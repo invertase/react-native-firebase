@@ -1,0 +1,89 @@
+{
+  "name": "react-native-firebase",
+  "version": "1.0.0-alpha",
+  "author": "Invertase <contact@invertase.io> (http://invertase.io)",
+  "description": "A react native firebase adapter supporting android and ios.",
+  "main": "index",
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
+    "dev": "npm run compile -- --watch",
+    "lint": "eslint ./src",
+    "publish_pages": "gh-pages -d public/",
+    "test": "./node_modules/.bin/mocha",
+    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase.git"
+  },
+  "jest": {
+    "preset": "jest-react-native",
+    "setupFiles": [],
+    "unmockedModulePathPatterns": [
+      "./node_modules/react",
+      "./node_modules/react-native",
+      "./node_modules/react-native-mock",
+      "./node_modules/react-addons-test-utils"
+    ]
+  },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "fcm",
+    "analytics",
+    "messaging",
+    "database",
+    "android",
+    "ios",
+    "crash",
+    "firestack"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "rnpm": {
+    "commands": {
+      "prelink": "node_modules/react-native-firebase/bin/prepare.sh",
+      "postlink": "node_modules/react-native-firebase/bin/cocoapods.sh"
+    },
+    "ios": {
+      "project": "ios/Firebase.xcodeproj"
+    },
+    "android": {
+      "packageInstance": "new FirebasePackage()"
+    }
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.0.0",
+    "babel-jest": "^14.1.0",
+    "babel-preset-react-native": "^1.9.0",
+    "cpx": "^1.5.0",
+    "debug": "^2.2.0",
+    "enzyme": "^2.4.1",
+    "eslint": "^3.8.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-flowtype": "^2.20.0",
+    "eslint-plugin-import": "^2.0.1",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.4.1",
+    "flow-bin": "^0.35.0",
+    "jest": "^14.1.0",
+    "jest-react-native": "^14.1.3",
+    "mocha": "^3.0.2",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "react-native-mock": "^0.2.6",
+    "react-test-renderer": "^15.3.0",
+    "should": "^11.1.0",
+    "sinon": "^2.0.0-pre.2"
+  },
+  "dependencies": {
+    "bows": "^1.6.0",
+    "es6-symbol": "^3.1.0"
+  }
+}

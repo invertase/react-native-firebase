@@ -1,0 +1,14 @@
+*.swp
+*~
+*.iml
+.*.haste_cache.*
+.DS_Store
+.idea
+.babelrc
+.eslintrc
+npm-debug.log
+src/
+examples/
+public/
+scripts/
+test/
