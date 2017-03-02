@@ -69,8 +69,8 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
 
     KeySetterFn fn = new KeySetterFn() {
       public String setKeyOrDefault(
-          final String key,
-          final String defaultValue) {
+        final String key,
+        final String defaultValue) {
         if (params.hasKey(key)) {
           // User-set key
           final String val = params.getString(key);

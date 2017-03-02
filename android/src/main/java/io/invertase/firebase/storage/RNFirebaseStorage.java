@@ -114,18 +114,18 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
 
     Task<Uri> downloadTask = reference.getDownloadUrl();
     downloadTask
-        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-          @Override
-          public void onSuccess(Uri uri) {
-            callback.invoke(null, uri.toString());
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-            callback.invoke(makeErrorPayload(1, exception));
-          }
-        });
+      .addOnSuccessListener(new OnSuccessListener<Uri>() {
+        @Override
+        public void onSuccess(Uri uri) {
+          callback.invoke(null, uri.toString());
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          callback.invoke(makeErrorPayload(1, exception));
+        }
+      });
   }
 
   @ReactMethod
@@ -187,8 +187,8 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       @Override
       public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
         int indexOfLastSlash = localPath.lastIndexOf("/");
-        String pathMinusFileName = indexOfLastSlash>0 ? localPath.substring(0, indexOfLastSlash) + "/" : "/";
-        String filename = indexOfLastSlash>0 ? localPath.substring(indexOfLastSlash+1) : localPath;
+        String pathMinusFileName = indexOfLastSlash > 0 ? localPath.substring(0, indexOfLastSlash) + "/" : "/";
+        String filename = indexOfLastSlash > 0 ? localPath.substring(indexOfLastSlash + 1) : localPath;
         File fileWithJustPath = new File(pathMinusFileName);
         fileWithJustPath.mkdirs();
         File fileWithFullPath = new File(pathMinusFileName, filename);
@@ -255,42 +255,42 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
 
       // register observers to listen for when the download is done or if it fails
       uploadTask
-          .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-              // handle unsuccessful uploads
-              Log.e(TAG, "Failed to upload file " + exception.getMessage());
-              //TODO: JS Error event
-              callback.invoke(makeErrorPayload(1, exception));
-            }
-          })
-          .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-              Log.d(TAG, "Successfully uploaded file " + taskSnapshot);
-              WritableMap resp = getUploadTaskAsMap(taskSnapshot);
-              handleStorageEvent(STORAGE_UPLOAD_SUCCESS, path, resp);
-              //TODO: A little hacky, but otherwise throws a not consumed exception
-              resp = getUploadTaskAsMap(taskSnapshot);
-              callback.invoke(null, resp);
-            }
-          })
-          .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-              Log.d(TAG, "Got upload progress " + taskSnapshot);
-              WritableMap event = getUploadTaskAsMap(taskSnapshot);
-              handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
-            }
-          })
-          .addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-              Log.d(TAG, "Upload is paused " + taskSnapshot);
-              WritableMap event = getUploadTaskAsMap(taskSnapshot);
-              handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
-            }
-          });
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+            // handle unsuccessful uploads
+            Log.e(TAG, "Failed to upload file " + exception.getMessage());
+            //TODO: JS Error event
+            callback.invoke(makeErrorPayload(1, exception));
+          }
+        })
+        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            Log.d(TAG, "Successfully uploaded file " + taskSnapshot);
+            WritableMap resp = getUploadTaskAsMap(taskSnapshot);
+            handleStorageEvent(STORAGE_UPLOAD_SUCCESS, path, resp);
+            //TODO: A little hacky, but otherwise throws a not consumed exception
+            resp = getUploadTaskAsMap(taskSnapshot);
+            callback.invoke(null, resp);
+          }
+        })
+        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+            Log.d(TAG, "Got upload progress " + taskSnapshot);
+            WritableMap event = getUploadTaskAsMap(taskSnapshot);
+            handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
+          }
+        })
+        .addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+            Log.d(TAG, "Upload is paused " + taskSnapshot);
+            WritableMap event = getUploadTaskAsMap(taskSnapshot);
+            handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
+          }
+        });
     } catch (Exception ex) {
       final int errorCode = 2;
       callback.invoke(makeErrorPayload(errorCode, ex));
@@ -300,17 +300,17 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
   //Firebase.Storage methods
   @ReactMethod
   public void setMaxDownloadRetryTime(final double milliseconds) {
-    FirebaseStorage.getInstance().setMaxDownloadRetryTimeMillis((long)milliseconds);
+    FirebaseStorage.getInstance().setMaxDownloadRetryTimeMillis((long) milliseconds);
   }
 
   @ReactMethod
   public void setMaxOperationRetryTime(final double milliseconds) {
-    FirebaseStorage.getInstance().setMaxOperationRetryTimeMillis((long)milliseconds);
+    FirebaseStorage.getInstance().setMaxOperationRetryTimeMillis((long) milliseconds);
   }
 
   @ReactMethod
   public void setMaxUploadRetryTime(final double milliseconds) {
-    FirebaseStorage.getInstance().setMaxUploadRetryTimeMillis((long)milliseconds);
+    FirebaseStorage.getInstance().setMaxUploadRetryTimeMillis((long) milliseconds);
   }
 
   private StorageReference getReference(String path) {
@@ -438,7 +438,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     body.putString("path", path);
     body.putString("message", error.getMessage());
 
-    WritableMap evt  = Arguments.createMap();
+    WritableMap evt = Arguments.createMap();
     evt.putString("eventName", STORAGE_ERROR);
     evt.putMap("body", body);
 

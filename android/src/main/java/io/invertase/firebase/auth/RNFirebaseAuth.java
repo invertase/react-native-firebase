@@ -121,40 +121,40 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   @ReactMethod
   public void createUserWithEmail(final String email, final String password, final Callback callback) {
     mAuth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
   public void signInWithEmail(final String email, final String password, final Callback callback) {
 
     mAuth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
@@ -175,22 +175,22 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     if (user != null) {
       AuthCredential credential = EmailAuthProvider.getCredential(email, password);
       user
-          .linkWithCredential(credential)
-          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-              try {
-                if (task.isSuccessful()) {
-                  Log.d(TAG, "user linked with password credential");
-                  userCallback(mAuth.getCurrentUser(), callback);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+          @Override
+          public void onComplete(@NonNull Task<AuthResult> task) {
+            try {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "user linked with password credential");
+                userCallback(mAuth.getCurrentUser(), callback);
+              } else {
+                userErrorCallback(task, callback);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -209,42 +209,42 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   public void signInAnonymously(final Callback callback) {
     Log.d(TAG, "signInAnonymously:called:");
     mAuth.signInAnonymously()
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
 
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
   public void signInWithCustomToken(final String customToken, final Callback callback) {
     mAuth.signInWithCustomToken(customToken)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
@@ -261,22 +261,22 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     if (user != null) {
       user
-          .updateEmail(email)
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              try {
-                if (task.isSuccessful()) {
-                  Log.d(TAG, "User email address updated");
-                  userCallback(mAuth.getCurrentUser(), callback);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .updateEmail(email)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            try {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "User email address updated");
+                userCallback(mAuth.getCurrentUser(), callback);
+              } else {
+                userErrorCallback(task, callback);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -288,21 +288,21 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     if (user != null) {
       user.updatePassword(newPassword)
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              try {
-                if (task.isSuccessful()) {
-                  Log.d(TAG, "User password updated");
-                  userCallback(mAuth.getCurrentUser(), callback);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            try {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "User password updated");
+                userCallback(mAuth.getCurrentUser(), callback);
+              } else {
+                userErrorCallback(task, callback);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -311,22 +311,22 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   @ReactMethod
   public void sendPasswordResetWithEmail(final String email, final Callback callback) {
     mAuth.sendPasswordResetEmail(email)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                WritableMap resp = Arguments.createMap();
-                resp.putString("status", "complete");
-                callback.invoke(null, resp);
-              } else {
-                callback.invoke(task.getException().toString());
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          try {
+            if (task.isSuccessful()) {
+              WritableMap resp = Arguments.createMap();
+              resp.putString("status", "complete");
+              callback.invoke(null, resp);
+            } else {
+              callback.invoke(task.getException().toString());
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
@@ -334,24 +334,24 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     FirebaseUser user = mAuth.getCurrentUser();
     if (user != null) {
       user.delete()
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              try {
-                if (task.isSuccessful()) {
-                  Log.d(TAG, "User account deleted");
-                  WritableMap resp = Arguments.createMap();
-                  resp.putString("status", "complete");
-                  resp.putString("msg", "User account deleted");
-                  callback.invoke(null, resp);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            try {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "User account deleted");
+                WritableMap resp = Arguments.createMap();
+                resp.putString("status", "complete");
+                resp.putString("msg", "User account deleted");
+                callback.invoke(null, resp);
+              } else {
+                userErrorCallback(task, callback);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -364,26 +364,26 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     if (user != null) {
       user.sendEmailVerification()
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              try {
-                if (task.isSuccessful()) {
-                  WritableMap resp = Arguments.createMap();
-                  resp.putString("status", "complete");
-                  resp.putString("msg", "User verification email sent");
-                  callback.invoke(null, resp);
-                } else {
-                  WritableMap err = Arguments.createMap();
-                  err.putInt("errorCode", ERROR_SENDING_VERIFICATION_EMAIL);
-                  err.putString("errorMessage", task.getException().getMessage());
-                  callback.invoke(err);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            try {
+              if (task.isSuccessful()) {
+                WritableMap resp = Arguments.createMap();
+                resp.putString("status", "complete");
+                resp.putString("msg", "User verification email sent");
+                callback.invoke(null, resp);
+              } else {
+                WritableMap err = Arguments.createMap();
+                err.putInt("errorCode", ERROR_SENDING_VERIFICATION_EMAIL);
+                err.putString("errorMessage", task.getException().getMessage());
+                callback.invoke(err);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -396,27 +396,27 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     if (user != null) {
       user.getToken(true)
-          .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-            @Override
-            public void onComplete(@NonNull Task<GetTokenResult> task) {
-              try {
-                if (task.isSuccessful()) {
-                  String token = task.getResult().getToken();
-                  WritableMap resp = Arguments.createMap();
-                  resp.putString("status", "complete");
-                  resp.putString("token", token);
-                  callback.invoke(null, resp);
-                } else {
-                  WritableMap err = Arguments.createMap();
-                  err.putInt("errorCode", ERROR_FETCHING_TOKEN);
-                  err.putString("errorMessage", task.getException().getMessage());
-                  callback.invoke(err);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+          @Override
+          public void onComplete(@NonNull Task<GetTokenResult> task) {
+            try {
+              if (task.isSuccessful()) {
+                String token = task.getResult().getToken();
+                WritableMap resp = Arguments.createMap();
+                resp.putString("status", "complete");
+                resp.putString("token", token);
+                callback.invoke(null, resp);
+              } else {
+                WritableMap err = Arguments.createMap();
+                err.putInt("errorCode", ERROR_FETCHING_TOKEN);
+                err.putString("errorMessage", task.getException().getMessage());
+                callback.invoke(err);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -445,21 +445,21 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       UserProfileChangeRequest profileUpdates = profileBuilder.build();
 
       user.updateProfile(profileUpdates)
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              try {
-                if (task.isSuccessful()) {
-                  Log.d(TAG, "User profile updated");
-                  userCallback(mAuth.getCurrentUser(), callback);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            try {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "User profile updated");
+                userCallback(mAuth.getCurrentUser(), callback);
+              } else {
+                userErrorCallback(task, callback);
               }
+            } catch (Exception ex) {
+              userExceptionCallback(ex, callback);
             }
-          });
+          }
+        });
     } else {
       callbackNoUser(callback, true);
     }
@@ -483,17 +483,17 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       callbackNoUser(callback, false);
     } else {
       user.reload()
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "user reloaded");
-                userCallback(mAuth.getCurrentUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "user reloaded");
+              userCallback(mAuth.getCurrentUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
-          });
+          }
+        });
     }
   }
 
@@ -514,40 +514,40 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   public void googleLogin(String IdToken, final Callback callback) {
     AuthCredential credential = GoogleAuthProvider.getCredential(IdToken, null);
     mAuth.signInWithCredential(credential)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   @ReactMethod
   public void facebookLogin(String Token, final Callback callback) {
     AuthCredential credential = FacebookAuthProvider.getCredential(Token);
     mAuth.signInWithCredential(credential)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                userCallback(task.getResult().getUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          try {
+            if (task.isSuccessful()) {
+              userCallback(task.getResult().getUser(), callback);
+            } else {
+              userErrorCallback(task, callback);
             }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
           }
-        });
+        }
+      });
   }
 
   // Internal helpers

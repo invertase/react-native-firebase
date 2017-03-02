@@ -341,8 +341,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   private RNFirebaseDatabaseReference getDBHandle(final String path,
-                                                 final ReadableArray modifiersArray,
-                                                 final String modifiersString) {
+                                                  final ReadableArray modifiersArray,
+                                                  final String modifiersString) {
     String key = this.getDBListenerKey(path, modifiersString);
     RNFirebaseDatabaseReference r = mDBListeners.get(key);
 

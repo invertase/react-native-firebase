@@ -22,7 +22,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @return
    */
   @Override
@@ -36,7 +35,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param enabled
    */
   @ReactMethod
@@ -45,7 +43,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param screenName
    * @param screenClassOverride
    */
@@ -65,7 +62,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param milliseconds
    */
   @ReactMethod
@@ -74,7 +70,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param milliseconds
    */
   @ReactMethod
@@ -83,7 +78,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param id
    */
   @ReactMethod
@@ -92,7 +86,6 @@ public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
   }
 
   /**
-   *
    * @param name
    * @param value
    */
