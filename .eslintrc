@@ -18,7 +18,9 @@
   },
   "rules": {
     "class-methods-use-this": 0,
+    "no-plusplus": 0,
     "no-underscore-dangle": 0,
+    "no-undef": 0,
     "no-use-before-define": 0,
     "arrow-body-style": 0,
     "import/prefer-default-export": 0,
