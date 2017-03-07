@@ -1,5 +1,5 @@
 {
-"ignore_dirs": [
+  "ignore_dirs": [
     ".git",
     "node_modules",
     "android/build",

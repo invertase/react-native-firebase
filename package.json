@@ -71,7 +71,7 @@
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.35.0",
     "react": "^15.3.0",
-    "react-dom": "^15.3.0",
+    "react-dom": "^15.3.0"
   },
   "dependencies": {
     "bows": "^1.6.0",
