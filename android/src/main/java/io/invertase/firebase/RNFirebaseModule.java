@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import android.util.Log;
-import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Callback;
@@ -31,6 +30,7 @@ interface KeySetterFn {
 public class RNFirebaseModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "RNFirebase";
   private FirebaseApp app;
+  private ReactApplicationContext reactContext;
 
   public RNFirebaseModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -146,7 +146,7 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     try {
       Log.i(TAG, "Configuring app");
       if (app == null) {
-        app = FirebaseApp.initializeApp(getReactApplicationContext().getBaseContext(), builder.build());
+        app = FirebaseApp.initializeApp(reactContext, builder.build());
       }
       Log.i(TAG, "Configured");
 

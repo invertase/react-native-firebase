@@ -112,9 +112,11 @@ public class RNFirebaseDatabaseReference {
       @Override
       public void onCancelled(DatabaseError error) {
         WritableMap err = Arguments.createMap();
-        err.putInt("errorCode", error.getCode());
-        err.putString("errorDetails", error.getDetails());
-        err.putString("description", error.getMessage());
+        err.putString("path", mPath);
+        err.putInt("code", error.getCode());
+        err.putString("modifiers", mModifiersString);
+        err.putString("details", error.getDetails());
+        err.putString("message", error.getMessage());
         callback.invoke(err);
       }
     };
@@ -168,19 +170,15 @@ public class RNFirebaseDatabaseReference {
   }
 
   private void handleDatabaseError(final DatabaseError error) {
-    WritableMap err = Arguments.createMap();
-    err.putString("eventName", "database_error");
-    err.putString("path", mPath);
-    err.putString("modifiersString", mModifiersString);
-    err.putInt("errorCode", error.getCode());
-    err.putString("errorDetails", error.getDetails());
-    err.putString("msg", error.getMessage());
+    WritableMap errMap = Arguments.createMap();
 
-    WritableMap evt  = Arguments.createMap();
-    evt.putString("eventName", "database_error");
-    evt.putMap("body", err);
+    errMap.putString("path", mPath);
+    errMap.putInt("code", error.getCode());
+    errMap.putString("modifiers", mModifiersString);
+    errMap.putString("details", error.getDetails());
+    errMap.putString("message", error.getMessage());
 
-    Utils.sendEvent(mReactContext, "database_error", evt);
+    Utils.sendEvent(mReactContext, "database_error", errMap);
   }
 
   private Query buildDatabaseQueryAtPathAndModifiers(final FirebaseDatabase firebaseDatabase,

@@ -1,7 +1,6 @@
 {
   "ignore_dirs": [
     ".git",
-    "node_modules",
     "android/build",
     "android/.idea",
     "android/.gradle",

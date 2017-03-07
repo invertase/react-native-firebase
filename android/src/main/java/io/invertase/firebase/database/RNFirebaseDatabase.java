@@ -191,7 +191,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void onOnce(final String path,
+  public void once(final String path,
                      final String modifiersString,
                      final ReadableArray modifiersArray,
                      final String eventName,
