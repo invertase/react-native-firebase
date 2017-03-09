@@ -1,0 +1,325 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */; };
+		D950369E1D19C77400F7094D /* RNFirebase.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* RNFirebase.m */; };
+		D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */; };
+		D96290451D6D16100099A3EC /* RNFirebaseAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290441D6D16100099A3EC /* RNFirebaseAnalytics.m */; };
+		D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290841D6D28B80099A3EC /* RNFirebaseDatabase.m */; };
+		D9D62E7C1D6D86FD003D826D /* RNFirebaseStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7B1D6D86FD003D826D /* RNFirebaseStorage.m */; };
+		D9D62E801D6D8717003D826D /* RNFirebaseAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58B511D91A9E6C8500147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		134814201AA4EA6300B7C361 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseMessaging.h; path = RNFirebase/RNFirebaseMessaging.h; sourceTree = "<group>"; };
+		D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseMessaging.m; path = RNFirebase/RNFirebaseMessaging.m; sourceTree = "<group>"; };
+		D950369C1D19C77400F7094D /* RNFirebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebase.h; path = RNFirebase/RNFirebase.h; sourceTree = "<group>"; };
+		D950369D1D19C77400F7094D /* RNFirebase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebase.m; path = RNFirebase/RNFirebase.m; sourceTree = "<group>"; };
+		D96290391D6D152A0099A3EC /* RNFirebaseEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseEvents.h; path = RNFirebase/RNFirebaseEvents.h; sourceTree = "<group>"; };
+		D962903D1D6D15B00099A3EC /* RNFirebaseErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseErrors.h; path = RNFirebase/RNFirebaseErrors.h; sourceTree = "<group>"; };
+		D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseErrors.m; path = RNFirebase/RNFirebaseErrors.m; sourceTree = "<group>"; };
+		D96290431D6D16100099A3EC /* RNFirebaseAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseAnalytics.h; path = RNFirebase/RNFirebaseAnalytics.h; sourceTree = "<group>"; };
+		D96290441D6D16100099A3EC /* RNFirebaseAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseAnalytics.m; path = RNFirebase/RNFirebaseAnalytics.m; sourceTree = "<group>"; };
+		D96290831D6D28B80099A3EC /* RNFirebaseDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseDatabase.h; path = RNFirebase/RNFirebaseDatabase.h; sourceTree = "<group>"; };
+		D96290841D6D28B80099A3EC /* RNFirebaseDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseDatabase.m; path = RNFirebase/RNFirebaseDatabase.m; sourceTree = "<group>"; };
+		D9D62E7A1D6D86FD003D826D /* RNFirebaseStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseStorage.h; path = RNFirebase/RNFirebaseStorage.h; sourceTree = "<group>"; };
+		D9D62E7B1D6D86FD003D826D /* RNFirebaseStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseStorage.m; path = RNFirebase/RNFirebaseStorage.m; sourceTree = "<group>"; };
+		D9D62E7E1D6D8717003D826D /* RNFirebaseAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseAuth.h; path = RNFirebase/RNFirebaseAuth.h; sourceTree = "<group>"; };
+		D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseAuth.m; path = RNFirebase/RNFirebaseAuth.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58B511D81A9E6C8500147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		134814211AA4EA7D00B7C361 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				134814201AA4EA6300B7C361 /* libRNFirebase.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58B511D21A9E6C8500147676 = {
+			isa = PBXGroup;
+			children = (
+				D96290351D6D145F0099A3EC /* Modules */,
+				D950369C1D19C77400F7094D /* RNFirebase.h */,
+				D950369D1D19C77400F7094D /* RNFirebase.m */,
+				134814211AA4EA7D00B7C361 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D96290351D6D145F0099A3EC /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */,
+				D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */,
+				D9D62E7E1D6D8717003D826D /* RNFirebaseAuth.h */,
+				D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */,
+				D96290391D6D152A0099A3EC /* RNFirebaseEvents.h */,
+				D962903D1D6D15B00099A3EC /* RNFirebaseErrors.h */,
+				D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */,
+				D96290431D6D16100099A3EC /* RNFirebaseAnalytics.h */,
+				D96290441D6D16100099A3EC /* RNFirebaseAnalytics.m */,
+				D96290831D6D28B80099A3EC /* RNFirebaseDatabase.h */,
+				D96290841D6D28B80099A3EC /* RNFirebaseDatabase.m */,
+				D9D62E7A1D6D86FD003D826D /* RNFirebaseStorage.h */,
+				D9D62E7B1D6D86FD003D826D /* RNFirebaseStorage.m */,
+			);
+			name = Modules;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58B511DA1A9E6C8500147676 /* RNFirebase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNFirebase" */;
+			buildPhases = (
+				58B511D71A9E6C8500147676 /* Sources */,
+				58B511D81A9E6C8500147676 /* Frameworks */,
+				58B511D91A9E6C8500147676 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFirebase;
+			productName = RCTDataManager;
+			productReference = 134814201AA4EA6300B7C361 /* libRNFirebase.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58B511D31A9E6C8500147676 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					58B511DA1A9E6C8500147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNFirebase" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 58B511D21A9E6C8500147676;
+			productRefGroup = 58B511D21A9E6C8500147676;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58B511DA1A9E6C8500147676 /* RNFirebase */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58B511D71A9E6C8500147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9D62E801D6D8717003D826D /* RNFirebaseAuth.m in Sources */,
+				D96290451D6D16100099A3EC /* RNFirebaseAnalytics.m in Sources */,
+				D9D62E7C1D6D86FD003D826D /* RNFirebaseStorage.m in Sources */,
+				D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */,
+				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
+				D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */,
+				D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		58B511ED1A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		58B511EE1A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		58B511F01A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				DEFINES_MODULE = NO;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"${BUILT_PRODUCTS_DIR}",
+					"${PROJECT_DIR}/../../../ios/Pods/**",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+					"${SRCROOT}/../../../ios/Pods/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACH_O_TYPE = staticlib;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = RNFirebase;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		58B511F11A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				DEFINES_MODULE = NO;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
+				ENABLE_BITCODE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"${BUILT_PRODUCTS_DIR}",
+					"${PROJECT_DIR}/../../../ios/Pods/**",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+					"${SRCROOT}/../../../ios/Pods/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_NAME = RNFirebase;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNFirebase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511ED1A9E6C8500147676 /* Debug */,
+				58B511EE1A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNFirebase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511F01A9E6C8500147676 /* Debug */,
+				58B511F11A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58B511D31A9E6C8500147676 /* Project object */;
+}
