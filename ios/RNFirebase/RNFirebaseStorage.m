@@ -175,26 +175,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path
         PHAsset *asset = [assets firstObject];
 
         //NOTE: This is all based on http://stackoverflow.com/questions/35241449
-        if (asset.mediaType == PHAssetMediaTypeImage && (asset.mediaSubtypes & PHAssetMediaSubtypePhotoLive)) {
-            //TODO: This is untested as I don't have an iPhone 6s/7
-            PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
-            options.networkAccessAllowed = YES;
-            [[PHImageManager defaultManager] requestLivePhotoForAsset:asset
-                                                           targetSize:CGSizeZero
-                                                          contentMode:PHImageContentModeAspectFill
-                                                              options:options
-                                                        resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
-                                                            if ([info objectForKey:PHImageErrorKey] == nil) {
-                                                                NSData *livePhotoData = [NSKeyedArchiver archivedDataWithRootObject:livePhoto];
-                                                                [self uploadData:livePhotoData metadata:metadata path:path callback:callback];
-                                                            } else {
-                                                                NSDictionary *errProps = [[NSMutableDictionary alloc] init];
-                                                                [errProps setValue:@"Could not obtain live image data" forKey:@"message"];
-                                                                //TODO: Error event
-                                                                callback(@[errProps]);
-                                                            }
-            }];
-        } else if (asset.mediaType == PHAssetMediaTypeImage) {
+        if (asset.mediaType == PHAssetMediaTypeImage) {
             PHImageRequestOptions *options = [PHImageRequestOptions new];
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset

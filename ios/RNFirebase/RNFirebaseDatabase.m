@@ -50,6 +50,7 @@
         };
         id errorBlock = ^(NSError * _Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
+            [self unsetListeningOn:eventName];
             [self getAndSendDatabaseError:error
                                      path:_path
                           modifiersString:_modifiersString];
