@@ -147,8 +147,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
         public void onComplete(DatabaseError error, DatabaseReference ref) {
           if (error != null) {
             WritableMap err = Arguments.createMap();
-            err.putInt("errorCode", error.getCode());
-            err.putString("errorDetails", error.getDetails());
+            err.putInt("code", error.getCode());
+            err.putString("details", error.getDetails());
             err.putString("description", error.getMessage());
             callback.invoke(err);
           } else {
@@ -171,11 +171,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void on(final String path,
-                 final String modifiersString,
-                 final ReadableArray modifiersArray,
-                 final String eventName,
-                 final Callback callback) {
+  public void on(final String path, final String modifiersString, final ReadableArray modifiersArray, final String eventName, final Callback callback) {
     RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
 
     if (eventName.equals("value")) {
@@ -192,10 +188,10 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void once(final String path,
-                     final String modifiersString,
-                     final ReadableArray modifiersArray,
-                     final String eventName,
-                     final Callback callback) {
+                   final String modifiersString,
+                   final ReadableArray modifiersArray,
+                   final String eventName,
+                   final Callback callback) {
     RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
     ref.addOnceValueEventListener(callback);
   }
@@ -328,8 +324,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     final DatabaseError databaseError) {
     if (databaseError != null) {
       WritableMap err = Arguments.createMap();
-      err.putInt("errorCode", databaseError.getCode());
-      err.putString("errorDetails", databaseError.getDetails());
+      err.putInt("code", databaseError.getCode());
+      err.putString("details", databaseError.getDetails());
       err.putString("description", databaseError.getMessage());
       callback.invoke(err);
     } else {
