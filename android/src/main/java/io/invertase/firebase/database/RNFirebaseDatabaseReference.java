@@ -68,6 +68,7 @@ public class RNFirebaseDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
+          removeChildEventListener();
           handleDatabaseError(error);
         }
       };
@@ -90,6 +91,7 @@ public class RNFirebaseDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
+          removeValueEventListener();
           handleDatabaseError(error);
         }
       };
@@ -186,10 +188,9 @@ public class RNFirebaseDatabaseReference {
                                                      final ReadableArray modifiers) {
     Query query = firebaseDatabase.getReference(path);
     List<Object> strModifiers = Utils.recursivelyDeconstructReadableArray(modifiers);
-    ListIterator<Object> it = strModifiers.listIterator();
 
-    while(it.hasNext()) {
-      String str = (String) it.next();
+    for (Object strModifier : strModifiers) {
+      String str = (String) strModifier;
 
       String[] strArr = str.split(":");
       String methStr = strArr[0];
@@ -227,7 +228,7 @@ public class RNFirebaseDatabaseReference {
         } else if ("boolean".equals(type)) {
           boolean booleanValue = Boolean.parseBoolean(value);
           if (strArr.length > 3) {
-            query = query.equalTo(booleanValue, strArr[3] );
+            query = query.equalTo(booleanValue, strArr[3]);
           } else {
             query = query.equalTo(booleanValue);
           }
@@ -251,7 +252,7 @@ public class RNFirebaseDatabaseReference {
         } else if ("boolean".equals(type)) {
           boolean booleanValue = Boolean.parseBoolean(value);
           if (strArr.length > 3) {
-            query = query.endAt(booleanValue, strArr[3] );
+            query = query.endAt(booleanValue, strArr[3]);
           } else {
             query = query.endAt(booleanValue);
           }
@@ -275,7 +276,7 @@ public class RNFirebaseDatabaseReference {
         } else if ("boolean".equals(type)) {
           boolean booleanValue = Boolean.parseBoolean(value);
           if (strArr.length > 3) {
-            query = query.startAt(booleanValue, strArr[3] );
+            query = query.startAt(booleanValue, strArr[3]);
           } else {
             query = query.startAt(booleanValue);
           }
