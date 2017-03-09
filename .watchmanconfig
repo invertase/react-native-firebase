@@ -4,6 +4,7 @@
     "node_modules",
     "android/build",
     "android/.idea",
+    "ios/.idea",
     "android/.gradle",
     "android/gradle",
     ".idea"
