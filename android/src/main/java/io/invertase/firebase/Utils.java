@@ -48,68 +48,77 @@ public class Utils {
     }
   }
 
-  // snapshot
-  public static WritableMap dataSnapshotToMap(
-    String name,
-    String path,
-    String modifiersString,
-    DataSnapshot dataSnapshot
-  ) {
-    WritableMap data = Arguments.createMap();
+  /**
+   * @param key   map key
+   * @param value map value
+   * @param map   map
+   */
+  public static void mapPutValue(String key, Object value, WritableMap map) {
+    String type = value != null ? value.getClass().getName() : "";
+    switch (type) {
+      case "java.lang.Boolean":
+        map.putBoolean(key, (Boolean) value);
+        break;
+      case "java.lang.Long":
+        Long longVal = (Long) value;
+        map.putDouble(key, (double) longVal);
+        break;
+      case "java.lang.Double":
+        map.putDouble(key, (Double) value);
+        break;
+      case "java.lang.String":
+        map.putString(key, (String) value);
+        break;
+      default:
+        map.putString(key, null);
+    }
+  }
 
-    data.putString("key", dataSnapshot.getKey());
-    data.putBoolean("exists", dataSnapshot.exists());
-    data.putBoolean("hasChildren", dataSnapshot.hasChildren());
+  /**
+   *
+   * @param name
+   * @param path
+   * @param modifiersString
+   * @param dataSnapshot
+   * @return
+   */
+  public static WritableMap snapshotToMap(String name, String path, String modifiersString, DataSnapshot dataSnapshot) {
+    WritableMap snapshot = Arguments.createMap();
+    WritableMap eventMap = Arguments.createMap();
 
-    data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+    snapshot.putString("key", dataSnapshot.getKey());
+    snapshot.putBoolean("exists", dataSnapshot.exists());
+    snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
+    snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+
     if (!dataSnapshot.hasChildren()) {
-      Object value = dataSnapshot.getValue();
-      String type = value != null ? value.getClass().getName() : "";
-      switch (type) {
-        case "java.lang.Boolean":
-          data.putBoolean("value", (Boolean) value);
-          break;
-        case "java.lang.Long":
-          Long longVal = (Long) value;
-          data.putDouble("value", (double) longVal);
-          break;
-        case "java.lang.Double":
-          data.putDouble("value", (Double) value);
-          break;
-        case "java.lang.String":
-          data.putString("value", (String) value);
-          break;
-        default:
-          data.putString("value", null);
-      }
+      mapPutValue("value", dataSnapshot.getValue(), snapshot);
     } else {
       Object value = Utils.castSnapshotValue(dataSnapshot);
       if (value instanceof WritableNativeArray) {
-        data.putArray("value", (WritableArray) value);
+        snapshot.putArray("value", (WritableArray) value);
       } else {
-        data.putMap("value", (WritableMap) value);
+        snapshot.putMap("value", (WritableMap) value);
       }
     }
 
-    // Child keys
-    WritableArray childKeys = Utils.getChildKeys(dataSnapshot);
-    data.putArray("childKeys", childKeys);
+    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
+    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
-    Object priority = dataSnapshot.getPriority();
-    if (priority == null) {
-      data.putString("priority", null);
-    } else {
-      data.putString("priority", priority.toString());
-    }
-
-    WritableMap eventMap = Arguments.createMap();
-    eventMap.putString("eventName", name);
-    eventMap.putMap("snapshot", data);
     eventMap.putString("path", path);
+    eventMap.putMap("snapshot", snapshot);
+    eventMap.putString("eventName", name);
     eventMap.putString("modifiersString", modifiersString);
+
     return eventMap;
   }
 
+  /**
+   *
+   * @param snapshot
+   * @param <Any>
+   * @return
+   */
   public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
     if (snapshot.hasChildren()) {
       if (isArray(snapshot)) {
@@ -122,22 +131,24 @@ public class Utils {
         String type = snapshot.getValue().getClass().getName();
         switch (type) {
           case "java.lang.Boolean":
-            return (Any) (snapshot.getValue());
           case "java.lang.Long":
-            return (Any) (snapshot.getValue());
           case "java.lang.Double":
-            return (Any) (snapshot.getValue());
           case "java.lang.String":
             return (Any) (snapshot.getValue());
           default:
             Log.w(TAG, "Invalid type: " + type);
-            return (Any) null;
+            return null;
         }
       }
-      return (Any) null;
+      return null;
     }
   }
 
+  /**
+   *
+   * @param snapshot
+   * @return
+   */
   private static boolean isArray(DataSnapshot snapshot) {
     long expectedKey = 0;
     for (DataSnapshot child : snapshot.getChildren()) {
@@ -155,6 +166,12 @@ public class Utils {
     return true;
   }
 
+  /**
+   *
+   * @param snapshot
+   * @param <Any>
+   * @return
+   */
   private static <Any> WritableArray buildArray(DataSnapshot snapshot) {
     WritableArray array = Arguments.createArray();
     for (DataSnapshot child : snapshot.getChildren()) {
@@ -187,6 +204,12 @@ public class Utils {
     return array;
   }
 
+  /**
+   *
+   * @param snapshot
+   * @param <Any>
+   * @return
+   */
   private static <Any> WritableMap buildMap(DataSnapshot snapshot) {
     WritableMap map = Arguments.createMap();
     for (DataSnapshot child : snapshot.getChildren()) {
@@ -197,8 +220,7 @@ public class Utils {
           map.putBoolean(child.getKey(), (Boolean) castedChild);
           break;
         case "java.lang.Long":
-          Long longVal = (Long) castedChild;
-          map.putDouble(child.getKey(), (double) longVal);
+          map.putDouble(child.getKey(), (double) ((Long) castedChild));
           break;
         case "java.lang.Double":
           map.putDouble(child.getKey(), (Double) castedChild);
@@ -220,6 +242,11 @@ public class Utils {
     return map;
   }
 
+  /**
+   *
+   * @param snapshot
+   * @return
+   */
   public static WritableArray getChildKeys(DataSnapshot snapshot) {
     WritableArray childKeys = Arguments.createArray();
 

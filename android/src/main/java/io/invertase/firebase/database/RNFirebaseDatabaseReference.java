@@ -3,7 +3,7 @@ package io.invertase.firebase.database;
 import java.util.HashSet;
 import java.util.List;
 import android.util.Log;
-import java.util.ListIterator;
+
 import java.util.Set;
 
 import com.facebook.react.bridge.Callback;
@@ -107,7 +107,7 @@ public class RNFirebaseDatabaseReference {
     final ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.dataSnapshotToMap("value", mPath, mModifiersString, dataSnapshot);
+        WritableMap data = Utils.snapshotToMap("value", mPath, mModifiersString, dataSnapshot);
         callback.invoke(null, data);
       }
 
@@ -163,7 +163,7 @@ public class RNFirebaseDatabaseReference {
   }
 
   private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
-    WritableMap data = Utils.dataSnapshotToMap(name, mPath, mModifiersString, dataSnapshot);
+    WritableMap data = Utils.snapshotToMap(name, mPath, mModifiersString, dataSnapshot);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", data);
