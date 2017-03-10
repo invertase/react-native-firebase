@@ -34,18 +34,17 @@ RCT_EXPORT_METHOD(setCurrentScreen:(NSString *) screenName
   [FIRAnalytics setScreenName:screenName screenClass:screenClassOverriew];
 }
 
-RCT_EXPORT_METHOD(setMinimumSessionDuration:(NSNumber *) milliseconds)
+RCT_EXPORT_METHOD(setMinimumSessionDuration:(nonnull NSNumber *) milliseconds)
 {
   //Not implemented on iOS
 }
 
-RCT_EXPORT_METHOD(setSessionTimeoutDuration:(NSNumber *) milliseconds)
+RCT_EXPORT_METHOD(setSessionTimeoutDuration:(nonnull NSNumber *) milliseconds)
 {
   //Not implemented on iOS
 }
 
-RCT_EXPORT_METHOD(setUserId: (NSString *) id
-  props:(NSDictionary *) props)
+RCT_EXPORT_METHOD(setUserId: (NSString *) id)
 {
   [FIRAnalytics setUserID:id];
 }
