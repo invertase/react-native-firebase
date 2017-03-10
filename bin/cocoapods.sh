@@ -43,7 +43,7 @@ if [ -f $podfile ]
     cat $template
     echo ""
     echo ""
-    echo "and run 'pod install' to install Firestack for iOS"
+    echo "and run 'pod install' to install RNFirebase for iOS"
     exit 0
   fi
 
