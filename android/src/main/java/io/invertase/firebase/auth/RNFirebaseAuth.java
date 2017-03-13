@@ -269,7 +269,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
+  public void reauthenticate(final String provider, final String authToken, final String authSecret, final Callback callback) {
     // TODO:
     Utils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
     // AuthCredential credential;
@@ -351,7 +351,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void deleteUser(final Callback callback) {
+  public void delete(final Callback callback) {
     FirebaseUser user = mAuth.getCurrentUser();
     if (user != null) {
       user.delete()
@@ -488,7 +488,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
 
   @ReactMethod
-  public void reloadUser(final Callback callback) {
+  public void reload(final Callback callback) {
     FirebaseUser user = mAuth.getCurrentUser();
 
     if (user == null) {
