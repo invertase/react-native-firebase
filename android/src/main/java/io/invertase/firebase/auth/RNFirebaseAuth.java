@@ -96,6 +96,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * Removes the current auth state listener
+   *
    * @param callback
    */
   @ReactMethod
@@ -111,6 +112,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * signOut
+   *
    * @param promise
    */
   @ReactMethod
@@ -125,6 +127,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * signInAnonymously
+   *
    * @param promise
    */
   @ReactMethod
@@ -150,6 +153,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * createUserWithEmailAndPassword
+   *
    * @param email
    * @param password
    * @param promise
@@ -564,6 +568,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * Resolves or rejects an auth method promise without a user (user was missing)
+   *
    * @param promise
    * @param isError
    */
@@ -576,29 +581,15 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * promiseWithUser
+   *
    * @param user
    * @param promise
    */
   private void promiseWithUser(final FirebaseUser user, final Promise promise) {
     if (user != null) {
-      user.getToken(true)
-        .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-          @Override
-          public void onSuccess(GetTokenResult getTokenResult) {
-            Log.d(TAG, "promiseWithUser:getToken:success");
-            WritableMap userMap = firebaseUserToMap(user);
-            userMap.putString("token", getTokenResult.getToken());
-            promise.resolve(userMap);
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-            WritableMap error = authExceptionToMap(exception);
-            Log.e(TAG, "promiseWithUser:getToken::failure", exception);
-            promise.reject(error.getString("code"), error.getString("message"), exception);
-          }
-        });
+      WritableMap userMap = firebaseUserToMap(user);
+      promise.resolve(userMap);
     } else {
       promiseNoUser(promise, true);
     }
