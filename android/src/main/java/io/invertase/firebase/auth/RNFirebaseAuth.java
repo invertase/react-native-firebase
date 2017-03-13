@@ -68,7 +68,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
 
   @ReactMethod
-  public void createAuthStateListener() {
+  public void addAuthStateListener() {
     if (mAuthListener == null) {
       mAuthListener = new FirebaseAuth.AuthStateListener() {
         @Override
@@ -79,7 +79,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
           if (user != null) {
             // TODO move to helper
-            WritableMap userMap = getUserMap(user);
+            WritableMap userMap = firebaseUserToMap(user);
             msgMap.putBoolean("authenticated", true);
             msgMap.putMap("user", userMap);
 
@@ -94,37 +94,87 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * Removes the current auth state listener
+   * @param callback
+   */
   @ReactMethod
-  public void unlistenForAuth(final Callback callback) {
+  public void removeAuthStateListener(final Callback callback) {
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
-
       // TODO move to helper
       WritableMap resp = Arguments.createMap();
       resp.putString("status", "complete");
-
       callback.invoke(null, resp);
     }
   }
 
+  /**
+   * signOut
+   * @param promise
+   */
   @ReactMethod
-  public void createUserWithEmail(final String email, final String password, final Callback callback) {
-    mAuth.createUserWithEmailAndPassword(email, password)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+  public void signOut(final Promise promise) {
+    if (mAuth == null || mAuth.getCurrentUser() == null) {
+      promiseNoUser(promise, true);
+    } else {
+      mAuth.signOut();
+      promiseNoUser(promise, false);
+    }
+  }
+
+  /**
+   * signInAnonymously
+   * @param promise
+   */
+  @ReactMethod
+  public void signInAnonymously(final Promise promise) {
+    Log.d(TAG, "signInAnonymously");
+    mAuth.signInAnonymously()
+      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
         @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              userCallback(task.getResult().getUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
+        public void onSuccess(AuthResult authResult) {
+          Log.d(TAG, "signInAnonymously:onComplete:success");
+          promiseWithUser(authResult.getUser(), promise);
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          WritableMap error = authExceptionToMap(exception);
+          Log.e(TAG, "signInAnonymously:onComplete:failure", exception);
+          promise.reject(error.getString("code"), error.getString("message"), exception);
         }
       });
   }
+
+  /**
+   * createUserWithEmailAndPassword
+   * @param email
+   * @param password
+   * @param promise
+   */
+  @ReactMethod
+  public void createUserWithEmailAndPassword(final String email, final String password, final Promise promise) {
+    Log.d(TAG, "createUserWithEmailAndPassword");
+    mAuth.createUserWithEmailAndPassword(email, password)
+      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        @Override
+        public void onSuccess(AuthResult authResult) {
+          Log.d(TAG, "createUserWithEmailAndPassword:onComplete:success");
+          promiseWithUser(authResult.getUser(), promise);
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          WritableMap error = authExceptionToMap(exception);
+          Log.e(TAG, "createUserWithEmailAndPassword:onComplete:failure", exception);
+          promise.reject(error.getString("code"), error.getString("message"), exception);
+        }
+      });
+  }
+
 
   @ReactMethod
   public void signInWithEmail(final String email, final String password, final Callback callback) {
@@ -192,27 +242,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     } else
       // TODO other providers
       Utils.todoNote(TAG, "linkWithProvider", callback);
-  }
-
-  @ReactMethod
-  public void signInAnonymously(final Promise promise) {
-    Log.d(TAG, "signInAnonymously");
-    mAuth.signInAnonymously()
-      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-        @Override
-        public void onSuccess(AuthResult authResult) {
-          Log.d(TAG, "signInAnonymously:onComplete:success");
-          promise.resolve(authResult.getUser());
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception exception) {
-          WritableMap error = authExceptionToMap(exception);
-          Log.e(TAG, "signInAnonymously:onComplete:failure", exception);
-          promise.reject(error.getString("code"), error.getString("message"), exception);
-        }
-      });
   }
 
   @ReactMethod
@@ -453,15 +482,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void signOut(final Callback callback) {
-    mAuth.signOut();
-
-    WritableMap resp = Arguments.createMap();
-    resp.putString("status", "complete");
-    resp.putString("msg", "User signed out");
-    callback.invoke(null, resp);
-  }
 
   @ReactMethod
   public void reloadUser(final Callback callback) {
@@ -543,10 +563,53 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * ---------------- */
 
   /**
-   *
+   * Resolves or rejects an auth method promise without a user (user was missing)
+   * @param promise
+   * @param isError
+   */
+  private void promiseNoUser(Promise promise, Boolean isError) {
+    if (isError) {
+      promise.reject("auth/no_current_user", "No user currently signed in.");
+    } else {
+      promise.resolve(null);
+    }
+  }
+
+  /**
+   * @param user
+   * @param promise
+   */
+  private void promiseWithUser(final FirebaseUser user, final Promise promise) {
+    if (user != null) {
+      user.getToken(true)
+        .addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+          @Override
+          public void onSuccess(GetTokenResult getTokenResult) {
+            Log.d(TAG, "promiseWithUser:getToken:success");
+            WritableMap userMap = firebaseUserToMap(user);
+            userMap.putString("token", getTokenResult.getToken());
+            promise.resolve(userMap);
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+            WritableMap error = authExceptionToMap(exception);
+            Log.e(TAG, "promiseWithUser:getToken::failure", exception);
+            promise.reject(error.getString("code"), error.getString("message"), exception);
+          }
+        });
+    } else {
+      promiseNoUser(promise, true);
+    }
+  }
+
+
+  /**
    * @param user
    * @param callback
    */
+  @Deprecated
   private void userCallback(final FirebaseUser user, final Callback callback) {
     if (user != null) {
       user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -554,7 +617,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         public void onComplete(@NonNull Task<GetTokenResult> task) {
           try {
             if (task.isSuccessful()) {
-              WritableMap userMap = getUserMap(user);
+              WritableMap userMap = firebaseUserToMap(user);
               userMap.putString("token", task.getResult().getToken());
               callback.invoke(null, userMap);
             } else {
@@ -571,7 +634,38 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * @param user
+   * @return
+   */
+  private WritableMap firebaseUserToMap(FirebaseUser user) {
+    WritableMap userMap = Arguments.createMap();
+
+    final String email = user.getEmail();
+    final String uid = user.getUid();
+    final String provider = user.getProviderId();
+    final String name = user.getDisplayName();
+    final Boolean verified = user.isEmailVerified();
+    final Uri photoUrl = user.getPhotoUrl();
+
+    userMap.putString("email", email);
+    userMap.putString("uid", uid);
+    userMap.putString("providerId", provider);
+    userMap.putBoolean("emailVerified", verified);
+
+    if (name != null) {
+      userMap.putString("name", name);
+    }
+
+    if (photoUrl != null) {
+      userMap.putString("photoURL", photoUrl.toString());
+    }
+
+    return userMap;
+  }
+
+  /**
    * Returns web code and message values.
+   *
    * @param exception Auth exception
    * @return WritableMap writable map with code and message string values
    */
@@ -647,6 +741,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    *
    * @param callback JS callback
    */
+  @Deprecated
   private void callbackNoUser(Callback callback, Boolean isError) {
     WritableMap err = Arguments.createMap();
     err.putInt("code", NO_CURRENT_USER);
@@ -670,34 +765,5 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     error.putInt("code", ex.hashCode());
     error.putString("message", ex.getMessage());
     onFail.invoke(error);
-  }
-
-  private WritableMap getUserMap(FirebaseUser user) {
-    WritableMap userMap = Arguments.createMap();
-    if (user != null) {
-      final String email = user.getEmail();
-      final String uid = user.getUid();
-      final String provider = user.getProviderId();
-      final String name = user.getDisplayName();
-      final Boolean verified = user.isEmailVerified();
-      final Uri photoUrl = user.getPhotoUrl();
-
-      userMap.putString("email", email);
-      userMap.putString("uid", uid);
-      userMap.putString("providerId", provider);
-      userMap.putBoolean("emailVerified", verified);
-
-      if (name != null) {
-        userMap.putString("name", name);
-      }
-
-      if (photoUrl != null) {
-        userMap.putString("photoURL", photoUrl.toString());
-      }
-    } else {
-      userMap.putString("msg", "no user");
-    }
-
-    return userMap;
   }
 }
