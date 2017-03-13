@@ -22,9 +22,13 @@ The native SDK's are much better for performance compared to the web SDK. The we
 
 The native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md) and [Remote Config](/docs/api/remote-config.md).
 
-## Example app
+## Examples app
 
-We have a working application example available in at [invertase/firebase-app](https://github.com/invertase/firebase-app). Check it out for more details about how to use firebase with react native.
+There's currently a work in progress [examples app](https://github.com/invertase/react-native-firebase-examples) which aims to demonstrate various real world use-case scenarios with React Native & Firebase. We welcome any new examples or updates to existing ones, however please do not overcomplicate them.
+
+## Test app
+
+To help ensure changes and features work across both iOS & Android, we've developed an app specifically to test `react-native-firebase` against the [`firebase` web SDK](https://www.npmjs.com/package/firebase). Please see the [`react-native-firebase-tests`](https://github.com/invertase/react-native-firebase-tests) repository for more information.
 
 ## Documentation
 
