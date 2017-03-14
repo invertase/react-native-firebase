@@ -13,7 +13,7 @@
 static NSString *const kRNFirebaseInitialized = @"RNFirebaseInitializedEvent";
 static NSString *const INITIALIZED_EVENT = @"RNFirebaseInitialized";
 
-static NSString *const AUTH_CHANGED_EVENT = @"listenForAuth";
+static NSString *const AUTH_CHANGED_EVENT = @"onAuthStateChanged";
 static NSString *const AUTH_ERROR_EVENT = @"authError";
 static NSString *const AUTH_ANONYMOUS_ERROR_EVENT = @"authAnonymousError";
 static NSString *const DEBUG_EVENT = @"debug";

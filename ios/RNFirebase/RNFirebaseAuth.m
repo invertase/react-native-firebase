@@ -113,7 +113,7 @@ RCT_EXPORT_METHOD(signOut:(RCTResponseSenderBlock)callback)
     }
 }
 
-RCT_EXPORT_METHOD(listenForAuth)
+RCT_EXPORT_METHOD(addAuthStateListener)
 {
     self->listening = true;
     self->authListenerHandle =
@@ -156,7 +156,7 @@ RCT_EXPORT_METHOD(listenForAuth)
     }];
 }
 
-RCT_EXPORT_METHOD(unlistenForAuth:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(removeAuthStateListener:(RCTResponseSenderBlock)callback)
 {
     if (self->authListenerHandle != nil) {
         [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
