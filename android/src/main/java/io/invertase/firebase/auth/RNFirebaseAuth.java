@@ -66,7 +66,9 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     return TAG;
   }
 
-
+  /**
+   * Add a new auth state listener - if one doesn't exist already
+   */
   @ReactMethod
   public void addAuthStateListener() {
     if (mAuthListener == null) {
@@ -179,36 +181,109 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       });
   }
 
-
+  /**
+   * signInWithEmailAndPassword
+   *
+   * @param email
+   * @param password
+   * @param promise
+   */
   @ReactMethod
-  public void signInWithEmail(final String email, final String password, final Callback callback) {
-
+  public void signInWithEmailAndPassword(final String email, final String password, final Promise promise) {
+    Log.d(TAG, "signInWithEmailAndPassword");
     mAuth.signInWithEmailAndPassword(email, password)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
         @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              userCallback(task.getResult().getUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
+        public void onSuccess(AuthResult authResult) {
+          Log.d(TAG, "signInWithEmailAndPassword:onComplete:success");
+          promiseWithUser(authResult.getUser(), promise);
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          WritableMap error = authExceptionToMap(exception);
+          Log.e(TAG, "signInWithEmailAndPassword:onComplete:failure", exception);
+          promise.reject(error.getString("code"), error.getString("message"), exception);
+        }
+      });
+  }
+
+
+  /**
+   * signInWithCustomToken
+   *
+   * @param token
+   * @param promise
+   */
+  @ReactMethod
+  public void signInWithCustomToken(final String token, final Promise promise) {
+    Log.d(TAG, "signInWithCustomToken");
+    mAuth.signInWithCustomToken(token)
+      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        @Override
+        public void onSuccess(AuthResult authResult) {
+          Log.d(TAG, "signInWithCustomToken:onComplete:success");
+          promiseWithUser(authResult.getUser(), promise);
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          WritableMap error = authExceptionToMap(exception);
+          Log.e(TAG, "signInWithCustomToken:onComplete:failure", exception);
+          promise.reject(error.getString("code"), error.getString("message"), exception);
         }
       });
   }
 
   @ReactMethod
-  public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-    if (provider.equals("facebook")) {
-      this.facebookLogin(authToken, callback);
-    } else if (provider.equals("google")) {
-      this.googleLogin(authToken, callback);
-    } else
-      // TODO
-      Utils.todoNote(TAG, "signInWithProvider", callback);
+  public void delete(final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "delete");
+    if (user != null) {
+      user.delete()
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "delete:onComplete:success");
+              promiseNoUser(promise, false);
+            } else {
+              Exception exception = task.getException();
+              WritableMap error = authExceptionToMap(exception);
+              Log.e(TAG, "delete:onComplete:failure", exception);
+              promise.reject(error.getString("code"), error.getString("message"), exception);
+            }
+          }
+        });
+    } else {
+      Log.e(TAG, "signInWithCustomToken:onComplete:failure:noCurrentUser");
+      promiseNoUser(promise, true);
+    }
+  }
+
+
+  /**
+   * signInWithCredential
+   * TODO
+   *
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @param promise
+   */
+  @ReactMethod
+  public void signInWithCredential(final String provider, final String authToken, final String authSecret, final Promise promise) {
+    switch (provider) {
+      case "facebook":
+        //facebookLogin(authToken, callback);
+        break;
+      case "google":
+        //googleLogin(authToken, callback);
+      default:
+        promise.reject("auth/invalid_provider", "The provider specified is invalid.");
+    }
   }
 
   @ReactMethod
@@ -246,26 +321,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     } else
       // TODO other providers
       Utils.todoNote(TAG, "linkWithProvider", callback);
-  }
-
-  @ReactMethod
-  public void signInWithCustomToken(final String customToken, final Callback callback) {
-    mAuth.signInWithCustomToken(customToken)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
-          try {
-            if (task.isSuccessful()) {
-              userCallback(task.getResult().getUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
   }
 
   @ReactMethod
@@ -349,35 +404,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         }
       });
   }
-
-  @ReactMethod
-  public void delete(final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-    if (user != null) {
-      user.delete()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User account deleted");
-                WritableMap resp = Arguments.createMap();
-                resp.putString("status", "complete");
-                resp.putString("msg", "User account deleted");
-                callback.invoke(null, resp);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
 
   @ReactMethod
   public void sendEmailVerification(final Callback callback) {
@@ -638,17 +664,28 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     final Boolean verified = user.isEmailVerified();
     final Uri photoUrl = user.getPhotoUrl();
 
-    userMap.putString("email", email);
+
     userMap.putString("uid", uid);
     userMap.putString("providerId", provider);
     userMap.putBoolean("emailVerified", verified);
+    userMap.putBoolean("isAnonymous", user.isAnonymous());
+
+    if (email != null) {
+      userMap.putString("email", email);
+    } else {
+      userMap.putNull("email");
+    }
 
     if (name != null) {
-      userMap.putString("name", name);
+      userMap.putString("displayName", name);
+    } else {
+      userMap.putNull("displayName");
     }
 
     if (photoUrl != null) {
       userMap.putString("photoURL", photoUrl.toString());
+    } else {
+      userMap.putNull("photoURL");
     }
 
     return userMap;
