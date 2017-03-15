@@ -41,9 +41,9 @@ static NSString *const STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 // Messaging
 static NSString *const MESSAGING_SUBSYSTEM_EVENT = @"messaging_event";
 static NSString *const MESSAGING_SUBSYSTEM_ERROR = @"messaging_error";
-static NSString *const MESSAGING_TOKEN_REFRESH = @"messaging_token_refresh";
+static NSString *const MESSAGING_TOKEN_REFRESH = @"RNFirebaseRefreshToken";
 
-static NSString *const MESSAGING_MESSAGE_RECEIVED_REMOTE = @"messaging_remote_event_received";
-static NSString *const MESSAGING_MESSAGE_RECEIVED_LOCAL = @"messaging_local_event_received";
+static NSString *const MESSAGING_MESSAGE_RECEIVED_REMOTE = @"RNFirebaseReceiveNotification";
+static NSString *const MESSAGING_MESSAGE_RECEIVED_LOCAL = @"RNFirebaseReceiveNotification";
 
 #endif
