@@ -706,65 +706,69 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     WritableMap error = Arguments.createMap();
     String code = "UNKNOWN";
     String message = exception.getMessage();
-    Matcher matcher = Pattern.compile("\\[(.*?)\\]").matcher(message);
 
-    if (matcher.find()) {
-      code = matcher.group().substring(2, matcher.group().length() - 2);
-      switch (code) {
-        case "INVALID_CUSTOM_TOKEN":
-          message = "The custom token format is incorrect. Please check the documentation.";
-          break;
-        case "CUSTOM_TOKEN_MISMATCH":
-          message = "The custom token corresponds to a different audience.";
-          break;
-        case "INVALID_CREDENTIAL":
-          message = "The supplied auth credential is malformed or has expired.";
-          break;
-        case "INVALID_EMAIL":
-          message = "The email address is badly formatted.";
-          break;
-        case "WRONG_PASSWORD":
-          message = "The password is invalid or the user does not have a password.";
-          break;
-        case "USER_MISMATCH":
-          message = "The supplied credentials do not correspond to the previously signed in user.";
-          break;
-        case "REQUIRES_RECENT_LOGIN":
-          message = "This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
-          break;
-        case "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-          message = "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
-          break;
-        case "EMAIL_ALREADY_IN_USE":
-          message = "The email address is already in use by another account.";
-          break;
-        case "CREDENTIAL_ALREADY_IN_USE":
-          message = "This credential is already associated with a different user account.";
-          break;
-        case "USER_USER_DISABLED":
-          message = "The user account has been disabled by an administrator.";
-          break;
-        case "USER_TOKEN_EXPIRED":
-          message = "The user\'s credential is no longer valid. The user must sign in again.";
-          break;
-        case "USER_NOT_FOUND":
-          message = "There is no user record corresponding to this identifier. The user may have been deleted.";
-          break;
-        case "INVALID_USER_TOKEN":
-          message = "The user\'s credential is no longer valid. The user must sign in again.";
-          break;
-        case "WEAK_PASSWORD":
-          message = "The given password is invalid.";
-          break;
-        case "OPERATION_NOT_ALLOWED":
-          message = "This operation is not allowed. You must enable this service in the console.";
-          break;
-        case "FOO":
-          break;
+    try {
+      FirebaseAuthException authException = (FirebaseAuthException) exception;
+      code = authException.getErrorCode();
+      message = authException.getMessage();
+    } catch (Exception e) {
+      Matcher matcher = Pattern.compile("\\[(.*?)\\]").matcher(message);
+      if (matcher.find()) {
+        code = matcher.group().substring(2, matcher.group().length() - 2).trim();
+        switch (code) {
+          case "INVALID_CUSTOM_TOKEN":
+            message = "The custom token format is incorrect. Please check the documentation.";
+            break;
+          case "CUSTOM_TOKEN_MISMATCH":
+            message = "The custom token corresponds to a different audience.";
+            break;
+          case "INVALID_CREDENTIAL":
+            message = "The supplied auth credential is malformed or has expired.";
+            break;
+          case "INVALID_EMAIL":
+            message = "The email address is badly formatted.";
+            break;
+          case "WRONG_PASSWORD":
+            message = "The password is invalid or the user does not have a password.";
+            break;
+          case "USER_MISMATCH":
+            message = "The supplied credentials do not correspond to the previously signed in user.";
+            break;
+          case "REQUIRES_RECENT_LOGIN":
+            message = "This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
+            break;
+          case "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
+            message = "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
+            break;
+          case "EMAIL_ALREADY_IN_USE":
+            message = "The email address is already in use by another account.";
+            break;
+          case "CREDENTIAL_ALREADY_IN_USE":
+            message = "This credential is already associated with a different user account.";
+            break;
+          case "USER_USER_DISABLED":
+            message = "The user account has been disabled by an administrator.";
+            break;
+          case "USER_TOKEN_EXPIRED":
+            message = "The user\'s credential is no longer valid. The user must sign in again.";
+            break;
+          case "USER_NOT_FOUND":
+            message = "There is no user record corresponding to this identifier. The user may have been deleted.";
+            break;
+          case "INVALID_USER_TOKEN":
+            message = "The user\'s credential is no longer valid. The user must sign in again.";
+            break;
+          case "WEAK_PASSWORD":
+            message = "The given password is invalid.";
+            break;
+          case "OPERATION_NOT_ALLOWED":
+            message = "This operation is not allowed. You must enable this service in the console.";
+            break;
+        }
       }
     }
 
-    error.putString("code", "auth/" + code.toLowerCase());
+    error.putString("code", "auth/" + code.toLowerCase().replace("error_", "").replace('_', '-'));
     error.putString("message", message);
     return error;
   }
