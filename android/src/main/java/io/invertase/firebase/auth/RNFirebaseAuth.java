@@ -1,14 +1,12 @@
-
 package io.invertase.firebase.auth;
 
 import android.util.Log;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -36,9 +34,7 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.EmailAuthProvider;
 
-
 import io.invertase.firebase.Utils;
-
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class RNFirebaseAuth extends ReactContextBaseJavaModule {
@@ -48,7 +44,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   private static final String TAG = "RNFirebaseAuth";
 
-  // private Context context;
   private ReactContext mReactContext;
   private FirebaseAuth mAuth;
   private FirebaseAuth.AuthStateListener mAuthListener;
@@ -57,8 +52,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     super(reactContext);
     mReactContext = reactContext;
     mAuth = FirebaseAuth.getInstance();
-
-    Log.d(TAG, "New RNFirebaseAuth instance");
+    Log.d(TAG, "RNFirebaseAuth:initialized");
   }
 
   @Override
@@ -71,6 +65,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void addAuthStateListener() {
+    Log.d(TAG, "addAuthStateListener");
     if (mAuthListener == null) {
       mAuthListener = new FirebaseAuth.AuthStateListener() {
         @Override
@@ -78,13 +73,9 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
           FirebaseUser user = firebaseAuth.getCurrentUser();
           WritableMap msgMap = Arguments.createMap();
           msgMap.putString("eventName", "onAuthStateChanged");
-
           if (user != null) {
-            // TODO move to helper
-            WritableMap userMap = firebaseUserToMap(user);
             msgMap.putBoolean("authenticated", true);
-            msgMap.putMap("user", userMap);
-
+            msgMap.putMap("user", firebaseUserToMap(user));
             Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
           } else {
             msgMap.putBoolean("authenticated", false);
@@ -98,17 +89,12 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * Removes the current auth state listener
-   *
-   * @param callback
    */
   @ReactMethod
-  public void removeAuthStateListener(final Callback callback) {
+  public void removeAuthStateListener() {
+    Log.d(TAG, "removeAuthStateListener");
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
-      // TODO move to helper
-      WritableMap resp = Arguments.createMap();
-      resp.putString("status", "complete");
-      callback.invoke(null, resp);
     }
   }
 
@@ -119,6 +105,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void signOut(final Promise promise) {
+    Log.d(TAG, "signOut");
     if (mAuth == null || mAuth.getCurrentUser() == null) {
       promiseNoUser(promise, true);
     } else {
@@ -238,6 +225,49 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * sendPasswordResetEmail
+   *
+   * @param email
+   * @param promise
+   */
+  @ReactMethod
+  public void sendPasswordResetEmail(final String email, final Promise promise) {
+    Log.d(TAG, "sendPasswordResetEmail");
+    mAuth.sendPasswordResetEmail(email)
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
+            promiseNoUser(promise, false);
+          } else {
+            Exception exception = task.getException();
+            WritableMap error = authExceptionToMap(exception);
+            Log.e(TAG, "sendPasswordResetEmail:onComplete:failure", exception);
+            promise.reject(error.getString("code"), error.getString("message"), exception);
+          }
+        }
+      });
+  }
+
+  /**
+   * getCurrentUser - returns the current user, probably no need for this due to
+   * js side already listening for user auth changes
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void getCurrentUser(final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "getCurrentUser");
+    if (user == null) {
+      promiseNoUser(promise, false);
+    } else {
+      promiseWithUser(user, promise);
+    }
+  }
+
+  /**
    * delete
    *
    * @param promise
@@ -290,6 +320,17 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         promise.reject("auth/invalid_provider", "The provider specified is invalid.");
     }
   }
+
+
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
 
   @ReactMethod
   public void linkPassword(final String email, final String password, final Callback callback) {
@@ -387,27 +428,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     } else {
       callbackNoUser(callback, true);
     }
-  }
-
-  @ReactMethod
-  public void sendPasswordResetWithEmail(final String email, final Callback callback) {
-    mAuth.sendPasswordResetEmail(email)
-      .addOnCompleteListener(new OnCompleteListener<Void>() {
-        @Override
-        public void onComplete(@NonNull Task<Void> task) {
-          try {
-            if (task.isSuccessful()) {
-              WritableMap resp = Arguments.createMap();
-              resp.putString("status", "complete");
-              callback.invoke(null, resp);
-            } else {
-              callback.invoke(task.getException().toString());
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
   }
 
   @ReactMethod
@@ -540,18 +560,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void getCurrentUser(final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user == null) {
-      callbackNoUser(callback, false);
-    } else {
-      Log.d("USRC", user.getUid());
-      userCallback(user, callback);
-    }
-  }
-
   // TODO: Check these things
   @ReactMethod
   public void googleLogin(String IdToken, final Callback callback) {
@@ -626,34 +634,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-
-  /**
-   * @param user
-   * @param callback
-   */
-  @Deprecated
-  private void userCallback(final FirebaseUser user, final Callback callback) {
-    if (user != null) {
-      user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-        @Override
-        public void onComplete(@NonNull Task<GetTokenResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              WritableMap userMap = firebaseUserToMap(user);
-              userMap.putString("token", task.getResult().getToken());
-              callback.invoke(null, userMap);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
 
   /**
    * @param user
@@ -773,11 +753,38 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     return error;
   }
 
-  /**
-   * Returns a no user error.
-   *
-   * @param callback JS callback
-   */
+
+  // ------------------ Clean me when no longer used ------------------------------
+  // ------------------ Clean me when no longer used ------------------------------
+  // ------------------ Clean me when no longer used ------------------------------
+  // ------------------ Clean me when no longer used ------------------------------
+  // ------------------ Clean me when no longer used ------------------------------
+  // ------------------ Clean me when no longer used ------------------------------
+
+  @Deprecated
+  private void userCallback(final FirebaseUser user, final Callback callback) {
+    if (user != null) {
+      user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        @Override
+        public void onComplete(@NonNull Task<GetTokenResult> task) {
+          try {
+            if (task.isSuccessful()) {
+              WritableMap userMap = firebaseUserToMap(user);
+              userMap.putString("token", task.getResult().getToken());
+              callback.invoke(null, userMap);
+            } else {
+              userErrorCallback(task, callback);
+            }
+          } catch (Exception ex) {
+            userExceptionCallback(ex, callback);
+          }
+        }
+      });
+    } else {
+      callbackNoUser(callback, true);
+    }
+  }
+
   @Deprecated
   private void callbackNoUser(Callback callback, Boolean isError) {
     WritableMap err = Arguments.createMap();
@@ -791,12 +798,14 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  @Deprecated
   private void userErrorCallback(Task task, final Callback onFail) {
     WritableMap error = Arguments.createMap();
     error.putString("message", ((FirebaseAuthException) task.getException()).getMessage());
     onFail.invoke(error);
   }
 
+  @Deprecated
   private void userExceptionCallback(Exception ex, final Callback onFail) {
     WritableMap error = Arguments.createMap();
     error.putInt("code", ex.hashCode());
