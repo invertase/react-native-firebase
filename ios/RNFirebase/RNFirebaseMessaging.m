@@ -217,20 +217,10 @@ RCT_EXPORT_METHOD(cancelLocalNotifications:(NSDictionary<NSString *, id> *)userI
     }
 }
 
-RCT_EXPORT_METHOD(sendRemote:(UILocalNotification *)notification
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    
-}
 
-
-RCT_EXPORT_METHOD(send:(NSString *) senderId
-                  messageId:(NSString *) messageId
-                  messageType:(NSString *) messageType
-                  msg: (NSString *) msg
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    
+RCT_EXPORT_METHOD(send:(NSDictionary *) message resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject){
+    // todo
+    resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(listenForTokenRefresh:(RCTResponseSenderBlock)callback)

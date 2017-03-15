@@ -165,7 +165,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
 
   // String senderId, String messageId, String messageType,
   @ReactMethod
-  public void send(ReadableMap params, final Callback callback) {
+  public void send(ReadableMap params, final Promise promise) {
     ReadableMap data = params.getMap("data");
     FirebaseMessaging fm = FirebaseMessaging.getInstance();
     RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(params.getString("sender"));
@@ -194,15 +194,10 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     try {
       fm.send(remoteMessage.build());
       WritableMap res = Arguments.createMap();
-      res.putString("status", "success");
-      Log.d(TAG, "send: Message sent");
-      callback.invoke(null, res);
+      promise.resolve(null);
     } catch (Exception e) {
       Log.e(TAG, "send: error sending message", e);
-      WritableMap error = Arguments.createMap();
-      error.putString("code", e.toString());
-      error.putString("message", e.toString());
-      callback.invoke(error);
+      promise.reject("messaging/unknown", e.getMessage(), e);
     }
   }
 
