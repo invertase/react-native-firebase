@@ -746,7 +746,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
           case "CREDENTIAL_ALREADY_IN_USE":
             message = "This credential is already associated with a different user account.";
             break;
-          case "USER_USER_DISABLED":
+          case "USER_DISABLED":
             message = "The user account has been disabled by an administrator.";
             break;
           case "USER_TOKEN_EXPIRED":
