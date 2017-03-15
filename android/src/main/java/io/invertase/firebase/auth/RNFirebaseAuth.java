@@ -237,6 +237,11 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       });
   }
 
+  /**
+   * delete
+   *
+   * @param promise
+   */
   @ReactMethod
   public void delete(final Promise promise) {
     FirebaseUser user = mAuth.getCurrentUser();

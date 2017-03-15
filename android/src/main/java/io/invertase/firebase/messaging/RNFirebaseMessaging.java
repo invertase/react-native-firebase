@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -140,16 +141,13 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getToken(final Callback callback) {
-
+  public void getToken(final Promise promise) {
     try {
       String token = FirebaseInstanceId.getInstance().getToken();
       Log.d(TAG, "Firebase token: " + token);
-      callback.invoke(null, token);
+      promise.resolve(token);
     } catch (Exception e) {
-      WritableMap error = Arguments.createMap();
-      error.putString("message", e.getMessage());
-      callback.invoke(error);
+      promise.reject("messaging/unknown", e.getMessage(), e);
     }
   }
 

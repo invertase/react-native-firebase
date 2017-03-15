@@ -5,7 +5,6 @@
   "description": "A react native firebase library supporting both android and ios native firebase SDK's",
   "main": "index",
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
     "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
     "dev": "npm run compile -- --watch",
     "lint": "eslint ./src",
