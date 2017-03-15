@@ -267,6 +267,10 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /* ----------------------
+   *  .currentUser methods
+   * ---------------------- */
+
   /**
    * delete
    *
@@ -293,8 +297,40 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         });
     } else {
-      Log.e(TAG, "signInWithCustomToken:onComplete:failure:noCurrentUser");
+      Log.e(TAG, "delete:failure:noCurrentUser");
       promiseNoUser(promise, true);
+    }
+  }
+
+  /**
+   * reload
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void reload(final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "delete");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "reload:failure:noCurrentUser");
+    } else {
+      user.reload()
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "reload:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              WritableMap error = authExceptionToMap(exception);
+              Log.e(TAG, "reload:onComplete:failure", exception);
+              promise.reject(error.getString("code"), error.getString("message"), exception);
+            }
+          }
+        });
     }
   }
 
@@ -538,28 +574,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
 
-  @ReactMethod
-  public void reload(final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user == null) {
-      callbackNoUser(callback, false);
-    } else {
-      user.reload()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "user reloaded");
-              userCallback(mAuth.getCurrentUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          }
-        });
-    }
-  }
-
   // TODO: Check these things
   @ReactMethod
   public void googleLogin(String IdToken, final Callback callback) {
@@ -636,6 +650,8 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
 
   /**
+   * firebaseUserToMap
+   *
    * @param user
    * @return
    */
