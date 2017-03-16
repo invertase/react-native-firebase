@@ -6,7 +6,7 @@ RNFirebase makes using the latest [Firebase](http://firebase.com) with React Nat
 npm i react-native-firebase --save
 ```
 
-[![Gitter](https://badges.gitter.im/invertase/firebase.svg)](https://gitter.im/invertase/firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gitter](https://badges.gitter.im/invertase/react-native-firebase.svg)](https://gitter.im/invertase/react-native-firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg)](https://www.npmjs.com/package/react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
 
