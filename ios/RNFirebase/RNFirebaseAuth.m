@@ -114,6 +114,29 @@ RCT_EXPORT_METHOD(delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRe
 }
 
 
+/**
+ getToken
+ 
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
+            if (error) {
+                // TODO authExceptionToDict
+                reject(@"auth/unknown", @"An unknown error has occurred.", error);
+            } else {
+                resolve(token);
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
 
 
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
@@ -302,23 +325,6 @@ RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
                                                            }]);
                                         }
                                     }];
-}
-
-RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user) {
-        [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
-            if (error) {
-                [self userErrorCallback:callback error:error user:user msg:@"getTokenError"];
-            } else {
-                callback(@[[NSNull null], token]);
-            }
-        }];
-    } else {
-        [self noUserCallback:callback isError:true];
-    }
 }
 
 RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)

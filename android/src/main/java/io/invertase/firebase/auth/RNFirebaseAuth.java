@@ -407,6 +407,37 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * getToken
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void getToken(final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "getToken");
+
+    if (user != null) {
+      user.getToken(true)
+        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+          @Override
+          public void onComplete(@NonNull Task<GetTokenResult> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "getToken:onComplete:success");
+              promise.resolve(task.getResult().getToken());
+            } else {
+              Exception exception = task.getException();
+              WritableMap error = authExceptionToMap(exception);
+              Log.e(TAG, "getToken:onComplete:failure", exception);
+              promise.reject(error.getString("code"), error.getString("message"), exception);
+            }
+          }
+        });
+    } else {
+      promiseNoUser(promise, true);
+    }
+  }
+
 
   // ----------------------- CLEAN ME -----------------------------------------------------
   // ----------------------- CLEAN ME -----------------------------------------------------
@@ -497,39 +528,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
               } else {
                 WritableMap err = Arguments.createMap();
                 err.putInt("errorCode", ERROR_SENDING_VERIFICATION_EMAIL);
-                err.putString("errorMessage", task.getException().getMessage());
-                callback.invoke(err);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-
-  @ReactMethod
-  public void getToken(final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user != null) {
-      user.getToken(true)
-        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-          @Override
-          public void onComplete(@NonNull Task<GetTokenResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                String token = task.getResult().getToken();
-                WritableMap resp = Arguments.createMap();
-                resp.putString("status", "complete");
-                resp.putString("token", token);
-                callback.invoke(null, resp);
-              } else {
-                WritableMap err = Arguments.createMap();
-                err.putInt("errorCode", ERROR_FETCHING_TOKEN);
                 err.putString("errorMessage", task.getException().getMessage());
                 callback.invoke(err);
               }
