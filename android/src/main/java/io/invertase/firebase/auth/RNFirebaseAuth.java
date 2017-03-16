@@ -357,53 +357,66 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-
+  /**
+   * link
+   *
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @param promise
+   */
   @ReactMethod
-  public void linkPassword(final String email, final String password, final Callback callback) {
+  public void link(final String provider, final String authToken, final String authSecret, final Promise promise) {
+    if (provider.equals("password")) {
+      linkPassword(authToken, authSecret, promise);
+    } else
+      promise.reject("auth/todo", "Method currently not implemented.");
+  }
+
+  /**
+   * linkPassword
+   *
+   * @param email
+   * @param password
+   * @param promise
+   */
+  @ReactMethod
+  public void linkPassword(final String email, final String password, final Promise promise) {
     FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "linkPassword");
 
     if (user != null) {
       AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-      user
-        .linkWithCredential(credential)
+      user.linkWithCredential(credential)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
           @Override
           public void onComplete(@NonNull Task<AuthResult> task) {
-            try {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "user linked with password credential");
-                userCallback(mAuth.getCurrentUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
+            if (task.isSuccessful()) {
+              Log.d(TAG, "linkPassword:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              WritableMap error = authExceptionToMap(exception);
+              Log.e(TAG, "linkPassword:onComplete:failure", exception);
+              promise.reject(error.getString("code"), error.getString("message"), exception);
             }
           }
         });
     } else {
-      callbackNoUser(callback, true);
+      promiseNoUser(promise, true);
     }
   }
 
-  @ReactMethod
-  public void link(final String provider, final String authToken, final String authSecret, final Callback callback) {
-    if (provider.equals("password")) {
-      linkPassword(authToken, authSecret, callback);
-    } else
-      // TODO other providers
-      Utils.todoNote(TAG, "linkWithProvider", callback);
-  }
+
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
+  // ----------------------- CLEAN ME -----------------------------------------------------
 
   @ReactMethod
   public void reauthenticate(final String provider, final String authToken, final String authSecret, final Callback callback) {
