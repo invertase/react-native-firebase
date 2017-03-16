@@ -1,7 +1,7 @@
 # Analytics
 
-Integrating Firebase analytics is super simple using RNFirebase. A number of methods are provided to help tailor analytics specifically for your
-own app. The Firebase SDK includes a number of pre-set events which are automatically handled, and cannot be used with custom events:
+Integrating Firebase analytics is simple. A number of methods are provided to help tailor analytics specifically for your
+own app. The Firebase SDK includes a number of pre-set events which are automatically handled, and cannot be used with custom `logEvent` events:
 
 ```
   'app_clear_data',
