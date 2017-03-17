@@ -10,7 +10,7 @@ npm i react-native-firebase --save
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg)](https://www.npmjs.com/package/react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
 
-RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible.
+RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
 ## RNFirebase vs Firebase Web SDK
 
@@ -43,10 +43,8 @@ RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Becaus
   * [Analytics](docs/api/analytics.md)
   * [Storage](docs/api/storage.md)
   * [Realtime Database](docs/api/database.md)
-  * [Presence](docs/api/presence.md)
   * [ServerValue](docs/api/server-value.md)
-  * [Cloud Messaging](docs/api/cloud-messaging.md)
-  * [Remote Config](docs/api/remote-config.md)
+  * [Messaging](docs/api/cloud-messaging.md)
   * [Events](docs/api/events.md)
 
 ## Contributing
