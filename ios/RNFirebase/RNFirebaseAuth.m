@@ -172,7 +172,7 @@ RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)au
     FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
     
     if (credential == nil) {
-        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed or has expired.", nil);
+        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
     }
     
     [[FIRAuth auth] signInWithCredential:credential completion:^(FIRUser *user, NSError *error) {

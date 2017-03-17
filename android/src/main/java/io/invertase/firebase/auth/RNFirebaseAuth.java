@@ -25,6 +25,9 @@ import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.TwitterAuthCredential;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -329,7 +332,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * signInWithCredential
-   * TODO
    *
    * @param provider
    * @param authToken
@@ -338,14 +340,26 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void signInWithCredential(final String provider, final String authToken, final String authSecret, final Promise promise) {
-    switch (provider) {
-      case "facebook":
-        //facebookLogin(authToken, callback);
-        break;
-      case "google":
-        //googleLogin(authToken, callback);
-      default:
-        promise.reject("auth/invalid_provider", "The provider specified is invalid.");
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+
+    if (credential == null) {
+      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+    } else {
+      Log.d(TAG, "signInWithCredential");
+      mAuth.signInWithCredential(credential)
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+          @Override
+          public void onComplete(@NonNull Task<AuthResult> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "signInWithCredential:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
     }
   }
 
@@ -359,42 +373,57 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void link(final String provider, final String authToken, final String authSecret, final Promise promise) {
-    if (provider.equals("password")) {
-      linkPassword(authToken, authSecret, promise);
-    } else
-      promise.reject("auth/todo", "Method currently not implemented.");
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+
+    if (credential == null) {
+      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+    } else {
+      FirebaseUser user = mAuth.getCurrentUser();
+      Log.d(TAG, "link");
+
+      if (user != null) {
+        user.linkWithCredential(credential)
+          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "link:onComplete:success");
+                promiseWithUser(mAuth.getCurrentUser(), promise);
+              } else {
+                Exception exception = task.getException();
+                Log.e(TAG, "link:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            }
+          });
+      } else {
+        promiseNoUser(promise, true);
+      }
+    }
   }
 
   /**
-   * linkPassword
+   * Returns an instance of AuthCredential for the specified provider
    *
-   * @param email
-   * @param password
-   * @param promise
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @return
    */
-  @ReactMethod
-  public void linkPassword(final String email, final String password, final Promise promise) {
-    FirebaseUser user = mAuth.getCurrentUser();
-    Log.d(TAG, "linkPassword");
-
-    if (user != null) {
-      AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-      user.linkWithCredential(credential)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "linkPassword:onComplete:success");
-              promiseWithUser(mAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "linkPassword:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
-    } else {
-      promiseNoUser(promise, true);
+  public AuthCredential getCredentialForProvider(String provider, String authToken, String authSecret) {
+    switch (provider) {
+      case "facebook":
+        return FacebookAuthProvider.getCredential(authToken);
+      case "google":
+        return GoogleAuthProvider.getCredential(authToken, null);
+      case "twitter":
+        return TwitterAuthProvider.getCredential(authToken, authSecret);
+      case "github":
+        return GithubAuthProvider.getCredential(authToken);
+      case "password":
+        return EmailAuthProvider.getCredential(authToken, authSecret);
+      default:
+        return null;
     }
   }
 
@@ -572,48 +601,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     } else {
       callbackNoUser(callback, true);
     }
-  }
-
-
-  // TODO: Check these things
-  @ReactMethod
-  public void googleLogin(String IdToken, final Callback callback) {
-    AuthCredential credential = GoogleAuthProvider.getCredential(IdToken, null);
-    mAuth.signInWithCredential(credential)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              userCallback(task.getResult().getUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
-  }
-
-  @ReactMethod
-  public void facebookLogin(String Token, final Callback callback) {
-    AuthCredential credential = FacebookAuthProvider.getCredential(Token);
-    mAuth.signInWithCredential(credential)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              userCallback(task.getResult().getUser(), callback);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
   }
 
   /* ------------------
