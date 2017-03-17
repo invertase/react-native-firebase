@@ -1,7 +1,6 @@
 # Crash Reporting
 
-RNFirebase provides crash reporting for your app out of the box. Please not crashes do not appear in real-time on the console,
-they tend to take a number of hours to appear.
+RNFirebase provides crash reporting for your app out of the box. Please note crashes do not appear in real-time on the console, they tend to take a number of hours to appear.
 
 ## Manual Crash Reporting
 
