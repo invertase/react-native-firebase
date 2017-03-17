@@ -32,4 +32,4 @@ Logs a message that will appear in a subsequent crash report.
 
 Files a crash report, along with any previous logs to Firebase. An [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) object must be passed into the report method.
 
-`firebase.crash().report(Error)`.
+`firebase.crash().report(Error, int maxStackSize)`.
