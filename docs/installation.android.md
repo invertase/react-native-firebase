@@ -1,6 +1,6 @@
 # Android Installation
 
-The simplest way of installing on Android is to use React Native linker:
+The simplest way of installing on Android is to use the react-native link CLI command & rebuild the project:
 
 ```
 react-native link react-native-firebase
@@ -38,24 +38,45 @@ dependencies {
 }
 ```
 
-Add to `AndroidManifest.xml` file
-```diff
-  <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-+   <service android:name="io.invertase.firebase.RNFirebaseMessagingService">
-+     <intent-filter>
-+       <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-+     </intent-filter>
-+   </service>
+Add the project path to `android/settings.gradle`:
 
-+   <service android:name="io.invertase.firebase.RNFirebaseInstanceIdService" android:exported="false">
-+     <intent-filter>
-+       <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-+     </intent-filter>
-+   </service>
-```
-
-Add to `android/settings.gradle`
 ```
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
+```
+
+If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/), add the following to `android/app/src/main/AndroidManifest.xml`.
+
+Add permissions:
+```
+<manifest ...>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.VIBRATE" />
+```
+
+Set app [launch mode](https://inthecheesefactory.com/blog/understand-android-activity-launchmode/en) inside application props:
+```
+<application
+  ...
+  android:launchMode="singleTop"
+>
+```
+
+Add messaging service:
+```
+<application ...>
+  <service
+    android:name="io.invertase.firebase.messaging.MessagingService"
+    android:enabled="true"
+    android:exported="true">
+      <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+      </intent-filter>
+  </service>
+  <service android:name="io.invertase.firebase.messaging.InstanceIdService" android:exported="false">
+    <intent-filter>
+      <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+    </intent-filter>
+  </service>
 ```
