@@ -9,6 +9,32 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 RCT_EXPORT_MODULE(RNFirebaseAuth);
 
 /**
+ addAuthStateListener
+ 
+ */
+RCT_EXPORT_METHOD(addAuthStateListener) {
+    self->listening = true;
+    self->authListenerHandle = [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+        if (user != nil) {
+            [self sendJSEvent:AUTH_CHANGED_EVENT props: @{ @"authenticated": @(true),@"user": [self firebaseUserToDict:user] }];
+        } else {
+            [self sendJSEvent:AUTH_CHANGED_EVENT props:@{ @"authenticated": @(false) }];
+        }
+    }];
+}
+
+/**
+ removeAuthStateListener
+ 
+ */
+RCT_EXPORT_METHOD(removeAuthStateListener) {
+    if (self->authListenerHandle != nil) {
+        [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
+        self->listening = false;
+    }
+}
+
+/**
  signOut
  
  @param RCTPromiseResolveBlock resolve
@@ -156,11 +182,11 @@ RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)au
     }
     
     [[FIRAuth auth] signInWithCredential:credential completion:^(FIRUser *user, NSError *error) {
-        if (user != nil) {
-            [self promiseWithUser:resolve rejecter:reject user:user];
-        } else {
+        if (error) {
             // TODO authExceptionToDict
             reject(@"auth/unknown", @"An unknown error has occurred.", error);
+        } else {
+            [self promiseWithUser:resolve rejecter:reject user:user];
         }
     }];
 }
@@ -193,85 +219,34 @@ RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *)email resolver:(RCTPromiseR
  */
 RCT_EXPORT_METHOD(getCurrentUser:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user != nil) {
-        [self promiseWithUser:resolve rejecter:reject user:user];
-    } else {
-        [self promiseNoUser:resolve rejecter:reject isError:NO];
-    }
+    [self promiseWithUser:resolve rejecter:reject user:user];
 }
 
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
 
-RCT_EXPORT_METHOD(signInWithCustomToken:
-                  (NSString *)customToken
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    [[FIRAuth auth]
-     signInWithCustomToken:customToken
-     completion:^(FIRUser *user, NSError *error) {
-         
-         if (user != nil) {
-             [self userCallback:callback user:user];
-         } else {
-             [self userErrorCallback:callback error:error user:user msg:AUTH_ERROR_EVENT];
-         }
-     }];
-}
-
-RCT_EXPORT_METHOD(addAuthStateListener)
-{
-    self->listening = true;
-    self->authListenerHandle =
-    [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
-        
-        if (user != nil) {
-            // User is signed in.
-            [self userPropsFromFIRUserWithToken:user
-                                    andCallback:^(NSDictionary *userProps, NSError * error) {
-                                        if (error != nil) {
-                                            [self
-                                             sendJSEvent:AUTH_CHANGED_EVENT
-                                             props: @{
-                                                      @"eventName": @"userTokenError",
-                                                      @"msg": [error localizedDescription]
-                                                      }];
-                                        } else {
-                                            [self
-                                             sendJSEvent:AUTH_CHANGED_EVENT
-                                             props: @{
-                                                      @"eventName": @"user",
-                                                      @"authenticated": @(true),
-                                                      @"user": userProps
-                                                      }];
-                                        }
-                                    }];
+/**
+ signInWithCustomToken
+ 
+ @param NSString email
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(signInWithCustomToken: (NSString *)customToken resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] signInWithCustomToken:customToken completion:^(FIRUser *user, NSError *error) {
+        if (error) {
+            // TODO authExceptionToDict
+            reject(@"auth/unknown", @"An unknown error has occurred.", error);
         } else {
-            // TODO: Update this with different error states
-            NSDictionary *err = @{
-                                  @"error": @"No user logged in"
-                                  };
-            [self sendJSEvent:AUTH_CHANGED_EVENT
-                        props:@{
-                                @"eventName": @"no_user",
-                                @"authenticated": @(false),
-                                @"error": err
-                                }];
+            [self promiseWithUser:resolve rejecter:reject user:user];
         }
     }];
 }
 
-RCT_EXPORT_METHOD(removeAuthStateListener:(RCTResponseSenderBlock)callback)
-{
-    if (self->authListenerHandle != nil) {
-        [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
-        self->listening = false;
-        callback(@[[NSNull null]]);
-    }
-}
+
+// TODO ------------------------------------------------------- CLEAN UP --------------------------
+// TODO ------------------------------------------------------- CLEAN UP --------------------------
+// TODO ------------------------------------------------------- CLEAN UP --------------------------
+// TODO ------------------------------------------------------- CLEAN UP --------------------------
 
 RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
                   callback:(RCTResponseSenderBlock) callback)
@@ -398,20 +373,6 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }
 }
 
-- (void) userPropsFromFIRUserWithToken:(FIRUser *) user
-                           andCallback:(UserWithTokenResponse) callback
-{
-    NSMutableDictionary *userProps = [[self firebaseUserToDict:user] mutableCopy];
-    [user getTokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
-        if (error != nil) {
-            return callback(nil, error);
-        }
-        
-        [userProps setValue:token forKey:@"idToken"];
-        callback(userProps, nil);
-    }];
-}
-
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
     FIRAuthCredential *credential;
     if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
@@ -427,26 +388,6 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }
     return credential;
 }
-
-// Not sure how to get away from this... yet
-- (NSArray<NSString *> *)supportedEvents {
-    return @[AUTH_CHANGED_EVENT, AUTH_ANONYMOUS_ERROR_EVENT, AUTH_ERROR_EVENT];
-}
-
-- (void) sendJSEvent:(NSString *)title
-               props:(NSDictionary *)props
-{
-    @try {
-        if (self->listening) {
-            [self sendEventWithName:title
-                               body:props];
-        }
-    }
-    @catch (NSException *err) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
-    }
-}
-
 
 - (void) noUserCallback:(RCTResponseSenderBlock) callback
                 isError:(Boolean) isError {
@@ -504,6 +445,17 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 }
 
 /**
+ Reject a promise with an auth exception
+ 
+ @param reject RCTPromiseRejectBlock
+ @param error NSError
+ */
+- (void) promiseRejectAuthException:(RCTPromiseRejectBlock) reject error:(NSError *)error {
+    // TODO authExceptionToDict
+    reject(@"auth/unknown", @"An unknown error has occurred.", error);
+}
+
+/**
  Resolve or reject a promise based on FIRUser value existance
  
  @param resolve RCTPromiseResolveBlock
@@ -519,6 +471,25 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }
     
 }
+
+
+/**
+ wrapper for sendEventWithName for auth events
+ 
+ @param title sendEventWithName
+ @param props <#props description#>
+ */
+- (void) sendJSEvent:(NSString *)title props:(NSDictionary *)props {
+    @try {
+        if (self->listening) {
+            [self sendEventWithName:title body:props];
+        }
+    }
+    @catch (NSException *error) {
+        NSLog(@"An error occurred in sendJSEvent: %@", [error debugDescription]);
+    }
+}
+
 
 /**
  Converts a FIRUser instance into a dictionary to send via RNBridge
@@ -544,6 +515,10 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }
     
     return userDict;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[AUTH_CHANGED_EVENT, AUTH_ANONYMOUS_ERROR_EVENT, AUTH_ERROR_EVENT];
 }
 
 @end
