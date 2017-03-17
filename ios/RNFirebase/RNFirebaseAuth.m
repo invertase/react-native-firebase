@@ -138,6 +138,68 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromise
     }
 }
 
+/**
+ signInWithCredential
+ 
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authSecret resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    
+    if (credential == nil) {
+        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed or has expired.", nil);
+    }
+    
+    [[FIRAuth auth] signInWithCredential:credential completion:^(FIRUser *user, NSError *error) {
+        if (user != nil) {
+            [self promiseWithUser:resolve rejecter:reject user:user];
+        } else {
+            // TODO authExceptionToDict
+            reject(@"auth/unknown", @"An unknown error has occurred.", error);
+        }
+    }];
+}
+
+/**
+ sendPasswordResetEmail
+ 
+ @param NSString email
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *)email resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
+        if (error) {
+            // TODO authExceptionToDict
+            reject(@"auth/unknown", @"An unknown error has occurred.", error);
+        } else {
+            [self promiseNoUser:resolve rejecter:reject isError:NO];
+        }
+    }];
+}
+
+/**
+ getCurrentUser
+ 
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(getCurrentUser:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user != nil) {
+        [self promiseWithUser:resolve rejecter:reject user:user];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:NO];
+    }
+}
 
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
@@ -158,44 +220,6 @@ RCT_EXPORT_METHOD(signInWithCustomToken:
              [self userErrorCallback:callback error:error user:user msg:AUTH_ERROR_EVENT];
          }
      }];
-}
-
-RCT_EXPORT_METHOD(signInWithProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
-    if (credential == nil) {
-        NSDictionary *err = @{
-                              @"error": @"Unhandled provider"
-                              };
-        return callback(@[err]);
-    }
-    
-    @try {
-        [[FIRAuth auth] signInWithCredential:credential
-                                  completion:^(FIRUser *user, NSError *error) {
-                                      if (user != nil) {
-                                          // User is signed in.
-                                          [self userCallback:callback user:user];
-                                      } else {
-                                          NSLog(@"An error occurred: %@", [error localizedDescription]);
-                                          // No user is signed in.
-                                          NSDictionary *err = @{
-                                                                @"error": @"No user signed in",
-                                                                @"description": [error localizedDescription]
-                                                                };
-                                          callback(@[err]);
-                                      }
-                                  }];
-    } @catch (NSException *exception) {
-        [RNFirebaseErrors handleException:exception
-                             withCallback:callback];
-    }
 }
 
 RCT_EXPORT_METHOD(addAuthStateListener)
@@ -249,21 +273,6 @@ RCT_EXPORT_METHOD(removeAuthStateListener:(RCTResponseSenderBlock)callback)
     }
 }
 
-RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user != nil) {
-        [self userCallback:callback user:user];
-    } else {
-        // No user is signed in.
-        NSDictionary *err = @{
-                              @"user": @"No user logged in"
-                              };
-        callback(@[err]);
-    }
-}
-
 RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
                   callback:(RCTResponseSenderBlock) callback)
 {
@@ -303,28 +312,6 @@ RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
     } else {
         [self noUserCallback:callback isError:true];
     }
-}
-
-RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    
-    [[FIRAuth auth] sendPasswordResetWithEmail:email
-                                    completion:^(NSError *_Nullable error) {
-                                        if (error) {
-                                            // An error happened.
-                                            NSDictionary *err = @{
-                                                                  @"error": @"sendPasswordResetWithEmailError",
-                                                                  @"description": error.localizedDescription
-                                                                  };
-                                            callback(@[err]);
-                                        } else {
-                                            // Email updated.
-                                            callback(@[[NSNull null], @{
-                                                           @"result": @(true)
-                                                           }]);
-                                        }
-                                    }];
 }
 
 RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
@@ -500,9 +487,6 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 //    //    NSDictionary *evt = @{ @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
 //    //                           @"msg": [error localizedDescription] };
 //}
-
-
-
 
 /**
  Resolve or reject a promise based on isError value
