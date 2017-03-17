@@ -1,15 +1,10 @@
-source 'https://github.com/CocoaPods/Specs.git'
-use_frameworks!
-platform :ios, '8.0'
-
-[
-  'Firebase',
-  'Firebase/Core',
-  'Firebase/Auth',
-  'Firebase/Storage',
-  'Firebase/Database',
-  'Firebase/RemoteConfig',
-  'Firebase/Messaging'
-].each do |lib|
-  pod lib
-end
+pod 'Firebase/Auth'
+pod 'Firebase/Analytics'
+pod 'Firebase/AppIndexing'
+pod 'Firebase/Core'
+pod 'Firebase/Crash'
+pod 'Firebase/Database'
+pod 'Firebase/DynamicLinks'
+pod 'Firebase/Messaging'
+pod 'Firebase/RemoteConfig'
+pod 'Firebase/Storage'
