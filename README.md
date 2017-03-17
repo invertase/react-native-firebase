@@ -40,12 +40,11 @@ RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Becaus
 * [Firebase Setup](docs/firebase-setup.md)
 * API
   * [Authentication](docs/api/authentication.md)
+  * [Realtime Database](docs/api/database.md)
   * [Analytics](docs/api/analytics.md)
   * [Storage](docs/api/storage.md)
-  * [Realtime Database](docs/api/database.md)
-  * [ServerValue](docs/api/server-value.md)
   * [Messaging](docs/api/cloud-messaging.md)
-  * [Events](docs/api/events.md)
+  * [Crash](docs/api/crash.md)
 
 ## Contributing
 
