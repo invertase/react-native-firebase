@@ -218,7 +218,6 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTPromiseResolveBlock) resolve rejecter:(RCTP
 /**
  signInWithCustomToken
  
- @param NSString email
  @param RCTPromiseResolveBlock resolve
  @param RCTPromiseRejectBlock reject
  @return
@@ -231,6 +230,38 @@ RCT_EXPORT_METHOD(signInWithCustomToken: (NSString *)customToken resolver:(RCTPr
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
     }];
+}
+
+/**
+ link - *insert zelda joke here*
+ 
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(link:(NSString *)provider authToken:(NSString *)authToken authSecret:(NSString *)authSecret resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    
+    if (credential == nil) {
+        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    }
+    
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user linkWithCredential:credential completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseWithUser:resolve rejecter:reject user:user];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
 }
 
 
@@ -364,22 +395,6 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }
 }
 
-- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
-    FIRAuthCredential *credential;
-    if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                          secret:authTokenSecret];
-    } else if ([provider compare:@"facebook" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
-                                                      accessToken:authTokenSecret];
-    } else {
-        NSLog(@"Provider not yet handled: %@", provider);
-    }
-    return credential;
-}
-
 - (void) noUserCallback:(RCTResponseSenderBlock) callback
                 isError:(Boolean) isError {
     if (isError) {
@@ -412,6 +427,36 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 // END ------------------------------------------------------- CLEAN UP --------------------------
 // END ------------------------------------------------------- CLEAN UP --------------------------
 // END ------------------------------------------------------- CLEAN UP --------------------------
+
+/**
+ getCredentialForProvider
+ 
+ @param provider
+ @param authToken
+ @param authTokenSecret
+ @return FIRAuthCredential
+ */
+- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
+    FIRAuthCredential *credential;
+    
+    if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    } else if ([provider compare:@"facebook" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+    } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
+    } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIREmailPasswordAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+    } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
+    } else {
+        NSLog(@"Provider not yet handled: %@", provider);
+    }
+    
+    return credential;
+}
+
+
 
 /**
  Resolve or reject a promise based on isError value
