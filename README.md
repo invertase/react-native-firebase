@@ -16,9 +16,9 @@ RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libra
 
 Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library will work with React Native, it is built for the web.
 
-RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS and Android. The Firebase processes will run on the native thread, allowing the rest of your app to run on the [JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate). The Firebase Web SDK also runs on the JS thread, therefore potentially affecting the frane rate causing jank with animations, touch events etc. All in, RNFirebase provides much faster performance (~2x) over the web SDK.
+RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS and Android. The Firebase processes will run on the native thread, allowing the rest of your app to run on the [JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate). The Firebase Web SDK also runs on the JS thread, therefore potentially affecting the frame rate causing jank with animations, touch events etc. All in, RNFirebase provides much faster performance (~2x) over the web SDK.
 
-The native SDKs allow allow us to hook into device events which are not possible with the web SDK, for example crash reporting, offiline realtime database support, analyics and more!
+The native SDKs also allow us to hook into device events which are not possible with the web SDK, for example crash reporting, offiline realtime database support, analyics and more!
 
 ## Test app
 
