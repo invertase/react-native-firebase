@@ -48,8 +48,7 @@ RCT_EXPORT_METHOD(signOut:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseR
         NSError *error;
         [[FIRAuth auth] signOut:&error];
         if (!error) [self promiseNoUser:resolve rejecter:reject isError:NO];
-        // TODO authExceptionToDict
-        else reject(@"auth/unknown", @"An unknown error has occurred.", error);
+        else [self promiseRejectAuthException:reject error:error];
     } else {
         [self promiseNoUser:resolve rejecter:reject isError:YES];
     }
@@ -66,8 +65,7 @@ RCT_EXPORT_METHOD(signOut:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseR
 RCT_EXPORT_METHOD(signInAnonymously:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/todo", [error localizedDescription], error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
@@ -87,8 +85,7 @@ RCT_EXPORT_METHOD(signInAnonymously:(RCTPromiseResolveBlock) resolve rejecter:(R
 RCT_EXPORT_METHOD(signInWithEmailAndPassword:(NSString *)email pass:(NSString *)password resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     [[FIRAuth auth] signInWithEmail:email password:password completion:^(FIRUser *user, NSError *error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/todo", [error localizedDescription], error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
@@ -107,8 +104,7 @@ RCT_EXPORT_METHOD(signInWithEmailAndPassword:(NSString *)email pass:(NSString *)
 RCT_EXPORT_METHOD(createUserWithEmailAndPassword:(NSString *)email pass:(NSString *)password resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     [[FIRAuth auth] createUserWithEmail:email password:password completion:^(FIRUser *user, NSError *error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/todo", [error localizedDescription], error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
@@ -128,8 +124,7 @@ RCT_EXPORT_METHOD(delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRe
     if (user) {
         [user deleteWithCompletion:^(NSError *_Nullable error) {
             if (error) {
-                // TODO authExceptionToDict
-                reject(@"auth/unknown", @"An unknown error has occurred.", error);
+                [self promiseRejectAuthException:reject error:error];
             } else {
                 [self promiseNoUser:resolve rejecter:reject isError:NO];
             }
@@ -153,8 +148,7 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromise
     if (user) {
         [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
             if (error) {
-                // TODO authExceptionToDict
-                reject(@"auth/unknown", @"An unknown error has occurred.", error);
+                [self promiseRejectAuthException:reject error:error];
             } else {
                 resolve(token);
             }
@@ -183,8 +177,7 @@ RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)au
     
     [[FIRAuth auth] signInWithCredential:credential completion:^(FIRUser *user, NSError *error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/unknown", @"An unknown error has occurred.", error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
@@ -202,8 +195,7 @@ RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)au
 RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *)email resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     [[FIRAuth auth] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/unknown", @"An unknown error has occurred.", error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseNoUser:resolve rejecter:reject isError:NO];
         }
@@ -234,8 +226,7 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTPromiseResolveBlock) resolve rejecter:(RCTP
 RCT_EXPORT_METHOD(signInWithCustomToken: (NSString *)customToken resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     [[FIRAuth auth] signInWithCustomToken:customToken completion:^(FIRUser *user, NSError *error) {
         if (error) {
-            // TODO authExceptionToDict
-            reject(@"auth/unknown", @"An unknown error has occurred.", error);
+            [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseWithUser:resolve rejecter:reject user:user];
         }
@@ -422,13 +413,6 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 // END ------------------------------------------------------- CLEAN UP --------------------------
 // END ------------------------------------------------------- CLEAN UP --------------------------
 
-
-//- (NSDictionary *) authExceptionToDict:(NSError *) error {
-//    // TODO
-//    //    NSDictionary *evt = @{ @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-//    //                           @"msg": [error localizedDescription] };
-//}
-
 /**
  Resolve or reject a promise based on isError value
  
@@ -451,8 +435,119 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
  @param error NSError
  */
 - (void) promiseRejectAuthException:(RCTPromiseRejectBlock) reject error:(NSError *)error {
-    // TODO authExceptionToDict
-    reject(@"auth/unknown", @"An unknown error has occurred.", error);
+    NSString *code = @"auth/unknown";
+    NSString *message = [error localizedDescription];
+    
+    switch (error.code) {
+        case FIRAuthErrorCodeInvalidCustomToken:
+            code = @"auth/invalid-custom-token";
+            message = @"The custom token format is incorrect. Please check the documentation.";
+            break;
+        case FIRAuthErrorCodeCustomTokenMismatch:
+            code = @"auth/custom-token-mismatch";
+            message = @"The custom token corresponds to a different audience.";
+            break;
+        case FIRAuthErrorCodeInvalidCredential:
+            code = @"auth/invalid-credential";
+            message = @"The supplied auth credential is malformed or has expired.";
+            break;
+        case FIRAuthErrorCodeInvalidEmail:
+            code = @"auth/invalid-email";
+            message = @"The email address is badly formatted.";
+            break;
+        case FIRAuthErrorCodeWrongPassword:
+            code = @"auth/wrong-password";
+            message = @"The password is invalid or the user does not have a password.";
+            break;
+        case FIRAuthErrorCodeUserMismatch:
+            code = @"auth/user-mismatch";
+            message = @"The supplied credentials do not correspond to the previously signed in user.";
+            break;
+        case FIRAuthErrorCodeRequiresRecentLogin:
+            code = @"auth/requires-recent-login";
+            message = @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
+            break;
+        case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
+            code = @"auth/account-exists-with-different-credential";
+            message = @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
+            break;
+        case FIRAuthErrorCodeEmailAlreadyInUse:
+            code = @"auth/email-already-in-use";
+            message = @"The email address is already in use by another account.";
+            break;
+        case FIRAuthErrorCodeCredentialAlreadyInUse:
+            code = @"auth/credential-already-in-use";
+            message = @"This credential is already associated with a different user account.";
+            break;
+        case FIRAuthErrorCodeUserDisabled:
+            code = @"auth/user-disabled";
+            message = @"The user account has been disabled by an administrator.";
+            break;
+        case FIRAuthErrorCodeUserTokenExpired:
+            code = @"auth/user-token-expired";
+            message = @"The user's credential is no longer valid. The user must sign in again.";
+            break;
+        case FIRAuthErrorCodeUserNotFound:
+            code = @"auth/user-not-found";
+            message = @"There is no user record corresponding to this identifier. The user may have been deleted.";
+            break;
+        case FIRAuthErrorCodeInvalidUserToken:
+            code = @"auth/invalid-user-token";
+            message = @"The user's credential is no longer valid. The user must sign in again.";
+            break;
+        case FIRAuthErrorCodeWeakPassword:
+            code = @"auth/weak-password";
+            message = @"The given password is invalid.";
+            break;
+        case FIRAuthErrorCodeOperationNotAllowed:
+            code = @"auth/operation-not-allowed";
+            message = @"This operation is not allowed. You must enable this service in the console.";
+            break;
+        case FIRAuthErrorCodeNetworkError:
+            code = @"auth/network-error";
+            message = @"A network error has occurred, please try again.";
+            break;
+        case FIRAuthErrorCodeInternalError:
+            code = @"auth/internal-error";
+            message = @"An internal error has occurred, please try again.";
+            break;
+            
+            // unsure of the below codes so leaving them as the defaul error message
+        case FIRAuthErrorCodeTooManyRequests:
+            code = @"auth/too-many-requests";
+            break;
+        case FIRAuthErrorCodeProviderAlreadyLinked:
+            code = @"auth/provider-already-linked";
+            break;
+        case FIRAuthErrorCodeNoSuchProvider:
+            code = @"auth/no-such-provider";
+            break;
+        case FIRAuthErrorCodeInvalidAPIKey:
+            code = @"auth/invalid-api-key";
+            break;
+        case FIRAuthErrorCodeAppNotAuthorized:
+            code = @"auth/app-not-authorised";
+            break;
+        case FIRAuthErrorCodeExpiredActionCode:
+            code = @"auth/expired-action-code";
+            break;
+        case FIRAuthErrorCodeInvalidMessagePayload:
+            code = @"auth/invalid-message-payload";
+            break;
+        case FIRAuthErrorCodeInvalidSender:
+            code = @"auth/invalid-sender";
+            break;
+        case FIRAuthErrorCodeInvalidRecipientEmail:
+            code = @"auth/invalid-recipient-email";
+            break;
+        case FIRAuthErrorCodeKeychainError:
+            code = @"auth/keychain-error";
+            break;
+        default:
+            break;
+    }
+    
+    reject(code, message, error);
 }
 
 /**
