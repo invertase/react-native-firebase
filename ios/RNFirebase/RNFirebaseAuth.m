@@ -495,11 +495,11 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 // END ------------------------------------------------------- CLEAN UP --------------------------
 
 
-- (NSDictionary *) authExceptionToDict:(NSError *) error {
-    // TODO
-    //    NSDictionary *evt = @{ @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-    //                           @"msg": [error localizedDescription] };
-}
+//- (NSDictionary *) authExceptionToDict:(NSError *) error {
+//    // TODO
+//    //    NSDictionary *evt = @{ @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
+//    //                           @"msg": [error localizedDescription] };
+//}
 
 
 
