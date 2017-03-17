@@ -1,222 +1,285 @@
 package io.invertase.firebase.messaging;
 
-import java.util.Map;
-
-import android.content.Context;
-import android.content.IntentFilter;
-import android.content.Intent;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.util.Log;
+import android.content.Intent;
+import android.content.IntentFilter;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.RemoteMessage.Notification;
 
-import io.invertase.firebase.Utils;
+import android.app.Application;
+import android.os.Bundle;
+import android.util.Log;
 
-public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
+import android.content.Context;
 
-  private static final String TAG = "RNFirebaseMessaging";
-  private static final String EVENT_NAME_TOKEN = "RNFirebaseRefreshToken";
-  private static final String EVENT_NAME_NOTIFICATION = "RNFirebaseReceiveNotification";
-  private static final String EVENT_NAME_SEND = "RNFirebaseUpstreamSend";
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-  public static final String INTENT_NAME_TOKEN = "io.invertase.firebase.refreshToken";
-  public static final String INTENT_NAME_NOTIFICATION = "io.invertase.firebase.ReceiveNotification";
-  public static final String INTENT_NAME_SEND = "io.invertase.firebase.Upstream";
-
-  private IntentFilter mRefreshTokenIntentFilter;
-  private IntentFilter mReceiveNotificationIntentFilter;
-  private IntentFilter mReceiveSendIntentFilter;
-  private BroadcastReceiver mBroadcastReceiver;
+public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
+  private final static String TAG = RNFirebaseMessaging.class.getCanonicalName();
+  private RNFirebaseLocalMessagingHelper mRNFirebaseLocalMessagingHelper;
+  private BadgeHelper mBadgeHelper;
 
   public RNFirebaseMessaging(ReactApplicationContext reactContext) {
     super(reactContext);
-    mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
-    mReceiveNotificationIntentFilter = new IntentFilter(INTENT_NAME_NOTIFICATION);
-    mReceiveSendIntentFilter = new IntentFilter(INTENT_NAME_SEND);
-    initRefreshTokenHandler();
-    initMessageHandler();
-    initSendHandler();
-    Log.d(TAG, "New instance");
+    mRNFirebaseLocalMessagingHelper = new RNFirebaseLocalMessagingHelper((Application) reactContext.getApplicationContext());
+    mBadgeHelper = new BadgeHelper(reactContext.getApplicationContext());
+    getReactApplicationContext().addLifecycleEventListener(this);
+    getReactApplicationContext().addActivityEventListener(this);
+    registerTokenRefreshHandler();
+    registerMessageHandler();
+    registerLocalMessageHandler();
   }
 
   @Override
   public String getName() {
-    return TAG;
+    return "RNFirebaseMessaging";
   }
 
-  private void initMessageHandler() {
-    Log.d(TAG, "RNFirebase initMessageHandler called");
-
-    if (mBroadcastReceiver == null) {
-      mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-          RemoteMessage remoteMessage = intent.getParcelableExtra("data");
-          Log.d(TAG, "Firebase onReceive: " + remoteMessage);
-          WritableMap params = Arguments.createMap();
-
-          params.putNull("data");
-          params.putNull("notification");
-          params.putString("id", remoteMessage.getMessageId());
-          params.putString("messageId", remoteMessage.getMessageId());
-
-
-          if (remoteMessage.getData().size() != 0) {
-            WritableMap dataMap = Arguments.createMap();
-            Map<String, String> data = remoteMessage.getData();
-
-            for (String key : data.keySet()) {
-              dataMap.putString(key, data.get(key));
-            }
-
-            params.putMap("data", dataMap);
-          }
-
-
-          if (remoteMessage.getNotification() != null) {
-            WritableMap notificationMap = Arguments.createMap();
-            RemoteMessage.Notification notification = remoteMessage.getNotification();
-            notificationMap.putString("title", notification.getTitle());
-            notificationMap.putString("body", notification.getBody());
-            notificationMap.putString("icon", notification.getIcon());
-            notificationMap.putString("sound", notification.getSound());
-            notificationMap.putString("tag", notification.getTag());
-            params.putMap("notification", notificationMap);
-          }
-
-          ReactContext ctx = getReactApplicationContext();
-          Utils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
-        }
-      };
-
+  @ReactMethod
+  public void getInitialNotification(Promise promise) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.resolve(null);
+      return;
     }
-    getReactApplicationContext().registerReceiver(mBroadcastReceiver, mReceiveNotificationIntentFilter);
+    promise.resolve(parseIntent(getCurrentActivity().getIntent()));
   }
 
-  /**
-   *
-   */
-  private void initRefreshTokenHandler() {
+  @ReactMethod
+  public void requestPermissions() {
+  }
+
+  @ReactMethod
+  public void getToken(Promise promise) {
+    Log.d(TAG, "Firebase token: " + FirebaseInstanceId.getInstance().getToken());
+    promise.resolve(FirebaseInstanceId.getInstance().getToken());
+  }
+
+  @ReactMethod
+  public void createLocalNotification(ReadableMap details) {
+    Bundle bundle = Arguments.toBundle(details);
+    mRNFirebaseLocalMessagingHelper.sendNotification(bundle);
+  }
+
+  @ReactMethod
+  public void scheduleLocalNotification(ReadableMap details) {
+    Bundle bundle = Arguments.toBundle(details);
+    mRNFirebaseLocalMessagingHelper.sendNotificationScheduled(bundle);
+  }
+
+  @ReactMethod
+  public void cancelLocalNotification(String notificationID) {
+    mRNFirebaseLocalMessagingHelper.cancelLocalNotification(notificationID);
+  }
+
+  @ReactMethod
+  public void cancelAllLocalNotifications() {
+    mRNFirebaseLocalMessagingHelper.cancelAllLocalNotifications();
+  }
+
+  @ReactMethod
+  public void removeDeliveredNotification(String notificationID) {
+    mRNFirebaseLocalMessagingHelper.removeDeliveredNotification(notificationID);
+  }
+
+  @ReactMethod
+  public void removeAllDeliveredNotifications() {
+    mRNFirebaseLocalMessagingHelper.removeAllDeliveredNotifications();
+  }
+
+  @ReactMethod
+  public void subscribeToTopic(String topic) {
+    FirebaseMessaging.getInstance().subscribeToTopic(topic);
+  }
+
+  @ReactMethod
+  public void unsubscribeFromTopic(String topic) {
+    FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+  }
+
+  @ReactMethod
+  public void getScheduledLocalNotifications(Promise promise) {
+    ArrayList<Bundle> bundles = mRNFirebaseLocalMessagingHelper.getScheduledLocalNotifications();
+    WritableArray array = Arguments.createArray();
+    for (Bundle bundle : bundles) {
+      array.pushMap(Arguments.fromBundle(bundle));
+    }
+    promise.resolve(array);
+  }
+
+  @ReactMethod
+  public void setBadgeNumber(int badgeNumber) {
+    mBadgeHelper.setBadgeCount(badgeNumber);
+  }
+
+  @ReactMethod
+  public void getBadgeNumber(Promise promise) {
+    promise.resolve(mBadgeHelper.getBadgeCount());
+  }
+
+  private void sendEvent(String eventName, Object params) {
+    getReactApplicationContext()
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
+  }
+
+  private void registerTokenRefreshHandler() {
+    IntentFilter intentFilter = new IntentFilter("io.invertase.firebase.messaging.FCMRefreshToken");
     getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        WritableMap params = Arguments.createMap();
-        params.putString("token", intent.getStringExtra("token"));
-        ReactContext ctx = getReactApplicationContext();
-        Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
-        Utils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
+        if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          String token = intent.getStringExtra("token");
+          sendEvent("FCMTokenRefreshed", token);
+        }
       }
-
-      ;
-    }, mRefreshTokenIntentFilter);
+    }, intentFilter);
   }
 
   @ReactMethod
-  public void subscribeToTopic(String topic, final Callback callback) {
-    try {
-      FirebaseMessaging.getInstance().subscribeToTopic(topic);
-      callback.invoke(null, topic);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Log.d(TAG, "Firebase token: " + e);
-      WritableMap error = Arguments.createMap();
-      error.putString("message", e.getMessage());
-      callback.invoke(error);
-
-    }
-  }
-
-  @ReactMethod
-  public void getToken(final Promise promise) {
-    try {
-      String token = FirebaseInstanceId.getInstance().getToken();
-      Log.d(TAG, "Firebase token: " + token);
-      promise.resolve(token);
-    } catch (Exception e) {
-      promise.reject("messaging/unknown", e.getMessage(), e);
-    }
-  }
-
-  @ReactMethod
-  public void unsubscribeFromTopic(String topic, final Callback callback) {
-    try {
-      FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-      callback.invoke(null, topic);
-    } catch (Exception e) {
-      WritableMap error = Arguments.createMap();
-      error.putString("message", e.getMessage());
-      callback.invoke(error);
-    }
-  }
-
-  // String senderId, String messageId, String messageType,
-  @ReactMethod
-  public void send(ReadableMap params, final Promise promise) {
-    ReadableMap data = params.getMap("data");
+  public void send(String senderId, ReadableMap payload) throws Exception {
     FirebaseMessaging fm = FirebaseMessaging.getInstance();
-    RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(params.getString("sender"));
+    RemoteMessage.Builder message = new RemoteMessage.Builder(senderId + "@gcm.googleapis.com")
+      .setMessageId(UUID.randomUUID().toString());
 
-    remoteMessage.setMessageId(params.getString("id"));
-    remoteMessage.setMessageType(params.getString("type"));
-
-    if (params.hasKey("ttl")) {
-      remoteMessage.setTtl(params.getInt("ttl"));
-    }
-
-    if (params.hasKey("collapseKey")) {
-      remoteMessage.setCollapseKey(params.getString("collapseKey"));
-    }
-
-    ReadableMapKeySetIterator iterator = data.keySetIterator();
-
+    ReadableMapKeySetIterator iterator = payload.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      ReadableType type = data.getType(key);
-      if (type == ReadableType.String) {
-        remoteMessage.addData(key, data.getString(key));
-      }
+      String value = getStringFromReadableMap(payload, key);
+      message.addData(key, value);
     }
+    fm.send(message.build());
+  }
 
-    try {
-      fm.send(remoteMessage.build());
-      WritableMap res = Arguments.createMap();
-      promise.resolve(null);
-    } catch (Exception e) {
-      Log.e(TAG, "send: error sending message", e);
-      promise.reject("messaging/unknown", e.getMessage(), e);
+  private String getStringFromReadableMap(ReadableMap map, String key) throws Exception {
+    switch (map.getType(key)) {
+      case String:
+        return map.getString(key);
+      case Number:
+        try {
+          return String.valueOf(map.getInt(key));
+        } catch (Exception e) {
+          return String.valueOf(map.getDouble(key));
+        }
+      case Boolean:
+        return String.valueOf(map.getBoolean(key));
+      default:
+        throw new Exception("Unknown data type: " + map.getType(key).name() + " for message key " + key);
     }
   }
 
-  private void initSendHandler() {
+  private void registerMessageHandler() {
+    IntentFilter intentFilter = new IntentFilter("io.invertase.firebase.messaging.ReceiveNotification");
+
     getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        WritableMap params = Arguments.createMap();
-        if (intent.getBooleanExtra("hasError", false)) {
-          WritableMap error = Arguments.createMap();
-          error.putInt("code", intent.getIntExtra("errCode", 0));
-          error.putString("message", intent.getStringExtra("errorMessage"));
-          params.putMap("err", error);
-        } else {
-          params.putNull("err");
+        if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          RemoteMessage message = intent.getParcelableExtra("data");
+          WritableMap params = Arguments.createMap();
+          WritableMap fcmData = Arguments.createMap();
+
+          if (message.getNotification() != null) {
+            Notification notification = message.getNotification();
+            fcmData.putString("title", notification.getTitle());
+            fcmData.putString("body", notification.getBody());
+            fcmData.putString("color", notification.getColor());
+            fcmData.putString("icon", notification.getIcon());
+            fcmData.putString("tag", notification.getTag());
+            fcmData.putString("action", notification.getClickAction());
+          }
+          params.putMap("fcm", fcmData);
+
+          if (message.getData() != null) {
+            Map<String, String> data = message.getData();
+            Set<String> keysIterator = data.keySet();
+            for (String key : keysIterator) {
+              params.putString(key, data.get(key));
+            }
+          }
+          sendEvent("FCMNotificationReceived", params);
+
         }
-        ReactContext ctx = getReactApplicationContext();
-        Utils.sendEvent(ctx, EVENT_NAME_SEND, params);
       }
-    }, mReceiveSendIntentFilter);
+    }, intentFilter);
+  }
+
+  private void registerLocalMessageHandler() {
+    IntentFilter intentFilter = new IntentFilter("io.invertase.firebase.messaging.ReceiveLocalNotification");
+
+    getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        if (getReactApplicationContext().hasActiveCatalystInstance()) {
+          sendEvent("FCMNotificationReceived", Arguments.fromBundle(intent.getExtras()));
+        }
+      }
+    }, intentFilter);
+  }
+
+  private WritableMap parseIntent(Intent intent) {
+    WritableMap params;
+    Bundle extras = intent.getExtras();
+    if (extras != null) {
+      try {
+        params = Arguments.fromBundle(extras);
+      } catch (Exception e) {
+        Log.e(TAG, e.getMessage());
+        params = Arguments.createMap();
+      }
+    } else {
+      params = Arguments.createMap();
+    }
+    WritableMap fcm = Arguments.createMap();
+    fcm.putString("action", intent.getAction());
+    params.putMap("fcm", fcm);
+
+    params.putBoolean("opened_from_tray", true);
+    return params;
+  }
+
+  @Override
+  public void onHostResume() {
+    mRNFirebaseLocalMessagingHelper.setApplicationForeground(true);
+  }
+
+  @Override
+  public void onHostPause() {
+    mRNFirebaseLocalMessagingHelper.setApplicationForeground(false);
+  }
+
+  @Override
+  public void onHostDestroy() {
+
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // todo hmm?
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    // todo hmm?
+    sendEvent("FCMNotificationReceived", parseIntent(intent));
   }
 }

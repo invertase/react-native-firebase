@@ -43,7 +43,9 @@ allprojects {
 // END
 
 dependencies {
-    compile 'com.facebook.react:react-native:0.20.+'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.facebook.react:react-native:+'
+    compile 'me.leolin:ShortcutBadger:1.1.10@aar'
     compile 'com.google.android.gms:play-services-base:10.2.0'
     compile 'com.google.firebase:firebase-core:10.2.0'
     compile 'com.google.firebase:firebase-config:10.2.0'
