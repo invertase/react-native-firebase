@@ -512,7 +512,7 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
             message = @"An internal error has occurred, please try again.";
             break;
             
-            // unsure of the below codes so leaving them as the defaul error message
+            // unsure of the below codes so leaving them as the default error message
         case FIRAuthErrorCodeTooManyRequests:
             code = @"auth/too-many-requests";
             break;
