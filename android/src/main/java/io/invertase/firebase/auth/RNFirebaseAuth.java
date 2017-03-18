@@ -352,7 +352,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
           public void onComplete(@NonNull Task<AuthResult> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "signInWithCredential:onComplete:success");
-              promiseWithUser(mAuth.getCurrentUser(), promise);
+              promiseWithUser(task.getResult().getUser(), promise);
             } else {
               Exception exception = task.getException();
               Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
@@ -388,10 +388,49 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
             public void onComplete(@NonNull Task<AuthResult> task) {
               if (task.isSuccessful()) {
                 Log.d(TAG, "link:onComplete:success");
-                promiseWithUser(mAuth.getCurrentUser(), promise);
+                promiseWithUser(task.getResult().getUser(), promise);
               } else {
                 Exception exception = task.getException();
                 Log.e(TAG, "link:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            }
+          });
+      } else {
+        promiseNoUser(promise, true);
+      }
+    }
+  }
+
+  /**
+   * reauthenticate
+   *
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @param promise
+   */
+  @ReactMethod
+  public void reauthenticate(final String provider, final String authToken, final String authSecret, final Promise promise) {
+    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+
+    if (credential == null) {
+      promise.reject("auth/invalid-credential", "The supplied auth credential is malformed, has expired or is not currently supported.");
+    } else {
+      FirebaseUser user = mAuth.getCurrentUser();
+      Log.d(TAG, "reauthenticate");
+
+      if (user != null) {
+        user.reauthenticate(credential)
+          .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "reauthenticate:onComplete:success");
+                promiseWithUser(mAuth.getCurrentUser(), promise);
+              } else {
+                Exception exception = task.getException();
+                Log.e(TAG, "reauthenticate:onComplete:failure", exception);
                 promiseRejectAuthException(promise, exception);
               }
             }
@@ -467,14 +506,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   // ----------------------- CLEAN ME -----------------------------------------------------
   // ----------------------- CLEAN ME -----------------------------------------------------
   // ----------------------- CLEAN ME -----------------------------------------------------
-
-  @ReactMethod
-  public void reauthenticate(final String provider, final String authToken, final String authSecret, final Callback callback) {
-    // TODO:
-    Utils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
-    // AuthCredential credential;
-    // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
-  }
 
   @ReactMethod
   public void updateUserEmail(final String email, final Callback callback) {
