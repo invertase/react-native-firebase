@@ -206,6 +206,30 @@ RCT_EXPORT_METHOD(updateEmail:(NSString *) email resolver:(RCTPromiseResolveBloc
     }
 }
 
+/**
+ updatePassword
+ 
+ @param NSString password
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(updatePassword:(NSString *) password resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user updatePassword:password completion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterUpdate = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
 
 /**
  getToken
@@ -374,47 +398,6 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
-
-RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user) {
-        [user updateEmail:email completion:^(NSError *_Nullable error) {
-            if (error) {
-                // An error happened.
-                [self userErrorCallback:callback error:error user:user msg:@"updateEmailError"];
-            } else {
-                // Email updated.
-                [self userCallback:callback user:user];
-            }
-        }];
-    } else {
-        [self noUserCallback:callback isError:true];
-    }
-}
-
-RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user) {
-        [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
-            if (error) {
-                // An error happened.
-                [self userErrorCallback:callback error:error user:user msg:@"updateUserPasswordError"];
-            } else {
-                // Email updated.
-                [self userCallback:callback user:user];
-            }
-        }];
-    } else {
-        [self noUserCallback:callback isError:true];
-    }
-}
 
 RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                   callback:(RCTResponseSenderBlock) callback)
