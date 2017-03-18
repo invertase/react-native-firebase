@@ -134,6 +134,78 @@ RCT_EXPORT_METHOD(delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRe
     }
 }
 
+/**
+ reload
+ 
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(reload:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user reloadWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterReload = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterReload];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+/**
+ sendEmailVerification
+ 
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(sendEmailVerification:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseNoUser:resolve rejecter:reject isError:NO];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+/**
+ updateEmail
+ 
+ @param NSString email
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(updateEmail:(NSString *) email resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user updateEmail:email completion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterUpdate = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
 
 /**
  getToken
