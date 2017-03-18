@@ -4,7 +4,6 @@ import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
@@ -40,9 +38,6 @@ import io.invertase.firebase.Utils;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class RNFirebaseAuth extends ReactContextBaseJavaModule {
-  private final int NO_CURRENT_USER = 100;
-  private final int ERROR_SENDING_VERIFICATION_EMAIL = 102;
-
   private static final String TAG = "RNFirebaseAuth";
 
   private ReactContext mReactContext;
@@ -423,6 +418,53 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * updateProfile
+   *
+   * @param props
+   * @param promise
+   */
+  @ReactMethod
+  public void updateProfile(ReadableMap props, final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "updateProfile");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "updateProfile:failure:noCurrentUser");
+    } else {
+      UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
+
+      if (props.hasKey("displayName")) {
+        String displayName = props.getString("displayName");
+        profileBuilder.setDisplayName(displayName);
+      }
+
+      if (props.hasKey("photoUri")) {
+        String photoUriStr = props.getString("photoUri");
+        Uri uri = Uri.parse(photoUriStr);
+        profileBuilder.setPhotoUri(uri);
+      }
+
+      UserProfileChangeRequest profileUpdates = profileBuilder.build();
+
+      user.updateProfile(profileUpdates)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "updateProfile:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "updateProfile:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    }
+  }
+
+  /**
    * signInWithCredential
    *
    * @param provider
@@ -588,60 +630,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-  // ----------------------- CLEAN ME -----------------------------------------------------
-
-    @ReactMethod
-  public void updateUserProfile(ReadableMap props, final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user != null) {
-      UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
-
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
-
-      if (m.containsKey("displayName")) {
-        String displayName = (String) m.get("displayName");
-        profileBuilder.setDisplayName(displayName);
-      }
-
-      if (m.containsKey("photoUri")) {
-        String photoUriStr = (String) m.get("photoUri");
-        Uri uri = Uri.parse(photoUriStr);
-        profileBuilder.setPhotoUri(uri);
-      }
-
-      UserProfileChangeRequest profileUpdates = profileBuilder.build();
-
-      user.updateProfile(profileUpdates)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User profile updated");
-                userCallback(mAuth.getCurrentUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
   /* ------------------
    * INTERNAL HELPERS
    * ---------------- */
@@ -767,7 +755,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     final Boolean verified = user.isEmailVerified();
     final Uri photoUrl = user.getPhotoUrl();
 
-
     userMap.putString("uid", uid);
     userMap.putString("providerId", provider);
     userMap.putBoolean("emailVerified", verified);
@@ -791,65 +778,8 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       userMap.putNull("photoURL");
     }
 
+    // todo providerData
+
     return userMap;
-  }
-
-  // ------------------ Clean me when no longer used ------------------------------
-  // ------------------ Clean me when no longer used ------------------------------
-  // ------------------ Clean me when no longer used ------------------------------
-  // ------------------ Clean me when no longer used ------------------------------
-  // ------------------ Clean me when no longer used ------------------------------
-  // ------------------ Clean me when no longer used ------------------------------
-
-  @Deprecated
-  private void userCallback(final FirebaseUser user, final Callback callback) {
-    if (user != null) {
-      user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-        @Override
-        public void onComplete(@NonNull Task<GetTokenResult> task) {
-          try {
-            if (task.isSuccessful()) {
-              WritableMap userMap = firebaseUserToMap(user);
-              userMap.putString("token", task.getResult().getToken());
-              callback.invoke(null, userMap);
-            } else {
-              userErrorCallback(task, callback);
-            }
-          } catch (Exception ex) {
-            userExceptionCallback(ex, callback);
-          }
-        }
-      });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-  @Deprecated
-  private void callbackNoUser(Callback callback, Boolean isError) {
-    WritableMap err = Arguments.createMap();
-    err.putInt("code", NO_CURRENT_USER);
-    err.putString("message", "No current user");
-
-    if (isError) {
-      callback.invoke(err);
-    } else {
-      callback.invoke(null, null);
-    }
-  }
-
-  @Deprecated
-  private void userErrorCallback(Task task, final Callback onFail) {
-    WritableMap error = Arguments.createMap();
-    error.putString("message", ((FirebaseAuthException) task.getException()).getMessage());
-    onFail.invoke(error);
-  }
-
-  @Deprecated
-  private void userExceptionCallback(Exception ex, final Callback onFail) {
-    WritableMap error = Arguments.createMap();
-    error.putInt("code", ex.hashCode());
-    error.putString("message", ex.getMessage());
-    onFail.invoke(error);
   }
 }
