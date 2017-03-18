@@ -26,7 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.TwitterAuthCredential;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -42,7 +41,6 @@ import io.invertase.firebase.Utils;
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
-  private final int ERROR_FETCHING_TOKEN = 101;
   private final int ERROR_SENDING_VERIFICATION_EMAIL = 102;
 
   private static final String TAG = "RNFirebaseAuth";
@@ -306,7 +304,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   @ReactMethod
   public void reload(final Promise promise) {
     FirebaseUser user = mAuth.getCurrentUser();
-    Log.d(TAG, "delete");
+    Log.d(TAG, "reload");
 
     if (user == null) {
       promiseNoUser(promise, false);
@@ -329,6 +327,67 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * sendEmailVerification
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void sendEmailVerification(final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "sendEmailVerification");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "sendEmailVerification:failure:noCurrentUser");
+    } else {
+      user.sendEmailVerification()
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "sendEmailVerification:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "sendEmailVerification:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    }
+  }
+
+  /**
+   * updateEmail
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void updateEmail(final String email, final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "updateEmail");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "updateEmail:failure:noCurrentUser");
+    } else {
+      user.updateEmail(email)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "updateEmail:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "updateEmail:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    }
+  }
 
   /**
    * signInWithCredential
@@ -549,37 +608,6 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
                 userCallback(mAuth.getCurrentUser(), callback);
               } else {
                 userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-  @ReactMethod
-  public void sendEmailVerification(final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user != null) {
-      user.sendEmailVerification()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                WritableMap resp = Arguments.createMap();
-                resp.putString("status", "complete");
-                resp.putString("msg", "User verification email sent");
-                callback.invoke(null, resp);
-              } else {
-                WritableMap err = Arguments.createMap();
-                err.putInt("errorCode", ERROR_SENDING_VERIFICATION_EMAIL);
-                err.putString("errorMessage", task.getException().getMessage());
-                callback.invoke(err);
               }
             } catch (Exception ex) {
               userExceptionCallback(ex, callback);
