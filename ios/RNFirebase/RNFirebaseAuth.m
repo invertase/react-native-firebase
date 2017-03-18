@@ -4,8 +4,6 @@
 
 @implementation RNFirebaseAuth
 
-typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
-
 RCT_EXPORT_MODULE(RNFirebaseAuth);
 
 /**
@@ -232,6 +230,48 @@ RCT_EXPORT_METHOD(updatePassword:(NSString *) password resolver:(RCTPromiseResol
 }
 
 /**
+ updateProfile
+ 
+ @param NSDictionary props
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(updateProfile:(NSDictionary *) props resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
+        NSMutableArray *allKeys = [[props allKeys] mutableCopy];
+        
+        for (NSString *key in allKeys) {
+            @try {
+                if ([key isEqualToString:@"photoURL"]) {
+                    NSURL *url = [NSURL URLWithString:[props valueForKey:key]];
+                    [changeRequest setValue:url forKey:key];
+                } else {
+                    [changeRequest setValue:[props objectForKey:key] forKey:key];
+                }
+            } @catch (NSException *exception) {
+                NSLog(@"Exception occurred while configuring: %@", exception);
+            }
+        }
+        
+        [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterUpdate = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+
+/**
  getToken
  
  @param RCTPromiseResolveBlock resolve
@@ -392,84 +432,6 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
         [self promiseNoUser:resolve rejecter:reject isError:YES];
     }
 }
-
-
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-// TODO ------------------------------------------------------- CLEAN UP --------------------------
-
-RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user) {
-        FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
-        
-        NSMutableArray *allKeys = [[userProps allKeys] mutableCopy];
-        for (NSString *key in allKeys) {
-            // i.e. changeRequest.displayName = userProps[displayName];
-            @try {
-                if ([key isEqualToString:@"photoURL"]) {
-                    NSURL *url = [NSURL URLWithString:[userProps valueForKey:key]];
-                    [changeRequest setValue:url forKey:key];
-                } else {
-                    [changeRequest setValue:[userProps objectForKey:key] forKey:key];
-                }
-            }
-            @catch (NSException *exception) {
-                NSLog(@"Exception occurred while configuring: %@", exception);
-            }
-            @finally {
-                [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
-                    if (error) {
-                        // An error happened.
-                        [self userErrorCallback:callback error:error user:user msg:@"updateEmailError"];
-                    } else {
-                        // Profile updated.
-                        [self userCallback:callback user:user];
-                    }
-                }];
-            }
-        }
-    } else {
-        [self noUserCallback:callback isError:true];
-    }
-}
-
-- (void) noUserCallback:(RCTResponseSenderBlock) callback
-                isError:(Boolean) isError {
-    if (isError) {
-        NSDictionary *err = @{
-                              @"error": @"Unhandled provider"
-                              };
-        return callback(@[err]);
-        
-    }
-    return callback(@[[NSNull null], [NSNull null]]);
-}
-
-- (void) userErrorCallback:(RCTResponseSenderBlock) callback
-                     error:(NSError *)error
-                      user:(FIRUser *) user
-                       msg:(NSString *) msg {
-    // An error happened.
-    NSDictionary *err = [RNFirebaseErrors handleFirebaseError:msg
-                                                        error:error
-                                                     withUser:user];
-    callback(@[err]);
-}
-
-- (void) userCallback:(RCTResponseSenderBlock) callback user:(FIRUser *) user {
-    NSDictionary *userProps = [self firebaseUserToDict:user];
-    callback(@[[NSNull null], userProps]);
-}
-
-// END ------------------------------------------------------- CLEAN UP -^ -----------------------
-// END ------------------------------------------------------- CLEAN UP --------------------------
-// END ------------------------------------------------------- CLEAN UP --------------------------
-// END ------------------------------------------------------- CLEAN UP --------------------------
 
 /**
  getCredentialForProvider
@@ -692,6 +654,8 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                                         }
                                      mutableCopy
                                      ];
+    
+    // todo providerData
     
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue: [NSString stringWithFormat:@"%@", user.photoURL] forKey:@"photoURL"];
