@@ -264,6 +264,39 @@ RCT_EXPORT_METHOD(link:(NSString *)provider authToken:(NSString *)authToken auth
     }
 }
 
+/**
+ reauthenticate
+ 
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)authToken authSecret:(NSString *)authSecret resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    
+    if (credential == nil) {
+        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    }
+    
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    if (user) {
+        [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterAuth = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterAuth];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
 
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
 // TODO ------------------------------------------------------- CLEAN UP --------------------------
@@ -310,51 +343,6 @@ RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
         [self noUserCallback:callback isError:true];
     }
 }
-
-RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user) {
-        [user getTokenWithCompletion:^(NSString *token , NSError *_Nullable error) {
-            if (error) {
-                [self userErrorCallback:callback error:error user:user msg:@"getTokenWithCompletion"];
-            } else {
-                callback(@[[NSNull null], token]);
-            }
-        }];
-    } else {
-        [self noUserCallback:callback isError:true];
-    }
-}
-
-RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
-    if (credential == nil) {
-        NSDictionary *err = @{
-                              @"error": @"Unhandled provider"
-                              };
-        return callback(@[err]);
-    }
-    
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
-        if (error) {
-            [self userErrorCallback:callback error:error user:user msg:@"reauthenticateWithCredentialForProviderError"];
-        } else {
-            callback(@[[NSNull null], @{@"result": @(true)}]);
-        }
-    }];
-}
-
 
 RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                   callback:(RCTResponseSenderBlock) callback)
