@@ -361,6 +361,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * updateEmail
    *
+   * @param email
    * @param promise
    */
   @ReactMethod
@@ -382,6 +383,38 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
             } else {
               Exception exception = task.getException();
               Log.e(TAG, "updateEmail:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    }
+  }
+
+  /**
+   * updatePassword
+   *
+   * @param password
+   * @param promise
+   */
+  @ReactMethod
+  public void updatePassword(final String password, final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "updatePassword");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "updatePassword:failure:noCurrentUser");
+    } else {
+      user.updatePassword(password)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "updatePassword:onComplete:success");
+              promiseWithUser(mAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "updatePassword:onComplete:failure", exception);
               promiseRejectAuthException(promise, exception);
             }
           }
@@ -566,60 +599,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   // ----------------------- CLEAN ME -----------------------------------------------------
   // ----------------------- CLEAN ME -----------------------------------------------------
 
-  @ReactMethod
-  public void updateUserEmail(final String email, final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user != null) {
-      user
-        .updateEmail(email)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User email address updated");
-                userCallback(mAuth.getCurrentUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-  @ReactMethod
-  public void updateUserPassword(final String newPassword, final Callback callback) {
-    FirebaseUser user = mAuth.getCurrentUser();
-
-    if (user != null) {
-      user.updatePassword(newPassword)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            try {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User password updated");
-                userCallback(mAuth.getCurrentUser(), callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            } catch (Exception ex) {
-              userExceptionCallback(ex, callback);
-            }
-          }
-        });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-  @ReactMethod
+    @ReactMethod
   public void updateUserProfile(ReadableMap props, final Callback callback) {
     FirebaseUser user = mAuth.getCurrentUser();
 
