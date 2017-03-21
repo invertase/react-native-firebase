@@ -24,7 +24,7 @@ Unsubscribes the device from a topic.
 firebase.messaging().unsubscribeFromTopic('foobar');
 ```
 
-### getInitialNotification(): Promise<Object>
+### getInitialNotification(): `Promise<Object>`
 
 When the application has been opened from a notification `getInitialNotification` is called and the notification payload 
 is returned. Use `onMessage` for notifications when the app is running.
