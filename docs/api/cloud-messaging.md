@@ -36,7 +36,7 @@ firebase.messaging().getInitialNotification()
   });
 ```
 
-### getToken(): Promise<string>
+### getToken(): `Promise<string>`
 
 Returns the devices FCM token. This token can be used in the Firebase console to send messages to directly.
 
@@ -47,7 +47,7 @@ firebase.messaging().getToken()
   });
 ```
 
-### onTokenRefresh(listener: Function<string>)
+### onTokenRefresh(listener: `Function<string>`)
 
 On the event a devices FCM token is refreshed by Google, the new token is returned in a callback listener.
 
@@ -57,7 +57,7 @@ firebase.messaging().onTokenRefresh((token) => {
 });
 ```
 
-### onMessage(listener: Function<Object>)
+### onMessage(listener: `Function<Object>`)
 
 On a new message, the payload object is passed to the listener callback. This method is only triggered when the app is
 running. Use `getInitialNotification` for notifications which cause the app to open.
@@ -78,7 +78,7 @@ Create a local notification from the device itself.
 
 Schedule a local notification to be shown on the device.
 
-### getScheduledLocalNotifications(): Promise<Array>
+### getScheduledLocalNotifications(): `Promise<Array>`
 
 Returns an array of all currently scheduled notifications.
 
