@@ -249,7 +249,7 @@ Updates the user's email address. See Firebase docs for more information on secu
 
 ```javascript
 firebase.auth().currentUser
-  .updateUserEmail('foo@bar.com')
+  .updateEmail('foo@bar.com')
   .then()
   .catch();
 ```
