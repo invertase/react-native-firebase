@@ -22,10 +22,19 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
     NSString *code = @"storage/unknown";
     NSString *message = [error localizedDescription];
     
+    NSDictionary *userInfo = [error userInfo];
+    NSError *underlyingError = [userInfo objectForKey:NSUnderlyingErrorKey];
+    NSString *underlyingErrorDescription = [underlyingError localizedDescription];
+    
     switch (error.code) {
         case FIRStorageErrorCodeUnknown:
-            code = @"storage/unknown";
-            message = @"An unknown error has occurred.";
+            if ([underlyingErrorDescription isEqualToString:@"The operation couldn’t be completed. Permission denied"]) {
+                code = @"storage/invalid-device-file-path";
+                message = @"The specified device file path is invalid or is restricted.";
+            } else {
+                code = @"storage/unknown";
+                message = @"An unknown error has occurred.";
+            }
             break;
         case FIRStorageErrorCodeObjectNotFound:
             code = @"storage/object-not-found";
