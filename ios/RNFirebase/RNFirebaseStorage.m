@@ -378,15 +378,15 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
 
 - (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
     if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
-        return @"RUNNING";
+        return @"running";
     } else if (status == FIRStorageTaskStatusPause) {
-        return @"PAUSED";
+        return @"paused";
     } else if (status == FIRStorageTaskStatusSuccess) {
-        return @"SUCCESS";
+        return @"success";
     } else if (status == FIRStorageTaskStatusFailure) {
-        return @"ERROR";
+        return @"error";
     } else {
-        return @"UNKNOWN";
+        return @"unknown";
     }
 }
 
