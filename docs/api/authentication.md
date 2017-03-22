@@ -100,7 +100,7 @@ Sign in the user with a 3rd party credential provider. `credential` requires the
 
 ```javascript
 const credential = {
-  provider: 'facebook.com',
+  provider: 'facebook',
   token: '12345',
   secret: '6789',
 };
@@ -210,7 +210,7 @@ Reauthenticate the current user with credentials:
 
 ```javascript
 const credentials = {
-  provider: 'facebook.com',
+  provider: 'facebook',
   token: '12345',
   secret: '6789',
 };
@@ -248,7 +248,8 @@ firebase.auth().currentUser
 Updates the user's email address. See Firebase docs for more information on security & email validation. This will Promise reject is the user is anonymous.
 
 ```javascript
-firebase.auth().updateUserEmail('foo@bar.com')
+firebase.auth().currentUser
+  .updateEmail('foo@bar.com')
   .then()
   .catch();
 ```
@@ -258,7 +259,8 @@ firebase.auth().updateUserEmail('foo@bar.com')
 Important: this is a security sensitive operation that requires the user to have recently signed in. If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.  This will Promise reject is the user is anonymous.
 
 ```javascript
-firebase.auth().updatePassword('foobar1234')
+firebase.auth().currentUser
+  .updatePassword('foobar1234')
   .then()
   .catch();
 ```
@@ -275,7 +277,7 @@ Updates a user's profile data. Profile data should be an object of fields to upd
 ```
 
 ```javascript
-firebase.auth()
+firebase.auth().currentUser
   .updateProfile({
     displayName: 'Ari Lerner'
   })
