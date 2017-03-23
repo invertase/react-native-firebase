@@ -1,6 +1,6 @@
 # iOS Installation
 
-Setup the Firebase ios frameworks first; check out the relevant Firebase docs [here](https://firebase.google.com/docs/ios/setup#frameworks).
+Setup the Firebase ios frameworks first; check out the relevant Firebase docs [here](https://firebase.google.com/docs/ios/setup#frameworks) or see section `d` below.
 
 ## cocoapods
 
@@ -50,17 +50,17 @@ Since we're dependent upon cocoapods (or at least the Firebase libraries being a
 Using cocoapods is the easiest way to get started with this linking. Add or update a `Podfile` at `ios/Podfile` in your app with the following:
 
 ```ruby
-source 'https://github.com/CocoaPods/Specs.git'
-[
-  'Firebase/Core',
-  'Firebase/Auth',
-  'Firebase/Storage',
-  'Firebase/Database',
-  'Firebase/RemoteConfig',
-  'Firebase/Messaging'
-].each do |lib|
-  pod lib
-end
+# Required by RNFirebase
+pod 'Firebase/Auth'
+pod 'Firebase/Analytics'
+pod 'Firebase/AppIndexing'
+pod 'Firebase/Core'
+pod 'Firebase/Crash'
+pod 'Firebase/Database'
+pod 'Firebase/DynamicLinks'
+pod 'Firebase/Messaging'
+pod 'Firebase/RemoteConfig'
+pod 'Firebase/Storage'
 ```
 
 Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
