@@ -41,7 +41,7 @@ If you prefer not to use `react-native link`, we can manually link the package t
   2. `$(SRCROOT)/../node_modules/react-native/React`
   3. `${PROJECT_DIR}/../../../ios/Pods`
 
-![Recursive paths](https://cloud.githubusercontent.com/assets/21329063/24250094/f9c4811a-0fd5-11e7-9aac-760f1ee2fd8a.png)
+![Recursive paths](https://cloud.githubusercontent.com/assets/21329063/24250349/da91284c-0fd6-11e7-8328-6008e462039e.png)
 
 **D.** Setting up cocoapods
 
