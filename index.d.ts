@@ -1,44 +1,46 @@
-
 // Type definitions for React Native Firebase  v1.0.0-alpha7
 // Project: https://github.com/invertase/react-native-firebase
-// TypeScript Version: 2.1 
+// Definitions by: Tal <https://github.com/taljacobson>
+// TypeScript Version: 2.1
 
-// TODO definitions for storage, database methods, undocumented features
+declare module "react-native-firebase" {
 
-  class FireBase {
-      constructor(config?: configurationOptions)
-      analytics(): Analytics
-      auth(): Auth
-      on(type: string, handler: (msg:any) => void): any
-      /** mimics firebase Web SDK */
-      database(): any
-      /**RNFirebase mimics the Web Firebase SDK Storage, 
-       * whilst providing some iOS and Android specific functionality. 
-       */
-      storage(): any
-      /**
-       * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
-       * Assuming the installation instructions have been followed, FCM is ready to go.
-       * As the Firebase Web SDK has limited messaging functionality, 
-       * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
-       */
-      messaging(): Messaging
-      /**
-       * RNFirebase provides crash reporting for your app out of the box.
-       * Please note crashes do not appear in real-time on the console,
-       * they tend to take a number of hours to appear
-       * If you want to manually report a crash,
-       * such as a pre-caught exception this is possible by using the report method.
-       */
-      crash(): Crash
+  export default class FireBase {
+    constructor(config?: RNFirebase.configurationOptions)
+    analytics(): RNFirebase.Analytics
+    auth(): RNFirebase.Auth
+    on(type: string, handler: (msg: any) => void): any
+    /** mimics firebase Web SDK */
+    database(): any
+    /**RNFirebase mimics the Web Firebase SDK Storage, 
+     * whilst providing some iOS and Android specific functionality. 
+     */
+    storage(): any
+    /**
+     * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
+     * Assuming the installation instructions have been followed, FCM is ready to go.
+     * As the Firebase Web SDK has limited messaging functionality, 
+     * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
+     */
+    messaging(): RNFirebase.Messaging
+    /**
+     * RNFirebase provides crash reporting for your app out of the box.
+     * Please note crashes do not appear in real-time on the console,
+     * they tend to take a number of hours to appear
+     * If you want to manually report a crash,
+     * such as a pre-caught exception this is possible by using the report method.
+     */
+    crash(): RNFirebase.Crash
   }
 
-  /**
-   * pass custom options by passing an object with configuration options. 
-   * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
-   * That is, all of the following key/value pairs are optional if the native configuration is set.
-   */
-  interface configurationOptions {
+  namespace RNFirebase {
+
+    /**
+     * pass custom options by passing an object with configuration options. 
+     * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
+     * That is, all of the following key/value pairs are optional if the native configuration is set.
+     */
+    interface configurationOptions {
       /**
        *  default false	
        *  When set to true, RNFirebase will log messages to the console and fire debug events we can listen to in js
@@ -100,11 +102,11 @@
        * The secret iOS API key used for authenticating requests from our app
        */
       APIKey?: string
-  }
-  /**
-   * firebase Analytics
-   */
-  interface Analytics {
+    }
+    /**
+     * firebase Analytics
+     */
+    interface Analytics {
       /**Log a custom event with optional params. */
       logEvent(event: string, params?: Object): void
       /** Sets whether analytics collection is enabled for this app on this device. */
@@ -138,9 +140,9 @@
        * Sets a key/value pair of data on the current user.
        */
       setUserProperty(name: string, value: string): void
-  }
+    }
 
-  interface User {
+    interface User {
       /**
        * The user's display name (if available).
        */
@@ -212,16 +214,16 @@
        * Profile data should be an object of fields to update:
        */
       updateProfile(profile: Object): Promise<void>
-  }
+    }
 
-  /** 3rd party provider Credentials */
-  interface Credential {
+    /** 3rd party provider Credentials */
+    interface Credential {
       provider: string,
       token: string,
       secret: string
-  }
+    }
 
-  interface Auth {
+    interface Auth {
       /**
        * Returns the current Firebase authentication state.
        */
@@ -275,9 +277,9 @@
        */
       signOut(): Promise<void>
 
-  }
+    }
 
-  interface Messaging {
+    interface Messaging {
       /**
        * Subscribes the device to a topic.
        */
@@ -362,18 +364,18 @@
       REMOTE_NOTIFICATION_RESULT: Object
       WILL_PRESENT_RESULT: Object
       EVENT_TYPE: Object
-  }
+    }
 
-  interface RemoteMessage {
+    interface RemoteMessage {
       id: string,
       type: string,
       ttl?: number,
       sender: string,
       collapseKey?: string,
       data: Object,
-  }
+    }
 
-  interface Crash {
+    interface Crash {
       /** Logs a message that will appear in a subsequent crash report. */
       log(message: string): void
       /**
@@ -386,5 +388,8 @@
        * An Error object must be passed into the report method.
        */
       report(error: Error, maxStackSize: Number): void
+    }
   }
 
+
+}
