@@ -13,10 +13,9 @@ npm i react-native-firebase --save
 ```
 
 #### Platform specific setup guides:
-  * [ios](docs/installation.ios.md)
-  * [android](docs/installation.android.md)
+[![ios](https://a.fsdn.com/sd/topics/ios_64.png)](docs/installation.ios.md)   [![android](https://a.fsdn.com/sd/topics/android_64.png)](docs/installation.android.md)
 
-## RNFirebase vs Firebase Web SDK
+### RNFirebase vs Firebase Web SDK
 
 RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
@@ -26,15 +25,15 @@ RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS
 
 The native SDKs also allow us to hook into device events which are not possible with the web SDK, for example crash reporting, offline realtime database support, analyics and more!
 
-## Test app
+### Test app
 
 To help ensure changes and features work across both iOS & Android, we've developed an app specifically to test `react-native-firebase` against the [`firebase` web SDK](https://www.npmjs.com/package/firebase). Please see the [`react-native-firebase-tests`](https://github.com/invertase/react-native-firebase-tests) repository for more information.
 
-## Examples app
+### Examples app
 
 There's currently a work in progress [examples app](https://github.com/invertase/react-native-firebase-examples) which aims to demonstrate various real world use-case scenarios with React Native & Firebase. We welcome any new examples or updates to existing ones.
 
-## Documentation
+### Documentation
 
 RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Because of this, the documentation focuses around the installation, differences & best practices of this library. Please see the [Firebase Web SDK](https://firebase.google.com/docs/reference/js/) documentation for Firebase functionality.
 
@@ -49,7 +48,7 @@ RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Becaus
   * [Messaging](docs/api/cloud-messaging.md)
   * [Crash](docs/api/crash.md)
 
-## Contributing
+### Contributing
 
 We welcome any contribution to the repository. Please ensure your changes to the JavaScript code follow the styling guides controlled by ESlint. Changes to native code should be kept clean and follow the standard of existing code.
 
@@ -57,6 +56,6 @@ Changes to existing code should ensure all relevant tests on the test app pass. 
 
 **Project board:** https://github.com/invertase/react-native-firebase/projects
 
-## License
+### License
 
 - MIT
