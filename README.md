@@ -1,18 +1,24 @@
-# React Native Firebase
-
-RNFirebase makes using the latest [Firebase](http://firebase.com) with React Native straight-forward.
-
-```
-npm i react-native-firebase --save
-```
+# React Native Firebase<img align="left" src="http://i.imgur.com/01XQL0x.png">
 
 [![Gitter](https://badges.gitter.im/invertase/react-native-firebase.svg)](https://gitter.im/invertase/react-native-firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg)](https://www.npmjs.com/package/react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
 
-RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
+**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
+<hr>
+
+### Install
+```
+npm i react-native-firebase --save
+```
+
+#### Platform specific setup guides:
+  * [ios](docs/installation.ios.md)
+  * [android](docs/installation.android.md)
 
 ## RNFirebase vs Firebase Web SDK
+
+RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
 Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library will work with React Native, it is built for the web.
 
@@ -34,9 +40,6 @@ RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Becaus
 
 > If you find any discrepancies between the two libraries, please raise an issue or PR.
 
-* Installation
-  * [iOS](docs/installation.ios.md)
-  * [Android](docs/installation.android.md)
 * [Firebase Setup](docs/firebase-setup.md)
 * API
   * [Authentication](docs/api/authentication.md)
