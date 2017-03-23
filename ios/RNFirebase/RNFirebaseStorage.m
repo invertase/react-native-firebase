@@ -80,7 +80,12 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
             break;
     }
     
-    reject(code, message, error);
+    if (userInfo != nil && [userInfo objectForKey:@"data"]) {
+        // errors with 'data' are unserializable - it breaks react so we send nil instead
+        reject(code, message, nil);
+    } else {
+        reject(code, message, error);
+    }
 }
 
 
@@ -367,7 +372,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
     return @{
              @"bytesTransferred": @(task.progress.completedUnitCount),
              @"ref": task.reference.fullPath,
-             @"status": [self getTaskStatus:task.status],
+             @"state": [self getTaskStatus:task.status],
              @"totalBytes": @(task.progress.totalUnitCount)
              };
 }
