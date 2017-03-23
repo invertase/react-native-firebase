@@ -1,6 +1,6 @@
 # iOS Installation
 
-If you don't want to use cocoapods, you don't need to use it! Just make sure you link the Firebase libraries in your project manually. For more information, check out the relevant Firebase docs at [https://firebase.google.com/docs/ios/setup#frameworks](https://firebase.google.com/docs/ios/setup#frameworks).
+Setup the Firebase ios frameworks first; check out the relevant Firebase docs [here](https://firebase.google.com/docs/ios/setup#frameworks).
 
 ## cocoapods
 
