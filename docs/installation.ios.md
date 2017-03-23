@@ -1,10 +1,10 @@
-#iOS Installation
+# iOS Installation
 
 If you don't want to use cocoapods, you don't need to use it! Just make sure you link the Firebase libraries in your project manually. For more information, check out the relevant Firebase docs at [https://firebase.google.com/docs/ios/setup#frameworks](https://firebase.google.com/docs/ios/setup#frameworks).
 
 ## cocoapods
 
-Unfortunately, due to AppStore restrictions, we currently do _not_ package Firebase libraries in with Firebase. However, the good news is we've automated the process (with many thanks to the Auth0 team for inspiration) of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`.
+We've automated the process of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`.
 
 **Remember to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on**.
 
