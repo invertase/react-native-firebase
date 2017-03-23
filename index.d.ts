@@ -7,22 +7,22 @@ declare module "react-native-firebase" {
 
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
-    analytics(): RNFirebase.Analytics
-    auth(): RNFirebase.Auth
-    on(type: string, handler: (msg: any) => void): any
+    analytics(): RNFirebase.Analytics;
+    auth(): RNFirebase.Auth;
+    on(type: string, handler: (msg: any) => void): any;
     /** mimics firebase Web SDK */
-    database(): any
+    database(): RNFirebase.database.Database;
     /**RNFirebase mimics the Web Firebase SDK Storage, 
      * whilst providing some iOS and Android specific functionality. 
      */
-    storage(): any
+    storage(): RNFirebase.storage.Storage;
     /**
      * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
      * Assuming the installation instructions have been followed, FCM is ready to go.
      * As the Firebase Web SDK has limited messaging functionality, 
      * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
      */
-    messaging(): RNFirebase.Messaging
+    messaging(): RNFirebase.Messaging;
     /**
      * RNFirebase provides crash reporting for your app out of the box.
      * Please note crashes do not appear in real-time on the console,
@@ -30,11 +30,253 @@ declare module "react-native-firebase" {
      * If you want to manually report a crash,
      * such as a pre-caught exception this is possible by using the report method.
      */
-    crash(): RNFirebase.Crash
+    crash(): RNFirebase.Crash;
   }
 
   namespace RNFirebase {
+    namespace storage {
 
+      interface StorageTask<T> extends Promise<T> {
+        on(
+          event: TaskEvent,
+          nextOrObserver: (snapshot: any) => any,
+          error: (error: Error) => any,
+          complete: (complete: any) => any
+        ): any
+        /**
+         * is not currently supported by react-native-firebase
+         */
+        pause(): void
+        /**
+         * is not currently supported by react-native-firebase
+         */
+        resume(): void
+        /**
+         * is not currently supported by react-native-firebase
+         */
+        cancel(): void
+
+      }
+
+      interface RNStorage extends Reference {
+        /**
+         *  Downloads a reference to the device
+         *  @param {String} filePath Where to store the file
+         *  @return {Promise}
+         * */
+        downloadFile(filePath: string): any;
+        /**
+         * Upload a file path
+         * @returns {Promise}
+         */
+        putFile(filePath: Object, metadata?: Object): StorageTask<Object>;
+      }
+
+      interface Storage {
+        maxOperationRetryTime: number;
+        maxUploadRetryTime: number;
+        ref(path?: string): storage.RNStorage;
+        refFromURL(url: string): storage.RNStorage;
+        setMaxOperationRetryTime(time: number): any;
+        setMaxUploadRetryTime(time: number): any;
+      }
+
+      interface Reference {
+        bucket: string;
+        child(path: string): storage.Reference;
+        delete(): Promise<any>;
+        fullPath: string;
+        getDownloadURL(): Promise<any>;
+        getMetadata(): Promise<any>;
+        name: string;
+        parent: storage.Reference | null;
+        put(data: any | Uint8Array | ArrayBuffer,
+          metadata?: storage.UploadMetadata):
+          storage.UploadTask;
+        putString(
+          data: string, format?: storage.StringFormat,
+          metadata?: storage.UploadMetadata):
+          storage.UploadTask;
+        root: storage.Reference;
+        storage: storage.Storage;
+        toString(): string;
+        updateMetadata(metadata: storage.SettableMetadata):
+          Promise<any>;
+      }
+      interface UploadMetadata extends storage.SettableMetadata {
+        md5Hash?: string | null;
+      }
+      interface SettableMetadata {
+        cacheControl?: string | null;
+        contentDisposition?: string | null;
+        contentEncoding?: string | null;
+        contentLanguage?: string | null;
+        contentType?: string | null;
+        customMetadata?: { [/* warning: coerced from ? */ key: string]: string } | null;
+      }
+
+      type StringFormat = string;
+      var StringFormat: {
+        BASE64: StringFormat,
+        BASE64URL: StringFormat,
+        DATA_URL: StringFormat,
+        RAW: StringFormat,
+      }
+
+      interface UploadTask {
+        cancel(): boolean;
+        catch(onRejected: (a: Error) => any): Promise<any>;
+        on(event: storage.TaskEvent, nextOrObserver?: null | Object,
+          error?: ((a: Error) => any) | null, complete?: (() => any) | null): Function;
+        pause(): boolean;
+        resume(): boolean;
+        snapshot: storage.UploadTaskSnapshot;
+        then(
+          onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
+          onRejected?: ((a: Error) => any) | null): Promise<any>;
+      }
+
+      interface UploadTaskSnapshot {
+        bytesTransferred: number;
+        downloadURL: string | null;
+        metadata: storage.FullMetadata;
+        ref: storage.Reference;
+        state: storage.TaskState;
+        task: storage.UploadTask;
+        totalBytes: number;
+      }
+
+      interface FullMetadata extends storage.UploadMetadata {
+        bucket: string;
+        downloadURLs: string[];
+        fullPath: string;
+        generation: string;
+        metageneration: string;
+        name: string;
+        size: number;
+        timeCreated: string;
+        updated: string;
+      }
+
+      type TaskEvent = string;
+      var TaskEvent: {
+        STATE_CHANGED: TaskEvent,
+      };
+
+      type TaskState = string;
+      var TaskState: {
+        CANCELED: TaskState,
+        ERROR: TaskState,
+        PAUSED: TaskState,
+        RUNNING: TaskState,
+        SUCCESS: TaskState,
+      };
+    }
+
+
+    namespace database {
+
+
+      interface Database {
+        /**
+         * Returns a new firebase reference instance
+         * */
+        ref(path: string): RnReference
+        /**
+         * register listener 
+         */
+        on(path: string, modifiersString: string, modifiers: Array<string>, eventName: string, cb: () => void, errorCb: () => void): any
+        /**
+         * unregister listener 
+         */
+        off(path: string, modifiersString: string, eventName?: string, origCB?: () => void): any
+        /**
+         * Removes all event handlers and their native subscriptions
+         */
+        cleanup(): Promise<any>
+        /**
+         * connect to firebase backend
+         */
+        goOnline(): void
+        /**
+         * disconnect to firebase backend
+         */
+        goOffline(): void
+      }
+
+      interface RnReference extends Reference {
+        keepSynced(bool: boolean): any
+        filter(name: string, value: any, key?: string): any
+      }
+
+      interface Query {
+        endAt(value: number | string | boolean | null, key?: string): database.Query;
+        equalTo(value: number | string | boolean | null, key?: string): database.Query;
+        isEqual(other: database.Query | null): boolean;
+        limitToFirst(limit: number): database.Query;
+        limitToLast(limit: number): database.Query;
+        off(eventType?: string,
+          callback?: (a: database.DataSnapshot, b?: string | null) => any,
+          context?: Object | null): any;
+        on(eventType: string,
+          callback: (a: database.DataSnapshot | null, b?: string) => any,
+          cancelCallbackOrContext?: Object | null, context?: Object | null):
+          (a: database.DataSnapshot | null, b?: string) => any;
+        once(
+          eventType: string,
+          successCallback?:
+            (a: database.DataSnapshot, b?: string) => any,
+          failureCallbackOrContext?: Object | null,
+          context?: Object | null): Promise<any>;
+        orderByChild(path: string): database.Query;
+        orderByKey(): database.Query;
+        orderByPriority(): database.Query;
+        orderByValue(): database.Query;
+        ref: database.Reference;
+        startAt(value: number | string | boolean | null, key?: string): database.Query;
+        toJSON(): Object;
+        toString(): string;
+      }
+
+      interface DataSnapshot {
+        child(path: string): database.DataSnapshot;
+        exists(): boolean;
+        exportVal(): any;
+        forEach(action: (a: database.DataSnapshot) => boolean): boolean;
+        getPriority(): string | number | null;
+        hasChild(path: string): boolean;
+        hasChildren(): boolean;
+        key: string | null;
+        numChildren(): number;
+        ref: database.Reference;
+        toJSON(): Object | null;
+        val(): any;
+      }
+      
+      interface Reference extends database.Query {
+        child(path: string): database.Reference;
+        key: string | null;
+        onDisconnect(): any;
+        parent: database.Reference | null;
+        push(value?: any, onComplete?: (a: Error | null) => any): any
+        remove(onComplete?: (a: Error | null) => any): Promise<any>;
+        root: database.Reference;
+        set(value: any, onComplete?: (a: Error | null) => any): Promise<any>;
+        setPriority(
+          priority: string | number | null,
+          onComplete: (a: Error | null) => any): Promise<any>;
+        setWithPriority(
+          newVal: any, newPriority: string | number | null,
+          onComplete?: (a: Error | null) => any): Promise<any>;
+        transaction(
+          transactionUpdate: (a: any) => any,
+          onComplete?:
+            (a: Error | null, b: boolean,
+              c: database.DataSnapshot | null) => any,
+          applyLocally?: boolean): Promise<any>;
+        update(values: Object, onComplete?: (a: Error | null) => any): Promise<any>;
+      }
+    }
     /**
      * pass custom options by passing an object with configuration options. 
      * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
@@ -276,7 +518,6 @@ declare module "react-native-firebase" {
        * given a confirmation code and new password.
        */
       signOut(): Promise<void>
-
     }
 
     interface Messaging {
@@ -390,6 +631,4 @@ declare module "react-native-firebase" {
       report(error: Error, maxStackSize: Number): void
     }
   }
-
-
 }
