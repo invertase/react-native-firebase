@@ -29,12 +29,11 @@ cd ios && pod update --verbose
 If you prefer not to use `react-native link`, we can manually link the package together with the following steps, after `npm install`:
 
 **A.** In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
-
-![Add library to project](http://d.pr/i/2gEH.png)
+![Firebase.xcodeproj add to files](https://cloud.githubusercontent.com/assets/5347038/24249673/0fccdbec-0fcc-11e7-83eb-c058f8898525.png)
 
 **B.** Add the `node_modules/react-native-firebase/ios/Firebase.xcodeproj`
 
-![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
+![Firebase.xcodeproj in Libraries listing](https://cloud.githubusercontent.com/assets/21329063/24249440/9494e19c-0fd3-11e7-95c0-c2baa85092e8.png)
 
 **C.** Ensure that the `Build Settings` of the `RNFirebase.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
 
