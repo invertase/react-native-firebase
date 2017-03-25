@@ -10,6 +10,8 @@
 }
 
 @property NSMutableDictionary *dbReferences;
+@property NSMutableDictionary *transactions;
+@property dispatch_queue_t transactionQueue;
 
 @end
 
