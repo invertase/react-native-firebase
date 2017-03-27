@@ -31,8 +31,8 @@ Then you can run `(cd ios && pod install)` to get the pods installed.
 
 You need to add the following to the top of `ios/AppDelegate.m`:
 
-`#import <Firebase.h>
+`#import <Firebase.h>`
 
 and this to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method:
 
-`[FIRApp configure];
+`[FIRApp configure];`
