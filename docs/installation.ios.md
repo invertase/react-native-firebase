@@ -29,7 +29,7 @@ Then you can run `(cd ios && pod install)` to get the pods installed.
 
 ## AppDelegate.m
 
-You need to add the following to the top of `ios/AppDelegate.m`:
+You need to add the following to the top of `ios/[YOUR APP NAME]]/AppDelegate.m`:
 
 `#import <Firebase.h>`
 
