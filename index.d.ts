@@ -34,13 +34,16 @@ declare module "react-native-firebase" {
   }
 
   namespace RNFirebase {
+    interface RnError extends Error {
+      code?: string;
+    }
     namespace storage {
 
       interface StorageTask<T> extends Promise<T> {
         on(
           event: TaskEvent,
           nextOrObserver: (snapshot: any) => any,
-          error: (error: Error) => any,
+          error: (error: RnError) => any,
           complete: (complete: any) => any
         ): any
         /**
@@ -125,15 +128,15 @@ declare module "react-native-firebase" {
 
       interface UploadTask {
         cancel(): boolean;
-        catch(onRejected: (a: Error) => any): Promise<any>;
+        catch(onRejected: (a: RnError) => any): Promise<any>;
         on(event: storage.TaskEvent, nextOrObserver?: null | Object,
-          error?: ((a: Error) => any) | null, complete?: (() => any) | null): Function;
+          error?: ((a: RnError) => any) | null, complete?: (() => any) | null): Function;
         pause(): boolean;
         resume(): boolean;
         snapshot: storage.UploadTaskSnapshot;
         then(
           onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
-          onRejected?: ((a: Error) => any) | null): Promise<any>;
+          onRejected?: ((a: RnError) => any) | null): Promise<any>;
       }
 
       interface UploadTaskSnapshot {
@@ -252,29 +255,29 @@ declare module "react-native-firebase" {
         toJSON(): Object | null;
         val(): any;
       }
-      
+
       interface Reference extends database.Query {
         child(path: string): database.Reference;
         key: string | null;
         onDisconnect(): any;
         parent: database.Reference | null;
-        push(value?: any, onComplete?: (a: Error | null) => any): any
-        remove(onComplete?: (a: Error | null) => any): Promise<any>;
+        push(value?: any, onComplete?: (a: RnError | null) => any): any
+        remove(onComplete?: (a: RnError | null) => any): Promise<any>;
         root: database.Reference;
-        set(value: any, onComplete?: (a: Error | null) => any): Promise<any>;
+        set(value: any, onComplete?: (a: RnError | null) => any): Promise<any>;
         setPriority(
           priority: string | number | null,
-          onComplete: (a: Error | null) => any): Promise<any>;
+          onComplete: (a: RnError | null) => any): Promise<any>;
         setWithPriority(
           newVal: any, newPriority: string | number | null,
-          onComplete?: (a: Error | null) => any): Promise<any>;
+          onComplete?: (a: RnError | null) => any): Promise<any>;
         transaction(
           transactionUpdate: (a: any) => any,
           onComplete?:
-            (a: Error | null, b: boolean,
+            (a: RnError | null, b: boolean,
               c: database.DataSnapshot | null) => any,
           applyLocally?: boolean): Promise<any>;
-        update(values: Object, onComplete?: (a: Error | null) => any): Promise<any>;
+        update(values: Object, onComplete?: (a: RnError | null) => any): Promise<any>;
       }
     }
     /**
@@ -388,7 +391,7 @@ declare module "react-native-firebase" {
       /**
        * The user's display name (if available).
        */
-      isplayName: string | null
+      displayName: string | null
       /**
        * - The user's email address (if available).
        */
@@ -479,7 +482,9 @@ declare module "react-native-firebase" {
        * This method returns a unsubscribe function to stop listening to events. 
        * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
        */
-      onAuthStateChanged(event: Function): Function
+      onAuthStateChanged(
+        nextOrObserver: Object, error?: (a: RnError) => any,
+        completed?: () => any): () => any;
       /**
        * We can create a user by calling the createUserWithEmailAndPassword() function. 
        * The method accepts two parameters, an email and a password.
@@ -628,7 +633,7 @@ declare module "react-native-firebase" {
        * Files a crash report, along with any previous logs to Firebase. 
        * An Error object must be passed into the report method.
        */
-      report(error: Error, maxStackSize: Number): void
+      report(error: RnError, maxStackSize: Number): void
     }
   }
 }
