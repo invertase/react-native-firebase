@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.ReadableArray;
 import com.google.firebase.database.DataSnapshot;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.google.firebase.database.MutableData;
 
 @SuppressWarnings("WeakerAccess")
 public class Utils {
@@ -94,7 +95,7 @@ public class Utils {
     if (!dataSnapshot.hasChildren()) {
       mapPutValue("value", dataSnapshot.getValue(), snapshot);
     } else {
-      Object value = Utils.castSnapshotValue(dataSnapshot);
+      Object value = Utils.castValue(dataSnapshot);
       if (value instanceof WritableNativeArray) {
         snapshot.putArray("value", (WritableArray) value);
       } else {
@@ -115,11 +116,41 @@ public class Utils {
 
   /**
    *
+   * @param dataSnapshot
+   * @return
+   */
+  public static WritableMap snapshotToMap(DataSnapshot dataSnapshot) {
+    WritableMap snapshot = Arguments.createMap();
+
+    snapshot.putString("key", dataSnapshot.getKey());
+    snapshot.putBoolean("exists", dataSnapshot.exists());
+    snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
+    snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+
+    if (!dataSnapshot.hasChildren()) {
+      mapPutValue("value", dataSnapshot.getValue(), snapshot);
+    } else {
+      Object value = Utils.castValue(dataSnapshot);
+      if (value instanceof WritableNativeArray) {
+        snapshot.putArray("value", (WritableArray) value);
+      } else {
+        snapshot.putMap("value", (WritableMap) value);
+      }
+    }
+
+    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
+    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
+
+    return snapshot;
+  }
+
+  /**
+   *
    * @param snapshot
    * @param <Any>
    * @return
    */
-  public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
+  public static <Any> Any castValue(DataSnapshot snapshot) {
     if (snapshot.hasChildren()) {
       if (isArray(snapshot)) {
         return (Any) buildArray(snapshot);
@@ -135,6 +166,37 @@ public class Utils {
           case "java.lang.Double":
           case "java.lang.String":
             return (Any) (snapshot.getValue());
+          default:
+            Log.w(TAG, "Invalid type: " + type);
+            return null;
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
+   *
+   * @param mutableData
+   * @param <Any>
+   * @return
+   */
+  public static <Any> Any castValue(MutableData mutableData) {
+    if (mutableData.hasChildren()) {
+      if (isArray(mutableData)) {
+        return (Any) buildArray(mutableData);
+      } else {
+        return (Any) buildMap(mutableData);
+      }
+    } else {
+      if (mutableData.getValue() != null) {
+        String type = mutableData.getValue().getClass().getName();
+        switch (type) {
+          case "java.lang.Boolean":
+          case "java.lang.Long":
+          case "java.lang.Double":
+          case "java.lang.String":
+            return (Any) (mutableData.getValue());
           default:
             Log.w(TAG, "Invalid type: " + type);
             return null;
@@ -168,6 +230,28 @@ public class Utils {
 
   /**
    *
+   * @param mutableData
+   * @return
+   */
+  private static boolean isArray(MutableData mutableData) {
+    long expectedKey = 0;
+    for (MutableData child : mutableData.getChildren()) {
+      try {
+        long key = Long.parseLong(child.getKey());
+        if (key == expectedKey) {
+          expectedKey++;
+        } else {
+          return false;
+        }
+      } catch (NumberFormatException ex) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   *
    * @param snapshot
    * @param <Any>
    * @return
@@ -175,7 +259,45 @@ public class Utils {
   private static <Any> WritableArray buildArray(DataSnapshot snapshot) {
     WritableArray array = Arguments.createArray();
     for (DataSnapshot child : snapshot.getChildren()) {
-      Any castedChild = castSnapshotValue(child);
+      Any castedChild = castValue(child);
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          array.pushBoolean((Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) castedChild;
+          array.pushDouble((double) longVal);
+          break;
+        case "java.lang.Double":
+          array.pushDouble((Double) castedChild);
+          break;
+        case "java.lang.String":
+          array.pushString((String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          array.pushMap((WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          array.pushArray((WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return array;
+  }
+
+  /**
+   *
+   * @param mutableData
+   * @param <Any>
+   * @return
+   */
+  private static <Any> WritableArray buildArray(MutableData mutableData) {
+    WritableArray array = Arguments.createArray();
+    for (MutableData child : mutableData.getChildren()) {
+      Any castedChild = castValue(child);
       switch (castedChild.getClass().getName()) {
         case "java.lang.Boolean":
           array.pushBoolean((Boolean) castedChild);
@@ -213,7 +335,45 @@ public class Utils {
   private static <Any> WritableMap buildMap(DataSnapshot snapshot) {
     WritableMap map = Arguments.createMap();
     for (DataSnapshot child : snapshot.getChildren()) {
-      Any castedChild = castSnapshotValue(child);
+      Any castedChild = castValue(child);
+
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          map.putBoolean(child.getKey(), (Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          map.putDouble(child.getKey(), (double) ((Long) castedChild));
+          break;
+        case "java.lang.Double":
+          map.putDouble(child.getKey(), (Double) castedChild);
+          break;
+        case "java.lang.String":
+          map.putString(child.getKey(), (String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          map.putMap(child.getKey(), (WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          map.putArray(child.getKey(), (WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return map;
+  }
+
+  /**
+   *
+   * @param mutableData
+   * @param <Any>
+   * @return
+   */
+  private static <Any> WritableMap buildMap(MutableData mutableData) {
+    WritableMap map = Arguments.createMap();
+    for (MutableData child : mutableData.getChildren()) {
+      Any castedChild = castValue(child);
 
       switch (castedChild.getClass().getName()) {
         case "java.lang.Boolean":

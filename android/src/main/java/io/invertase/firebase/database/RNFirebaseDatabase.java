@@ -1,15 +1,16 @@
 package io.invertase.firebase.database;
 
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
-
-import java.util.HashMap;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactMethod;
@@ -19,18 +20,22 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
+import com.facebook.react.bridge.WritableNativeArray;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
-
+import com.google.firebase.database.Transaction;
 
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private HashMap<String, RNFirebaseDatabaseReference> mDBListeners = new HashMap<String, RNFirebaseDatabaseReference>();
+  private HashMap<String, RNFirebaseDatabaseReference> mDBListeners = new HashMap<>();
+  private HashMap<String, RNFirebaseTransactionHandler> mTransactionHandlers = new HashMap<>();
   private FirebaseDatabase mFirebaseDatabase;
 
   public RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -170,6 +175,109 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * @param path
+   * @param id
+   * @param applyLocally
+   */
+  @ReactMethod
+  public void startTransaction(final String path, final String id, final Boolean applyLocally) {
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        DatabaseReference transactionRef = FirebaseDatabase.getInstance().getReference(path);
+
+        transactionRef.runTransaction(new Transaction.Handler() {
+          @Override
+          public Transaction.Result doTransaction(MutableData mutableData) {
+            final WritableMap updatesMap = Arguments.createMap();
+
+            updatesMap.putString("id", id);
+            updatesMap.putString("type", "update");
+
+            if (!mutableData.hasChildren()) {
+              Utils.mapPutValue("value", mutableData.getValue(), updatesMap);
+            } else {
+              Object value = Utils.castValue(mutableData);
+              if (value instanceof WritableNativeArray) {
+                updatesMap.putArray("value", (WritableArray) value);
+              } else {
+                updatesMap.putMap("value", (WritableMap) value);
+              }
+            }
+
+            RNFirebaseTransactionHandler rnFirebaseTransactionHandler = new RNFirebaseTransactionHandler();
+            mTransactionHandlers.put(id, rnFirebaseTransactionHandler);
+
+            AsyncTask.execute(new Runnable() {
+              @Override
+              public void run() {
+                Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", updatesMap);
+              }
+            });
+
+            try {
+              rnFirebaseTransactionHandler.await();
+            } catch (InterruptedException e) {
+              rnFirebaseTransactionHandler.interrupted = true;
+              return Transaction.abort();
+            }
+
+            if (rnFirebaseTransactionHandler.abort) {
+              return Transaction.abort();
+            }
+
+            mutableData.setValue(rnFirebaseTransactionHandler.value);
+            return Transaction.success(mutableData);
+          }
+
+          @Override
+          public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+            final WritableMap updatesMap = Arguments.createMap();
+            updatesMap.putString("id", id);
+
+            RNFirebaseTransactionHandler rnFirebaseTransactionHandler = mTransactionHandlers.get(id);
+
+            // TODO error conversion util for database to create web sdk codes based on DatabaseError
+            if (databaseError != null) {
+              updatesMap.putString("type", "error");
+
+              updatesMap.putInt("code", databaseError.getCode());
+              updatesMap.putString("message", databaseError.getMessage());
+            } else if (rnFirebaseTransactionHandler.interrupted) {
+              updatesMap.putString("type", "error");
+
+              updatesMap.putInt("code", 666);
+              updatesMap.putString("message", "RNFirebase transaction was interrupted, aborting.");
+            } else {
+              updatesMap.putString("type", "complete");
+              updatesMap.putBoolean("committed", committed);
+              updatesMap.putMap("snapshot", Utils.snapshotToMap(dataSnapshot));
+            }
+
+            Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", updatesMap);
+            mTransactionHandlers.remove(id);
+          }
+        }, applyLocally);
+      }
+    });
+  }
+
+  /**
+   * 
+   * @param id
+   * @param updates
+   */
+  @ReactMethod
+  public void tryCommitTransaction(final String id, final ReadableMap updates) {
+    Map<String, Object> updatesReturned = Utils.recursivelyDeconstructReadableMap(updates);
+    RNFirebaseTransactionHandler rnFirebaseTransactionHandler = mTransactionHandlers.get(id);
+
+    if (rnFirebaseTransactionHandler != null) {
+      rnFirebaseTransactionHandler.signalUpdateReceived(updatesReturned);
+    }
+  }
+
   @ReactMethod
   public void on(final String path, final String modifiersString, final ReadableArray modifiersArray, final String eventName, final Callback callback) {
     RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
@@ -187,11 +295,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void once(final String path,
-                   final String modifiersString,
-                   final ReadableArray modifiersArray,
-                   final String eventName,
-                   final Callback callback) {
+  public void once(final String path, final String modifiersString, final ReadableArray modifiersArray, final String eventName, final Callback callback) {
     RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
     ref.addOnceValueEventListener(callback);
   }
@@ -336,9 +440,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
-  private RNFirebaseDatabaseReference getDBHandle(final String path,
-                                                  final ReadableArray modifiersArray,
-                                                  final String modifiersString) {
+  private RNFirebaseDatabaseReference getDBHandle(final String path, final ReadableArray modifiersArray, final String modifiersString) {
     String key = this.getDBListenerKey(path, modifiersString);
     RNFirebaseDatabaseReference r = mDBListeners.get(key);
 

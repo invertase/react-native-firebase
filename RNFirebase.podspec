@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/mikediarmid'
   s.platform            = :ios, "8.0"
-  s.header_dir          = 'ios/RNFirebase'
   s.preserve_paths      = 'README.md', 'package.json', '*.js'
   s.source_files        = 'ios/RNFirebase/*.{h,m}'
   s.dependency          'React'
