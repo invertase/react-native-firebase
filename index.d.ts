@@ -7,8 +7,9 @@ declare module "react-native-firebase" {
 
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
+    log: any
     analytics(): RNFirebase.Analytics;
-    auth(): RNFirebase.Auth;
+    auth(): RNFirebase.auth.Auth;
     on(type: string, handler: (msg: any) => void): any;
     /** mimics firebase Web SDK */
     database(): RNFirebase.database.Database;
@@ -22,7 +23,7 @@ declare module "react-native-firebase" {
      * As the Firebase Web SDK has limited messaging functionality, 
      * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
      */
-    messaging(): RNFirebase.Messaging;
+    messaging(): RNFirebase.messaging.Messaging;
     /**
      * RNFirebase provides crash reporting for your app out of the box.
      * Please note crashes do not appear in real-time on the console,
@@ -30,13 +31,93 @@ declare module "react-native-firebase" {
      * If you want to manually report a crash,
      * such as a pre-caught exception this is possible by using the report method.
      */
-    crash(): RNFirebase.Crash;
+    crash(): RNFirebase.crash.Crash;
+
+    googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
+    static initializeApp(options?: any, name?: string): FireBase
   }
 
   namespace RNFirebase {
     interface RnError extends Error {
       code?: string;
     }
+
+    type GoogleApiAvailabilityType = {
+      status: number,
+      isAvailable: boolean,
+      isUserResolvableError?: boolean,
+      error?: string
+    };
+
+    /**
+ * pass custom options by passing an object with configuration options. 
+ * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
+ * That is, all of the following key/value pairs are optional if the native configuration is set.
+ */
+    interface configurationOptions {
+      /**
+       *  default false	
+       *  When set to true, RNFirebase will log messages to the console and fire debug events we can listen to in js
+       * @usage 
+       * firebase.on('debug', msg => console.log('Received debug message', msg))
+       */
+      debug?: boolean;
+      /**
+       * default false	
+       * When set to true, database persistence will be enabled.
+       */
+      persistence?: boolean;
+      /**
+       * Default from app [NSBundle mainBundle]	The bundle ID for the app to be bundled with
+       */
+      bundleID?: string;
+      /**
+       * defualt ""	
+       * The Google App ID that is used to uniquely identify an instance of an app.
+       */
+      googleAppID?: string;
+      /**
+       * deufalt ""	
+       * The database root (i.e. https://my-app.firebaseio.com)
+       */
+      databaseURL?: string;
+      /**
+       * defualt ""	
+       * URL scheme to set up durable deep link service
+       */
+      deepLinkURLScheme?: string;
+      /**
+       * defualt "" 
+       * The Google Cloud storage bucket name
+       */
+      storageBucket?: string;
+      /**
+       * default ""	
+       * The Android client ID used in Google AppInvite when an iOS app has it's android version
+       */
+      androidClientID?: string;
+      /**
+       * default	""	
+       * The Project number from the Google Developer's console used to configure Google Cloud Messaging
+       */
+      GCMSenderID?: string;
+      /**
+       * default ""	
+       * The tracking ID for Google Analytics
+       */
+      trackingID?: string;
+      /**
+       * default ""	
+       * The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google
+       */
+      clientID?: string;
+      /**
+       * defualt ""	
+       * The secret iOS API key used for authenticating requests from our app
+       */
+      APIKey?: string
+    }
+
     namespace storage {
 
       interface StorageTask<T> extends Promise<T> {
@@ -67,12 +148,13 @@ declare module "react-native-firebase" {
          *  @param {String} filePath Where to store the file
          *  @return {Promise}
          * */
-        downloadFile(filePath: string): any;
+        downloadFile(filePath: string): StorageTask<any>;
         /**
          * Upload a file path
          * @returns {Promise}
          */
-        putFile(filePath: Object, metadata?: Object): StorageTask<Object>;
+        putFile(filePath: string, metadata?: any): StorageTask<any>;
+        setMaxDownloadRetryTime(time: number): void
       }
 
       interface Storage {
@@ -281,74 +363,6 @@ declare module "react-native-firebase" {
       }
     }
     /**
-     * pass custom options by passing an object with configuration options. 
-     * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
-     * That is, all of the following key/value pairs are optional if the native configuration is set.
-     */
-    interface configurationOptions {
-      /**
-       *  default false	
-       *  When set to true, RNFirebase will log messages to the console and fire debug events we can listen to in js
-       * @usage 
-       * firebase.on('debug', msg => console.log('Received debug message', msg))
-       */
-      debug?: boolean;
-      /**
-       * default false	
-       * When set to true, database persistence will be enabled.
-       */
-      persistence?: boolean;
-      /**
-       * Default from app [NSBundle mainBundle]	The bundle ID for the app to be bundled with
-       */
-      bundleID?: string;
-      /**
-       * defualt ""	
-       * The Google App ID that is used to uniquely identify an instance of an app.
-       */
-      googleAppID?: string;
-      /**
-       * deufalt ""	
-       * The database root (i.e. https://my-app.firebaseio.com)
-       */
-      databaseURL?: string;
-      /**
-       * defualt ""	
-       * URL scheme to set up durable deep link service
-       */
-      deepLinkURLScheme?: string;
-      /**
-       * defualt "" 
-       * The Google Cloud storage bucket name
-       */
-      storageBucket?: string;
-      /**
-       * default ""	
-       * The Android client ID used in Google AppInvite when an iOS app has it's android version
-       */
-      androidClientID?: string;
-      /**
-       * default	""	
-       * The Project number from the Google Developer's console used to configure Google Cloud Messaging
-       */
-      GCMSenderID?: string;
-      /**
-       * default ""	
-       * The tracking ID for Google Analytics
-       */
-      trackingID?: string;
-      /**
-       * default ""	
-       * The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google
-       */
-      clientID?: string;
-      /**
-       * defualt ""	
-       * The secret iOS API key used for authenticating requests from our app
-       */
-      APIKey?: string
-    }
-    /**
      * firebase Analytics
      */
     interface Analytics {
@@ -411,7 +425,7 @@ declare module "react-native-firebase" {
       /**
        * - Additional provider-specific information about the user.
        */
-      providerData: Object | null
+      providerData: any | null
       /**
        *  - The authentication provider ID for the current user.
        *  For example, 'facebook.com', or 'google.com'.
@@ -467,173 +481,180 @@ declare module "react-native-firebase" {
       token: string,
       secret: string
     }
+    namespace auth {
 
-    interface Auth {
-      /**
-       * Returns the current Firebase authentication state.
-       */
-      authenticated: boolean;
-      /**
-       * Returns the currently signed-in user (or null). See the User class documentation for further usage.
-       */
-      currentUser: User | null
-      /**
-       * Listen for changes in the users auth state (logging in and out). 
-       * This method returns a unsubscribe function to stop listening to events. 
-       * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
-       */
-      onAuthStateChanged(
-        nextOrObserver: Object, error?: (a: RnError) => any,
-        completed?: () => any): () => any;
-      /**
-       * We can create a user by calling the createUserWithEmailAndPassword() function. 
-       * The method accepts two parameters, an email and a password.
-       */
-      createUserWithEmailAndPassword(email: string, password: string): Promise<User>
-      /**
-       * To sign a user in with their email and password, use the signInWithEmailAndPassword() function. 
-       * It accepts two parameters, the user's email and password:
-       */
-      signInWithEmailAndPassword(email: string, password: string): Promise<User>
-      /**
-       * Sign an anonymous user. 
-       * If the user has already signed in, that user will be returned
-       */
-      signInAnonymously(): Promise<User>
-      /**
-       * Sign in the user with a 3rd party credential provider. 
-       * credential requires the following properties:
-       */
-      signInWithCredential(credential: Credential): Promise<User>
-      /**
-       * Sign a user in with a self-signed JWT token. 
-       * To sign a user using a self-signed custom token, 
-       * use the signInWithCustomToken() function. 
-       * It accepts one parameter, the custom token:
-       */
-      signInWithCustomToken(token: string): Promise<User>
-      /**
-       * Sends a password reset email to the given email address. 
-       * Unlike the web SDK, 
-       * the email will contain a password reset link rather than a code.
-       */
-      sendPasswordResetEmail(email: string): Promise<void>
-      /**
-       * Completes the password reset process, 
-       * given a confirmation code and new password.
-       */
-      signOut(): Promise<void>
+      interface Auth {
+        /**
+         * Returns the current Firebase authentication state.
+         */
+        authenticated: boolean;
+        /**
+         * Returns the currently signed-in user (or null). See the User class documentation for further usage.
+         */
+        currentUser: User | null
+        /**
+         * Listen for changes in the users auth state (logging in and out). 
+         * This method returns a unsubscribe function to stop listening to events. 
+         * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
+         */
+        onAuthStateChanged(
+          nextOrObserver: Object, error?: (a: RnError) => any,
+          completed?: () => any): () => any;
+        /**
+         * We can create a user by calling the createUserWithEmailAndPassword() function. 
+         * The method accepts two parameters, an email and a password.
+         */
+        createUserWithEmailAndPassword(email: string, password: string): Promise<User>
+        /**
+         * To sign a user in with their email and password, use the signInWithEmailAndPassword() function. 
+         * It accepts two parameters, the user's email and password:
+         */
+        signInWithEmailAndPassword(email: string, password: string): Promise<User>
+        /**
+         * Sign an anonymous user. 
+         * If the user has already signed in, that user will be returned
+         */
+        signInAnonymously(): Promise<User>
+        /**
+         * Sign in the user with a 3rd party credential provider. 
+         * credential requires the following properties:
+         */
+        signInWithCredential(credential: Credential): Promise<User>
+        /**
+         * Sign a user in with a self-signed JWT token. 
+         * To sign a user using a self-signed custom token, 
+         * use the signInWithCustomToken() function. 
+         * It accepts one parameter, the custom token:
+         */
+        signInWithCustomToken(token: string): Promise<User>
+        /**
+         * Sends a password reset email to the given email address. 
+         * Unlike the web SDK, 
+         * the email will contain a password reset link rather than a code.
+         */
+        sendPasswordResetEmail(email: string): Promise<void>
+        /**
+         * Completes the password reset process, 
+         * given a confirmation code and new password.
+         */
+        signOut(): Promise<void>
+      }
     }
+    
+    namespace messaging {
 
-    interface Messaging {
-      /**
-       * Subscribes the device to a topic.
-       */
-      subscribeToTopic(topic: string): void
-      /**
-       * Unsubscribes the device from a topic.
-       */
-      unsubscribeFromTopic(topic: string): void
-      /**
-       * When the application has been opened from a notification 
-       * getInitialNotification is called and the notification payload is returned. 
-       * Use onMessage for notifications when the app is running.
-       */
-      getInitialNotification(): Promise<Object>
-      /**
-       * Returns the devices FCM token. 
-       * This token can be used in the Firebase console to send messages to directly.
-       */
-      getToken(): Promise<string>
-      /**
-       * On the event a devices FCM token is refreshed by Google,
-       *  the new token is returned in a callback listener.
-       */
-      onTokenRefresh(listener: (token: string) => any): void
-      /**
-       * On a new message, 
-       * the payload object is passed to the listener callback. 
-       * This method is only triggered when the app is running.
-       * Use getInitialNotification for notifications which cause the app to open.
-       */
-      onMessage(listener: (message: Object) => any): void
-      /**
-       * Create a local notification from the device itself.
-       */
-      createLocalNotification(notification: Object): any
-      /**
-       * Schedule a local notification to be shown on the device.
-       */
-      scheduleLocalNotification(notification: Object): any
-      /**
-       * Returns an array of all currently scheduled notifications.
-       * ```
-       * firebase.messaging().getScheduledLocalNotifications()
-       *   .then((notifications) => {
-       *       console.log('Current scheduled notifications: ', notifications);
-       *   });
-       * ```
-       */
-      getScheduledLocalNotifications(): Promise<any[]>
-      /**
-       * Cancels a location notification by ID, 
-       * or all notifications by *.
-       */
-      cancelLocalNotification(id: string): void
-      /**
-       * Removes all delivered notifications from device by ID, 
-       * or all notifications by *.
-       */
-      removeDeliveredNotification(id: string): void
-      /**
-       * IOS 
-       * Requests app notification permissions in an Alert dialog.
-       */
-      requestPermissions(): void
-      /**
-       * IOS
-       * Sets the badge number on the iOS app icon.
-       */
-      setBadgeNumber(value: number): void
-      /**
-       * IOS
-       * Returns the current badge number on the app icon.
-       */
-      getBadgeNumber(): number
-      /**
-       * Send an upstream message
-       * @param senderId
-       * @param payload
-       */
-      send(senderId: string, payload: RemoteMessage): any
-      NOTIFICATION_TYPE: Object
-      REMOTE_NOTIFICATION_RESULT: Object
-      WILL_PRESENT_RESULT: Object
-      EVENT_TYPE: Object
+      interface Messaging {
+        /**
+         * Subscribes the device to a topic.
+         */
+        subscribeToTopic(topic: string): void
+        /**
+         * Unsubscribes the device from a topic.
+         */
+        unsubscribeFromTopic(topic: string): void
+        /**
+         * When the application has been opened from a notification 
+         * getInitialNotification is called and the notification payload is returned. 
+         * Use onMessage for notifications when the app is running.
+         */
+        getInitialNotification(): Promise<any>
+        /**
+         * Returns the devices FCM token. 
+         * This token can be used in the Firebase console to send messages to directly.
+         */
+        getToken(forceRefresh?: Boolean): Promise<string>
+        /**
+         * On the event a devices FCM token is refreshed by Google,
+         *  the new token is returned in a callback listener.
+         */
+        onTokenRefresh(listener: (token: string) => any): void
+        /**
+         * On a new message, 
+         * the payload object is passed to the listener callback. 
+         * This method is only triggered when the app is running.
+         * Use getInitialNotification for notifications which cause the app to open.
+         */
+        onMessage(listener: (message: any) => any): void
+        /**
+         * Create a local notification from the device itself.
+         */
+        createLocalNotification(notification: any): any
+        /**
+         * Schedule a local notification to be shown on the device.
+         */
+        scheduleLocalNotification(notification: any): any
+        /**
+         * Returns an array of all currently scheduled notifications.
+         * ```
+         * firebase.messaging().getScheduledLocalNotifications()
+         *   .then((notifications) => {
+         *       console.log('Current scheduled notifications: ', notifications);
+         *   });
+         * ```
+         */
+        getScheduledLocalNotifications(): Promise<any[]>
+        /**
+         * Cancels a location notification by ID, 
+         * or all notifications by *.
+         */
+        cancelLocalNotification(id: string): void
+        /**
+         * Removes all delivered notifications from device by ID, 
+         * or all notifications by *.
+         */
+        removeDeliveredNotification(id: string): void
+        /**
+         * IOS 
+         * Requests app notification permissions in an Alert dialog.
+         */
+        requestPermissions(): void
+        /**
+         * IOS
+         * Sets the badge number on the iOS app icon.
+         */
+        setBadgeNumber(value: number): void
+        /**
+         * IOS
+         * Returns the current badge number on the app icon.
+         */
+        getBadgeNumber(): number
+        /**
+         * Send an upstream message
+         * @param senderId
+         * @param payload
+         */
+        send(senderId: string, payload: RemoteMessage): any
+        NOTIFICATION_TYPE: Object
+        REMOTE_NOTIFICATION_RESULT: Object
+        WILL_PRESENT_RESULT: Object
+        EVENT_TYPE: Object
+      }
+
+      interface RemoteMessage {
+        id: string,
+        type: string,
+        ttl?: number,
+        sender: string,
+        collapseKey?: string,
+        data: Object,
+      }
     }
+    namespace crash {
 
-    interface RemoteMessage {
-      id: string,
-      type: string,
-      ttl?: number,
-      sender: string,
-      collapseKey?: string,
-      data: Object,
-    }
-
-    interface Crash {
-      /** Logs a message that will appear in a subsequent crash report. */
-      log(message: string): void
-      /**
-       * Android: Logs a message that will appear in a subsequent crash report as well as in logcat.
-       * iOS: Logs the message in the subsequest crash report only (same as log).
-       */
-      logcat(level: number, tag: string, message: string): void
-      /**
-       * Files a crash report, along with any previous logs to Firebase. 
-       * An Error object must be passed into the report method.
-       */
-      report(error: RnError, maxStackSize: Number): void
+      interface Crash {
+        /** Logs a message that will appear in a subsequent crash report. */
+        log(message: string): void
+        /**
+         * Android: Logs a message that will appear in a subsequent crash report as well as in logcat.
+         * iOS: Logs the message in the subsequest crash report only (same as log).
+         */
+        logcat(level: number, tag: string, message: string): void
+        /**
+         * Files a crash report, along with any previous logs to Firebase. 
+         * An Error object must be passed into the report method.
+         */
+        report(error: RnError, maxStackSize: Number): void
+      }
     }
   }
 }
