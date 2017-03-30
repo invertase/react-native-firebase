@@ -126,12 +126,12 @@ RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path resolver:(RCTPromiseResolveB
 }
 
 /**
- getMetaData
+ getMetadata
  
- @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetaData
+ @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
  @param NSString path
  */
-RCT_EXPORT_METHOD(getMetaData: (NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getMetadata: (NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
     
     [fileRef metadataWithCompletion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
@@ -203,6 +203,7 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) path localPath:(NSString *) localPa
     
     [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download task failed
+        // TODO sendJSError event
         if (snapshot.error != nil) {
             [self promiseRejectStorageException:reject error:snapshot.error];
         }
