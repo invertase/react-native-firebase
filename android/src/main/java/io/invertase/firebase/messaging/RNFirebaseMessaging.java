@@ -156,35 +156,30 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
   }
 
   @ReactMethod
-  public void send(String senderId, ReadableMap payload) throws Exception {
+  public void send(ReadableMap remoteMessage) {
     FirebaseMessaging fm = FirebaseMessaging.getInstance();
-    RemoteMessage.Builder message = new RemoteMessage.Builder(senderId + "@gcm.googleapis.com")
-      .setMessageId(UUID.randomUUID().toString());
+    RemoteMessage.Builder message = new RemoteMessage.Builder(remoteMessage.getString("sender"));
 
-    ReadableMapKeySetIterator iterator = payload.keySetIterator();
+    message.setTtl(remoteMessage.getInt("ttl"));
+    message.setMessageId(remoteMessage.getString("id"));
+    message.setMessageType(remoteMessage.getString("type"));
+
+    if (remoteMessage.hasKey("collapseKey")) {
+      message.setCollapseKey(remoteMessage.getString("collapseKey"));
+    }
+
+    // get data keys and values and add to builder
+    // js side ensures all data values are strings
+    // so no need to check types
+    ReadableMap data = remoteMessage.getMap("data");
+    ReadableMapKeySetIterator iterator = data.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      String value = getStringFromReadableMap(payload, key);
+      String value = data.getString(key);
       message.addData(key, value);
     }
-    fm.send(message.build());
-  }
 
-  private String getStringFromReadableMap(ReadableMap map, String key) throws Exception {
-    switch (map.getType(key)) {
-      case String:
-        return map.getString(key);
-      case Number:
-        try {
-          return String.valueOf(map.getInt(key));
-        } catch (Exception e) {
-          return String.valueOf(map.getDouble(key));
-        }
-      case Boolean:
-        return String.valueOf(map.getBoolean(key));
-      default:
-        throw new Exception("Unknown data type: " + map.getType(key).name() + " for message key " + key);
-    }
+    fm.send(message.build());
   }
 
   private void registerMessageHandler() {

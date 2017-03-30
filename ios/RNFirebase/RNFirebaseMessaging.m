@@ -278,12 +278,12 @@ RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(R
         [[UNUserNotificationCenter currentNotificationCenter]
          requestAuthorizationWithOptions:authOptions
          completionHandler:^(BOOL granted, NSError * _Nullable error) {
-            resolve(@{@"granted":@(granted)});
+             resolve(@{@"granted":@(granted)});
          }
          ];
 #endif
     }
-
+    
     [[UIApplication sharedApplication] registerForRemoteNotifications];
 }
 
@@ -408,23 +408,12 @@ RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTP
     resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
 }
 
-RCT_EXPORT_METHOD(send:(NSString*)senderId withPayload:(NSDictionary *)message)
-{
-    NSMutableDictionary * mMessage = [message mutableCopy];
-    NSMutableDictionary * upstreamMessage = [[NSMutableDictionary alloc] init];
-    for (NSString* key in mMessage) {
-        upstreamMessage[key] = [NSString stringWithFormat:@"%@", [mMessage valueForKey:key]];
-    }
-    
-    NSDictionary *imMessage = [NSDictionary dictionaryWithDictionary:upstreamMessage];
-    
-    int64_t ttl = 3600;
-    NSString * receiver = [NSString stringWithFormat:@"%@@gcm.googleapis.com", senderId];
-    
-    NSUUID *uuid = [NSUUID UUID];
-    NSString * messageID = [uuid UUIDString];
-    
-    [[FIRMessaging messaging]sendMessage:imMessage to:receiver withMessageID:messageID timeToLive:ttl];
+RCT_EXPORT_METHOD(send:(NSDictionary *)remoteMessage) {
+    int64_t ttl = @([[remoteMessage valueForKey:@"ttl"] intValue]).doubleValue;
+    NSString * mId = [[remoteMessage valueForKey:@"id"] stringValue];
+    NSString * receiver = [[remoteMessage valueForKey:@"senderId"] stringValue];
+    NSDictionary * data = [[remoteMessage valueForKey:@"data"] dictionaryRepresentation];
+    [[FIRMessaging messaging]sendMessage:data to:receiver withMessageID:mId timeToLive:ttl];
 }
 
 RCT_EXPORT_METHOD(finishRemoteNotification: (NSString *)completionHandlerId fetchResult:(UIBackgroundFetchResult)result){
