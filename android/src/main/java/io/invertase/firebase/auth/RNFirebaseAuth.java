@@ -606,12 +606,12 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void getToken(final Promise promise) {
+  public void getToken(final Boolean forceRefresh, final Promise promise) {
     FirebaseUser user = mAuth.getCurrentUser();
     Log.d(TAG, "getToken");
 
     if (user != null) {
-      user.getToken(true)
+      user.getToken(forceRefresh)
         .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
           @Override
           public void onComplete(@NonNull Task<GetTokenResult> task) {

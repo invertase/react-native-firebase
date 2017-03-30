@@ -278,11 +278,11 @@ RCT_EXPORT_METHOD(updateProfile:(NSDictionary *) props resolver:(RCTPromiseResol
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(getToken:(BOOL)forceRefresh resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
     FIRUser *user = [FIRAuth auth].currentUser;
     
     if (user) {
-        [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
+        [user getTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
