@@ -410,9 +410,9 @@ RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTP
 
 RCT_EXPORT_METHOD(send:(NSDictionary *)remoteMessage) {
     int64_t ttl = @([[remoteMessage valueForKey:@"ttl"] intValue]).doubleValue;
-    NSString * mId = [[remoteMessage valueForKey:@"id"] stringValue];
-    NSString * receiver = [[remoteMessage valueForKey:@"senderId"] stringValue];
-    NSDictionary * data = [[remoteMessage valueForKey:@"data"] dictionaryRepresentation];
+    NSString * mId = [remoteMessage valueForKey:@"id"];
+    NSString * receiver = [remoteMessage valueForKey:@"sender"];
+    NSDictionary * data = [remoteMessage valueForKey:@"data"];
     [[FIRMessaging messaging]sendMessage:data to:receiver withMessageID:mId timeToLive:ttl];
 }
 
