@@ -1,3 +1,3 @@
-import Firebase from './firebase';
+import Firebase from './lib/firebase';
 
 export default Firebase;
