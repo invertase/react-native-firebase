@@ -9,7 +9,8 @@
     "dev": "npm run compile -- --watch",
     "lint": "eslint ./src",
     "publish_pages": "gh-pages -d public/",
-    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'"
+    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'",
+    "flow": "flow"
   },
   "repository": {
     "type": "git",
@@ -68,7 +69,7 @@
     "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.35.0",
+    "flow-bin": "^0.40.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-native": "^0.42.0"
