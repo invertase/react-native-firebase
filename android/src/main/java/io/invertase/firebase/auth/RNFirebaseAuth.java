@@ -439,9 +439,9 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         profileBuilder.setDisplayName(displayName);
       }
 
-      if (props.hasKey("photoUri")) {
-        String photoUriStr = props.getString("photoUri");
-        Uri uri = Uri.parse(photoUriStr);
+      if (props.hasKey("photoURL")) {
+        String photoURLStr = props.getString("photoURL");
+        Uri uri = Uri.parse(photoURLStr);
         profileBuilder.setPhotoUri(uri);
       }
 
