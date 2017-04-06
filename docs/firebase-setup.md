@@ -10,11 +10,11 @@ Each platform uses a different setup method after creating the project.
 
 ## iOS
 
-See the [ios setup guide](/installation.ios.md).
+See the [ios setup guide](./installation.ios.md).
 
 ## Android
 
-See the [android setup guide](/installation.android.md).
+See the [android setup guide](./installation.android.md).
 
 ## Usage
 
