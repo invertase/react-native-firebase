@@ -32,29 +32,23 @@ const firebase = RNFirebase.initializeApp({
 });
 ```
 
-We can pass _custom_ options by passing an object with configuration options. The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. That is, all of the following key/value pairs are optional if the native configuration is set.
+### Configuration Options
 
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
 | debug | bool | false | When set to true, RNFirebase will log messages to the console and fire `debug` events we can listen to in `js` |
 | persistence | bool | false | When set to true, database persistence will be enabled. |
-| bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
-| googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
-| databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
-| deepLinkURLScheme | string | "" | URL scheme to set up durable deep link service |
-| storageBucket | string | "" | The Google Cloud storage bucket name |
-| androidClientID | string | "" | The Android client ID used in Google AppInvite when an iOS app has it's android version |
-| GCMSenderID | string | "" | The Project number from the Google Developer's console used to configure Google Cloud Messaging |
-| trackingID | string | "" | The tracking ID for Google Analytics |
-| clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
-| APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
 
 For instance:
 
 ```javascript
+import RNFirebase from 'react-native-firebase';
+
 const configurationOptions = {
   debug: true
 };
-const firebase = new RNFirebase(configurationOptions);
-firebase.on('debug', msg => console.log('Received debug message', msg))
+
+const firebase = RNFirebase.initializeApp(configurationOptions);
+
+export default firebase;
 ```
