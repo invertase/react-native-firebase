@@ -22,30 +22,7 @@ Lastly, due to some dependencies requirements, RNFirebase supports iOS versions 
 
 ## Android
 
-There are several ways to setup Firebase on Android. The _easiest_ way is to pass the configuration settings in JavaScript. In that way, there is no setup for the native platform.
-
-### google-services.json setup
-If you prefer to include the default settings in the source of your app, download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console.
-
-Next you'll have to add the google-services gradle plugin in order to parse it.
-
-Add the google-services gradle plugin as a dependency in the *project* level build.gradle
-`android/build.gradle`
-```java
-buildscript {
-  // ...
-  dependencies {
-    // ...
-    classpath 'com.google.gms:google-services:3.0.0'
-  }
-}
-```
-
-In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the file (below all dependencies)
-`android/app/build.gradle`
-```java
-apply plugin: 'com.google.gms.google-services'
-```
+See the [android setup guide](/installation.android.md).
 
 ## Usage
 
@@ -58,7 +35,9 @@ import RNFirebase from 'react-native-firebase'
 We need to tell the Firebase library we want to _configure_ the project. RNFirebase provides a way to configure both the native and the JavaScript side of the project at the same time with a single command:
 
 ```javascript
-const firebase = new RNFirebase();
+const firebase = RNFirebase.initializeApp({
+  // config options
+});
 ```
 
 We can pass _custom_ options by passing an object with configuration options. The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. That is, all of the following key/value pairs are optional if the native configuration is set.
