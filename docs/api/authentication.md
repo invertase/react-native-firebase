@@ -1,6 +1,6 @@
 # Authentication
 
-RNFirebase handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers).
+RNFirebase handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers, see [examples](#examples)).
 
 > Authentication requires Google Play services to be installed on Android.
 
