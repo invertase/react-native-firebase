@@ -349,6 +349,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload completed successfully
         NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:resp];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
         resolve(resp);
     }];
