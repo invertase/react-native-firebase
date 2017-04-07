@@ -1,14 +1,31 @@
 # Android Installation
 
-The simplest way of installing on Android is to use the react-native link CLI command & rebuild the project:
+### 1 - Setup google-services.json
+Download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console. This file should be downloaded to `YOUR_PROJECT/android/app/google-services.json`.
 
+Next you'll have to add the google-services gradle plugin in order to parse it.
+
+Add the google-services gradle plugin as a dependency in the *project* level build.gradle
+`android/build.gradle`
+```java
+buildscript {
+  // ...
+  dependencies {
+    // ...
+    classpath 'com.google.gms:google-services:3.0.0'
+  }
+}
 ```
-react-native link react-native-firebase
+
+In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the file (below all dependencies)
+`android/app/build.gradle`
+```java
+apply plugin: 'com.google.gms.google-services'
 ```
 
-## Manually
+### 2 - Link RNFirebase
 
-To install `react-native-firebase` manually in our project, we'll need to import the package from `io.invertase.firebase` in our project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list it as a package for ReactNative in the `getPackages()` function:
+To install `react-native-firebase` in your project, you'll need to import the package from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list it as a package for ReactNative in the `getPackages()` function:
 
 ```java
 package com.youcompany.application;
@@ -29,8 +46,7 @@ public class MainApplication extends Application implements ReactApplication {
   // ...
 }
 ```
-
-We'll also need to list it in our `android/app/build.gradle` file as a dependency that we want React Native to compile. In the `dependencies` listing, add the `compile` line:
+You'll also need to list it in our `android/app/build.gradle` file as a dependency that we want React Native to compile. In the `dependencies` listing, add the `compile` line:
 
 ```java
 dependencies {
@@ -44,6 +60,8 @@ Add the project path to `android/settings.gradle`:
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
+
+### 3 - Cloud Messaging (optional)
 
 If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/), add the following to `android/app/src/main/AndroidManifest.xml`.
 

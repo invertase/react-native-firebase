@@ -1,6 +1,6 @@
 # Authentication
 
-RNFirebase handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers).
+RNFirebase handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers, see [examples](#examples)).
 
 > Authentication requires Google Play services to be installed on Android.
 
@@ -283,4 +283,41 @@ firebase.auth().currentUser
   })
   .then()
   .catch();
+```
+
+## Examples
+
+### Facebook authentication with react-native-fbsdk and signInWithCredential
+
+```javascript
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
+
+// ... somewhere in your login screen component
+LoginManager
+  .logInWithReadPermissions(['public_profile', 'email'])
+  .then((result) => {
+    if (result.isCancelled) {
+      return Promise.resolve('cancelled');
+    }
+    console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
+    // get the access token
+    const data = AccessToken.getCurrentAccessToken();
+
+    // create a new firebase credential with the token
+    const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+
+    // login with credential
+    return firebase.auth().signInWithCredential(credential);
+  })
+  .then((currentUser) => {
+    if (currentUser === 'cancelled') {
+      console.log('Login cancelled');
+    } else {
+      // now signed in
+      console.warn(JSON.stringify(currentUser.toJSON()));
+    }
+  })
+  .catch((error) => {
+    console.log(`Login fail with error: ${error}`);
+  });
 ```
