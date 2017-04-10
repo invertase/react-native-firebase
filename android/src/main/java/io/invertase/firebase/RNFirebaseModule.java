@@ -3,12 +3,17 @@ package io.invertase.firebase;
 import java.util.Map;
 import java.util.HashMap;
 
+// android
+import android.app.Activity;
+
 // react
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
 
 // play services
 import com.google.android.gms.common.ConnectionResult;
@@ -25,6 +30,16 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
   @Override
   public String getName() {
     return TAG;
+  }
+
+  @ReactMethod
+  public void promptPlayServices() {
+    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
+    int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
+
+    if (status != ConnectionResult.SUCCESS && gapi.isUserResolvableError(status)) {
+      gapi.getErrorDialog(getCurrentActivity(), status, 2404).show();
+    }
   }
 
   private WritableMap getPlayServicesStatus() {
