@@ -57,6 +57,7 @@ RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Becaus
   * [Messaging](docs/api/cloud-messaging.md)
   * [Crash](docs/api/crash.md)
   * [Transactions](docs/api/transactions.md)
+* [FAQs / Troubleshooting](docs/faqs.md)
 
 <hr>
 
