@@ -66,7 +66,7 @@ project(':react-native-firebase').projectDir = new File(rootProject.projectDir, 
 If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/), add the following to `android/app/src/main/AndroidManifest.xml`.
 
 Add permissions:
-```
+```xml
 <manifest ...>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -74,7 +74,7 @@ Add permissions:
 ```
 
 Set app [launch mode](https://inthecheesefactory.com/blog/understand-android-activity-launchmode/en) inside application props:
-```
+```xml
 <application
   ...
   android:launchMode="singleTop"
@@ -82,7 +82,7 @@ Set app [launch mode](https://inthecheesefactory.com/blog/understand-android-act
 ```
 
 Add messaging service:
-```
+```xml
 <application ...>
   <service
     android:name="io.invertase.firebase.messaging.MessagingService"
@@ -100,7 +100,7 @@ Add messaging service:
 ```
 
 If you would like to schedule local notifications then you also need to add the following:
-```
+```xml
   <receiver android:name="io.invertase.firebase.messaging.RNFirebaseLocalMessagingPublisher"/>
   <receiver android:enabled="true" android:exported="true"android:name="io.invertase.firebase.messaging.RNFirebaseSystemBootEventReceiver">
     <intent-filter>
