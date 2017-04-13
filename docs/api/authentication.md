@@ -301,8 +301,9 @@ LoginManager
     }
     console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
     // get the access token
-    const data = AccessToken.getCurrentAccessToken();
-
+    return AccessToken.getCurrentAccessToken();
+  })
+  .then(data => {
     // create a new firebase credential with the token
     const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
 
