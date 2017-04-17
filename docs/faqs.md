@@ -70,7 +70,7 @@ recommend using the native Android Studio emulators to reduce the chance of thes
 
 ### [Android] Checking for Google Play Services availability with React Native Firebase
 
-React Native Firebase actually has a useful helper method for checking G.P.S availability:
+React Native Firebase actually has a useful helper object for checking G.P.S availability:
 
 ```javascript
 const availability = firebase.googleApiAvailability;
