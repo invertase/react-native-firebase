@@ -68,6 +68,17 @@ party emulator such as GenyMotion.
 Using this kind of workaround with Google Play Services can be problematic, so we
 recommend using the native Android Studio emulators to reduce the chance of these complications.
 
+### [Android] Turning off Google Play Services availability errors
+
+G.P.S errors can be turned off using a config option like so:
+
+```javascript
+const firebase = RNFirebase.initializeApp({
+  errorOnMissingPlayServices: false,
+});
+```
+This will stop your app from immediately red-boxing or crashing, but won't solve the underlying issue of G.P.S not being available or of the correct version. This will mean certain functionalities won't work properly and your app may even crash.
+
 ### [Android] Checking for Google Play Services availability with React Native Firebase
 
 React Native Firebase actually has a useful helper object for checking G.P.S availability:
