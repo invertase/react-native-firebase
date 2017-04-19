@@ -614,25 +614,14 @@ RCT_EXPORT_METHOD(off:(NSString *)path
 }
 
 // On disconnect
-RCT_EXPORT_METHOD(onDisconnectSetObject:(NSString *) path
+RCT_EXPORT_METHOD(onDisconnectSet:(NSString *) path
                   props:(NSDictionary *) props
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref onDisconnectSetValue:props
+    [ref onDisconnectSetValue:props[@"value"]
           withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
               [self handleCallback:@"onDisconnectSetObject" callback:callback databaseError:error];
-          }];
-}
-
-RCT_EXPORT_METHOD(onDisconnectSetString:(NSString *) path
-                  val:(NSString *) val
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref onDisconnectSetValue:val
-          withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-              [self handleCallback:@"onDisconnectSetString" callback:callback databaseError:error];
           }];
 }
 
