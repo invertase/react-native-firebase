@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		29C199451EA7A851007B6BF8 /* RNFirebaseCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C199441EA7A851007B6BF8 /* RNFirebaseCrash.m */; };
 		D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */; };
 		D950369E1D19C77400F7094D /* RNFirebase.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* RNFirebase.m */; };
 		D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */; };
@@ -30,6 +31,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		29C199431EA7A851007B6BF8 /* RNFirebaseCrash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseCrash.h; path = RNFirebase/RNFirebaseCrash.h; sourceTree = "<group>"; };
+		29C199441EA7A851007B6BF8 /* RNFirebaseCrash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseCrash.m; path = RNFirebase/RNFirebaseCrash.m; sourceTree = "<group>"; };
 		D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseMessaging.h; path = RNFirebase/RNFirebaseMessaging.h; sourceTree = "<group>"; };
 		D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseMessaging.m; path = RNFirebase/RNFirebaseMessaging.m; sourceTree = "<group>"; };
 		D950369C1D19C77400F7094D /* RNFirebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebase.h; path = RNFirebase/RNFirebase.h; sourceTree = "<group>"; };
@@ -83,6 +86,8 @@
 				D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */,
 				D9D62E7E1D6D8717003D826D /* RNFirebaseAuth.h */,
 				D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */,
+				29C199431EA7A851007B6BF8 /* RNFirebaseCrash.h */,
+				29C199441EA7A851007B6BF8 /* RNFirebaseCrash.m */,
 				D96290391D6D152A0099A3EC /* RNFirebaseEvents.h */,
 				D962903D1D6D15B00099A3EC /* RNFirebaseErrors.h */,
 				D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */,
@@ -158,6 +163,7 @@
 				D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
 				D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */,
+				29C199451EA7A851007B6BF8 /* RNFirebaseCrash.m in Sources */,
 				D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
