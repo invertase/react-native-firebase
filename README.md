@@ -32,7 +32,7 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 
 ### Test app
 
-To help ensure changes and features work across both iOS & Android, we've developed an app specifically to test `react-native-firebase` against the [`firebase` web SDK](https://www.npmjs.com/package/firebase). Please see the [`react-native-firebase-tests`](https://github.com/invertase/react-native-firebase-tests) repository for more information.
+To help ensure changes and features work across both iOS & Android, we've developed an app specifically to test `react-native-firebase` against the [`firebase` web SDK](https://www.npmjs.com/package/firebase). Please see the [`tests`](tests/README.md) directory for more information.
 
 <hr>
 
