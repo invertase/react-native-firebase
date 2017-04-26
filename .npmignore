@@ -60,3 +60,4 @@ docs
 .idea
 coverage
 yarn.lock
+tests

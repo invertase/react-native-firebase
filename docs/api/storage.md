@@ -1,4 +1,3 @@
-
 # Storage
 
 RNFirebase mimics the [Web Firebase SDK Storage](https://firebase.google.com/docs/storage/web/start), whilst

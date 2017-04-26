@@ -356,7 +356,12 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
           public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
             Log.d(TAG, "putFile success " + taskSnapshot);
             WritableMap resp = getUploadTaskAsMap(taskSnapshot);
+            sendJSEvent(STORAGE_STATE_CHANGED, path, resp);
+
+            // to avoid readable map already consumed errors
+            resp = getUploadTaskAsMap(taskSnapshot);
             sendJSEvent(STORAGE_UPLOAD_SUCCESS, path, resp);
+
             resp = getUploadTaskAsMap(taskSnapshot);
             promise.resolve(resp);
           }
