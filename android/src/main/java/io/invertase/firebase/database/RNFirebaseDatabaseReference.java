@@ -153,30 +153,16 @@ public class RNFirebaseDatabaseReference {
   }
 
   private void removeChildEventListener(Integer listenerId) {
-    if (listenerId != null) {
-      ChildEventListener listener = mChildEventListeners.remove(listenerId);
-      if (listener != null) {
-        mQuery.removeEventListener(listener);
-      }
-    } else {
-      for (ChildEventListener listener : mChildEventListeners.values()) {
-        mQuery.removeEventListener(listener);
-      }
-      mChildEventListeners = new HashMap<>();
+    ChildEventListener listener = mChildEventListeners.remove(listenerId);
+    if (listener != null) {
+      mQuery.removeEventListener(listener);
     }
   }
 
   private void removeValueEventListener(Integer listenerId) {
-    if (listenerId != null) {
-      ValueEventListener listener = mValueEventListeners.remove(listenerId);
-      if (listener != null) {
-        mQuery.removeEventListener(listener);
-      }
-    } else {
-      for (ValueEventListener listener : mValueEventListeners.values()) {
-        mQuery.removeEventListener(listener);
-      }
-      mValueEventListeners = new HashMap<>();
+    ValueEventListener listener = mValueEventListeners.remove(listenerId);
+    if (listener != null) {
+      mQuery.removeEventListener(listener);
     }
   }
 
