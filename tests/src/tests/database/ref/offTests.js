@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import should from 'should';
 import sinon from 'sinon';
 
@@ -89,9 +90,10 @@ function offTests({ describe, it, xcontext, context, firebase }) {
 
         // Check childAddedCallback is really attached
         await ref.push(DatabaseContents.DEFAULT.number);
-        // Android Note: There is definitely a single listener, but value is called three times
+        // TODO: Android: There is definitely a single listener, but value is called three times
         // rather than the two you'd perhaps expect
-        valueCallback.should.be.callCount(3);
+        const expectedCount = Platform.OS === 'ios' ? 2 : 3;
+        valueCallback.should.be.callCount(expectedCount);
         childAddedCallback.should.be.callCount(arrayLength + 1);
 
         // Returns nothing
@@ -104,7 +106,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         await ref.push(DatabaseContents.DEFAULT.number);
 
         // Callbacks should have been unbound and not called again
-        valueCallback.should.be.callCount(3);
+        valueCallback.should.be.callCount(expectedCount);
         childAddedCallback.should.be.callCount(arrayLength + 1);
       });
     });
@@ -265,9 +267,10 @@ function offTests({ describe, it, xcontext, context, firebase }) {
 
           // Callback should have been called only once because one of the attachments
           // has been removed
-          // Android Note: There is definitely a single listener, but value is called twice
+          // TODO: Android: There is definitely a single listener, but value is called twice
           // rather than the once you'd perhaps expect
-          spyA.should.be.callCount(4);
+          const expectedCount = Platform.OS === 'ios' ? 3 : 4;
+          spyA.should.be.callCount(expectedCount);
 
           // Undo the second attachment
           const resp2 = await ref.off('value', callbackA);
@@ -277,7 +280,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.set(DatabaseContents.DEFAULT.number);
 
           // Callback should not have been called any more times
-          spyA.should.be.callCount(4);
+          spyA.should.be.callCount(expectedCount);
         });
       });
     });
