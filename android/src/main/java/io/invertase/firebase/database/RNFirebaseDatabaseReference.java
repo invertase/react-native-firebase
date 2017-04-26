@@ -1,9 +1,11 @@
 package io.invertase.firebase.database;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import android.util.Log;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.facebook.react.bridge.Callback;
@@ -25,81 +27,87 @@ public class RNFirebaseDatabaseReference {
   private static final String TAG = "RNFirebaseDBReference";
 
   private Query mQuery;
+  private int mRefId;
   private String mPath;
-  private String mModifiersString;
-  private ChildEventListener mEventListener;
-  private ValueEventListener mValueListener;
+  private Map<Integer, ChildEventListener> mChildEventListeners = new HashMap<>();
+  private Map<Integer, ValueEventListener> mValueEventListeners = new HashMap<>();
   private ReactContext mReactContext;
-  private Set<String> childEventListeners = new HashSet<>();
 
   public RNFirebaseDatabaseReference(final ReactContext context,
-                                    final FirebaseDatabase firebaseDatabase,
-                                    final String path,
-                                    final ReadableArray modifiersArray,
-                                    final String modifiersString) {
+                                     final FirebaseDatabase firebaseDatabase,
+                                     final int refId,
+                                     final String path,
+                                     final ReadableArray modifiersArray) {
     mReactContext = context;
+    mRefId = refId;
     mPath = path;
-    mModifiersString = modifiersString;
     mQuery = this.buildDatabaseQueryAtPathAndModifiers(firebaseDatabase, path, modifiersArray);
   }
 
-  public void addChildEventListener(final String eventName) {
-    if (mEventListener == null) {
-      mEventListener = new ChildEventListener() {
+  public void addChildEventListener(final int listenerId, final String eventName) {
+    if (!mChildEventListeners.containsKey(listenerId)) {
+      ChildEventListener childEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-          handleDatabaseEvent("child_added", dataSnapshot);
+          if ("child_added".equals(eventName)) {
+            handleDatabaseEvent("child_added", listenerId, dataSnapshot);
+          }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-          handleDatabaseEvent("child_changed", dataSnapshot);
+          if ("child_changed".equals(eventName)) {
+            handleDatabaseEvent("child_changed", listenerId, dataSnapshot);
+          }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-          handleDatabaseEvent("child_removed", dataSnapshot);
+          if ("child_removed".equals(eventName)) {
+            handleDatabaseEvent("child_removed", listenerId, dataSnapshot);
+          }
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-          handleDatabaseEvent("child_moved", dataSnapshot);
+          if ("child_moved".equals(eventName)) {
+            handleDatabaseEvent("child_moved", listenerId, dataSnapshot);
+          }
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
-          removeChildEventListener();
-          handleDatabaseError(error);
+          removeChildEventListener(listenerId);
+          handleDatabaseError(listenerId, error);
         }
       };
-      mQuery.addChildEventListener(mEventListener);
-      Log.d(TAG, "Added ChildEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
+      mChildEventListeners.put(listenerId, childEventListener);
+      mQuery.addChildEventListener(childEventListener);
+      Log.d(TAG, "Added ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId);
     } else {
-      Log.w(TAG, "Trying to add duplicate ChildEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
+      Log.d(TAG, "ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
     }
-    //Keep track of the events that the JS is interested in knowing about
-    childEventListeners.add(eventName);
   }
 
-  public void addValueEventListener() {
-    if (mValueListener == null) {
-      mValueListener = new ValueEventListener() {
+  public void addValueEventListener(final int listenerId) {
+    if (!mValueEventListeners.containsKey(listenerId)) {
+      ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-          handleDatabaseEvent("value", dataSnapshot);
+          handleDatabaseEvent("value", listenerId, dataSnapshot);
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
-          removeValueEventListener();
-          handleDatabaseError(error);
+          removeValueEventListener(listenerId);
+          handleDatabaseError(listenerId, error);
         }
       };
-      mQuery.addValueEventListener(mValueListener);
-      Log.d(TAG, "Added ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
-      //this.setListeningTo(mPath, modifiersString, "value");
+      mValueEventListeners.put(listenerId, valueEventListener);
+      mQuery.addValueEventListener(valueEventListener);
+      Log.d(TAG, "Added ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId);
     } else {
-      Log.w(TAG, "Trying to add duplicate ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
+      Log.d(TAG, "ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
     }
   }
 
@@ -107,63 +115,73 @@ public class RNFirebaseDatabaseReference {
     final ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap("value", mPath, mModifiersString, dataSnapshot);
+        WritableMap data = Utils.snapshotToMap("value", mRefId, null, mPath, dataSnapshot);
         callback.invoke(null, data);
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
         WritableMap err = Arguments.createMap();
+        err.putInt("refId", mRefId);
         err.putString("path", mPath);
         err.putInt("code", error.getCode());
-        err.putString("modifiers", mModifiersString);
         err.putString("details", error.getDetails());
         err.putString("message", error.getMessage());
         callback.invoke(err);
       }
     };
     mQuery.addListenerForSingleValueEvent(onceValueEventListener);
-    Log.d(TAG, "Added OnceValueEventListener for path: " + mPath + " with modifiers " + mModifiersString);
+    Log.d(TAG, "Added OnceValueEventListener for refId: " + mRefId);
   }
 
-  public void removeEventListener(String eventName) {
+  public void removeEventListener(int listenerId, String eventName) {
     if ("value".equals(eventName)) {
-      this.removeValueEventListener();
+      this.removeValueEventListener(listenerId);
     } else {
-      childEventListeners.remove(eventName);
-      if (childEventListeners.isEmpty()) {
-        this.removeChildEventListener();
-      }
+      this.removeChildEventListener(listenerId);
     }
   }
 
   public boolean hasListeners() {
-    return mEventListener != null || mValueListener != null;
+    return !mChildEventListeners.isEmpty() || !mValueEventListeners.isEmpty();
   }
 
   public void cleanup() {
     Log.d(TAG, "cleaning up database reference " + this);
-    childEventListeners.clear();
-    this.removeChildEventListener();
-    this.removeValueEventListener();
+    this.removeChildEventListener(null);
+    this.removeValueEventListener(null);
   }
 
-  private void removeChildEventListener() {
-    if (mEventListener != null) {
-      mQuery.removeEventListener(mEventListener);
-      mEventListener = null;
+  private void removeChildEventListener(Integer listenerId) {
+    if (listenerId != null) {
+      ChildEventListener listener = mChildEventListeners.remove(listenerId);
+      if (listener != null) {
+        mQuery.removeEventListener(listener);
+      }
+    } else {
+      for (ChildEventListener listener : mChildEventListeners.values()) {
+        mQuery.removeEventListener(listener);
+      }
+      mChildEventListeners = new HashMap<>();
     }
   }
 
-  private void removeValueEventListener() {
-    if (mValueListener != null) {
-      mQuery.removeEventListener(mValueListener);
-      mValueListener = null;
+  private void removeValueEventListener(Integer listenerId) {
+    if (listenerId != null) {
+      ValueEventListener listener = mValueEventListeners.remove(listenerId);
+      if (listener != null) {
+        mQuery.removeEventListener(listener);
+      }
+    } else {
+      for (ValueEventListener listener : mValueEventListeners.values()) {
+        mQuery.removeEventListener(listener);
+      }
+      mValueEventListeners = new HashMap<>();
     }
   }
 
-  private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
-    WritableMap data = Utils.snapshotToMap(name, mPath, mModifiersString, dataSnapshot);
+  private void handleDatabaseEvent(final String name, final Integer listenerId, final DataSnapshot dataSnapshot) {
+    WritableMap data = Utils.snapshotToMap(name, mRefId, listenerId, mPath, dataSnapshot);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", data);
@@ -171,12 +189,15 @@ public class RNFirebaseDatabaseReference {
     Utils.sendEvent(mReactContext, "database_event", evt);
   }
 
-  private void handleDatabaseError(final DatabaseError error) {
+  private void handleDatabaseError(final Integer listenerId, final DatabaseError error) {
     WritableMap errMap = Arguments.createMap();
 
+    errMap.putInt("refId", mRefId);
+    if (listenerId != null) {
+      errMap.putInt("listenerId", listenerId);
+    }
     errMap.putString("path", mPath);
     errMap.putInt("code", error.getCode());
-    errMap.putString("modifiers", mModifiersString);
     errMap.putString("details", error.getDetails());
     errMap.putString("message", error.getMessage());
 
@@ -187,104 +208,102 @@ public class RNFirebaseDatabaseReference {
                                                      final String path,
                                                      final ReadableArray modifiers) {
     Query query = firebaseDatabase.getReference(path);
-    List<Object> strModifiers = Utils.recursivelyDeconstructReadableArray(modifiers);
+    List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);
 
-    for (Object strModifier : strModifiers) {
-      String str = (String) strModifier;
+    for (Object m : modifiersList) {
+      Map<String, Object> modifier = (Map) m;
+      String type = (String) modifier.get("type");
+      String name = (String) modifier.get("name");
 
-      String[] strArr = str.split(":");
-      String methStr = strArr[0];
-
-      if (methStr.equalsIgnoreCase("orderByKey")) {
-        query = query.orderByKey();
-      } else if (methStr.equalsIgnoreCase("orderByValue")) {
-        query = query.orderByValue();
-      } else if (methStr.equalsIgnoreCase("orderByPriority")) {
-        query = query.orderByPriority();
-      } else if (methStr.contains("orderByChild")) {
-        String key = strArr[1];
-        Log.d(TAG, "orderByChild: " + key);
-        query = query.orderByChild(key);
-      } else if (methStr.contains("limitToLast")) {
-        String key = strArr[1];
-        int limit = Integer.parseInt(key);
-        Log.d(TAG, "limitToLast: " + limit);
-        query = query.limitToLast(limit);
-      } else if (methStr.contains("limitToFirst")) {
-        String key = strArr[1];
-        int limit = Integer.parseInt(key);
-        Log.d(TAG, "limitToFirst: " + limit);
-        query = query.limitToFirst(limit);
-      } else if (methStr.contains("equalTo")) {
-        String value = strArr[1];
-        String type = strArr[2];
-        if ("number".equals(type)) {
-          double doubleValue = Double.parseDouble(value);
-          if (strArr.length > 3) {
-            query = query.equalTo(doubleValue, strArr[3]);
-          } else {
-            query = query.equalTo(doubleValue);
-          }
-        } else if ("boolean".equals(type)) {
-          boolean booleanValue = Boolean.parseBoolean(value);
-          if (strArr.length > 3) {
-            query = query.equalTo(booleanValue, strArr[3]);
-          } else {
-            query = query.equalTo(booleanValue);
-          }
-        } else {
-          if (strArr.length > 3) {
-            query = query.equalTo(value, strArr[3]);
-          } else {
-            query = query.equalTo(value);
-          }
+      if ("orderBy".equals(type)) {
+        if ("orderByKey".equals(name)) {
+          query = query.orderByKey();
+        } else if ("orderByPriority".equals(name)) {
+          query = query.orderByPriority();
+        } else if ("orderByValue".equals(name)) {
+          query = query.orderByValue();
+        } else if ("orderByChild".equals(name)) {
+          String key = (String) modifier.get("key");
+          query = query.orderByChild(key);
         }
-      } else if (methStr.contains("endAt")) {
-        String value = strArr[1];
-        String type = strArr[2];
-        if ("number".equals(type)) {
-          double doubleValue = Double.parseDouble(value);
-          if (strArr.length > 3) {
-            query = query.endAt(doubleValue, strArr[3]);
-          } else {
-            query = query.endAt(doubleValue);
-          }
-        } else if ("boolean".equals(type)) {
-          boolean booleanValue = Boolean.parseBoolean(value);
-          if (strArr.length > 3) {
-            query = query.endAt(booleanValue, strArr[3]);
-          } else {
-            query = query.endAt(booleanValue);
-          }
-        } else {
-          if (strArr.length > 3) {
-            query = query.endAt(value, strArr[3]);
-          } else {
-            query = query.endAt(value);
-          }
+      } else if ("limit".equals(type)) {
+        int limit = (Integer) modifier.get("limit");
+        if ("limitToLast".equals(name)) {
+          query = query.limitToLast(limit);
+        } else if ("limitToFirst".equals(name)) {
+          query = query.limitToFirst(limit);
         }
-      } else if (methStr.contains("startAt")) {
-        String value = strArr[1];
-        String type = strArr[2];
-        if ("number".equals(type)) {
-          double doubleValue = Double.parseDouble(value);
-          if (strArr.length > 3) {
-            query = query.startAt(doubleValue, strArr[3]);
-          } else {
-            query = query.startAt(doubleValue);
+      } else if ("filter".equals(type)) {
+        String valueType = (String) modifier.get("valueType");
+        String key = (String) modifier.get("key");
+        if ("equalTo".equals(name)) {
+          if ("number".equals(valueType)) {
+            double value = (Double) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("boolean".equals(valueType)) {
+            boolean value = (Boolean) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("string".equals(valueType)) {
+            String value = (String) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
           }
-        } else if ("boolean".equals(type)) {
-          boolean booleanValue = Boolean.parseBoolean(value);
-          if (strArr.length > 3) {
-            query = query.startAt(booleanValue, strArr[3]);
-          } else {
-            query = query.startAt(booleanValue);
+        } else if ("endAt".equals(name)) {
+          if ("number".equals(valueType)) {
+            double value = (Double) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("boolean".equals(valueType)) {
+            boolean value = (Boolean) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("string".equals(valueType)) {
+            String value = (String) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
           }
-        } else {
-          if (strArr.length > 3) {
-            query = query.startAt(value, strArr[3]);
-          } else {
-            query = query.startAt(value);
+        } else if ("startAt".equals(name)) {
+          if ("number".equals(valueType)) {
+            double value = (Double) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("boolean".equals(valueType)) {
+            boolean value = (Boolean) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
+          } else if ("string".equals(valueType)) {
+            String value = (String) modifier.get("value");
+            if (key == null) {
+              query = query.equalTo(value);
+            } else {
+              query = query.equalTo(value, key);
+            }
           }
         }
       }
