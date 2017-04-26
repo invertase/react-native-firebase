@@ -32,9 +32,10 @@ declare module "react-native-firebase" {
      * such as a pre-caught exception this is possible by using the report method.
      */
     crash(): RNFirebase.crash.Crash;
-
+    apps: Array<string>;
     googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
-    static initializeApp(options?: any, name?: string): FireBase
+    static initializeApp(options?: any | RNFirebase.configurationOptions, name?: string): FireBase;
+    [key: string]: any;
   }
 
   namespace RNFirebase {
@@ -155,6 +156,7 @@ declare module "react-native-firebase" {
          */
         putFile(filePath: string, metadata?: any): StorageTask<any>;
         setMaxDownloadRetryTime(time: number): void
+        [key: string]: any;
       }
 
       interface Storage {
@@ -287,11 +289,13 @@ declare module "react-native-firebase" {
          * disconnect to firebase backend
          */
         goOffline(): void
+        [key: string]: any;
       }
 
       interface RnReference extends Reference {
         keepSynced(bool: boolean): any
-        filter(name: string, value: any, key?: string): any
+        filter(name: string, value: any, key?: string): any;
+        [key: string]: any;
       }
 
       interface Query {
@@ -398,7 +402,8 @@ declare module "react-native-firebase" {
       /**
        * Sets a key/value pair of data on the current user.
        */
-      setUserProperty(name: string, value: string): void
+      setUserProperty(name: string, value: string): void;
+      [key: string]: any;
     }
 
     interface User {
@@ -538,9 +543,10 @@ declare module "react-native-firebase" {
          * given a confirmation code and new password.
          */
         signOut(): Promise<void>
+        [key: string]: any;
       }
     }
-    
+
     namespace messaging {
 
       interface Messaging {
@@ -654,6 +660,7 @@ declare module "react-native-firebase" {
          * An Error object must be passed into the report method.
          */
         report(error: RnError, maxStackSize: Number): void
+        [key: string]: any;
       }
     }
   }
