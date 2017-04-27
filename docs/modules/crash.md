@@ -4,7 +4,7 @@ RNFirebase provides crash reporting for your app out of the box. Please note cra
 
 ## Manual Crash Reporting
 
-If you want to manually report a crash, such as a pre-caught exception this is possible by using the `report` method. 
+If you want to manually report a crash, such as a pre-caught exception this is possible by using the `report` method.
 
 ```javascript
 try {
