@@ -1,10 +1,8 @@
 
 <h1 align="center">
-  <a href="http://invertase.io/react-native-firebase/#/">
-    <img src="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/><br>
-  </a>
+  <img src="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/><br>
 
-  <a href="http://invertase.io/react-native-firebase/#/">React Native Firebase</a>
+  React Native Firebase
 </h1>
 
 <div style="text-align: center;">

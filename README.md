@@ -1,4 +1,4 @@
-# React Native Firebase<img align="left" src="http://i.imgur.com/01XQL0x.png">
+# React Native Firebase<a href="https://invertase.io/react-native-firebase"><img align="left" src="http://i.imgur.com/01XQL0x.png"></a>
 
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/t6bdqMs)
 [![Gitter](https://badges.gitter.im/invertase/react-native-firebase.svg)](https://gitter.im/invertase/react-native-firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -6,9 +6,11 @@
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
-<hr>
 
 > [Documentation](https://invertase.io/react-native-firebase)
+
+
+<hr>
 
 ### Install
 ```bash
