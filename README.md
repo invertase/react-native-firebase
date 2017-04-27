@@ -8,13 +8,15 @@
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
 <hr>
 
+> [Documentation](https://invertase.io/react-native-firebase)
+
 ### Install
-```
+```bash
 npm i react-native-firebase --save
 ```
 
 #### Platform specific setup guides:
-[![ios](https://a.fsdn.com/sd/topics/ios_64.png)](docs/installation.ios.md)   [![android](https://a.fsdn.com/sd/topics/android_64.png)](docs/installation.android.md)
+[![ios](https://a.fsdn.com/sd/topics/ios_64.png)](http://invertase.io/react-native-firebase/#/installation-ios)   [![android](https://a.fsdn.com/sd/topics/android_64.png)](http://invertase.io/react-native-firebase/#/installation-android)
 
 <hr>
 
@@ -27,47 +29,6 @@ Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library 
 RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS and Android. Firebase will run on the native thread, allowing the rest of your app to run on the [JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate). The Firebase Web SDK also runs on the JS thread, therefore potentially affecting the frame rate causing jank with animations, touch events etc. All in all, RNFirebase provides much faster performance (~2x) over the web SDK.
 
 The native SDKs also allow us to hook into device sdk's which are not possible with the web SDK, for example crash reporting, offline realtime database support, analyics and more!
-
-<hr>
-
-### Test app
-
-To help ensure changes and features work across both iOS & Android, we've developed an app specifically to test `react-native-firebase` against the [`firebase` web SDK](https://www.npmjs.com/package/firebase). Please see the [`tests`](tests/README.md) directory for more information.
-
-<hr>
-
-### Examples app
-
-There's currently a work in progress [examples app](https://github.com/invertase/react-native-firebase-examples) which aims to demonstrate various real world use-case scenarios with React Native & Firebase. We welcome any new examples or updates to existing ones.
-
-<hr>
-
-### Documentation
-
-RNFirebase aims to replicate the Firebase Web SDK as closely as possible. Because of this, the documentation focuses around the installation, differences & best practices of this library. Please see the [Firebase Web SDK](https://firebase.google.com/docs/reference/js/) documentation for Firebase functionality.
-
-> If you find any discrepancies between the two libraries, please raise an issue or PR.
-
-* [Firebase Setup](docs/firebase-setup.md)
-* API
-  * [Authentication](docs/api/authentication.md)
-  * [Realtime Database](docs/api/database.md)
-  * [Analytics](docs/api/analytics.md)
-  * [Storage](docs/api/storage.md)
-  * [Messaging](docs/api/cloud-messaging.md)
-  * [Crash](docs/api/crash.md)
-  * [Transactions](docs/api/transactions.md)
-* [FAQs / Troubleshooting](docs/faqs.md)
-
-<hr>
-
-### Contributing
-
-We welcome any contribution to the repository. Please ensure your changes to the JavaScript code follow the styling guides controlled by ESlint. Changes to native code should be kept clean and follow the standard of existing code.
-
-Changes to existing code should ensure all relevant tests on the test app pass. Any new features should have new tests created and ensure all existing tests pass.
-
-**Project board:** https://github.com/invertase/react-native-firebase/projects
 
 <hr>
 

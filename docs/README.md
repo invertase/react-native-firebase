@@ -6,6 +6,11 @@
 </h1>
 
 <div style="text-align: center;">
+[![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/t6bdqMs)
+[![Gitter](https://badges.gitter.im/invertase/react-native-firebase.svg)](https://gitter.im/invertase/react-native-firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![npm version](https://img.shields.io/npm/v/react-native-firebase.svg)](https://www.npmjs.com/package/react-native-firebase)
+[![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
+<br />
 A well tested Firebase implementation for React Native, supporting both iOS & Android apps.
 </div>
 
