@@ -1,6 +1,6 @@
 # Cloud Messaging
 
-Firebase Cloud Messaging ([FCM](https://firebase.google.com/docs/cloud-messaging/)) allows you to send push messages at no 
+Firebase Cloud Messaging ([FCM](https://firebase.google.com/docs/cloud-messaging/)) allows you to send push messages at no
 cost to both Android & iOS platforms. Assuming the installation instructions have been followed, FCM is ready to go.
 
 As the Firebase Web SDK has limited messaging functionality, the following methods within `react-native-firebase` have been
@@ -26,7 +26,7 @@ firebase.messaging().unsubscribeFromTopic('foobar');
 
 ### getInitialNotification(): `Promise<Object>`
 
-When the application has been opened from a notification `getInitialNotification` is called and the notification payload 
+When the application has been opened from a notification `getInitialNotification` is called and the notification payload
 is returned. Use `onMessage` for notifications when the app is running.
 
 ```javascript

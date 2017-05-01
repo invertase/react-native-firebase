@@ -10,45 +10,11 @@ Each platform uses a different setup method after creating the project.
 
 ## iOS
 
-See the [ios setup guide](./installation.ios.md).
+For iOS, ensure you've followed the instructions provided by Firebase; adding your [GoogleService-Info.plist](https://github.com/invertase/react-native-firebase/blob/master/tests/ios/GoogleService-Info.plist)
+file to the project, and [configuring your AppDelegate](https://github.com/invertase/react-native-firebase/blob/master/tests/ios/ReactNativeFirebaseDemo/AppDelegate.m#L20).
 
 ## Android
 
-See the [android setup guide](./installation.android.md).
-
-## Usage
-
-After creating a Firebase project and installing the library, we can use it in our project by importing the library in our JavaScript:
-
-```javascript
-import RNFirebase from 'react-native-firebase'
-```
-
-We need to tell the Firebase library we want to _configure_ the project. RNFirebase provides a way to configure both the native and the JavaScript side of the project at the same time with a single command:
-
-```javascript
-const firebase = RNFirebase.initializeApp({
-  // config options
-});
-```
-
-### Configuration Options
-
-| option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
-|----------------|----------|-------------------------|----------------------------------------|
-| debug | bool | false | When set to true, RNFirebase will log messages to the console and fire `debug` events we can listen to in `js` |
-| persistence | bool | false | When set to true, database persistence will be enabled. |
-
-For instance:
-
-```javascript
-import RNFirebase from 'react-native-firebase';
-
-const configurationOptions = {
-  debug: true
-};
-
-const firebase = RNFirebase.initializeApp(configurationOptions);
-
-export default firebase;
-```
+For Android, ensure you've followed the instructions provided by Firebase; adding your [google-services.json](https://github.com/invertase/react-native-firebase/blob/master/tests/android/app/google-services.json)
+file to the project, installing the [google-services](https://github.com/invertase/react-native-firebase/blob/master/tests/android/build.gradle#L9)
+  plugin and applying **at the end** of your [`build.gradle`](https://github.com/invertase/react-native-firebase/blob/master/tests/android/app/build.gradle#L144).

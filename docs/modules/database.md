@@ -72,7 +72,7 @@ class MyComponent extends Component {
 
 ### Reading data
 
-Firstack allows the database instance to [persist on disk](https://firebase.google.com/docs/database/android/offline-capabilities) if enabled.
+Firebase allows the database instance to [persist on disk](https://firebase.google.com/docs/database/android/offline-capabilities) if enabled.
 To enable database persistence, pass the configuration option `persistence` before calls are made:
 
 ```javascript
@@ -181,7 +181,7 @@ class ToDos extends Component {
 #### Differences between `.on` & `.once`
 
 With persistence enabled, any calls to a ref with `.once` will always read the data from disk and not contact the server.
-On behavious differently, by first checking for a connection and if none exists returns the persisted data. If it successfully connects
+On behaves differently, by first checking for a connection and if none exists returns the persisted data. If it successfully connects
 to the server, the new data will be returned and the disk data will be updated.
 
 The database refs has a `keepSynced()` function to tell the RNFirebase library to keep the data at the `ref` in sync.

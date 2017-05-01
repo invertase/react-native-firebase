@@ -78,12 +78,13 @@ public class Utils {
   /**
    *
    * @param name
+   * @param refId
+   * @param listenerId
    * @param path
-   * @param modifiersString
    * @param dataSnapshot
    * @return
    */
-  public static WritableMap snapshotToMap(String name, String path, String modifiersString, DataSnapshot dataSnapshot) {
+  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot) {
     WritableMap snapshot = Arguments.createMap();
     WritableMap eventMap = Arguments.createMap();
 
@@ -106,10 +107,13 @@ public class Utils {
     snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
     mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
+    eventMap.putInt("refId", refId);
+    if (listenerId != null) {
+      eventMap.putInt("listenerId", listenerId);
+    }
     eventMap.putString("path", path);
     eventMap.putMap("snapshot", snapshot);
     eventMap.putString("eventName", name);
-    eventMap.putString("modifiersString", modifiersString);
 
     return eventMap;
   }

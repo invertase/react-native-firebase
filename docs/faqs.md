@@ -1,6 +1,6 @@
 # FAQs / Troubleshooting
 
-### Comparison to Firestack
+## Comparison to Firestack
 
 Firestack was a great start to integrating Firebase and React Native, however has underlying issues which needed to be fixed.
 A V3 fork of Firestack was created to help address issues such as lack of standardisation with the Firebase Web SDK,
@@ -10,7 +10,7 @@ too large to manage on the existing repository, whilst trying to maintain backwa
 RNFirebase was re-written from the ground up, addressing these issues with core focus being around matching the Web SDK as
 closely as possible and fixing the major bugs/issues along the way.
 
-### How do I integrate Redux with RNFirebase
+## How do I integrate Redux with RNFirebase
 
 As every project has different requirements & structure, RNFirebase *currently* has no built in methods for Redux integration.
 As RNFirebase can be used outside of a Components context, you do have free reign to integrate it as you see fit. For example,
@@ -42,7 +42,7 @@ export function onAuthStateChanged() {
 }
 ```
 
-### [Android] Google Play Services related issues
+## [Android] Google Play Services related issues
 
 The firebase SDK requires a certain version of Google Play Services installed on Android in order to function properly.
 
@@ -68,7 +68,7 @@ party emulator such as GenyMotion.
 Using this kind of workaround with Google Play Services can be problematic, so we
 recommend using the native Android Studio emulators to reduce the chance of these complications.
 
-### [Android] Turning off Google Play Services availability errors
+## [Android] Turning off Google Play Services availability errors
 
 G.P.S errors can be turned off using a config option like so:
 
@@ -79,7 +79,7 @@ const firebase = RNFirebase.initializeApp({
 ```
 This will stop your app from immediately red-boxing or crashing, but won't solve the underlying issue of G.P.S not being available or of the correct version. This will mean certain functionalities won't work properly and your app may even crash.
 
-### [Android] Checking for Google Play Services availability with React Native Firebase
+## [Android] Checking for Google Play Services availability with React Native Firebase
 
 React Native Firebase actually has a useful helper object for checking G.P.S availability:
 
@@ -109,7 +109,7 @@ This error will match the messages and error codes mentioned above, and can be f
 https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult#SERVICE_VERSION_UPDATE_REQUIRED
 
 
-### [Android] Duplicate Dex Files error (build time error)
+## [Android] Duplicate Dex Files error (build time error)
 
 A common build time error when using libraries that require google play services is of the form:
 'Failed on android with com.android.dex.DexException: Multiple dex files... '

@@ -36,5 +36,6 @@ target 'ReactNativeFirebaseDemo' do
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage'
 
+
   pod 'RNFirebase', :path => './../../'
 end

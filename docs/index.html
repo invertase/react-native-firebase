@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>react-native-firebase - A react native firebase library supporting both android and ios native firebase SDK's</title>
+  <meta name="description" content="A react native firebase library supporting both android and ios native firebase SDK's">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+<script>
+  window.$docsify = {
+    name: 'react-native-firebase',
+    repo: 'https://github.com/invertase/react-native-firebase',
+    loadSidebar: true,
+    search: 'auto',
+    themeColor: '#f5820b',
+    subMaxLevel: 2,
+    maxLevel: 4,
+    ga: 'UA-98196653-1',
+    plugins: [
+      function (hook) {
+        var footer = [
+          '<hr/>',
+          '<footer>',
+          `<span>Caught a mistake or want to contribute to the documentation? <a href="https://github.com/invertase/react-native-firebase/tree/master/docs" target="_blank">Edit documentation on Github!</a>.</span>`,
+          '</footer>'
+        ].join('');
+
+        hook.afterEach(function (html) {
+          return html + footer
+        })
+      }
+    ]
+  }
+</script>
+<script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+<script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
+<link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
+<script src="//unpkg.com/docsify/lib/plugins/emoji.min.js"></script>
+<script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
+<script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
+<script src="//unpkg.com/prismjs/components/prism-javascript.min.js"></script>
+</html>

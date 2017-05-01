@@ -25,7 +25,7 @@ class CoreContainer extends React.Component {
       StatusBar.setBackgroundColor('#0279ba');
     }
     if (Platform.OS === 'ios') {
-      StatusBar.setBarStyle('light-content')
+      StatusBar.setBarStyle('light-content');
     }
     AppState.addEventListener('change', this.handleAppStateChange);
     NetInfo.isConnected.fetch().then((isConnected) => {
@@ -44,6 +44,7 @@ class CoreContainer extends React.Component {
   }
 
   props: Props;
+  _isConnected: boolean;
 
   /**
    * Handle app state changes
