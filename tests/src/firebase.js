@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import RNfirebase from './../../';
+import RNfirebase from './../firebase/firebase';
 
 import DatabaseContents from './tests/support/DatabaseContents';
 
