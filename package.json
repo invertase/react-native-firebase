@@ -9,7 +9,12 @@
     "dev": "npm run compile -- --watch",
     "lint": "eslint ./src",
     "publish_pages": "gh-pages -d public/",
+    "tests-npm-install": "cd tests && npm install",
     "tests-packager": "cd tests && npm run start",
+    "watch:add": "wml add $(node --eval \"console.log(require('path').resolve('./lib'));\") $(node --eval \"console.log(require('path').resolve('./tests/firebase'));\")",
+    "watch:list": "wml list",
+    "watch:start": "watchman watch $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml start",
+    "watch:stop": "watchman watch-del $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml stop",
     "tests-pod-install": "cd tests && npm run ios:pod:install",
     "flow": "flow"
   },
@@ -73,7 +78,8 @@
     "flow-bin": "^0.40.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
-    "react-native": "^0.42.0"
+    "react-native": "^0.42.0",
+    "wml": "0.0.82"
   },
   "dependencies": {
     "bows": "^1.6.0",

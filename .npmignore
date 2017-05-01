@@ -61,3 +61,5 @@ docs
 coverage
 yarn.lock
 tests
+lib/.watchmanconfig
+

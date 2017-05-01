@@ -24,6 +24,7 @@ android/local.properties
 
 # Gradle generated files
 android/.gradle/
+firebase
 
 # Signing files
 android/.signing/
@@ -56,6 +57,7 @@ android/gradlew
 android/build
 android/gradlew.bat
 android/gradle/
+lib/.watchmanconfig
 .idea
 .idea
 coverage
