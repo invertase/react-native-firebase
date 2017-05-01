@@ -9,7 +9,8 @@
     "dev": "npm run compile -- --watch",
     "lint": "eslint ./src",
     "publish_pages": "gh-pages -d public/",
-    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'",
+    "tests-packager": "cd tests && npm run start",
+    "tests-pod-install": "cd tests && npm run ios:pod:install",
     "flow": "flow"
   },
   "repository": {

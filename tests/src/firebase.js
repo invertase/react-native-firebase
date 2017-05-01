@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import RNfirebase from 'react-native-firebase';
+import RNfirebase from './../../';
 
 import DatabaseContents from './tests/support/DatabaseContents';
 

@@ -55,7 +55,6 @@ buck-out/
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
-ios/Podfile
 ios/Podfile.lock
 ios/Pods/
 ios/ReactNativeFirebaseDemo.xcworkspace/
