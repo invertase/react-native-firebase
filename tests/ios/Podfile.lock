@@ -1,31 +1,31 @@
 PODS:
-  - Firebase/Analytics (3.15.0):
+  - Firebase/Analytics (3.14.0):
     - Firebase/Core
-  - Firebase/AppIndexing (3.15.0):
+  - Firebase/AppIndexing (3.14.0):
     - Firebase/Core
     - FirebaseAppIndexing (= 1.2.0)
-  - Firebase/Auth (3.15.0):
+  - Firebase/Auth (3.14.0):
     - Firebase/Core
     - FirebaseAuth (= 3.1.1)
-  - Firebase/Core (3.15.0):
+  - Firebase/Core (3.14.0):
     - FirebaseAnalytics (= 3.7.0)
-    - FirebaseCore (= 3.5.2)
-  - Firebase/Crash (3.15.0):
+    - FirebaseCore (= 3.5.1)
+  - Firebase/Crash (3.14.0):
     - Firebase/Core
     - FirebaseCrash (= 1.1.6)
-  - Firebase/Database (3.15.0):
+  - Firebase/Database (3.14.0):
     - Firebase/Core
     - FirebaseDatabase (= 3.1.2)
-  - Firebase/DynamicLinks (3.15.0):
+  - Firebase/DynamicLinks (3.14.0):
     - Firebase/Core
-    - FirebaseDynamicLinks (= 1.3.4)
-  - Firebase/Messaging (3.15.0):
+    - FirebaseDynamicLinks (= 1.3.3)
+  - Firebase/Messaging (3.14.0):
     - Firebase/Core
     - FirebaseMessaging (= 1.2.2)
-  - Firebase/RemoteConfig (3.15.0):
+  - Firebase/RemoteConfig (3.14.0):
     - Firebase/Core
     - FirebaseRemoteConfig (= 1.3.4)
-  - Firebase/Storage (3.15.0):
+  - Firebase/Storage (3.14.0):
     - Firebase/Core
     - FirebaseStorage (= 1.1.0)
   - FirebaseAnalytics (3.7.0):
@@ -37,7 +37,7 @@ PODS:
     - FirebaseAnalytics (~> 3.7)
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (3.5.2):
+  - FirebaseCore (3.5.1):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
   - FirebaseCrash (1.1.6):
     - FirebaseAnalytics (~> 3.7)
@@ -47,7 +47,7 @@ PODS:
     - Protobuf (~> 3.1)
   - FirebaseDatabase (3.1.2):
     - FirebaseAnalytics (~> 3.7)
-  - FirebaseDynamicLinks (1.3.4):
+  - FirebaseDynamicLinks (1.3.3):
     - FirebaseAnalytics (~> 3.7)
   - FirebaseInstanceID (1.0.9)
   - FirebaseMessaging (1.2.2):
@@ -75,7 +75,7 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
-  - GTMSessionFetcher/Core (1.1.9)
+  - GTMSessionFetcher/Core (1.1.8)
   - Protobuf (3.2.0)
   - React (0.40.0):
     - React/Core (= 0.40.0)
@@ -112,7 +112,7 @@ PODS:
   - React/RCTWebSocket (0.40.0):
     - React/Core
   - React/yoga (0.40.0)
-  - RNFirebase (1.0.0-alpha12):
+  - RNFirebase (1.0.0-alpha13):
     - Firebase/Auth
     - Firebase/Core
     - Firebase/Database
@@ -145,33 +145,33 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
-  - RNFirebase (from `../node_modules/react-native-firebase`)
+  - RNFirebase (from `./../../`)
 
 EXTERNAL SOURCES:
   React:
-    :path: "../node_modules/react-native"
+    :path: ../node_modules/react-native
   RNFirebase:
-    :path: "../node_modules/react-native-firebase"
+    :path: ./../../
 
 SPEC CHECKSUMS:
-  Firebase: 2b1cdfba1cda8589f32904a697cc753322bff9d8
+  Firebase: 85a581fb04e44f63ae9f4fbc8d6dabf4a4c18653
   FirebaseAnalytics: 0d1b7d81d5021155be37702a94ba1ec16d45365d
   FirebaseAppIndexing: d0fa52ce0ad13f4b5b2f09e4b47fb0dc2213f4e9
   FirebaseAuth: cc8a1824170adbd351edb7f994490a3fb5c18be6
-  FirebaseCore: a024587e43778508700af8c6b1209f7c4516ba02
+  FirebaseCore: 225d40532489835a034b8f4e2c9c87fbf4f615a2
   FirebaseCrash: db4c05d9c75baa050744d31b36357c8f1efba481
   FirebaseDatabase: 05c96d7b43a7368dc91c07791adb49683e1738d1
-  FirebaseDynamicLinks: 30fb0856dd9ae6d8ba4da00972141a5c293a27b2
+  FirebaseDynamicLinks: f0d025dd29a1d70418c003344813b67ab748ffb9
   FirebaseInstanceID: 2d0518b1378fe9d685ef40cbdd63d2fdc1125339
   FirebaseMessaging: df8267f378580a24174ce7861233aa11d5c90109
   FirebaseRemoteConfig: af3003f4e8daa2bd1d5cf90d3cccc1fe224f8ed9
   FirebaseStorage: a5c55b23741a49a72af8f30f95b3bb5ddbeda12d
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  GTMSessionFetcher: 5c046c76a1f859bc9c187e918f18e4fc7bb57b5e
+  GTMSessionFetcher: 6f8d8b28b7e345549ac471071608170b31cb4977
   Protobuf: 745f59e122e5de98d4d7ef291e264a0eef80f58e
   React: 6dfb2f72edb1d74a800127ae157af038646673ce
-  RNFirebase: 228c16667a3ed1ba3b9ff0702449dca3be1c3618
+  RNFirebase: 2e27a1e4530653630913ebdfb49de5ef8858e3b4
 
-PODFILE CHECKSUM: 23445e2727726988c7338fa2f396980d6fd3906f
+PODFILE CHECKSUM: f8bc5de55afd159ec2faf523f1b8e0d861d0832b
 
 COCOAPODS: 1.2.0
