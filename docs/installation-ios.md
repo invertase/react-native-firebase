@@ -132,7 +132,7 @@ Add the following to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOp
 
 Add the following methods:
 
-```
+```objectivec
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
