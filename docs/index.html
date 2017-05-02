@@ -36,6 +36,11 @@
     ]
   }
 </script>
+<script>
+  if (typeof navigator.serviceWorker !== 'undefined') {
+    navigator.serviceWorker.register('sw.js')
+  }
+</script>
 <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
 <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
 <link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
@@ -43,4 +48,7 @@
 <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
 <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
 <script src="//unpkg.com/prismjs/components/prism-javascript.min.js"></script>
+<script src="//unpkg.com/prismjs/components/prism-java.min.js"></script>
+<script src="//unpkg.com/prismjs/components/prism-swift.min.js"></script>
+<script src="//unpkg.com/prismjs/components/prism-objectivec.min.js"></script>
 </html>
