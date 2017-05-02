@@ -249,46 +249,46 @@ public class RNFirebaseDatabaseReference {
           if ("number".equals(valueType)) {
             double value = (Double) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.endAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.endAt(value, key);
             }
           } else if ("boolean".equals(valueType)) {
             boolean value = (Boolean) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.endAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.endAt(value, key);
             }
           } else if ("string".equals(valueType)) {
             String value = (String) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.endAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.endAt(value, key);
             }
           }
         } else if ("startAt".equals(name)) {
           if ("number".equals(valueType)) {
             double value = (Double) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.startAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.startAt(value, key);
             }
           } else if ("boolean".equals(valueType)) {
             boolean value = (Boolean) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.startAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.startAt(value, key);
             }
           } else if ("string".equals(valueType)) {
             String value = (String) modifier.get("value");
             if (key == null) {
-              query = query.equalTo(value);
+              query = query.startAt(value);
             } else {
-              query = query.equalTo(value, key);
+              query = query.startAt(value, key);
             }
           }
         }
