@@ -92,3 +92,67 @@ pod 'Firebase/Storage'
 ```
 
 Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
+
+## 3) Cloud Messaging (optional)
+
+If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) then, you need to:
+
+**NOTE: FCM does not work on the iOS simulator, you must test is using a real device.  This is a restriction enforced by Apple for some unknown reason.**
+
+### 3.1) Set up certificates
+
+Follow the instructions at https://firebase.google.com/docs/cloud-messaging/ios/certs
+
+### 3.2) Enable capabilities
+
+In Xcode, enable the following capabilities:
+
+1) Push Notifications
+2) Background modes > Remove notifications
+
+### 3.3) Update `AppDelegate.h`
+
+Add the following import:
+
+`@import UserNotifications;`
+
+Change the interface descriptor to:
+
+`@interface AppDelegate : UIResponder <UIApplicationDelegate,UNUserNotificationCenterDelegate>`
+
+### 3.4) Update `AppDelegate.m`
+
+Add the following import:
+
+`#import "RNFirebaseMessaging.h"`
+
+Add the following to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method after `[FIRApp Configure]`:
+
+`[[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];`
+
+Add the following methods:
+
+```
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
+{
+  [RNFirebaseMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)())completionHandler
+{
+  [RNFirebaseMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+
+-(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+  [RNFirebaseMessaging didReceiveLocalNotification:notification];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo 
+                                                       fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+  [RNFirebaseMessaging didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+```
