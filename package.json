@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase",
-  "version": "1.0.0-alpha13",
+  "version": "1.0.0-alpha14",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A react native firebase library supporting both android and ios native firebase SDK's",
   "main": "index",
