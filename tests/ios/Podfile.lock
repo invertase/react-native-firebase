@@ -77,8 +77,6 @@ PODS:
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
   - GTMSessionFetcher/Core (1.1.8)
   - Protobuf (3.2.0)
-  - React (0.40.0):
-    - React/Core (= 0.40.0)
   - React/Core (0.40.0):
     - React/cxxreact
     - React/yoga
@@ -112,14 +110,7 @@ PODS:
   - React/RCTWebSocket (0.40.0):
     - React/Core
   - React/yoga (0.40.0)
-  - RNFirebase (1.0.0-alpha13):
-    - Firebase/Auth
-    - Firebase/Core
-    - Firebase/Database
-    - Firebase/Messaging
-    - Firebase/RemoteConfig
-    - Firebase/Storage
-    - React
+  - RNFirebase (1.0.0-alpha13)
 
 DEPENDENCIES:
   - Firebase/Analytics
@@ -170,7 +161,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 6f8d8b28b7e345549ac471071608170b31cb4977
   Protobuf: 745f59e122e5de98d4d7ef291e264a0eef80f58e
   React: 6dfb2f72edb1d74a800127ae157af038646673ce
-  RNFirebase: 2e27a1e4530653630913ebdfb49de5ef8858e3b4
+  RNFirebase: 46bfe1099349ac6fac8c5e57cf4f0b0f4b7938ac
 
 PODFILE CHECKSUM: f8bc5de55afd159ec2faf523f1b8e0d861d0832b
 
