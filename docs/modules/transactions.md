@@ -1,6 +1,21 @@
 # Transactions
 
-> Transactions are currently an experimental feature as they can not be integrated as easily as the other Firebase features. Please see the [Firebase documentation](https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction) for full implemtation details.
+!> Transactions is currently an experimental feature in RNFirebase. Whilst it does work there may still be some issues with it, especially around offline connectivity handling. Please report any issues in the usual manner.
+
+
+?> For help on how to use firebase transactions please see the [Firebase Transaction Documentation](https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction).
+
+### Android Implementation
+
+The [android implementation](https://github.com/invertase/react-native-firebase/blob/master/android/src/main/java/io/invertase/firebase/database/RNFirebaseTransactionHandler.java) makes use of [Condition](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/Condition.html) and [ReentrantLock](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/locks/ReentrantLock.html) locks to handle transactions across the React Native Bridge. 
+
+
+### iOS Implementation
+
+The [iOS implementation](https://github.com/invertase/react-native-firebase/blob/master/ios/RNFirebase/RNFirebaseDatabase.m#L279) makes use of GCD (Grand Central Dispatch) to handle transactions across the React Native Bridge without blocking the application thread. Check out [this](https://mikeash.com/pyblog/friday-qa-2011-10-14-whats-new-in-gcd.html) post for some 'light' reading about it.
+
+!> Transactions that receive no response from react native's JS thread within 30 seconds are automatically aborted - this value is currently not configurable - PR welcome.
+
 
 ## Example
 
