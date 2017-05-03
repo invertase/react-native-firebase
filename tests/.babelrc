@@ -1,0 +1,9 @@
+{
+  "presets": [
+    "react-native"
+  ],
+  "ignore": [
+    "node_modules/diff/lib/**/*.js",
+    "node_modules/diff/node_modules/**/*.js"
+  ]
+}

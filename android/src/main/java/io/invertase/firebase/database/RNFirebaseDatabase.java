@@ -34,7 +34,7 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private HashMap<String, RNFirebaseDatabaseReference> mDBListeners = new HashMap<>();
+  private HashMap<Integer, RNFirebaseDatabaseReference> mReferences = new HashMap<>();
   private HashMap<String, RNFirebaseTransactionHandler> mTransactionHandlers = new HashMap<>();
   private FirebaseDatabase mFirebaseDatabase;
 
@@ -264,7 +264,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   /**
-   * 
+   *
    * @param id
    * @param updates
    */
@@ -279,61 +279,60 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void on(final String path, final String modifiersString, final ReadableArray modifiersArray, final String eventName, final Callback callback) {
-    RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
+  public void on(final int refId, final String path, final ReadableArray modifiers, final int listenerId, final String eventName, final Callback callback) {
+    RNFirebaseDatabaseReference ref = this.getDBHandle(refId, path, modifiers);
 
     if (eventName.equals("value")) {
-      ref.addValueEventListener();
+      ref.addValueEventListener(listenerId);
     } else {
-      ref.addChildEventListener(eventName);
+      ref.addChildEventListener(listenerId, eventName);
     }
 
     WritableMap resp = Arguments.createMap();
     resp.putString("status", "success");
+    resp.putInt("refId", refId);
     resp.putString("handle", path);
     callback.invoke(null, resp);
   }
 
   @ReactMethod
-  public void once(final String path, final String modifiersString, final ReadableArray modifiersArray, final String eventName, final Callback callback) {
-    RNFirebaseDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
+  public void once(final int refId, final String path, final ReadableArray modifiers, final String eventName, final Callback callback) {
+    RNFirebaseDatabaseReference ref = this.getDBHandle(refId, path, modifiers);
     ref.addOnceValueEventListener(callback);
   }
 
   /**
    * At the time of this writing, off() only gets called when there are no more subscribers to a given path.
-   * `mListeners` might therefore be out of sync (though javascript isnt listening for those eventTypes, so
+   * `mListeners` might therefore be out of sync (though javascript isnt listening for those eventNames, so
    * it doesn't really matter- just polluting the RN bridge a little more than necessary.
    * off() should therefore clean *everything* up
    */
   @ReactMethod
   public void off(
-    final String path,
-    final String modifiersString,
-    final String eventName,
+    final int refId,
+    final ReadableArray listeners,
     final Callback callback) {
 
-    String key = this.getDBListenerKey(path, modifiersString);
-    RNFirebaseDatabaseReference r = mDBListeners.get(key);
+    RNFirebaseDatabaseReference r = mReferences.get(refId);
 
     if (r != null) {
-      if (eventName == null || "".equals(eventName)) {
-        r.cleanup();
-        mDBListeners.remove(key);
-      } else {
-        r.removeEventListener(eventName);
+      List<Object> listenersList = Utils.recursivelyDeconstructReadableArray(listeners);
+
+      for (Object l : listenersList) {
+        Map<String, Object> listener = (Map) l;
+        int listenerId = ((Double) listener.get("listenerId")).intValue();
+        String eventName = (String) listener.get("eventName");
+        r.removeEventListener(listenerId, eventName);
         if (!r.hasListeners()) {
-          mDBListeners.remove(key);
+          mReferences.remove(refId);
         }
       }
     }
 
-    Log.d(TAG, "Removed listener " + path + "/" + modifiersString);
+    Log.d(TAG, "Removed listeners refId: " + refId + " ; count: " + listeners.size());
     WritableMap resp = Arguments.createMap();
-    resp.putString("handle", path);
+    resp.putInt("refId", refId);
     resp.putString("status", "success");
-    resp.putString("modifiersString", modifiersString);
-    //TODO: Remaining listeners
     callback.invoke(null, resp);
   }
 
@@ -440,21 +439,17 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
-  private RNFirebaseDatabaseReference getDBHandle(final String path, final ReadableArray modifiersArray, final String modifiersString) {
-    String key = this.getDBListenerKey(path, modifiersString);
-    RNFirebaseDatabaseReference r = mDBListeners.get(key);
+  private RNFirebaseDatabaseReference getDBHandle(final int refId, final String path,
+    final ReadableArray modifiers) {
+    RNFirebaseDatabaseReference r = mReferences.get(refId);
 
     if (r == null) {
       ReactContext ctx = getReactApplicationContext();
-      r = new RNFirebaseDatabaseReference(ctx, mFirebaseDatabase, path, modifiersArray, modifiersString);
-      mDBListeners.put(key, r);
+      r = new RNFirebaseDatabaseReference(ctx, mFirebaseDatabase, refId, path, modifiers);
+      mReferences.put(refId, r);
     }
 
     return r;
-  }
-
-  private String getDBListenerKey(String path, String modifiersString) {
-    return path + " | " + modifiersString;
   }
 
   @Override
