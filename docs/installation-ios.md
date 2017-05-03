@@ -13,9 +13,10 @@ and this to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` me
 `[FIRApp configure];`
 
 ## 2) Link RNFirebase
+
 There are multiple ways to install RNFirebase depending on how your project is currently setup:
 
-### 2.1) Existing Cocoapods setup, including React Native as a pod
+### 2.1) You already use Cocoapods and have React Native installed as a pod
 Simply add the following to your `Podfile`:
 
 ```ruby
@@ -33,12 +34,17 @@ pod 'Firebase/Storage'
 pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 ```
 
-### 2.2) Via react-native-cli link
+### 2.2) You're not using Cocoapods or don't have React Native installed as a pod (Automatic install)
+
 React native ships with a `link` command that can be used to link the projects together, which can help automate the process of linking our package environments.
 
 ```bash
 react-native link react-native-firebase
 ```
+
+#### cocoapods
+
+We've automated the process of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`.
 
 Update the newly installed pods once the linking is done:
 
@@ -46,13 +52,9 @@ Update the newly installed pods once the linking is done:
 cd ios && pod update --verbose
 ```
 
-### cocoapods
+**NOTE: You need to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on.**
 
-We've automated the process of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`.
-
-> Remember to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on.
-
-### 2.3) Manually
+### 2.3) You're not using Cocoapods or don't have React Native installed as a pod (Manual install)
 
 If you prefer not to use `react-native link`, we can manually link the package together with the following steps, after `npm install`:
 
@@ -91,7 +93,9 @@ pod 'Firebase/RemoteConfig'
 pod 'Firebase/Storage'
 ```
 
-Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
+Then you can run `(cd ios && pod install)` to get the pods opened.
+
+**NOTE: You need to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on.**
 
 ## 3) Cloud Messaging (optional)
 
