@@ -2,8 +2,8 @@
 #define RNFirebaseDatabase_h
 
 #import "Firebase.h"
-#import "RCTEventEmitter.h"
-#import "RCTBridgeModule.h"
+#import <React/RCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 
 @interface RNFirebaseDatabase : RCTEventEmitter <RCTBridgeModule> {
 

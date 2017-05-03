@@ -1,7 +1,7 @@
 #ifndef RNFirebaseCrash_h
 #define RNFirebaseCrash_h
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface RNFirebaseCrash : NSObject <RCTBridgeModule> {
 

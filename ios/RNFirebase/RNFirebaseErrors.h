@@ -1,7 +1,7 @@
 #ifndef RNFirebaseErrors_h
 #define RNFirebaseErrors_h
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import "Firebase.h"
 
 @interface RNFirebaseErrors : NSObject <RCTBridgeModule> {
