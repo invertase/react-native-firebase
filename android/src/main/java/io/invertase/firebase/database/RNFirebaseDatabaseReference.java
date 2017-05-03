@@ -213,7 +213,7 @@ public class RNFirebaseDatabaseReference {
           query = query.orderByChild(key);
         }
       } else if ("limit".equals(type)) {
-        int limit = (Integer) modifier.get("limit");
+        int limit = ((Double)modifier.get("limit")).intValue();
         if ("limitToLast".equals(name)) {
           query = query.limitToLast(limit);
         } else if ("limitToFirst".equals(name)) {
