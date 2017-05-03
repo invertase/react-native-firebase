@@ -4,7 +4,7 @@ The RNFirebase library is intended on making it easy to work with [Firebase](htt
 
 To add Firebase to your project, make sure to create a project in the [Firebase console](https://firebase.google.com/console)
 
-![Create a new project](http://d.pr/i/17cJ2.png)
+![Create a new project](https://i.imgur.com/KbbamwD.png)
 
 Each platform uses a different setup method after creating the project.
 
