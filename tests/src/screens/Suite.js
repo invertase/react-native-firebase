@@ -11,25 +11,19 @@ import TestSuiteControlButton from '../components/TestSuiteControlButton';
 
 class Suite extends React.Component {
 
-  static navigationOptions = {
-    title: ({ state: { params: { title } } }) => {
-      return title;
-    },
-    header: ({ state: { params: { testSuiteId, onlyShowFailingTests } }, setParams }) => {
-      return {
-        style: { backgroundColor: '#0288d1' },
-        tintColor: '#ffffff',
-        right: (
-          <View style={{ flexDirection: 'row', marginRight: 8 }}>
-            <TestSuiteControlButton
-              testSuiteId={testSuiteId}
-              onlyShowFailingTests={onlyShowFailingTests}
-              onFilterChange={setParams}
-            />
-          </View>
-        ),
-      };
-    },
+  static navigationOptions = ({ navigation: { state: { params: { title, testSuiteId, onlyShowFailingTests } }, setParams } }) => {
+    return {
+      title,
+      headerTintColor: '#ffffff',
+      headerStyle: { backgroundColor: '#0288d1' },
+      headerRight: <View style={{ flexDirection: 'row', marginRight: 8 }}>
+        <TestSuiteControlButton
+          testSuiteId={testSuiteId}
+          onlyShowFailingTests={onlyShowFailingTests}
+          onFilterChange={setParams}
+        />
+      </View>,
+    };
   };
 
   /**
