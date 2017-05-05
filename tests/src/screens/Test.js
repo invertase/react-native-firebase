@@ -9,21 +9,15 @@ import TestControlButton from '../components/TestControlButton';
 
 class Test extends React.Component {
 
-  static navigationOptions = {
-    title: ({ state: { params: { title } } }) => {
-      return title;
-    },
-    header: ({ state: { params: { testId } } }) => {
-      return {
-        style: { backgroundColor: '#0288d1' },
-        tintColor: '#ffffff',
-        right: (
-          <View style={{ marginRight: 8 }}>
-            <TestControlButton testId={testId} />
-          </View>
-        ),
-      };
-    },
+  static navigationOptions = ({ navigation: { state: { params: { title, testId } } } }) => {
+    return {
+      title,
+      headerTintColor: '#ffffff',
+      headerStyle: { backgroundColor: '#0288d1' },
+      headerRight: <View style={{ marginRight: 8 }}>
+        <TestControlButton testId={testId} />
+      </View>,
+    };
   };
 
   static renderBanner({ status, time }) {
