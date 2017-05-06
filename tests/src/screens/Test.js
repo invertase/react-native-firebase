@@ -62,16 +62,16 @@ class Test extends React.Component {
             <Text style={styles.testLabel}>{testContextName}:</Text><Text style={styles.description}>{description}</Text>
           </ScrollView>
           <ScrollView>
-            <Text style={styles.header}>Test Error</Text>
-            <Text style={styles.code}>
+            <Text style={styles.testLabel}>Test Error</Text>
+            <Text style={styles.description}>
               <Text>{message || 'None'}</Text>
             </Text>
           </ScrollView>
-          <Text style={styles.header}>
+          <Text style={styles.testLabel}>
             Test Code Preview
           </Text>
           <ScrollView>
-            <Text style={styles.code}>
+            <Text style={styles.description}>
               {beautify(removeLastLine(removeFirstLine(func.toString())), { indent_size: 4, break_chained_methods: true })}
             </Text>
           </ScrollView>
@@ -102,27 +102,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  header: {
+  testLabel: {
+    padding: 5,
+    backgroundColor: '#0288d1',
     fontWeight: '600',
-    fontSize: 18,
-    backgroundColor: '#000',
-    color: '#fff',
-    padding: 5,
-  },
-  code: {
-    backgroundColor: '#3F373A',
-    color: '#c3c3c3',
-    padding: 5,
-    fontSize: 12,
+    color: '#ffffff',
+    fontSize: 16
   },
   description: {
     padding: 5,
     fontSize: 14,
   },
-  testLabel: {
-    fontWeight: '600',
-    fontSize: 16
-  }
 });
 
 function select({ tests, testContexts }, { navigation: { state: { params: { testId } } } }) {

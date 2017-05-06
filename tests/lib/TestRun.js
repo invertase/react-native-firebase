@@ -306,7 +306,7 @@ class TestRun {
   }
 
   async _safelyRunFunction(func, timeOutDuration, description) {
-    const syncResultOrPromise = tryCatcher(func);
+    const syncResultOrPromise = captureThrownErrors(func);
 
     if (syncResultOrPromise.error) {
       // Synchronous Error
@@ -314,49 +314,59 @@ class TestRun {
     }
 
     // Asynchronous Error
-    return promiseToCallBack(syncResultOrPromise.value, timeOutDuration, description);
+    return capturePromiseErrors(syncResultOrPromise.result, timeOutDuration, description);
   }
 
 }
 
 /**
- * Try catch to object
- * @returns {{}}
+ * Call a function and capture any errors that are immediately thrown.
+ * @returns {Object} Object containing result of executing the function, or the error
+ * message that was captured
  * @private
  */
 
-function tryCatcher(func) {
+function captureThrownErrors(func) {
   const result = {};
 
   try {
-    result.value = func();
-  } catch (e) {
-    result.error = e;
+    result.result = func();
+  } catch (error) {
+    result.error = error;
   }
 
   return result;
 }
 
 /**
- * Make a promise callback-able to trap errors
- * @param promise
+ * Wraps a promise so that if it's rejected or an error is thrown while it's being
+ * evaluated, it's captured and thrown no further
+ * @param {*} target - Target to wrap. If a thenable object, it's wrapped so if it's
+ * rejected or an error is thrown, it will be captured. If a non-thenable object,
+ * wrapped in resolved promise and returned.
+ * @param {Number} timeoutDuration - Number of milliseconds the promise is allowed
+ * to pend before it's considered timed out
+ * @param {String} description - Description of the context the promises is defined
+ * in, used for reporting where a timeout occurred in the resulting error message.
  * @private
  */
 
-function promiseToCallBack(promise, timeoutDuration, description) {
+function capturePromiseErrors(target, timeoutDuration, description) {
   let returnValue = null;
 
   try {
-    returnValue = Promise.resolve(promise)
+    returnValue = Promise.resolve(target)
       .then(() => {
         return null;
       }, (error) => {
         return Promise.resolve(error);
       })
-      .timeout(timeoutDuration, `${description} took longer than ${timeoutDuration}ms. This can be extended with the timeout option.`)
       .catch((error) => {
         return Promise.resolve(error);
-      });
+      })
+      .timeout(timeoutDuration,
+        `${description} took longer than ${timeoutDuration}ms. This can be extended with the timeout option.`
+      );
   } catch (error) {
     returnValue = Promise.resolve(error);
   }
