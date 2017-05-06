@@ -52,25 +52,26 @@ class Test extends React.Component {
   }
 
   render() {
-    const { test: { message, description, func, status, time }, testContextName } = this.props;
+    const { test: { stackTrace, description, func, status, time }, testContextName } = this.props;
 
     return (
       <View style={styles.container}>
         {Test.renderBanner({ status, time })}
         <View >
-          <ScrollView>
-            <Text style={styles.testLabel}>{testContextName}:</Text><Text style={styles.description}>{description}</Text>
+          <ScrollView style={styles.sectionContainer}>
+            <Text style={styles.heading}>{testContextName}</Text>
+            <Text style={styles.description}>{description}</Text>
           </ScrollView>
-          <ScrollView>
-            <Text style={styles.testLabel}>Test Error</Text>
+          <ScrollView style={styles.sectionContainer}>
+            <Text style={styles.heading}>Test Error</Text>
             <Text style={styles.description}>
-              <Text>{message || 'None'}</Text>
+              <Text>{stackTrace || 'None.'}</Text>
             </Text>
           </ScrollView>
-          <Text style={styles.testLabel}>
+          <Text style={styles.heading}>
             Test Code Preview
           </Text>
-          <ScrollView>
+          <ScrollView style={styles.sectionContainer}>
             <Text style={styles.description}>
               {beautify(removeLastLine(removeFirstLine(func.toString())), { indent_size: 4, break_chained_methods: true })}
             </Text>
@@ -85,8 +86,8 @@ Test.propTypes = {
   test: PropTypes.shape({
     status: PropTypes.string,
     time: PropTypes.number,
-    message: PropTypes.string,
     func: PropTypes.function,
+    stackTrace: PropTypes.function,
     description: PropTypes.string,
   }).isRequired,
 
@@ -102,12 +103,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  testLabel: {
+  sectionContainer: {
+    minHeight: 100,
+  },
+  heading: {
     padding: 5,
     backgroundColor: '#0288d1',
     fontWeight: '600',
     color: '#ffffff',
-    fontSize: 16
+    fontSize: 16,
   },
   description: {
     padding: 5,

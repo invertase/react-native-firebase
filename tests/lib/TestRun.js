@@ -286,8 +286,7 @@ class TestRun {
         suiteId: this.testSuite.id,
         status: RunStatus.ERR,
         time: Date.now() - this.runStartTime,
-        message: `Test suite failed: ${error.message}`,
-        stackTrace: error.stack,
+        message: `Test suite failed: ${error.message}`
       });
     });
   }
