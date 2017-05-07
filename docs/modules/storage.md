@@ -3,8 +3,6 @@
 RNFirebase mimics the [Web Firebase SDK Storage](https://firebase.google.com/docs/storage/web/start), whilst
 providing some iOS and Android specific functionality.
 
-All Storage operations are accessed via `storage()`.
-
 ## Uploading files
 
 ### Simple

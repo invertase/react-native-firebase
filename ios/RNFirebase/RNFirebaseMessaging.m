@@ -1,8 +1,20 @@
 #import "RNFirebaseMessaging.h"
 
-#import <React/RCTConvert.h>
+#if __has_include(<React/RCTEventDispatcher.h>)
 #import <React/RCTEventDispatcher.h>
+#else // Compatibility for RN version < 0.40
+#import "RCTEventDispatcher.h"
+#endif
+#if __has_include(<React/RCTConvert.h>)
+#import <React/RCTConvert.h>
+#else // Compatibility for RN version < 0.40
+#import "RCTConvert.h"
+#endif
+#if __has_include(<React/RCTUtils.h>)
 #import <React/RCTUtils.h>
+#else // Compatibility for RN version < 0.40
+#import "RCTUtils.h"
+#endif
 
 @import UserNotifications;
 #import <FirebaseMessaging/FirebaseMessaging.h>
@@ -53,13 +65,13 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
     content.categoryIdentifier = [RCTConvert NSString:details[@"click_action"]];
     content.userInfo = details;
     content.badge = [RCTConvert NSNumber:details[@"badge"]];
-    
+
     NSDate *fireDate = [RCTConvert NSDate:details[@"fire_date"]];
-    
+
     if(fireDate == nil){
         return [UNNotificationRequest requestWithIdentifier:[RCTConvert NSString:details[@"id"]] content:content trigger:nil];
     }
-    
+
     NSCalendarUnit interval = [RCTConvert NSCalendarUnit:details[@"repeat_interval"]];
     NSCalendarUnit unitFlags;
     switch (interval) {
@@ -177,12 +189,12 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
     _bridge = bridge;
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleNotificationReceived:)
                                                  name:FCMNotificationReceived
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(disconnectFCM)
                                                  name:UIApplicationDidEnterBackgroundNotification
@@ -191,19 +203,19 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(connectToFCM)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter]
      addObserver:self selector:@selector(onTokenRefresh)
      name:kFIRInstanceIDTokenRefreshNotification object:nil];
-    
+
     [[NSNotificationCenter defaultCenter]
      addObserver:self selector:@selector(sendDataMessageFailure:)
      name:FIRMessagingSendErrorNotification object:nil];
-    
+
     [[NSNotificationCenter defaultCenter]
      addObserver:self selector:@selector(sendDataMessageSuccess:)
      name:FIRMessagingSendSuccessNotification object:nil];
-    
+
     // For iOS 10 data message (sent via FCM)
     dispatch_async(dispatch_get_main_queue(), ^{
         [[FIRMessaging messaging] setRemoteMessageDelegate:self];
@@ -283,7 +295,7 @@ RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(R
          ];
 #endif
     }
-    
+
     [[UIApplication sharedApplication] registerForRemoteNotifications];
 }
 
@@ -459,22 +471,22 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId){
         self.notificationCallbacks[completionHandlerId] = completionHandler;
         data[@"_completionHandlerId"] = completionHandlerId;
     }
-    
+
     [_bridge.eventDispatcher sendDeviceEventWithName:FCMNotificationReceived body:data];
-    
+
 }
 
 - (void)sendDataMessageFailure:(NSNotification *)notification
 {
     NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
-    
+
     NSLog(@"sendDataMessageFailure: %@", messageID);
 }
 
 - (void)sendDataMessageSuccess:(NSNotification *)notification
 {
     NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
-    
+
     NSLog(@"sendDataMessageSuccess: %@", messageID);
 }
 

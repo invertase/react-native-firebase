@@ -19,6 +19,9 @@ xcuserdata/
 # Crashlytics configuations
 android/com_crashlytics_export_strings.xml
 
+# Signing files
+android/.signing/
+
 # Local configuration file (sdk path, etc)
 **/android/local.properties
 
@@ -54,12 +57,24 @@ ehthumbs.db
 Thumbs.dbandroid/gradle
 android/gradlew
 android/build
+android/.gradle
 android/gradlew.bat
-android/gradle/
-.idea
+android/gradle
+lib/.watchmanconfig
 .idea
 coverage
 yarn.lock
 
+tests/build
+tests/ios/Podfile.lock
+tests/android/app/build
+tests/ios/Pods
+tests/ios/Podfile.lock
+tests/firebase
+.gradle
+local.properties
+*.iml
+
 **/ios/Pods/**
 **/ios/ReactNativeFirebaseDemo.xcworkspace/
+

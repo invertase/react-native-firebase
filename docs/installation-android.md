@@ -1,6 +1,6 @@
 # Android Installation
 
-### 1 - Setup google-services.json
+## 1) Setup google-services.json
 Download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console. This file should be downloaded to `YOUR_PROJECT/android/app/google-services.json`.
 
 Next you'll have to add the google-services gradle plugin in order to parse it.
@@ -23,7 +23,7 @@ In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the f
 apply plugin: 'com.google.gms.google-services'
 ```
 
-### 2 - Link RNFirebase
+## 2) Link RNFirebase
 
 To install `react-native-firebase` in your project, you'll need to import the package from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list it as a package for ReactNative in the `getPackages()` function:
 
@@ -61,7 +61,7 @@ include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
 
-### 3 - Cloud Messaging (optional)
+## 3) Cloud Messaging (optional)
 
 If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/), add the following to `android/app/src/main/AndroidManifest.xml`.
 

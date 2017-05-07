@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase",
-  "version": "1.0.0-alpha12",
+  "version": "1.0.2",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A react native firebase library supporting both android and ios native firebase SDK's",
   "main": "index",
@@ -9,7 +9,12 @@
     "dev": "npm run compile -- --watch",
     "lint": "eslint ./src",
     "publish_pages": "gh-pages -d public/",
-    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'",
+    "tests-npm-install": "cd tests && npm install",
+    "tests-packager": "cd tests && npm run start",
+    "tests-watch-init": "wml add $(node --eval \"console.log(require('path').resolve('./lib'));\") $(node --eval \"console.log(require('path').resolve('./tests/firebase'));\")",
+    "tests-watch-start": "watchman watch $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml start",
+    "tests-watch-stop": "watchman watch-del $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml stop",
+    "tests-pod-install": "cd tests && npm run ios:pod:install",
     "flow": "flow"
   },
   "repository": {
@@ -72,7 +77,8 @@
     "flow-bin": "^0.40.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
-    "react-native": "^0.42.0"
+    "react-native": "^0.42.0",
+    "wml": "0.0.82"
   },
   "dependencies": {
     "bows": "^1.6.0",
