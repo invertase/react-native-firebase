@@ -4,6 +4,7 @@
 [![Gitter](https://badges.gitter.im/invertase/react-native-firebase.svg)](https://gitter.im/invertase/react-native-firebase?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg)](https://www.npmjs.com/package/react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg)](/LICENSE)
+[![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg)](https://www.patreon.com/invertase)
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
 
