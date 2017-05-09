@@ -361,7 +361,11 @@ RCT_EXPORT_METHOD(enablePersistence:(BOOL) enable
 
     BOOL isEnabled = [FIRDatabase database].persistenceEnabled;
     if ( isEnabled != enable) {
-        [FIRDatabase database].persistenceEnabled = enable;
+        @try {
+           [FIRDatabase database].persistenceEnabled = enable;
+        } @catch (NSException *exception) {
+            // do nothing - for RN packager reloads
+        }
     }
     callback(@[[NSNull null], @{
                    @"result": @"success"
