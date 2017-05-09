@@ -18,8 +18,8 @@ const DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS = [
   'number'
 ];
 
-function onTests({ describe, context, it, xit, firebase, tryCatch }) {
-  describe('ref().on(\'value\')', () => {
+function onTests({ fdescribe, context, it, firebase, tryCatch }) {
+  fdescribe('ref().on(\'value\')', () => {
     // Documented Web API Behaviour
     it('returns the success callback', () => {
       // Setup
@@ -142,12 +142,7 @@ function onTests({ describe, context, it, xit, firebase, tryCatch }) {
       await ref.set(currentDataValue);
     });
 
-    /**
-     * Pending until behaviour of push is possibly fixed. Currently, causes
-     * an array to be converted to an object - don't think this is the intended
-     * behaviour
-     */
-    xit('calls callback when child of the ref is added', async () => {
+    it('calls callback when child of the ref is added', async () => {
       const ref = firebase.native.database().ref('tests/types/array');
       const currentDataValue = DatabaseContents.DEFAULT.array;
 
@@ -164,15 +159,24 @@ function onTests({ describe, context, it, xit, firebase, tryCatch }) {
 
       callback.should.be.calledWith(currentDataValue);
 
-      await ref.push(37);
+      const newElementRef = await ref.push(37);
+
+      const arrayAsObject = currentDataValue.reduce((memo, element, index) => {
+        memo[index] = element;
+        return memo;
+      }, {});
 
       // Assertions
-      callback.should.be.calledWith([
-        ...currentDataValue,
-        37,
-      ]);
+      callback.should.be.calledWith({
+        ...arrayAsObject,
+        [newElementRef.key]: 37,
+      });
 
-      callback.should.be.calledTwice();
+      if (Platform.OS === 'android') {
+        callback.should.be.calledThrice();
+      } else {
+        callback.should.be.calledTwice();
+      }
 
       // Tear down
 
