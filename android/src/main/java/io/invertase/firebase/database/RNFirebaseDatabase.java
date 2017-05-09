@@ -28,6 +28,7 @@ import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.Transaction;
 
 import io.invertase.firebase.Utils;
@@ -55,8 +56,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     final Callback callback) {
     try {
       mFirebaseDatabase.setPersistenceEnabled(enable);
-    } catch (Throwable t) {
-      Log.e(TAG, "FirebaseDatabase setPersistenceEnabled exception", t);
+    } catch (DatabaseException t) {
+
     }
 
     WritableMap res = Arguments.createMap();
