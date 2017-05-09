@@ -77,40 +77,16 @@ PODS:
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
   - GTMSessionFetcher/Core (1.1.8)
   - Protobuf (3.2.0)
-  - React/Core (0.40.0):
+  - React (0.44.0):
+    - React/Core (= 0.44.0)
+  - React/Core (0.44.0):
     - React/cxxreact
-    - React/yoga
-  - React/cxxreact (0.40.0):
+    - Yoga (= 0.44.0.React)
+  - React/cxxreact (0.44.0):
     - React/jschelpers
-  - React/jschelpers (0.40.0)
-  - React/RCTActionSheet (0.40.0):
-    - React/Core
-  - React/RCTAnimation (0.40.0):
-    - React/Core
-  - React/RCTCameraRoll (0.40.0):
-    - React/Core
-    - React/RCTImage
-  - React/RCTGeolocation (0.40.0):
-    - React/Core
-  - React/RCTImage (0.40.0):
-    - React/Core
-    - React/RCTNetwork
-  - React/RCTLinkingIOS (0.40.0):
-    - React/Core
-  - React/RCTNetwork (0.40.0):
-    - React/Core
-  - React/RCTPushNotification (0.40.0):
-    - React/Core
-  - React/RCTSettings (0.40.0):
-    - React/Core
-  - React/RCTText (0.40.0):
-    - React/Core
-  - React/RCTVibration (0.40.0):
-    - React/Core
-  - React/RCTWebSocket (0.40.0):
-    - React/Core
-  - React/yoga (0.40.0)
-  - RNFirebase (1.0.0-alpha13)
+  - React/jschelpers (0.44.0)
+  - RNFirebase (1.0.2)
+  - Yoga (0.44.0.React)
 
 DEPENDENCIES:
   - Firebase/Analytics
@@ -123,26 +99,17 @@ DEPENDENCIES:
   - Firebase/Messaging
   - Firebase/RemoteConfig
   - Firebase/Storage
-  - React/Core (from `../node_modules/react-native`)
-  - React/RCTActionSheet (from `../node_modules/react-native`)
-  - React/RCTAnimation (from `../node_modules/react-native`)
-  - React/RCTCameraRoll (from `../node_modules/react-native`)
-  - React/RCTGeolocation (from `../node_modules/react-native`)
-  - React/RCTImage (from `../node_modules/react-native`)
-  - React/RCTLinkingIOS (from `../node_modules/react-native`)
-  - React/RCTNetwork (from `../node_modules/react-native`)
-  - React/RCTPushNotification (from `../node_modules/react-native`)
-  - React/RCTSettings (from `../node_modules/react-native`)
-  - React/RCTText (from `../node_modules/react-native`)
-  - React/RCTVibration (from `../node_modules/react-native`)
-  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - React (from `../node_modules/react-native`)
   - RNFirebase (from `./../../`)
+  - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
   React:
     :path: ../node_modules/react-native
   RNFirebase:
     :path: ./../../
+  Yoga:
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   Firebase: 85a581fb04e44f63ae9f4fbc8d6dabf4a4c18653
@@ -160,9 +127,10 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMSessionFetcher: 6f8d8b28b7e345549ac471071608170b31cb4977
   Protobuf: 745f59e122e5de98d4d7ef291e264a0eef80f58e
-  React: 6dfb2f72edb1d74a800127ae157af038646673ce
-  RNFirebase: 46bfe1099349ac6fac8c5e57cf4f0b0f4b7938ac
+  React: d2077cc20245ccdc8bfe1fdc002f2003318ae8d8
+  RNFirebase: 9b9ab212d14243db38bee3637029f1752c2a349f
+  Yoga: a92a5d8e128905bf9f29c82f870192a6e873dd98
 
-PODFILE CHECKSUM: f8bc5de55afd159ec2faf523f1b8e0d861d0832b
+PODFILE CHECKSUM: 62ff31b87feae064d9ea6ae4b9c4375b48a6153e
 
 COCOAPODS: 1.2.0

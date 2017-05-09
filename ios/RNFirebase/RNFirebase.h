@@ -12,8 +12,8 @@
 #else // Compatibility for RN version < 0.40
 #import "RCTEventEmitter.h"
 #endif
-#if __has_include(<React/RCTBridgeModule.h>)
-#import <React/RCTBridgeModule.h>
+#if __has_include(<React/Base/RCTBridgeModule.h>)
+#import <React/Base/RCTBridgeModule.h>
 #else // Compatibility for RN version < 0.40
 #import "RCTBridgeModule.h"
 #endif
