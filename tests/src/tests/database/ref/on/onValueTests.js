@@ -15,11 +15,11 @@ import DatabaseContents from '../../../support/DatabaseContents';
  */
 const DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS = [
   'array',
-  'number'
+  'number',
 ];
 
-function onTests({ fdescribe, context, it, firebase, tryCatch }) {
-  fdescribe('ref().on(\'value\')', () => {
+function onTests({ describe, context, it, firebase, tryCatch }) {
+  describe('ref().on(\'value\')', () => {
     // Documented Web API Behaviour
     it('returns the success callback', () => {
       // Setup

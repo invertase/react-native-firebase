@@ -22,4 +22,22 @@ export default {
       foo: 'baz',
     },
   },
+
+  ISSUES: {
+    // https://github.com/invertase/react-native-firebase/issues/100
+    100: {
+      1: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+      2: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+      3: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+    },
+  },
 };

@@ -15,11 +15,12 @@ import refTests from './refTests';
 import rootTests from './rootTests';
 import transactionTests from './transactionTests';
 import queryTests from './queryTests';
+import issueSpecificTests from './issueSpecificTests';
 
 import DatabaseContents from '../../support/DatabaseContents';
 
 const testGroups = [
-  factoryTests, keyTests, parentTests, childTests, rootTests,
+  issueSpecificTests, factoryTests, keyTests, parentTests, childTests, rootTests,
   pushTests, onTests, onValueTests, offTests, onceTests, updateTests,
   removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
 ];
@@ -29,10 +30,12 @@ function registerTestSuite(testSuite) {
     this._databaseRef = testSuite.firebase.native.database().ref('tests/types');
 
     await this._databaseRef.set(DatabaseContents.DEFAULT);
+    await this._databaseRef.parent.child('issues').set(DatabaseContents.ISSUES);
   });
 
   testSuite.afterEach(async function () {
     await this._databaseRef.set(DatabaseContents.DEFAULT);
+    await this._databaseRef.parent.child('issues').set(DatabaseContents.ISSUES);
   });
 
   testGroups.forEach((testGroup) => {
