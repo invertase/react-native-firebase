@@ -68,7 +68,7 @@ Tests are bootstrapped and ran when the app is booted. The status of each test s
 
 Tests can be run by pressing the play button in the toolbar of the app. Test can be run individually, by suite, or all at once.
 
-![Test suite Android](/docs/assets/test-suite-screenshot-android.png?raw=true)
+![Test suite Android](/tests/docs/assets/test-suite-screenshot-android.png?raw=true)
 
 
 ### Adding test
