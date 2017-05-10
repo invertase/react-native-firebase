@@ -14,7 +14,7 @@ function childTests({ fdescribe, it, context, firebase }) {
           // Assertion
           console.warn(JSON.stringify(snapshot.val()));
 
-          snapshot.val().should.eql(DatabaseContents.ISSUES[100]);
+          snapshot.val().should.eql([null, DatabaseContents.ISSUES[100][1], DatabaseContents.ISSUES[100][2], DatabaseContents.ISSUES[100][3]]);
         });
       });
     });
