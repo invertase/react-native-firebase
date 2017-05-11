@@ -112,7 +112,7 @@ Follow the instructions at https://firebase.google.com/docs/cloud-messaging/ios/
 In Xcode, enable the following capabilities:
 
 1) Push Notifications
-2) Background modes > Remove notifications
+2) Background modes > Remote notifications
 
 ### 3.3) Update `AppDelegate.h`
 
