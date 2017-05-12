@@ -679,7 +679,7 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                      ];
     
     if ([user valueForKey:@"photoURL"] != nil) {
-        [userDict setValue: [NSString stringWithFormat:@"%@", user.photoURL] forKey:@"photoURL"];
+        [userDict setValue: [user.photoURL absoluteString] forKey:@"photoURL"];
     }
     
     return userDict;
