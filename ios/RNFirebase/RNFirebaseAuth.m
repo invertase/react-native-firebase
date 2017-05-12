@@ -636,18 +636,16 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
 }
 
 
-/** 
+/**
  Converts an array of FIRUserInfo instances into the correct format to match the web sdk
  
  @param providerData FIRUser.providerData
  @return NSArray
  */
 - (NSArray <NSObject *> *) convertProviderData:(NSArray <id<FIRUserInfo>> *) providerData {
-    NSEnumerator *items = [providerData objectEnumerator];
     NSMutableArray *output = [NSMutableArray array];
     
-    id<FIRUserInfo> userInfo;
-    while (userInfo = [items nextObject]) {
+    for (id<FIRUserInfo> userInfo in providerData) {
         [output addObject:@{
                     @"providerId": userInfo.providerID,
                     @"uid": userInfo.uid,
@@ -677,8 +675,8 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                         @"refreshToken": user.refreshToken,
                                         @"providerId": [user.providerID lowercaseString],
                                         @"providerData": [self convertProviderData: user.providerData]
-                                      } mutableCopy
-                                  ];
+                                        } mutableCopy
+                                     ];
     
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue: [NSString stringWithFormat:@"%@", user.photoURL] forKey:@"photoURL"];
