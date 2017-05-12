@@ -636,6 +636,31 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
 }
 
 
+/** 
+ Converts an array of FIRUserInfo instances into the correct format to match the web sdk
+ 
+ @param providerData FIRUser.providerData
+ @return NSArray
+ */
+- (NSArray <NSObject *> *) convertProviderData:(NSArray <id<FIRUserInfo>> *) providerData {
+    NSEnumerator *items = [providerData objectEnumerator];
+    NSMutableArray *output = [NSMutableArray array];
+    
+    id<FIRUserInfo> userInfo;
+    while (userInfo = [items nextObject]) {
+        [output addObject:@{
+                    @"providerId": userInfo.providerID,
+                    @"uid": userInfo.uid,
+                    @"displayName": userInfo.displayName,
+                    @"photoURL": userInfo.photoURL,
+                    @"email": userInfo.email
+                }
+        ];
+    }
+    
+    return output;
+}
+
 /**
  Converts a FIRUser instance into a dictionary to send via RNBridge
  
@@ -650,7 +675,8 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                         @"isAnonymous": @(user.anonymous),
                                         @"displayName": user.displayName ? user.displayName : [NSNull null],
                                         @"refreshToken": user.refreshToken,
-                                        @"providerId": [user.providerID lowercaseString]
+                                        @"providerId": [user.providerID lowercaseString],
+                                        @"providerDate": [self convertProviderData: user.providerData]
                                         }
                                      mutableCopy
                                      ];
