@@ -48,7 +48,7 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": ">= 0.38.0"
   },
   "rnpm": {
     "commands": {
