@@ -73,9 +73,9 @@ Add permissions:
   <uses-permission android:name="android.permission.VIBRATE" />
 ```
 
-Set app [launch mode](https://inthecheesefactory.com/blog/understand-android-activity-launchmode/en) inside application props:
+Set app [launch mode](https://inthecheesefactory.com/blog/understand-android-activity-launchmode/en) inside activity props:
 ```xml
-<application
+<activity
   ...
   android:launchMode="singleTop"
 >
