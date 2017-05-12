@@ -650,7 +650,7 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                     @"providerId": userInfo.providerID,
                     @"uid": userInfo.uid,
                     @"displayName": userInfo.displayName,
-                    @"photoURL": userInfo.photoURL,
+                    @"photoURL": [userInfo.photoURL absoluteString],
                     @"email": userInfo.email
                 }
         ];
