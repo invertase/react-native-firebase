@@ -676,12 +676,9 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                         @"displayName": user.displayName ? user.displayName : [NSNull null],
                                         @"refreshToken": user.refreshToken,
                                         @"providerId": [user.providerID lowercaseString],
-                                        @"providerDate": [self convertProviderData: user.providerData]
-                                        }
-                                     mutableCopy
-                                     ];
-    
-    // todo providerData
+                                        @"providerData": [self convertProviderData: user.providerData]
+                                      } mutableCopy
+                                  ];
     
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue: [NSString stringWithFormat:@"%@", user.photoURL] forKey:@"photoURL"];
