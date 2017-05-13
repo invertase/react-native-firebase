@@ -219,7 +219,7 @@
              type:(NSString *) type
 {
     if ([type isEqualToString:@"number"]) {
-        return [NSNumber numberWithInteger:value.integerValue];
+        return [NSNumber numberWithDouble:value.doubleValue];
     } else if ([type isEqualToString:@"boolean"]) {
         return [NSNumber numberWithBool:value.boolValue];
     } else {
