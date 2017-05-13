@@ -646,14 +646,29 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
     NSMutableArray *output = [NSMutableArray array];
     
     for (id<FIRUserInfo> userInfo in providerData) {
-        [output addObject:@{
-                    @"providerId": userInfo.providerID,
-                    @"uid": userInfo.uid,
-                    @"displayName": userInfo.displayName,
-                    @"photoURL": [userInfo.photoURL absoluteString],
-                    @"email": userInfo.email
-                }
-        ];
+        NSMutableDictionary *pData;
+        
+        if (userInfo.providerID != nil) {
+            [pData setValue: userInfo.providerID forKey:@"providerId"];
+        }
+        
+        if (userInfo.uid != nil) {
+            [pData setValue: userInfo.uid forKey:@"uid"];
+        }
+        
+        if (userInfo.displayName != nil) {
+            [pData setValue: userInfo.displayName forKey:@"displayName"];
+        }
+        
+        if (userInfo.photoURL != nil) {
+            [pData setValue: [userInfo.photoURL absoluteString] forKey:@"photoURL"];
+        }
+        
+        if (userInfo.email != nil) {
+            [pData setValue: userInfo.email forKey:@"email"];
+        }
+        
+        [output addObject:pData];
     }
     
     return output;
@@ -675,8 +690,8 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                         @"refreshToken": user.refreshToken,
                                         @"providerId": [user.providerID lowercaseString],
                                         @"providerData": [self convertProviderData: user.providerData]
-                                        } mutableCopy
-                                     ];
+                                     } mutableCopy
+                                 ];
     
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue: [user.photoURL absoluteString] forKey:@"photoURL"];
