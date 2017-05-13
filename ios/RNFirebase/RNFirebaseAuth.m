@@ -646,7 +646,7 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
     NSMutableArray *output = [NSMutableArray array];
     
     for (id<FIRUserInfo> userInfo in providerData) {
-        NSMutableDictionary *pData;
+        NSMutableDictionary *pData = [NSMutableDictionary dictionary];
         
         if (userInfo.providerID != nil) {
             [pData setValue: userInfo.providerID forKey:@"providerId"];
