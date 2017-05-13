@@ -1,8 +1,8 @@
 import should from 'should';
 import DatabaseContents from '../../support/DatabaseContents';
 
-function issueTests({ fdescribe, it, context, firebase }) {
-  fdescribe('issue_100', () => {
+function issueTests({ fdescribe, describe, it, context, firebase }) {
+  describe('issue_100', () => {
     context('array-like values should', () => {
       it('return null in returned array at positions where a key is missing', async() => {
         // Setup
@@ -21,7 +21,7 @@ function issueTests({ fdescribe, it, context, firebase }) {
     });
   });
 
-  fdescribe('issue_108', () => {
+  describe('issue_108', () => {
     context('filters using floats', () => {
       it('return correct results', async() => {
         // Setup
