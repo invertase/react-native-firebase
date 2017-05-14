@@ -615,15 +615,13 @@ declare module "react-native-firebase" {
          */
         requestPermissions(): void
         /**
-         * IOS
          * Sets the badge number on the iOS app icon.
          */
         setBadgeNumber(value: number): void
         /**
-         * IOS
          * Returns the current badge number on the app icon.
          */
-        getBadgeNumber(): number
+        getBadgeNumber(): Promise<number>
         /**
          * Send an upstream message
          * @param senderId

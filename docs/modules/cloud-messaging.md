@@ -6,6 +6,10 @@ cost to both Android & iOS platforms. Assuming the installation instructions hav
 As the Firebase Web SDK has limited messaging functionality, the following methods within `react-native-firebase` have been
 created to handle FCM in the React Native environment.
 
+Badge notification is well known on the iOS platform, but also supported by different Android devices / launchers.
+This library uses the [ShortcutBadger](https://github.com/leolin310148/ShortcutBadger) library to set the badge number
+also on Android. A list of supported launcher can be found there.
+
 ## API
 
 ### subscribeToTopic(topic: string)
@@ -119,7 +123,7 @@ Requests app notification permissions in an Alert dialog.
 firebase.messaging().requestPermissions();
 ```
 
-### [iOS] setBadgeNumber(value: number)
+### setBadgeNumber(value: number)
 
 Sets the badge number on the iOS app icon.
 
@@ -127,10 +131,13 @@ Sets the badge number on the iOS app icon.
 firebase.messaging().setBadgeNumber(2);
 ```
 
-### [iOS] getBadgeNumber(): number
+### getBadgeNumber(): `Promise<number>`
 
 Returns the current badge number on the app icon.
 
 ```javascript
-const badgeNumber = firebase.messaging().getBadgeNumber();
+firebase.messaging().getBadgeNumber()
+  .then((badgeNumber) => {
+    console.log('Current badge number: ', badgeNumber);
+  });
 ```
