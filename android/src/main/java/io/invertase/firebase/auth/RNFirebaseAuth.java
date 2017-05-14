@@ -4,6 +4,7 @@ import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
@@ -25,6 +27,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -740,6 +743,35 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
 
   /**
+   * Converts a List of UserInfo instances into the correct format to match the web sdk
+   * @param providerData List<UserInfo> user.getProviderData()
+   * @return WritableArray array
+   */
+  private WritableArray convertProviderData(List<? extends UserInfo> providerData) {
+    WritableArray output = Arguments.createArray();
+    for (UserInfo userInfo : providerData) {
+      WritableMap userInfoMap = Arguments.createMap();
+      userInfoMap.putString("providerId", userInfo.getProviderId());
+      userInfoMap.putString("uid", userInfo.getUid());
+      userInfoMap.putString("displayName", userInfo.getDisplayName());
+
+      final Uri photoUrl = userInfo.getPhotoUrl();
+
+      if (photoUrl != null) {
+        userInfoMap.putString("photoURL", photoUrl.toString());
+      } else {
+        userInfoMap.putNull("photoURL");
+      }
+
+      userInfoMap.putString("email", userInfo.getEmail());
+
+      output.pushMap(userInfoMap);
+    }
+
+    return output;
+  }
+
+  /**
    * firebaseUserToMap
    *
    * @param user
@@ -778,7 +810,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       userMap.putNull("photoURL");
     }
 
-    // todo providerData
+    userMap.putArray("providerData", convertProviderData(user.getProviderData()));
 
     return userMap;
   }

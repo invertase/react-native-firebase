@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase",
-  "version": "1.0.1",
+  "version": "1.0.10",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A react native firebase library supporting both android and ios native firebase SDK's",
   "main": "index",
@@ -48,7 +48,7 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": ">= 0.38.0"
   },
   "rnpm": {
     "commands": {
@@ -77,7 +77,7 @@
     "flow-bin": "^0.40.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
-    "react-native": "^0.42.0",
+    "react-native": "^0.44.0",
     "wml": "0.0.82"
   },
   "dependencies": {

@@ -22,4 +22,38 @@ export default {
       foo: 'baz',
     },
   },
+
+  ISSUES: {
+    // https://github.com/invertase/react-native-firebase/issues/100
+    100: {
+      1: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+      2: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+      3: {
+        someKey: 'someValue',
+        someOtherKey: 'someOtherValue',
+      },
+    },
+
+    // https://github.com/invertase/react-native-firebase/issues/108
+    108: {
+      foobar: {
+        name: 'Foobar Pizzas',
+        latitude: 34.1013717,
+      },
+      notTheFoobar: {
+        name: 'Not the pizza you\'re looking for',
+        latitude: 34.456787,
+      },
+      notAFloat: {
+        name: 'Not a float',
+        latitude: 37,
+      },
+    },
+  },
 };

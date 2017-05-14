@@ -1,5 +1,7 @@
 package io.invertase.firebase;
 
+import android.app.Activity;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -34,7 +36,10 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
 
     if (status != ConnectionResult.SUCCESS && gapi.isUserResolvableError(status)) {
-      gapi.getErrorDialog(getCurrentActivity(), status, 2404).show();
+      Activity activity = getCurrentActivity();
+      if (activity != null) {
+        gapi.getErrorDialog(activity, status, 2404).show();
+      }
     }
   }
 

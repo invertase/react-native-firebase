@@ -637,6 +637,44 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
 
 
 /**
+ Converts an array of FIRUserInfo instances into the correct format to match the web sdk
+ 
+ @param providerData FIRUser.providerData
+ @return NSArray
+ */
+- (NSArray <NSObject *> *) convertProviderData:(NSArray <id<FIRUserInfo>> *) providerData {
+    NSMutableArray *output = [NSMutableArray array];
+    
+    for (id<FIRUserInfo> userInfo in providerData) {
+        NSMutableDictionary *pData = [NSMutableDictionary dictionary];
+        
+        if (userInfo.providerID != nil) {
+            [pData setValue: userInfo.providerID forKey:@"providerId"];
+        }
+        
+        if (userInfo.uid != nil) {
+            [pData setValue: userInfo.uid forKey:@"uid"];
+        }
+        
+        if (userInfo.displayName != nil) {
+            [pData setValue: userInfo.displayName forKey:@"displayName"];
+        }
+        
+        if (userInfo.photoURL != nil) {
+            [pData setValue: [userInfo.photoURL absoluteString] forKey:@"photoURL"];
+        }
+        
+        if (userInfo.email != nil) {
+            [pData setValue: userInfo.email forKey:@"email"];
+        }
+        
+        [output addObject:pData];
+    }
+    
+    return output;
+}
+
+/**
  Converts a FIRUser instance into a dictionary to send via RNBridge
  
  @param user FIRUser
@@ -650,15 +688,13 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
                                         @"isAnonymous": @(user.anonymous),
                                         @"displayName": user.displayName ? user.displayName : [NSNull null],
                                         @"refreshToken": user.refreshToken,
-                                        @"providerId": [user.providerID lowercaseString]
-                                        }
-                                     mutableCopy
-                                     ];
-    
-    // todo providerData
+                                        @"providerId": [user.providerID lowercaseString],
+                                        @"providerData": [self convertProviderData: user.providerData]
+                                     } mutableCopy
+                                 ];
     
     if ([user valueForKey:@"photoURL"] != nil) {
-        [userDict setValue: [NSString stringWithFormat:@"%@", user.photoURL] forKey:@"photoURL"];
+        [userDict setValue: [user.photoURL absoluteString] forKey:@"photoURL"];
     }
     
     return userDict;
