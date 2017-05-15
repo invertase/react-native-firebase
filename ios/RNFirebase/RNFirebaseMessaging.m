@@ -296,7 +296,7 @@ RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(R
 #endif
     }
 
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    [RCTSharedApplication() registerForRemoteNotifications];
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic)
@@ -380,10 +380,10 @@ RCT_EXPORT_METHOD(cancelLocalNotification:(NSString*) notificationId)
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
     }else {
-        for (UILocalNotification *notification in [UIApplication sharedApplication].scheduledLocalNotifications) {
+        for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary<NSString *, id> *notificationInfo = notification.userInfo;
             if([notificationId isEqualToString:[notificationInfo valueForKey:@"id"]]){
-                [[UIApplication sharedApplication] cancelLocalNotification:notification];
+                [RCTSharedApplication() cancelLocalNotification:notification];
             }
         }
     }
