@@ -102,7 +102,7 @@ Add messaging service:
 If you would like to schedule local notifications then you also need to add the following:
 ```xml
   <receiver android:name="io.invertase.firebase.messaging.RNFirebaseLocalMessagingPublisher"/>
-  <receiver android:enabled="true" android:exported="true"android:name="io.invertase.firebase.messaging.RNFirebaseSystemBootEventReceiver">
+  <receiver android:enabled="true" android:exported="true" android:name="io.invertase.firebase.messaging.RNFirebaseSystemBootEventReceiver">
     <intent-filter>
       <action android:name="android.intent.action.BOOT_COMPLETED"/>
       <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
