@@ -571,49 +571,54 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     String message = exception.getMessage();
 
     try {
-      StorageException storageException = (StorageException) exception;
+      if (exception instanceof StorageException) {
+        StorageException storageException = (StorageException) exception;
 
-      switch (storageException.getErrorCode()) {
-        case StorageException.ERROR_UNKNOWN:
-          code = "storage/unknown";
-          message = "An unknown error has occurred.";
-          break;
-        case StorageException.ERROR_OBJECT_NOT_FOUND:
-          code = "storage/object-not-found";
-          message = "No object exists at the desired reference.";
-          break;
-        case StorageException.ERROR_BUCKET_NOT_FOUND:
-          code = "storage/bucket-not-found";
-          message = "No bucket is configured for Firebase Storage.";
-          break;
-        case StorageException.ERROR_PROJECT_NOT_FOUND:
-          code = "storage/project-not-found";
-          message = "No project is configured for Firebase Storage.";
-          break;
-        case StorageException.ERROR_QUOTA_EXCEEDED:
-          code = "storage/quota-exceeded";
-          message = "Quota on your Firebase Storage bucket has been exceeded.";
-          break;
-        case StorageException.ERROR_NOT_AUTHENTICATED:
-          code = "storage/unauthenticated";
-          message = "User is unauthenticated. Authenticate and try again.";
-          break;
-        case StorageException.ERROR_NOT_AUTHORIZED:
-          code = "storage/unauthorized";
-          message = "User is not authorized to perform the desired action.";
-          break;
-        case StorageException.ERROR_RETRY_LIMIT_EXCEEDED:
-          code = "storage/retry-limit-exceeded";
-          message = "The maximum time limit on an operation (upload, download, delete, etc.) has been exceeded.";
-          break;
-        case StorageException.ERROR_INVALID_CHECKSUM:
-          code = "storage/non-matching-checksum";
-          message = "File on the client does not match the checksum of the file received by the server.";
-          break;
-        case StorageException.ERROR_CANCELED:
-          code = "storage/cancelled";
-          message = "User cancelled the operation.";
-          break;
+        switch (storageException.getErrorCode()) {
+          case StorageException.ERROR_UNKNOWN:
+            code = "storage/unknown";
+            message = "An unknown error has occurred.";
+            break;
+          case StorageException.ERROR_OBJECT_NOT_FOUND:
+            code = "storage/object-not-found";
+            message = "No object exists at the desired reference.";
+            break;
+          case StorageException.ERROR_BUCKET_NOT_FOUND:
+            code = "storage/bucket-not-found";
+            message = "No bucket is configured for Firebase Storage.";
+            break;
+          case StorageException.ERROR_PROJECT_NOT_FOUND:
+            code = "storage/project-not-found";
+            message = "No project is configured for Firebase Storage.";
+            break;
+          case StorageException.ERROR_QUOTA_EXCEEDED:
+            code = "storage/quota-exceeded";
+            message = "Quota on your Firebase Storage bucket has been exceeded.";
+            break;
+          case StorageException.ERROR_NOT_AUTHENTICATED:
+            code = "storage/unauthenticated";
+            message = "User is unauthenticated. Authenticate and try again.";
+            break;
+          case StorageException.ERROR_NOT_AUTHORIZED:
+            code = "storage/unauthorized";
+            message = "User is not authorized to perform the desired action.";
+            break;
+          case StorageException.ERROR_RETRY_LIMIT_EXCEEDED:
+            code = "storage/retry-limit-exceeded";
+            message = "The maximum time limit on an operation (upload, download, delete, etc.) has been exceeded.";
+            break;
+          case StorageException.ERROR_INVALID_CHECKSUM:
+            code = "storage/non-matching-checksum";
+            message = "File on the client does not match the checksum of the file received by the server.";
+            break;
+          case StorageException.ERROR_CANCELED:
+            code = "storage/cancelled";
+            message = "User cancelled the operation.";
+            break;
+        }
+      } else {
+        code = "storage/unknown";
+        message = "An unknown error has occurred.";
       }
     } finally {
       promise.reject(code, message, exception);
