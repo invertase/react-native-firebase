@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(fetch:(RCTPromiseResolveBlock)resolve
     }];
 }
 
-RCT_EXPORT_METHOD(fetchWithExpirationDuration:(NSNumber *)expirationDuration
+RCT_EXPORT_METHOD(fetchWithExpirationDuration:(nonnull NSNumber *)expirationDuration
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
