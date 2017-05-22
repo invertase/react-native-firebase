@@ -243,81 +243,9 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
                       callback:callback];
 }
 
-#pragma mark - Storage
-
+#pragma mark Storage
 
 #pragma mark RemoteConfig
-
-// RCT_EXPORT_METHOD(setDefaultRemoteConfig:(NSDictionary *)props
-//                   callback:(RCTResponseSenderBlock) callback)
-// {
-//     if (!self.remoteConfigInstance) {
-//         // Create remote Config instance
-//         self.remoteConfigInstance = [FIRRemoteConfig remoteConfig];
-//     }
-
-//     [self.remoteConfigInstance setDefaults:props];
-//     callback(@[[NSNull null], props]);
-// }
-
-// RCT_EXPORT_METHOD(setDev:(RCTResponseSenderBlock) callback)
-// {
-//     FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
-//     self.remoteConfigInstance.configSettings = remoteConfigSettings;
-//     callback(@[[NSNull null], @"ok"]);
-// }
-
-// RCT_EXPORT_METHOD(configValueForKey:(NSString *)name
-//                   callback:(RCTResponseSenderBlock) callback)
-// {
-//     if (!self.remoteConfigInstance) {
-//         NSDictionary *err = @{
-//                               @"error": @"No configuration instance",
-//                               @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
-//                               };
-//         callback(@[err]);
-//     }
-
-
-//     FIRRemoteConfigValue *value = [self.remoteConfigInstance configValueForKey:name];
-//     NSString *valueStr = value.stringValue;
-
-//     if (valueStr == nil) {
-//         valueStr = @"";
-//     }
-//     callback(@[[NSNull null], valueStr]);
-// }
-
-// RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
-//                   callback:(RCTResponseSenderBlock) callback)
-// {
-//     if (!self.remoteConfigInstance) {
-//         NSDictionary *err = @{
-//                               @"error": @"No configuration instance",
-//                               @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
-//                               };
-//         callback(@[err]);
-//     }
-
-//     NSTimeInterval expirationDuration = [expirationSeconds doubleValue];
-
-//     [self.remoteConfigInstance fetchWithExpirationDuration:expirationDuration completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
-//         if (status == FIRRemoteConfigFetchStatusSuccess) {
-//             NSLog(@"Config fetched!");
-//             [self.remoteConfigInstance activateFetched];
-//             callback(@[[NSNull null], @(YES)]);
-//         } else {
-//             NSLog(@"Error %@", error.localizedDescription);
-
-//             NSDictionary *err = @{
-//                                   @"error": @"No configuration instance",
-//                                   @"msg": [error localizedDescription]
-//                                   };
-
-//             callback(@[err]);
-//         }
-//     }];
-// }
 
 #pragma mark Database
 

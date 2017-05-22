@@ -15,6 +15,7 @@
 		D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290841D6D28B80099A3EC /* RNFirebaseDatabase.m */; };
 		D9D62E7C1D6D86FD003D826D /* RNFirebaseStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7B1D6D86FD003D826D /* RNFirebaseStorage.m */; };
 		D9D62E801D6D8717003D826D /* RNFirebaseAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */; };
+		EC841F001ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = EC841EFF1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +49,8 @@
 		D9D62E7B1D6D86FD003D826D /* RNFirebaseStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseStorage.m; path = RNFirebase/RNFirebaseStorage.m; sourceTree = "<group>"; };
 		D9D62E7E1D6D8717003D826D /* RNFirebaseAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseAuth.h; path = RNFirebase/RNFirebaseAuth.h; sourceTree = "<group>"; };
 		D9D62E7F1D6D8717003D826D /* RNFirebaseAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseAuth.m; path = RNFirebase/RNFirebaseAuth.m; sourceTree = "<group>"; };
+		EC841EFE1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseRemoteConfig.h; path = RNFirebase/RNFirebaseRemoteConfig.h; sourceTree = "<group>"; };
+		EC841EFF1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseRemoteConfig.m; path = RNFirebase/RNFirebaseRemoteConfig.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,8 @@
 		D96290351D6D145F0099A3EC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				EC841EFE1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.h */,
+				EC841EFF1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m */,
 				D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */,
 				D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */,
 				D9D62E7E1D6D8717003D826D /* RNFirebaseAuth.h */,
@@ -163,6 +168,7 @@
 				D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
 				D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */,
+				EC841F001ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m in Sources */,
 				29C199451EA7A851007B6BF8 /* RNFirebaseCrash.m in Sources */,
 				D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */,
 			);
