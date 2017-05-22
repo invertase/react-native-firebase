@@ -17,15 +17,15 @@ NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus
 {
     switch(value){
         case FIRRemoteConfigFetchStatusNoFetchYet:
-            return @"remoteConfitFetchStatusNoFetchYet";
+            return @"remoteConfigFetchStatusNoFetchYet";
         case FIRRemoteConfigFetchStatusSuccess:
-            return @"remoteConfitFetchStatusSuccess";
+            return @"remoteConfigFetchStatusSuccess";
         case FIRRemoteConfigFetchStatusFailure:
-            return @"remoteConfitFetchStatusFailure";
+            return @"remoteConfigFetchStatusFailure";
         case FIRRemoteConfigFetchStatusThrottled:
-            return @"remoteConfitFetchStatusThrottled";
+            return @"remoteConfigFetchStatusThrottled";
         default:
-            return @"remoteConfitFetchStatusFailure";
+            return @"remoteConfigFetchStatusFailure";
     }
 }
 
