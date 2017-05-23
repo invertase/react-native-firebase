@@ -1,8 +1,9 @@
-function configTests({ tryCatch, before, fdescribe, it, firebase }) {
+function configTests({ before, describe, it, firebase }) {
 
   /* Remote config service values = {
    foo: true,
    foobar: 'barbaz',
+   numvalue: 0,
    } */
 
   before(() => {
@@ -13,7 +14,7 @@ function configTests({ tryCatch, before, fdescribe, it, firebase }) {
     });
   });
 
-  fdescribe('Config', () => {
+  describe('Config', () => {
     it('it should fetch and activate config', () => {
       return firebase.native.config().fetch()
         .then(() => {
@@ -39,17 +40,19 @@ function configTests({ tryCatch, before, fdescribe, it, firebase }) {
     });
 
     it('it should get multiple values by an array of keys', () => {
-      return firebase.native.config().getValues(['foo', 'bar', 'foobar'])
+      return firebase.native.config().getValues(['foo', 'bar', 'foobar', 'numvalue'])
         .then((result) => {
           result.should.be.a.Object();
           result.should.have.keys('foo', 'bar', 'foobar');
           const fooValue = result.foo.val();
           const barValue = result.bar.val();
           const foobarValue = result.foobar.val();
+          const numvalueValue = result.numvalue.val();
 
           fooValue.should.be.equal(true);
           barValue.should.be.equal('baz');
           foobarValue.should.be.equal('barbaz');
+          numvalueValue.should.be.equal(0);
 
           return Promise.resolve();
         });

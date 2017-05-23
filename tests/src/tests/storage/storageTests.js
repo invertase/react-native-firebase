@@ -1,5 +1,5 @@
-function storageTests({ xdescribe, it, firebase, tryCatch }) {
-  xdescribe('downloadFile()', () => {
+function storageTests({ describe, it, firebase, tryCatch }) {
+  describe('downloadFile()', () => {
     it('it should error on download file if permission denied', () => {
       return new Promise((resolve, reject) => {
         const successCb = tryCatch(() => {
@@ -33,7 +33,7 @@ function storageTests({ xdescribe, it, firebase, tryCatch }) {
     });
   });
 
-  xdescribe('putFile()', () => {
+  describe('putFile()', () => {
     it('it should error on upload if permission denied', () => {
       return new Promise((resolve, reject) => {
         const successCb = tryCatch(() => {
@@ -69,7 +69,7 @@ function storageTests({ xdescribe, it, firebase, tryCatch }) {
     });
   });
 
-  xdescribe('on()', () => {
+  describe('on()', () => {
     it('should listen to upload state', () => {
       return new Promise((resolve, reject) => {
         const path = `${firebase.native.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`;
