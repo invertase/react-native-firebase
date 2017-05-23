@@ -28,7 +28,10 @@ Any values in the defaults but not on Firebase will be untouched.
 Fetches the remote config data from Firebase, defined in the dashboard. To have fetched data available in the active config, use
 `activateFetched`.
 
-// TODO Errors
+Thrown errors can be one of the following:
+* config/failure - Config fetch failed.
+* config/no_fetch_yet - Config has never been fetched.
+* config/throttled - Config fetch was throttled.
 
 ```js
  firebase.config()
@@ -45,7 +48,12 @@ Fetches the remote config data from Firebase, defined in the dashboard. To have 
 
 Same as `fetch`, however defines (in seconds) how long fetched data is available in the active config.
 
-Default duration is 12 hours (43200 seconds)*[]:
+Thrown errors can be one of the following:
+* config/failure - Config fetch failed.
+* config/no_fetch_yet - Config has never been fetched.
+* config/throttled - Config fetch was throttled.
+
+Default duration is 12 hours (43200 seconds):
 
 
 ```js
