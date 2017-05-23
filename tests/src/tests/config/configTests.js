@@ -16,7 +16,7 @@ function configTests({ before, describe, it, firebase }) {
 
   describe('Config', () => {
     it('it should fetch and activate config', () => {
-      return firebase.native.config().fetch()
+      return firebase.native.config().fetch(0)
         .then(() => {
           return firebase.native.config().activateFetched();
         })
@@ -54,6 +54,15 @@ function configTests({ before, describe, it, firebase }) {
           foobarValue.should.be.equal('barbaz');
           numvalueValue.should.be.equal(0);
 
+          return Promise.resolve();
+        });
+    });
+
+    it('it get all keys as an array', () => {
+      return firebase.native.config().getKeysByPrefix()
+        .then((result) => {
+          console.log(result)
+          result.should.be.Array();
           return Promise.resolve();
         });
     });
