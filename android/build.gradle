@@ -2,6 +2,8 @@
 // YES, jcenter is required twice - it somehow tricks studio into compiling deps below
 // doesn't break anything anywhere else and projects using this lib work as normal
 buildscript {
+    ext.firebaseVersion = '10.2.6'
+
     repositories {
         jcenter()
     }
@@ -46,14 +48,14 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.facebook.react:react-native:+'
     compile 'me.leolin:ShortcutBadger:1.1.10@aar'
-    compile 'com.google.android.gms:play-services-base:10.2.0'
-    compile 'com.google.firebase:firebase-core:10.2.0'
-    compile 'com.google.firebase:firebase-config:10.2.0'
-    compile 'com.google.firebase:firebase-auth:10.2.0'
-    compile 'com.google.firebase:firebase-analytics:10.2.0'
-    compile 'com.google.firebase:firebase-database:10.2.0'
-    compile 'com.google.firebase:firebase-storage:10.2.0'
-    compile 'com.google.firebase:firebase-messaging:10.2.0'
-    compile 'com.google.firebase:firebase-crash:10.2.0'
-    compile 'com.google.firebase:firebase-config:10.2.0'
+    compile "com.google.android.gms:play-services-base:$firebaseVersion"
+    compile "com.google.firebase:firebase-core:$firebaseVersion"
+    compile "com.google.firebase:firebase-config:$firebaseVersion"
+    compile "com.google.firebase:firebase-auth:$firebaseVersion"
+    compile "com.google.firebase:firebase-analytics:$firebaseVersion"
+    compile "com.google.firebase:firebase-database:$firebaseVersion"
+    compile "com.google.firebase:firebase-storage:$firebaseVersion"
+    compile "com.google.firebase:firebase-messaging:$firebaseVersion"
+    compile "com.google.firebase:firebase-crash:$firebaseVersion"
+    compile "com.google.firebase:firebase-config:$firebaseVersion"
 }

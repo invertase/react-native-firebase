@@ -20,6 +20,8 @@ const firebase = RNFirebase.initializeApp({
 |----------------|----------|-------------------------|----------------------------------------|
 | debug | bool | false | When set to true, RNFirebase will log messages to the console and fire `debug` events we can listen to in `js` |
 | persistence | bool | false | When set to true, database persistence will be enabled. |
+| errorOnMissingPlayServices | bool | true | (Android only) When set to true, will throw an error if Google Play Services isn't installed. |
+| promptOnMissingPlayServices | bool | true | (Android only) When set to true, will prompt the user to install Google Play Services if it isn't installed.  This takes precedence over `errorOnMissingPlayServices`.|
 
 For instance:
 

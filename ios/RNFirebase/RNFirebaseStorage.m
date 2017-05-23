@@ -302,8 +302,8 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
             }];
         }
     } else {
-        NSURL *fileUrl = [NSURL fileURLWithPath:localPath];
-        [self uploadFile:fileUrl metadata:metadata path:path resolver:resolve rejecter:reject];
+        NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
+        [self uploadData:data metadata:metadata path:path resolver:resolve rejecter:reject];
     }
     
 }
