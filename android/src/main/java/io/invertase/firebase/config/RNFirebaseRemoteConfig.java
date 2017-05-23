@@ -63,8 +63,8 @@ public class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void fetchWithExpirationDuration(long expirationDuration, final Promise promise) {
-    fetchInternal(promise, true, expirationDuration);
+  public void fetchWithExpirationDuration(double expirationDuration, final Promise promise) {
+    fetchInternal(promise, true, (long) expirationDuration);
   }
 
   @ReactMethod
@@ -74,13 +74,13 @@ public class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void configValueForKey(String key, final Promise promise) {
+  public void getValue(String key, final Promise promise) {
     FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue(key);
     promise.resolve(convertRemoteConfigValue(value));
   }
 
   @ReactMethod
-  public void configValuesForKeys(ReadableArray keys, final Promise promise) {
+  public void getValues(ReadableArray keys, final Promise promise) {
     WritableArray array = Arguments.createArray();
     List<Object> keysList = Utils.recursivelyDeconstructReadableArray(keys);
 
@@ -93,7 +93,7 @@ public class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void keysWithPrefix(String prefix, final Promise promise) {
+  public void getKeysByPrefix(String prefix, final Promise promise) {
     Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
     WritableArray array = Arguments.createArray();
 

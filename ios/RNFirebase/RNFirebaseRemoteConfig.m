@@ -17,29 +17,25 @@ NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus
 {
     switch(value){
         case FIRRemoteConfigFetchStatusNoFetchYet:
-            return @"remoteConfigFetchStatusNoFetchYet";
-        case FIRRemoteConfigFetchStatusSuccess:
-            return @"remoteConfigFetchStatusSuccess";
+            return @"config/no_fetch_yet";
         case FIRRemoteConfigFetchStatusFailure:
-            return @"remoteConfigFetchStatusFailure";
+            return @"config/failure";
         case FIRRemoteConfigFetchStatusThrottled:
-            return @"remoteConfigFetchStatusThrottled";
+            return @"config/throttled";
         default:
-            return @"remoteConfigFetchStatusFailure";
+            return @"config/failure";
     }
 }
 
 NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value)
 {
     switch(value) {
-        case FIRRemoteConfigSourceRemote:
-            return @"remoteConfigSourceRemote";
         case FIRRemoteConfigSourceDefault:
-            return @"remoteConfigSourceDefault";
-        case FIRRemoteConfigSourceStatic:
-            return @"remoteConfigSourceStatic";
+            return @"default";
+        case FIRRemoteConfigSourceRemote:
+            return @"remote";
         default:
-            return @"remoteConfigSourceStatic";
+            return @"static";
     }
 }
 
@@ -112,7 +108,7 @@ RCT_EXPORT_METHOD(activateFetched:(RCTPromiseResolveBlock)resolve
     resolve(@(status));
 }
 
-RCT_EXPORT_METHOD(configValueForKey:(NSString *)key
+RCT_EXPORT_METHOD(getValue:(NSString *)key
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -120,28 +116,28 @@ RCT_EXPORT_METHOD(configValueForKey:(NSString *)key
     resolve(convertFIRRemoteConfigValueToNSDictionary(value));
 }
 
-RCT_EXPORT_METHOD(configValuesForKeys:(NSArray *)keys
+RCT_EXPORT_METHOD(getValues:(NSArray *)keys
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-    NSMutableDictionary *res = [[NSMutableDictionary alloc] init];
+    NSMutableArray *valuesArray = [[NSMutableArray alloc] init];
     for (NSString *key in keys) {
       FIRRemoteConfigValue *value = [self.remoteConfig configValueForKey:key];
-      res[key] = convertFIRRemoteConfigValueToNSDictionary(value);
+        [valuesArray addObject:convertFIRRemoteConfigValueToNSDictionary(value)];
     }
-    resolve(res);
+    resolve(valuesArray);
 }
 
-RCT_EXPORT_METHOD(keysWithPrefix:(NSString *)prefix
+RCT_EXPORT_METHOD(getKeysByPrefix:(NSString *)prefix
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
     NSSet *keys = [self.remoteConfig keysWithPrefix:prefix];
-    if (keys.count) {
-        resolve(keys);
-    } else {
-        reject(@"no_keys_matching_prefix", @"There are no keys that match that prefix", nil);
+    NSMutableArray *keysArray = [[NSMutableArray alloc] init];
+    for (NSString *key in keys) {
+        [keysArray addObject:key];
     }
+    resolve(keysArray);
 }
 
 RCT_EXPORT_METHOD(setDefaults:(NSDictionary *)defaults)

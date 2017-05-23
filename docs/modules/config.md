@@ -23,10 +23,12 @@ Any values in the defaults but not on Firebase will be untouched.
  });
 ```
 
-### fetch(): `Promise<String>`
+### fetch(duration?: `number`): `Promise<String>`
 
-Fetches the remote config data from Firebase, defined in the dashboard. To have fetched data available in the active config, use
-`activateFetched`.
+Fetches the remote config data from Firebase, defined in the dashboard.
+If duration is defined (seconds), data will be locally cached for this duration.
+
+The default duration is 43200 seconds (12 hours). To force a cache refresh call the method with a duration of 0.
 
 Thrown errors can be one of the following:
 * config/failure - Config fetch failed.
@@ -109,6 +111,18 @@ Gets multiple values by key. Returns an object of keys with the same object retu
      console.log('Value of barbaz: ', snapshot.barbaz.val());
    })
    .catch(console.error);
+```
+
+### getKeysByPrefix(prefix?: `String`): `Promise <Array<String>>`
+
+Returns all keys as an array by a prefix. If no prefix is defined all keys are returned.
+
+```js
+firebase.config()
+  .getKeysByPrefix()
+  .then((keys) => {
+
+  });
 ```
 
 ## Usage
