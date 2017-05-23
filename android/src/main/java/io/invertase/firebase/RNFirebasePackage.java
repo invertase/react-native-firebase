@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import io.invertase.firebase.auth.RNFirebaseAuth;
+import io.invertase.firebase.config.RNFirebaseRemoteConfig;
 import io.invertase.firebase.storage.RNFirebaseStorage;
 import io.invertase.firebase.database.RNFirebaseDatabase;
 import io.invertase.firebase.analytics.RNFirebaseAnalytics;
@@ -41,6 +42,7 @@ public class RNFirebasePackage implements ReactPackage {
     modules.add(new RNFirebaseStorage(reactContext));
     modules.add(new RNFirebaseMessaging(reactContext));
     modules.add(new RNFirebaseCrash(reactContext));
+    modules.add(new RNFirebaseRemoteConfig(reactContext));
     return modules;
   }
 
