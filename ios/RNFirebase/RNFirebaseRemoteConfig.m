@@ -109,11 +109,7 @@ RCT_EXPORT_METHOD(activateFetched:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
     BOOL status = [self.remoteConfig activateFetched];
-    if (status) {
-        resolve(@(status));
-    } else {
-        reject(@"activate_failed", @"Did not activate remote config", nil);
-    }
+    resolve(@(status));
 }
 
 RCT_EXPORT_METHOD(configValueForKey:(NSString *)key
