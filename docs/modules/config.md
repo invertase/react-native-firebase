@@ -46,29 +46,6 @@ Thrown errors can be one of the following:
    });
 ```
 
-### fetchWithExpirationDuration(duration: `int`): `Promise<String>`
-
-Same as `fetch`, however defines (in seconds) how long fetched data is available in the active config.
-
-Thrown errors can be one of the following:
-* config/failure - Config fetch failed.
-* config/no_fetch_yet - Config has never been fetched.
-* config/throttled - Config fetch was throttled.
-
-Default duration is 12 hours (43200 seconds):
-
-
-```js
- firebase.config()
-   .fetchWithExpirationDuration(1337)
-   .then(() => {
-     console.log('Successfully fetched data for 1337 seconds');
-   })
-   .catch((error) => {
-     console.error('Unable to fetch remote config data: ', error);
-   });
-```
-
 ### activateFetched(): `Promise<Boolean>`
 
 Moves fetched data in the apps active config. Always successfully resolves with a boolean value.
