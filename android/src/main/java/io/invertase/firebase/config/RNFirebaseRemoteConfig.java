@@ -110,6 +110,11 @@ public class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
     FirebaseRemoteConfig.getInstance().setDefaults(convertedMap);
   }
 
+  @ReactMethod
+  public void setDefaultsFromResource(int resourceId) {
+    FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
+  }
+
   private void fetchInternal(final Promise promise, Boolean withExpiration, long expirationDuration) {
     FirebaseRemoteConfig.getInstance().fetch(withExpiration ? expirationDuration : 43200) // 12 hours default
       .addOnCompleteListener(new OnCompleteListener<Void>() {

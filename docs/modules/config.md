@@ -98,8 +98,22 @@ Returns all keys as an array by a prefix. If no prefix is defined all keys are r
 firebase.config()
   .getKeysByPrefix()
   .then((keys) => {
-
+    console.log('Current keys: ', keys);
   });
+```
+
+### setDefaultsFromResource(filename: `String`)
+
+Sets the default values from a resource:
+
+* Android: Id for the XML resource, which should be in your application's res/xml folder.
+* iOS: The plist file name, with no file name extension
+
+```js
+// Anrdoid
+firebase.config().setDefaultsFromResource(1337);
+// iOS
+firebase.config().setDefaultsFromResource('configDefaults');
 ```
 
 ## Usage

@@ -145,7 +145,7 @@ RCT_EXPORT_METHOD(setDefaults:(NSDictionary *)defaults)
     [self.remoteConfig setDefaults:defaults];
 }
 
-RCT_EXPORT_METHOD(setDefaultsFromPlistFileName:(NSString *)fileName)
+RCT_EXPORT_METHOD(setDefaultsFromResource:(NSString *)fileName)
 {
     [self.remoteConfig setDefaultsFromPlistFileName:fileName];
 }
