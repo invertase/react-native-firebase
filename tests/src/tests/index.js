@@ -5,6 +5,7 @@ import database from './database/index';
 import messaging from './messaging/index';
 import storage from './storage/index';
 import auth from './auth/index';
+import config from './config/index';
 
 const testSuiteInstances = [
   database,
@@ -13,6 +14,7 @@ const testSuiteInstances = [
   messaging,
   crash,
   storage,
+  config,
 ];
 
 /*
