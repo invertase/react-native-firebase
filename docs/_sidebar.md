@@ -16,6 +16,7 @@
  - [Cloud Messaging](/modules/cloud-messaging)
  - [Crash Reporting](/modules/crash)
  - [Transactions](/modules/transactions)
+ - [Remote Config](/modules/config)
 
 - Other
   - [Project Board](https://github.com/invertase/react-native-firebase/projects)
