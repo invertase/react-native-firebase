@@ -39,6 +39,7 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   public void stop(String identifier) {
     Trace trace = getOrCreateTrace(identifier);
     trace.stop();
+    traces.remove(identifier);
   }
 
   @ReactMethod
