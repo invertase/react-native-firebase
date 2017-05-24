@@ -1,0 +1,54 @@
+# Performance Monitoring
+
+!> Performance monitoring requires react-native-firebase version 1.2.0.
+
+?> If you plan on using this module in your own application, please ensure the optional setup instructions for
+[Android](#) and [iOS](#) have been followed.
+
+Out of the box, [Firebase Performance Monitoring](https://firebase.google.com/docs/perf-mon/automatic) monitors a number of
+[automatic traces](https://firebase.google.com/docs/perf-mon/automatic) such as app start/background/foreground response times.
+You can easily trace your own events with RNFirebase:
+
+## API
+
+#### newTrace(id: `string`): `Trace`
+
+Returns a new instance of Trace (see API below). The id is the unique name of something you'd like to run performance
+monitoring against.
+
+```js
+const trace = firebase.perf().newTrace("test_trace");
+```
+
+### Trace
+
+#### start()
+
+Initializes the trace to start tracing performance to relay back to Firebase.
+
+```js
+trace.start();
+```
+
+#### incrementCounter(event: string)
+
+Notifies Firebase an event has occured. These events will be visible on Firebase once your trace has stopped.
+
+```js
+someCacheService.get('user:123')
+  .then((user) => {
+    if (user) {
+      trace.incrementCounter('user_cache_hit');
+    } else {
+      trace.incrementCounter('user_cache_missed');
+    }
+  });
+```
+
+#### stop()
+
+Stops performance tracing. The completed trace stats are now sent to Firebase.
+
+```js
+trace.stop();
+```
