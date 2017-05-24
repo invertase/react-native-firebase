@@ -49,6 +49,8 @@ someCacheService.get('user:123')
 
 Stops performance tracing. The completed trace stats are now sent to Firebase.
 
+?> Results are not realtime. They can take a number of hours to appear in the Firebase console.
+
 ```js
 trace.stop();
 ```
