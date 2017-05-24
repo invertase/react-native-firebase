@@ -9,11 +9,13 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.google.firebase:firebase-plugins:1.1.0'
     }
 }
 // END
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion 25
@@ -58,4 +60,5 @@ dependencies {
     compile "com.google.firebase:firebase-messaging:$firebaseVersion"
     compile "com.google.firebase:firebase-crash:$firebaseVersion"
     compile "com.google.firebase:firebase-config:$firebaseVersion"
+    compile 'com.google.firebase:firebase-perf:$firebaseVersion'
 }
