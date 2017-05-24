@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
 
 import com.android.build.OutputFile
 
@@ -130,6 +131,7 @@ dependencies {
     compile project(':react-native-firebase')
     compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.google.firebase:firebase-perf:10.2.6"
     compile "com.android.support:appcompat-v7:24.0.0"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
