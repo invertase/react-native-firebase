@@ -280,7 +280,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestExportSessionForVideo:asset options:options exportPreset:AVAssetExportPresetHighestQuality resultHandler:^(AVAssetExportSession * _Nullable exportSession, NSDictionary * _Nullable info) {
-                if ([info objectForKey:PHImageErrorKey] == nil) {
+                if (info[PHImageErrorKey] == nil) {
                     NSURL *tempUrl = [self temporaryFileUrl];
                     exportSession.outputURL = tempUrl;
 

@@ -1,26 +1,29 @@
 #import "RNFirebaseCrash.h"
-#import "Firebase.h"
+
+#if __has_include(<FirebaseCrash/FIRCrashLog.h>)
+#import "FirebaseCrash/FIRCrashLog.h"
 
 @implementation RNFirebaseCrash
+RCT_EXPORT_MODULE();
 
-RCT_EXPORT_MODULE(RNFirebaseCrash);
-
-RCT_EXPORT_METHOD(log:(NSString *)message)
-{
+RCT_EXPORT_METHOD(log:(NSString *)message) {
   FIRCrashLog(message);
 }
 
-RCT_EXPORT_METHOD(logcat:(nonnull NSNumber *) level
-                     tag:(NSString *) tag
-                 message:(NSString *) message)
-{
+RCT_EXPORT_METHOD(logcat:(nonnull NSNumber *) level tag:(NSString *) tag message:(NSString *) message) {
   FIRCrashLog(message);
 }
 
-RCT_EXPORT_METHOD(report:(NSString *) message)
-{
+RCT_EXPORT_METHOD(report:(NSString *) message) {
   FIRCrashLog(message);
   assert(NO);
 }
 
 @end
+
+#else
+@implementation RNFirebaseCrash
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif
