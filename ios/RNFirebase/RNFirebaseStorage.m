@@ -1,7 +1,9 @@
 #import "RNFirebaseStorage.h"
-#import "RNFirebaseEvents.h"
 
+#if __has_include(<FirebaseStorage/FIRStorage.h>)
+#import "RNFirebaseEvents.h"
 #import <Photos/Photos.h>
+#import "Firebase.h"
 
 @implementation RNFirebaseStorage
 
@@ -21,11 +23,11 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
 - (void) promiseRejectStorageException:(RCTPromiseRejectBlock) reject error:(NSError *)error {
     NSString *code = @"storage/unknown";
     NSString *message = [error localizedDescription];
-    
+
     NSDictionary *userInfo = [error userInfo];
-    NSError *underlyingError = [userInfo objectForKey:NSUnderlyingErrorKey];
+    NSError *underlyingError = userInfo[NSUnderlyingErrorKey];
     NSString *underlyingErrorDescription = [underlyingError localizedDescription];
-    
+
     switch (error.code) {
         case FIRStorageErrorCodeUnknown:
             if ([underlyingErrorDescription isEqualToString:@"The operation couldn’t be completed. Permission denied"]) {
@@ -79,8 +81,8 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
         default:
             break;
     }
-    
-    if (userInfo != nil && [userInfo objectForKey:@"data"]) {
+
+    if (userInfo != nil && userInfo[@"data"]) {
         // errors with 'data' are unserializable - it breaks react so we send nil instead
         reject(code, message, nil);
     } else {
@@ -97,7 +99,7 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
  */
 RCT_EXPORT_METHOD(delete: (NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
-    
+
     [fileRef deleteWithCompletion:^(NSError * _Nullable error) {
         if (error != nil) {
             [self promiseRejectStorageException:reject error: error];
@@ -115,7 +117,7 @@ RCT_EXPORT_METHOD(delete: (NSString *) path resolver:(RCTPromiseResolveBlock)res
  */
 RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
-    
+
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
             [self promiseRejectStorageException:reject error: error];
@@ -133,7 +135,7 @@ RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path resolver:(RCTPromiseResolveB
  */
 RCT_EXPORT_METHOD(getMetadata: (NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
-    
+
     [fileRef metadataWithCompletion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
         if (error != nil) {
             [self promiseRejectStorageException:reject error: error];
@@ -153,7 +155,7 @@ RCT_EXPORT_METHOD(getMetadata: (NSString *) path resolver:(RCTPromiseResolveBloc
 RCT_EXPORT_METHOD(updateMetadata: (NSString *) path metadata:(NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
-    
+
     [fileRef updateMetadata:firmetadata completion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
         if (error != nil) {
             [self promiseRejectStorageException:reject error: error];
@@ -174,33 +176,33 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) path localPath:(NSString *) localPa
     FIRStorageReference *fileRef = [self getReference:path];
     NSURL *localFile = [NSURL fileURLWithPath:localPath];
     FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
-    
+
     // listen for state changes, errors, and completion of the download.
     [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download resumed, also fires when the upload starts
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
-    
+
     [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download paused
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
-    
+
     [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download reported progress
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
-    
+
     [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download completed successfully
         NSDictionary *resp = [self getDownloadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_DOWNLOAD_SUCCESS props:resp];
         resolve(resp);
     }];
-    
+
     [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download task failed
         // TODO sendJSError event
@@ -250,7 +252,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds) {
 RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath metadata:(NSDictionary *)metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if ([localPath hasPrefix:@"assets-library://"] || [localPath hasPrefix:@"ph://"]) {
         PHFetchResult* assets;
-        
+
         if ([localPath hasPrefix:@"assets-library://"]) {
             NSURL *localFile = [[NSURL alloc] initWithString:localPath];
             assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
@@ -258,16 +260,16 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
             NSString *assetId = [localPath substringFromIndex:@"ph://".length];
             assets = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil];
         }
-        
+
         PHAsset *asset = [assets firstObject];
-        
+
         // this is based on http://stackoverflow.com/questions/35241449
         if (asset.mediaType == PHAssetMediaTypeImage) {
             // images
             PHImageRequestOptions *options = [PHImageRequestOptions new];
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * imageData, NSString * dataUTI, UIImageOrientation orientation, NSDictionary * info) {
-                if ([info objectForKey:PHImageErrorKey] == nil) {
+                if (info[PHImageErrorKey] == nil) {
                     [self uploadData:imageData metadata:metadata path:path resolver:resolve rejecter:reject];
                 } else {
                     reject(@"storage/request-image-data-failed", @"Could not obtain image data for the specified file.", nil);
@@ -281,13 +283,13 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
                 if ([info objectForKey:PHImageErrorKey] == nil) {
                     NSURL *tempUrl = [self temporaryFileUrl];
                     exportSession.outputURL = tempUrl;
-                    
+
                     NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
                     for (PHAssetResource *resource in resources) {
                         exportSession.outputFileType = resource.uniformTypeIdentifier;
                         if (exportSession.outputFileType != nil) break;
                     }
-                    
+
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         if (exportSession.status == AVAssetExportSessionStatusCompleted) {
                             [self uploadFile:tempUrl metadata:metadata path:path resolver:resolve rejecter:reject];
@@ -305,7 +307,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
         [self uploadData:data metadata:metadata path:path resolver:resolve rejecter:reject];
     }
-    
+
 }
 
 - (NSURL *) temporaryFileUrl {
@@ -334,7 +336,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload paused
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
@@ -345,7 +347,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload completed successfully
         NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
@@ -353,7 +355,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
         [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
         resolve(resp);
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         if (snapshot.error != nil) {
             [self promiseRejectStorageException:reject error:snapshot.error];
@@ -445,3 +447,10 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
 
 
 @end
+
+#else
+@implementation RNFirebaseStorage
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif
