@@ -434,6 +434,27 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
 }
 
 /**
+ fetchProvidersForEmail
+
+ @param NSString email
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *)email resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] fetchProvidersForEmail:email completion:^(NSArray<NSString *> *_Nullable providers, NSError *_Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else if (!providers) {
+            NSMutableArray *emptyResponse = [[NSMutableArray alloc] init];
+            resolve(emptyResponse);
+        } else {
+            resolve(providers);
+        }
+    }];
+}
+
+/**
  getCredentialForProvider
  
  @param provider
@@ -472,7 +493,7 @@ RCT_EXPORT_METHOD(reauthenticate:(NSString *)provider authToken:(NSString *)auth
  */
 - (void) promiseNoUser:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject isError:(BOOL) isError {
     if (isError) {
-        reject(@"auth/no_current_user", @"No user currently signed in.", nil);
+        reject(@"auth/no-current-user", @"No user currently signed in.", nil);
     } else {
         resolve([NSNull null]);
     }

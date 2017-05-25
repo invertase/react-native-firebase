@@ -49,7 +49,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
         const credential = firebase.native.auth.EmailAuthProvider.credential(email, pass);
 
         return currentUser
-          .link(credential)
+          .linkWithCredential(credential)
           .then((linkedUser) => {
             linkedUser.should.be.an.Object();
             linkedUser.uid.should.be.a.String();
@@ -84,7 +84,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
         const credential = firebase.native.auth.EmailAuthProvider.credential(email, pass);
 
         return currentUser
-          .link(credential)
+          .linkWithCredential(credential)
           .then(() => {
             return firebase.native.auth().signOut().then(() => {
               return Promise.reject(new Error('Did not error on link'));
@@ -149,6 +149,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
       };
 
       const failureCb = (error) => {
+        console.log('ERROR', error)
         error.code.should.equal('auth/wrong-password');
         error.message.should.equal('The password is invalid or the user does not have a password.');
         return Promise.resolve();
@@ -246,6 +247,56 @@ function authTests({ tryCatch, describe, it, firebase }) {
     });
   });
 
+  describe('Email - Providers', () => {
+    it('it should return password provider for an email address', () => {
+      return new Promise((resolve, reject) => {
+        const successCb = tryCatch((providers) => {
+          providers.should.be.a.Array();
+          providers.should.containEql('password');
+          resolve();
+        }, reject);
+
+        const failureCb = tryCatch(() => {
+          reject(new Error('Should not have an error.'));
+        }, reject);
+
+        return firebase.native.auth().fetchProvidersForEmail('test@test.com').then(successCb).catch(failureCb);
+      });
+    });
+
+    it('it should return an empty array for a not found email', () => {
+      return new Promise((resolve, reject) => {
+        const successCb = tryCatch((providers) => {
+          providers.should.be.a.Array();
+          providers.should.be.empty();
+          resolve();
+        }, reject);
+
+        const failureCb = tryCatch(() => {
+          reject(new Error('Should not have an error.'));
+        }, reject);
+
+        return firebase.native.auth().fetchProvidersForEmail('test@i-do-not-exist.com').then(successCb).catch(failureCb);
+      });
+    });
+
+    it('it should return an error for a bad email address', () => {
+      return new Promise((resolve, reject) => {
+        const successCb = tryCatch(() => {
+          reject(new Error('Should not have successfully resolved.'));
+        }, reject);
+
+        const failureCb = tryCatch((error) => {
+          error.code.should.equal('auth/invalid-email');
+          error.message.should.equal('The email address is badly formatted.');
+          resolve();
+        }, reject);
+
+        return firebase.native.auth().fetchProvidersForEmail('foobar').then(successCb).catch(failureCb);
+      });
+    });
+  });
+
   describe('Misc', () => {
     it('it should delete a user', () => {
       const random = randomString(12, '#aA');
@@ -264,7 +315,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
       return firebase.native.auth().createUserWithEmailAndPassword(email, pass).then(successCb);
     });
 
-    it('it should return a token via getToken', () => {
+    it('it should return a token via getIdToken', () => {
       const random = randomString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -276,7 +327,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
         newUser.isAnonymous.should.equal(false);
         newUser.providerId.should.equal('firebase');
 
-        return newUser.getToken().then((token) => {
+        return newUser.getIdToken().then((token) => {
           token.should.be.a.String();
           token.length.should.be.greaterThan(24);
           return firebase.native.auth().currentUser.delete();
@@ -297,7 +348,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
         }, reject);
 
         const failureCb = tryCatch((error) => {
-          error.code.should.equal('auth/no_current_user');
+          error.code.should.equal('auth/no-current-user');
           error.message.should.equal('No user currently signed in.');
           resolve();
         }, reject);
