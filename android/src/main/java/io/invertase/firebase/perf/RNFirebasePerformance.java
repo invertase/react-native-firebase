@@ -30,6 +30,11 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setPerformanceCollectionEnabled(Boolean enabled) {
+    FirebasePerformance.getInstance().setPerformanceCollectionEnabled(enabled);
+  }
+
+  @ReactMethod
   public void start(String identifier) {
     Trace trace = getOrCreateTrace(identifier);
     trace.start();

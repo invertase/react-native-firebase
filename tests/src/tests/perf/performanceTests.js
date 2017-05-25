@@ -1,4 +1,4 @@
-function messagingTests({ fdescribe, it, firebase }) {
+function performanceTests({ fdescribe, it, firebase }) {
   fdescribe('Performance Monitoring', () => {
     it('it should return a new Task instance', () => {
       const trace = firebase.native.perf().newTrace('foo');
@@ -19,7 +19,14 @@ function messagingTests({ fdescribe, it, firebase }) {
 
       return Promise.resolve();
     });
+
+    it('it should disable and enable performance monitoring', () => {
+      firebase.native.perf().setPerformanceCollectionEnabled(false);
+      firebase.native.perf().setPerformanceCollectionEnabled(true);
+
+      return Promise.resolve();
+    });
   });
 }
 
-export default messagingTests;
+export default performanceTests;
