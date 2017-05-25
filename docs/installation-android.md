@@ -111,3 +111,32 @@ If you would like to schedule local notifications then you also need to add the 
     </intent-filter>
   </receiver>
 ```
+
+## 3) Performance Monitoring (optional)
+
+If you'd like to take advantage of Firebases [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
+ to your project setup are required:
+
+In your projects `android/build.gradle` file, add the plugin to your dependencies:
+
+```
+dependencies {
+  ...
+  classpath 'com.google.firebase:firebase-plugins:1.1.0'
+}
+```
+
+At the top of your `android/app/build.gradle` file, below other plugins, apply the `firebase-perf` plugin:
+```
+apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
+```
+
+In the same file, add the `firebase-perf` module to your dependencies:
+
+```
+dependencies {
+  ...
+  compile "com.google.firebase:firebase-perf:10.2.6"
+}
+```
