@@ -30,6 +30,8 @@ const trace = firebase.perf().newTrace("test_trace");
 
 ### Trace
 
+!> Once a trace has been started and stopped, you cannot re-start it in the same app lifecycle.
+
 #### start()
 
 Initializes the trace to start tracing performance to relay back to Firebase.
