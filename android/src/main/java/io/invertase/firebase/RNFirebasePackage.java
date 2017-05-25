@@ -9,10 +9,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import io.invertase.firebase.admob.RNFirebaseAdMob;
 import io.invertase.firebase.auth.RNFirebaseAuth;
 import io.invertase.firebase.config.RNFirebaseRemoteConfig;
 import io.invertase.firebase.storage.RNFirebaseStorage;
@@ -66,6 +68,8 @@ public class RNFirebasePackage implements ReactPackage {
    */
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
+    return Arrays.<ViewManager>asList(
+      new RNFirebaseAdMob()
+    );
   }
 }
