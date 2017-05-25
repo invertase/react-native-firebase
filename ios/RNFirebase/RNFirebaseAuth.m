@@ -1,9 +1,10 @@
 #import "RNFirebaseAuth.h"
 #import "RNFirebaseEvents.h"
 
-@implementation RNFirebaseAuth
 
-RCT_EXPORT_MODULE(RNFirebaseAuth);
+#if __has_include(<FirebaseAuth/FIRAuth.h>)
+@implementation RNFirebaseAuth
+RCT_EXPORT_MODULE();
 
 /**
  addAuthStateListener
@@ -249,7 +250,7 @@ RCT_EXPORT_METHOD(updateProfile:(NSDictionary *) props resolver:(RCTPromiseResol
                     NSURL *url = [NSURL URLWithString:[props valueForKey:key]];
                     [changeRequest setValue:url forKey:key];
                 } else {
-                    [changeRequest setValue:[props objectForKey:key] forKey:key];
+                    [changeRequest setValue:props[key] forKey:key];
                 }
             } @catch (NSException *exception) {
                 NSLog(@"Exception occurred while configuring: %@", exception);
@@ -281,7 +282,7 @@ RCT_EXPORT_METHOD(getToken:(BOOL)forceRefresh resolver:(RCTPromiseResolveBlock) 
     FIRUser *user = [FIRAuth auth].currentUser;
     
     if (user) {
-        [user getTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
+        [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
@@ -387,11 +388,11 @@ RCT_EXPORT_METHOD(link:(NSString *)provider authToken:(NSString *)authToken auth
     FIRUser *user = [FIRAuth auth].currentUser;
     
     if (user) {
-        [user linkWithCredential:credential completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+        [user linkWithCredential:credential completion:^(FIRUser *_Nullable _user, NSError *_Nullable error) {
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self promiseWithUser:resolve rejecter:reject user:user];
+                [self promiseWithUser:resolve rejecter:reject user:_user];
             }
         }];
     } else {
@@ -471,7 +472,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *)email resolver:(RCTPromiseR
     } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
     } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIREmailPasswordAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+        credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
     } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else {
@@ -725,3 +726,10 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *)email resolver:(RCTPromiseR
 }
 
 @end
+
+#else
+@implementation RNFirebaseAuth
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif
