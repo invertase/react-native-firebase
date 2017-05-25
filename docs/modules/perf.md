@@ -11,6 +11,14 @@ You can easily trace your own events with RNFirebase:
 
 ## API
 
+#### setPerformanceCollectionEnabled(enabled: `boolean`)
+
+Globally enables or disables performance monitoring capture across the app.
+
+```js
+firebase.perf().setPerformanceCollectionEnabled(false); // Disable
+```
+
 #### newTrace(id: `string`): `Trace`
 
 Returns a new instance of Trace (see API below). The id is the unique name of something you'd like to run performance
