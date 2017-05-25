@@ -76,7 +76,7 @@ class CoreContainer extends React.Component {
   };
 
   render() {
-    return <Navigator />;
+    return <Navigator onNavigationStateChange={null} />;
   }
 }
 
