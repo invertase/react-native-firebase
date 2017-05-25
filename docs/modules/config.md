@@ -128,13 +128,13 @@ firebase.config().setDefaults({
   hasExperimentalFeature: false,
 });
 
-firebase.remoteConfig.fetch()
+firebase.config().fetch()
   .then(() => {
-    return firebase.remoteConfig().activateFetched();
+    return firebase.config().activateFetched();
   })
   .then((activated) => {
     if (!activated) console.log('Fetched data not activated');
-    return firebase.remoteConfig().getValue('hasExperimentalFeature');
+    return firebase.config().getValue('hasExperimentalFeature');
   })
   .then((snapshot) => {
     const hasExperimentalFeature = snapshot.val();

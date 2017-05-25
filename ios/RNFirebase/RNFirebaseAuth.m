@@ -1,5 +1,4 @@
 #import "RNFirebaseAuth.h"
-#import "RNFirebaseErrors.h"
 #import "RNFirebaseEvents.h"
 
 @implementation RNFirebaseAuth

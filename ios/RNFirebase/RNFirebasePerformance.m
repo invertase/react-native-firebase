@@ -1,6 +1,7 @@
 #import "RNFirebasePerformance.h"
-#import "FirebasePerformance/FIRPerformance.h"
 
+#if __has_include(<FirebasePerformance/FIRPerformance.h>)
+#import <FirebasePerformance/FIRPerformance.h>
 @implementation RNFirebasePerformance
 RCT_EXPORT_MODULE();
 
@@ -45,3 +46,10 @@ RCT_EXPORT_METHOD(incrementCounter:
 }
 
 @end
+
+#else
+@implementation RNFirebasePerformance
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif

@@ -1,7 +1,6 @@
 #ifndef RNFirebaseStorage_h
 #define RNFirebaseStorage_h
 
-#import "Firebase.h"
 #if __has_include(<React/RCTEventEmitter.h>)
 #import <React/RCTEventEmitter.h>
 #else // Compatibility for RN version < 0.40
@@ -16,8 +15,6 @@
 @interface RNFirebaseStorage : RCTEventEmitter <RCTBridgeModule> {
 
 }
-
-@property (nonatomic) NSString *_storageUrl;
 
 @end
 
