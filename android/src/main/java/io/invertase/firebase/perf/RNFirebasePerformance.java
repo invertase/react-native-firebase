@@ -36,21 +36,18 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void start(String identifier) {
-    Trace trace = getOrCreateTrace(identifier);
-    trace.start();
+    getOrCreateTrace(identifier).start();
   }
 
   @ReactMethod
   public void stop(String identifier) {
-    Trace trace = getOrCreateTrace(identifier);
-    trace.stop();
+    getOrCreateTrace(identifier).stop();
     traces.remove(identifier);
   }
 
   @ReactMethod
   public void incrementCounter(String identifier, String event) {
-    Trace trace = getOrCreateTrace(identifier);
-    trace.incrementCounter(event);
+    getOrCreateTrace(identifier).incrementCounter(event);
   }
 
   private Trace getOrCreateTrace(String identifier) {
