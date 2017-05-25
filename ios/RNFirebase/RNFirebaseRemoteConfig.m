@@ -5,12 +5,9 @@
 #else // Compatibility for RN version < 0.40
 #import "RCTConvert.h"
 #endif
-#if __has_include(<React/RCTUtils.h>)
-#import <React/RCTUtils.h>
-#else // Compatibility for RN version < 0.40
-#import "RCTUtils.h"
-#endif
 
+
+#if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
 #import "FirebaseRemoteConfig/FirebaseRemoteConfig.h"
 
 NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value)
@@ -68,15 +65,12 @@ RCT_EXPORT_MODULE(RNFirebaseRemoteConfig);
     return self;
 }
 
-RCT_EXPORT_METHOD(enableDeveloperMode)
-{
+RCT_EXPORT_METHOD(enableDeveloperMode) {
     FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
     self.remoteConfig.configSettings = remoteConfigSettings;
 }
 
-RCT_EXPORT_METHOD(fetch:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(fetch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     [self.remoteConfig fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
         if (error) {
             RCTLogError(@"\nError: %@", RCTJSErrorFromNSError(error));
@@ -140,14 +134,19 @@ RCT_EXPORT_METHOD(getKeysByPrefix:(NSString *)prefix
     resolve(keysArray);
 }
 
-RCT_EXPORT_METHOD(setDefaults:(NSDictionary *)defaults)
-{
+RCT_EXPORT_METHOD(setDefaults:(NSDictionary *)defaults) {
     [self.remoteConfig setDefaults:defaults];
 }
 
-RCT_EXPORT_METHOD(setDefaultsFromResource:(NSString *)fileName)
-{
+RCT_EXPORT_METHOD(setDefaultsFromResource:(NSString *)fileName) {
     [self.remoteConfig setDefaultsFromPlistFileName:fileName];
 }
 
 @end
+
+#else
+@implementation RNFirebaseRemoteConfig
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif
