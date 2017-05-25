@@ -1,5 +1,5 @@
-function performanceTests({ fdescribe, it, firebase }) {
-  fdescribe('Performance Monitoring', () => {
+function performanceTests({ describe, it, firebase }) {
+  describe('Performance Monitoring', () => {
     it('it should return a new Task instance', () => {
       const trace = firebase.native.perf().newTrace('foo');
 
