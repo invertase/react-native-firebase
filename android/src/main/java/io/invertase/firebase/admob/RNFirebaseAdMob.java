@@ -4,46 +4,35 @@ package io.invertase.firebase.admob;
 import android.app.Activity;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.google.android.gms.ads.AdRequest;
-import com.google.firebase.database.ServerValue;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-
 import io.invertase.firebase.Utils;
-import io.invertase.firebase.admob.RNFirebaseAdmobInterstitial;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
 
   private static final String TAG = "RNFirebaseAdmob";
 
-  public ReactApplicationContext getContext() {
+  ReactApplicationContext getContext() {
     return getReactApplicationContext();
   }
 
-  public Activity getActivity() {
+  Activity getActivity() {
     return getCurrentActivity();
   }
 
-  private ReactApplicationContext context;
   private HashMap<String, RNFirebaseAdmobInterstitial> interstitials = new HashMap<>();
 
   public RNFirebaseAdMob(ReactApplicationContext reactContext) {
     super(reactContext);
-    context = reactContext;
     Log.d(TAG, "New instance");
   }
 
