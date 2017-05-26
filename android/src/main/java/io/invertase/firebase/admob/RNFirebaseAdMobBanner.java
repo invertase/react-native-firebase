@@ -1,7 +1,6 @@
 package io.invertase.firebase.admob;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
@@ -17,10 +16,8 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 
 import java.util.Map;
-
 
 public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> implements View.OnLayoutChangeListener {
 
@@ -51,6 +48,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
   private String size;
+  private Boolean testing = false;
 
   @Override
   public String getName() {
@@ -69,7 +67,6 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     emitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
     attachAdViewToViewGroup();
-
     return viewGroup;
   }
 
@@ -98,7 +95,6 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
    */
   @Override
   public void onLayoutChange(View view, final int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-    Log.d("Ads", "onLayoutChange");
     // If the view has changed at all, recalculate what banner we need
     if (left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
       setSize(viewGroup, null);
@@ -108,14 +104,23 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
   /**
    * Handle unitId prop
    * @param view
-   * @param unitId
+   * @param value
    */
   @ReactProp(name = "unitId")
-  public void setUnitId(final ReactViewGroup view, final String unitId) {
-    Log.d("Ads", "Prop unitId something " + unitId);
-
+  public void setUnitId(final ReactViewGroup view, final String value) {
     AdView adViewView = (AdView) view.getChildAt(0);
-    adViewView.setAdUnitId(unitId);
+    adViewView.setAdUnitId(value);
+    requestAd();
+  }
+
+  /**
+   * Handle testing prop
+   * @param view
+   * @param value
+   */
+  @ReactProp(name = "testing")
+  public void setUnitId(final ReactViewGroup view, final Boolean value) {
+    testing = value;
     requestAd();
   }
 
@@ -131,8 +136,6 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     }
 
     AdSize adSize = propToAdSize(size.toUpperCase());
-    Log.d("Ads", "Prop size something " + adSize.toString());
-
     AdView adViewView = (AdView) view.getChildAt(0);
     adViewView.setAdSize(adSize);
 
@@ -192,7 +195,12 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     }
 
     AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-    adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+
+    // If the prop testing is set, assign the emulators device ID
+    if (testing) {
+      adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+    }
+
     AdRequest adRequest = adRequestBuilder.build();
     adView.loadAd(adRequest);
   }
@@ -220,28 +228,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
 
       @Override
       public void onAdFailedToLoad(int errorCode) {
-        WritableMap payload = Arguments.createMap();
-
-        // TODO Error code converter
-        switch (errorCode) {
-          case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-            payload.putString("code", "admob/error-code-internal-error");
-            payload.putString("message", "Something happened internally; for instance, an invalid response was received from the ad server.");
-            break;
-          case AdRequest.ERROR_CODE_INVALID_REQUEST:
-            payload.putString("code", "admob/error-code-invalid-request");
-            payload.putString("message", "The ad request was invalid; for instance, the ad unit ID was incorrect.");
-            break;
-          case AdRequest.ERROR_CODE_NETWORK_ERROR:
-            payload.putString("code", "admob/error-code-network-error");
-            payload.putString("message", "The ad request was unsuccessful due to network connectivity.");
-            break;
-          case AdRequest.ERROR_CODE_NO_FILL:
-            payload.putString("code", "admob/error-code-no-fill");
-            payload.putString("message", "The ad request was successful, but no ad was returned due to lack of ad inventory.");
-            break;
-        }
-
+        WritableMap payload = RNFirebaseAdMobUtils.errorCodeToMap(errorCode);
         sendEvent(Events.EVENT_AD_FAILED_TO_LOAD.toString(), payload);
       }
 
