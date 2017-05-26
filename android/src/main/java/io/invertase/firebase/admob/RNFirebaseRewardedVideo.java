@@ -1,0 +1,121 @@
+package io.invertase.firebase.admob;
+
+
+import android.app.Activity;
+import android.support.annotation.Nullable;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+
+import io.invertase.firebase.Utils;
+
+public class RNFirebaseRewardedVideo implements RewardedVideoAdListener {
+
+  private RewardedVideoAd mAd;
+  private String adUnit;
+  private RNFirebaseAdMob adMob;
+  private RewardedVideoAd rewardedVideo;
+
+  RNFirebaseRewardedVideo(final String adUnitString, final RNFirebaseAdMob adMobInstance) {
+    adUnit = adUnitString;
+    adMob = adMobInstance;
+
+    rewardedVideo = MobileAds.getRewardedVideoAdInstance(adMob.getContext());
+    rewardedVideo.setRewardedVideoAdListener(this);
+  }
+
+  /**
+   * Load an Ad with a AdRequest instance
+   * @param adRequest
+   */
+  void loadAd(final AdRequest adRequest) {
+    Activity activity = adMob.getActivity();
+    if (activity != null) {
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          rewardedVideo.loadAd(adUnit, adRequest);
+        }
+      });
+    }
+  }
+
+  /**
+   * Show the loaded interstitial, if it's loaded
+   */
+  void show() {
+    Activity activity = adMob.getActivity();
+    if (activity != null) {
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          if (rewardedVideo.isLoaded()) {
+            rewardedVideo.show();
+          }
+        }
+      });
+    }
+  }
+
+  @Override
+  public void onRewarded(RewardItem reward) {
+    sendEvent("onRewarded", null);
+  }
+
+  @Override
+  public void onRewardedVideoAdLeftApplication() {
+    sendEvent("onRewardedVideoAdLeftApplication", null);
+  }
+
+  @Override
+  public void onRewardedVideoAdClosed() {
+    sendEvent("onRewardedVideoAdClosed", null);
+  }
+
+  @Override
+  public void onRewardedVideoAdFailedToLoad(int errorCode) {
+    WritableMap payload = RNFirebaseAdMobUtils.errorCodeToMap(errorCode);
+    sendEvent("onRewardedVideoAdFailedToLoad", payload);
+  }
+
+  @Override
+  public void onRewardedVideoAdLoaded() {
+    sendEvent("onRewardedVideoAdLoaded", null);
+  }
+
+  @Override
+  public void onRewardedVideoAdOpened() {
+    sendEvent("onRewardedVideoAdOpened", null);
+  }
+
+  @Override
+  public void onRewardedVideoStarted() {
+    sendEvent("onRewardedVideoStarted", null);
+  }
+
+  // TODO onResume etc??? https://developers.google.com/admob/android/rewarded-video
+
+  /**
+   * Send a native event over the bridge with a type and optional payload
+   * @param type
+   * @param payload
+   */
+  void sendEvent(String type, final @Nullable WritableMap payload) {
+    WritableMap map = Arguments.createMap();
+    map.putString("type", type);
+    map.putString("adunit", adUnit);
+
+    if (payload != null) {
+      map.putMap("payload", payload);
+    }
+
+    Utils.sendEvent(adMob.getContext(), "rewarded_video_event", map);
+  }
+}
