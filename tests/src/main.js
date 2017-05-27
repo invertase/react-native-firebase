@@ -52,12 +52,12 @@ function bootstrap() {
         return null;
       }
 
-      return <Banner style={{ width: 100, height: 100, backgroundColor: 'pink'}} />;
-      // return (
-      //   <Provider store={this.state.store}>
-      //     <CoreContainer />
-      //   </Provider>
-      // );
+      // return <Banner style={{ width: 100, height: 100, backgroundColor: 'pink'}} />;
+      return (
+        <Provider store={this.state.store}>
+          <CoreContainer />
+        </Provider>
+      );
     }
   }
 
