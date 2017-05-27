@@ -1,20 +1,8 @@
 #import "RNFirebaseMessaging.h"
 
-#if __has_include(<React/RCTEventDispatcher.h>)
 #import <React/RCTEventDispatcher.h>
-#else // Compatibility for RN version < 0.40
-#import "RCTEventDispatcher.h"
-#endif
-#if __has_include(<React/RCTConvert.h>)
 #import <React/RCTConvert.h>
-#else // Compatibility for RN version < 0.40
-#import "RCTConvert.h"
-#endif
-#if __has_include(<React/RCTUtils.h>)
 #import <React/RCTUtils.h>
-#else // Compatibility for RN version < 0.40
-#import "RCTUtils.h"
-#endif
 
 @import UserNotifications;
 #import <FirebaseMessaging/FirebaseMessaging.h>

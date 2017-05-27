@@ -1,11 +1,6 @@
 #import "RNFirebaseRemoteConfig.h"
 
-#if __has_include(<React/RCTConvert.h>)
 #import <React/RCTConvert.h>
-#else // Compatibility for RN version < 0.40
-#import "RCTConvert.h"
-#endif
-
 
 #if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
 #import "FirebaseRemoteConfig/FirebaseRemoteConfig.h"
