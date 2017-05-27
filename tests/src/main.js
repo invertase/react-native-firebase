@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 
+import { Banner } from './../firebase/modules/admob';
+
 import CoreContainer from './containers/CoreContainer';
 import setupStore from './store/setup';
 import { setupSuites } from './tests/index';
@@ -50,11 +52,12 @@ function bootstrap() {
         return null;
       }
 
-      return (
-        <Provider store={this.state.store}>
-          <CoreContainer />
-        </Provider>
-      );
+      return <Banner style={{ width: 100, height: 100, backgroundColor: 'pink'}} />;
+      // return (
+      //   <Provider store={this.state.store}>
+      //     <CoreContainer />
+      //   </Provider>
+      // );
     }
   }
 

@@ -9,10 +9,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import io.invertase.firebase.admob.RNFirebaseAdMobBanner;
 import io.invertase.firebase.auth.RNFirebaseAuth;
 import io.invertase.firebase.config.RNFirebaseRemoteConfig;
 import io.invertase.firebase.storage.RNFirebaseStorage;
@@ -21,6 +23,7 @@ import io.invertase.firebase.analytics.RNFirebaseAnalytics;
 import io.invertase.firebase.crash.RNFirebaseCrash;
 import io.invertase.firebase.messaging.RNFirebaseMessaging;
 import io.invertase.firebase.perf.RNFirebasePerformance;
+import io.invertase.firebase.admob.RNFirebaseAdMob;
 
 @SuppressWarnings("unused")
 public class RNFirebasePackage implements ReactPackage {
@@ -45,6 +48,7 @@ public class RNFirebasePackage implements ReactPackage {
     modules.add(new RNFirebaseCrash(reactContext));
     modules.add(new RNFirebaseRemoteConfig(reactContext));
     modules.add(new RNFirebasePerformance(reactContext));
+    modules.add(new RNFirebaseAdMob(reactContext));
     return modules;
   }
 
@@ -66,6 +70,8 @@ public class RNFirebasePackage implements ReactPackage {
    */
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
+    return Arrays.<ViewManager>asList(
+      new RNFirebaseAdMobBanner()
+    );
   }
 }
