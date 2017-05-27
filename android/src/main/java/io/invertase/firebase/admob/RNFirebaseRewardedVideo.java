@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
@@ -28,11 +26,23 @@ public class RNFirebaseRewardedVideo implements RewardedVideoAdListener {
     adMob = adMobInstance;
 
     rewardedVideo = MobileAds.getRewardedVideoAdInstance(adMob.getContext());
-    rewardedVideo.setRewardedVideoAdListener(this);
+
+    Activity activity = adMob.getActivity();
+    final RNFirebaseRewardedVideo _this = this;
+
+    if (activity != null) {
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          rewardedVideo.setRewardedVideoAdListener(_this);
+        }
+      });
+    }
   }
 
   /**
    * Load an Ad with a AdRequest instance
+   *
    * @param adRequest
    */
   void loadAd(final AdRequest adRequest) {
@@ -66,33 +76,36 @@ public class RNFirebaseRewardedVideo implements RewardedVideoAdListener {
 
   @Override
   public void onRewarded(RewardItem reward) {
-    sendEvent("onRewarded", null);
+    WritableMap payload = Arguments.createMap();
+    payload.putInt("amount", reward.getAmount());
+    payload.putString("type", reward.getType());
+    sendEvent("onRewarded", payload);
   }
 
   @Override
   public void onRewardedVideoAdLeftApplication() {
-    sendEvent("onRewardedVideoAdLeftApplication", null);
+    sendEvent("onAdLeftApplication", null);
   }
 
   @Override
   public void onRewardedVideoAdClosed() {
-    sendEvent("onRewardedVideoAdClosed", null);
+    sendEvent("onAdClosed", null);
   }
 
   @Override
   public void onRewardedVideoAdFailedToLoad(int errorCode) {
     WritableMap payload = RNFirebaseAdMobUtils.errorCodeToMap(errorCode);
-    sendEvent("onRewardedVideoAdFailedToLoad", payload);
+    sendEvent("onAdFailedToLoad", payload);
   }
 
   @Override
   public void onRewardedVideoAdLoaded() {
-    sendEvent("onRewardedVideoAdLoaded", null);
+    sendEvent("onAdLoaded", null);
   }
 
   @Override
   public void onRewardedVideoAdOpened() {
-    sendEvent("onRewardedVideoAdOpened", null);
+    sendEvent("onAdOpened", null);
   }
 
   @Override
@@ -104,13 +117,14 @@ public class RNFirebaseRewardedVideo implements RewardedVideoAdListener {
 
   /**
    * Send a native event over the bridge with a type and optional payload
+   *
    * @param type
    * @param payload
    */
   void sendEvent(String type, final @Nullable WritableMap payload) {
     WritableMap map = Arguments.createMap();
     map.putString("type", type);
-    map.putString("adunit", adUnit);
+    map.putString("adUnit", adUnit);
 
     if (payload != null) {
       map.putMap("payload", payload);
