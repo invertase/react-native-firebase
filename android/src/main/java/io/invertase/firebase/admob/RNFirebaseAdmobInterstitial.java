@@ -99,7 +99,7 @@ class RNFirebaseAdmobInterstitial {
   void sendEvent(String type, final @Nullable WritableMap payload) {
     WritableMap map = Arguments.createMap();
     map.putString("type", type);
-    map.putString("adunit", adUnit);
+    map.putString("adUnit", adUnit);
 
     if (payload != null) {
       map.putMap("payload", payload);

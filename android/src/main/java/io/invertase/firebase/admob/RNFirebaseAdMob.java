@@ -66,6 +66,11 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
     rewardedVideo.show();
   }
 
+  /**
+   *
+   * @param adUnit
+   * @return
+   */
   private RNFirebaseAdmobInterstitial getOrCreateInterstitial(String adUnit) {
     if (interstitials.containsKey(adUnit)) {
       return interstitials.get(adUnit);
@@ -75,6 +80,11 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
     return interstitial;
   }
 
+  /**
+   *
+   * @param adUnit
+   * @return
+   */
   private RNFirebaseRewardedVideo getOrCreateRewardedVideo(String adUnit) {
     if (rewardedVideos.containsKey(adUnit)) {
       return rewardedVideos.get(adUnit);
