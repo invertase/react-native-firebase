@@ -2,7 +2,7 @@
   "name": "react-native-firebase",
   "version": "1.1.0",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A react native firebase library supporting both android and ios native firebase SDK's",
+  "description": "A well tested feature rich Firebase implementation for React Native, supporting iOS & Android",
   "main": "index",
   "scripts": {
     "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
@@ -34,6 +34,11 @@
   "license": "MIT",
   "keywords": [
     "react",
+    "admob",
+    "auth",
+    "config",
+    "remote-config",
+    "transactions",
     "react-native",
     "react-native-firebase",
     "firebase",
@@ -48,7 +53,7 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.38.0"
+    "react-native": ">= 0.40.0"
   },
   "rnpm": {
     "commands": {
