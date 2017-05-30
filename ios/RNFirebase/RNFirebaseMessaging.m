@@ -6,6 +6,7 @@
 #import <React/RCTUtils.h>
 
 @import UserNotifications;
+#if __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
 #import <FirebaseMessaging/FirebaseMessaging.h>
 
 @implementation RCTConvert (NSCalendarUnit)
@@ -416,3 +417,10 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId) {
 }
 
 @end
+
+#else
+@implementation RNFirebaseMessaging
+RCT_EXPORT_MODULE();
+RCT_EXPORT_METHOD(nativeSDKMissing) {}
+@end
+#endif
