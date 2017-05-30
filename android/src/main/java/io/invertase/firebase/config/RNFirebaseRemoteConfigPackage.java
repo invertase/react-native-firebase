@@ -1,6 +1,4 @@
-package io.invertase.firebase;
-
-import android.content.Context;
+package io.invertase.firebase.config;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -9,27 +7,13 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import io.invertase.firebase.admob.RNFirebaseAdMobBanner;
-import io.invertase.firebase.auth.RNFirebaseAuth;
-import io.invertase.firebase.config.RNFirebaseRemoteConfig;
-import io.invertase.firebase.storage.RNFirebaseStorage;
-import io.invertase.firebase.database.RNFirebaseDatabase;
-import io.invertase.firebase.analytics.RNFirebaseAnalytics;
-import io.invertase.firebase.crash.RNFirebaseCrash;
-import io.invertase.firebase.messaging.RNFirebaseMessaging;
-import io.invertase.firebase.perf.RNFirebasePerformance;
-import io.invertase.firebase.admob.RNFirebaseAdMob;
+import java.util.List;
 
 @SuppressWarnings("unused")
-public class RNFirebasePackage implements ReactPackage {
-  private Context mContext;
-
-  public RNFirebasePackage() {
+public class RNFirebaseRemoteConfigPackage implements ReactPackage {
+  public RNFirebaseRemoteConfigPackage() {
   }
 
   /**
@@ -39,7 +23,8 @@ public class RNFirebasePackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new RNFirebaseModule(reactContext));
+    modules.add(new RNFirebaseRemoteConfig(reactContext));
+
     return modules;
   }
 
@@ -61,8 +46,6 @@ public class RNFirebasePackage implements ReactPackage {
    */
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList(
-      new RNFirebaseAdMobBanner()
-    );
+    return Collections.emptyList();
   }
 }
