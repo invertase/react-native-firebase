@@ -137,26 +137,22 @@ Add the following to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOp
 Add the following methods:
 
 ```objectivec
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
-{
-  [RNFirebaseMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void (^)())completionHandler
-{
-  [RNFirebaseMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-}
-
 -(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
   [RNFirebaseMessaging didReceiveLocalNotification:notification];
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
+  [RNFirebaseMessaging didReceiveRemoteNotification:userInfo];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
                                                        fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
   [RNFirebaseMessaging didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
+
+### 3.5) Debugging
+
+If you're having problems with messages not being received, check out the following blog post for help:
+
+https://firebase.googleblog.com/2017/01/debugging-firebase-cloud-messaging-on.html
 ```
