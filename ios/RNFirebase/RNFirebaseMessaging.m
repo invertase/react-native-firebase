@@ -1,4 +1,5 @@
 #import "RNFirebaseMessaging.h"
+#import "RNFirebaseEvents.h"
 
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTConvert.h>
@@ -6,19 +7,6 @@
 
 @import UserNotifications;
 #import <FirebaseMessaging/FirebaseMessaging.h>
-#import <FirebaseInstanceID/FirebaseInstanceID.h>
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
-
-#define UIUserNotificationTypeAlert UIRemoteNotificationTypeAlert
-#define UIUserNotificationTypeBadge UIRemoteNotificationTypeBadge
-#define UIUserNotificationTypeSound UIRemoteNotificationTypeSound
-#define UIUserNotificationTypeNone  UIRemoteNotificationTypeNone
-#define UIUserNotificationType      UIRemoteNotificationType
-
-#endif
-
-NSString *const FCMNotificationReceived = @"FCMNotificationReceived";
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -136,174 +124,160 @@ RCT_ENUM_CONVERTER(UNNotificationPresentationOptions, (@{
 
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
++ (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
+    [data setValue:@"remote_notification" forKey:@"_notificationType"];
+    [data setValue:@(RCTSharedApplication().applicationState == UIApplicationStateInactive) forKey:@"opened_from_tray"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data}];
+}
 
 + (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull RCTRemoteNotificationCallback)completionHandler {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
     [data setValue:@"remote_notification" forKey:@"_notificationType"];
     [data setValue:@(RCTSharedApplication().applicationState == UIApplicationStateInactive) forKey:@"opened_from_tray"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FCMNotificationReceived object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
 }
 
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
     [data setValue:@"local_notification" forKey:@"_notificationType"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FCMNotificationReceived object:self userInfo:@{@"data": data}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data}];
 }
 
-+ (void)didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(nonnull RCTNotificationResponseCallback)completionHandler
-{
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
-    [data setValue:@"notification_response" forKey:@"_notificationType"];
-    [data setValue:@YES forKey:@"opened_from_tray"];
-    if (response.actionIdentifier) {
-        [data setValue:response.actionIdentifier forKey:@"_actionIdentifier"];
+- (id)init {
+    self = [super init];
+    if (self != nil) {
+        NSLog(@"Setting up RNFirebase instance");
+        [self initialiseMessaging];
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:FCMNotificationReceived object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+    return self;
 }
 
-+ (void)willPresentNotification:(UNNotification *)notification withCompletionHandler:(nonnull RCTWillPresentNotificationCallback)completionHandler
-{
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.request.content.userInfo];
-    [data setValue:@"will_present_notification" forKey:@"_notificationType"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FCMNotificationReceived object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
-}
+- (void)initialiseMessaging {
+    // Establish Firebase managed data channel
+    [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
+    // Set up listeners for data messages
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sendDataMessageFailure:)
+                                                 name:FIRMessagingSendErrorNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sendDataMessageSuccess:)
+                                                 name:FIRMessagingSendSuccessNotification
+                                               object:nil];
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-    _bridge = bridge;
-
+    // Set up internal listener to send notification over bridge
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleNotificationReceived:)
-                                                 name:FCMNotificationReceived
+                                                 name:MESSAGING_NOTIFICATION_RECEIVED
                                                object:nil];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(disconnectFCM)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(connectToFCM)
-                                                 name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter]
-     addObserver:self selector:@selector(onTokenRefresh)
-     name:kFIRInstanceIDTokenRefreshNotification object:nil];
-
-    [[NSNotificationCenter defaultCenter]
-     addObserver:self selector:@selector(sendDataMessageFailure:)
-     name:FIRMessagingSendErrorNotification object:nil];
-
-    [[NSNotificationCenter defaultCenter]
-     addObserver:self selector:@selector(sendDataMessageSuccess:)
-     name:FIRMessagingSendSuccessNotification object:nil];
-
-    // For iOS 10 data message (sent via FCM)
+    // Set this as a delegate for FIRMessaging
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[FIRMessaging messaging] setRemoteMessageDelegate:self];
-        [self connectToFCM];
+        [FIRMessaging messaging].delegate = self;
     });
 }
 
-- (void)connectToFCM
-{
-    [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
-        if (error != nil) {
-            NSLog(@"Unable to connect to FCM. %@", error);
-        } else {
-            NSLog(@"Connected to FCM.");
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)handleNotificationReceived:(NSNotification *)notification {
+    id completionHandler = notification.userInfo[@"completionHandler"];
+    NSMutableDictionary* data = notification.userInfo[@"data"];
+    if(completionHandler != nil){
+        NSString *completionHandlerId = [[NSUUID UUID] UUIDString];
+        if (!self.notificationCallbacks) {
+            // Lazy initialization
+            self.notificationCallbacks = [NSMutableDictionary dictionary];
         }
-    }];
+        self.notificationCallbacks[completionHandlerId] = completionHandler;
+        data[@"_completionHandlerId"] = completionHandlerId;
+    }
+
+    [self sendEventWithName:MESSAGING_NOTIFICATION_RECEIVED body:data];
 }
 
-- (void)disconnectFCM
-{
-    [[FIRMessaging messaging] disconnect];
-    NSLog(@"Disconnected from FCM");
+
+- (void)sendDataMessageFailure:(NSNotification *)notification {
+    NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
+    NSLog(@"sendDataMessageFailure: %@", messageID);
 }
 
+- (void)sendDataMessageSuccess:(NSNotification *)notification {
+    NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
+    NSLog(@"sendDataMessageSuccess: %@", messageID);
+}
+
+// ** Start FIRMessagingDelegate methods **
+// Handle data messages in the background
+- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+    [self sendEventWithName:MESSAGING_NOTIFICATION_RECEIVED body:[remoteMessage appData]];
+}
+
+// Listen for token refreshes
+- (void)messaging:(nonnull FIRMessaging *)messaging didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
+    NSLog(@"FCM registration token: %@", fcmToken);
+    [self sendEventWithName:MESSAGING_TOKEN_REFRESHED body:fcmToken];
+}
+// ** End FIRMessagingDelegate methods **
+
+// ** Start React Module methods **
 RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    UILocalNotification *localUserInfo = _bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+    UILocalNotification *localUserInfo = [self bridge].launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
     if (localUserInfo) {
         resolve([[localUserInfo userInfo] copy]);
-        return;
+    } else {
+        resolve([[self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy]);
     }
-    resolve([_bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy]);
 }
 
-RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
-    resolve([[FIRInstanceID instanceID] token]);
+RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve([FIRMessaging messaging].FCMToken);
 }
 
-- (void) onTokenRefresh
-{
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"FCMTokenRefreshed" body:[[FIRInstanceID instanceID] token]];
-}
-
-RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (RCTRunningInAppExtension()) {
         return;
     }
+
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationType allNotificationTypes =
         (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        UIApplication *app = RCTSharedApplication();
-        if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-            //iOS 8 or later
-            UIUserNotificationSettings *notificationSettings =
-            [UIUserNotificationSettings settingsForTypes:(NSUInteger)allNotificationTypes categories:nil];
-            [app registerUserNotificationSettings:notificationSettings];
-        } else {
-            //iOS 7 or below
-            [app registerForRemoteNotificationTypes:(NSUInteger)allNotificationTypes];
-        }
+        UIUserNotificationSettings *settings =
+        [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        [RCTSharedApplication() registerUserNotificationSettings:settings];
         // Unfortunately on iOS 9 or below, there's no way to tell whether the user accepted or
         // rejected the permissions popup
         resolve(@{@"status":@"unknown"});
     } else {
         // iOS 10 or later
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        // For iOS 10 display notification (sent via APNS)
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
         UNAuthorizationOptions authOptions =
         UNAuthorizationOptionAlert
         | UNAuthorizationOptionSound
         | UNAuthorizationOptionBadge;
-        [[UNUserNotificationCenter currentNotificationCenter]
-         requestAuthorizationWithOptions:authOptions
-         completionHandler:^(BOOL granted, NSError * _Nullable error) {
-             resolve(@{@"granted":@(granted)});
-         }
-         ];
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            resolve(@{@"granted":@(granted)});
+        }];
 #endif
     }
 
     [RCTSharedApplication() registerForRemoteNotifications];
 }
 
-RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic)
-{
+RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
     [[FIRMessaging messaging] subscribeToTopic:topic];
 }
 
-RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic)
-{
+RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
 }
 
-// Receive data message on iOS 10 devices.
-- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    [_bridge.eventDispatcher sendDeviceEventWithName:FCMNotificationReceived body:[remoteMessage appData]];
-}
-
-RCT_EXPORT_METHOD(createLocalNotification:(id)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(createLocalNotification:(id)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         UNNotificationRequest* request = [RCTConvert UNNotificationRequest:data];
         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
@@ -320,8 +294,7 @@ RCT_EXPORT_METHOD(createLocalNotification:(id)data resolver:(RCTPromiseResolveBl
     }
 }
 
-RCT_EXPORT_METHOD(scheduleLocalNotification:(id)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(scheduleLocalNotification:(id)data resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         UNNotificationRequest* request = [RCTConvert UNNotificationRequest:data];
         [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
@@ -338,15 +311,13 @@ RCT_EXPORT_METHOD(scheduleLocalNotification:(id)data resolver:(RCTPromiseResolve
     }
 }
 
-RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId)
-{
+RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
     }
 }
 
-RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
-{
+RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
     } else {
@@ -354,8 +325,7 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
     }
 }
 
-RCT_EXPORT_METHOD(cancelAllLocalNotifications)
-{
+RCT_EXPORT_METHOD(cancelAllLocalNotifications) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
     } else {
@@ -363,11 +333,10 @@ RCT_EXPORT_METHOD(cancelAllLocalNotifications)
     }
 }
 
-RCT_EXPORT_METHOD(cancelLocalNotification:(NSString*) notificationId)
-{
+RCT_EXPORT_METHOD(cancelLocalNotification:(NSString*) notificationId) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
-    }else {
+    } else {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary<NSString *, id> *notificationInfo = notification.userInfo;
             if([notificationId isEqualToString:[notificationInfo valueForKey:@"id"]]){
@@ -377,19 +346,17 @@ RCT_EXPORT_METHOD(cancelLocalNotification:(NSString*) notificationId)
     }
 }
 
-RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if([UNUserNotificationCenter currentNotificationCenter] != nil){
         [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
             NSMutableArray* list = [[NSMutableArray alloc] init];
             for(UNNotificationRequest * notif in requests){
-                NSString* interval;
                 UNMutableNotificationContent *content = notif.content;
                 [list addObject:content.userInfo];
             }
             resolve(list);
         }];
-    }else{
+    } else {
         NSMutableArray* list = [[NSMutableArray alloc] init];
         for(UILocalNotification * notif in [RCTSharedApplication() scheduledLocalNotifications]){
             [list addObject:notif.userInfo];
@@ -398,13 +365,11 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTPromiseResolveBlock)resolve
     }
 }
 
-RCT_EXPORT_METHOD(setBadgeNumber: (NSInteger*) number)
-{
+RCT_EXPORT_METHOD(setBadgeNumber: (NSInteger*) number) {
     [RCTSharedApplication() setApplicationIconBadgeNumber:number];
 }
 
-RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
 }
 
@@ -413,10 +378,10 @@ RCT_EXPORT_METHOD(send:(NSDictionary *)remoteMessage) {
     NSString * mId = [remoteMessage valueForKey:@"id"];
     NSString * receiver = [remoteMessage valueForKey:@"sender"];
     NSDictionary * data = [remoteMessage valueForKey:@"data"];
-    [[FIRMessaging messaging]sendMessage:data to:receiver withMessageID:mId timeToLive:ttl];
+    [[FIRMessaging messaging] sendMessage:data to:receiver withMessageID:mId timeToLive:ttl];
 }
 
-RCT_EXPORT_METHOD(finishRemoteNotification: (NSString *)completionHandlerId fetchResult:(UIBackgroundFetchResult)result){
+RCT_EXPORT_METHOD(finishRemoteNotification: (NSString *)completionHandlerId fetchResult:(UIBackgroundFetchResult)result) {
     RCTRemoteNotificationCallback completionHandler = self.notificationCallbacks[completionHandlerId];
     if (!completionHandler) {
         RCTLogError(@"There is no completion handler with completionHandlerId: %@", completionHandlerId);
@@ -426,7 +391,7 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString *)completionHandlerId fetc
     [self.notificationCallbacks removeObjectForKey:completionHandlerId];
 }
 
-RCT_EXPORT_METHOD(finishWillPresentNotification: (NSString *)completionHandlerId fetchResult:(UNNotificationPresentationOptions)result){
+RCT_EXPORT_METHOD(finishWillPresentNotification: (NSString *)completionHandlerId fetchResult:(UNNotificationPresentationOptions)result) {
     RCTWillPresentNotificationCallback completionHandler = self.notificationCallbacks[completionHandlerId];
     if (!completionHandler) {
         RCTLogError(@"There is no completion handler with completionHandlerId: %@", completionHandlerId);
@@ -436,7 +401,7 @@ RCT_EXPORT_METHOD(finishWillPresentNotification: (NSString *)completionHandlerId
     [self.notificationCallbacks removeObjectForKey:completionHandlerId];
 }
 
-RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId){
+RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId) {
     RCTNotificationResponseCallback completionHandler = self.notificationCallbacks[completionHandlerId];
     if (!completionHandler) {
         RCTLogError(@"There is no completion handler with completionHandlerId: %@", completionHandlerId);
@@ -446,36 +411,8 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId){
     [self.notificationCallbacks removeObjectForKey:completionHandlerId];
 }
 
-- (void)handleNotificationReceived:(NSNotification *)notification
-{
-    id completionHandler = notification.userInfo[@"completionHandler"];
-    NSMutableDictionary* data = notification.userInfo[@"data"];
-    if(completionHandler != nil){
-        NSString *completionHandlerId = [[NSUUID UUID] UUIDString];
-        if (!self.notificationCallbacks) {
-            // Lazy initialization
-            self.notificationCallbacks = [NSMutableDictionary dictionary];
-        }
-        self.notificationCallbacks[completionHandlerId] = completionHandler;
-        data[@"_completionHandlerId"] = completionHandlerId;
-    }
-
-    [_bridge.eventDispatcher sendDeviceEventWithName:FCMNotificationReceived body:data];
-
-}
-
-- (void)sendDataMessageFailure:(NSNotification *)notification
-{
-    NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
-
-    NSLog(@"sendDataMessageFailure: %@", messageID);
-}
-
-- (void)sendDataMessageSuccess:(NSNotification *)notification
-{
-    NSString *messageID = (NSString *)notification.userInfo[@"messageID"];
-
-    NSLog(@"sendDataMessageSuccess: %@", messageID);
+- (NSArray<NSString *> *)supportedEvents {
+    return @[MESSAGING_TOKEN_REFRESHED, MESSAGING_NOTIFICATION_RECEIVED];
 }
 
 @end
