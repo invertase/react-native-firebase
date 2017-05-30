@@ -147,7 +147,7 @@ RCT_EXPORT_MODULE()
 - (id)init {
     self = [super init];
     if (self != nil) {
-        NSLog(@"Setting up RNFirebase instance");
+        NSLog(@"Setting up RNFirebaseMessaging instance");
         [self initialiseMessaging];
     }
     return self;
