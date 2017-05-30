@@ -77,18 +77,18 @@ dependencies {
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:$firebaseVersion"
+  compile "com.google.firebase:firebase-core:10.2.6"
 
   # RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:$firebaseVersion"
-  compile "com.google.firebase:firebase-analytics:$firebaseVersion"
-  compile "com.google.firebase:firebase-auth:$firebaseVersion"
-  compile "com.google.firebase:firebase-config:$firebaseVersion"
-  compile "com.google.firebase:firebase-crash:$firebaseVersion"
-  compile "com.google.firebase:firebase-database:$firebaseVersion"
-  compile "com.google.firebase:firebase-messaging:$firebaseVersion"
-  compile "com.google.firebase:firebase-perf:$firebaseVersion"
-  compile "com.google.firebase:firebase-storage:$firebaseVersion"
+  compile "com.google.firebase:firebase-ads:10.2.6"
+  compile "com.google.firebase:firebase-analytics:10.2.6"
+  compile "com.google.firebase:firebase-auth:10.2.6"
+  compile "com.google.firebase:firebase-config:10.2.6"
+  compile "com.google.firebase:firebase-crash:10.2.6"
+  compile "com.google.firebase:firebase-database:10.2.6"
+  compile "com.google.firebase:firebase-messaging:10.2.6"
+  compile "com.google.firebase:firebase-perf:10.2.6"
+  compile "com.google.firebase:firebase-storage:10.2.6"
 }
 ```
 
