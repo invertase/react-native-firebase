@@ -1,9 +1,13 @@
 package io.invertase.firebase.messaging;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -16,22 +20,16 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 
-import android.app.Application;
-import android.os.Bundle;
-import android.util.Log;
-
-import android.content.Context;
+import io.invertase.firebase.Utils;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
   private final static String TAG = RNFirebaseMessaging.class.getCanonicalName();
@@ -136,12 +134,6 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
     promise.resolve(mBadgeHelper.getBadgeCount());
   }
 
-  private void sendEvent(String eventName, Object params) {
-    getReactApplicationContext()
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit(eventName, params);
-  }
-
   private void registerTokenRefreshHandler() {
     IntentFilter intentFilter = new IntentFilter("io.invertase.firebase.messaging.FCMRefreshToken");
     getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
@@ -149,7 +141,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
       public void onReceive(Context context, Intent intent) {
         if (getReactApplicationContext().hasActiveCatalystInstance()) {
           String token = intent.getStringExtra("token");
-          sendEvent("FCMTokenRefreshed", token);
+          Utils.sendEvent(getReactApplicationContext(), "messaging_token_refreshed", token);
         }
       }
     }, intentFilter);
@@ -211,7 +203,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
               params.putString(key, data.get(key));
             }
           }
-          sendEvent("FCMNotificationReceived", params);
+          Utils.sendEvent(getReactApplicationContext(), "messaging_notification_received", params);
 
         }
       }
@@ -225,7 +217,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
       @Override
       public void onReceive(Context context, Intent intent) {
         if (getReactApplicationContext().hasActiveCatalystInstance()) {
-          sendEvent("FCMNotificationReceived", Arguments.fromBundle(intent.getExtras()));
+          Utils.sendEvent(getReactApplicationContext(), "messaging_notification_received", Arguments.fromBundle(intent.getExtras()));
         }
       }
     }, intentFilter);
@@ -275,6 +267,6 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
   @Override
   public void onNewIntent(Intent intent) {
     // todo hmm?
-    sendEvent("FCMNotificationReceived", parseIntent(intent));
+    Utils.sendEvent(getReactApplicationContext(), "messaging_notification_received", parseIntent(intent));
   }
 }
