@@ -1,4 +1,3 @@
-#import "RNFirebase.h"
 #import "RNFirebaseAnalytics.h"
 
 #if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)
@@ -35,7 +34,5 @@ RCT_EXPORT_METHOD(setSessionTimeoutDuration:(nonnull NSNumber *) milliseconds) {
 
 #else
 @implementation RNFirebaseAnalytics
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif
