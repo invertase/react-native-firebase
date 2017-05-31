@@ -86,6 +86,7 @@
     "wml": "0.0.82"
   },
   "dependencies": {
-    "bows": "^1.6.0"
+    "bows": "^1.6.0",
+    "prop-types": "^15.5.10"
   }
 }
