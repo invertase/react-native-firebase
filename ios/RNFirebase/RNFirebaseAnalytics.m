@@ -1,4 +1,3 @@
-#import "RNFirebase.h"
 #import "RNFirebaseAnalytics.h"
 
 #if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)

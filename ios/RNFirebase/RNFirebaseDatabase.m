@@ -1,7 +1,6 @@
-#import "RNFirebase.h"
 #import "RNFirebaseDatabase.h"
 #import "RNFirebaseEvents.h"
-
+#import "Firebase.h"
 
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 

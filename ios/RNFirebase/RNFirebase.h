@@ -1,8 +1,6 @@
 #ifndef RNFirebase_h
 #define RNFirebase_h
 
-#import <UIKit/UIKit.h>
-#import <React/RCTEventDispatcher.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTBridgeModule.h>
 

@@ -5,11 +5,7 @@
 #import <React/RCTBridgeModule.h>
 
 #if __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import "Firebase.h"
 #import <FirebaseMessaging/FirebaseMessaging.h>
-
-#import <React/RCTUtils.h>
-#import <UIKit/UIKit.h>
 
 @import UserNotifications;
 
