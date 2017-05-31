@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
 
-  private static final String TAG = "RNFirebaseAdmob";
+  private static final String TAG = "RNFirebaseAdMob";
 
   ReactApplicationContext getContext() {
     return getReactApplicationContext();
@@ -30,7 +30,8 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   }
 
   private HashMap<String, RNFirebaseAdmobInterstitial> interstitials = new HashMap<>();
-  private HashMap<String, RNFirebaseRewardedVideo> rewardedVideos = new HashMap<>();
+  private HashMap<String, RNFirebaseAdMobRewardedVideo> rewardedVideos = new HashMap<>();
+  private HashMap<String, RNFirebaseAdMobNativeExpress> nativeExpressAds = new HashMap<>();
 
   public RNFirebaseAdMob(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -45,7 +46,7 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   @ReactMethod
   public void interstitialLoadAd(String adUnit, ReadableMap request) {
     RNFirebaseAdmobInterstitial interstitial = getOrCreateInterstitial(adUnit);
-    interstitial.loadAd(buildRequest(request).build());
+    interstitial.loadAd(RNFirebaseAdMobUtils.buildRequest(request).build());
   }
 
   @ReactMethod
@@ -56,13 +57,13 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void rewardedVideoLoadAd(String adUnit, ReadableMap request) {
-    RNFirebaseRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
-    rewardedVideo.loadAd(buildRequest(request).build());
+    RNFirebaseAdMobRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
+    rewardedVideo.loadAd(RNFirebaseAdMobUtils.buildRequest(request).build());
   }
 
   @ReactMethod
   public void rewardedVideoShowAd(String adUnit) {
-    RNFirebaseRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
+    RNFirebaseAdMobRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
     rewardedVideo.show();
   }
 
@@ -85,11 +86,11 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
    * @param adUnit
    * @return
    */
-  private RNFirebaseRewardedVideo getOrCreateRewardedVideo(String adUnit) {
+  private RNFirebaseAdMobRewardedVideo getOrCreateRewardedVideo(String adUnit) {
     if (rewardedVideos.containsKey(adUnit)) {
       return rewardedVideos.get(adUnit);
     }
-    RNFirebaseRewardedVideo rewardedVideo = new RNFirebaseRewardedVideo(adUnit, this);
+    RNFirebaseAdMobRewardedVideo rewardedVideo = new RNFirebaseAdMobRewardedVideo(adUnit, this);
     rewardedVideos.put(adUnit, rewardedVideo);
     return rewardedVideo;
   }
@@ -99,22 +100,5 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("DEVICE_ID_EMULATOR", AdRequest.DEVICE_ID_EMULATOR);
     return constants;
-  }
-
-  AdRequest.Builder buildRequest(ReadableMap request) {
-    AdRequest.Builder requestBuilder = new AdRequest.Builder();
-
-    if (request.hasKey("testDevice")) {
-      requestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-    }
-
-    ReadableArray keywords = request.getArray("keywords");
-    List<Object> keywordsList = Utils.recursivelyDeconstructReadableArray(keywords);
-
-    for (Object word : keywordsList) {
-      requestBuilder.addKeyword((String) word);
-    }
-
-    return requestBuilder;
   }
 }

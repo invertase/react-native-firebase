@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
@@ -16,8 +17,11 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> implements View.OnLayoutChangeListener {
 
@@ -30,7 +34,8 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
     EVENT_AD_OPENED("onAdOpened"),
     EVENT_AD_CLOSED("onAdClosed"),
-    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication");
+    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication"),
+    EVENT_AD_VIDEO_CONTENT("hasVideoContent");
 
     private final String event;
 
@@ -47,8 +52,8 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
+  private AdRequest.Builder request = null;
   private String size;
-  private Boolean testing = false;
 
   @Override
   public String getName() {
@@ -66,8 +71,15 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     viewGroup = new ReactViewGroup(themedReactContext);
     emitter = themedReactContext.getJSModule(RCTEventEmitter.class);
 
-    attachAdViewToViewGroup();
+    AdView adView = new AdView(context);
+    viewGroup.addView(adView);
+    setAdListener();
+
     return viewGroup;
+  }
+
+  AdView getAdView() {
+    return (AdView) viewGroup.getChildAt(0);
   }
 
   /**
@@ -108,19 +120,19 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
    */
   @ReactProp(name = "unitId")
   public void setUnitId(final ReactViewGroup view, final String value) {
-    AdView adViewView = (AdView) view.getChildAt(0);
+    AdView adViewView = getAdView();
     adViewView.setAdUnitId(value);
     requestAd();
   }
 
   /**
-   * Handle testing prop
+   * Handle request prop
    * @param view
-   * @param value
+   * @param adRequest
    */
-  @ReactProp(name = "testing")
-  public void setUnitId(final ReactViewGroup view, final Boolean value) {
-    testing = value;
+  @ReactProp(name = "request")
+  public void setRequest(final ReactViewGroup view, final ReadableMap adRequest) {
+    request = RNFirebaseAdMobUtils.buildRequest(adRequest);
     requestAd();
   }
 
@@ -135,7 +147,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
       size = value;
     }
 
-    AdSize adSize = propToAdSize(size.toUpperCase());
+    AdSize adSize = RNFirebaseAdMobUtils.stringToAdSize(size);
     AdView adViewView = (AdView) view.getChildAt(0);
     adViewView.setAdSize(adSize);
 
@@ -159,49 +171,17 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     requestAd();
   }
 
-
-  /**
-   * Creates a new instance of the AdView and attaches it to the
-   * current ReactViewGroup
-   */
-  void attachAdViewToViewGroup() {
-    removeAdFromViewGroup();
-
-    final AdView adView = new AdView(context);
-    viewGroup.addView(adView);
-    setAdListener();
-  }
-
-  /**
-   * Removes the AdView from the ViewGroup
-   */
-  void removeAdFromViewGroup() {
-    AdView adView = (AdView) viewGroup.getChildAt(0);
-    viewGroup.removeAllViews();
-
-    if (adView != null) {
-      adView.destroy();
-    }
-  }
-
   /**
    * Loads a new ad into a viewGroup
    */
   void requestAd() {
-    AdView adView = (AdView) viewGroup.getChildAt(0);
+    AdView adView = getAdView();
 
-    if (adView.getAdSize() == null || adView.getAdUnitId() == null) {
+    if (adView.getAdSize() == null || adView.getAdUnitId() == null || request == null) {
       return;
     }
 
-    AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-
-    // If the prop testing is set, assign the emulators device ID
-    if (testing) {
-      adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-    }
-
-    AdRequest adRequest = adRequestBuilder.build();
+    AdRequest adRequest = request.build();
     adView.loadAd(adRequest);
   }
 
@@ -209,7 +189,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
    * Listen to Ad events
    */
   void setAdListener() {
-    final AdView adView = (AdView) viewGroup.getChildAt(0);
+    final AdView adView = getAdView();
 
     adView.setAdListener(new AdListener() {
       @Override
@@ -223,7 +203,16 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
 
-        sendEvent(Events.EVENT_AD_LOADED.toString(), null);
+        WritableMap payload = Arguments.createMap();
+
+        payload.putBoolean(RNFirebaseAdMobNativeExpress.Events.EVENT_AD_VIDEO_CONTENT.toString(), false);
+        payload.putInt("width", width);
+        payload.putInt("height", height);
+        payload.putInt("left", left);
+        payload.putInt("top", top);
+
+
+        sendEvent(Events.EVENT_AD_LOADED.toString(), payload);
       }
 
       @Override
@@ -263,28 +252,5 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> imp
     }
 
     emitter.receiveEvent(viewGroup.getId(), BANNER_EVENT, event);
-  }
-
-  /**
-   * Map the size prop to the AdSize
-   * @param prop
-   * @return
-   */
-  AdSize propToAdSize(String prop) {
-    switch (prop) {
-      default:
-      case "BANNER":
-        return AdSize.BANNER;
-      case "LARGE_BANNER":
-        return AdSize.LARGE_BANNER;
-      case "MEDIUM_RECTANGLE":
-        return AdSize.MEDIUM_RECTANGLE;
-      case "FULL_BANNER":
-        return AdSize.FULL_BANNER;
-      case "LEADERBOARD":
-        return AdSize.LEADERBOARD;
-      case "SMART_BANNER":
-        return AdSize.SMART_BANNER;
-    }
   }
 }
