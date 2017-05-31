@@ -34,7 +34,5 @@ RCT_EXPORT_METHOD(setSessionTimeoutDuration:(nonnull NSNumber *) milliseconds) {
 
 #else
 @implementation RNFirebaseAnalytics
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif

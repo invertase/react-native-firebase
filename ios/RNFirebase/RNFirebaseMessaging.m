@@ -420,7 +420,5 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId) {
 
 #else
 @implementation RNFirebaseMessaging
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif

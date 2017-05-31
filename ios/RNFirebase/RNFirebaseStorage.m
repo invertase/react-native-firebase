@@ -16,7 +16,7 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
 
 /**
  Reject a promise with a storage exception
- 
+
  @param reject RCTPromiseRejectBlock
  @param error NSError
  */
@@ -93,7 +93,7 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
 
 /**
  delete
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
  @param NSString path
  */
@@ -111,7 +111,7 @@ RCT_EXPORT_METHOD(delete: (NSString *) path resolver:(RCTPromiseResolveBlock)res
 
 /**
  getDownloadURL
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
  @param NSString path
  */
@@ -129,7 +129,7 @@ RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path resolver:(RCTPromiseResolveB
 
 /**
  getMetadata
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
  @param NSString path
  */
@@ -147,7 +147,7 @@ RCT_EXPORT_METHOD(getMetadata: (NSString *) path resolver:(RCTPromiseResolveBloc
 
 /**
  updateMetadata
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
  @param NSString path
  @param NSDictionary metadata
@@ -167,7 +167,7 @@ RCT_EXPORT_METHOD(updateMetadata: (NSString *) path metadata:(NSDictionary *) me
 
 /**
  downloadFile
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
  @param NSString path
  @param NSString localPath
@@ -214,7 +214,7 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) path localPath:(NSString *) localPa
 
 /**
  setMaxDownloadRetryTime
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  @param NSNumber milliseconds
  */
@@ -224,7 +224,7 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSNumber *) milliseconds) {
 
 /**
  setMaxOperationRetryTime
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
  @param NSNumber milliseconds
  */
@@ -234,7 +234,7 @@ RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSNumber *) milliseconds) {
 
 /**
  setMaxUploadRetryTime
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
  */
 RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds) {
@@ -243,7 +243,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds) {
 
 /**
  putFile
- 
+
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  @param NSString path
  @param NSString localPath
@@ -450,7 +450,5 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
 
 #else
 @implementation RNFirebaseStorage
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif

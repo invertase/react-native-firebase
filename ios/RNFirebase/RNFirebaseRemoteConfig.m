@@ -132,7 +132,5 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:(NSString *)fileName) {
 
 #else
 @implementation RNFirebaseRemoteConfig
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif

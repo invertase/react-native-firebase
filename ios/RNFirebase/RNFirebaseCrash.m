@@ -23,7 +23,5 @@ RCT_EXPORT_METHOD(report:(NSString *) message) {
 
 #else
 @implementation RNFirebaseCrash
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif

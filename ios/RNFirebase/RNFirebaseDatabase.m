@@ -511,7 +511,5 @@ RCT_EXPORT_METHOD(goOnline) {
 
 #else
 @implementation RNFirebaseDatabase
-RCT_EXPORT_MODULE();
-RCT_EXPORT_METHOD(nativeSDKMissing) {}
 @end
 #endif
