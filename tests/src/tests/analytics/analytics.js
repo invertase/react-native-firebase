@@ -1,29 +1,5 @@
 
 export default function addTests({ fdescribe, describe, it, firebase }) {
-  //   it('works', () => {
-  //     return new Promise((resolve) => {
-  //       firebase.native.remoteConfig().enableDeveloperMode();
-  //
-  //       firebase.native.remoteConfig().setDefaults({
-  //         foobar: '123',
-  //         barbaz: '345'
-  //       });
-  //
-  //       firebase.native.remoteConfig().fetch()
-  //         .then(() => {
-  //           return firebase.native.remoteConfig().activateFetched();
-  //         })
-  //         .then(() => {
-  //           return firebase.native.remoteConfig().getValue('foobar')
-  //         })
-  //         .then((res) => {
-  //           console.log('>>>>>', res.val())
-  //           return Promise.resolve();
-  //         })
-  //     });
-  //   });
-  // });
-
   describe('Analytics', () => {
     it('logEvent: it should log a text event without error', () => {
       return new Promise((resolve) => {

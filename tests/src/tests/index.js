@@ -7,6 +7,7 @@ import storage from './storage/index';
 import auth from './auth/index';
 import config from './config/index';
 import performance from './perf/index';
+import admob from './admob/index';
 
 const testSuiteInstances = [
   database,
@@ -17,6 +18,7 @@ const testSuiteInstances = [
   storage,
   config,
   performance,
+  admob,
 ];
 
 /*

@@ -36,7 +36,7 @@ AdMob Banners in RNFirebase are exported as a usable React component, allowing y
 
 ```js
 const Banner = firebase.admob.Banner;
-const AdRequest = firebase.admob.Banner;
+const AdRequest = firebase.admob.AdRequest;
 const request = new AdRequest();
 request.addKeyword('foobar');
 ...
@@ -121,7 +121,9 @@ styling (background color, positions, font size etc). Native Express adverts are
 
 ```js
 const Banner = firebase.admob.Banner;
-const AdRequest = firebase.admob.NativeExpress;
+const NativeExpress = firebase.admob.NativeExpress;
+const NativeExpress = firebase.admob.AdRequest;
+
 const request = new AdRequest();
 request.addKeyword('foobar');
 ...
