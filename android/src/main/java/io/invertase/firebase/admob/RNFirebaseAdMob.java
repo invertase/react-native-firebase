@@ -7,13 +7,11 @@ import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.ads.AdRequest;
-import io.invertase.firebase.Utils;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -31,7 +29,6 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
 
   private HashMap<String, RNFirebaseAdmobInterstitial> interstitials = new HashMap<>();
   private HashMap<String, RNFirebaseAdMobRewardedVideo> rewardedVideos = new HashMap<>();
-  private HashMap<String, RNFirebaseAdMobNativeExpress> nativeExpressAds = new HashMap<>();
 
   public RNFirebaseAdMob(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -41,6 +38,11 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return TAG;
+  }
+
+  @ReactMethod
+  public void initialize(String appId) {
+    MobileAds.initialize(this.getContext(), appId);
   }
 
   @ReactMethod

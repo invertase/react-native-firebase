@@ -1,8 +1,17 @@
 # AdMob
 
-The admob allows you to display adverts in your app, using your account from [AdMob by Google](https://www.google.co.uk/admob/).
+The admob allows you to display adverts in your app, using your account from [AdMob by Google](https://www.google.co.uk/admob/). RNFirebase allows you to display Banners, Interstitials, NativeExpress Ads & Rewarded Videos.
 
-RNFirebase allows you to display Banners, Interstitials, NativeExpress Ads & Rewarded Videos.
+## Initialize
+
+Before using any AdMob feature, ensure you call the initialize method. This only needs to be done once per the apps lifecycle.
+Initialize takes your AdMob App ID, where you can find on your AdMob dashboard.
+
+> For testing purposes, you can use AdMobs test app ID "ca-app-pub-3940256099942544~3347511713".
+
+```js
+firebase.admob().initialize("ca-app-pub-3940256099942544~3347511713");
+```
 
 ## API
 
