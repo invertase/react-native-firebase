@@ -268,7 +268,7 @@ declare module "react-native-firebase" {
         /**
          * Returns a new firebase reference instance
          * */
-        ref(path: string): RnReference
+        ref(path?: string): RnReference
         /**
          * register listener 
          */
