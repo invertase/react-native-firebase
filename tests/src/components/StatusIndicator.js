@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import RunStatus from '../../lib/RunStatus';
 import Icon from './Icon';

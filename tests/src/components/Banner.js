@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, View, Text } from 'react-native';
 
 function Banner({ type, children, style, textStyle }) {
@@ -15,15 +16,15 @@ function Banner({ type, children, style, textStyle }) {
 }
 
 Banner.propTypes = {
-  type: React.PropTypes.oneOf([
+  type: PropTypes.oneOf([
     'success',
     'warning',
     'error',
     'info',
   ]),
-  children: React.PropTypes.oneOfType([
-    React.PropTypes.string,
-    React.PropTypes.array,
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array,
   ]).isRequired,
   style: View.propTypes.style,
   textStyle: Text.propTypes.style,
