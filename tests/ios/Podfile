@@ -13,6 +13,7 @@ target 'ReactNativeFirebaseDemo' do
   # Pods for ReactNativeFirebaseDemo
   pod 'React', :path => '../node_modules/react-native'
 
+  pod 'Firebase/AdMob'
   pod 'Firebase/Auth'
   pod 'Firebase/Analytics'
   pod 'Firebase/Core'

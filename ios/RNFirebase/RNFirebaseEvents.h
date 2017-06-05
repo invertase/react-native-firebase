@@ -32,4 +32,8 @@ static NSString *const STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 static NSString *const MESSAGING_TOKEN_REFRESHED = @"messaging_token_refreshed";
 static NSString *const MESSAGING_NOTIFICATION_RECEIVED = @"messaging_notification_received";
 
+// AdMob
+static NSString *const ADMOB_INTERSTITIAL_EVENT = @"interstitial_event";
+static NSString *const ADMOB_REWARDED_VIDEO_EVENT = @"rewarded_video_event";
+
 #endif

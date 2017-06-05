@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		29C199451EA7A851007B6BF8 /* RNFirebaseCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C199441EA7A851007B6BF8 /* RNFirebaseCrash.m */; };
+		99EBBD431EE5A4E50087F3CD /* RNFirebaseAdMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EBBD3E1EE5A4E50087F3CD /* RNFirebaseAdMob.m */; };
+		99EBBD441EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EBBD401EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.m */; };
+		99EBBD451EE5A4E50087F3CD /* RNFirebasePerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EBBD421EE5A4E50087F3CD /* RNFirebasePerformance.m */; };
 		D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */; };
 		D950369E1D19C77400F7094D /* RNFirebase.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* RNFirebase.m */; };
 		D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* RNFirebaseErrors.m */; };
@@ -34,6 +37,12 @@
 		134814201AA4EA6300B7C361 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C199431EA7A851007B6BF8 /* RNFirebaseCrash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseCrash.h; path = RNFirebase/RNFirebaseCrash.h; sourceTree = "<group>"; };
 		29C199441EA7A851007B6BF8 /* RNFirebaseCrash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseCrash.m; path = RNFirebase/RNFirebaseCrash.m; sourceTree = "<group>"; };
+		99EBBD3D1EE5A4E50087F3CD /* RNFirebaseAdMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseAdMob.h; path = RNFirebase/RNFirebaseAdMob.h; sourceTree = "<group>"; };
+		99EBBD3E1EE5A4E50087F3CD /* RNFirebaseAdMob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseAdMob.m; path = RNFirebase/RNFirebaseAdMob.m; sourceTree = "<group>"; };
+		99EBBD3F1EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseAdMobInterstitial.h; path = RNFirebase/RNFirebaseAdMobInterstitial.h; sourceTree = "<group>"; };
+		99EBBD401EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseAdMobInterstitial.m; path = RNFirebase/RNFirebaseAdMobInterstitial.m; sourceTree = "<group>"; };
+		99EBBD411EE5A4E50087F3CD /* RNFirebasePerformance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebasePerformance.h; path = RNFirebase/RNFirebasePerformance.h; sourceTree = "<group>"; };
+		99EBBD421EE5A4E50087F3CD /* RNFirebasePerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebasePerformance.m; path = RNFirebase/RNFirebasePerformance.m; sourceTree = "<group>"; };
 		D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseMessaging.h; path = RNFirebase/RNFirebaseMessaging.h; sourceTree = "<group>"; };
 		D90882D51D89C18C00FB6742 /* RNFirebaseMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseMessaging.m; path = RNFirebase/RNFirebaseMessaging.m; sourceTree = "<group>"; };
 		D950369C1D19C77400F7094D /* RNFirebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebase.h; path = RNFirebase/RNFirebase.h; sourceTree = "<group>"; };
@@ -85,6 +94,12 @@
 		D96290351D6D145F0099A3EC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				99EBBD3D1EE5A4E50087F3CD /* RNFirebaseAdMob.h */,
+				99EBBD3E1EE5A4E50087F3CD /* RNFirebaseAdMob.m */,
+				99EBBD3F1EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.h */,
+				99EBBD401EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.m */,
+				99EBBD411EE5A4E50087F3CD /* RNFirebasePerformance.h */,
+				99EBBD421EE5A4E50087F3CD /* RNFirebasePerformance.m */,
 				EC841EFE1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.h */,
 				EC841EFF1ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m */,
 				D90882D41D89C18C00FB6742 /* RNFirebaseMessaging.h */,
@@ -163,12 +178,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9D62E801D6D8717003D826D /* RNFirebaseAuth.m in Sources */,
+				99EBBD441EE5A4E50087F3CD /* RNFirebaseAdMobInterstitial.m in Sources */,
 				D96290451D6D16100099A3EC /* RNFirebaseAnalytics.m in Sources */,
 				D9D62E7C1D6D86FD003D826D /* RNFirebaseStorage.m in Sources */,
 				D962903F1D6D15B00099A3EC /* RNFirebaseErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
 				D90882D61D89C18C00FB6742 /* RNFirebaseMessaging.m in Sources */,
+				99EBBD431EE5A4E50087F3CD /* RNFirebaseAdMob.m in Sources */,
 				EC841F001ECE79D6001AD3D9 /* RNFirebaseRemoteConfig.m in Sources */,
+				99EBBD451EE5A4E50087F3CD /* RNFirebasePerformance.m in Sources */,
 				29C199451EA7A851007B6BF8 /* RNFirebaseCrash.m in Sources */,
 				D96290851D6D28B80099A3EC /* RNFirebaseDatabase.m in Sources */,
 			);
