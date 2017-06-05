@@ -49,10 +49,6 @@ class RNFirebaseAdMobUtils {
   static AdRequest.Builder buildRequest(ReadableMap request) {
     AdRequest.Builder requestBuilder = new AdRequest.Builder();
 
-    if (request.hasKey("testDevice")) {
-      requestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-    }
-
     if (request.hasKey("isDesignedForFamilies")) {
       requestBuilder.setIsDesignedForFamilies(request.getBoolean("isDesignedForFamilies"));
     }
@@ -84,6 +80,19 @@ class RNFirebaseAdMobUtils {
       }
     }
 
+    // Handle testDevices array
+    ReadableArray testDevices = request.getArray("keywords");
+    List<Object> testDevicesList = Utils.recursivelyDeconstructReadableArray(testDevices);
+
+    for (Object deviceId : testDevicesList) {
+      if (deviceId == "DEVICE_ID_EMULATOR") {
+        requestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
+      } else {
+        requestBuilder.addTestDevice((String) deviceId);
+      }
+    }
+
+    // Handle keywords array
     ReadableArray keywords = request.getArray("keywords");
     List<Object> keywordsList = Utils.recursivelyDeconstructReadableArray(keywords);
 

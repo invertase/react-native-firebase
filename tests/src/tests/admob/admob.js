@@ -55,6 +55,7 @@ export default function addTests({ before, fdescribe, describe, it, firebase }) 
         const build = request.build();
 
         build.should.have.property('keywords').and.be.a.Array();
+        build.should.have.property('testDevices').and.be.a.Array();
         resolve();
       });
     });
@@ -65,6 +66,7 @@ export default function addTests({ before, fdescribe, describe, it, firebase }) 
 
         request
           .addTestDevice()
+          .addTestDevice('foobar')
           .addKeyword('foo')
           .addKeyword('bar')
           // .setBirthday() // TODO
@@ -78,8 +80,10 @@ export default function addTests({ before, fdescribe, describe, it, firebase }) 
         const build = request.build();
 
         build.should.have.property('keywords').and.be.a.Array();
+        build.should.have.property('testDevices').and.be.a.Array();
         build.keywords.should.containEql('foo');
         build.keywords.should.containEql('bar');
+        build.testDevices.should.containEql('foobar');
         build.should.have.property('contentUrl').and.be.a.equal('http://google.com');
         build.should.have.property('gender').and.be.a.equal('female');
         build.should.have.property('requestAgent').and.be.a.equal('foobar');
