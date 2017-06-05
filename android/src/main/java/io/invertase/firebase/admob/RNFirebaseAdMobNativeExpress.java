@@ -1,7 +1,6 @@
 package io.invertase.firebase.admob;
 
 import android.support.annotation.Nullable;
-import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
@@ -16,16 +15,13 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.ads.VideoController;
 import com.google.android.gms.ads.VideoOptions;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGroup> implements View.OnLayoutChangeListener {
+public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGroup> {
 
   public static final String REACT_CLASS = "RNFirebaseAdMobNativeExpress";
   public static final String BANNER_EVENT = "bannerEvent";
@@ -55,9 +51,13 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
+  private Boolean requested = false;
+
+  // Internal prop values
   private AdRequest.Builder request;
   private VideoOptions.Builder videoOptions;
-  private String size;
+  private AdSize size;
+  private String unitId;
 
   @Override
   public String getName() {
@@ -87,6 +87,19 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
   }
 
   /**
+   * Remove the inner AdView and set a new one
+   */
+  private void resetAdView() {
+    NativeExpressAdView oldAdView = getAdView();
+    NativeExpressAdView newAdView = new NativeExpressAdView(context);
+
+    viewGroup.removeViewAt(0);
+    if (oldAdView != null) oldAdView.destroy();
+    viewGroup.addView(newAdView);
+    setAdListener();
+  }
+
+  /**
    * Declare custom events
    * @return
    */
@@ -98,34 +111,13 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
   }
 
   /**
-   * If the React View changes, reset the Ad size
-   * @param view
-   * @param left
-   * @param top
-   * @param right
-   * @param bottom
-   * @param oldLeft
-   * @param oldTop
-   * @param oldRight
-   * @param oldBottom
-   */
-  @Override
-  public void onLayoutChange(View view, final int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-    // If the view has changed at all, recalculate what banner we need
-    if (left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
-      setSize(viewGroup, null);
-    }
-  }
-
-  /**
    * Handle unitId prop
    * @param view
    * @param value
    */
   @ReactProp(name = "unitId")
-  public void setUnitId(final ReactViewGroup view, final String value) {
-    NativeExpressAdView adViewView = getAdView();
-    adViewView.setAdUnitId(value);
+  public void setUnitId(ReactViewGroup view, String value) {
+    unitId = value;
     requestAd();
   }
 
@@ -135,7 +127,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
    * @param map
    */
   @ReactProp(name = "request")
-  public void setRequest(final ReactViewGroup view, final ReadableMap map) {
+  public void setRequest(ReactViewGroup view, ReadableMap map) {
     request = RNFirebaseAdMobUtils.buildRequest(map);
     requestAd();
   }
@@ -146,7 +138,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
    * @param map
    */
   @ReactProp(name = "video")
-  public void setVideoOptions(final ReactViewGroup view, final ReadableMap map) {
+  public void setVideoOptions(ReactViewGroup view, ReadableMap map) {
     videoOptions = RNFirebaseAdMobUtils.buildVideoOptions(map);
     requestAd();
   }
@@ -157,26 +149,20 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
    * @param value
    */
   @ReactProp(name = "size")
-  public void setSize(final ReactViewGroup view, final @Nullable String value) {
-    if (value != null) {
-      size = value;
-    }
-
-    AdSize adSize = RNFirebaseAdMobUtils.stringToAdSize(size);
-    NativeExpressAdView adViewView = getAdView();
-    adViewView.setAdSize(adSize);
+  public void setSize(ReactViewGroup view, String value) {
+    size = RNFirebaseAdMobUtils.stringToAdSize(value);
 
     // Send the width & height back to the JS
     int width;
     int height;
     WritableMap payload = Arguments.createMap();
 
-    if (adSize == AdSize.SMART_BANNER) {
-      width = (int) PixelUtil.toDIPFromPixel(adSize.getWidthInPixels(context));
-      height = (int) PixelUtil.toDIPFromPixel(adSize.getHeightInPixels(context));
+    if (size == AdSize.SMART_BANNER) {
+      width = (int) PixelUtil.toDIPFromPixel(size.getWidthInPixels(context));
+      height = (int) PixelUtil.toDIPFromPixel(size.getHeightInPixels(context));
     } else {
-      width = adSize.getWidth();
-      height = adSize.getHeight();
+      width = size.getWidth();
+      height = size.getHeight();
     }
 
     payload.putDouble("width", width);
@@ -190,14 +176,21 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
    * Loads a new ad into a viewGroup
    */
   void requestAd() {
-    NativeExpressAdView adView = getAdView();
-
-    if (adView.getAdSize() == null || adView.getAdUnitId() == null || request == null || videoOptions == null) {
+    if (size == null || unitId == null || request == null || videoOptions == null) {
       return;
     }
 
-    AdRequest adRequest = request.build();
+    if (requested) {
+      resetAdView();
+    }
+
+    NativeExpressAdView adView = getAdView();
+    adView.setAdUnitId(unitId);
+    adView.setAdSize(size);
     adView.setVideoOptions(videoOptions.build());
+    AdRequest adRequest = request.build();
+
+    requested = true;
     adView.loadAd(adRequest);
   }
 
