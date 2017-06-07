@@ -60,6 +60,8 @@ An interstitial is a full screen advert which creates a new activity on top of R
 allowing the developer to choose when to display them they're not available as a component. Instead they're controlled via
 method calls.
 
+A single interstitial instance can only be shown once. If you want to display another, create a new one.
+
 To request an interstitial from AdMob, the `loadAd` method must be called with an instance of `AdRequest` (see below for full API):
 
 #### Methods
@@ -147,6 +149,8 @@ A rewarded video allows you to display a video to a user, whereby they're able t
 and receive nothing. For example, when a user completes a level on your gaming app, show them a video which will give them in-game
 credit.
 
+A single rewarded video instance can only be shown once. If you want to display another, create a new one.
+
 ?> It's recommended you begin loading the video as soon as possible.
 
 To request an Rewarded Video from AdMob, the `loadAd` method must be called with an instance of `AdRequest` (see below for full API):
@@ -203,8 +207,8 @@ in production.
 ##### build()
 Builds the current request for AdMob to handle.
 
-##### addTestDevice()
-Sets the current device as a test device.
+##### addTestDevice(device?: string)
+Sets a device ID as a test device. If no device string is passed, a default emulator id is passed.
 
 ##### addKeyword(keyword: `string`)
 Add a new keyword to relate the advert to.
@@ -224,7 +228,7 @@ Sets the request agent string to identify the ad request's origin. Third party l
 ##### setContentUrl(url: `string`)
 Sets the content URL for targeting purposes.
 
-##### setIsDesignedForFamilies(forFamilies: `boolean`)
+##### [android] setIsDesignedForFamilies(forFamilies: `boolean`)
 If you set this value to true, you indicate that your app requires that the ad request should return a Designed for Families-compliant ad.
 
 If you set this value to false, you indicate that your app does not require that the ad request should return a Designed for Families-compliant ad.
@@ -301,7 +305,7 @@ Called if the opened advert causes the user to leave the application, for exampl
 Called when the user returns back to the application after closing an advert.
 
 ##### onAdFailedToLoad(error: `Error`)
-Called when an advert fails to load. Returns a JavaScript Error with one of the following error codes:
+Called when an advert fails to load. Returns a JavaScript Error with one of the following error codes.
 
 | code                              | message                                                                                                      |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------ |
@@ -309,6 +313,7 @@ Called when an advert fails to load. Returns a JavaScript Error with one of the 
 | admob/error-code-invalid-request  | The ad request was invalid; for instance, the ad unit ID was incorrect.                                      |
 | admob/error-code-network-error    | The ad request was unsuccessful due to network connectivity.                                                 |
 | admob/error-code-no-fill          | The ad request was successful, but no ad was returned due to lack of ad inventory.                           |
+| admob/os-version-too-low          | The current device’s OS is below the minimum required version.                                               |
 
 ##### [NativeExpress] onVideoEnd()
 Called when a the video has ended.
@@ -340,3 +345,13 @@ Used to build a request object to pass into AdMob requests.
 
 ### VideoOptions
 Used to build an options object for how videos should be handled with adverts containing a video.
+
+### EventTypes
+Returns all of the available advert event types.
+
+### RewardedVideoEventTypes
+Returns the extra event types for Rewarded Videos.
+
+### NativeExpressEventTypes
+Returns the extra event types for Native Express adverts.
+

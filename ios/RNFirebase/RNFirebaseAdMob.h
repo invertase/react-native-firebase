@@ -11,9 +11,11 @@
 #import "GoogleMobileAds/GADAdDelegate.h"
 
 
-@interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule, GADInterstitialDelegate, GADAdDelegate> {
-}
+@interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule, GADInterstitialDelegate, GADAdDelegate>
 @property NSMutableDictionary *interstitials;
+
+- (GADRequest *)buildRequest:(NSDictionary *)request;
+- (NSDictionary *)errorCodeToDictionary:(NSError *)error;
 @end
 
 #else

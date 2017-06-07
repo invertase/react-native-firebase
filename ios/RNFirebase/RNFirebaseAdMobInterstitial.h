@@ -2,6 +2,7 @@
 #define RNFirebaseAdMobInterstitial_h
 
 #import <React/RCTBridgeModule.h>
+#import "RNFirebaseEvents.h"
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
@@ -18,7 +19,8 @@
 - (id)initWithProps:(NSString *)adUnit delegate:(RNFirebaseAdMob *)delegate;
 
 - (void)showAd;
-- (void)loadAd;
+- (void)loadAd:(NSDictionary *)request;
+- (void)sendJSEvent:(NSString *)type payload:(nullable NSDictionary *)payload;
 
 @end
 
