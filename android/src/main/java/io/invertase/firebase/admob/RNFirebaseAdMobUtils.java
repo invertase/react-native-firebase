@@ -81,7 +81,7 @@ class RNFirebaseAdMobUtils {
     }
 
     // Handle testDevices array
-    ReadableArray testDevices = request.getArray("keywords");
+    ReadableArray testDevices = request.getArray("testDevices");
     List<Object> testDevicesList = Utils.recursivelyDeconstructReadableArray(testDevices);
 
     for (Object deviceId : testDevicesList) {
