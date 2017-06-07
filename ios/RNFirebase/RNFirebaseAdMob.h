@@ -8,11 +8,13 @@
 #import "RNFirebaseEvents.h"
 #import <React/RCTEventEmitter.h>
 #import "GoogleMobileAds/GADInterstitialDelegate.h"
+#import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
 #import "GoogleMobileAds/GADAdDelegate.h"
 
 
-@interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule, GADInterstitialDelegate, GADAdDelegate>
+@interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule>
 @property NSMutableDictionary *interstitials;
+@property NSMutableDictionary *rewardedVideos;
 
 - (GADRequest *)buildRequest:(NSDictionary *)request;
 - (NSDictionary *)errorCodeToDictionary:(NSError *)error;

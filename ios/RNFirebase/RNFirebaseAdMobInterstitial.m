@@ -22,17 +22,13 @@
     [_interstitial loadRequest:[_delegate buildRequest:request]];
 }
 
-- (void)showAd {
+- (void)show {
     if (_interstitial.isReady) {
         [_interstitial presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];
     }
 }
 
 - (void)sendJSEvent:(NSString *)type payload:(NSDictionary *)payload {
-    if (payload == nil) {
-        payload = @{};
-    }
-
     [_delegate sendEventWithName:ADMOB_INTERSTITIAL_EVENT body:@{
             @"type": type,
             @"adUnit": _adUnitID,

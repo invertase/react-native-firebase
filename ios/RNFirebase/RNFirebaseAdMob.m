@@ -2,6 +2,7 @@
 #import "GoogleMobileAds/GADMobileAds.h"
 
 #import "RNFirebaseAdMobInterstitial.h"
+#import "RNFirebaseAdMobRewardedVideo.h"
 
 NSString *MALE = @"male";
 NSString *FEMALE = @"female";
@@ -14,6 +15,7 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self != nil) {
         _interstitials = [[NSMutableDictionary alloc] init];
+        _rewardedVideos = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -27,12 +29,6 @@ RCT_EXPORT_METHOD(initialize:
     [GADMobileAds configureWithApplicationID:appId];
 }
 
-RCT_EXPORT_METHOD(interstitialShowAd:
-    (NSString *) adUnit) {
-    RNFirebaseAdMobInterstitial *interstitial = [self getOrCreateInterstitial:adUnit];
-    [interstitial showAd];
-}
-
 RCT_EXPORT_METHOD(interstitialLoadAd:
     (NSString *) adUnit
             request:
@@ -41,6 +37,25 @@ RCT_EXPORT_METHOD(interstitialLoadAd:
     [interstitial loadAd:request];
 }
 
+RCT_EXPORT_METHOD(interstitialShowAd:
+    (NSString *) adUnit) {
+    RNFirebaseAdMobInterstitial *interstitial = [self getOrCreateInterstitial:adUnit];
+    [interstitial show];
+}
+
+RCT_EXPORT_METHOD(rewardedVideoLoadAd:
+    (NSString *) adUnit
+            request:
+            (NSDictionary *) request) {
+    RNFirebaseAdMobRewardedVideo *rewardedVideo = [self getOrCreateRewardedVideo:adUnit];
+    [rewardedVideo loadAd:request];
+}
+
+RCT_EXPORT_METHOD(rewardedVideoShowAd:
+    (NSString *) adUnit) {
+    RNFirebaseAdMobRewardedVideo *rewardedVideo = [self getOrCreateRewardedVideo:adUnit];
+    [rewardedVideo show];
+}
 
 - (RNFirebaseAdMobInterstitial *)getOrCreateInterstitial:(NSString *)adUnit {
     if (_interstitials[adUnit]) {
@@ -49,6 +64,15 @@ RCT_EXPORT_METHOD(interstitialLoadAd:
 
     _interstitials[adUnit] = [[RNFirebaseAdMobInterstitial alloc] initWithProps:adUnit delegate:self];
     return _interstitials[adUnit];
+}
+
+- (RNFirebaseAdMobRewardedVideo *)getOrCreateRewardedVideo:(NSString *)adUnit {
+    if (_rewardedVideos[adUnit]) {
+        return _rewardedVideos[adUnit];
+    }
+
+    _rewardedVideos[adUnit] = [[RNFirebaseAdMobRewardedVideo alloc] initWithProps:adUnit delegate:self];
+    return _rewardedVideos[adUnit];
 }
 
 - (NSArray<NSString *> *)supportedEvents {

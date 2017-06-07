@@ -1,20 +1,20 @@
-#ifndef RNFirebaseAdMobInterstitial_h
-#define RNFirebaseAdMobInterstitial_h
+#ifndef RNFirebaseAdMobRewardedVideo_h
+#define RNFirebaseAdMobRewardedVideo_h
 
 #import <React/RCTBridgeModule.h>
 #import "RNFirebaseEvents.h"
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-#import "GoogleMobileAds/GADInterstitialDelegate.h"
-#import "GoogleMobileAds/GADInterstitial.h"
+#import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
+#import "GoogleMobileAds/GADRewardBasedVideoAd.h"
 #import <React/RCTEventEmitter.h>
 #import "RNFirebaseAdMob.h"
 
-@interface RNFirebaseAdMobInterstitial : NSObject <GADInterstitialDelegate>
+@interface RNFirebaseAdMobRewardedVideo : NSObject <GADRewardBasedVideoAdDelegate>
 @property NSString *adUnitID;
 @property RNFirebaseAdMob *delegate;
-@property GADInterstitial *interstitial;
+@property GADRewardBasedVideoAd *videoAd;
 
 - (id)initWithProps:(NSString *)adUnit delegate:(RNFirebaseAdMob *)delegate;
 
@@ -25,7 +25,7 @@
 @end
 
 #else
-@interface RNFirebaseAdMobInterstitial : NSObject <RCTBridgeModule> {
+@interface RNFirebaseAdMobRewardedVideo : NSObject <RCTBridgeModule> {
 }
 @end
 #endif
