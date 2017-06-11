@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
+import { View } from 'react-native';
+import fb from './firebase';
+const firebase = fb.native;
+const Banner = firebase.admob.Banner;
+const NativeExpress = firebase.admob.NativeExpress;
 
 import CoreContainer from './containers/CoreContainer';
 import setupStore from './store/setup';
@@ -50,6 +55,15 @@ function bootstrap() {
         return null;
       }
 
+      return (
+        <View>
+          <NativeExpress size="320x250" onAdLoaded={(props) => {
+            console.log('ad', props)
+          }} />
+        </View>
+      );
+
+      // return <Banner style={{ width: 100, height: 100, backgroundColor: 'pink'}} />;
       return (
         <Provider store={this.state.store}>
           <CoreContainer />

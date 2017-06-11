@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
 
 import com.android.build.OutputFile
 
@@ -126,10 +127,25 @@ android {
     }
 }
 
+project.ext.firebaseVersion = '10.2.6'
+
 dependencies {
-    compile project(':react-native-firebase')
+    compile(project(':react-native-firebase')) {
+        transitive = false
+    }
     compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.google.android.gms:play-services-base:$firebaseVersion"
+    compile "com.google.firebase:firebase-ads:$firebaseVersion"
+    compile "com.google.firebase:firebase-analytics:$firebaseVersion"
+    compile "com.google.firebase:firebase-auth:$firebaseVersion"
+    compile "com.google.firebase:firebase-config:$firebaseVersion"
+    compile "com.google.firebase:firebase-core:$firebaseVersion"
+    compile "com.google.firebase:firebase-crash:$firebaseVersion"
+    compile "com.google.firebase:firebase-database:$firebaseVersion"
+    compile "com.google.firebase:firebase-messaging:$firebaseVersion"
+    compile "com.google.firebase:firebase-perf:$firebaseVersion"
+    compile "com.google.firebase:firebase-storage:$firebaseVersion"
     compile "com.android.support:appcompat-v7:24.0.0"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }

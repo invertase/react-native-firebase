@@ -29,7 +29,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * com.facebook.internal is solely for the use of other packages within the Facebook SDK for
@@ -41,7 +45,7 @@ import java.util.*;
  * If other types are found, an IllegalArgumentException is thrown.
  */
 public class BundleJSONConverter {
-  private static final Map<Class<?>, Setter> SETTERS = new HashMap<Class<?>, Setter>();
+  private static final Map<Class<?>, Setter> SETTERS = new HashMap<>();
 
   static {
     SETTERS.put(Boolean.class, new Setter() {

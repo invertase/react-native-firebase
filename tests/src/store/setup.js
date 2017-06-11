@@ -11,7 +11,7 @@ function setup(done) {
   const isDev = global.isDebuggingInChrome || __DEV__;
 
   const logger = reduxLogger({
-    predicate: () => isDev,
+    predicate: () => false,
     collapsed: true,
     duration: true,
   });
@@ -24,7 +24,7 @@ function setup(done) {
   middlewares.push(applyMiddleware(...[thunk]));
 
   if (isDev) {
-    middlewares.push(applyMiddleware(...[logger]));
+    // middlewares.push(applyMiddleware(...[logger]));
     middlewares.push(applyMiddleware(require('redux-immutable-state-invariant')()));
   }
 

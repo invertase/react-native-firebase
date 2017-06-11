@@ -1,11 +1,14 @@
-pod 'Firebase/Auth'
-pod 'Firebase/Analytics'
-pod 'Firebase/AppIndexing'
 pod 'Firebase/Core'
+
+# [OPTIONAL PODS] - comment out pods for firebase products you won't be using.
+pod 'Firebase/Auth'
 pod 'Firebase/Crash'
-pod 'Firebase/Database'
-pod 'Firebase/DynamicLinks'
-pod 'Firebase/Messaging'
-pod 'Firebase/RemoteConfig'
 pod 'Firebase/Storage'
+pod 'Firebase/Database'
+pod 'Firebase/Messaging'
+pod 'Firebase/Analytics'
+pod 'Firebase/Performance'
+pod 'Firebase/RemoteConfig'
+# END [OPTIONAL PODS]
+
 pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
