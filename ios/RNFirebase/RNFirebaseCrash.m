@@ -19,6 +19,15 @@ RCT_EXPORT_METHOD(report:(NSString *) message) {
   assert(NO);
 }
 
+RCT_EXPORT_METHOD(setCrashCollectionEnabled:(BOOL *) enabled) {
+    // Not available yet
+}
+
+RCT_EXPORT_METHOD(isCrashCollectionEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    // Not available yet
+  resolve(@YES);
+}
+
 @end
 
 #else
