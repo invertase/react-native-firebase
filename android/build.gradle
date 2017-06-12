@@ -2,13 +2,13 @@
 // YES, jcenter is required twice - it somehow tricks studio into compiling deps below
 // doesn't break anything anywhere else and projects using this lib work as normal
 buildscript {
-    ext.firebaseVersion = '10.2.6'
+    ext.firebaseVersion = '11.0.0'
 
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.3.2'
     }
 }
 // END
@@ -16,21 +16,22 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "23.0.3"
-
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled  true
+  compileSdkVersion 25
+  buildToolsVersion "23.0.3"
+  defaultConfig {
+    minSdkVersion 16
+    targetSdkVersion 26
+    versionCode 1
+    versionName "1.0"
+    multiDexEnabled true
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
+  }
+  productFlavors {
+  }
 }
 
 // START - required to allow working on this project inside Android Studio
@@ -45,19 +46,19 @@ allprojects {
 // END
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.facebook.react:react-native:+'
-    compile 'me.leolin:ShortcutBadger:1.1.10@aar'
-    compile "com.google.android.gms:play-services-base:$firebaseVersion"
-    compile "com.google.firebase:firebase-core:$firebaseVersion"
-    compile "com.google.firebase:firebase-config:$firebaseVersion"
-    compile "com.google.firebase:firebase-auth:$firebaseVersion"
-    compile "com.google.firebase:firebase-analytics:$firebaseVersion"
-    compile "com.google.firebase:firebase-database:$firebaseVersion"
-    compile "com.google.firebase:firebase-storage:$firebaseVersion"
-    compile "com.google.firebase:firebase-messaging:$firebaseVersion"
-    compile "com.google.firebase:firebase-crash:$firebaseVersion"
-    compile "com.google.firebase:firebase-config:$firebaseVersion"
-    compile "com.google.firebase:firebase-perf:$firebaseVersion"
-    compile "com.google.firebase:firebase-ads:$firebaseVersion"
+  compile fileTree(include: ['*.jar'], dir: 'libs')
+  compile 'com.facebook.react:react-native:+'
+  compile 'me.leolin:ShortcutBadger:1.1.10@aar'
+  compile "com.google.android.gms:play-services-base:$firebaseVersion"
+  compile "com.google.firebase:firebase-core:$firebaseVersion"
+  compile "com.google.firebase:firebase-config:$firebaseVersion"
+  compile "com.google.firebase:firebase-auth:$firebaseVersion"
+  compile "com.google.firebase:firebase-analytics:$firebaseVersion"
+  compile "com.google.firebase:firebase-database:$firebaseVersion"
+  compile "com.google.firebase:firebase-storage:$firebaseVersion"
+  compile "com.google.firebase:firebase-messaging:$firebaseVersion"
+  compile "com.google.firebase:firebase-crash:$firebaseVersion"
+  compile "com.google.firebase:firebase-config:$firebaseVersion"
+  compile "com.google.firebase:firebase-perf:$firebaseVersion"
+  compile "com.google.firebase:firebase-ads:$firebaseVersion"
 }
