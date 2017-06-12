@@ -85,13 +85,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         applicationId "com.reactnativefirebasedemo"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -127,7 +127,7 @@ android {
     }
 }
 
-project.ext.firebaseVersion = '10.2.6'
+project.ext.firebaseVersion = '11.0.0'
 
 dependencies {
     compile(project(':react-native-firebase')) {
