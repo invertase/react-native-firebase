@@ -7,7 +7,7 @@ if [ -d ios_dir ]
 fi
 
 podfile="$ios_dir/Podfile"
-template=`pwd`/node_modules/react-native-firebase/Podfile.template
+template=`pwd`/node_modules/react-native-firebase/ios/Podfile.template
 
 project_name=$(node -pe "require('./package.json').name")
 
