@@ -1,6 +1,6 @@
-export default function addTests({ describe, fdescribe, it, firebase }) {
+export default function addTests({ describe, it, firebase }) {
 
-  fdescribe('API', () => {
+  describe('API', () => {
     it('it should set collection enabled/disabled', () => {
       return new Promise((resolve) => {
         firebase.native.crash().setCrashCollectionEnabled(false);
