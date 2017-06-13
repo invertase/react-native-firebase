@@ -1,7 +1,7 @@
 - Getting started
+ - [Initial setup](/initial-setup)
  - [Installation - iOS](/installation-ios)
  - [Installation - Android](/installation-android)
- - [Firebase Setup](/firebase-setup.md)
  - [Usage](/usage)
 
 - Contributing
