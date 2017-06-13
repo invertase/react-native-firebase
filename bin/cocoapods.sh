@@ -8,6 +8,7 @@ fi
 
 podfile="$ios_dir/Podfile"
 template=`pwd`/node_modules/react-native-firebase/ios/Podfile.template
+template_content=`cat $template`
 
 project_name=$(node -pe "require('./package.json').name")
 
@@ -46,16 +47,7 @@ target '${project_name}' do
 end
 
 # RNFirebase
-pod 'Firebase/Auth'
-pod 'Firebase/Analytics'
-pod 'Firebase/AppIndexing'
-pod 'Firebase/Core'
-pod 'Firebase/Crash'
-pod 'Firebase/Database'
-pod 'Firebase/DynamicLinks'
-pod 'Firebase/Messaging'
-pod 'Firebase/RemoteConfig'
-pod 'Firebase/Storage'
+${template_content}
 EOL
 
 echo "Installing Pods"
