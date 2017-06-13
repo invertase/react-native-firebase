@@ -282,7 +282,7 @@ RCT_EXPORT_METHOD(getToken:(BOOL)forceRefresh resolver:(RCTPromiseResolveBlock) 
     FIRUser *user = [FIRAuth auth].currentUser;
 
     if (user) {
-        [user getIDTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
+        [user getTokenForcingRefresh:(BOOL) forceRefresh completion:^(NSString *token, NSError *_Nullable error) {
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
@@ -472,7 +472,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *)email resolver:(RCTPromiseR
     } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
     } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+        credential = [FIREmailPasswordAuthProvider credentialWithEmail:authToken password:authTokenSecret];
     } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else {
@@ -703,16 +703,16 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *)email resolver:(RCTPromiseR
  */
 - (NSDictionary *) firebaseUserToDict:(FIRUser *) user {
     NSMutableDictionary *userDict = [
-                                     @{ @"uid": user.uid,
-                                        @"email": user.email ? user.email : [NSNull null],
-                                        @"emailVerified": @(user.emailVerified),
-                                        @"isAnonymous": @(user.anonymous),
-                                        @"displayName": user.displayName ? user.displayName : [NSNull null],
-                                        @"refreshToken": user.refreshToken,
-                                        @"providerId": [user.providerID lowercaseString],
-                                        @"providerData": [self convertProviderData: user.providerData]
-                                     } mutableCopy
-                                 ];
+            @{ @"uid": user.uid,
+                    @"email": user.email ? user.email : [NSNull null],
+                    @"emailVerified": @(user.emailVerified),
+                    @"isAnonymous": @(user.anonymous),
+                    @"displayName": user.displayName ? user.displayName : [NSNull null],
+                    @"refreshToken": user.refreshToken,
+                    @"providerId": [user.providerID lowercaseString],
+                    @"providerData": [self convertProviderData: user.providerData]
+            } mutableCopy
+    ];
 
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue: [user.photoURL absoluteString] forKey:@"photoURL"];
