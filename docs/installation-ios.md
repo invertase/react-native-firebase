@@ -1,6 +1,6 @@
 # iOS Installation
 
-## 1) Setup `GoogleService-Info.plist`
+## 1) Setup GoogleService-Info.plist
 Setup the `GoogleService-Info.plist` file by following the instructions and adding it to the root of your project at `ios/[YOUR APP NAME]/GoogleService-Info.plist` [here](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app).
 
 ### 1.1) Initialisation
