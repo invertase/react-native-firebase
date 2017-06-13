@@ -19,14 +19,42 @@ Unfortunately, due to the fact that Firebase is much easier to setup using Cocoa
 ### 2.0) If you don't already have Cocoapods set up
 Follow the instructions to install Cocoapods and create your Podfile [here](https://firebase.google.com/docs/ios/setup#add_the_sdk).
 
+**NOTE: The Podfile needs to be initialised in the `ios` directory of your project.**
+
+#### Troubleshooting
+1) When running `pod install` you may encounter an error saying that a `tvOSTests` target is declared twice. This appears to be a bug with `pod init` and the way that react native is set up.
+
+**Resolution:**
+- Open your Podfile
+- Remove the duplicate `tvOSTests` target nested within the main project target
+- Re-run `pod install`.
+
+2) When running `pod install` you may encounter a number of warnings relating to `target overrides 'OTHER_LDFLAGS'`.
+
+**Resolution:**
+- Open Xcode
+- Select your project
+- For each target:
+-- Select the target
+-- Click Build settings
+-- Search for `other linker flags`
+-- Add `$(inherited)` as the top line if it doesn't already exist
+- Re-run `pod install`
+
+3) When running `pod install` you may encounter a warning that a default iOS platform has been assigned.  If you wish to specify a different minimum version:
+
+**Resolution**
+- Open your Podfile
+- Uncomment the `# platform :ios, '9.0'` line by removing the `#` character
+- Change the version as required
+
 ### 2.1) Add the required pods
-Simply add the following to your `Podfile`:
+Simply add the following to your `Podfile` either at the top level, or within the main project target:
 
 ```ruby
 # Required by RNFirebase
 pod 'Firebase/Auth'
 pod 'Firebase/Analytics'
-pod 'Firebase/AppIndexing'
 pod 'Firebase/Core'
 pod 'Firebase/Crash'
 pod 'Firebase/Database'
@@ -37,18 +65,26 @@ pod 'Firebase/Storage'
 pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 ```
 
-If you are new to Cocoapods do not already have React installed as a pod, then add Yoga and React to your `Podfile` as follows:
+If you are new to Cocoapods or do not already have React installed as a pod, then add Yoga and React to your `Podfile` as follows:
 
 ```ruby
 pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 pod 'React', :path => '../node_modules/react-native', :subspecs => [
-  'BatchedBridge', # For React Native 0.45.0+
+  'BatchedBridge', # Required For React Native 0.45.0+
   'Core',
   # Add any other subspecs you want to use in your project
 ]
 ```
 
+Run `pod install`.
+
 **NOTE: You need to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on.**
+
+#### Troubleshooting
+1) You receive an error `No podspec found for 'RNFirebase'`
+
+**Resolution**
+- Run `npm install --save react-native-firebase` from the root of your project
 
 ## 3) Cloud Messaging (optional)
 
