@@ -718,9 +718,9 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
       code = authException.getErrorCode();
       message = authException.getMessage();
     } catch (Exception e) {
-      Matcher matcher = Pattern.compile("\\[(.*?)\\]").matcher(message);
+      Matcher matcher = Pattern.compile("\\[(.*):.*\\]").matcher(message);
       if (matcher.find()) {
-        code = matcher.group().substring(2, matcher.group().length() - 2).trim();
+        code = matcher.group(1).trim();
         switch (code) {
           case "INVALID_CUSTOM_TOKEN":
             message = "The custom token format is incorrect. Please check the documentation.";
