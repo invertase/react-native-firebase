@@ -31,9 +31,9 @@
 
 - (void)addEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName {
     if (!_listeners[listenerId]) {
-        id withBlock = ^(FIRDataSnapshot *_Nonnull snapshot) {
+        id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
             NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props}];
+            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName":previousChildName}];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
@@ -41,7 +41,7 @@
             [self getAndSendDatabaseError:error listenerId:listenerId];
         };
         int eventType = [self eventTypeFromName:eventName];
-        FIRDatabaseHandle handle = [_query observeEventType:eventType withBlock:withBlock withCancelBlock:errorBlock];
+        FIRDatabaseHandle handle = [_query observeEventType:eventType andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock withCancelBlock:errorBlock];
         _listeners[listenerId] = @(handle);
     } else {
         NSLog(@"Warning Trying to add duplicate listener for refId: %@ listenerId: %@", _refId, listenerId);
@@ -49,9 +49,9 @@
 }
 
 - (void)addSingleEventHandler:(RCTResponseSenderBlock)callback {
-    [_query observeSingleEventOfType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot *_Nonnull snapshot) {
+    [_query observeSingleEventOfType:FIRDataEventTypeValue andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
                 NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-                callback(@[[NSNull null], @{@"eventName": @"value", @"path": _path, @"refId": _refId, @"snapshot": props}]);
+                callback(@[[NSNull null], @{@"eventName": @"value", @"path": _path, @"refId": _refId, @"snapshot": props, @"previousChildName":previousChildName}]);
             } withCancelBlock:^(NSError *_Nonnull error) {
                 NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
                 callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
