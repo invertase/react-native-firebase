@@ -5,6 +5,9 @@
 @implementation BannerComponent
 
 - (void)initBanner:(GADAdSize)adSize {
+    if (_requested) {
+        [_banner removeFromSuperview];
+    }
     _banner = [[GADBannerView alloc] initWithAdSize:adSize];
     _banner.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     _banner.delegate = self;
@@ -27,6 +30,7 @@
 
 - (void)requestAd {
     if (_unitId == nil || _size == nil || _request == nil) {
+        [self setRequested:NO];
         return;
     }
 
@@ -39,6 +43,7 @@
     }];
 
     _banner.adUnitID = _unitId;
+    [self setRequested:YES];
     [_banner loadRequest:[RNFirebaseAdMob buildRequest:_request]];
 }
 

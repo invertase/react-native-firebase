@@ -7,7 +7,8 @@
 
 @interface BannerComponent : UIView <GADBannerViewDelegate>
 
-@property GADBannerView  *banner;
+@property GADBannerView *banner;
+@property (nonatomic, assign) BOOL requested;
 
 @property (nonatomic, copy) NSString *size;
 @property (nonatomic, copy) NSString *unitId;
