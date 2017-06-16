@@ -28,6 +28,7 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 ---
 
 ## Supported Firebase Features
+> The Web SDK column indicates what modules from the Firebase Web SDK are usable within React Native.
 
 | Firebase Features      | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)  | Web SDK |
 | ---------------------- | :---: | :---: | :---: |
