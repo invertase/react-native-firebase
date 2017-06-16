@@ -305,7 +305,7 @@ LoginManager
   })
   .then(data => {
     // create a new firebase credential with the token
-    const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+    const credential = firebase.auth().FacebookAuthProvider.credential(data.accessToken);
 
     // login with credential
     return firebase.auth().signInWithCredential(credential);
