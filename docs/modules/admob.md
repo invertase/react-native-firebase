@@ -282,7 +282,7 @@ adverts (e.g. Interstitial) they're available via the `on` method.
 ##### onAdLoaded(config: `Object`)
 !> The config is not provided for Interstitial or Rewarded Video adverts.
 
-On successful response from the AdMob servers.
+On successful response from the AdMob servers. This is also called when a new banner is automatically loaded from the AdMob servers if the current one expires.
 
 Returns an object of config data related to the loaded advert:
 ```js

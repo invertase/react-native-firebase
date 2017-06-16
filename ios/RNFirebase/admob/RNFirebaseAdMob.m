@@ -88,8 +88,8 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
     if (request[@"keywords"]) builder.keywords = request[@"keywords"];
 
     if (request[@"testDevices"]) {
-        NSArray * devices = request[@"testDevices"];
-        NSMutableArray * testDevices = [[NSMutableArray alloc] init];
+        NSArray *devices = request[@"testDevices"];
+        NSMutableArray *testDevices = [[NSMutableArray alloc] init];
 
         for (id device in devices) {
             if ([device isEqual:@"DEVICE_ID_EMULATOR"]) {
@@ -114,6 +114,12 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
         }
     }
 
+    return builder;
+}
+
++ (GADVideoOptions *)buildVideoOptions:(NSDictionary *)options {
+    GADVideoOptions *builder = [[GADVideoOptions alloc] init];
+    builder.startMuted = (BOOL) options[@"startMuted"];
     return builder;
 }
 
@@ -162,6 +168,22 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
 }
 
 + (GADAdSize)stringToAdSize:(NSString *)value {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9]+)x([0-9]+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:value options:0 range:NSMakeRange(0, [value length])];
+
+    for (NSTextCheckingResult *match in matches) {
+        NSString *matchText = [value substringWithRange:[match range]];
+        if (matchText) {
+            NSArray *values = [matchText componentsSeparatedByString:@"x"];
+            CGFloat width = (CGFloat)[values[0] intValue];
+            CGFloat height = (CGFloat)[values[1] intValue];
+            return GADAdSizeFromCGSize(CGSizeMake(width, height));
+        }
+    }
+
+    value = [value uppercaseString];
+
     if ([value isEqualToString:@"BANNER"]) {
         return kGADAdSizeBanner;
     } else if ([value isEqualToString:@"LARGE_BANNER"]) {

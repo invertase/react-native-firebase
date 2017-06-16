@@ -17,6 +17,7 @@
 @property NSMutableDictionary *rewardedVideos;
 
 + (GADRequest *)buildRequest:(NSDictionary *)request;
++ (GADVideoOptions *)buildVideoOptions:(NSDictionary *)options;
 + (NSDictionary *)errorCodeToDictionary:(NSError *)error;
 + (GADAdSize)stringToAdSize:(NSString *)value;
 @end

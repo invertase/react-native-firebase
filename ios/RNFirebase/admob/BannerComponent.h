@@ -21,7 +21,7 @@
 @end
 #else
 
-@interface RNFirebaseAdMobBanner : NSObject <RCTBridgeModule> {
+@interface BannerComponent : NSObject <RCTBridgeModule> {
 }
 @end
 
