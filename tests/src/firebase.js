@@ -26,6 +26,8 @@ instances.web.database().ref('tests/priority').setWithPriority({
   foo: 'bar',
 }, 666);
 
+instances.web.database().ref('tests/query').set(DatabaseContents.QUERY);
+
 
 // instances.native.messaging().subscribeToTopic('fcm_test');
 

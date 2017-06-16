@@ -23,6 +23,14 @@ export default {
     },
   },
 
+  QUERY: [{
+    search: 'foo',
+  }, {
+    search: 'bar',
+  }, {
+    search: 'blah',
+  }],
+
   ISSUES: {
     // https://github.com/invertase/react-native-firebase/issues/100
     100: {
