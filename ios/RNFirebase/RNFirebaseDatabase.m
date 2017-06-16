@@ -33,8 +33,14 @@
     if (!_listeners[listenerId]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
             NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-            if (previousChildName == nil) previousChildName = @"";
-            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName":previousChildName}];
+            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{
+                    @"eventName": eventName,
+                    @"refId": _refId,
+                    @"listenerId": listenerId,
+                    @"path": _path,
+                    @"snapshot": props,
+                    @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]
+            }];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
@@ -52,7 +58,13 @@
 - (void)addSingleEventHandler:(RCTResponseSenderBlock)callback {
     [_query observeSingleEventOfType:FIRDataEventTypeValue andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
                 NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-                callback(@[[NSNull null], @{@"eventName": @"value", @"path": _path, @"refId": _refId, @"snapshot": props, @"previousChildName":previousChildName}]);
+                callback(@[[NSNull null], @{
+                        @"eventName": @"value",
+                        @"path": _path,
+                        @"refId": _refId,
+                        @"snapshot": props,
+                        @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]
+                }]);
             } withCancelBlock:^(NSError *_Nonnull error) {
                 NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
                 callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
@@ -232,7 +244,7 @@ RCT_EXPORT_METHOD(startTransaction:
     dispatch_async(_transactionQueue, ^{
         NSMutableDictionary *transactionState = [NSMutableDictionary new];
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        [transactionState setObject:sema forKey:@"semaphore"];
+        transactionState[@"semaphore"] = sema;
         FIRDatabaseReference *ref = [self getPathRef:path];
 
         [ref runTransactionBlock:^FIRTransactionResult * _Nonnull(FIRMutableData *
