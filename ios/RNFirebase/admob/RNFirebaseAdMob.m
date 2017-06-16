@@ -79,14 +79,28 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
     return @[ADMOB_INTERSTITIAL_EVENT, ADMOB_REWARDED_VIDEO_EVENT];
 }
 
-- (GADRequest *)buildRequest:(NSDictionary *)request {
++ (GADRequest *)buildRequest:(NSDictionary *)request {
     GADRequest *builder = [GADRequest request];
 
     if (request[@"tagForChildDirectedTreatment"]) [builder tagForChildDirectedTreatment:(BOOL) request[@"tagForChildDirectedTreatment"]];
     if (request[@"contentUrl"]) builder.contentURL = request[@"contentUrl"];
     if (request[@"requestAgent"]) builder.requestAgent = request[@"requestAgent"];
     if (request[@"keywords"]) builder.keywords = request[@"keywords"];
-    if (request[@"testDevices"]) builder.testDevices = request[@"testDevices"];
+
+    if (request[@"testDevices"]) {
+        NSArray * devices = request[@"testDevices"];
+        NSMutableArray * testDevices = [[NSMutableArray alloc] init];
+
+        for (id device in devices) {
+            if ([device isEqual:@"DEVICE_ID_EMULATOR"]) {
+                [testDevices addObject:kGADSimulatorID];
+            } else {
+                [testDevices addObject:device];
+            }
+        }
+
+        builder.testDevices = testDevices;
+    }
 
     if (request[@"gender"]) {
         NSString *gender = [request[@"gender"] stringValue];
@@ -103,7 +117,7 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
     return builder;
 }
 
-- (NSDictionary *)errorCodeToDictionary:(NSError *)error {
++ (NSDictionary *)errorCodeToDictionary:(NSError *)error {
     NSString *code;
     NSString *message;
 
@@ -145,6 +159,24 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
             @"code": code,
             @"message": message,
     };
+}
+
++ (GADAdSize)stringToAdSize:(NSString *)value {
+    if ([value isEqualToString:@"BANNER"]) {
+        return kGADAdSizeBanner;
+    } else if ([value isEqualToString:@"LARGE_BANNER"]) {
+        return kGADAdSizeLargeBanner;
+    } else if ([value isEqualToString:@"MEDIUM_RECTANGLE"]) {
+        return kGADAdSizeMediumRectangle;
+    } else if ([value isEqualToString:@"FULL_BANNER"]) {
+        return kGADAdSizeFullBanner;
+    } else if ([value isEqualToString:@"LEADERBOARD"]) {
+        return kGADAdSizeLeaderboard;
+    } else if ([value isEqualToString:@"SMART_BANNER"]) {
+        return kGADAdSizeSmartBannerPortrait;
+    } else {
+        return kGADAdSizeBanner;
+    }
 }
 
 @end
