@@ -19,7 +19,7 @@
 }
 
 - (void)loadAd:(NSDictionary *)request {
-    [_interstitial loadRequest:[_delegate buildRequest:request]];
+    [_interstitial loadRequest:[RNFirebaseAdMob buildRequest:request]];
 }
 
 - (void)show {
@@ -41,7 +41,7 @@
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
-    [self sendJSEvent:@"onAdFailedToLoad" payload:[_delegate errorCodeToDictionary:error]];
+    [self sendJSEvent:@"onAdFailedToLoad" payload:[RNFirebaseAdMob errorCodeToDictionary:error]];
 }
 
 - (void)interstitialWillPresentScreen:(GADInterstitial *)ad {

@@ -1,6 +1,5 @@
 #import "RNFirebaseAdMobRewardedVideo.h"
 
-
 @implementation RNFirebaseAdMobRewardedVideo
 
 - (id)initWithProps:(NSString *)adUnit delegate:(RNFirebaseAdMob *)delegate {
@@ -20,7 +19,7 @@
 }
 
 - (void)loadAd:(NSDictionary *)request {
-    [_videoAd loadRequest:[_delegate buildRequest:request] withAdUnitID:_adUnitID];
+    [_videoAd loadRequest:[RNFirebaseAdMob buildRequest:request] withAdUnitID:_adUnitID];
 }
 
 - (void)show {
@@ -67,7 +66,7 @@
 
 - (void)rewardBasedVideoAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd
     didFailToLoadWithError:(NSError *)error {
-    [self sendJSEvent:@"onAdFailedToLoad" payload:[_delegate errorCodeToDictionary:error]];
+    [self sendJSEvent:@"onAdFailedToLoad" payload:[RNFirebaseAdMob errorCodeToDictionary:error]];
 }
 
 @end
