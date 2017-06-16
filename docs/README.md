@@ -24,3 +24,25 @@ Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library 
 RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS and Android. Firebase will run on the native thread, allowing the rest of your app to run on the [JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate). The Firebase Web SDK also runs on the JS thread, therefore potentially affecting the frame rate causing jank with animations, touch events etc. All in all, RNFirebase provides much faster performance (~2x) over the web SDK.
 
 The native SDKs also allow us to hook into device sdk's which are not possible with the web SDK, for example crash reporting, offline realtime database support, analyics and more!
+
+---
+
+## Supported Firebase Features
+> The Web SDK column indicates what modules from the Firebase Web SDK are usable within React Native.
+
+| Firebase Features      | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)  | Web SDK |
+| ---------------------- | :---: | :---: | :---: |
+| Analytics              | ✅ | ✅ | ❌ |
+| Cloud Messaging        | ✅ | ✅ | ❌ |
+| Authentication         | ✅ | ✅ | ✅ |
+| Realtime Database      | ✅ | ✅ | ✅ |
+|  - Offline Persistance | ✅ | ✅ | ❌ |
+| Storage                | ✅ | ✅ | ❌ |
+| Performance Monitoring | ✅ | ✅ | ❌ |
+| Crash Reporting        | ✅ | ✅ | ❌ |
+| Remote Config          | ✅ | ✅ | ❌ |
+| App Indexing           | ❌ | ❌ | ❌ |
+| Dynamic Links          | ❌ | ❌ | ❌ |
+| Invites                | ❌ | ❌ | ❌ |
+| AdMob                  | ❌ | ✅ | ❌ |
+

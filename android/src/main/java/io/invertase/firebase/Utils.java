@@ -213,16 +213,22 @@ public class Utils {
   }
 
   /**
+   * Data should be treated as an array if:
+   * 1) All the keys are integers
+   * 2) More than half the keys between 0 and the maximum key in the object have non-empty values
+   *
+   * Definition from: https://firebase.googleblog.com/2014/04/best-practices-arrays-in-firebase.html
    *
    * @param snapshot
    * @return
    */
   private static boolean isArray(DataSnapshot snapshot) {
     long expectedKey = -1;
+    long maxAllowedKey = (snapshot.getChildrenCount() * 2) - 1;
     for (DataSnapshot child : snapshot.getChildren()) {
       try {
         long key = Long.parseLong(child.getKey());
-        if (key > expectedKey) {
+        if (key > expectedKey && key <= maxAllowedKey) {
           expectedKey = key;
         } else {
           return false;
@@ -235,16 +241,22 @@ public class Utils {
   }
 
   /**
+   * Data should be treated as an array if:
+   * 1) All the keys are integers
+   * 2) More than half the keys between 0 and the maximum key in the object have non-empty values
+   *
+   * Definition from: https://firebase.googleblog.com/2014/04/best-practices-arrays-in-firebase.html
    *
    * @param mutableData
    * @return
    */
   private static boolean isArray(MutableData mutableData) {
     long expectedKey = -1;
+    long maxAllowedKey = (mutableData.getChildrenCount() * 2) - 1;
     for (MutableData child : mutableData.getChildren()) {
       try {
         long key = Long.parseLong(child.getKey());
-        if (key > expectedKey) {
+        if (key > expectedKey && key <= maxAllowedKey) {
           expectedKey++;
         } else {
           return false;
