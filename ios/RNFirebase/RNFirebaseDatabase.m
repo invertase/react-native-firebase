@@ -33,6 +33,7 @@
     if (!_listeners[listenerId]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
             NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
+            if (previousChildName == nil) previousChildName = @"";
             [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName":previousChildName}];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
