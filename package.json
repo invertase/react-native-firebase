@@ -56,18 +56,6 @@
     "react": "*",
     "react-native": ">= 0.40.0"
   },
-  "rnpm": {
-    "commands": {
-      "prelink": "node_modules/react-native-firebase/bin/prepare.sh",
-      "postlink": "node_modules/react-native-firebase/bin/cocoapods.sh"
-    },
-    "ios": {
-      "project": "ios/RNFirebase.xcodeproj"
-    },
-    "android": {
-      "packageInstance": "new RNFirebasePackage()"
-    }
-  },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
     "babel-jest": "^14.1.0",
