@@ -290,8 +290,6 @@ Returns an object of config data related to the loaded advert:
   hasVideoContent: boolean,
   width: number,
   height: number,
-  top: number,
-  left: number,
 }
 ```
 
