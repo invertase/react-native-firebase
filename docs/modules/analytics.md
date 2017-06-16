@@ -63,7 +63,7 @@ firebase.analytics().setSessionTimeoutDuration(900000);
 
 #### `setUserId(id: string): void`
 
-Gives a user a uniqiue identificaition.
+Gives a user a unique identification.
 
 ```javascript
 const id = firebase.auth().currentUser.uid;
