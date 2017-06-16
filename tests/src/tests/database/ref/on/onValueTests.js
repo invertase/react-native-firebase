@@ -1,22 +1,8 @@
-import { Platform } from 'react-native';
-
 import sinon from 'sinon';
 import 'should-sinon';
 import Promise from 'bluebird';
 
 import DatabaseContents from '../../../support/DatabaseContents';
-
-/**
- * On Android, some data types result in callbacks that get called twice every time
- * they are updated. This appears to be behaviour coming from the Android Firebase
- * library itself.
- *
- * See https://github.com/invertase/react-native-firebase/issues/92 for details
- */
-const DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS = [
-  'array',
-  'number',
-];
 
 function onTests({ describe, context, it, firebase, tryCatch }) {
   describe('ref().on(\'value\')', () => {
@@ -92,12 +78,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
         // Assertions
 
         callback.should.be.calledWith(newDataValue);
-
-        if (Platform.OS === 'android' && DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS.includes(dataRef)) {
-          callback.should.be.calledThrice();
-        } else {
-          callback.should.be.calledTwice();
-        }
+        callback.should.be.calledTwice();
 
         // Tear down
 
@@ -171,12 +152,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
         ...arrayAsObject,
         [newElementRef.key]: 37,
       });
-
-      if (Platform.OS === 'android') {
-        callback.should.be.calledThrice();
-      } else {
-        callback.should.be.calledTwice();
-      }
+      callback.should.be.calledTwice();
 
       // Tear down
 
@@ -251,13 +227,8 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
         callbackA.should.be.calledWith(newDataValue);
         callbackB.should.be.calledWith(newDataValue);
 
-        if (Platform.OS === 'android' && DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS.includes(dataRef)) {
-          callbackA.should.be.calledThrice();
-          callbackB.should.be.calledThrice();
-        } else {
-          callbackA.should.be.calledTwice();
-          callbackB.should.be.calledTwice();
-        }
+        callbackA.should.be.calledTwice();
+        callbackB.should.be.calledTwice();
 
         // Tear down
 
@@ -317,12 +288,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
           // Assertions
 
           context.value.should.eql(newDataValue);
-
-          if (Platform.OS === 'android' && DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS.includes(dataRef)) {
-            context.callCount.should.eql(3);
-          } else {
-            context.callCount.should.eql(2);
-          }
+          context.callCount.should.eql(2);
 
           // Tear down
 
@@ -389,12 +355,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
           // Assertions
 
           context.value.should.eql(newDataValue);
-
-          if (Platform.OS === 'android' && DATATYPES_WITH_DUPLICATE_CALLBACK_CALLS.includes(dataRef)) {
-            context.callCount.should.eql(3);
-          } else {
-            context.callCount.should.eql(2);
-          }
+          context.callCount.should.eql(2);
 
           // Tear down
 
