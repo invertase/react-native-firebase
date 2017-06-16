@@ -42,19 +42,30 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 
 | Firebase Features      | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)  | Web SDK |
 | ---------------------- | :---: | :---: | :---: |
+| AdMob                  | ❌ | ✅ | ❌ |
 | Analytics              | ✅ | ✅ | ❌ |
-| Cloud Messaging        | ✅ | ✅ | ❌ |
-| Authentication         | ✅ | ✅ | ✅ |
-| Realtime Database      | ✅ | ✅ | ✅ |
-|  - Offline Persistance | ✅ | ✅ | ❌ |
-| Storage                | ✅ | ✅ | ❌ |
-| Performance Monitoring | ✅ | ✅ | ❌ |
-| Crash Reporting        | ✅ | ✅ | ❌ |
-| Remote Config          | ✅ | ✅ | ❌ |
 | App Indexing           | ❌ | ❌ | ❌ |
+| Authentication         | ✅ | ✅ | ✅ |
+| Cloud Messaging        | ✅ | ✅ | ❌ |
+| Crash Reporting        | ✅ | ✅ | ❌ |
 | Dynamic Links          | ❌ | ❌ | ❌ |
 | Invites                | ❌ | ❌ | ❌ |
-| AdMob                  | ❌ | ✅ | ❌ |
+| Performance Monitoring | ✅ | ✅ | ❌ |
+| Realtime Database      | ✅ | ✅ | ✅ |
+|  - Offline Persistance | ✅ | ✅ | ❌ |
+| Remote Config          | ✅ | ✅ | ❌ |
+| Storage                | ✅ | ✅ | ❌ |
+
+---
+### Supported versions - Firebase / React Native
+
+> The table below shows the minimum supported versions of the Firebase SDKs and React Native
+
+|                        | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)
+| ---------------------- | :---: | :---: |
+| React Native           | 0.36.0+ | 0.40.0 + |
+| Firebase Android SDK   | 10.2.0+ | 11.0.0 + |
+| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  |
 
 ---
 
