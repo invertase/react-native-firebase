@@ -117,7 +117,7 @@ public class RNFirebaseDatabaseReference {
     final ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap("value", mRefId, null, mPath, dataSnapshot);
+        WritableMap data = Utils.snapshotToMap("value", mRefId, null, mPath, dataSnapshot, null);
         callback.invoke(null, data);
       }
 
@@ -169,13 +169,10 @@ public class RNFirebaseDatabaseReference {
   }
 
   private void handleDatabaseEvent(final String name, final Integer listenerId, final DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-    WritableMap data = Utils.snapshotToMap(name, mRefId, listenerId, mPath, dataSnapshot);
+    WritableMap data = Utils.snapshotToMap(name, mRefId, listenerId, mPath, dataSnapshot, previousChildName);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", data);
-    if (previousChildName != null) {
-      evt.putString("previousChildName", previousChildName);
-    }
 
     Utils.sendEvent(mReactContext, "database_event", evt);
   }

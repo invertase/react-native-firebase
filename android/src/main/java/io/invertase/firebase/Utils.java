@@ -1,5 +1,6 @@
 package io.invertase.firebase;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class Utils {
    * @param dataSnapshot
    * @return
    */
-  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot) {
+  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     WritableMap snapshot = Arguments.createMap();
     WritableMap eventMap = Arguments.createMap();
 
@@ -114,6 +115,7 @@ public class Utils {
     eventMap.putString("path", path);
     eventMap.putMap("snapshot", snapshot);
     eventMap.putString("eventName", name);
+    eventMap.putString("previousChildName", previousChildName);
 
     return eventMap;
   }
