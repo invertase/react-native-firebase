@@ -22,7 +22,7 @@ import java.util.Map;
 public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
 
   public static final String REACT_CLASS = "RNFirebaseAdMobBanner";
-  public static final String BANNER_EVENT = "bannerEvent";
+  public static final String BANNER_EVENT = "onBannerEvent";
 
   public enum Events {
     EVENT_AD_SIZE_CHANGE("onSizeChange"),
@@ -30,8 +30,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
     EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
     EVENT_AD_OPENED("onAdOpened"),
     EVENT_AD_CLOSED("onAdClosed"),
-    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication"),
-    EVENT_AD_VIDEO_CONTENT("hasVideoContent");
+    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication");
 
     private final String event;
 

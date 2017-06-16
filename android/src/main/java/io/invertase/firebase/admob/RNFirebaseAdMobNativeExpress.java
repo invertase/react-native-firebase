@@ -24,7 +24,7 @@ import java.util.Map;
 public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGroup> {
 
   public static final String REACT_CLASS = "RNFirebaseAdMobNativeExpress";
-  public static final String BANNER_EVENT = "bannerEvent";
+  public static final String BANNER_EVENT = "onBannerEvent";
 
   public enum Events {
     EVENT_AD_SIZE_CHANGE("onSizeChange"),
