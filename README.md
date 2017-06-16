@@ -46,6 +46,7 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 | Cloud Messaging        | ✅ | ✅ | ❌ |
 | Authentication         | ✅ | ✅ | ✅ |
 | Realtime Database      | ✅ | ✅ | ✅ |
+|  - Offline Persistance | ✅ | ✅ | ❌ |
 | Storage                | ✅ | ✅ | ❌ |
 | Performance Monitoring | ✅ | ✅ | ❌ |
 | Crash Reporting        | ✅ | ✅ | ❌ |
