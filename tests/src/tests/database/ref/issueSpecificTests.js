@@ -1,10 +1,10 @@
 import should from 'should';
 import DatabaseContents from '../../support/DatabaseContents';
 
-function issueTests({ fdescribe, describe, it, context, firebase }) {
+function issueTests({ describe, it, context, firebase }) {
   describe('issue_100', () => {
     context('array-like values should', () => {
-      it('return null in returned array at positions where a key is missing', async() => {
+      it('return null in returned array at positions where a key is missing', async () => {
         // Setup
 
         const ref = firebase.native.database().ref('tests/issues/100');
@@ -12,9 +12,6 @@ function issueTests({ fdescribe, describe, it, context, firebase }) {
         // Test
 
         return ref.once('value').then((snapshot) => {
-          // Assertion
-          // console.warn(JSON.stringify(snapshot.val()));
-
           snapshot.val().should.eql([null, DatabaseContents.ISSUES[100][1], DatabaseContents.ISSUES[100][2], DatabaseContents.ISSUES[100][3]]);
         });
       });
@@ -23,7 +20,7 @@ function issueTests({ fdescribe, describe, it, context, firebase }) {
 
   describe('issue_108', () => {
     context('filters using floats', () => {
-      it('return correct results', async() => {
+      it('return correct results', async () => {
         // Setup
 
         const ref = firebase.native.database().ref('tests/issues/108');
@@ -45,7 +42,7 @@ function issueTests({ fdescribe, describe, it, context, firebase }) {
           });
       });
 
-      it('return correct results when not using float values', async() => {
+      it('return correct results when not using float values', async () => {
         // Setup
 
         const ref = firebase.native.database().ref('tests/issues/108');
@@ -66,6 +63,22 @@ function issueTests({ fdescribe, describe, it, context, firebase }) {
 
             return Promise.resolve();
           });
+      });
+    });
+  });
+
+  describe('issue_171', () => {
+    context('non array-like values should', () => {
+      it('return as objects', async () => {
+        // Setup
+
+        const ref = firebase.native.database().ref('tests/issues/171');
+
+        // Test
+
+        return ref.once('value').then((snapshot) => {
+          snapshot.val().should.eql(DatabaseContents.ISSUES[171]);
+        });
       });
     });
   });

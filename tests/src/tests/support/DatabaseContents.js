@@ -63,5 +63,33 @@ export default {
         latitude: 37,
       },
     },
+
+    // https://github.com/invertase/react-native-firebase/issues/171
+    171: {
+      10053768200609241: {
+        email: 'emaila@hotmail.com',
+        name: 'Sek Ranger',
+        profile_picture: 'https://url.to/picture',
+        uid: 'n6V8vACidyW4OKxnELkBbW83JaS2',
+      },
+      10053925505239749: {
+        email: 'emailb@hotmail.com',
+        name: 'Gu Hungry',
+        profile_picture: 'https://url.to/picture',
+        uid: 'Qq4Pwm7H2kO6sJIMLAJxuhAGGh22',
+      },
+      10106631429240929: {
+        email: 'emailc@gmail.com',
+        name: 'Chwang',
+        profile_picture: 'https://url.to/picture',
+        uid: 'T7VVrveS0dPs3idmgetLUfQsLZs1',
+      },
+      10106631429240930: {
+        email: 'emaild@gmail.com',
+        name: 'Introv Bigs',
+        profile_picture: 'https://url.to/picture',
+        uid: 'aNYxLexOb2WsXGOPiEAu47q5bxH3',
+      },
+    },
   },
 };
