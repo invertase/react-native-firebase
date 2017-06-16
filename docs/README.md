@@ -29,18 +29,19 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 
 ## Supported Firebase Features
 
-| Firebase Features      | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)  |
-| ---------------------- | :---: | :---: |
-| Analytics              | ✅ | ✅ |
-| Cloud Messaging        | ✅ | ✅ |
-| Authentication         | ✅ | ✅ |
-| Realtime Database      | ✅ | ✅ |
-| Storage                | ✅ | ✅ |
-| Performance Monitoring | ✅ | ✅ |
-| Crash Reporting        | ✅ | ✅ |
-| Remote Config          | ✅ | ✅ |
-| App Indexing           | ❌ | ❌ |
-| Dynamic Links          | ❌ | ❌ |
-| Invites                | ❌ | ❌ |
-| AdMob                  | ❌ | ✅ |
+| Firebase Features      | v1  | [v2](https://github.com/invertase/react-native-firebase/pull/130)  | Web SDK |
+| ---------------------- | :---: | :---: | :---: |
+| Analytics              | ✅ | ✅ | ❌ |
+| Cloud Messaging        | ✅ | ✅ | ❌ |
+| Authentication         | ✅ | ✅ | ✅ |
+| Realtime Database      | ✅ | ✅ | ✅ |
+|  - Offline Persistance | ✅ | ✅ | ❌ |
+| Storage                | ✅ | ✅ | ❌ |
+| Performance Monitoring | ✅ | ✅ | ❌ |
+| Crash Reporting        | ✅ | ✅ | ❌ |
+| Remote Config          | ✅ | ✅ | ❌ |
+| App Indexing           | ❌ | ❌ | ❌ |
+| Dynamic Links          | ❌ | ❌ | ❌ |
+| Invites                | ❌ | ❌ | ❌ |
+| AdMob                  | ❌ | ✅ | ❌ |
 
