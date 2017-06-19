@@ -54,7 +54,8 @@ function authTests({ tryCatch, describe, it, firebase }) {
             linkedUser.should.be.an.Object();
             linkedUser.uid.should.be.a.String();
             linkedUser.toJSON().should.be.an.Object();
-            linkedUser.toJSON().email.should.eql(email);
+            // iOS and Android are inconsistent in returning lowercase / mixed case
+            linkedUser.toJSON().email.toLowerCase().should.eql(email.toLowerCase());
             linkedUser.isAnonymous.should.equal(false);
             linkedUser.providerId.should.equal('firebase');
             return firebase.native.auth().signOut();
