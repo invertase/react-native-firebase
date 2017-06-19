@@ -13,14 +13,14 @@ declare module "react-native-firebase" {
     on(type: string, handler: (msg: any) => void): any;
     /** mimics firebase Web SDK */
     database(): RNFirebase.database.Database;
-    /**RNFirebase mimics the Web Firebase SDK Storage, 
-     * whilst providing some iOS and Android specific functionality. 
+    /**RNFirebase mimics the Web Firebase SDK Storage,
+     * whilst providing some iOS and Android specific functionality.
      */
     storage(): RNFirebase.storage.Storage;
     /**
      * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
      * Assuming the installation instructions have been followed, FCM is ready to go.
-     * As the Firebase Web SDK has limited messaging functionality, 
+     * As the Firebase Web SDK has limited messaging functionality,
      * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
      */
     messaging(): RNFirebase.messaging.Messaging;
@@ -51,20 +51,20 @@ declare module "react-native-firebase" {
     };
 
     /**
- * pass custom options by passing an object with configuration options. 
- * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. 
+ * pass custom options by passing an object with configuration options.
+ * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS.
  * That is, all of the following key/value pairs are optional if the native configuration is set.
  */
     interface configurationOptions {
       /**
-       *  default false	
+       *  default false
        *  When set to true, RNFirebase will log messages to the console and fire debug events we can listen to in js
-       * @usage 
+       * @usage
        * firebase.on('debug', msg => console.log('Received debug message', msg))
        */
       debug?: boolean;
       /**
-       * default false	
+       * default false
        * When set to true, database persistence will be enabled.
        */
       persistence?: boolean;
@@ -73,47 +73,47 @@ declare module "react-native-firebase" {
        */
       bundleID?: string;
       /**
-       * defualt ""	
+       * defualt ""
        * The Google App ID that is used to uniquely identify an instance of an app.
        */
       googleAppID?: string;
       /**
-       * deufalt ""	
+       * deufalt ""
        * The database root (i.e. https://my-app.firebaseio.com)
        */
       databaseURL?: string;
       /**
-       * defualt ""	
+       * defualt ""
        * URL scheme to set up durable deep link service
        */
       deepLinkURLScheme?: string;
       /**
-       * defualt "" 
+       * defualt ""
        * The Google Cloud storage bucket name
        */
       storageBucket?: string;
       /**
-       * default ""	
+       * default ""
        * The Android client ID used in Google AppInvite when an iOS app has it's android version
        */
       androidClientID?: string;
       /**
-       * default	""	
+       * default	""
        * The Project number from the Google Developer's console used to configure Google Cloud Messaging
        */
       GCMSenderID?: string;
       /**
-       * default ""	
+       * default ""
        * The tracking ID for Google Analytics
        */
       trackingID?: string;
       /**
-       * default ""	
+       * default ""
        * The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google
        */
       clientID?: string;
       /**
-       * defualt ""	
+       * defualt ""
        * The secret iOS API key used for authenticating requests from our app
        */
       APIKey?: string
@@ -270,11 +270,11 @@ declare module "react-native-firebase" {
          * */
         ref(path?: string): RnReference
         /**
-         * register listener 
+         * register listener
          */
         on(path: string, modifiersString: string, modifiers: Array<string>, eventName: string, cb: () => void, errorCb: () => void): any
         /**
-         * unregister listener 
+         * unregister listener
          */
         off(path: string, modifiersString: string, eventName?: string, origCB?: () => void): any
         /**
@@ -376,13 +376,13 @@ declare module "react-native-firebase" {
       setAnalyticsCollectionEnabled(enabled: boolean): void
       /**
        * Sets the current screen name, which specifies the current visual context in your app.
-       * Whilst screenClassOverride is optional, 
-       * it is recommended it is always sent as your current class name, 
+       * Whilst screenClassOverride is optional,
+       * it is recommended it is always sent as your current class name,
        * for example on Android it will always show as 'MainActivity' if not specified.
        */
       setCurrentScreen(screenName: string, screenClassOverride?: string): void
       /**
-       * Sets the minimum engagement time required before starting a session. 
+       * Sets the minimum engagement time required before starting a session.
        * The default value is 10000 (10 seconds)
        */
       setMinimumSessionDuration(miliseconds: number): void
@@ -393,9 +393,9 @@ declare module "react-native-firebase" {
       setSessionTimeoutDuration(miliseconds: number): void
       /**
        * Gives a user a uniqiue identificaition.
-       * @example 
+       * @example
        * const id = firebase.auth().currentUser.uid;
-       * 
+       *
        * firebase.analytics().setUserId(id);
        */
       setUserId(id: string): void
@@ -420,7 +420,7 @@ declare module "react-native-firebase" {
        */
       emailVerified: boolean
       /**
-       * 
+       *
        */
       isAnonymous: boolean
       /**
@@ -457,19 +457,19 @@ declare module "react-native-firebase" {
        */
       reload(): Promise<void>
       /**
-       * Sends a verification email to a user. 
+       * Sends a verification email to a user.
        * This will Promise reject is the user is anonymous.
        */
       sendEmailVerification(): Promise<void>
       /**
        * Updates the user's email address.
-       * See Firebase docs for more information on security & email validation. 
+       * See Firebase docs for more information on security & email validation.
        * This will Promise reject is the user is anonymous.
        */
       updateEmail(email: string): Promise<void>
       /**
-       * Important: this is a security sensitive operation that requires the user to have recently signed in. 
-       * If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate. 
+       * Important: this is a security sensitive operation that requires the user to have recently signed in.
+       * If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.
        * This will Promise reject is the user is anonymous.
        */
       updatePassword(password: string): Promise<void>
@@ -498,48 +498,48 @@ declare module "react-native-firebase" {
          */
         currentUser: User | null
         /**
-         * Listen for changes in the users auth state (logging in and out). 
-         * This method returns a unsubscribe function to stop listening to events. 
+         * Listen for changes in the users auth state (logging in and out).
+         * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
         onAuthStateChanged(
           nextOrObserver: Object, error?: (a: RnError) => any,
           completed?: () => any): () => any;
         /**
-         * We can create a user by calling the createUserWithEmailAndPassword() function. 
+         * We can create a user by calling the createUserWithEmailAndPassword() function.
          * The method accepts two parameters, an email and a password.
          */
         createUserWithEmailAndPassword(email: string, password: string): Promise<User>
         /**
-         * To sign a user in with their email and password, use the signInWithEmailAndPassword() function. 
+         * To sign a user in with their email and password, use the signInWithEmailAndPassword() function.
          * It accepts two parameters, the user's email and password:
          */
         signInWithEmailAndPassword(email: string, password: string): Promise<User>
         /**
-         * Sign an anonymous user. 
+         * Sign an anonymous user.
          * If the user has already signed in, that user will be returned
          */
         signInAnonymously(): Promise<User>
         /**
-         * Sign in the user with a 3rd party credential provider. 
+         * Sign in the user with a 3rd party credential provider.
          * credential requires the following properties:
          */
         signInWithCredential(credential: Credential): Promise<User>
         /**
-         * Sign a user in with a self-signed JWT token. 
-         * To sign a user using a self-signed custom token, 
-         * use the signInWithCustomToken() function. 
+         * Sign a user in with a self-signed JWT token.
+         * To sign a user using a self-signed custom token,
+         * use the signInWithCustomToken() function.
          * It accepts one parameter, the custom token:
          */
         signInWithCustomToken(token: string): Promise<User>
         /**
-         * Sends a password reset email to the given email address. 
-         * Unlike the web SDK, 
+         * Sends a password reset email to the given email address.
+         * Unlike the web SDK,
          * the email will contain a password reset link rather than a code.
          */
         sendPasswordResetEmail(email: string): Promise<void>
         /**
-         * Completes the password reset process, 
+         * Completes the password reset process,
          * given a confirmation code and new password.
          */
         signOut(): Promise<void>
@@ -559,13 +559,13 @@ declare module "react-native-firebase" {
          */
         unsubscribeFromTopic(topic: string): void
         /**
-         * When the application has been opened from a notification 
-         * getInitialNotification is called and the notification payload is returned. 
+         * When the application has been opened from a notification
+         * getInitialNotification is called and the notification payload is returned.
          * Use onMessage for notifications when the app is running.
          */
         getInitialNotification(): Promise<any>
         /**
-         * Returns the devices FCM token. 
+         * Returns the devices FCM token.
          * This token can be used in the Firebase console to send messages to directly.
          */
         getToken(forceRefresh?: Boolean): Promise<string>
@@ -573,14 +573,14 @@ declare module "react-native-firebase" {
          * On the event a devices FCM token is refreshed by Google,
          *  the new token is returned in a callback listener.
          */
-        onTokenRefresh(listener: (token: string) => any): void
+        onTokenRefresh(listener: (token: string) => any): () => any
         /**
-         * On a new message, 
-         * the payload object is passed to the listener callback. 
+         * On a new message,
+         * the payload object is passed to the listener callback.
          * This method is only triggered when the app is running.
          * Use getInitialNotification for notifications which cause the app to open.
          */
-        onMessage(listener: (message: any) => any): void
+        onMessage(listener: (message: any) => any): () => any
         /**
          * Create a local notification from the device itself.
          */
@@ -600,17 +600,17 @@ declare module "react-native-firebase" {
          */
         getScheduledLocalNotifications(): Promise<any[]>
         /**
-         * Cancels a location notification by ID, 
+         * Cancels a location notification by ID,
          * or all notifications by *.
          */
         cancelLocalNotification(id: string): void
         /**
-         * Removes all delivered notifications from device by ID, 
+         * Removes all delivered notifications from device by ID,
          * or all notifications by *.
          */
         removeDeliveredNotification(id: string): void
         /**
-         * IOS 
+         * IOS
          * Requests app notification permissions in an Alert dialog.
          */
         requestPermissions(): void
@@ -654,7 +654,7 @@ declare module "react-native-firebase" {
          */
         logcat(level: number, tag: string, message: string): void
         /**
-         * Files a crash report, along with any previous logs to Firebase. 
+         * Files a crash report, along with any previous logs to Firebase.
          * An Error object must be passed into the report method.
          */
         report(error: RnError, maxStackSize: Number): void
