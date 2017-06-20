@@ -23,7 +23,7 @@
 @end
 
 #else
-@interface RNFirebaseAdMob : NSObject <RCTBridgeModule> {
+@interface RNFirebaseAdMob : NSObject {
 }
 @end
 #endif

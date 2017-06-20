@@ -5,6 +5,8 @@
 
 RCT_EXPORT_MODULE();
 
+#if __has_include(<GoogleMobileAds/GADMobileAds.h>)
+
 @synthesize bridge = _bridge;
 
 - (UIView *)view
@@ -24,5 +26,7 @@ RCT_EXPORT_VIEW_PROPERTY(request, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(video, NSDictionary);
 
 RCT_EXPORT_VIEW_PROPERTY(onBannerEvent, RCTBubblingEventBlock);
+
+#endif
 
 @end

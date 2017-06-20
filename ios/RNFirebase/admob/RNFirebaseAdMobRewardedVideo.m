@@ -2,6 +2,8 @@
 
 @implementation RNFirebaseAdMobRewardedVideo
 
+#if __has_include(<GoogleMobileAds/GADMobileAds.h>)
+
 - (id)initWithProps:(NSString *)adUnit delegate:(RNFirebaseAdMob *)delegate {
     self = [super init];
     if (self) {
@@ -68,5 +70,7 @@
     didFailToLoadWithError:(NSError *)error {
     [self sendJSEvent:@"onAdFailedToLoad" payload:[RNFirebaseAdMob errorCodeToDictionary:error]];
 }
+
+#endif
 
 @end

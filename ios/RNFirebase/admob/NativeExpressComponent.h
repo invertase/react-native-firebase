@@ -9,7 +9,6 @@
 @interface NativeExpressComponent : UIView <GADNativeExpressAdViewDelegate, GADVideoControllerDelegate>
 
 @property GADNativeExpressAdView *banner;
-//@property(nonatomic, weak) IBOutlet GADNativeExpressAdView *banner;
 @property (nonatomic, assign) BOOL requested;
 
 @property (nonatomic, copy) NSString *size;
@@ -24,7 +23,7 @@
 @end
 #else
 
-@interface NativeExpressComponent : NSObject <RCTBridgeModule> {
+@interface NativeExpressComponent : NSObject {
 }
 @end
 

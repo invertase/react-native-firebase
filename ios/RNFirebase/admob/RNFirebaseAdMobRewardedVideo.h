@@ -25,7 +25,7 @@
 @end
 
 #else
-@interface RNFirebaseAdMobRewardedVideo : NSObject <RCTBridgeModule> {
+@interface RNFirebaseAdMobRewardedVideo : NSObject {
 }
 @end
 #endif

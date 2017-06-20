@@ -4,6 +4,8 @@
 
 @implementation NativeExpressComponent
 
+#if __has_include(<GoogleMobileAds/GADMobileAds.h>)
+
 - (void)initBanner:(GADAdSize)adSize {
     if (_requested) {
         [_banner removeFromSuperview];
@@ -114,5 +116,7 @@
             @"isMuted": @NO,
     }];
 }
+
+#endif
 
 @end
