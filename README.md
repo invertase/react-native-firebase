@@ -10,7 +10,9 @@
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
 
-> [Documentation](https://invertase.io/react-native-firebase)
+<hr>
+
+[Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android)
 
 <hr>
 
@@ -18,11 +20,6 @@
 ```bash
 npm i react-native-firebase --save
 ```
-
-> *Pst! [We're working on V2 with loads of new features!](https://github.com/invertase/react-native-firebase/pull/130)*
-
-#### Platform specific setup guides:
-[![ios](https://a.fsdn.com/sd/topics/ios_64.png)](http://invertase.io/react-native-firebase/#/installation-ios)   [![android](https://a.fsdn.com/sd/topics/android_64.png)](http://invertase.io/react-native-firebase/#/installation-android)
 
 <hr>
 
