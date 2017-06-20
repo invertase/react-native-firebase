@@ -12,9 +12,9 @@ and this to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` me
 
 `[FIRApp configure];`
 
-## 2) Link RNFirebase
+## 2) Setup RNFirebase
 
-Unfortunately, due to the fact that Firebase is much easier to setup using Cocoapods, `react-native link` is not recommended as it is not customisable enough for our needs and we have had numerous problems reported.
+Unfortunately, due to the fact that Firebase is much easier to setup using Cocoapods, *we do not recommend* `react-native link` as it is not customisable enough for our needs and we have had numerous problems reported.
 
 ### 2.0) If you don't already have Cocoapods set up
 Follow the instructions to install Cocoapods and create your Podfile [here](https://firebase.google.com/docs/ios/setup#add_the_sdk).
