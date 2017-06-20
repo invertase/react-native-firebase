@@ -77,18 +77,18 @@ dependencies {
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:10.2.6"
+  compile "com.google.firebase:firebase-core:11.0.0"
 
   # RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:10.2.6"
-  compile "com.google.firebase:firebase-analytics:10.2.6"
-  compile "com.google.firebase:firebase-auth:10.2.6"
-  compile "com.google.firebase:firebase-config:10.2.6"
-  compile "com.google.firebase:firebase-crash:10.2.6"
-  compile "com.google.firebase:firebase-database:10.2.6"
-  compile "com.google.firebase:firebase-messaging:10.2.6"
-  compile "com.google.firebase:firebase-perf:10.2.6"
-  compile "com.google.firebase:firebase-storage:10.2.6"
+  compile "com.google.firebase:firebase-ads:11.0.0"
+  compile "com.google.firebase:firebase-analytics:11.0.0"
+  compile "com.google.firebase:firebase-auth:11.0.0"
+  compile "com.google.firebase:firebase-config:11.0.0"
+  compile "com.google.firebase:firebase-crash:11.0.0"
+  compile "com.google.firebase:firebase-database:11.0.0"
+  compile "com.google.firebase:firebase-messaging:11.0.0"
+  compile "com.google.firebase:firebase-perf:11.0.0"
+  compile "com.google.firebase:firebase-storage:11.0.0"
 }
 ```
 
@@ -175,6 +175,6 @@ In the same file, add the `firebase-perf` module to your dependencies:
 ```
 dependencies {
   ...
-  compile "com.google.firebase:firebase-perf:10.2.6"
+  compile "com.google.firebase:firebase-perf:11.0.0"
 }
 ```
