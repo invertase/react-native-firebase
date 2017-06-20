@@ -89,8 +89,30 @@
     [self sendEvent:@"onAdLeftApplication" payload:nil];
 }
 
-- (void)videoControllerDidEndVideoPlayback:(GADVideoController *)videoController {
+- (void)videoControllerDidEndVideoPlayback:(nonnull GADVideoController *)videoController {
     [self sendEvent:@"onVideoEnd" payload:nil];
+}
+
+// Only one video play method?
+- (void)videoControllerDidPlayVideo:(nonnull GADVideoController *)videoController {
+    [self sendEvent:@"onVideoStart" payload:nil];
+    [self sendEvent:@"onVideoPlay" payload:nil];
+}
+
+- (void)videoControllerDidPauseVideo:(nonnull GADVideoController *)videoController {
+    [self sendEvent:@"onVideoPause" payload:nil];
+}
+
+- (void)videoControllerDidMuteVideo:(nonnull GADVideoController *)videoController {
+    [self sendEvent:@"onVideoMute" payload:@{
+            @"isMuted": @YES,
+    }];
+}
+
+- (void)videoControllerDidUnmuteVideo:(nonnull GADVideoController *)videoController {
+    [self sendEvent:@"onVideoMute" payload:@{
+            @"isMuted": @NO,
+    }];
 }
 
 @end

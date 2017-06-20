@@ -34,6 +34,10 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
     EVENT_AD_CLOSED("onAdClosed"),
     EVENT_AD_LEFT_APPLICATION("onAdLeftApplication"),
     EVENT_AD_VIDEO_END("onVideoEnd"),
+    EVENT_AD_VIDEO_MUTE("onVideoMute"),
+    EVENT_AD_VIDEO_PAUSE("onVideoPause"),
+    EVENT_AD_VIDEO_PLAY("onVideoPlay"),
+    EVENT_AD_VIDEO_START("onVideoStart"),
     EVENT_AD_VIDEO_CONTENT("hasVideoContent");
 
     private final String event;
@@ -213,23 +217,35 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
         adView.layout(left, top, left + width, top + height);
 
         VideoController vc = adView.getVideoController();
-        WritableMap payload = Arguments.createMap();
+        final WritableMap payload = Arguments.createMap();
 
         payload.putBoolean(Events.EVENT_AD_VIDEO_CONTENT.toString(), vc.hasVideoContent());
         payload.putInt("width", width);
         payload.putInt("height", height);
-        payload.putInt("left", left);
-        payload.putInt("top", top);
+
+        sendEvent(Events.EVENT_AD_LOADED.toString(), payload);
 
         if (vc.hasVideoContent()) {
           vc.setVideoLifecycleCallbacks(new VideoController.VideoLifecycleCallbacks() {
             public void onVideoEnd() {
               sendEvent(Events.EVENT_AD_VIDEO_END.toString(), null);
             }
+            public void onVideoMute(boolean isMuted) {
+              WritableMap videoMutePayload = Arguments.createMap();
+              videoMutePayload.putBoolean("isMuted", isMuted);
+              sendEvent(Events.EVENT_AD_VIDEO_MUTE.toString(), videoMutePayload);
+            }
+            public void onVideoPause() {
+              sendEvent(Events.EVENT_AD_VIDEO_PAUSE.toString(), null);
+            }
+            public void onVideoPlay() {
+              sendEvent(Events.EVENT_AD_VIDEO_PLAY.toString(), null);
+            }
+            public void onVideoStart() {
+              sendEvent(Events.EVENT_AD_VIDEO_START.toString(), null);
+            }
           });
         }
-
-        sendEvent(Events.EVENT_AD_LOADED.toString(), payload);
       }
 
       @Override

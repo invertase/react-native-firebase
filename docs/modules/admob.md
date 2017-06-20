@@ -24,7 +24,7 @@ AdMob Banners in RNFirebase are exported as a usable React component, allowing y
 | Prop                | Type               | Default                                 | Description                                                                         |
 | ------------------- | ------------------ | --------------------------------------- | ----------------------------------------------------------------------------------- |
 | size                | string (See Sizes) | SMART_BANNER                            | Returns a sized banner (automatically sets View style)                              |
-| unitId              | string             | ca-app-pub-3940256099942544/6300978111  | Your AdMob banner unit ID. Default is the Google testing account                    |
+| unitId              | string             |                                         | Your AdMob banner unit ID.                                                          |
 | request             | AdRequest          | new AdRequest().addTestDevice().build() | An instance of AdRequest to load with the Banner                                    |
 | onAdLoaded          | function           |                                         | Called when an ad is received.                                                      |
 | onAdOpened          | function           |                                         | Called when an ad opens an overlay that covers the screen.                          |
@@ -109,7 +109,7 @@ styling (background color, positions, font size etc). Native Express adverts are
 | Prop                | Type               | Default                                 | Description                                                                         |
 | ------------------- | ------------------ | --------------------------------------- | ----------------------------------------------------------------------------------- |
 | size                | string (See Sizes) | SMART_BANNER                            | TODO                                                                                |
-| unitId              | string             | ca-app-pub-3940256099942544/6300978111  | Your AdMob banner unit ID. Default is the Google testing account                    |
+| unitId              | string             |                                         | Your AdMob banner unit ID.                                                          |
 | request             | AdRequest          | new AdRequest().addTestDevice().build() | An instance of AdRequest to load with the Banner                                    |
 | video               | AdRequest          | new VideoOptions().build()              | An instance of AdRequest to load with the Banner                                    |
 | onAdLoaded          | function           |                                         | Called when an ad is received.                                                      |
@@ -124,7 +124,7 @@ styling (background color, positions, font size etc). Native Express adverts are
 ```js
 const Banner = firebase.admob.Banner;
 const NativeExpress = firebase.admob.NativeExpress;
-const NativeExpress = firebase.admob.AdRequest;
+const AdRequest = firebase.admob.AdRequest;
 
 const request = new AdRequest();
 request.addKeyword('foobar');
@@ -314,7 +314,25 @@ Called when an advert fails to load. Returns a JavaScript Error with one of the 
 | admob/os-version-too-low          | The current device’s OS is below the minimum required version.                                               |
 
 ##### [NativeExpress] onVideoEnd()
-Called when a the video has ended.
+Called when video playback finishes playing.
+
+##### [NativeExpress] onVideoMute(config: `Object`)
+Called when the video changes mute state.
+
+```js
+{
+  isMuted: boolean,
+}
+```
+
+##### [NativeExpress] onVideoPause()
+Called when video playback is paused.
+
+##### [NativeExpress] onVideoPlay()
+Called when video playback is playing.
+
+##### [NativeExpress] onVideoStart()
+alled when video playback first begins.
 
 ##### [RewardedVideo] onRewarded(reward: `Object`)
 Called when the user has been rewarded (usually for watching an entire video). Returns a reward object:

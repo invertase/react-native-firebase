@@ -208,9 +208,6 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
         payload.putBoolean(RNFirebaseAdMobNativeExpress.Events.EVENT_AD_VIDEO_CONTENT.toString(), false);
         payload.putInt("width", width);
         payload.putInt("height", height);
-        payload.putInt("left", left);
-        payload.putInt("top", top);
-
 
         sendEvent(Events.EVENT_AD_LOADED.toString(), payload);
       }
