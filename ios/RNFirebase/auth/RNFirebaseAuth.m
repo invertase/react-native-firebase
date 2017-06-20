@@ -171,7 +171,8 @@ RCT_EXPORT_METHOD(sendEmailVerification:(RCTPromiseResolveBlock) resolve rejecte
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self promiseNoUser:resolve rejecter:reject isError:NO];
+                FIRUser *userAfterUpdate = [FIRAuth auth].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
             }
         }];
     } else {
