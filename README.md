@@ -12,7 +12,7 @@
 
 <hr>
 
-[Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android)
+> [Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android)
 
 <hr>
 
