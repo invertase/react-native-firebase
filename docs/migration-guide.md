@@ -108,7 +108,7 @@ Add the packages to the `getPackages()` method as required:
 
 ##### 6) iOS - Update podfile:
 
-
+First, delete your `Podfile.lock` file, and re-run `pod install`.
 
 As all firebase modules are now optional you only need to import the Firebase functionality that you require in your application.  Simply update your Podfile to only include the Firebase modules for functionality that you require in your app.
 
