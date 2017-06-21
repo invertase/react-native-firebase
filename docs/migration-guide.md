@@ -19,7 +19,7 @@ The below is a quick summary of steps to take when migrating from v1 to v2 of RN
 
 ##### 3) Update your JS code to reflect deprecations/breaking changes:
 
-<detail>
+
 
 - [deprecated] providerId should now be used instead of provider whilst obtaining auth credentials. The latter will be removed in future releases.
 - [deprecated] Deprecated User.getToken in favour of User.getIdToken.
@@ -28,14 +28,14 @@ The below is a quick summary of steps to take when migrating from v1 to v2 of RN
 - [breaking] Removed unnecessary didReceiveNotificationResponse and willPresentNotification methods for iOS messaging. Added additional didReceiveRemoteNotification method.
 - [breaking] firebase.messaging().onTokenRefresh and firebase.messaging().onMessage return a function to unsubscribe as per the Web SDK spec: https://firebase.google.com/docs/reference/js/firebase.messaging.Messaging#onMessage. Previously they returned an object with a .remove() method.
 
-</detail>
+
 
 
 
 
 ##### 4) Android - Update `app/build.gradle`:
 
-<detail>
+
 All firebase modules are now optional so you only need to import the Firebase functionality that you require in your application.
 
 You need to make a couple of changes to your `app/build.gradle` file.  Update the react-native-firebase compile statement to read:
@@ -59,13 +59,13 @@ compile "com.google.firebase:firebase-perf:11.0.0"
 compile "com.google.firebase:firebase-storage:11.0.0"
 ```
 
-</detail>
+
 
 
 
 ##### 5) Android - Update `MainApplication.java`:
 
-<detail>
+
 
 Update `MainApplication.java` and import the modules you require / currently use:
 
@@ -102,13 +102,13 @@ Add the packages to the `getPackages()` method as required:
     }
 ```
 
-</detail>
+
 
 
 
 ##### 6) iOS - Update podfile:
 
-<detail>
+
 
 As all firebase modules are now optional you only need to import the Firebase functionality that you require in your application.  Simply update your Podfile to only include the Firebase modules for functionality that you require in your app.
 
@@ -144,4 +144,4 @@ target 'ReactNativeFirebaseDemo' do
 end
 ```
 
-</detail>
+
