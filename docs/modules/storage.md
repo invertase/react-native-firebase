@@ -19,6 +19,18 @@ firebase.storage()
     });
 ```
 
+
+### With metadata
+
+```javascript
+const metadata = {
+    contentType: 'image/jpeg'
+}
+firebase.storage()
+    .ref('/files/1234')
+    .putFile('/path/to/file/1234', metadata)
+```
+
 ### Listen to upload state
 
 ```javascript
