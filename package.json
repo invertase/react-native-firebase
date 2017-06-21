@@ -2,7 +2,7 @@
   "name": "react-native-firebase",
   "version": "1.1.2",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A react native firebase library supporting both android and ios native firebase SDK's",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Messaging, Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
   "main": "index",
   "scripts": {
     "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
@@ -34,6 +34,11 @@
   "license": "MIT",
   "keywords": [
     "react",
+    "admob",
+    "auth",
+    "config",
+    "remote-config",
+    "transactions",
     "react-native",
     "react-native-firebase",
     "firebase",
@@ -44,11 +49,12 @@
     "android",
     "ios",
     "crash",
-    "firestack"
+    "firestack",
+    "performance"
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.38.0"
+    "react-native": ">= 0.40.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
@@ -62,7 +68,7 @@
     "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.40.0",
+    "flow-bin": "^0.46.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-native": "^0.44.0",
@@ -70,6 +76,6 @@
   },
   "dependencies": {
     "bows": "^1.6.0",
-    "es6-symbol": "^3.1.0"
+    "prop-types": "^15.5.10"
   }
 }

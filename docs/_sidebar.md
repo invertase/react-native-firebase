@@ -3,6 +3,7 @@
  - [Installation - iOS](/installation-ios)
  - [Installation - Android](/installation-android)
  - [Usage](/usage)
+ - [Migration Guide](/migration-guide)
 
 - Contributing
  - [Guidelines](/contributing/guidelines)

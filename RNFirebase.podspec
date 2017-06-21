@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/mikediarmid'
   s.platform            = :ios, "8.0"
   s.preserve_paths      = 'README.md', 'package.json', '*.js'
-  s.source_files        = 'ios/RNFirebase/*.{h,m}'
+  s.source_files        = 'ios/RNFirebase/**/*.{h,m}'
 end

@@ -25,7 +25,9 @@ import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -633,6 +635,40 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * fetchProvidersForEmail
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void fetchProvidersForEmail(final String email, final Promise promise) {
+    Log.d(TAG, "fetchProvidersForEmail");
+
+    mAuth.fetchProvidersForEmail(email)
+        .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+          @Override
+          public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
+              List<String> providers = task.getResult().getProviders();
+              WritableArray array = Arguments.createArray();
+
+              if (providers != null) {
+                for(String provider : providers) {
+                  array.pushString(provider);
+                }
+              }
+
+              promise.resolve(array);
+            } else {
+              Exception exception = task.getException();
+              Log.d(TAG, "fetchProvidersForEmail:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+  }
+
   /* ------------------
    * INTERNAL HELPERS
    * ---------------- */
@@ -645,7 +681,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    */
   private void promiseNoUser(Promise promise, Boolean isError) {
     if (isError) {
-      promise.reject("auth/no_current_user", "No user currently signed in.");
+      promise.reject("auth/no-current-user", "No user currently signed in.");
     } else {
       promise.resolve(null);
     }
@@ -675,15 +711,16 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private void promiseRejectAuthException(Promise promise, Exception exception) {
     String code = "UNKNOWN";
     String message = exception.getMessage();
+    String invalidEmail = "The email address is badly formatted.";
 
     try {
       FirebaseAuthException authException = (FirebaseAuthException) exception;
       code = authException.getErrorCode();
       message = authException.getMessage();
     } catch (Exception e) {
-      Matcher matcher = Pattern.compile("\\[(.*?)\\]").matcher(message);
+      Matcher matcher = Pattern.compile("\\[(.*):.*\\]").matcher(message);
       if (matcher.find()) {
-        code = matcher.group().substring(2, matcher.group().length() - 2).trim();
+        code = matcher.group(1).trim();
         switch (code) {
           case "INVALID_CUSTOM_TOKEN":
             message = "The custom token format is incorrect. Please check the documentation.";
@@ -695,7 +732,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
             message = "The supplied auth credential is malformed or has expired.";
             break;
           case "INVALID_EMAIL":
-            message = "The email address is badly formatted.";
+            message = invalidEmail;
             break;
           case "WRONG_PASSWORD":
             message = "The password is invalid or the user does not have a password.";
@@ -735,6 +772,11 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
             break;
         }
       }
+    }
+
+    if (code.equals("UNKNOWN") && exception instanceof FirebaseAuthInvalidCredentialsException) {
+      code = "INVALID_EMAIL";
+      message = invalidEmail;
     }
 
     code = "auth/" + code.toLowerCase().replace("error_", "").replace('_', '-');

@@ -1,6 +1,6 @@
 install! 'cocoapods', :deterministic_uuids => false
 # Uncomment this line to define a global platform for your project
-# platform :ios, '9.0'
+# platform :ios, '8.0'
 
 target 'ReactNativeFirebaseDemo' do
   platform :ios, '8.0'
@@ -13,6 +13,7 @@ target 'ReactNativeFirebaseDemo' do
   # Pods for ReactNativeFirebaseDemo
   pod 'React', :path => '../node_modules/react-native'
 
+  pod 'Firebase/AdMob'
   pod 'Firebase/Auth'
   pod 'Firebase/Analytics'
   pod 'Firebase/Core'
@@ -22,6 +23,7 @@ target 'ReactNativeFirebaseDemo' do
   pod 'Firebase/Messaging'
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage'
+  pod 'Firebase/Performance'
 
 
   pod 'RNFirebase', :path => './../../'

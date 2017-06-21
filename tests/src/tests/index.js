@@ -6,6 +6,8 @@ import messaging from './messaging/index';
 import storage from './storage/index';
 import auth from './auth/index';
 import config from './config/index';
+import performance from './perf/index';
+import admob from './admob/index';
 
 const testSuiteInstances = [
   database,
@@ -15,6 +17,8 @@ const testSuiteInstances = [
   crash,
   storage,
   config,
+  performance,
+  admob,
 ];
 
 /*

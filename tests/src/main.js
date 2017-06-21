@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-
 import CoreContainer from './containers/CoreContainer';
 import setupStore from './store/setup';
 import { setupSuites } from './tests/index';

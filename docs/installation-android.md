@@ -25,12 +25,25 @@ apply plugin: 'com.google.gms.google-services'
 
 ## 2) Link RNFirebase
 
-To install `react-native-firebase` in your project, you'll need to import the package from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list it as a package for ReactNative in the `getPackages()` function:
+RNFirebase is split into separate modules to allow you to only include the Firebase functionality that you need in your application.
+
+To install `react-native-firebase` in your project, you'll need to import the packages you need from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list them as packages for ReactNative in the `getPackages()` function:
 
 ```java
 package com.youcompany.application;
 // ...
-import io.invertase.firebase.RNFirebasePackage;
+// Required package
+import io.invertase.firebase.RNFirebasePackage; // <-- Add this line
+// Optional packages - add as appropriate
+import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
+import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
+import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
+import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase Remote Config
+import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
+import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
+import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
 // ...
 public class MainApplication extends Application implements ReactApplication {
     // ...
@@ -39,18 +52,43 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new RNFirebasePackage()  // <-- Add this line
+          new RNFirebasePackage(),  // <-- Add this line
+          // Add these packages as appropriate
+          new RNFirebaseAdMobPackage(),
+          new RNFirebaseAnalyticsPackage(),
+          new RNFirebaseAuthPackage(),
+          new RNFirebaseRemoteConfigPackage(),
+          new RNFirebaseCrashPackage(),
+          new RNFirebaseDatabasePackage(),
+          new RNFirebaseMessagingPackage(),
+          new RNFirebasePerformancePackage(),
+          new RNFirebaseStoragePackage()
       );
     }
   };
   // ...
 }
 ```
-You'll also need to list it in our `android/app/build.gradle` file as a dependency that we want React Native to compile. In the `dependencies` listing, add the `compile` line:
+You'll also need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
 
-```java
+```
 dependencies {
-  compile project(':react-native-firebase')
+  # RNFirebase Required dependencies
+  compile(project(':react-native-firebase')) {
+    transitive = false
+  }
+  compile "com.google.firebase:firebase-core:11.0.0"
+
+  # RNFirebase optional dependencies
+  compile "com.google.firebase:firebase-ads:11.0.0"
+  compile "com.google.firebase:firebase-analytics:11.0.0"
+  compile "com.google.firebase:firebase-auth:11.0.0"
+  compile "com.google.firebase:firebase-config:11.0.0"
+  compile "com.google.firebase:firebase-crash:11.0.0"
+  compile "com.google.firebase:firebase-database:11.0.0"
+  compile "com.google.firebase:firebase-messaging:11.0.0"
+  compile "com.google.firebase:firebase-perf:11.0.0"
+  compile "com.google.firebase:firebase-storage:11.0.0"
 }
 ```
 
@@ -110,4 +148,33 @@ If you would like to schedule local notifications then you also need to add the 
       <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
   </receiver>
+```
+
+## 4) Performance Monitoring (optional)
+
+If you'd like to take advantage of Firebases [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
+ to your project setup are required:
+
+In your projects `android/build.gradle` file, add the plugin to your dependencies:
+
+```
+dependencies {
+  ...
+  classpath 'com.google.firebase:firebase-plugins:1.1.0'
+}
+```
+
+At the top of your `android/app/build.gradle` file, below other plugins, apply the `firebase-perf` plugin:
+```
+apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
+```
+
+In the same file, add the `firebase-perf` module to your dependencies:
+
+```
+dependencies {
+  ...
+  compile "com.google.firebase:firebase-perf:11.0.0"
+}
 ```

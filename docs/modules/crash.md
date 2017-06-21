@@ -2,6 +2,25 @@
 
 RNFirebase provides crash reporting for your app out of the box. Please note crashes do not appear in real-time on the console, they tend to take a number of hours to appear.
 
+## Enabling/Disabling Crash Reporting
+
+By default crash reporting is enabled. If you want to disable reporting, call `setCrashCollectionEnabled(enabled: Boolean)`:
+
+```js
+firebase.crash().setCrashCollectionEnabled(false);
+```
+
+To check if crash reporting is currently enabled, call `isCrashCollectionEnabled(): Promise<boolean>`:
+
+```js
+firebase.crash().isCrashCollectionEnabled()
+  .then((enabled) => {
+    if (enabled) {
+      console.log('Crash Reporting is currently enabled');
+    }
+  });
+```
+
 ## Manual Crash Reporting
 
 If you want to manually report a crash, such as a pre-caught exception this is possible by using the `report` method.

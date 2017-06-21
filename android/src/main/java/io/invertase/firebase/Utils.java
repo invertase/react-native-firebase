@@ -1,5 +1,6 @@
 package io.invertase.firebase;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ public class Utils {
   /**
    * send a JS event
    **/
-  public static void sendEvent(final ReactContext context, final String eventName, final WritableMap params) {
+  public static void sendEvent(final ReactContext context, final String eventName, Object body) {
     if (context != null) {
       context
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
+        .emit(eventName, body);
     } else {
       Log.d(TAG, "Missing context - cannot send event!");
     }
@@ -84,7 +85,7 @@ public class Utils {
    * @param dataSnapshot
    * @return
    */
-  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot) {
+  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     WritableMap snapshot = Arguments.createMap();
     WritableMap eventMap = Arguments.createMap();
 
@@ -114,6 +115,7 @@ public class Utils {
     eventMap.putString("path", path);
     eventMap.putMap("snapshot", snapshot);
     eventMap.putString("eventName", name);
+    eventMap.putString("previousChildName", previousChildName);
 
     return eventMap;
   }

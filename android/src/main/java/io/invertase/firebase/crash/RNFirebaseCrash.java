@@ -2,6 +2,7 @@ package io.invertase.firebase.crash;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -36,5 +37,16 @@ public class RNFirebaseCrash extends ReactContextBaseJavaModule {
   @ReactMethod
   public void report(String message) {
     FirebaseCrash.report(new Exception(message));
+  }
+
+  @ReactMethod
+  public void setCrashCollectionEnabled(Boolean enabled) {
+    FirebaseCrash.setCrashCollectionEnabled(enabled);
+  }
+
+  @ReactMethod
+  public void isCrashCollectionEnabled(Promise promise) {
+    Boolean isEnabled = FirebaseCrash.isCrashCollectionEnabled();
+    promise.resolve(isEnabled);
   }
 }

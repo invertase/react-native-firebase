@@ -13,14 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import io.invertase.firebase.auth.RNFirebaseAuth;
-import io.invertase.firebase.config.RNFirebaseRemoteConfig;
-import io.invertase.firebase.storage.RNFirebaseStorage;
-import io.invertase.firebase.database.RNFirebaseDatabase;
-import io.invertase.firebase.analytics.RNFirebaseAnalytics;
-import io.invertase.firebase.crash.RNFirebaseCrash;
-import io.invertase.firebase.messaging.RNFirebaseMessaging;
-
 @SuppressWarnings("unused")
 public class RNFirebasePackage implements ReactPackage {
   private Context mContext;
@@ -36,13 +28,6 @@ public class RNFirebasePackage implements ReactPackage {
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new RNFirebaseModule(reactContext));
-    modules.add(new RNFirebaseAuth(reactContext));
-    modules.add(new RNFirebaseDatabase(reactContext));
-    modules.add(new RNFirebaseAnalytics(reactContext));
-    modules.add(new RNFirebaseStorage(reactContext));
-    modules.add(new RNFirebaseMessaging(reactContext));
-    modules.add(new RNFirebaseCrash(reactContext));
-    modules.add(new RNFirebaseRemoteConfig(reactContext));
     return modules;
   }
 
