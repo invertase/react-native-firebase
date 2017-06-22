@@ -73,13 +73,13 @@ You'll also need to include RNFirebase and the required Firebase dependencies in
 
 ```
 dependencies {
-  # RNFirebase Required dependencies
+  // RNFirebase Required dependencies
   compile(project(':react-native-firebase')) {
     transitive = false
   }
   compile "com.google.firebase:firebase-core:11.0.0"
 
-  # RNFirebase optional dependencies
+  // RNFirebase optional dependencies
   compile "com.google.firebase:firebase-ads:11.0.0"
   compile "com.google.firebase:firebase-analytics:11.0.0"
   compile "com.google.firebase:firebase-auth:11.0.0"
