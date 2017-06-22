@@ -66,10 +66,8 @@ coverage
 yarn.lock
 
 tests/build
-tests/ios/Podfile.lock
 tests/android/app/build
 tests/ios/Pods
-tests/ios/Podfile.lock
 tests/firebase
 .gradle
 local.properties
