@@ -66,6 +66,12 @@ import com.android.build.OutputFile
  * ]
  */
 
+ project.ext.react = [
+     // whether to bundle JS and assets in staging mode
+     bundleInDebug: true,
+     jsBundleDirDebug: "$buildDir/intermediates/assets/debug"
+ ]
+
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
