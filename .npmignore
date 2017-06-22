@@ -62,4 +62,5 @@ coverage
 yarn.lock
 tests
 lib/.watchmanconfig
+buddybuild_postclone.sh
 
