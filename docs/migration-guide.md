@@ -33,21 +33,44 @@ The below is a quick summary of steps to take when migrating from v1 to v2 of RN
 
 
 
-##### 4) Android - Update `app/build.gradle`:
+##### 4) Android - Update `android/build.gradle`:
+
+
+The latest google-services version needs to be used:
+
+```groovy
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.google.gms:google-services:3.1.0'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+```
+
+
+
+
+
+##### 5) Android - Update `app/build.gradle`:
 
 
 All firebase modules are now optional so you only need to import the Firebase functionality that you require in your application.
 
 You need to make a couple of changes to your `app/build.gradle` file.  Update the react-native-firebase compile statement to read:
 
-```gradle
+```groovy
 compile(project(':react-native-firebase')) {
   transitive = false
 }
 compile "com.google.firebase:firebase-core:11.0.0"
 ```
 Add each of the firebase modules you need from the following list:
-```gradle
+```groovy
 compile "com.google.firebase:firebase-ads:11.0.0"
 compile "com.google.firebase:firebase-analytics:11.0.0"
 compile "com.google.firebase:firebase-auth:11.0.0"
@@ -63,7 +86,7 @@ compile "com.google.firebase:firebase-storage:11.0.0"
 
 
 
-##### 5) Android - Update `MainApplication.java`:
+##### 6) Android - Update `MainApplication.java`:
 
 
 
@@ -106,7 +129,7 @@ Add the packages to the `getPackages()` method as required:
 
 
 
-##### 6) iOS - Update podfile:
+##### 7) iOS - Update podfile:
 
 First, delete your `Podfile.lock` file, and after making any changes from the below re-run `pod install` in your ios directory.
 
