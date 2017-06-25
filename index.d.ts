@@ -11,8 +11,13 @@ declare module "react-native-firebase" {
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
     on(type: string, handler: (msg: any) => void): any;
-    /** mimics firebase Web SDK */
-    database(): RNFirebase.database.Database;
+    /** mimics firebase Web SDK */    
+    database: {
+      (): RNFirebase.database.Database
+      ServerValue: {
+        TIMESTAMP: number
+      }
+    }
     /**RNFirebase mimics the Web Firebase SDK Storage,
      * whilst providing some iOS and Android specific functionality.
      */
