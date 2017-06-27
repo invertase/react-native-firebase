@@ -13,6 +13,15 @@ Initialize takes your AdMob App ID, where you can find on your AdMob dashboard.
 firebase.admob().initialize("ca-app-pub-3940256099942544~3347511713");
 ```
 
+## Debugging
+
+Once initialized, you can debug ((Android)[https://developers.google.com/mobile-ads-sdk/docs/dfp/android/debug]/(iOS)[https://developers.google.com/mobile-ads-sdk/docs/dfp/ios/debug])
+your ads using the debug menu.
+
+```js
+firebase.admob().openDebugMenu();
+```
+
 ## API
 
 ### Banner

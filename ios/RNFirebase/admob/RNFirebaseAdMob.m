@@ -32,6 +32,14 @@ RCT_EXPORT_METHOD(initialize:
     [GADMobileAds configureWithApplicationID:appId];
 }
 
+RCT_EXPORT_METHOD(openDebugMenu:
+    (NSString *) appId) {
+    GADDebugOptionsViewController *debugOptionsViewController = [GADDebugOptionsViewController debugOptionsViewControllerWithAdUnitID:appId];
+    UIWindow* window = [UIApplication sharedApplication].keyWindow;
+
+    [[window rootViewController] presentViewController:debugOptionsViewController animated:YES completion:nil];
+}
+
 RCT_EXPORT_METHOD(interstitialLoadAd:
     (NSString *) adUnit
             request:

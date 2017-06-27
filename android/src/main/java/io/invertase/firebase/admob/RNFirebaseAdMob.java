@@ -46,6 +46,11 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void openDebugMenu(String appId) {
+    MobileAds.openDebugMenu(getActivity(), appId);
+  }
+
+  @ReactMethod
   public void interstitialLoadAd(String adUnit, ReadableMap request) {
     RNFirebaseAdmobInterstitial interstitial = getOrCreateInterstitial(adUnit);
     interstitial.loadAd(RNFirebaseAdMobUtils.buildRequest(request).build());

@@ -22,6 +22,7 @@ export default function addTests({ before, fdescribe, describe, it, firebase }) 
         const admob = firebase.native.admob();
 
         admob.should.have.property('initialize').and.be.a.Function();
+        admob.should.have.property('openDebugMenu').and.be.a.Function();
         admob.should.have.property('interstitial').and.be.a.Function();
         admob.should.have.property('rewarded').and.be.a.Function();
         resolve();
