@@ -44,6 +44,7 @@ const unsubscribe = uploadTask.on('state_changed', snapshot => {
                             //Success
                             unsubscribe();
                         });
+                        
 uploadTask.catch(err => {
                             //Error
                             unsubscribe();
