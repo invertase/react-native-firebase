@@ -5,6 +5,7 @@
 #import <Photos/Photos.h>
 #import "Firebase.h"
 
+
 @implementation RNFirebaseStorage
 
 RCT_EXPORT_MODULE(RNFirebaseStorage);
@@ -154,7 +155,7 @@ RCT_EXPORT_METHOD(getMetadata: (NSString *) path resolver:(RCTPromiseResolveBloc
  */
 RCT_EXPORT_METHOD(updateMetadata: (NSString *) path metadata:(NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRStorageReference *fileRef = [self getReference:path];
-    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
 
     [fileRef updateMetadata:firmetadata completion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
         if (error != nil) {
@@ -317,14 +318,14 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
 
 - (void) uploadFile:(NSURL *) url metadata:(NSDictionary *) metadata path:(NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path];
-    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     FIRStorageUploadTask *uploadTask = [fileRef putFile:url metadata:firmetadata];
     [self addUploadObservers:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
 - (void) uploadData:(NSData *) data metadata:(NSDictionary *) metadata path:(NSString *) path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject{
     FIRStorageReference *fileRef = [self getReference:path];
-    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:firmetadata];
     [self addUploadObservers:uploadTask path:path resolver:resolve rejecter:reject];
 }
@@ -392,6 +393,13 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
              @"state": [self getTaskStatus:task.status],
              @"totalBytes": @(task.progress.totalUnitCount)
              };
+}
+
+- (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {
+    NSMutableDictionary *result = [metadata mutableCopy];
+    result[@"metadata"] = metadata[@"customMetadata"];
+    [result removeObjectForKey:@"customMetadata"];
+    return [[FIRStorageMetadata alloc] initWithDictionary:result];
 }
 
 - (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
