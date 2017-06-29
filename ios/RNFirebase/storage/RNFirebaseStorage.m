@@ -5,7 +5,6 @@
 #import <Photos/Photos.h>
 #import "Firebase.h"
 
-
 @implementation RNFirebaseStorage
 
 RCT_EXPORT_MODULE(RNFirebaseStorage);
