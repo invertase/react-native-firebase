@@ -9,7 +9,7 @@
 
 @interface RNFirebaseAuth : RCTEventEmitter <RCTBridgeModule> {
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
-    Boolean listening;
+    NSMutableDictionary *authStateHandlers;
 }
 
 @end

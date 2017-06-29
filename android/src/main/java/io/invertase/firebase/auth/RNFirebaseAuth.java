@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,14 +43,14 @@ import com.google.firebase.auth.EmailAuthProvider;
 import io.invertase.firebase.Utils;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-public class RNFirebaseAuth extends ReactContextBaseJavaModule {
+class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
 
   private ReactContext mReactContext;
   private FirebaseAuth mAuth;
-  private FirebaseAuth.AuthStateListener mAuthListener;
+  private Map<String, FirebaseAuth.AuthStateListener> mAuthListeners;
 
-  public RNFirebaseAuth(ReactApplicationContext reactContext) {
+  RNFirebaseAuth(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactContext = reactContext;
     mAuth = FirebaseAuth.getInstance();
@@ -65,16 +66,18 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * Add a new auth state listener - if one doesn't exist already
    */
   @ReactMethod
-  public void addAuthStateListener() {
+  public void addAuthStateListener(final String appName) {
     Log.d(TAG, "addAuthStateListener");
+    FirebaseAuth.AuthStateListener mAuthListener = mAuthListeners.get(appName);
     if (mAuthListener == null) {
-      mAuthListener = new FirebaseAuth.AuthStateListener() {
+      FirebaseAuth.AuthStateListener newAuthListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
           FirebaseUser user = firebaseAuth.getCurrentUser();
           WritableMap msgMap = Arguments.createMap();
           if (user != null) {
             msgMap.putBoolean("authenticated", true);
+            msgMap.putString("appName", appName); // for js side distribution
             msgMap.putMap("user", firebaseUserToMap(user));
             Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
           } else {
@@ -83,7 +86,9 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         }
       };
-      mAuth.addAuthStateListener(mAuthListener);
+
+      mAuth.addAuthStateListener(newAuthListener);
+      mAuthListeners.put(appName, newAuthListener);
     }
   }
 
@@ -91,8 +96,10 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * Removes the current auth state listener
    */
   @ReactMethod
-  public void removeAuthStateListener() {
+  public void removeAuthStateListener(String appName) {
     Log.d(TAG, "removeAuthStateListener");
+    FirebaseAuth.AuthStateListener mAuthListener = mAuthListeners.get(appName);
+
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
     }
