@@ -9,14 +9,14 @@ providing some iOS and Android specific functionality.
 
 ```javascript
 firebase.storage()
-.ref('/files/1234')
-.putFile('/path/to/file/1234')
-.then(uploadedFile => {
-//success
-})
-.catch(err => {
-//Error
-});
+    .ref('/files/1234')
+    .putFile('/path/to/file/1234')
+    .then(uploadedFile => {
+        //success
+    })
+    .catch(err => {
+        //Error
+    });
 ```
 
 
@@ -24,28 +24,28 @@ firebase.storage()
 
 ```javascript
 const metadata = {
-contentType: 'image/jpeg'
+    contentType: 'image/jpeg'
 }
 firebase.storage()
-.ref('/files/1234')
-.putFile('/path/to/file/1234', metadata)
+    .ref('/files/1234')
+    .putFile('/path/to/file/1234', metadata)
 ```
 
 ### Listen to upload state
 
 ```javascript
 const unsubscribe = firebase.storage()
-.ref('/files/1234')
-.putFile('/path/to/file/1234')
-.on('state_changed', snapshot => {
-//Current upload state
-}, err => {
-//Error
-unsubscribe();
-}, uploadedFile => {
-//Success
-unsubscribe();
-});
+                        .ref('/files/1234')
+                        .putFile('/path/to/file/1234')
+                        .on('state_changed', snapshot => {
+                            //Current upload state
+                        }, err => {
+                            //Error
+                            unsubscribe();
+                        }, uploadedFile => {
+                            //Success
+                            unsubscribe();
+                        });
 ```
 
 ## Downloading files
@@ -54,31 +54,31 @@ unsubscribe();
 
 ```javascript
 firebase.storage()
-.ref('/files/1234')
-.downloadFile('/path/to/save/file')
-.then(downloadedFile => {
-//success
-})
-.catch(err => {
-//Error
-});
+    .ref('/files/1234')
+    .downloadFile('/path/to/save/file')
+    .then(downloadedFile => {
+        //success
+    })
+    .catch(err => {
+        //Error
+    });
 ```
 
 ### Listen to download state
 
 ```javascript
 const unsubscribe = firebase.storage()
-.ref('/files/1234')
-.downloadFile('/path/to/save/file')
-.on('state_changed', snapshot => {
-//Current download state
-}, err => {
-//Error
-unsubscribe();
-}, downloadedFile => {
-//Success
-unsubscribe();
-});
+                        .ref('/files/1234')
+                        .downloadFile('/path/to/save/file')
+                        .on('state_changed', snapshot => {
+                            //Current download state
+                        }, err => {
+                            //Error
+                            unsubscribe();
+                        }, downloadedFile => {
+                            //Success
+                            unsubscribe();
+                        });
 ```
 
 ## TODO
