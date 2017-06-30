@@ -19,7 +19,7 @@ Unfortunately, due to the fact that Firebase is much easier to setup using Cocoa
 ### 2.0) If you don't already have Cocoapods set up
 Follow the instructions to install Cocoapods and create your Podfile [here](https://firebase.google.com/docs/ios/setup#add_the_sdk).
 
-**NOTE: The Podfile needs to be initialised in the `ios` directory of your project and do update cocoapods libs first `pod update`**
+**NOTE: The Podfile needs to be initialised in the `ios` directory of your project. Make sure to update cocoapods libs first by running `pod update`**
 
 #### Troubleshooting
 1) When running `pod install` you may encounter an error saying that a `tvOSTests` target is declared twice. This appears to be a bug with `pod init` and the way that react native is set up.
