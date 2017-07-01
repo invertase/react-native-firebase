@@ -109,7 +109,7 @@ Add the packages to the `getPackages()` method as required:
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new RNFirebasePackage(),  // <-- Add this line - it's the only one that's required
+          new RNFirebasePackage(),  // <-- Keep this line - it's the only one that's required
 
           // add these optional packages as appropriate
           new RNFirebaseAdMobPackage(),
