@@ -503,6 +503,31 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * 
+   * @param code
+   * @param newPassword
+   * @param promise
+   */
+  @ReactMethod
+  public void confirmPasswordReset(final String code, final String newPassword, final Promise promise) {
+      Log.d(TAG, "confirmPasswordReset");
+      mAuth.confirmPasswordReset(code, newPassword)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "confirmPasswordReset:onComplete:success");
+              promiseNoUser(promise, false);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "confirmPasswordReset:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+  }
+
+  /**
    * link
    *
    * @param provider

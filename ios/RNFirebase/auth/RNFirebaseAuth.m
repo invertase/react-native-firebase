@@ -322,6 +322,25 @@ RCT_EXPORT_METHOD(signInWithCredential:(NSString *)provider token:(NSString *)au
 }
 
 /**
+ confirmPasswordReset
+
+ @param NSString code
+ @param NSString newPassword
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(confirmPasswordReset:(NSString *)code newPassword:(NSString *)newPassword resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] confirmPasswordResetWithCode:code newPassword:newPassword completion:^(NSError *_Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseNoUser:resolve rejecter:reject isError:NO];
+        }
+    }];
+}
+
+/**
  sendPasswordResetEmail
 
  @param NSString email
