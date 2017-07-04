@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -47,10 +48,12 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
     return TAG;
   }
 
-  @ReactMethod
-  public void enableDeveloperMode(String appName) {
+  @ReactMethod  public void enableDeveloperMode(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
     FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder();
     settings.setDeveloperModeEnabled(true);
+
     FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
   }
 

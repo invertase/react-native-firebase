@@ -1,12 +1,12 @@
-#import "RNFirebaseRemoteConfig.h"
+#import "RNFirebaseConfig.h"
 
 #if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
+
 #import "FirebaseRemoteConfig/FirebaseRemoteConfig.h"
 #import <React/RCTConvert.h>
 
-NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value)
-{
-    switch(value){
+NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value) {
+    switch (value) {
         case FIRRemoteConfigFetchStatusNoFetchYet:
             return @"config/no_fetch_yet";
         case FIRRemoteConfigFetchStatusFailure:
@@ -18,9 +18,8 @@ NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus
     }
 }
 
-NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value)
-{
-    switch(value) {
+NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
+    switch (value) {
         case FIRRemoteConfigSourceDefault:
             return @"default";
         case FIRRemoteConfigSourceRemote:
@@ -30,33 +29,29 @@ NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value)
     }
 }
 
-NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value)
-{
-    return @{
-             @"stringValue" : value.stringValue ?: [NSNull null],
-             @"numberValue" : value.numberValue ?: [NSNull null],
-             @"dataValue" : value.dataValue ? [value.dataValue base64EncodedStringWithOptions:0] : [NSNull null],
-             @"boolValue" : @(value.boolValue),
-             @"source" : convertFIRRemoteConfigSourceToNSString(value.source)
-             };
+NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
+    return @{@"stringValue": value.stringValue ?: [NSNull null], @"numberValue": value.numberValue ?: [NSNull null], @"dataValue": value.dataValue ? [value.dataValue base64EncodedStringWithOptions:0] : [NSNull null], @"boolValue": @(value.boolValue), @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
 }
 
-@interface RNFirebaseRemoteConfig ()
+@interface RNFirebaseConfig ()
 
-@property (nonatomic, readwrite, weak) FIRRemoteConfig *remoteConfig;
+@property(nonatomic, readwrite, weak) FIRRemoteConfig *remoteConfig;
 
 @end
 
-@implementation RNFirebaseRemoteConfig
+@implementation RNFirebaseConfig
 
-RCT_EXPORT_MODULE(RNFirebaseRemoteConfig);
+RCT_EXPORT_MODULE(RNFirebaseConfig);
 
 RCT_EXPORT_METHOD(enableDeveloperMode) {
     FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
     [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
 }
 
-RCT_EXPORT_METHOD(fetch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(fetch:
+    (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
     [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
         if (error) {
             RCTLogError(@"\nError: %@", RCTJSErrorFromNSError(error));
@@ -67,10 +62,11 @@ RCT_EXPORT_METHOD(fetch:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseReje
     }];
 }
 
-RCT_EXPORT_METHOD(fetchWithExpirationDuration:(nonnull NSNumber *)expirationDuration
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(fetchWithExpirationDuration:
+    (nonnull
+        NSNumber *)expirationDuration
+        resolver:(RCTPromiseResolveBlock)resolve
+        rejecter:(RCTPromiseRejectBlock)reject) {
     [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
         if (error) {
             RCTLogError(@"\nError: %@", RCTJSErrorFromNSError(error));
@@ -81,37 +77,44 @@ RCT_EXPORT_METHOD(fetchWithExpirationDuration:(nonnull NSNumber *)expirationDura
     }];
 }
 
-RCT_EXPORT_METHOD(activateFetched:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(activateFetched:
+    (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
     BOOL status = [[FIRRemoteConfig remoteConfig] activateFetched];
     resolve(@(status));
 }
 
-RCT_EXPORT_METHOD(getValue:(NSString *)key
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(getValue:
+    (NSString *) key
+            resolver:
+            (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
     FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
     resolve(convertFIRRemoteConfigValueToNSDictionary(value));
 }
 
-RCT_EXPORT_METHOD(getValues:(NSArray *)keys
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(getValues:
+    (NSArray *) keys
+            resolver:
+            (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
     NSMutableArray *valuesArray = [[NSMutableArray alloc] init];
     for (NSString *key in keys) {
-      FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
+        FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
         [valuesArray addObject:convertFIRRemoteConfigValueToNSDictionary(value)];
     }
     resolve(valuesArray);
 }
 
-RCT_EXPORT_METHOD(getKeysByPrefix:(NSString *)prefix
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(getKeysByPrefix:
+    (NSString *) prefix
+            resolver:
+            (RCTPromiseResolveBlock) resolve
+            rejecter:
+            (RCTPromiseRejectBlock) reject) {
     NSSet *keys = [[FIRRemoteConfig remoteConfig] keysWithPrefix:prefix];
     NSMutableArray *keysArray = [[NSMutableArray alloc] init];
     for (NSString *key in keys) {
@@ -120,17 +123,19 @@ RCT_EXPORT_METHOD(getKeysByPrefix:(NSString *)prefix
     resolve(keysArray);
 }
 
-RCT_EXPORT_METHOD(setDefaults:(NSDictionary *)defaults) {
+RCT_EXPORT_METHOD(setDefaults:
+    (NSDictionary *) defaults) {
     [[FIRRemoteConfig remoteConfig] setDefaults:defaults];
 }
 
-RCT_EXPORT_METHOD(setDefaultsFromResource:(NSString *)fileName) {
+RCT_EXPORT_METHOD(setDefaultsFromResource:
+    (NSString *) fileName) {
     [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
 }
 
 @end
 
 #else
-@implementation RNFirebaseRemoteConfig
+@implementation RNFirebaseConfig
 @end
 #endif

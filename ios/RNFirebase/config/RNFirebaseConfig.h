@@ -3,7 +3,7 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface RNFirebaseRemoteConfig : NSObject <RCTBridgeModule>
+@interface RNFirebaseConfig : NSObject <RCTBridgeModule>
 
 @end
 
