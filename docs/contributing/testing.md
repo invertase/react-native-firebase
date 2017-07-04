@@ -292,7 +292,7 @@ If you need to access the web API for Firebase to compare with the functionality
 
 ## Development Notes
 
-> JavaScript changes require restarting the React Native packager to take effect
+> JavaScript changes do **not** require restarting the React Native packager to take effect
 
 > Java changes will need to be rebuilt in Android Studio
 
