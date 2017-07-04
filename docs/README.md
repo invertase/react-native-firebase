@@ -45,6 +45,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | Performance Monitoring | ✅ | ✅ | ❌ |
 | Realtime Database      | ✅ | ✅ | ✅ |
 |  - Offline Persistance | ✅ | ✅ | ❌ |
+|  - Transactions        | ✅ | ✅ | ✅ |
 | Remote Config          | ✅ | ✅ | ❌ |
 | Storage                | ✅ | ✅ | ❌ |
 
