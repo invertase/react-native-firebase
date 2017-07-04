@@ -2,6 +2,9 @@
 #
 .DS_Store
 
+# Google
+android/app/google-services.json
+
 # Xcode
 #
 build/
