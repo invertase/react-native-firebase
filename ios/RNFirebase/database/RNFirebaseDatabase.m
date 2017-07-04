@@ -33,14 +33,7 @@
     if (!_listeners[listenerId]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
             NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{
-                    @"eventName": eventName,
-                    @"refId": _refId,
-                    @"listenerId": listenerId,
-                    @"path": _path,
-                    @"snapshot": props,
-                    @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]
-            }];
+            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
@@ -55,20 +48,28 @@
     }
 }
 
-- (void)addSingleEventHandler:(RCTResponseSenderBlock)callback {
-    [_query observeSingleEventOfType:FIRDataEventTypeValue andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
-                NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
-                callback(@[[NSNull null], @{
-                        @"eventName": @"value",
-                        @"path": _path,
-                        @"refId": _refId,
-                        @"snapshot": props,
-                        @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]
-                }]);
-            } withCancelBlock:^(NSError *_Nonnull error) {
-                NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
-                callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
-            }];
+- (void)addSingleEventHandler:(NSString *)eventName callback:(RCTResponseSenderBlock)callback {
+    FIRDataEventType *firDataEventType;
+
+    if ([eventName isEqualToString:@"value"]) {
+        firDataEventType = (FIRDataEventType *) FIRDataEventTypeValue;
+    } else if ([eventName isEqualToString:@"child_added"]) {
+        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildAdded;
+    } else if ([eventName isEqualToString:@"child_removed"]) {
+        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildRemoved;
+    } else if ([eventName isEqualToString:@"child_changed"]) {
+        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildChanged;
+    } else if ([eventName isEqualToString:@"child_moved"]) {
+        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildMoved;
+    }
+
+    [_query observeSingleEventOfType:firDataEventType andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
+        NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
+        callback(@[[NSNull null], @{@"eventName": eventName, @"path": _path, @"refId": _refId, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}]);
+    } withCancelBlock:^(NSError *_Nonnull error) {
+        NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
+        callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
+    }];
 }
 
 - (void)removeEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName {
@@ -428,7 +429,7 @@ RCT_EXPORT_METHOD(once:
         eventName:(NSString *) eventName
         callback:(RCTResponseSenderBlock) callback) {
     RNFirebaseDBReference *ref = [self getDBHandle:refId path:path modifiers:modifiers];
-    [ref addSingleEventHandler:callback];
+    [ref addSingleEventHandler:eventName callback:callback];
 }
 
 RCT_EXPORT_METHOD(off:
@@ -459,8 +460,8 @@ RCT_EXPORT_METHOD(onDisconnectSet:
             (RCTResponseSenderBlock) callback) {
     FIRDatabaseReference *ref = [self getPathRef:path];
     [ref onDisconnectSetValue:props[@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-                [self handleCallback:@"onDisconnectSetObject" callback:callback databaseError:error];
-            }];
+        [self handleCallback:@"onDisconnectSetObject" callback:callback databaseError:error];
+    }];
 }
 
 RCT_EXPORT_METHOD(onDisconnectRemove:

@@ -113,7 +113,7 @@ public class RNFirebaseDatabaseReference {
     }
   }
 
-  public void addOnceValueEventListener(final Callback callback) {
+  void addOnceValueEventListener(final Callback callback) {
     final ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -136,7 +136,7 @@ public class RNFirebaseDatabaseReference {
     Log.d(TAG, "Added OnceValueEventListener for refId: " + mRefId);
   }
 
-  public void removeEventListener(int listenerId, String eventName) {
+  void removeEventListener(int listenerId, String eventName) {
     if ("value".equals(eventName)) {
       this.removeValueEventListener(listenerId);
     } else {
@@ -144,7 +144,7 @@ public class RNFirebaseDatabaseReference {
     }
   }
 
-  public boolean hasListeners() {
+  boolean hasListeners() {
     return !mChildEventListeners.isEmpty() || !mValueEventListeners.isEmpty();
   }
 
