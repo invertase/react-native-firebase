@@ -11,7 +11,10 @@ npm-debug.log
 project.xcworkspace/
 xcuserdata/
 
-# Android
+# Example
+example/demo/android/app/google-services.json
+example/demo/ios/demo/GoogleService-Info.plist
+example/demo/ios/demo.xcworkspace/
 
 # Built application files
 **/android/**/build/
