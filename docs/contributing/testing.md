@@ -290,40 +290,13 @@ If you need to access the web API for Firebase to compare with the functionality
 
 > All tests should be written in terms of `react-native-firebase`'s behaviour and should **not** include direct comparisons with the web API. It's available for reference, only.
 
-## Development
-
-### Running test suite against latest version of react-native-firebase
-
-You can use the node module `wml` to automatically copy changes you make to `react-native-firebase` over to the test application so you can run the test suite against them.
-
-1. Install `wml` globally:
-
-```bash
-npm install wml -g
-```
-
-2. Configure `wml` to copy changes from `react-native-firebase` to `react-native-firebase/tests/node_modules/react-native-firebase` is:
-
-```bash
-wml add /full/path/to/react-native-firebase /full/path/to/react-native-firebase/tests/node_modules/react-native-firebase
-```
-
-3. Start `wml`:
-
-```bash
-wml start
-```
+## Development Notes
 
 > JavaScript changes require restarting the React Native packager to take effect
 
 > Java changes will need to be rebuilt in Android Studio
 
 > Objective-C changes need to be rebuilt in Xcode
-
-4. Stop `wml` when you are finished:
-```bash
-wml stop
-```
 
 ### Debugging or viewing internals of the test suite
 
