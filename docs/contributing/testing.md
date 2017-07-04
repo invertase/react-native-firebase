@@ -62,7 +62,7 @@ Tests are bootstrapped and ran when the `play` button is pressed. The status of 
 
 Tests can be run by pressing the play button in the toolbar of the app. Test can be run individually, by suite, or all at once.
 
-![Test suite Android](/tests/docs/assets/test-suite-screenshot-android.png?raw=true)
+![Test suite Android](https://github.com/invertase/react-native-firebase/blob/master/tests/docs/assets/test-suite-screenshot-android.png?raw=true)
 
 
 ### Adding test
