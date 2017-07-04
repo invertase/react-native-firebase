@@ -35,7 +35,7 @@ RCT_EXPORT_METHOD(initialize:
 RCT_EXPORT_METHOD(openDebugMenu:
     (NSString *) appId) {
     GADDebugOptionsViewController *debugOptionsViewController = [GADDebugOptionsViewController debugOptionsViewControllerWithAdUnitID:appId];
-    UIWindow* window = [UIApplication sharedApplication].keyWindow;
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
 
     [[window rootViewController] presentViewController:debugOptionsViewController animated:YES completion:nil];
 }
@@ -66,6 +66,11 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
     (NSString *) adUnit) {
     RNFirebaseAdMobRewardedVideo *rewardedVideo = [self getOrCreateRewardedVideo:adUnit];
     [rewardedVideo show];
+}
+
+RCT_EXPORT_METHOD(clearInterstitial:
+    (NSString *) adUnit) {
+    if (_interstitials[adUnit]) [_interstitials removeObjectForKey:adUnit];
 }
 
 - (RNFirebaseAdMobInterstitial *)getOrCreateInterstitial:(NSString *)adUnit {
@@ -187,8 +192,8 @@ RCT_EXPORT_METHOD(rewardedVideoShowAd:
         NSString *matchText = [value substringWithRange:[match range]];
         if (matchText) {
             NSArray *values = [matchText componentsSeparatedByString:@"x"];
-            CGFloat width = (CGFloat)[values[0] intValue];
-            CGFloat height = (CGFloat)[values[1] intValue];
+            CGFloat width = (CGFloat) [values[0] intValue];
+            CGFloat height = (CGFloat) [values[1] intValue];
             return GADAdSizeFromCGSize(CGSizeMake(width, height));
         }
     }
