@@ -1,8 +1,5 @@
 # Transactions
 
-!> Transactions is currently an experimental feature in RNFirebase. Whilst it does work there may still be some issues with it, especially around offline connectivity handling. Please report any issues in the usual manner.
-
-
 ?> For help on how to use firebase transactions please see the [Firebase Transaction Documentation](https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction).
 
 ### Android Implementation
