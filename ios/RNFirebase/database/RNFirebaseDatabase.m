@@ -49,19 +49,7 @@
 }
 
 - (void)addSingleEventHandler:(NSString *)eventName callback:(RCTResponseSenderBlock)callback {
-    FIRDataEventType *firDataEventType;
-
-    if ([eventName isEqualToString:@"value"]) {
-        firDataEventType = (FIRDataEventType *) FIRDataEventTypeValue;
-    } else if ([eventName isEqualToString:@"child_added"]) {
-        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildAdded;
-    } else if ([eventName isEqualToString:@"child_removed"]) {
-        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildRemoved;
-    } else if ([eventName isEqualToString:@"child_changed"]) {
-        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildChanged;
-    } else if ([eventName isEqualToString:@"child_moved"]) {
-        firDataEventType = (FIRDataEventType *) FIRDataEventTypeChildMoved;
-    }
+    FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventName];
 
     [_query observeSingleEventOfType:firDataEventType andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
         NSDictionary *props = [RNFirebaseDBReference snapshotToDict:snapshot];
