@@ -6,10 +6,10 @@ Currently due to the blackbox Firebase enviroment, we have found the best way to
 
 For convenience all of the required NPM scripts are packaged with the main library to run the test app.
 
-### Step 1 - Clone
+### Step 1 - Fork & Clone
 
 ```bash
-git clone git@github.com:invertase/react-native-firebase.git
+git clone git@github.com:<username>/react-native-firebase.git
 ```
 
 ### Step 2 - Install dependencies
