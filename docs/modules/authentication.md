@@ -9,7 +9,7 @@ RNFirebase handles authentication for us out of the box, both with email/passwor
 ### Properties
 
 ##### `authenticated: boolean` - Returns the current Firebase authentication state.
-##### `currentUser: User | null` - Returns the currently signed-in user (or null). See the [User](/docs/api/authentication.md#user) class documentation for further usage.
+##### `currentUser: User | null` - Returns the currently signed-in user (or null). See the [User](/modules/authentication.md#user) class documentation for further usage.
 
 ### Methods
 
