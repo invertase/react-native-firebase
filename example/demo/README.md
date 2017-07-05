@@ -1,11 +1,16 @@
-### Android
+### Description
 
-1) Add your `google-services.json` inside of `android/app`
-- make sure the `package_name` inside of your file points to `com.demo`
+This example project implements `react-native-firebase` as described in the
+[installation instructions](http://invertase.io/react-native-firebase/#/initial-setup).
 
-### iOS
+### Usage
 
-1) Add GoogleService-Info.plist
-- make sure the `BUNDLE_ID` inside of your file points to `com.demo`
-2) Run pod install
-3) Open up `demo.xcworkspace`
+1) Install `node_modules`: `$ yarn`
+
+#### iOS
+1) Go into ios root directory where the `Podfile` is located
+2) Install pods: `$ pod install`
+3) Run app: `$ react-native run-ios`
+
+#### Android
+1) Run app: `$ react-native run-android`

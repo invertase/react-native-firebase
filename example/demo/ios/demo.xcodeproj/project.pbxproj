@@ -37,7 +37,7 @@
 		2D02E4C91E0B4AEC006451C7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* demoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* demoTests.m */; };
 		49AD62206CA8125FA248442D /* libPods-demo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D93F5A58817D14210226E62 /* libPods-demo.a */; };
-		4BDB01FB1F0C62DC00A6D842 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4BDB01FA1F0C62DC00A6D842 /* GoogleService-Info.plist */; };
+		4BDB021C1F0D1A8D00A6D842 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4BDB021B1F0D1A8D00A6D842 /* GoogleService-Info.plist */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		B3E16CE8D9F2A527C5ABD05B /* libPods-demoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B45536C36F1FEF9D53052C8D /* libPods-demoTests.a */; };
@@ -276,7 +276,7 @@
 		38D59AE4857D495E0D1B8579 /* Pods-demoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-demoTests/Pods-demoTests.release.xcconfig"; sourceTree = "<group>"; };
 		43A2ECAC58D0BA9375086208 /* Pods-demoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-demoTests/Pods-demoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		486E30F10089C88A7332A528 /* libPods-demo-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-demo-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4BDB01FA1F0C62DC00A6D842 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "demo/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4BDB021B1F0D1A8D00A6D842 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4DCEEBCB96250D77968E696E /* Pods-demo-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demo-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-demo-tvOS/Pods-demo-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		5D0D3588A545278D0BE6BF2B /* Pods-demo-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-demo-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-demo-tvOSTests/Pods-demo-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
@@ -443,7 +443,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				4BDB01FA1F0C62DC00A6D842 /* GoogleService-Info.plist */,
+				4BDB021B1F0D1A8D00A6D842 /* GoogleService-Info.plist */,
 			);
 			name = demo;
 			sourceTree = "<group>";
@@ -934,7 +934,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				4BDB01FB1F0C62DC00A6D842 /* GoogleService-Info.plist in Resources */,
+				4BDB021C1F0D1A8D00A6D842 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
