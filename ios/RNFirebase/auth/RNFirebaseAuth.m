@@ -340,6 +340,25 @@ RCT_EXPORT_METHOD(confirmPasswordReset:(NSString *)code newPassword:(NSString *)
     }];
 }
 
+
+/**
+ * applyActionCode
+ *
+ * @param NSString code
+ * @param RCTPromiseResolveBlock resolve
+ * @param RCTPromiseRejectBlock reject
+ * @return
+ */
+RCT_EXPORT_METHOD(applyActionCode:(NSString *)code resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] applyActionCode:code completion:^(NSError *_Nullable  error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseNoUser:resolve rejecter:reject isError:NO];
+        }
+    }];
+}
+
 /**
  sendPasswordResetEmail
 

@@ -11,7 +11,7 @@ declare module "react-native-firebase" {
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
     on(type: string, handler: (msg: any) => void): any;
-    /** mimics firebase Web SDK */    
+    /** mimics firebase Web SDK */
     database: {
       (): RNFirebase.database.Database
       ServerValue: {
@@ -543,6 +543,17 @@ declare module "react-native-firebase" {
          * the email will contain a password reset link rather than a code.
          */
         sendPasswordResetEmail(email: string): Promise<void>
+
+        /**
+         * Completes the password reset process, given a confirmation code and new password.
+         */
+        confirmPasswordReset(code: string, newPassword: string): Promise<void>
+
+        /**
+         * Applies a verification code sent to the user by email or other out-of-band mechanism.
+         */
+        applyActionCode(code: string): Promise<void>
+
         /**
          * Completes the password reset process,
          * given a confirmation code and new password.

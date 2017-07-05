@@ -503,28 +503,53 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
-   * 
+   * confirmPasswordReset
+   *
    * @param code
    * @param newPassword
    * @param promise
    */
   @ReactMethod
-  public void confirmPasswordReset(final String code, final String newPassword, final Promise promise) {
-      Log.d(TAG, "confirmPasswordReset");
-      mAuth.confirmPasswordReset(code, newPassword)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "confirmPasswordReset:onComplete:success");
-              promiseNoUser(promise, false);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "confirmPasswordReset:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
+  public void confirmPasswordReset(String code, String newPassword, final Promise promise) {
+    Log.d(TAG, "confirmPasswordReset");
+    mAuth.confirmPasswordReset(code, newPassword)
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "confirmPasswordReset:onComplete:success");
+            promiseNoUser(promise, false);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "confirmPasswordReset:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
           }
-        });
+        }
+      });
+  }
+
+  /**
+   * applyActionCode
+   *
+   * @param code
+   * @param promise
+   */
+  @ReactMethod
+  public void applyActionCode(String code, final Promise promise) {
+    Log.d(TAG, "applyActionCode");
+    mAuth.applyActionCode(code).addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "applyActionCode:onComplete:success");
+          promiseNoUser(promise, false);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "applyActionCode:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      }
+    });
   }
 
   /**
@@ -670,28 +695,28 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
     Log.d(TAG, "fetchProvidersForEmail");
 
     mAuth.fetchProvidersForEmail(email)
-        .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
-          @Override
-          public void onComplete(@NonNull Task<ProviderQueryResult> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
-              List<String> providers = task.getResult().getProviders();
-              WritableArray array = Arguments.createArray();
+      .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+        @Override
+        public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
+            List<String> providers = task.getResult().getProviders();
+            WritableArray array = Arguments.createArray();
 
-              if (providers != null) {
-                for(String provider : providers) {
-                  array.pushString(provider);
-                }
+            if (providers != null) {
+              for (String provider : providers) {
+                array.pushString(provider);
               }
-
-              promise.resolve(array);
-            } else {
-              Exception exception = task.getException();
-              Log.d(TAG, "fetchProvidersForEmail:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
             }
+
+            promise.resolve(array);
+          } else {
+            Exception exception = task.getException();
+            Log.d(TAG, "fetchProvidersForEmail:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
           }
-        });
+        }
+      });
   }
 
   /* ------------------
@@ -811,6 +836,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
   /**
    * Converts a List of UserInfo instances into the correct format to match the web sdk
+   *
    * @param providerData List<UserInfo> user.getProviderData()
    * @return WritableArray array
    */
