@@ -5,7 +5,7 @@ This example project implements `react-native-firebase` as described in the
 
 ### Usage
 
-1) Install `node_modules`: `$ yarn`
+1) Install node_modules: `$ yarn` or `$ npm install`
 
 #### iOS
 1) Go into ios root directory where the `Podfile` is located

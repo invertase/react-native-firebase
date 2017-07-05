@@ -1,6 +1,10 @@
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import firebase from './lib/firebase'
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet
+} from 'react-native';
+import firebase from './lib/firebase';
 
 export default class App extends React.Component {
   render () {
@@ -15,7 +19,7 @@ export default class App extends React.Component {
           Running app: {firebase.apps}
         </Text>
       </View>
-    )
+    );
   }
 }
 
@@ -25,4 +29,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
-})
+});

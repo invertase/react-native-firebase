@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
   View
-} from 'react-native'
-import App from './app'
+} from 'react-native';
+import App from './app';
 
 export default class demo extends Component {
   render () {
@@ -12,7 +12,7 @@ export default class demo extends Component {
       <View style={styles.container}>
         <App />
       </View>
-    )
+    );
   }
 }
 
@@ -20,6 +20,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   }
-})
+});
 
-AppRegistry.registerComponent('demo', () => demo)
+AppRegistry.registerComponent('demo', () => demo);
