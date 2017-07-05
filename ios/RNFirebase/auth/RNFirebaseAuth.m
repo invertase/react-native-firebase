@@ -350,11 +350,43 @@ RCT_EXPORT_METHOD(confirmPasswordReset:(NSString *)code newPassword:(NSString *)
  * @return
  */
 RCT_EXPORT_METHOD(applyActionCode:(NSString *)code resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
-    [[FIRAuth auth] applyActionCode:code completion:^(NSError *_Nullable  error) {
+    [[FIRAuth auth] applyActionCode:code completion:^(NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseNoUser:resolve rejecter:reject isError:NO];
+        }
+    }];
+}
+
+/**
+ * checkActionCode
+ *
+ * @param NSString code
+ * @param RCTPromiseResolveBlock resolve
+ * @param RCTPromiseRejectBlock reject
+ * @return
+ */
+RCT_EXPORT_METHOD(checkActionCode:(NSString *) code resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    [[FIRAuth auth] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error){
+        if (error) {
+           [self promiseRejectAuthException:reject error:error];
+        } else {
+            NSDictionary * result = @{
+                @"data": @{
+                    @"email": [info dataForKey:FIRActionCodeEmailKey],
+                    @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],
+                }
+            };
+
+            // TODO action code operation codes?
+            /*
+                FIRActionCodeOperationUnknown = 0,
+                FIRActionCodeOperationPasswordReset = 1,
+                FIRActionCodeOperationVerifyEmail = 2
+             */
+
+            resolve(result);
         }
     }];
 }

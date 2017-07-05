@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -546,6 +547,43 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         } else {
           Exception exception = task.getException();
           Log.e(TAG, "applyActionCode:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      }
+    });
+  }
+
+  /**
+   * @param code
+   * @param promise
+   */
+  @ReactMethod
+  public void checkActionCode(String code, final Promise promise) {
+    Log.d(TAG, "checkActionCode");
+    mAuth.checkActionCode(code).addOnCompleteListener(new OnCompleteListener<ActionCodeResult>() {
+      @Override
+      public void onComplete(@NonNull Task<ActionCodeResult> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "checkActionCode:onComplete:success");
+          ActionCodeResult result = task.getResult();
+          WritableMap writableMap = Arguments.createMap();
+          WritableMap dataMap = Arguments.createMap();
+
+          dataMap.putString("email", result.getData(ActionCodeResult.EMAIL));
+          dataMap.putString("fromEmail", result.getData(ActionCodeResult.FROM_EMAIL));
+
+          writableMap.putMap("data", dataMap);
+
+          // TODO figure out if these are required - web sdk only returns the 'email' and nothing else
+          // writableMap.putString("error", result.getData(ActionCodeResult.ERROR));
+          // writableMap.putString("verifyEmail", result.getData(ActionCodeResult.VERIFY_EMAIL));
+          // writableMap.putString("recoverEmail", result.getData(ActionCodeResult.RECOVER_EMAIL));
+          // writableMap.putString("passwordReset", result.getData(ActionCodeResult.PASSWORD_RESET));
+
+          promise.resolve(writableMap);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "checkActionCode:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
       }
