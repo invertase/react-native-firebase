@@ -79,6 +79,9 @@ dependencies {
   }
   compile "com.google.firebase:firebase-core:11.0.0"
 
+  // If you are receiving google play API availability issues, add the following dependency
+  compile "com.google.android.gms:play-services-base:11.0.0"
+
   // RNFirebase optional dependencies
   compile "com.google.firebase:firebase-ads:11.0.0"
   compile "com.google.firebase:firebase-analytics:11.0.0"
