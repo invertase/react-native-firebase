@@ -1,7 +1,7 @@
 node_modules
 npm-debug.log
 *.DS_Store
-
+.github
 # Xcode
 *.pbxuser
 *.mode1v3
