@@ -7,21 +7,28 @@ declare module "react-native-firebase" {
 
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
+
     log: any
+
     analytics(): RNFirebase.Analytics;
+
     auth(): RNFirebase.auth.Auth;
+
     on(type: string, handler: (msg: any) => void): any;
-    /** mimics firebase Web SDK */    
+
+    /** mimics firebase Web SDK */
     database: {
       (): RNFirebase.database.Database
       ServerValue: {
         TIMESTAMP: number
       }
     }
+
     /**RNFirebase mimics the Web Firebase SDK Storage,
      * whilst providing some iOS and Android specific functionality.
      */
     storage(): RNFirebase.storage.Storage;
+
     /**
      * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
      * Assuming the installation instructions have been followed, FCM is ready to go.
@@ -29,6 +36,7 @@ declare module "react-native-firebase" {
      * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
      */
     messaging(): RNFirebase.messaging.Messaging;
+
     /**
      * RNFirebase provides crash reporting for your app out of the box.
      * Please note crashes do not appear in real-time on the console,
@@ -37,9 +45,12 @@ declare module "react-native-firebase" {
      * such as a pre-caught exception this is possible by using the report method.
      */
     crash(): RNFirebase.crash.Crash;
+
     apps: Array<string>;
     googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
+
     static initializeApp(options?: any | RNFirebase.configurationOptions, name?: string): FireBase;
+
     [key: string]: any;
   }
 
@@ -56,10 +67,10 @@ declare module "react-native-firebase" {
     };
 
     /**
- * pass custom options by passing an object with configuration options.
- * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS.
- * That is, all of the following key/value pairs are optional if the native configuration is set.
- */
+     * pass custom options by passing an object with configuration options.
+     * The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS.
+     * That is, all of the following key/value pairs are optional if the native configuration is set.
+     */
     interface configurationOptions {
       /**
        *  default false
@@ -74,7 +85,7 @@ declare module "react-native-firebase" {
        */
       persistence?: boolean;
       /**
-       * Default from app [NSBundle mainBundle]	The bundle ID for the app to be bundled with
+       * Default from app [NSBundle mainBundle]  The bundle ID for the app to be bundled with
        */
       bundleID?: string;
       /**
@@ -103,7 +114,7 @@ declare module "react-native-firebase" {
        */
       androidClientID?: string;
       /**
-       * default	""
+       * default  ""
        * The Project number from the Google Developer's console used to configure Google Cloud Messaging
        */
       GCMSenderID?: string;
@@ -127,12 +138,10 @@ declare module "react-native-firebase" {
     namespace storage {
 
       interface StorageTask<T> extends Promise<T> {
-        on(
-          event: TaskEvent,
-          nextOrObserver: (snapshot: any) => any,
-          error: (error: RnError) => any,
-          complete: (complete: any) => any
-        ): any
+        on(event: TaskEvent,
+           nextOrObserver: (snapshot: any) => any,
+           error: (error: RnError) => any,
+           complete: (complete: any) => any): any
         /**
          * is not currently supported by react-native-firebase
          */
@@ -183,17 +192,13 @@ declare module "react-native-firebase" {
         name: string;
         parent: storage.Reference | null;
         put(data: any | Uint8Array | ArrayBuffer,
-          metadata?: storage.UploadMetadata):
-          storage.UploadTask;
-        putString(
-          data: string, format?: storage.StringFormat,
-          metadata?: storage.UploadMetadata):
-          storage.UploadTask;
+            metadata?: storage.UploadMetadata): storage.UploadTask;
+        putString(data: string, format?: storage.StringFormat,
+                  metadata?: storage.UploadMetadata): storage.UploadTask;
         root: storage.Reference;
         storage: storage.Storage;
         toString(): string;
-        updateMetadata(metadata: storage.SettableMetadata):
-          Promise<any>;
+        updateMetadata(metadata: storage.SettableMetadata): Promise<any>;
       }
       interface UploadMetadata extends storage.SettableMetadata {
         md5Hash?: string | null;
@@ -219,13 +224,12 @@ declare module "react-native-firebase" {
         cancel(): boolean;
         catch(onRejected: (a: RnError) => any): Promise<any>;
         on(event: storage.TaskEvent, nextOrObserver?: null | Object,
-          error?: ((a: RnError) => any) | null, complete?: (() => any) | null): Function;
+           error?: ((a: RnError) => any) | null, complete?: (() => any) | null): Function;
         pause(): boolean;
         resume(): boolean;
         snapshot: storage.UploadTaskSnapshot;
-        then(
-          onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
-          onRejected?: ((a: RnError) => any) | null): Promise<any>;
+        then(onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
+             onRejected?: ((a: RnError) => any) | null): Promise<any>;
       }
 
       interface UploadTaskSnapshot {
@@ -310,18 +314,15 @@ declare module "react-native-firebase" {
         limitToFirst(limit: number): database.Query;
         limitToLast(limit: number): database.Query;
         off(eventType?: string,
-          callback?: (a: database.DataSnapshot, b?: string | null) => any,
-          context?: Object | null): any;
+            callback?: (a: database.DataSnapshot, b?: string | null) => any,
+            context?: Object | null): any;
         on(eventType: string,
-          callback: (a: database.DataSnapshot | null, b?: string) => any,
-          cancelCallbackOrContext?: Object | null, context?: Object | null):
-          (a: database.DataSnapshot | null, b?: string) => any;
-        once(
-          eventType: string,
-          successCallback?:
-            (a: database.DataSnapshot, b?: string) => any,
-          failureCallbackOrContext?: Object | null,
-          context?: Object | null): Promise<any>;
+           callback: (a: database.DataSnapshot | null, b?: string) => any,
+           cancelCallbackOrContext?: Object | null, context?: Object | null): (a: database.DataSnapshot | null, b?: string) => any;
+        once(eventType: string,
+             successCallback?: (a: database.DataSnapshot, b?: string) => any,
+             failureCallbackOrContext?: Object | null,
+             context?: Object | null): Promise<any>;
         orderByChild(path: string): database.Query;
         orderByKey(): database.Query;
         orderByPriority(): database.Query;
@@ -356,18 +357,14 @@ declare module "react-native-firebase" {
         remove(onComplete?: (a: RnError | null) => any): Promise<any>;
         root: database.Reference;
         set(value: any, onComplete?: (a: RnError | null) => any): Promise<any>;
-        setPriority(
-          priority: string | number | null,
-          onComplete: (a: RnError | null) => any): Promise<any>;
-        setWithPriority(
-          newVal: any, newPriority: string | number | null,
-          onComplete?: (a: RnError | null) => any): Promise<any>;
-        transaction(
-          transactionUpdate: (a: any) => any,
-          onComplete?:
-            (a: RnError | null, b: boolean,
-              c: database.DataSnapshot | null) => any,
-          applyLocally?: boolean): Promise<any>;
+        setPriority(priority: string | number | null,
+                    onComplete: (a: RnError | null) => any): Promise<any>;
+        setWithPriority(newVal: any, newPriority: string | number | null,
+                        onComplete?: (a: RnError | null) => any): Promise<any>;
+        transaction(transactionUpdate: (a: any) => any,
+                    onComplete?: (a: RnError | null, b: boolean,
+                                  c: database.DataSnapshot | null) => any,
+                    applyLocally?: boolean): Promise<any>;
         update(values: Object, onComplete?: (a: RnError | null) => any): Promise<any>;
       }
     }
@@ -491,6 +488,17 @@ declare module "react-native-firebase" {
       token: string,
       secret: string
     }
+
+
+    interface ActionCodeInfo {
+      email: string,
+      error: string,
+      fromEmail: string,
+      verifyEmail: string,
+      recoverEmail: string,
+      passwordReset: string
+    }
+
     namespace auth {
 
       interface Auth {
@@ -507,9 +515,8 @@ declare module "react-native-firebase" {
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onAuthStateChanged(
-          nextOrObserver: Object, error?: (a: RnError) => any,
-          completed?: () => any): () => any;
+        onAuthStateChanged(nextOrObserver: Object, error?: (a: RnError) => any,
+                           completed?: () => any): () => any;
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
          * The method accepts two parameters, an email and a password.
@@ -543,6 +550,21 @@ declare module "react-native-firebase" {
          * the email will contain a password reset link rather than a code.
          */
         sendPasswordResetEmail(email: string): Promise<void>
+
+        /**
+         * Completes the password reset process, given a confirmation code and new password.
+         */
+        confirmPasswordReset(code: string, newPassword: string): Promise<any>
+
+        /**
+         * Applies a verification code sent to the user by email or other out-of-band mechanism.
+         */
+        applyActionCode(code: string): Promise<any>
+
+        /**
+         * Checks a verification code sent to the user by email or other out-of-band mechanism.
+         */
+        checkActionCode(code: string): Promise<ActionCodeInfo>
         /**
          * Completes the password reset process,
          * given a confirmation code and new password.
