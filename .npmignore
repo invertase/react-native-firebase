@@ -11,7 +11,8 @@ npm-debug.log
 project.xcworkspace/
 xcuserdata/
 
-# Android
+# Example
+example/
 
 # Built application files
 android/*/build/
@@ -63,4 +64,3 @@ yarn.lock
 tests
 lib/.watchmanconfig
 buddybuild_postclone.sh
-

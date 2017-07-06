@@ -73,11 +73,14 @@ You'll also need to include RNFirebase and the required Firebase dependencies in
 
 ```
 dependencies {
-  // RNFirebase Required dependencies
+  // RNFirebase required dependencies
   compile(project(':react-native-firebase')) {
     transitive = false
   }
   compile "com.google.firebase:firebase-core:11.0.0"
+
+  // If you are receiving Google Play API availability issues, add the following dependency
+  compile "com.google.android.gms:play-services-base:11.0.0"
 
   // RNFirebase optional dependencies
   compile "com.google.firebase:firebase-ads:11.0.0"

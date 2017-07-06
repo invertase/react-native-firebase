@@ -11,7 +11,8 @@ npm-debug.log
 project.xcworkspace/
 xcuserdata/
 
-# Android
+# Example
+example/demo/ios/demo.xcworkspace/
 
 # Built application files
 **/android/**/build/
