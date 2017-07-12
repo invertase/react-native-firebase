@@ -3,7 +3,6 @@ import { Provider } from 'react-redux';
 import CoreContainer from './containers/CoreContainer';
 import setupStore from './store/setup';
 import { setupSuites } from './tests/index';
-import { NativeModules } from 'react-native';
 
 global.Promise = require('bluebird');
 
@@ -36,7 +35,6 @@ function bootstrap() {
     state: State;
 
     componentDidMount() {
-      console.warn(JSON.stringify(Object.keys(NativeModules)));
       setupStore((store) => {
         setupSuites(store);
         this.setState({
