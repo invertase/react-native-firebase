@@ -1,4 +1,4 @@
-#import "RNFirebaseConfig.h"
+#import "RNFirebaseRemoteConfig.h"
 
 #if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
 
@@ -33,15 +33,15 @@ NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *va
     return @{@"stringValue": value.stringValue ?: [NSNull null], @"numberValue": value.numberValue ?: [NSNull null], @"dataValue": value.dataValue ? [value.dataValue base64EncodedStringWithOptions:0] : [NSNull null], @"boolValue": @(value.boolValue), @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
 }
 
-@interface RNFirebaseConfig ()
+@interface RNFirebaseRemoteConfig ()
 
 @property(nonatomic, readwrite, weak) FIRRemoteConfig *remoteConfig;
 
 @end
 
-@implementation RNFirebaseConfig
+@implementation RNFirebaseRemoteConfig
 
-RCT_EXPORT_MODULE(RNFirebaseConfig);
+RCT_EXPORT_MODULE(RNFirebaseRemoteConfig);
 
 RCT_EXPORT_METHOD(enableDeveloperMode) {
     FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
