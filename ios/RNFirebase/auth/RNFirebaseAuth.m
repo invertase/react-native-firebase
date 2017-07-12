@@ -372,19 +372,26 @@ RCT_EXPORT_METHOD(checkActionCode:(NSString *) code resolver:(RCTPromiseResolveB
         if (error) {
            [self promiseRejectAuthException:reject error:error];
         } else {
+            NSString *actionType = @"ERROR";
+            switch (info.operation) {
+                case FIRActionCodeOperationPasswordReset:
+                    actionType = @"PASSWORD_RESET";
+                    break;
+                case FIRActionCodeOperationVerifyEmail:
+                    actionType = @"VERIFY_EMAIL";
+                    break;
+                case FIRActionCodeOperationUnknown:
+                    actionType = @"UNKNOWN";
+                    break;
+            }
+
             NSDictionary * result = @{
                 @"data": @{
                     @"email": [info dataForKey:FIRActionCodeEmailKey],
                     @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],
-                }
+                },
+                @"actionType": actionType,
             };
-
-            // TODO action code operation codes?
-            /*
-                FIRActionCodeOperationUnknown = 0,
-                FIRActionCodeOperationPasswordReset = 1,
-                FIRActionCodeOperationVerifyEmail = 2
-             */
 
             resolve(result);
         }

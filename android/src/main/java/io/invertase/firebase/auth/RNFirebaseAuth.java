@@ -566,6 +566,7 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
         if (task.isSuccessful()) {
           Log.d(TAG, "checkActionCode:onComplete:success");
           ActionCodeResult result = task.getResult();
+
           WritableMap writableMap = Arguments.createMap();
           WritableMap dataMap = Arguments.createMap();
 
@@ -574,11 +575,24 @@ public class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
           writableMap.putMap("data", dataMap);
 
-          // TODO figure out if these are required - web sdk only returns the 'email' and nothing else
-          // writableMap.putString("error", result.getData(ActionCodeResult.ERROR));
-          // writableMap.putString("verifyEmail", result.getData(ActionCodeResult.VERIFY_EMAIL));
-          // writableMap.putString("recoverEmail", result.getData(ActionCodeResult.RECOVER_EMAIL));
-          // writableMap.putString("passwordReset", result.getData(ActionCodeResult.PASSWORD_RESET));
+          String actionType = "UNKNOWN";
+
+          switch (result.getOperation()) {
+            case ActionCodeResult.ERROR:
+              actionType = "ERROR";
+              break;
+            case ActionCodeResult.VERIFY_EMAIL:
+              actionType = "VERIFY_EMAIL";
+              break;
+            case ActionCodeResult.RECOVER_EMAIL:
+              actionType = "RECOVER_EMAIL";
+              break;
+            case ActionCodeResult.PASSWORD_RESET:
+              actionType = "PASSWORD_RESET";
+              break;
+          }
+
+          writableMap.putString("actionType", actionType);
 
           promise.resolve(writableMap);
         } else {
