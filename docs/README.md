@@ -8,7 +8,7 @@
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
-[![Package Quality](http://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
+[![Package Quality](https://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
 [![Chat](https://img.shields.io/badge/chat-on%20gitter-a0e7a0.svg?style=flat-square)](https://gitter.im/invertase/react-native-firebase)
