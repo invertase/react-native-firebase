@@ -48,9 +48,7 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
     return TAG;
   }
 
-  @ReactMethod  public void enableDeveloperMode(String appName) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
+  @ReactMethod  public void enableDeveloperMode() {
     FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder();
     settings.setDeveloperModeEnabled(true);
 
