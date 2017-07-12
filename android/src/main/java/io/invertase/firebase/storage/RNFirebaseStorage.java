@@ -428,10 +428,26 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
    */
   private StorageMetadata buildMetadataFromMap(ReadableMap metadata) {
     StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
-    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
 
-    for (Map.Entry<String, Object> entry : m.entrySet()) {
-      metadataBuilder.setCustomMetadata(entry.getKey(), entry.getValue().toString());
+    try {
+
+      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
+
+      Map<String, Object> customMetadata = (Map<String, Object>) m.get("customMetadata");
+      if (customMetadata != null) {
+        for (Map.Entry<String, Object> entry : customMetadata.entrySet()) {
+          metadataBuilder.setCustomMetadata(entry.getKey(), String.valueOf(entry.getValue()));
+        }
+      }
+
+      metadataBuilder.setCacheControl((String) m.get("cacheControl"));
+      metadataBuilder.setContentDisposition((String) m.get("contentDisposition"));
+      metadataBuilder.setContentEncoding((String) m.get("contentEncoding"));
+      metadataBuilder.setContentLanguage((String) m.get("contentLanguage"));
+      metadataBuilder.setContentType((String) m.get("contentType"));
+
+    } catch (Exception e) {
+      Log.e(TAG, "error while building meta data " + e.getMessage());
     }
 
     return metadataBuilder.build();

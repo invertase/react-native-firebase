@@ -19,38 +19,6 @@ too large to manage on the existing repository, whilst trying to maintain backwa
 RNFirebase was re-written from the ground up, addressing these issues with core focus being around matching the Web SDK as
 closely as possible and fixing the major bugs/issues along the way.
 
-## How do I integrate Redux with RNFirebase
-
-As every project has different requirements & structure, RNFirebase *currently* has no built in methods for Redux integration.
-As RNFirebase can be used outside of a Components context, you do have free reign to integrate it as you see fit. For example,
-with [`redux-thunk`](https://github.com/gaearon/redux-thunk) you dispatch updates to your store with updates from Firebase:
-
-```javascript
-class MyApp extends React.Component {
-
-  componentDidMount() {
-    this.props.dispatch(onAuthStateChanged());
-  }
-
-  ...
-}
-
-connect()(MyApp);
-```
-
-```javascript
-export function onAuthStateChanged() {
-  return (dispatch) => {
-    firebase.auth().onAuthStateChanged((user) => {
-      dispatch({
-        type: 'AUTH_STATE_CHANGE',
-        user,
-      });
-    });
-  };
-}
-```
-
 ## [Android] Google Play Services related issues
 
 The firebase SDK requires a certain version of Google Play Services installed on Android in order to function properly.

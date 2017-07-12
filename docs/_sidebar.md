@@ -19,8 +19,10 @@
  - [Remote Config](/modules/config)
  - [Storage](/modules/storage)
  - [Transactions](/modules/transactions)
+ - [Performance Monitoring](/modules/perf)
 
 - Other
+  - [Usage with Redux](/redux)
   - [Project Board](https://github.com/invertase/react-native-firebase/projects)
   - [FAQs / Troubleshooting](/faqs)
   - [Examples](https://github.com/invertase/react-native-firebase-examples)

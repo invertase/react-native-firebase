@@ -2,8 +2,8 @@
 
 !> Performance monitoring requires react-native-firebase version 1.2.0.
 
-?> If you plan on using this module in your own application, please ensure the optional setup instructions for
-[Android](#) and [iOS](#) have been followed.
+?> Android: If you plan on using this module in your own application, please ensure the optional setup instructions for
+[Android](http://invertase.io/react-native-firebase/#/installation-android?id=_4-performance-monitoring-optional) have been followed.
 
 Out of the box, [Firebase Performance Monitoring](https://firebase.google.com/docs/perf-mon/automatic) monitors a number of
 [automatic traces](https://firebase.google.com/docs/perf-mon/automatic) such as app start/background/foreground response times.

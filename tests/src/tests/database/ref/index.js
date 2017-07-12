@@ -1,5 +1,6 @@
 import onTests from './on/onTests';
 import onValueTests from './on/onValueTests';
+import onChildAddedTests from './on/onChildAddedTests';
 import offTests from './offTests';
 import onceTests from './onceTests';
 import setTests from './setTests';
@@ -21,7 +22,7 @@ import DatabaseContents from '../../support/DatabaseContents';
 
 const testGroups = [
   issueSpecificTests, factoryTests, keyTests, parentTests, childTests, rootTests,
-  pushTests, onTests, onValueTests, offTests, onceTests, updateTests,
+  pushTests, onTests, onValueTests, onChildAddedTests, offTests, onceTests, updateTests,
   removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
 ];
 
