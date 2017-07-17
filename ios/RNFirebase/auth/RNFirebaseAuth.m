@@ -972,7 +972,18 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:(NSString *) appName
  @return NSDictionary
  */
 - (NSDictionary *)firebaseUserToDict:(FIRUser *)user {
-    NSMutableDictionary *userDict = [@{@"uid": user.uid, @"email": user.email ? user.email : [NSNull null], @"emailVerified": @(user.emailVerified), @"isAnonymous": @(user.anonymous), @"displayName": user.displayName ? user.displayName : [NSNull null], @"refreshToken": user.refreshToken, @"providerId": [user.providerID lowercaseString], @"providerData": [self convertProviderData:user.providerData]} mutableCopy];
+    NSMutableDictionary *userDict = [
+        @{
+            @"uid": user.uid,
+            @"email": user.email ? user.email : [NSNull null],
+            @"emailVerified": @(user.emailVerified),
+            @"isAnonymous": @(user.anonymous),
+            @"displayName": user.displayName ? user.displayName : [NSNull null],
+            @"refreshToken": user.refreshToken,
+            @"providerId": [user.providerID lowercaseString],
+            @"providerData": [self convertProviderData:user.providerData]
+        } mutableCopy
+    ];
 
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue:[user.photoURL absoluteString] forKey:@"photoURL"];

@@ -31,11 +31,11 @@ RCT_EXPORT_METHOD(initializeApp:
         FIRApp *existingApp = [FIRApp appNamed:name];
 
         if (!existingApp) {
-            FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[options valueForKey:@"iosAppId"] GCMSenderID:[options valueForKey:@"messagingSenderId"]];
+            FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[options valueForKey:@"appId"] GCMSenderID:[options valueForKey:@"messagingSenderId"]];
 
             firOptions.APIKey = [options valueForKey:@"apiKey"];
             firOptions.projectID = [options valueForKey:@"projectId"];
-            firOptions.clientID = [options valueForKey:@"iosClientId"];
+            firOptions.clientID = [options valueForKey:@"clientId"];
             firOptions.trackingID = [options valueForKey:@"trackingId"];
             firOptions.databaseURL = [options valueForKey:@"databaseURL"];
             firOptions.storageBucket = [options valueForKey:@"storageBucket"];

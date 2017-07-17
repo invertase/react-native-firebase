@@ -47,10 +47,6 @@ import io.invertase.firebase.Utils;
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
-
-  // itts been a while ;p
-
-
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
 

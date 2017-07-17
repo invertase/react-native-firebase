@@ -53,12 +53,13 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
   public void initializeApp(String name, ReadableMap options, Callback callback) {
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
-    builder.setApplicationId(options.getString("androidAppId"));
+    builder.setApplicationId(options.getString("appId"));
     builder.setGcmSenderId(options.getString("messagingSenderId"));
     builder.setApiKey(options.getString("apiKey"));
     builder.setProjectId(options.getString("projectId"));
     builder.setDatabaseUrl(options.getString("databaseURL"));
     builder.setStorageBucket(options.getString("storageBucket"));
+    // todo firebase sdk has no client id setter
 
     FirebaseApp.initializeApp(getReactApplicationContext(), builder.build(), name);
 
