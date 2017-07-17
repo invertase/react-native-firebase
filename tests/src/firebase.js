@@ -13,13 +13,10 @@ const config = {
 
 const instances = {
   web: firebase.initializeApp(config),
-  native: RNfirebase.initializeApp({
-    debug: __DEV__ ? '*' : false,
-    errorOnMissingPlayServices: false,
-    persistence: true,
-  }),
+  native: RNfirebase.app(),
 };
 
+console.log('RNApps -->', RNfirebase.apps);
 
 instances.web.database().ref('tests/types').set(DatabaseContents.DEFAULT);
 

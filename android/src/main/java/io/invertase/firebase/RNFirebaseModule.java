@@ -2,6 +2,8 @@ package io.invertase.firebase;
 
 import android.app.Activity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -102,7 +104,28 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
 
   @Override
   public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
+    FirebaseApp firebaseApp;
+    Map<String, Object> constants = new HashMap<>();
+    List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
+    List<Map<String, Object>> appMapsList = new ArrayList<Map<String, Object>>();
+
+    for (FirebaseApp app : firebaseAppList) {
+      String appName = app.getName();
+      FirebaseOptions appOptions = app.getOptions();
+      Map<String, Object> appProps = new HashMap<>();
+
+      appProps.put("name", appName);
+      appProps.put("apiKey", appOptions.getApiKey());
+      appProps.put("applicationId", appOptions.getApplicationId());
+      appProps.put("databaseUrl", appOptions.getDatabaseUrl());
+      appProps.put("messagingSenderId", appOptions.getGcmSenderId());
+      appProps.put("projectId", appOptions.getProjectId());
+      appProps.put("storageBucket", appOptions.getStorageBucket());
+      // TODO no way to get client id currently from app options
+      appMapsList.add(appProps);
+    }
+
+    constants.put("apps", appMapsList);
     constants.put("googleApiAvailability", getPlayServicesStatus());
     return constants;
   }
