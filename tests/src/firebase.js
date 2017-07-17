@@ -43,14 +43,18 @@ const instances = {
 
 console.log('RNApps -->', RNfirebase.apps);
 
+// natively initialized apps are already available at app run time,
+// no need for ready checks
 instances.native.auth().signInAnonymously().then((user) => {
   console.log('defaultApp user ->', user.toJSON());
 });
 
-instances.another.auth().signInAnonymously().then((user) => {
-  console.log('anotherApp user ->', user.toJSON());
+// dynamically initialized apps need a ready check
+instances.another.onReady().then((app) => {
+  app.auth().signInAnonymously().then((user) => {
+    console.log('anotherApp user ->', user.toJSON());
+  });
 });
-
 
 instances.web.database().ref('tests/types').set(DatabaseContents.DEFAULT);
 

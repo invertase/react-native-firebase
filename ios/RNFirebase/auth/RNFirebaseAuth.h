@@ -7,10 +7,8 @@
 #import "Firebase.h"
 #import <React/RCTEventEmitter.h>
 
-@interface RNFirebaseAuth : RCTEventEmitter <RCTBridgeModule> {
-    FIRAuthStateDidChangeListenerHandle authListenerHandle;
-    NSMutableDictionary *authStateHandlers;
-}
+@interface RNFirebaseAuth : RCTEventEmitter <RCTBridgeModule> {};
+@property NSMutableDictionary *authStateHandlers;
 
 @end
 

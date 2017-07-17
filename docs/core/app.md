@@ -1,4 +1,4 @@
-# App
+# App - firebase.app(): FirebaseApp
 
 RNFirebase supports both initializing apps natively and also via js code over the RN bridge.
 
