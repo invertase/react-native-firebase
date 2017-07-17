@@ -727,8 +727,10 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void unlink(final String providerId, final Promise promise) {
-    FirebaseUser user = mAuth.getCurrentUser();
+  public void unlink(final String appName, final String providerId, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
     Log.d(TAG, "unlink");
 
     if (user != null) {
