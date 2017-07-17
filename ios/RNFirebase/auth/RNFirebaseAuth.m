@@ -622,6 +622,32 @@ RCT_EXPORT_METHOD(link:(NSString *) appName
 }
 
 /**
+ unlink
+
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(unlink:(NSString *)providerId resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRUser *user = [FIRAuth auth].currentUser;
+
+    if (user) {
+        [user unlinkFromProvider:providerId completion:^(FIRUser *_Nullable _user, NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseWithUser:resolve rejecter:reject user:_user];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+/**
  reauthenticate
 
  @param NSString provider

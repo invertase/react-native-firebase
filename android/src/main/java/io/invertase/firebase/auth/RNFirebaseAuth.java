@@ -720,6 +720,38 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * unlink
+   *
+   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser.html#unlink(java.lang.String)
+   * @param providerId
+   * @param promise
+   */
+  @ReactMethod
+  public void unlink(final String providerId, final Promise promise) {
+    FirebaseUser user = mAuth.getCurrentUser();
+    Log.d(TAG, "unlink");
+
+    if (user != null) {
+      user.unlink(providerId)
+        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+          @Override
+          public void onComplete(@NonNull Task<AuthResult> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "unlink:onComplete:success");
+              promiseWithUser(task.getResult().getUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "unlink:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    } else {
+      promiseNoUser(promise, true);
+    }
+  }
+
+  /**
    * reauthenticate
    *
    * @param provider
