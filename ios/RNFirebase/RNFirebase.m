@@ -31,11 +31,7 @@ RCT_EXPORT_METHOD(initializeApp:
         FIRApp *existingApp = [FIRApp appNamed:name];
 
         if (!existingApp) {
-            FIROptions *firOptions = [
-                [FIROptions alloc]
-                initWithGoogleAppID:[options valueForKey:@"iosAppId"]
-                GCMSenderID:[options valueForKey:@"messagingSenderId"]
-            ];
+            FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[options valueForKey:@"iosAppId"] GCMSenderID:[options valueForKey:@"messagingSenderId"]];
 
             firOptions.APIKey = [options valueForKey:@"apiKey"];
             firOptions.projectID = [options valueForKey:@"projectId"];
@@ -54,5 +50,37 @@ RCT_EXPORT_METHOD(initializeApp:
         callback(@[[NSNull null], @{@"result": @"success"}]);
     });
 }
+
+- (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    NSDictionary *firApps = [FIRApp allApps];
+    NSMutableArray *appsArray = [NSMutableArray new];
+
+    for (id key in firApps) {
+        NSMutableDictionary * appOptions = [NSMutableDictionary new];
+        FIRApp *firApp = firApps[key];
+        FIROptions *firOptions = [firApp options];
+        appOptions[@"name"] = firApp.name;
+        appOptions[@"apiKey"] = firOptions.APIKey;
+        appOptions[@"applicationId"] = firOptions.googleAppID;
+        appOptions[@"databaseUrl"] = firOptions.databaseURL;
+        appOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
+        appOptions[@"projectId"] = firOptions.projectID;
+        appOptions[@"storageBucket"] = firOptions.storageBucket;
+
+        // missing from android sdk / ios only:
+        appOptions[@"clientId"] = firOptions.clientID;
+        appOptions[@"trackingId"] = firOptions.trackingID;
+        appOptions[@"androidClientID"] = firOptions.androidClientID;
+        appOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
+
+        [appsArray addObject:appOptions];
+        NSLog(@"test");
+    }
+
+    constants[@"apps"] = appsArray;
+    return constants;
+}
+
 
 @end
