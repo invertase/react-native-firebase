@@ -718,9 +718,9 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * unlink
    *
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser.html#unlink(java.lang.String)
    * @param providerId
    * @param promise
+   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser.html#unlink(java.lang.String)
    */
   @ReactMethod
   public void unlink(final String appName, final String providerId, final Promise promise) {
@@ -1010,22 +1010,26 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private WritableArray convertProviderData(List<? extends UserInfo> providerData) {
     WritableArray output = Arguments.createArray();
     for (UserInfo userInfo : providerData) {
-      WritableMap userInfoMap = Arguments.createMap();
-      userInfoMap.putString("providerId", userInfo.getProviderId());
-      userInfoMap.putString("uid", userInfo.getUid());
-      userInfoMap.putString("displayName", userInfo.getDisplayName());
+      // remove 'firebase' provider data - android fb sdk
+      // should not be returning this as the ios/web ones don't
+      if (!userInfo.getProviderId().equals("firebase")) {
+        WritableMap userInfoMap = Arguments.createMap();
+        userInfoMap.putString("providerId", userInfo.getProviderId());
+        userInfoMap.putString("uid", userInfo.getUid());
+        userInfoMap.putString("displayName", userInfo.getDisplayName());
 
-      final Uri photoUrl = userInfo.getPhotoUrl();
+        final Uri photoUrl = userInfo.getPhotoUrl();
 
-      if (photoUrl != null) {
-        userInfoMap.putString("photoURL", photoUrl.toString());
-      } else {
-        userInfoMap.putNull("photoURL");
+        if (photoUrl != null) {
+          userInfoMap.putString("photoURL", photoUrl.toString());
+        } else {
+          userInfoMap.putNull("photoURL");
+        }
+
+        userInfoMap.putString("email", userInfo.getEmail());
+
+        output.pushMap(userInfoMap);
       }
-
-      userInfoMap.putString("email", userInfo.getEmail());
-
-      output.pushMap(userInfoMap);
     }
 
     return output;
