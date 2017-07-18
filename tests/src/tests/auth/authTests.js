@@ -150,7 +150,6 @@ function authTests({ tryCatch, describe, it, firebase }) {
       };
 
       const failureCb = (error) => {
-        console.log('ERROR', error)
         error.code.should.equal('auth/wrong-password');
         error.message.should.equal('The password is invalid or the user does not have a password.');
         return Promise.resolve();
