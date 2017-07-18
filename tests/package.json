@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
     "android:dev": "react-native run-android",
     "android:prod": "react-native run-android --configuration=release",
     "ios:dev": "react-native run-ios",

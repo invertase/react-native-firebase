@@ -15,14 +15,16 @@ class Suite extends React.Component {
     return {
       title,
       headerTintColor: '#ffffff',
-      headerStyle: { backgroundColor: '#0288d1' },
-      headerRight: <View style={{ flexDirection: 'row', marginRight: 8 }}>
-        <TestSuiteControlButton
-          testSuiteId={testSuiteId}
-          onlyShowFailingTests={onlyShowFailingTests}
-          onFilterChange={setParams}
-        />
-      </View>,
+      headerStyle: { backgroundColor: '#1976D2' },
+      headerRight: (
+        <View style={{ flexDirection: 'row', marginRight: 8 }}>
+          <TestSuiteControlButton
+            testSuiteId={testSuiteId}
+            onlyShowFailingTests={onlyShowFailingTests}
+            onFilterChange={setParams}
+          />
+        </View>
+      ),
     };
   };
 

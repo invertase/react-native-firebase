@@ -6,6 +6,21 @@ const EVENTS = {
   TEST_STATUS: 'TEST_STATUS',
 };
 
+const locationRegex = /\(?http:.*:([0-9]+):([0-9]+)\)?/g;
+
+function cleanStack(stack, maxLines = 5) {
+  const lines = stack.split('\n').slice(0, maxLines + 1);
+  const out = [];
+
+  for (let i = 0, len = lines.length; i < len; i++) {
+    const srcLine = lines[i].trim();
+    out.push(srcLine.replace(locationRegex, '()'));
+  }
+
+  return out.join('\r\n');
+}
+
+
 /**
  * Class that encapsulates synchronously running a suite's tests.
  */
@@ -212,6 +227,14 @@ class TestRun {
     }).then(() => true).catch(() => false);
   }
 
+  /**
+   *
+   * @param testContext
+   * @param error
+   * @param testStart
+   * @param errorPrefix
+   * @private
+   */
   _reportAllTestsAsFailed(testContext, error, testStart, errorPrefix) {
     testContext.tests.forEach((test) => {
       this._reportTestError(test, error, Date.now() - testStart, errorPrefix);
@@ -253,6 +276,13 @@ class TestRun {
 
         if (error) {
           this._reportTestError(test, error, Date.now() - testStart);
+          console.groupCollapsed(`%c ❌ Test Failed: ${test.description} (${this.testSuite.name})`, 'color: #f44336;');
+          console.log(`Test Description: ${test.description}`);
+          console.log(`Test Time Taken: ${Date.now() - testStart}`);
+          console.log(`Suite Name: ${this.testSuite.name}`);
+          console.log(`Suite Description: ${this.testSuite.description}`);
+          console.log(error);
+          console.groupEnd();
         } else {
           // eslint-disable-next-line no-param-reassign
           test.status = RunStatus.OK;
@@ -263,6 +293,13 @@ class TestRun {
             time: Date.now() - testStart,
             message: '',
           });
+
+          console.groupCollapsed(`%c ✅ Test Passed: ${test.description} (${this.testSuite.name})`, 'color: #4CAF50;');
+          console.log(`Test Description: ${test.description}`);
+          console.log(`Test Time Taken: ${Date.now() - testStart}`);
+          console.log(`Suite Name: ${this.testSuite.name}`);
+          console.log(`Suite Description: ${this.testSuite.description}`);
+          console.groupEnd();
         }
 
         // Update suite progress
@@ -279,31 +316,44 @@ class TestRun {
 
         await this._runHookChain(test, testStart, testContext, 'afterEach', afterEachHooks);
       }
-    })
-
-    .catch((error) => {
+    }).catch((error) => {
       this._updateStatus(EVENTS.TEST_SUITE_STATUS, {
         suiteId: this.testSuite.id,
         status: RunStatus.ERR,
         time: Date.now() - this.runStartTime,
-        message: `Test suite failed: ${error.message}`
+        message: `Test suite failed: ${error.message}`,
       });
     });
   }
 
+  /**
+   *
+   * @param test
+   * @param error
+   * @param time
+   * @param errorPrefix
+   * @private
+   */
   _reportTestError(test, error, time, errorPrefix = '') {
     // eslint-disable-next-line no-param-reassign
     test.status = RunStatus.ERR;
-
     this._updateStatus(EVENTS.TEST_STATUS, {
       testId: test.id,
       status: RunStatus.ERR,
       time,
       message: `${errorPrefix}${error.message ? `${error.name}: ${error.message}` : error}`,
-      stackTrace: error.stack,
+      stackTrace: cleanStack(error.stack),
     });
   }
 
+  /**
+   *
+   * @param func
+   * @param timeOutDuration
+   * @param description
+   * @return {Promise.<*>}
+   * @private
+   */
   async _safelyRunFunction(func, timeOutDuration, description) {
     const syncResultOrPromise = captureThrownErrors(func);
 
