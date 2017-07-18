@@ -10,6 +10,7 @@ import java.util.HashMap;
 // react
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -50,7 +51,7 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
   }
 
   @ReactMethod
-  public void initializeApp(String name, ReadableMap options, Callback callback) {
+  public void initializeApp(String appName, ReadableMap options, Callback callback) {
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
     builder.setApplicationId(options.getString("appId"));
@@ -61,12 +62,26 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     builder.setStorageBucket(options.getString("storageBucket"));
     // todo firebase sdk has no client id setter
 
-    FirebaseApp.initializeApp(getReactApplicationContext(), builder.build(), name);
+    FirebaseApp.initializeApp(getReactApplicationContext(), builder.build(), appName);
 
-    // todo expand on callback result
     WritableMap response = Arguments.createMap();
     response.putString("result", "success");
     callback.invoke(null, response);
+  }
+
+  @ReactMethod
+  public void deleteApp(String appName, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    if (firebaseApp == null) {
+      promise.resolve(null);
+    } else {
+      // todo ? not implemented on firebase sdk
+      promise.reject(
+        "app/delete-app-failed",
+        "Failed to delete app. The android Firebase SDK currently does not support this functionality"
+      );
+    }
   }
 
   private WritableMap getPlayServicesStatus() {
@@ -117,8 +132,8 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
 
       appProps.put("name", appName);
       appProps.put("apiKey", appOptions.getApiKey());
-      appProps.put("applicationId", appOptions.getApplicationId());
-      appProps.put("databaseUrl", appOptions.getDatabaseUrl());
+      appProps.put("appId", appOptions.getApplicationId());
+      appProps.put("databaseURL", appOptions.getDatabaseUrl());
       appProps.put("messagingSenderId", appOptions.getGcmSenderId());
       appProps.put("projectId", appOptions.getProjectId());
       appProps.put("storageBucket", appOptions.getStorageBucket());
