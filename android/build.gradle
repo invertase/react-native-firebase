@@ -61,4 +61,5 @@ dependencies {
   compile "com.google.firebase:firebase-config:$firebaseVersion"
   compile "com.google.firebase:firebase-perf:$firebaseVersion"
   compile "com.google.firebase:firebase-ads:$firebaseVersion"
+  compile "com.google.firebase:firebase-invites:$firebaseVersion"
 }
