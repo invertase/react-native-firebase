@@ -1,5 +1,7 @@
 # iOS Installation
 
+Please note that there is a known issue when using Cocoapods with the `!use_frameworks` enabled.  This is explained [here](https://github.com/invertase/react-native-firebase/issues/252#issuecomment-316340974).  Unfortunately we don't currently have a workaround, but are engaging with Firebase directly to try and resolve the problem.
+
 ## 1) Setup GoogleService-Info.plist
 Setup the `GoogleService-Info.plist` file by following the instructions and adding it to the root of your project at `ios/[YOUR APP NAME]/GoogleService-Info.plist` [here](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app).
 
