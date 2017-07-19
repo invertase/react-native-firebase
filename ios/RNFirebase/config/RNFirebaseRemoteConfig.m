@@ -3,6 +3,7 @@
 #if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
 #import "FirebaseRemoteConfig/FirebaseRemoteConfig.h"
 #import <React/RCTConvert.h>
+#import <React/RCTUtils.h>
 
 NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value)
 {
