@@ -90,16 +90,17 @@ PODS:
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
   - GTMSessionFetcher/Core (1.1.10)
   - Protobuf (3.3.0)
-  - React (0.44.3):
-    - React/Core (= 0.44.3)
-  - React/Core (0.44.3):
+  - React (0.44.0):
+    - React/Core (= 0.44.0)
+  - React/Core (0.44.0):
     - React/cxxreact
-    - Yoga (= 0.44.3.React)
-  - React/cxxreact (0.44.3):
+    - Yoga (= 0.44.0.React)
+  - React/cxxreact (0.44.0):
     - React/jschelpers
-  - React/jschelpers (0.44.3)
-  - RNFirebase (2.0.0)
-  - Yoga (0.44.3.React)
+  - React/jschelpers (0.44.0)
+  - RNFirebase (2.0.4):
+    - React
+  - Yoga (0.44.0.React)
 
 DEPENDENCIES:
   - Firebase/AdMob
@@ -142,9 +143,9 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
-  React: 6361345ebeb769a929e10a06baf0c868d6d03ad5
-  RNFirebase: dcc4dcb1c9400a9bc01866e50d1351272a7df311
-  Yoga: c90474ca3ec1edba44c97b6c381f03e222a9e287
+  React: d2077cc20245ccdc8bfe1fdc002f2003318ae8d8
+  RNFirebase: 3e5a3ff431c5c8a997152f5f19d354e1ca66f65d
+  Yoga: a92a5d8e128905bf9f29c82f870192a6e873dd98
 
 PODFILE CHECKSUM: 45666f734ebfc8b3b0f2be0a83bc2680caeb502f
 

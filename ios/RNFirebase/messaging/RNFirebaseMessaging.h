@@ -21,6 +21,8 @@ typedef void (^RCTNotificationResponseCallback)();
 + (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
 + (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull RCTRemoteNotificationCallback)completionHandler;
 + (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification;
++ (void)didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull RCTNotificationResponseCallback)completionHandler;
++ (void)willPresentNotification:(nonnull UNNotification *)notification withCompletionHandler:(nonnull RCTWillPresentNotificationCallback)completionHandler;
 #endif
 
 @end

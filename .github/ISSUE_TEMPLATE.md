@@ -1,5 +1,5 @@
 
-(Please write your issue here along with the environment details below)
+(Please write your issue here along with the environment details below. Include any key files which will help us to debug, such as your `Podfile` and/or `app/build.gradle` file).
 
 ### Environment
 
