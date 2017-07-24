@@ -27,6 +27,39 @@ apply plugin: 'com.google.gms.google-services'
 
 RNFirebase is split into separate modules to allow you to only include the Firebase functionality that you need in your application.
 
+First add the project path to `android/settings.gradle`:
+
+```
+include ':react-native-firebase'
+project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
+```
+
+Now you need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
+
+```
+dependencies {
+  // RNFirebase required dependencies
+  compile(project(':react-native-firebase')) {
+    transitive = false
+  }
+  compile "com.google.firebase:firebase-core:11.0.0"
+
+  // If you are receiving Google Play API availability issues, add the following dependency
+  compile "com.google.android.gms:play-services-base:11.0.0"
+
+  // RNFirebase optional dependencies
+  compile "com.google.firebase:firebase-ads:11.0.0"
+  compile "com.google.firebase:firebase-analytics:11.0.0"
+  compile "com.google.firebase:firebase-auth:11.0.0"
+  compile "com.google.firebase:firebase-config:11.0.0"
+  compile "com.google.firebase:firebase-crash:11.0.0"
+  compile "com.google.firebase:firebase-database:11.0.0"
+  compile "com.google.firebase:firebase-messaging:11.0.0"
+  compile "com.google.firebase:firebase-perf:11.0.0"
+  compile "com.google.firebase:firebase-storage:11.0.0"
+}
+```
+
 To install `react-native-firebase` in your project, you'll need to import the packages you need from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list them as packages for ReactNative in the `getPackages()` function:
 
 ```java
@@ -68,38 +101,6 @@ public class MainApplication extends Application implements ReactApplication {
   };
   // ...
 }
-```
-You'll also need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
-
-```
-dependencies {
-  // RNFirebase required dependencies
-  compile(project(':react-native-firebase')) {
-    transitive = false
-  }
-  compile "com.google.firebase:firebase-core:11.0.0"
-
-  // If you are receiving Google Play API availability issues, add the following dependency
-  compile "com.google.android.gms:play-services-base:11.0.0"
-
-  // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.0.0"
-  compile "com.google.firebase:firebase-analytics:11.0.0"
-  compile "com.google.firebase:firebase-auth:11.0.0"
-  compile "com.google.firebase:firebase-config:11.0.0"
-  compile "com.google.firebase:firebase-crash:11.0.0"
-  compile "com.google.firebase:firebase-database:11.0.0"
-  compile "com.google.firebase:firebase-messaging:11.0.0"
-  compile "com.google.firebase:firebase-perf:11.0.0"
-  compile "com.google.firebase:firebase-storage:11.0.0"
-}
-```
-
-Add the project path to `android/settings.gradle`:
-
-```
-include ':react-native-firebase'
-project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
 
 ## 3) Cloud Messaging (optional)
