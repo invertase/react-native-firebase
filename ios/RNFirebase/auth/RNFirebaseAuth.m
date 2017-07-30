@@ -777,7 +777,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
     } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIREmailPasswordAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+        credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
     } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else {

@@ -1,5 +1,5 @@
-function isEqualTests({ describe, before, it, firebase }) {
-  describe('ref().isEqual()', () => {
+function isEqualTests({ fdescribe, before, it, firebase }) {
+  fdescribe('ref().isEqual()', () => {
     before(() => {
       this.ref = firebase.native.database().ref('tests/types');
     });

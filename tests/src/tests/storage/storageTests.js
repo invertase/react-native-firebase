@@ -12,7 +12,12 @@ function storageTests({ describe, it, firebase, tryCatch }) {
           resolve();
         }, reject);
 
-        firebase.native.storage().ref('/not.jpg').downloadFile(`${firebase.native.storage.Native.DOCUMENT_DIRECTORY_PATH}/not.jpg`).then(successCb).catch(failureCb);
+        firebase.native.storage().ref('/not.jpg')
+          .downloadFile(
+            `${firebase.native.storage.Native.DOCUMENT_DIRECTORY_PATH}/not.jpg`,
+          )
+          .then(successCb)
+          .catch(failureCb);
       });
     });
 

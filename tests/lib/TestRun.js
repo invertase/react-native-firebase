@@ -6,6 +6,11 @@ const EVENTS = {
   TEST_STATUS: 'TEST_STATUS',
 };
 
+if (!console.groupCollapsed) {
+  console.groupCollapsed = console.log;
+  console.groupEnd = () => console.log('');
+}
+
 const locationRegex = /\(?http:.*:([0-9]+):([0-9]+)\)?/g;
 
 function cleanStack(stack, maxLines = 5) {

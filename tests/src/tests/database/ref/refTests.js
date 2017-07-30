@@ -1,5 +1,5 @@
-function refTests({ describe, it, firebase }) {
-  describe('ref().ref', () => {
+function refTests({ fdescribe, it, firebase }) {
+  fdescribe('ref().ref', () => {
     it('returns the reference', () => {
       // Setup
       const ref = firebase.native.database().ref();

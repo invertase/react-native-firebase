@@ -1,5 +1,5 @@
-function rootTests({ describe, it, context, firebase }) {
-  describe('ref().root', () => {
+function rootTests({ fdescribe, it, context, firebase }) {
+  fdescribe('ref().root', () => {
     context('when called on a non-root reference', () => {
       it('returns root ref', () => {
         // Setup
