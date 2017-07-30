@@ -10,8 +10,8 @@ NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus
     switch(value){
         case FIRRemoteConfigFetchStatusNoFetchYet:
             return @"config/no_fetch_yet";
-        case FIRRemoteConfigFetchStatusFailure:
-            return @"config/failure";
+        case FIRRemoteConfigFetchStatusSuccess:
+            return @"config/success";
         case FIRRemoteConfigFetchStatusThrottled:
             return @"config/throttled";
         default:
