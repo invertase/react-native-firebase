@@ -55,6 +55,7 @@ public class RNFirebaseDatabaseReference {
 
   /**
    * Listen for a single 'value' event from firebase.
+   *
    * @param promise
    */
   void addOnceValueEventListener(final Promise promise) {
@@ -78,6 +79,7 @@ public class RNFirebaseDatabaseReference {
 
   /**
    * Listen for single 'child_X' event from firebase.
+   *
    * @param eventName
    * @param promise
    */
@@ -130,14 +132,22 @@ public class RNFirebaseDatabaseReference {
   }
 
 
+  void on(String eventName) {
 
+  }
 
-
-
-
-
-
-
+  /**
+   *
+   * @param eventName
+   * @param promise
+   */
+  void once(String eventName, Promise promise) {
+    if (eventName.equals("value")) {
+      addOnceValueEventListener(promise);
+    } else {
+      addChildOnceEventListener(eventName, promise);
+    }
+  }
 
 
   // todo cleanup all below
@@ -210,7 +220,6 @@ public class RNFirebaseDatabaseReference {
       Log.d(TAG, "ValueEventListener for refId: " + refId + " listenerId: " + listenerId + " already exists");
     }
   }
-
 
 
   void removeEventListener(int listenerId, String eventName) {

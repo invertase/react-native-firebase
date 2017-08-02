@@ -373,10 +373,9 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     ref.removeValue(listener);
   }
 
-  // Push no longer required, handled in JS now.
 
   /**
-   * Subcribe once to a firebase reference.
+   * Subscribe once to a firebase reference.
    *
    * @param appName
    * @param refId
@@ -387,15 +386,24 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void once(String appName, int refId, String path, ReadableArray modifiers, String eventName, Promise promise) {
-    RNFirebaseDatabaseReference internalRef = getInternalReferenceForApp(appName, refId, path, modifiers, false);
-
-    if (eventName.equals("value")) {
-      internalRef.addOnceValueEventListener(promise);
-    } else {
-      internalRef.addChildOnceEventListener(eventName, promise);
-    }
+    getInternalReferenceForApp(appName, refId, path, modifiers, false).once(eventName, promise);
   }
 
+  /**
+   * Subscribe to real time events for the specified database path + modifiers
+   *
+   * @param appName
+   * @param refId
+   * @param path
+   * @param modifiers
+   * @param eventName
+   * @param promise
+   */
+  @ReactMethod
+  public void on(String appName, int refId, String path, ReadableArray modifiers, String eventName, Promise promise) {
+    getInternalReferenceForApp(appName, refId, path, modifiers, true).on(eventName);
+
+  }
 
 
 
@@ -422,6 +430,11 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * React Method - returns this module name
+   *
+   * @return
+   */
   @Override
   public String getName() {
     return "RNFirebaseDatabase";
@@ -482,13 +495,27 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     return existingRef;
   }
 
-  // todo move to error util for use in other modules
-  static String getMessageWithService(String message, String service, String fullCode) {
+  /**
+   * Wrap a message string with the specified service name e.g. 'Database'
+   *
+   * @param message
+   * @param service
+   * @param fullCode
+   * @return
+   */
+  private static String getMessageWithService(String message, String service, String fullCode) {
     // Service: Error message (service/code).
     return service + ": " + message + " (" + fullCode.toLowerCase() + ").";
   }
 
-  static String getCodeWithService(String service, String code) {
+  /**
+   * Generate a service error code string e.g. 'DATABASE/PERMISSION-DENIED'
+   *
+   * @param service
+   * @param code
+   * @return
+   */
+  private static String getCodeWithService(String service, String code) {
     return service.toUpperCase() + "/" + code.toUpperCase();
   }
 
