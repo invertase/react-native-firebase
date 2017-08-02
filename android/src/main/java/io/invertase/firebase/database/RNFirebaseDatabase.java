@@ -74,6 +74,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void keepSynced(String appName, String path, Boolean state) {
+    // TODO: Needs to take into account modifiers as well as just the path
     getReferenceForAppPath(appName, path).keepSynced(state);
   }
 
@@ -579,7 +580,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
         break;
       default:
         code = getCodeWithService(service, "unknown");
-        message = getMessageWithService("An unknown error occurred", service, code);
+        message = getMessageWithService("An unknown error occurred.", service, code);
     }
 
     errorMap.putString("code", code);

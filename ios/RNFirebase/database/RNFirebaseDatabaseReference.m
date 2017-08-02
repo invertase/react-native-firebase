@@ -1,18 +1,27 @@
 #import "RNFirebaseDatabaseReference.h"
 
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
+#import "RNFirebaseDatabase.h"
 #import "RNFirebaseEvents.h"
 
 @implementation RNFirebaseDatabaseReference
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter database:(FIRDatabase *)database refId:(NSNumber *)refId path:(NSString *)path modifiers:(NSArray *)modifiers {
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
+                           app:(NSString *) app
+                         refId:(NSNumber *) refId
+                       refPath:(NSString *) refPath
+                     modifiers:(NSArray *) modifiers {
     self = [super init];
     if (self) {
         _emitter = emitter;
+        _app = app;
         _refId = refId;
-        _path = path;
-        _query = [self buildQueryAtPathWithModifiers:database path:path modifiers:modifiers];
+        _path = refPath;
+        
+        // TODO: Only create if needed
         _listeners = [[NSMutableDictionary alloc] init];
+        
+        _query = [self buildQueryAtPathWithModifiers:refPath modifiers:modifiers];
     }
     return self;
 }
@@ -36,15 +45,17 @@
     }
 }
 
-- (void)addSingleEventHandler:(NSString *)eventName callback:(RCTResponseSenderBlock)callback {
+- (void)addSingleEventHandler:(NSString *)eventName
+                     resolver:(RCTPromiseResolveBlock) resolve
+                     rejecter:(RCTPromiseRejectBlock) reject {
     FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventName];
 
     [_query observeSingleEventOfType:firDataEventType andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
-        NSDictionary *props = [RNFirebaseDatabaseReference snapshotToDict:snapshot];
-        callback(@[[NSNull null], @{@"eventName": eventName, @"path": _path, @"refId": _refId, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}]);
+        NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:eventName path:_path dataSnapshot:snapshot previousChildName:previousChildName refId:_refId listenerId:0];
+        resolve(data);
     } withCancelBlock:^(NSError *_Nonnull error) {
         NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
-        callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
@@ -54,6 +65,45 @@
         [_listeners removeObjectForKey:listenerId];
         [_query removeObserverWithHandle:handle];
     }
+}
+
++ (NSDictionary *) snapshotToDictionary:(NSString *) eventName
+                                   path:(NSString *) path
+                           dataSnapshot:(FIRDataSnapshot *) dataSnapshot
+                      previousChildName:(NSString *) previousChildName
+                                  refId:(NSNumber *) refId
+                             listenerId:(NSNumber *) listenerId {
+    NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *eventMap = [[NSMutableDictionary alloc] init];
+    
+    [snapshot setValue:dataSnapshot.key forKey:@"key"];
+    [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
+    [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
+    [snapshot setValue:@(dataSnapshot.childrenCount) forKey:@"childrenCount"];
+    [snapshot setValue:dataSnapshot.value forKey:@"value"];
+    [snapshot setValue:[RNFirebaseDatabaseReference getChildKeys:dataSnapshot] forKey:@"childKeys"];
+    [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
+    
+    [eventMap setValue:refId forKey:@"refId"];
+    [eventMap setValue:path forKey:@"path"];
+    [eventMap setValue:snapshot forKey:@"snapshot"];
+    [eventMap setValue:eventName forKey:@"eventName"];
+    [eventMap setValue:listenerId forKey:@"listenerId"];
+    [eventMap setValue:previousChildName forKey:@"previousChildName"];
+    
+    return eventMap;
+}
+
++ (NSMutableArray *) getChildKeys:(FIRDataSnapshot *) snapshot {
+    NSMutableArray *childKeys = [NSMutableArray array];
+    if (snapshot.childrenCount > 0) {
+        NSEnumerator *children = [snapshot children];
+        FIRDataSnapshot *child;
+        while (child = [children nextObject]) {
+            [childKeys addObject:child.key];
+        }
+    }
+    return childKeys;
 }
 
 + (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)snapshot {
@@ -103,8 +153,10 @@
     }
 }
 
-- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(FIRDatabase *)database path:(NSString *)path modifiers:(NSArray *)modifiers {
-    FIRDatabaseQuery *query = [[database reference] child:path];
+- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *) path
+                                          modifiers:(NSArray *)modifiers {
+    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_app];
+    FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
 
     for (NSDictionary *modifier in modifiers) {
         NSString *type = [modifier valueForKey:@"type"];

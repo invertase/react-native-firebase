@@ -3,7 +3,6 @@
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 #import "RNFirebaseDatabaseReference.h"
 #import "RNFirebaseEvents.h"
-#import "Firebase.h"
 
 @implementation RNFirebaseDatabase
 RCT_EXPORT_MODULE();
@@ -18,206 +17,374 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
-- (void)sendTransactionEvent:(NSString *)type body:(id)body {
-    @try {
-        [self sendEventWithName:type body:body];
-    } @catch (NSException *err) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
-        NSLog(@"Tried to send: %@ with %@", type, body);
-    }
+RCT_EXPORT_METHOD(goOnline:(NSString *) appName) {
+    [[RNFirebaseDatabase getDatabaseForApp:appName] goOnline];
 }
 
-RCT_EXPORT_METHOD(startTransaction:
-    (NSString *) path
-            identifier:
-            (NSString *) identifier
-            applyLocally:
-            (BOOL) applyLocally) {
+RCT_EXPORT_METHOD(goOffline:(NSString *) appName) {
+    [[RNFirebaseDatabase getDatabaseForApp:appName] goOffline];
+}
+
+RCT_EXPORT_METHOD(setPersistence:(NSString *) appName
+                           state:(BOOL) state) {
+    [RNFirebaseDatabase getDatabaseForApp:appName].persistenceEnabled = state;
+}
+
+RCT_EXPORT_METHOD(keepSynced:(NSString *) appName
+                        path:(NSString *) path
+                       state:(BOOL) state) {
+    [[self getReferenceForAppPath:appName path:path] keepSynced:state];
+}
+
+RCT_EXPORT_METHOD(transactionTryCommit:(NSString *) appName
+                         transactionId:(nonnull NSNumber *) transactionId
+                               updates:(NSDictionary *) updates) {
+    __block NSMutableDictionary *transactionState;
+    
+    dispatch_sync(_transactionQueue, ^{
+        transactionState = _transactions[transactionId];
+    });
+    
+    if (!transactionState) {
+        NSLog(@"tryCommitTransaction for unknown ID %@", transactionId);
+        return;
+    }
+    
+    dispatch_semaphore_t sema = [transactionState valueForKey:@"semaphore"];
+    
+    BOOL abort = [[updates valueForKey:@"abort"] boolValue];
+    
+    if (abort) {
+        [transactionState setValue:@true forKey:@"abort"];
+    } else {
+        id newValue = [updates valueForKey:@"value"];
+        [transactionState setValue:newValue forKey:@"value"];
+    }
+    
+    dispatch_semaphore_signal(sema);
+}
+
+
+RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
+                              path:(NSString *) path
+                     transactionId:(nonnull NSNumber *) transactionId
+                      applyLocally:(BOOL) applyLocally) {
     dispatch_async(_transactionQueue, ^{
         NSMutableDictionary *transactionState = [NSMutableDictionary new];
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         transactionState[@"semaphore"] = sema;
-        FIRDatabaseReference *ref = [self getPathRef:path];
-
+        FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+        
         [ref runTransactionBlock:^FIRTransactionResult * _Nonnull(FIRMutableData *
-        _Nonnull currentData) {
-        dispatch_barrier_async(_transactionQueue, ^{
-            [_transactions setValue:transactionState forKey:identifier];
-            [self sendTransactionEvent:DATABASE_TRANSACTION_EVENT body:@{@"id": identifier, @"type": @"update", @"value": currentData.value}];
-        });
-
-        // wait for the js event handler to call tryCommitTransaction
-        // this wait occurs on the Firebase Worker Queue
-        // so if the tryCommitTransaction fails to signal the semaphore
-        // no further blocks will be executed by Firebase until the timeout expires
-        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
-        BOOL timedout = dispatch_semaphore_wait(sema, delayTime) != 0;
-
-        BOOL abort = [transactionState valueForKey:@"abort"] || timedout;
-        id value = [transactionState valueForKey:@"value"];
-
-        dispatch_barrier_async(_transactionQueue, ^{
-            [_transactions removeObjectForKey:identifier];
-        });
-
-        if (abort) {
-            return [FIRTransactionResult abort];
-        } else {
-            currentData.value = value;
-            return [FIRTransactionResult successWithValue:currentData];
-        }
-    }
-        andCompletionBlock:
-        ^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
-            if (databaseError != nil) {
-                [self sendTransactionEvent:DATABASE_TRANSACTION_EVENT body:@{@"id": identifier, @"type": @"error", @"code": @([databaseError code]), @"message": [databaseError description]}];
+                                                                  _Nonnull currentData) {
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions setValue:transactionState forKey:transactionId];
+                NSDictionary *updateMap = [self createTransactionUpdateMap:appName transactionId:transactionId updatesData:currentData];
+                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
+            });
+            
+            // wait for the js event handler to call tryCommitTransaction
+            // this wait occurs on the Firebase Worker Queue
+            // so if the tryCommitTransaction fails to signal the semaphore
+            // no further blocks will be executed by Firebase until the timeout expires
+            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
+            BOOL timedout = dispatch_semaphore_wait(sema, delayTime) != 0;
+            
+            BOOL abort = [transactionState valueForKey:@"abort"] || timedout;
+            id value = [transactionState valueForKey:@"value"];
+            
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions removeObjectForKey:transactionId];
+            });
+            
+            if (abort) {
+                return [FIRTransactionResult abort];
             } else {
-                [self sendTransactionEvent:DATABASE_TRANSACTION_EVENT body:@{@"id": identifier, @"type": @"complete", @"committed": @(committed), @"snapshot": [RNFirebaseDatabaseReference snapshotToDict:snapshot],}];
+                currentData.value = value;
+                return [FIRTransactionResult successWithValue:currentData];
             }
         }
-        withLocalEvents:
-        applyLocally];
+              andCompletionBlock:
+         ^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
+             NSDictionary *resultMap = [self createTransactionResultMap:appName transactionId:transactionId error:databaseError committed:committed snapshot:snapshot];
+             [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:resultMap];
+         }
+                 withLocalEvents:
+         applyLocally];
     });
 }
 
-RCT_EXPORT_METHOD(tryCommitTransaction:
-    (NSString *) identifier
-            withData:
-            (NSDictionary *) data) {
-    __block NSMutableDictionary *transactionState;
-
-    dispatch_sync(_transactionQueue, ^{
-        transactionState = _transactions[identifier];
-    });
-
-    if (!transactionState) {
-        NSLog(@"tryCommitTransaction for unknown ID %@", identifier);
-        return;
-    }
-
-    dispatch_semaphore_t sema = [transactionState valueForKey:@"semaphore"];
-
-    BOOL abort = [[data valueForKey:@"abort"] boolValue];
-
-    if (abort) {
-        [transactionState setValue:@true forKey:@"abort"];
-    } else {
-        id newValue = [data valueForKey:@"value"];
-        [transactionState setValue:newValue forKey:@"value"];
-    }
-
-    dispatch_semaphore_signal(sema);
-}
-
-RCT_EXPORT_METHOD(enablePersistence:
-    (BOOL) enable
-            callback:
-            (RCTResponseSenderBlock) callback) {
-
-    BOOL isEnabled = [FIRDatabase database].persistenceEnabled;
-    if (isEnabled != enable) {
-        @try {
-            [FIRDatabase database].persistenceEnabled = enable;
-        } @catch (NSException *exception) {
-            // do nothing - for RN packager reloads
-        }
-    }
-    callback(@[[NSNull null], @{@"result": @"success"}]);
-}
-
-RCT_EXPORT_METHOD(keepSynced:
-    (NSString *) path
-            withEnable:
-            (BOOL) enable
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref keepSynced:enable];
-    callback(@[[NSNull null], @{@"status": @"success", @"path": path}]);
-}
-
-RCT_EXPORT_METHOD(set:
-    (NSString *) path
-            data:
-            (NSDictionary *) data
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref setValue:[data valueForKey:@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"set" callback:callback databaseError:error];
+RCT_EXPORT_METHOD(onDisconnectSet:(NSString *) appName
+                             path:(NSString *) path
+                            props:(NSDictionary *) props
+                         resolver:(RCTPromiseResolveBlock) resolve
+                         rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref onDisconnectSetValue:props[@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-RCT_EXPORT_METHOD(priority:(NSString *) path
-                  priorityData:(NSDictionary *) priorityData
-                  callback:(RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref setPriority:[priorityData valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-        [self handleCallback:@"priority" callback:callback databaseError:error];
+RCT_EXPORT_METHOD(onDisconnectUpdate:(NSString *) appName
+                                path:(NSString *) path
+                               props:(NSDictionary *) props
+                            resolver:(RCTPromiseResolveBlock) resolve
+                            rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref onDisconnectUpdateChildValues:props withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-RCT_EXPORT_METHOD(withPriority:(NSString *) path
-                          data:(NSDictionary *) data
-                  priorityData:(NSDictionary *) priorityData
-                      callback:(RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref setValue:[data valueForKey:@"value"] andPriority:[priorityData valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
-        [self handleCallback:@"withPriority" callback:callback databaseError:error];
+RCT_EXPORT_METHOD(onDisconnectRemove:(NSString *) appName
+                                path:(NSString *) path
+                            resolver:(RCTPromiseResolveBlock) resolve
+                            rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref onDisconnectRemoveValueWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-RCT_EXPORT_METHOD(update:
-    (NSString *) path
-            value:
-            (NSDictionary *) value
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref updateChildValues:value withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"update" callback:callback databaseError:error];
+RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) appName
+                                path:(NSString *) path
+                            resolver:(RCTPromiseResolveBlock) resolve
+                            rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref cancelDisconnectOperationsWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-RCT_EXPORT_METHOD(remove:
-    (NSString *) path
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
+RCT_EXPORT_METHOD(set:(NSString *) appName
+                 path:(NSString *) path
+                props:(NSDictionary *) props
+             resolver:(RCTPromiseResolveBlock) resolve
+             rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref setValue:[props valueForKey:@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
+    }];
+}
+
+RCT_EXPORT_METHOD(setPriority:(NSString *) appName
+                         path:(NSString *) path
+                     priority:(NSDictionary *) priority
+                     resolver:(RCTPromiseResolveBlock) resolve
+                     rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref setPriority:[priority valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
+    }];
+}
+
+RCT_EXPORT_METHOD(setWithPriority:(NSString *) appName
+                             path:(NSString *) path
+                             data:(NSDictionary *) data
+                         priority:(NSDictionary *) priority
+                         resolver:(RCTPromiseResolveBlock) resolve
+                         rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref setValue:[data valueForKey:@"value"] andPriority:[priority valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
+    }];
+}
+
+RCT_EXPORT_METHOD(update:(NSString *) appName
+                    path:(NSString *) path
+                   props:(NSDictionary *) props
+                resolver:(RCTPromiseResolveBlock) resolve
+                rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
+    [ref updateChildValues:props withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
+    }];
+}
+
+RCT_EXPORT_METHOD(remove:(NSString *) appName
+                    path:(NSString *) path
+                resolver:(RCTPromiseResolveBlock) resolve
+                rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
     [ref removeValueWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"remove" callback:callback databaseError:error];
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-RCT_EXPORT_METHOD(push:
-    (NSString *) path
-            data:
-            (NSDictionary *) data
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    FIRDatabaseReference *newRef = [ref childByAutoId];
+RCT_EXPORT_METHOD(once:(NSString *) appName
+                 refId:(nonnull NSNumber *) refId
+                  path:(NSString *) path
+             modifiers:(NSArray *) modifiers
+             eventName:(NSString *) eventName
+              resolver:(RCTPromiseResolveBlock) resolve
+              rejecter:(RCTPromiseRejectBlock) reject) {
+    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName refId:refId path:path modifiers:modifiers keep:false];
+    [ref addSingleEventHandler:eventName resolver:resolve rejecter:reject];
+}
 
-    NSURL *url = [NSURL URLWithString:newRef.URL];
-    NSString *newPath = [url path];
-
-    if ([data count] > 0) {
-        [newRef setValue:[data valueForKey:@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-            if (error != nil) {
-                // Error handling
-                NSDictionary *evt = @{@"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]};
-
-                callback(@[evt]);
-            } else {
-                callback(@[[NSNull null], @{@"status": @"success", @"ref": newPath}]);
-            }
-        }];
+/*
+ * INTERNALS/UTILS
+ */
++ (void) handlePromise:(RCTPromiseResolveBlock) resolve
+              rejecter:(RCTPromiseRejectBlock) reject
+         databaseError:(NSError *) databaseError {
+    if (databaseError != nil) {
+        NSDictionary *jsError = [RNFirebaseDatabase getJSError:databaseError];
+        reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], databaseError);
     } else {
-        callback(@[[NSNull null], @{@"status": @"success", @"ref": newPath}]);
+        resolve([NSNull null]);
     }
 }
 
++ (FIRDatabase *) getDatabaseForApp:(NSString *) appName {
+    FIRApp *app = [FIRApp appNamed:appName];
+    return [FIRDatabase databaseForApp:app];
+}
 
+- (FIRDatabaseReference *) getReferenceForAppPath:(NSString *) appName
+                                             path:(NSString *) path {
+    return [[RNFirebaseDatabase getDatabaseForApp:appName] referenceWithPath:path];
+}
+
+- (RNFirebaseDatabaseReference *) getInternalReferenceForApp:(NSString *) appName
+                                                       refId:(NSNumber *) refId
+                                                        path:(NSString *) path
+                                                   modifiers:(NSArray *) modifiers
+                                                        keep:(BOOL) keep {
+    RNFirebaseDatabaseReference *ref = _dbReferences[refId];
+    
+    if (ref == nil) {
+        ref = [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName refId:refId refPath:path modifiers:modifiers];
+        
+        if (keep) {
+            _dbReferences[refId] = ref;
+        }
+    }
+    return ref;
+}
+
+// TODO: Move to error util for use in other modules
++ (NSString *) getMessageWithService:(NSString *) message
+                             service:(NSString *) service
+                            fullCode:(NSString *) fullCode {
+    return [NSString stringWithFormat:@"%@: %@ (%@).", service, message, [fullCode lowercaseString]];
+}
+
++ (NSString *) getCodeWithService:(NSString *) service
+                             code:(NSString *) code {
+    return [NSString stringWithFormat:@"%@/%@", [service uppercaseString], [code uppercaseString]];
+}
+
++ (NSDictionary *) getJSError:(NSError *) nativeError {
+    NSMutableDictionary *errorMap = [[NSMutableDictionary alloc] init];
+    [errorMap setValue:@(nativeError.code) forKey:@"nativeErrorCode"];
+    [errorMap setValue:[nativeError localizedDescription] forKey:@"nativeErrorMessage"];
+    
+    NSString *code;
+    NSString *message;
+    NSString *service = @"Database";
+    
+    switch (nativeError.code) {
+        // iOS confirmed codes
+        case 1: // -3 on Android
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"permission-denied"];
+            message = [RNFirebaseDatabase getMessageWithService:@"Client doesn't have permission to access the desired data." service:service fullCode:code];
+            break;
+        case 2: // -10 on Android
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"unavailable"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The service is unavailable." service:service fullCode:code];
+            break;
+        case 3: // -25 on Android
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"write-cancelled"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The write was canceled by the user." service:service fullCode:code];
+            break;
+
+        // TODO: Missing iOS equivalent codes
+        case -1:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"data-stale"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The transaction needs to be run again with current data." service:service fullCode:code];
+            break;
+        case -2:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"failure"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The server indicated that this operation failed." service:service fullCode:code];
+            break;
+        case -4:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"disconnected"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The operation had to be aborted due to a network disconnect." service:service fullCode:code];
+            break;
+        case -6:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"expired-token"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The supplied auth token has expired." service:service fullCode:code];
+            break;
+        case -7:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"invalid-token"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The supplied auth token was invalid." service:service fullCode:code];
+            break;
+        case -8:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"max-retries"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The transaction had too many retries." service:service fullCode:code];
+            break;
+        case -9:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"overridden-by-set"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The transaction was overridden by a subsequent set." service:service fullCode:code];
+            break;
+        case -11:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"user-code-exception"];
+            message = [RNFirebaseDatabase getMessageWithService:@"User code called from the Firebase Database runloop threw an exception." service:service fullCode:code];
+            break;
+        case -24:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"network-error"];
+            message = [RNFirebaseDatabase getMessageWithService:@"The operation could not be performed due to a network error." service:service fullCode:code];
+            break;
+        default:
+            code = [RNFirebaseDatabase getCodeWithService:service code:@"unknown"];
+            message = [RNFirebaseDatabase getMessageWithService:@"An unknown error occurred." service:service fullCode:code];
+            break;
+    }
+    
+    [errorMap setValue:code forKey:@"code"];
+    [errorMap setValue:message forKey:@"message"];
+    
+    return errorMap;
+}
+
+- (NSDictionary *) createTransactionUpdateMap:(NSString *) appName
+                                transactionId:(NSNumber *) transactionId
+                                  updatesData:(FIRMutableData *) updatesData {
+    NSMutableDictionary *updatesMap = [[NSMutableDictionary alloc] init];
+    [updatesMap setValue:transactionId forKey:@"id"];
+    [updatesMap setValue:@"update" forKey:@"type"];
+    [updatesMap setValue:appName forKey:@"appName"];
+    [updatesMap setValue:updatesData.value forKey:@"value"];
+    
+    return updatesMap;
+}
+
+- (NSDictionary *) createTransactionResultMap:(NSString *) appName
+                                transactionId:(NSNumber *) transactionId
+                                        error:(NSError *) error
+                                    committed:(BOOL) committed
+                                     snapshot:(FIRDataSnapshot *) snapshot {
+    NSMutableDictionary *resultMap = [[NSMutableDictionary alloc] init];
+    [resultMap setValue:transactionId forKey:@"id"];
+    [resultMap setValue:appName forKey:@"appName"];
+    // TODO: no timeout on iOS
+    [resultMap setValue:@(committed) forKey:@"committed"];
+    // TODO: no interrupted on iOS
+    if (error != nil) {
+        [resultMap setValue:@"error" forKey:@"type"];
+        [resultMap setValue:[RNFirebaseDatabase getJSError:error] forKey:@"error"];
+        // TODO: timeout error on iOS
+    } else {
+        [resultMap setValue:@"complete" forKey:@"type"];
+        [resultMap setValue:[RNFirebaseDatabaseReference snapshotToDict:snapshot] forKey:@"snapshot"];
+    }
+    
+    return resultMap;
+}
+
+
+/* TODO
 RCT_EXPORT_METHOD(on:
     (nonnull
         NSNumber *) refId
@@ -229,17 +396,6 @@ RCT_EXPORT_METHOD(on:
     RNFirebaseDatabaseReference *ref = [self getDBHandle:refId path:path modifiers:modifiers];
     [ref addEventHandler:listenerId eventName:eventName];
     callback(@[[NSNull null], @{@"status": @"success", @"refId": refId, @"handle": path}]);
-}
-
-RCT_EXPORT_METHOD(once:
-    (nonnull
-        NSNumber *) refId
-        path:(NSString *) path
-        modifiers:(NSArray *) modifiers
-        eventName:(NSString *) eventName
-        callback:(RCTResponseSenderBlock) callback) {
-    RNFirebaseDatabaseReference *ref = [self getDBHandle:refId path:path modifiers:modifiers];
-    [ref addSingleEventHandler:eventName callback:callback];
 }
 
 RCT_EXPORT_METHOD(off:
@@ -261,60 +417,6 @@ RCT_EXPORT_METHOD(off:
     callback(@[[NSNull null], @{@"status": @"success", @"refId": refId,}]);
 }
 
-// On disconnect
-RCT_EXPORT_METHOD(onDisconnectSet:
-    (NSString *) path
-            props:
-            (NSDictionary *) props
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref onDisconnectSetValue:props[@"value"] withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"onDisconnectSetObject" callback:callback databaseError:error];
-    }];
-}
-
-RCT_EXPORT_METHOD(onDisconnectRemove:
-    (NSString *) path
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref onDisconnectRemoveValueWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"onDisconnectRemove" callback:callback databaseError:error];
-    }];
-}
-
-
-RCT_EXPORT_METHOD(onDisconnectCancel:
-    (NSString *) path
-            callback:
-            (RCTResponseSenderBlock) callback) {
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref cancelDisconnectOperationsWithCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull _ref) {
-        [self handleCallback:@"onDisconnectCancel" callback:callback databaseError:error];
-    }];
-}
-
-RCT_EXPORT_METHOD(goOffline) {
-    [FIRDatabase database].goOffline;
-}
-
-RCT_EXPORT_METHOD(goOnline) {
-    [FIRDatabase database].goOnline;
-}
-
-- (FIRDatabaseReference *)getPathRef:(NSString *)path {
-    return [[[FIRDatabase database] reference] child:path];
-}
-
-- (void)handleCallback:(NSString *)methodName callback:(RCTResponseSenderBlock)callback databaseError:(NSError *)databaseError {
-    if (databaseError != nil) {
-        NSDictionary *evt = @{@"code": @([databaseError code]), @"details": [databaseError debugDescription], @"message": [databaseError localizedDescription], @"description": [databaseError description]};
-        callback(@[evt]);
-    } else {
-        callback(@[[NSNull null], @{@"status": @"success", @"method": methodName}]);
-    }
-}
 
 - (RNFirebaseDatabaseReference *)getDBHandle:(NSNumber *)refId path:(NSString *)path modifiers:(NSArray *)modifiers {
     RNFirebaseDatabaseReference *ref = _dbReferences[refId];
@@ -324,7 +426,7 @@ RCT_EXPORT_METHOD(goOnline) {
         _dbReferences[refId] = ref;
     }
     return ref;
-}
+} */
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
