@@ -70,7 +70,7 @@ pod 'Firebase/RemoteConfig'
 pod 'Firebase/Storage'
 ```
 
-If you are new to Cocoapods or do not already have React installed as a pod, then add Yoga and React to your `Podfile` as follows:
+If you do not already have React and Yoga installed as pods, then add Yoga and React to your `Podfile` as follows:
 
 ```ruby
 pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
