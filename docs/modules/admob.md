@@ -63,6 +63,9 @@ render() {
 
 ```
 
+Side note: If you use a style on the Banner, do not use zIndex. It will crash on release versions of your app (App Store review, TestFlight, adhoc distribution).
+
+
 ### Interstitial
 
 An interstitial is a full screen advert which creates a new activity on top of React. As they need to be controlled,
