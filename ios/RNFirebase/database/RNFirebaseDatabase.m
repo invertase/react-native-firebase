@@ -31,36 +31,40 @@ RCT_EXPORT_METHOD(setPersistence:(NSString *) appName
 }
 
 RCT_EXPORT_METHOD(keepSynced:(NSString *) appName
+                       refId:(nonnull NSNumber *) refId
                         path:(NSString *) path
+                   modifiers:(NSArray *) modifiers
                        state:(BOOL) state) {
-    [[self getReferenceForAppPath:appName path:path] keepSynced:state];
+
+    FIRDatabaseQuery * query = [self getInternalReferenceForApp:appName refId:refId path:path modifiers:modifiers keep:false].query;
+    [query keepSynced:state];
 }
 
 RCT_EXPORT_METHOD(transactionTryCommit:(NSString *) appName
                          transactionId:(nonnull NSNumber *) transactionId
                                updates:(NSDictionary *) updates) {
     __block NSMutableDictionary *transactionState;
-    
+
     dispatch_sync(_transactionQueue, ^{
         transactionState = _transactions[transactionId];
     });
-    
+
     if (!transactionState) {
         NSLog(@"tryCommitTransaction for unknown ID %@", transactionId);
         return;
     }
-    
+
     dispatch_semaphore_t sema = [transactionState valueForKey:@"semaphore"];
-    
+
     BOOL abort = [[updates valueForKey:@"abort"] boolValue];
-    
+
     if (abort) {
         [transactionState setValue:@true forKey:@"abort"];
     } else {
         id newValue = [updates valueForKey:@"value"];
         [transactionState setValue:newValue forKey:@"value"];
     }
-    
+
     dispatch_semaphore_signal(sema);
 }
 
@@ -74,7 +78,7 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         transactionState[@"semaphore"] = sema;
         FIRDatabaseReference *ref = [self getReferenceForAppPath:appName path:path];
-        
+
         [ref runTransactionBlock:^FIRTransactionResult * _Nonnull(FIRMutableData *
                                                                   _Nonnull currentData) {
             dispatch_barrier_async(_transactionQueue, ^{
@@ -82,21 +86,21 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
                 NSDictionary *updateMap = [self createTransactionUpdateMap:appName transactionId:transactionId updatesData:currentData];
                 [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
             });
-            
+
             // wait for the js event handler to call tryCommitTransaction
             // this wait occurs on the Firebase Worker Queue
             // so if the tryCommitTransaction fails to signal the semaphore
             // no further blocks will be executed by Firebase until the timeout expires
             dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
             BOOL timedout = dispatch_semaphore_wait(sema, delayTime) != 0;
-            
+
             BOOL abort = [transactionState valueForKey:@"abort"] || timedout;
             id value = [transactionState valueForKey:@"value"];
-            
+
             dispatch_barrier_async(_transactionQueue, ^{
                 [_transactions removeObjectForKey:transactionId];
             });
-            
+
             if (abort) {
                 return [FIRTransactionResult abort];
             } else {
@@ -252,10 +256,10 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
                                                    modifiers:(NSArray *) modifiers
                                                         keep:(BOOL) keep {
     RNFirebaseDatabaseReference *ref = _dbReferences[refId];
-    
+
     if (ref == nil) {
         ref = [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName refId:refId refPath:path modifiers:modifiers];
-        
+
         if (keep) {
             _dbReferences[refId] = ref;
         }
@@ -279,11 +283,11 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
     NSMutableDictionary *errorMap = [[NSMutableDictionary alloc] init];
     [errorMap setValue:@(nativeError.code) forKey:@"nativeErrorCode"];
     [errorMap setValue:[nativeError localizedDescription] forKey:@"nativeErrorMessage"];
-    
+
     NSString *code;
     NSString *message;
     NSString *service = @"Database";
-    
+
     switch (nativeError.code) {
         // iOS confirmed codes
         case 1: // -3 on Android
@@ -341,10 +345,10 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
             message = [RNFirebaseDatabase getMessageWithService:@"An unknown error occurred." service:service fullCode:code];
             break;
     }
-    
+
     [errorMap setValue:code forKey:@"code"];
     [errorMap setValue:message forKey:@"message"];
-    
+
     return errorMap;
 }
 
@@ -356,7 +360,7 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
     [updatesMap setValue:@"update" forKey:@"type"];
     [updatesMap setValue:appName forKey:@"appName"];
     [updatesMap setValue:updatesData.value forKey:@"value"];
-    
+
     return updatesMap;
 }
 
@@ -379,7 +383,7 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
         [resultMap setValue:@"complete" forKey:@"type"];
         [resultMap setValue:[RNFirebaseDatabaseReference snapshotToDict:snapshot] forKey:@"snapshot"];
     }
-    
+
     return resultMap;
 }
 
