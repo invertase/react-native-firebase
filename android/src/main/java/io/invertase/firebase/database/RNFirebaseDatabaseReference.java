@@ -33,6 +33,10 @@ public class RNFirebaseDatabaseReference {
   private SparseArray<ChildEventListener> childEventListeners;
   private SparseArray<ValueEventListener> valueEventListeners;
 
+  Query getQuery() {
+    return query;
+  }
+
   /**
    * @param context
    * @param app
@@ -45,11 +49,8 @@ public class RNFirebaseDatabaseReference {
     appName = app;
     path = refPath;
     reactContext = context;
-
-    // todo only create if needed
     childEventListeners = new SparseArray<ChildEventListener>();
     valueEventListeners = new SparseArray<ValueEventListener>();
-
     query = buildDatabaseQueryAtPathAndModifiers(path, modifiersArray);
   }
 
@@ -58,7 +59,7 @@ public class RNFirebaseDatabaseReference {
    *
    * @param promise
    */
-  void addOnceValueEventListener(final Promise promise) {
+  private void addOnceValueEventListener(final Promise promise) {
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -83,7 +84,7 @@ public class RNFirebaseDatabaseReference {
    * @param eventName
    * @param promise
    */
-  void addChildOnceEventListener(final String eventName, final Promise promise) {
+  private void addChildOnceEventListener(final String eventName, final Promise promise) {
     ChildEventListener childEventListener = new ChildEventListener() {
       @Override
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -132,12 +133,16 @@ public class RNFirebaseDatabaseReference {
   }
 
 
+  /**
+   * Handles a React Native JS 'on' request and initializes listeners.
+   * @param eventName
+   */
   void on(String eventName) {
 
   }
 
   /**
-   *
+   * Handles a React Native JS 'once' request.
    * @param eventName
    * @param promise
    */

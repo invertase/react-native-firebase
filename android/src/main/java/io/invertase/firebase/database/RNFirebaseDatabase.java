@@ -73,9 +73,10 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param state
    */
   @ReactMethod
-  public void keepSynced(String appName, String path, Boolean state) {
-    // TODO: Needs to take into account modifiers as well as just the path
-    getReferenceForAppPath(appName, path).keepSynced(state);
+  public void keepSynced(String appName, int id, String path, ReadableArray modifiers, Boolean state) {
+    getInternalReferenceForApp(appName, id, path, modifiers, false)
+      .getQuery()
+      .keepSynced(state);
   }
 
 
@@ -406,8 +407,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
 
   }
 
-
-
   /*
    * INTERNALS/UTILS
    */
@@ -441,6 +440,11 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     return "RNFirebaseDatabase";
   }
 
+  /**
+   * React Native constants for RNFirebaseDatabase
+   *
+   * @return
+   */
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
@@ -471,6 +475,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   /**
+   * Return an existing or create a new RNFirebaseDatabaseReference instance.
+   *
    * @param appName
    * @param refId
    * @param path
@@ -520,6 +526,13 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     return service.toUpperCase() + "/" + code.toUpperCase();
   }
 
+  /**
+   * Convert as firebase DatabaseError instance into a writable map
+   * with the correct web-like error codes.
+   *
+   * @param nativeError
+   * @return
+   */
   static WritableMap getJSError(DatabaseError nativeError) {
     WritableMap errorMap = Arguments.createMap();
     errorMap.putInt("nativeErrorCode", nativeError.getCode());
