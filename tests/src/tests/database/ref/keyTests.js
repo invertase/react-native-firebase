@@ -1,5 +1,5 @@
-function keyTests({ describe, it, firebase }) {
-  describe('ref().key', () => {
+function keyTests({ fdescribe, it, firebase }) {
+  fdescribe('ref().key', () => {
     it('returns null for root ref', () => {
       // Setup
 

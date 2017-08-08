@@ -1,5 +1,5 @@
-function parentTests({ describe, context, it, firebase }) {
-  describe('ref().parent', () => {
+function parentTests({ fdescribe, context, it, firebase }) {
+  fdescribe('ref().parent', () => {
     context('on the root ref', () => {
       it('returns null', () => {
         // Setup

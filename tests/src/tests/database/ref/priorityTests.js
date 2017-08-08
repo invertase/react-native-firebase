@@ -1,7 +1,7 @@
 import DatabaseContents from '../../support/DatabaseContents';
 
-function setTests({ describe, it, firebase }) {
-  describe('ref().priority', () => {
+function setTests({ fdescribe, it, firebase }) {
+  fdescribe('ref().priority', () => {
     it('setPriority() should correctly set a priority for all non-null values', async () => {
       await Promise.map(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
         // Setup

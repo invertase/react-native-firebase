@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   warning: {
-    backgroundColor: '#FFC107',
+    backgroundColor: '#f57c00',
   },
   error: {
     backgroundColor: '#f44336',

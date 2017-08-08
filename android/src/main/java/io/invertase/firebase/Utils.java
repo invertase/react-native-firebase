@@ -77,15 +77,14 @@ public class Utils {
   }
 
   /**
-   *
    * @param name
-   * @param refId
-   * @param listenerId
    * @param path
    * @param dataSnapshot
+   * @param refId
+   * @param listenerId
    * @return
    */
-  public static WritableMap snapshotToMap(String name, int refId, Integer listenerId, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+  public static WritableMap snapshotToMap(String name, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName, int refId, int listenerId) {
     WritableMap snapshot = Arguments.createMap();
     WritableMap eventMap = Arguments.createMap();
 
@@ -109,19 +108,16 @@ public class Utils {
     mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
     eventMap.putInt("refId", refId);
-    if (listenerId != null) {
-      eventMap.putInt("listenerId", listenerId);
-    }
     eventMap.putString("path", path);
     eventMap.putMap("snapshot", snapshot);
     eventMap.putString("eventName", name);
+    eventMap.putInt("listenerId", listenerId);
     eventMap.putString("previousChildName", previousChildName);
 
     return eventMap;
   }
 
   /**
-   *
    * @param dataSnapshot
    * @return
    */
@@ -151,7 +147,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param snapshot
    * @param <Any>
    * @return
@@ -182,7 +177,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param mutableData
    * @param <Any>
    * @return
@@ -216,7 +210,7 @@ public class Utils {
    * Data should be treated as an array if:
    * 1) All the keys are integers
    * 2) More than half the keys between 0 and the maximum key in the object have non-empty values
-   *
+   * <p>
    * Definition from: https://firebase.googleblog.com/2014/04/best-practices-arrays-in-firebase.html
    *
    * @param snapshot
@@ -244,7 +238,7 @@ public class Utils {
    * Data should be treated as an array if:
    * 1) All the keys are integers
    * 2) More than half the keys between 0 and the maximum key in the object have non-empty values
-   *
+   * <p>
    * Definition from: https://firebase.googleblog.com/2014/04/best-practices-arrays-in-firebase.html
    *
    * @param mutableData
@@ -269,7 +263,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param snapshot
    * @param <Any>
    * @return
@@ -316,7 +309,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param mutableData
    * @param <Any>
    * @return
@@ -363,7 +355,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param snapshot
    * @param <Any>
    * @return
@@ -401,7 +392,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param mutableData
    * @param <Any>
    * @return
@@ -439,7 +429,6 @@ public class Utils {
   }
 
   /**
-   *
    * @param snapshot
    * @return
    */

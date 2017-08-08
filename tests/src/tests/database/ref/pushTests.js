@@ -3,8 +3,8 @@ import 'should-sinon';
 
 import DatabaseContents from '../../support/DatabaseContents';
 
-function pushTests({ describe, it, firebase }) {
-  describe('ref().push()', () => {
+function pushTests({ fdescribe, it, firebase }) {
+  fdescribe('ref().push()', () => {
     it('returns a ref that can be used to set value later', async () => {
       // Setup
 

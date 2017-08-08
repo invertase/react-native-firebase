@@ -14,10 +14,12 @@ class Overview extends React.Component {
   static navigationOptions = {
     title: 'Test Suites',
     headerTintColor: '#ffffff',
-    headerStyle: { backgroundColor: '#0288d1' },
-    headerRight: <View style={{ marginRight: 8 }}>
-      <OverviewControlButton />
-    </View>
+    headerStyle: { backgroundColor: '#1976D2' },
+    headerRight: (
+      <View style={{ marginRight: 8 }}>
+        <OverviewControlButton />
+      </View>
+    ),
   };
 
   /**

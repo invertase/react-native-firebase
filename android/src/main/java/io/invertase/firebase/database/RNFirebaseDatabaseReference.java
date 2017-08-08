@@ -1,18 +1,14 @@
 package io.invertase.firebase.database;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.List;
 
-import android.support.annotation.Nullable;
-import android.telecom.Call;
 import android.util.Log;
+import android.support.annotation.Nullable;
+import android.util.SparseArray;
 
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -29,26 +25,140 @@ import io.invertase.firebase.Utils;
 public class RNFirebaseDatabaseReference {
   private static final String TAG = "RNFirebaseDBReference";
 
-  private Query mQuery;
-  private int mRefId;
-  private String mPath;
-  private Map<Integer, ChildEventListener> mChildEventListeners = new HashMap<>();
-  private Map<Integer, ValueEventListener> mValueEventListeners = new HashMap<>();
-  private ReactContext mReactContext;
+  private int refId;
+  private Query query;
+  private String path;
+  private String appName;
+  private ReactContext reactContext;
+  private SparseArray<ChildEventListener> childEventListeners;
+  private SparseArray<ValueEventListener> valueEventListeners;
 
-  public RNFirebaseDatabaseReference(final ReactContext context,
-                                     final FirebaseDatabase firebaseDatabase,
-                                     final int refId,
-                                     final String path,
-                                     final ReadableArray modifiersArray) {
-    mReactContext = context;
-    mRefId = refId;
-    mPath = path;
-    mQuery = this.buildDatabaseQueryAtPathAndModifiers(firebaseDatabase, path, modifiersArray);
+  Query getQuery() {
+    return query;
   }
 
-  public void addChildEventListener(final int listenerId, final String eventName) {
-    if (!mChildEventListeners.containsKey(listenerId)) {
+  /**
+   * @param context
+   * @param app
+   * @param id
+   * @param refPath
+   * @param modifiersArray
+   */
+  RNFirebaseDatabaseReference(ReactContext context, String app, int id, String refPath, ReadableArray modifiersArray) {
+    refId = id;
+    appName = app;
+    path = refPath;
+    reactContext = context;
+    childEventListeners = new SparseArray<ChildEventListener>();
+    valueEventListeners = new SparseArray<ValueEventListener>();
+    query = buildDatabaseQueryAtPathAndModifiers(path, modifiersArray);
+  }
+
+  /**
+   * Listen for a single 'value' event from firebase.
+   *
+   * @param promise
+   */
+  private void addOnceValueEventListener(final Promise promise) {
+    ValueEventListener onceValueEventListener = new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        WritableMap data = Utils.snapshotToMap("value", path, dataSnapshot, null, refId, 0);
+        promise.resolve(data);
+      }
+
+      @Override
+      public void onCancelled(DatabaseError error) {
+        RNFirebaseDatabase.handlePromise(promise, error);
+      }
+    };
+
+    query.addListenerForSingleValueEvent(onceValueEventListener);
+
+    Log.d(TAG, "Added OnceValueEventListener for refId: " + refId);
+  }
+
+  /**
+   * Listen for single 'child_X' event from firebase.
+   *
+   * @param eventName
+   * @param promise
+   */
+  private void addChildOnceEventListener(final String eventName, final Promise promise) {
+    ChildEventListener childEventListener = new ChildEventListener() {
+      @Override
+      public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+        if ("child_added".equals(eventName)) {
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap("child_added", path, dataSnapshot, previousChildName, refId, 0);
+          promise.resolve(data);
+        }
+      }
+
+      @Override
+      public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+        if ("child_changed".equals(eventName)) {
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap("child_changed", path, dataSnapshot, previousChildName, refId, 0);
+          promise.resolve(data);
+        }
+      }
+
+      @Override
+      public void onChildRemoved(DataSnapshot dataSnapshot) {
+        if ("child_removed".equals(eventName)) {
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap("child_removed", path, dataSnapshot, null, refId, 0);
+          promise.resolve(data);
+        }
+      }
+
+      @Override
+      public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+        if ("child_moved".equals(eventName)) {
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap("child_moved", path, dataSnapshot, previousChildName, refId, 0);
+          promise.resolve(data);
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError error) {
+        query.removeEventListener(this);
+        RNFirebaseDatabase.handlePromise(promise, error);
+      }
+    };
+
+    query.addChildEventListener(childEventListener);
+  }
+
+
+  /**
+   * Handles a React Native JS 'on' request and initializes listeners.
+   * @param eventName
+   */
+  void on(String eventName) {
+
+  }
+
+  /**
+   * Handles a React Native JS 'once' request.
+   * @param eventName
+   * @param promise
+   */
+  void once(String eventName, Promise promise) {
+    if (eventName.equals("value")) {
+      addOnceValueEventListener(promise);
+    } else {
+      addChildOnceEventListener(eventName, promise);
+    }
+  }
+
+
+  // todo cleanup all below
+
+  void addChildEventListener(final int listenerId, final String eventName) {
+    if (childEventListeners.get(listenerId) != null) {
       ChildEventListener childEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -84,16 +194,17 @@ public class RNFirebaseDatabaseReference {
           handleDatabaseError(listenerId, error);
         }
       };
-      mChildEventListeners.put(listenerId, childEventListener);
-      mQuery.addChildEventListener(childEventListener);
-      Log.d(TAG, "Added ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId);
+
+      childEventListeners.put(listenerId, childEventListener);
+      query.addChildEventListener(childEventListener);
+      Log.d(TAG, "Added ChildEventListener for refId: " + refId + " listenerId: " + listenerId);
     } else {
-      Log.d(TAG, "ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
+      Log.d(TAG, "ChildEventListener for refId: " + refId + " listenerId: " + listenerId + " already exists");
     }
   }
 
-  public void addValueEventListener(final int listenerId) {
-    if (!mValueEventListeners.containsKey(listenerId)) {
+  void addValueEventListener(final int listenerId) {
+    if (valueEventListeners.get(listenerId) != null) {
       ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -106,91 +217,15 @@ public class RNFirebaseDatabaseReference {
           handleDatabaseError(listenerId, error);
         }
       };
-      mValueEventListeners.put(listenerId, valueEventListener);
-      mQuery.addValueEventListener(valueEventListener);
-      Log.d(TAG, "Added ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId);
+
+      valueEventListeners.put(listenerId, valueEventListener);
+      query.addValueEventListener(valueEventListener);
+      Log.d(TAG, "Added ValueEventListener for refId: " + refId + " listenerId: " + listenerId);
     } else {
-      Log.d(TAG, "ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
+      Log.d(TAG, "ValueEventListener for refId: " + refId + " listenerId: " + listenerId + " already exists");
     }
   }
 
-  void addOnceValueEventListener(final Callback callback) {
-    final ValueEventListener onceValueEventListener = new ValueEventListener() {
-      @Override
-      public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap("value", mRefId, null, mPath, dataSnapshot, null);
-        callback.invoke(null, data);
-      }
-
-      @Override
-      public void onCancelled(DatabaseError error) {
-        WritableMap err = Arguments.createMap();
-        err.putInt("refId", mRefId);
-        err.putString("path", mPath);
-        err.putInt("code", error.getCode());
-        err.putString("details", error.getDetails());
-        err.putString("message", error.getMessage());
-        callback.invoke(err);
-      }
-    };
-
-    mQuery.addListenerForSingleValueEvent(onceValueEventListener);
-    Log.d(TAG, "Added OnceValueEventListener for refId: " + mRefId);
-  }
-
-  void addChildOnceEventListener(final String eventName, final Callback callback) {
-    ChildEventListener childEventListener = new ChildEventListener() {
-      @Override
-      public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-        if ("child_added".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_added", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
-        }
-      }
-
-      @Override
-      public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-        if ("child_changed".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_changed", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
-        }
-      }
-
-      @Override
-      public void onChildRemoved(DataSnapshot dataSnapshot) {
-        if ("child_removed".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_removed", mRefId, null, mPath, dataSnapshot, null);
-          callback.invoke(null, data);
-        }
-      }
-
-      @Override
-      public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-        if ("child_moved".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_moved", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
-        }
-      }
-
-      @Override
-      public void onCancelled(DatabaseError error) {
-        mQuery.removeEventListener(this);
-        WritableMap err = Arguments.createMap();
-        err.putInt("refId", mRefId);
-        err.putString("path", mPath);
-        err.putInt("code", error.getCode());
-        err.putString("details", error.getDetails());
-        err.putString("message", error.getMessage());
-        callback.invoke(err);
-      }
-    };
-
-    mQuery.addChildEventListener(childEventListener);
-  }
 
   void removeEventListener(int listenerId, String eventName) {
     if ("value".equals(eventName)) {
@@ -201,7 +236,7 @@ public class RNFirebaseDatabaseReference {
   }
 
   boolean hasListeners() {
-    return !mChildEventListeners.isEmpty() || !mValueEventListeners.isEmpty();
+    return childEventListeners.size() > 0 || valueEventListeners.size() > 0;
   }
 
   public void cleanup() {
@@ -211,49 +246,52 @@ public class RNFirebaseDatabaseReference {
   }
 
   private void removeChildEventListener(Integer listenerId) {
-    ChildEventListener listener = mChildEventListeners.remove(listenerId);
+    ChildEventListener listener = childEventListeners.get(listenerId);
     if (listener != null) {
-      mQuery.removeEventListener(listener);
+      query.removeEventListener(listener);
+      childEventListeners.delete(listenerId);
     }
   }
 
   private void removeValueEventListener(Integer listenerId) {
-    ValueEventListener listener = mValueEventListeners.remove(listenerId);
+    ValueEventListener listener = valueEventListeners.get(listenerId);
     if (listener != null) {
-      mQuery.removeEventListener(listener);
+      query.removeEventListener(listener);
+      valueEventListeners.delete(listenerId);
     }
   }
 
   private void handleDatabaseEvent(final String name, final Integer listenerId, final DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-    WritableMap data = Utils.snapshotToMap(name, mRefId, listenerId, mPath, dataSnapshot, previousChildName);
+    WritableMap data = Utils.snapshotToMap(name, path, dataSnapshot, previousChildName, refId, listenerId);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", data);
 
-    Utils.sendEvent(mReactContext, "database_event", evt);
+    Utils.sendEvent(reactContext, "database_event", evt);
   }
 
   private void handleDatabaseError(final Integer listenerId, final DatabaseError error) {
     WritableMap errMap = Arguments.createMap();
 
-    errMap.putInt("refId", mRefId);
+    errMap.putInt("refId", refId);
     if (listenerId != null) {
       errMap.putInt("listenerId", listenerId);
     }
-    errMap.putString("path", mPath);
+    errMap.putString("path", path);
     errMap.putInt("code", error.getCode());
     errMap.putString("details", error.getDetails());
     errMap.putString("message", error.getMessage());
 
-    Utils.sendEvent(mReactContext, "database_error", errMap);
+    Utils.sendEvent(reactContext, "database_error", errMap);
   }
 
-  private Query buildDatabaseQueryAtPathAndModifiers(final FirebaseDatabase firebaseDatabase,
-                                                     final String path,
-                                                     final ReadableArray modifiers) {
+  private Query buildDatabaseQueryAtPathAndModifiers(String path, ReadableArray modifiers) {
+    FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName);
+
     Query query = firebaseDatabase.getReference(path);
     List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);
 
+    // todo cleanup into utils
     for (Object m : modifiersList) {
       Map<String, Object> modifier = (Map) m;
       String type = (String) modifier.get("type");
@@ -271,7 +309,7 @@ public class RNFirebaseDatabaseReference {
           query = query.orderByChild(key);
         }
       } else if ("limit".equals(type)) {
-        int limit = ((Double)modifier.get("limit")).intValue();
+        int limit = ((Double) modifier.get("limit")).intValue();
         if ("limitToLast".equals(name)) {
           query = query.limitToLast(limit);
         } else if ("limitToFirst".equals(name)) {
