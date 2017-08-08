@@ -156,7 +156,7 @@ If you would like to schedule local notifications then you also need to add the 
 
 ## 4) Performance Monitoring (optional)
 
-If you'd like to take advantage of Firebases [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
+If you'd like to take advantage of Firebase's [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
  to your project setup are required:
 
 In your projects `android/build.gradle` file, add the plugin to your dependencies:
