@@ -75,7 +75,7 @@ import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase R
 import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
-import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Performance
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
 // ...
 public class MainApplication extends Application implements ReactApplication {
