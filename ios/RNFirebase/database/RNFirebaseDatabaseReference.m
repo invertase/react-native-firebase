@@ -190,6 +190,6 @@
 @end
 
 #else
-@implementation RNFirebaseDatabase
+@implementation RNFirebaseDatabaseReference
 @end
 #endif
