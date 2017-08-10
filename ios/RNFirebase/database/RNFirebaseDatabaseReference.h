@@ -1,8 +1,6 @@
 #ifndef RNFirebaseDatabaseReference_h
 #define RNFirebaseDatabaseReference_h
 
-#import <Foundation/Foundation.h>
-
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 #import <React/RCTEventEmitter.h>
 #import "Firebase.h"
@@ -23,6 +21,7 @@
 @end
 
 #else
+#import <Foundation/Foundation.h>
 
 @interface RNFirebaseDatabaseReference : NSObject
 @end
