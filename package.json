@@ -84,5 +84,5 @@
       "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;\nimport io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;",
       "packageInstance": "new RNFirebasePackage(),\n            new RNFirebaseAnalyticsPackage()"
     }
-  },
+  }
 }
