@@ -42,21 +42,21 @@ dependencies {
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:11.0.0"
+  compile "com.google.firebase:firebase-core:11.0.4"
 
   // If you are receiving Google Play API availability issues, add the following dependency
-  compile "com.google.android.gms:play-services-base:11.0.0"
+  compile "com.google.android.gms:play-services-base:11.0.4"
 
   // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.0.0"
-  compile "com.google.firebase:firebase-analytics:11.0.0"
-  compile "com.google.firebase:firebase-auth:11.0.0"
-  compile "com.google.firebase:firebase-config:11.0.0"
-  compile "com.google.firebase:firebase-crash:11.0.0"
-  compile "com.google.firebase:firebase-database:11.0.0"
-  compile "com.google.firebase:firebase-messaging:11.0.0"
-  compile "com.google.firebase:firebase-perf:11.0.0"
-  compile "com.google.firebase:firebase-storage:11.0.0"
+  compile "com.google.firebase:firebase-ads:11.0.4"
+  compile "com.google.firebase:firebase-analytics:11.0.4"
+  compile "com.google.firebase:firebase-auth:11.0.4"
+  compile "com.google.firebase:firebase-config:11.0.4"
+  compile "com.google.firebase:firebase-crash:11.0.4"
+  compile "com.google.firebase:firebase-database:11.0.4"
+  compile "com.google.firebase:firebase-messaging:11.0.4"
+  compile "com.google.firebase:firebase-perf:11.0.4"
+  compile "com.google.firebase:firebase-storage:11.0.4"
 }
 ```
 
@@ -75,7 +75,7 @@ import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase R
 import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
-import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Performance
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
 // ...
 public class MainApplication extends Application implements ReactApplication {
@@ -156,7 +156,7 @@ If you would like to schedule local notifications then you also need to add the 
 
 ## 4) Performance Monitoring (optional)
 
-If you'd like to take advantage of Firebases [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
+If you'd like to take advantage of Firebase's [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
  to your project setup are required:
 
 In your projects `android/build.gradle` file, add the plugin to your dependencies:
