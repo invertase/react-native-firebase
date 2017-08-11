@@ -23,6 +23,7 @@
 @end
 
 #else
+#import <Foundation/Foundation.h>
 
 @interface RNFirebaseDatabaseReference : NSObject
 @end
