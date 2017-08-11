@@ -1,10 +1,8 @@
 #import "RNFirebaseDatabaseReference.h"
 
-#if __has_include(<FirebaseDatabase/FIRDatabase.h>)
-#import "RNFirebaseDatabase.h"
-#import "RNFirebaseEvents.h"
-
 @implementation RNFirebaseDatabaseReference
+
+#if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
                            app:(NSString *) app
@@ -17,10 +15,10 @@
         _app = app;
         _refId = refId;
         _path = refPath;
-        
+
         // TODO: Only create if needed
         _listeners = [[NSMutableDictionary alloc] init];
-        
+
         _query = [self buildQueryAtPathWithModifiers:refPath modifiers:modifiers];
     }
     return self;
@@ -75,7 +73,7 @@
                              listenerId:(NSNumber *) listenerId {
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *eventMap = [[NSMutableDictionary alloc] init];
-    
+
     [snapshot setValue:dataSnapshot.key forKey:@"key"];
     [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
     [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
@@ -83,14 +81,14 @@
     [snapshot setValue:dataSnapshot.value forKey:@"value"];
     [snapshot setValue:[RNFirebaseDatabaseReference getChildKeys:dataSnapshot] forKey:@"childKeys"];
     [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
-    
+
     [eventMap setValue:refId forKey:@"refId"];
     [eventMap setValue:path forKey:@"path"];
     [eventMap setValue:snapshot forKey:@"snapshot"];
     [eventMap setValue:eventName forKey:@"eventName"];
     [eventMap setValue:listenerId forKey:@"listenerId"];
     [eventMap setValue:previousChildName forKey:@"previousChildName"];
-    
+
     return eventMap;
 }
 
@@ -239,9 +237,6 @@
     return eventType;
 }
 
-@end
-
-#else
-@implementation RNFirebaseDatabase
-@end
 #endif
+
+@end

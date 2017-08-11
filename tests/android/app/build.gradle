@@ -133,7 +133,7 @@ android {
     }
 }
 
-project.ext.firebaseVersion = '11.0.0'
+project.ext.firebaseVersion = '11.0.4'
 
 dependencies {
     compile(project(':react-native-firebase')) {

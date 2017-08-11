@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Messaging (FCM), Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
   "main": "index",
@@ -77,5 +77,12 @@
   "dependencies": {
     "bows": "^1.6.0",
     "prop-types": "^15.5.10"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "    compile(project(':react-native-firebase')) {\n        transitive = false\n    }\n",
+      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;\nimport io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;",
+      "packageInstance": "new RNFirebasePackage(),\n            new RNFirebaseAnalyticsPackage()"
+    }
   }
 }

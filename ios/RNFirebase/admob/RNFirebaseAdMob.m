@@ -2,7 +2,6 @@
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-
 #import "RNFirebaseAdMobInterstitial.h"
 #import "RNFirebaseAdMobRewardedVideo.h"
 
@@ -220,8 +219,7 @@ RCT_EXPORT_METHOD(clearInterstitial:
 
 #else
 
-@interface RNFirebaseAdMobRewardedVideo : NSObject <RCTBridgeModule> {
-}
+@implementation RNFirebaseAdMob
 @end
 
 #endif
