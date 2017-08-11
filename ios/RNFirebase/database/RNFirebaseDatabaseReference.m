@@ -1,9 +1,8 @@
 #import "RNFirebaseDatabaseReference.h"
 
-#if __has_include(<FirebaseDatabase/FIRDatabase.h>)
-#import "RNFirebaseEvents.h"
-
 @implementation RNFirebaseDatabaseReference
+
+#if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter database:(FIRDatabase *)database refId:(NSNumber *)refId path:(NSString *)path modifiers:(NSArray *)modifiers {
     self = [super init];
@@ -187,9 +186,6 @@
     return eventType;
 }
 
-@end
-
-#else
-@implementation RNFirebaseDatabase
-@end
 #endif
+
+@end
