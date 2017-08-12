@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,11 +26,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
@@ -47,6 +51,7 @@ import io.invertase.firebase.Utils;
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
+  private String mVerificationId;
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
 
@@ -561,6 +566,92 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * signInWithPhoneNumber
+   *
+   * @param phoneNumber
+   * @param promise
+   */
+  @ReactMethod
+  public void signInWithPhoneNumber(String appName, final String phoneNumber, final Promise promise) {
+    Log.d(TAG, "signInWithPhoneNumber");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    // Reset the verification Id
+    mVerificationId = null;
+
+    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
+      getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+          // User has been automatically verified, log them in
+          firebaseAuth.signInWithCredential(phoneAuthCredential)
+            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+              @Override
+              public void onSuccess(AuthResult authResult) {
+                // onAuthStateChanged will pick up the user change
+                Log.d(TAG, "signInWithPhoneNumber:autoVerified:success");
+              }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "signInWithPhoneNumber:autoVerified:failure", exception);
+                // TODO: Will this ever error? How do we get it back to the JS side?
+                // promiseRejectAuthException(promise, exception);
+              }
+            });
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+          // TODO: Will this ever get sent after we've received an onCodeSent?
+          // If so, then this will cause an exception as the promise has already been used
+          promiseRejectAuthException(promise, e);
+        }
+
+        @Override
+        public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+          // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
+          mVerificationId = verificationId;
+          WritableMap verificationMap = Arguments.createMap();
+          verificationMap.putString("verificationId", verificationId);
+
+          promise.resolve(verificationMap);
+        }
+
+        @Override
+        public void onCodeAutoRetrievalTimeOut (String verificationId) {
+          super.onCodeAutoRetrievalTimeOut(verificationId);
+          // Purposefully not doing anything with this at the moment
+        }
+      });
+  }
+
+  @ReactMethod
+  public void _confirmVerificationCode(String appName, final String verificationCode, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
+
+    firebaseAuth.signInWithCredential(credential)
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "signInWithCredential:onComplete:success");
+            promiseWithUser(task.getResult().getUser(), promise);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        }
+      });
+  }
+
+  /**
    * confirmPasswordReset
    *
    * @param code
@@ -1026,6 +1117,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           userInfoMap.putNull("photoURL");
         }
 
+        final String phoneNumber = userInfo.getPhoneNumber();
+        if (phoneNumber != null) {
+          userInfoMap.putString("phoneNumber", phoneNumber);
+        } else {
+          userInfoMap.putNull("phoneNumber");
+        }
+
         userInfoMap.putString("email", userInfo.getEmail());
 
         output.pushMap(userInfoMap);
@@ -1044,12 +1142,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private WritableMap firebaseUserToMap(FirebaseUser user) {
     WritableMap userMap = Arguments.createMap();
 
-    final String email = user.getEmail();
     final String uid = user.getUid();
-    final String provider = user.getProviderId();
-    final String name = user.getDisplayName();
-    final Boolean verified = user.isEmailVerified();
+    final String email = user.getEmail();
     final Uri photoUrl = user.getPhotoUrl();
+    final String name = user.getDisplayName();
+    final String provider = user.getProviderId();
+    final Boolean verified = user.isEmailVerified();
+    final String phoneNumber = user.getPhoneNumber();
 
     userMap.putString("uid", uid);
     userMap.putString("providerId", provider);
@@ -1072,6 +1171,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       userMap.putString("photoURL", photoUrl.toString());
     } else {
       userMap.putNull("photoURL");
+    }
+
+    if (phoneNumber != null) {
+      userMap.putString("phoneNumber", phoneNumber);
+    } else {
+      userMap.putNull("phoneNumber");
     }
 
     userMap.putArray("providerData", convertProviderData(user.getProviderData()));

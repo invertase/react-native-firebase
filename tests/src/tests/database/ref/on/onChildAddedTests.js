@@ -1,9 +1,9 @@
 import 'should-sinon';
 import Promise from 'bluebird';
 
-export default function onChildAddedTests({ describe, beforeEach, afterEach, it, firebase }) {
-  describe('ref().on(\'child_added\')', () => {
-    describe('the snapshot', () => {
+export default function onChildAddedTests({ fdescribe, beforeEach, afterEach, it, firebase }) {
+  fdescribe('ref().on(\'child_added\')', () => {
+    fdescribe('the snapshot', () => {
       let ref;
       let childRef;
       let childVal;

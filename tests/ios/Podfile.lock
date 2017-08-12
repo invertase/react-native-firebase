@@ -104,7 +104,7 @@ PODS:
   - React/cxxreact (0.44.3):
     - React/jschelpers
   - React/jschelpers (0.44.3)
-  - RNFirebase (2.1.0):
+  - RNFirebase (2.1.2):
     - React
   - Yoga (0.44.3.React)
 
@@ -126,11 +126,11 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   React:
-    :path: ../node_modules/react-native
+    :path: "../node_modules/react-native"
   RNFirebase:
-    :path: ./../../
+    :path: "./../../"
   Yoga:
-    :path: ../node_modules/react-native/ReactCommon/yoga
+    :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   Firebase: 1492bf04e1b73a7353b4fb2cf5a20bac9692f341
@@ -151,9 +151,9 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   React: 6361345ebeb769a929e10a06baf0c868d6d03ad5
-  RNFirebase: aef6fb5e509449546aa65cef2efae02d903c5fce
+  RNFirebase: f796cb5ff9c09f72f181f72a8b9fd972fccc9c49
   Yoga: c90474ca3ec1edba44c97b6c381f03e222a9e287
 
 PODFILE CHECKSUM: 45666f734ebfc8b3b0f2be0a83bc2680caeb502f
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.2.1

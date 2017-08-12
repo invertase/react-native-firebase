@@ -1,7 +1,7 @@
 import 'should-sinon';
 
-function onTests({ describe, it, firebase, context }) {
-  describe('ref().on()', () => {
+function onTests({ fdescribe, it, firebase, context }) {
+  fdescribe('ref().on()', () => {
     // Observed Web API Behaviour
     context('when no eventName is provided', () => {
       it('then raises an error', () => {

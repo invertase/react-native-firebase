@@ -605,6 +605,51 @@ RCT_EXPORT_METHOD(signInWithCustomToken:
 }
 
 /**
+ signInWithPhoneNumber
+
+ @param string phoneNumber
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(signInWithPhoneNumber:(NSString *) appName
+            phoneNumber:(NSString *) phoneNumber
+            resolver:(RCTPromiseResolveBlock) resolve
+            rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+
+    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:verificationID forKey:@"authVerificationID"];
+            resolve(@{
+                    @"verificationId": verificationID
+            });
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(_confirmVerificationCode:(NSString *) appName
+            verificationCode:(NSString *) verificationCode
+            resolver:(RCTPromiseResolveBlock) resolve
+            rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
+    FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId verificationCode:verificationCode];
+
+    [[FIRAuth authWithApp:firApp] signInWithCredential:credential completion:^(FIRUser *user, NSError *error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseWithUser:resolve rejecter:reject user:user];
+        }
+    }];
+}
+
+/**
  link - *insert zelda joke here*
 
  @param NSString provider
@@ -999,6 +1044,10 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
             [pData setValue:userInfo.email forKey:@"email"];
         }
 
+        if (userInfo.phoneNumber != nil) {
+            [pData setValue:userInfo.phoneNumber forKey:@"phoneNumber"];
+        }
+
         [output addObject:pData];
     }
 
@@ -1012,7 +1061,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
  @return NSDictionary
  */
 - (NSMutableDictionary *)firebaseUserToDict:(FIRUser *)user {
-    NSMutableDictionary *userDict = [@{@"uid": user.uid, @"email": user.email ? user.email : [NSNull null], @"emailVerified": @(user.emailVerified), @"isAnonymous": @(user.anonymous), @"displayName": user.displayName ? user.displayName : [NSNull null], @"refreshToken": user.refreshToken, @"providerId": [user.providerID lowercaseString], @"providerData": [self convertProviderData:user.providerData]} mutableCopy];
+    NSMutableDictionary *userDict = [@{@"uid": user.uid, @"email": user.email ? user.email : [NSNull null], @"emailVerified": @(user.emailVerified), @"isAnonymous": @(user.anonymous), @"displayName": user.displayName ? user.displayName : [NSNull null], @"refreshToken": user.refreshToken, @"providerId": [user.providerID lowercaseString], @"phoneNumber": user.phoneNumber ? user.phoneNumber : [NSNull null], @"providerData": [self convertProviderData:user.providerData]} mutableCopy];
 
     if ([user valueForKey:@"photoURL"] != nil) {
         [userDict setValue:[user.photoURL absoluteString] forKey:@"photoURL"];
