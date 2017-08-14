@@ -5,6 +5,7 @@
 #import "RNFirebaseEvents.h"
 #import <Photos/Photos.h>
 #import "Firebase.h"
+#import "../../../../../../../../../Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSObject.h"
 
 @implementation RNFirebaseStorage
 
@@ -197,7 +198,8 @@ RCT_EXPORT_METHOD(updateMetadata:
  */
 RCT_EXPORT_METHOD(downloadFile:
     (NSString *) appName
-    path:(NSString *) path
+            path:
+            (NSString *) path
             localPath:
             (NSString *) localPath
             resolver:
@@ -285,7 +287,8 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
  */
 RCT_EXPORT_METHOD(putFile:
     (NSString *) appName
-    path:(NSString *) path
+            path:
+            (NSString *) path
             localPath:
             (NSString *) localPath
             metadata:
@@ -359,7 +362,7 @@ RCT_EXPORT_METHOD(putFile:
     return [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:filename];
 }
 
-- (void)uploadFile:(NSString *) appName url:(NSURL *)url metadata:(NSDictionary *)metadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (void)uploadFile:(NSString *)appName url:(NSURL *)url metadata:(NSDictionary *)metadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path];
     FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     FIRStorageUploadTask *uploadTask = [fileRef putFile:url metadata:firmetadata];
@@ -373,7 +376,7 @@ RCT_EXPORT_METHOD(putFile:
     [self addUploadObservers:appName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
-- (void)addUploadObservers:(NSString *) appName uploadTask:(FIRStorageUploadTask *)uploadTask path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (void)addUploadObservers:(NSString *)appName uploadTask:(FIRStorageUploadTask *)uploadTask path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     // listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload resumed, also fires when the upload starts
@@ -422,15 +425,16 @@ RCT_EXPORT_METHOD(putFile:
 
 - (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
     NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
-    FIRStorageMetadata *metadata = [task.metadata dictionaryRepresentation];
+    FIRStorageMetadata *metadata = [[FIRStorageMetadata alloc] initWithDictionary:[task.metadata dictionaryRepresentation]];
     return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadUrl": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
 }
 
 - (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {
-    NSMutableDictionary *result = [metadata mutableCopy];
-    result[@"metadata"] = metadata[@"customMetadata"];
-    [result removeObjectForKey:@"customMetadata"];
-    return [[FIRStorageMetadata alloc] initWithDictionary:result];
+    NSMutableDictionary *metaCopy = [metadata mutableCopy];
+    [metaCopy removeObjectForKey:@"customMetadata"];
+    FIRStorageMetadata *storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metaCopy];
+    storageMetadata.customMetadata = [metadata[@"customMetadata"] mutableCopy];
+    return storageMetadata;
 }
 
 - (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
