@@ -1,4 +1,14 @@
-function storageTests({ describe, it, firebase, tryCatch }) {
+import RNfirebase from './../../../firebase/firebase';
+
+function storageTests({ describe, fdescribe, it, firebase, tryCatch }) {
+  fdescribe('ref(:path)', () => {
+    it('toString() should return the correct bucket path to the file', () => {
+      const app = RNfirebase.app();
+      firebase.native.storage().ref('/uploadNope.jpeg').toString()
+        .should.equal(`gs://${app.options.storageBucket}/uploadNope.jpeg`);
+    });
+  });
+
   describe('downloadFile()', () => {
     it('it should error on download file if permission denied', () => {
       return new Promise((resolve, reject) => {
