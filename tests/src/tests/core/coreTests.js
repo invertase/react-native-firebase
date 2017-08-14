@@ -7,7 +7,7 @@ const androidTestConfig = {
   // firebase android sdk completely ignores client id
   clientId: '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
   appId: '1:305229645282:android:efe37851d57e1d05',
-  apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
+  apiKey: 'AIzaSyCzbBYFyX8d6VdSu7T4s10IWYbPc-dguwM',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
   storageBucket: 'rnfirebase-b9ad4.appspot.com',
   messagingSenderId: '305229645282',
@@ -18,21 +18,27 @@ const iosTestConfig = {
   clientId: '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
   androidClientId: androidTestConfig.clientId,
   appId: '1:305229645282:ios:7b45748cb1117d2d',
-  apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
+  apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
   storageBucket: 'rnfirebase-b9ad4.appspot.com',
   messagingSenderId: '305229645282',
   projectId: 'rnfirebase-b9ad4',
 };
 
-function coreTests({ before, describe, it, firebase }) {
-  before(() => {
-    // todo
-  });
-
+function coreTests({ describe, it }) {
   describe('Core', () => {
     it('it should create js apps for natively initialized apps', () => {
       should.equal(RNFirebase.app()._nativeInitialized, true);
+      return Promise.resolve();
+    });
+
+    it('natively initialized apps should have options available in js', () => {
+      should.equal(RNFirebase.app().options.apiKey, Platform.OS === 'ios' ? iosTestConfig.apiKey : androidTestConfig.apiKey);
+      should.equal(RNFirebase.app().options.appId, Platform.OS === 'ios' ? iosTestConfig.appId : androidTestConfig.appId);
+      should.equal(RNFirebase.app().options.databaseURL, iosTestConfig.databaseURL);
+      should.equal(RNFirebase.app().options.messagingSenderId, iosTestConfig.messagingSenderId);
+      should.equal(RNFirebase.app().options.projectId, iosTestConfig.projectId);
+      should.equal(RNFirebase.app().options.storageBucket, iosTestConfig.storageBucket);
       return Promise.resolve();
     });
 
