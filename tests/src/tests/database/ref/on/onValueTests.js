@@ -2,9 +2,10 @@ import sinon from 'sinon';
 import 'should-sinon';
 import Promise from 'bluebird';
 
+import RNFirebase from './../../../../../firebase/firebase';
 import DatabaseContents from '../../../support/DatabaseContents';
 
-function onTests({ describe, context, it, firebase, tryCatch }) {
+function onTests({ describe, context, it, fit, firebase, tryCatch }) {
   describe('ref().on(\'value\')', () => {
     // Documented Web API Behaviour
     it('returns the success callback', () => {
@@ -92,12 +93,10 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
       const currentDataValue = DatabaseContents.DEFAULT.object;
 
       const callback = sinon.spy();
-
       // Test
 
       await new Promise((resolve) => {
         ref.on('value', (snapshot) => {
-          console.log('>>> SNAP',snapshot.val())
           callback(snapshot.val());
           resolve();
         });
@@ -125,40 +124,47 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
     });
 
     it('calls callback when child of the ref is added', async () => {
-      const ref = firebase.native.database().ref('tests/types/array');
-      const currentDataValue = DatabaseContents.DEFAULT.array;
+      return new Promise((resolve, reject) => {
+        const ref = firebase.native.database().ref('tests/types/array');
+        const currentDataValue = DatabaseContents.DEFAULT.array;
 
-      const callback = sinon.spy();
+        const callback = sinon.spy();
+        const callbackAfterSet = sinon.spy();
 
-      // Test
+        let newKey = '';
+        let calledOnce = false;
+        let calledTwice = false;
+        ref.on('value', tryCatch((snapshot) => {
+          if (!calledOnce) {
+            callback(snapshot.val());
+            callback.should.be.calledWith(currentDataValue);
+            calledOnce = true;
 
-      await new Promise((resolve) => {
-        ref.on('value', (snapshot) => {
-          callback(snapshot.val());
-          resolve();
-        });
+            const newElementRef = ref.push();
+            newKey = newElementRef.key;
+            newElementRef.set(37);
+          } else {
+            if (!calledTwice) {
+              calledTwice = true;
+              callbackAfterSet(snapshot.val());
+              const arrayAsObject = currentDataValue.reduce((memo, element, index) => {
+                memo[index] = element;
+                return memo;
+              }, {});
+
+              // Assertions
+              callbackAfterSet.should.be.calledWith({
+                ...arrayAsObject,
+                [newKey]: 37,
+              });
+
+              // Tear down
+              ref.off(); // TODO
+              ref.set(currentDataValue).then(() => resolve()).catch(() => reject());
+            } // todo throw new Error('On listener called more than two times, expects no more than 2 calls');
+          }
+        }, reject));
       });
-
-      callback.should.be.calledWith(currentDataValue);
-
-      const newElementRef = await ref.push(37);
-
-      const arrayAsObject = currentDataValue.reduce((memo, element, index) => {
-        memo[index] = element;
-        return memo;
-      }, {});
-
-      // Assertions
-      callback.should.be.calledWith({
-        ...arrayAsObject,
-        [newElementRef.key]: 37,
-      });
-      callback.should.be.calledTwice();
-
-      // Tear down
-
-      ref.off();
-      await ref.set(currentDataValue);
     });
 
     it('doesn\'t call callback when the ref is updated with the same value', async () => {
@@ -258,6 +264,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
         });
       });
 
+
       // Documented Web API Behaviour
       it('then calls callback bound to the specified context with the initial data and then when value changes', () => {
         return Promise.each(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
@@ -273,7 +280,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
           // Test
 
           await new Promise((resolve) => {
-            ref.on('value', function(snapshot) {
+            ref.on('value', function (snapshot) {
               this.value = snapshot.val();
               this.callCount += 1;
               resolve();
@@ -297,7 +304,6 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
           await ref.set(currentDataValue);
         });
       });
-
     });
 
     // Observed Web API Behaviour
@@ -310,9 +316,11 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
         return new Promise((resolve, reject) => {
           invalidRef.on('value', callback, tryCatch((error) => {
             error.message.should.eql(
-              'permission_denied at /nope: Client doesn\'t have permission to access the desired data.'
+              `Database: Client doesn't have permission to access the desired data. (database/permission-denied).`,
             );
-            error.name.should.eql('Error');
+            error.code.should.eql('DATABASE/PERMISSION-DENIED');
+            error.path.should.eql('nope');
+            error.appName.should.eql(RNFirebase.DEFAULT_APP_NAME);
 
             callback.should.not.be.called();
 
@@ -321,49 +329,6 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
           }, reject));
         });
       });
-
-      // Documented Web API Behaviour
-      it('then calls callback bound to the specified context with the initial data and then when value changes', () => {
-        return Promise.each(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
-          // Setup
-
-          const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
-          const currentDataValue = DatabaseContents.DEFAULT[dataRef];
-
-          const context = {
-            callCount: 0,
-          };
-
-          const failureCallback = sinon.spy();
-
-          // Test
-
-          await new Promise((resolve) => {
-            ref.on('value', function(snapshot) {
-              this.value = snapshot.val();
-              this.callCount += 1;
-              resolve();
-            }, failureCallback, context);
-          });
-
-          failureCallback.should.not.be.called();
-          context.value.should.eql(currentDataValue);
-          context.callCount.should.eql(1);
-
-          const newDataValue = DatabaseContents.NEW[dataRef];
-          await ref.set(newDataValue);
-
-          // Assertions
-
-          context.value.should.eql(newDataValue);
-          context.callCount.should.eql(2);
-
-          // Tear down
-
-          ref.off();
-          await ref.set(currentDataValue);
-        });
-      })
     });
   });
 }
