@@ -97,6 +97,7 @@ function onTests({ fdescribe, context, it, firebase, tryCatch }) {
 
       await new Promise((resolve) => {
         ref.on('value', (snapshot) => {
+          console.log('>>> SNAP',snapshot.val())
           callback(snapshot.val());
           resolve();
         });

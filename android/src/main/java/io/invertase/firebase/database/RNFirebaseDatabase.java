@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ServerValue;
@@ -21,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +33,39 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
+  private HashMap<String, ChildEventListener> childEventListeners;
+  private HashMap<String, ValueEventListener> valueEventListeners;
   private SparseArray<RNFirebaseDatabaseReference> references = new SparseArray<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
     super(reactContext);
+    childEventListeners = new HashMap<String, ChildEventListener>();
+    valueEventListeners = new HashMap<String, ValueEventListener>();
+  }
+
+  Boolean hasValueEventListener(String queryKey) {
+    return valueEventListeners.containsKey(queryKey);
+  }
+
+  Boolean hasChildEventListener(String queryKey) {
+    return childEventListeners.containsKey(queryKey);
+  }
+
+  void addValueEventListener(String queryKey, ValueEventListener listener) {
+    valueEventListeners.put(queryKey, listener);
+  }
+
+  void addChildEventListener(String queryKey, ChildEventListener listener) {
+    childEventListeners.put(queryKey, listener);
+  }
+
+  void removeValueEventListener(String queryKey) {
+    valueEventListeners.remove(queryKey);
+  }
+
+  void removeChildEventListener(String queryKey) {
+    childEventListeners.remove(queryKey);
   }
 
   /*
@@ -394,17 +424,20 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   /**
    * Subscribe to real time events for the specified database path + modifiers
    *
-   * @param appName
-   * @param refId
-   * @param path
-   * @param modifiers
-   * @param eventName
-   * @param promise
+   * @param appName String
+   * @param args    ReadableMap
    */
   @ReactMethod
-  public void on(String appName, int refId, String path, ReadableArray modifiers, String eventName, Promise promise) {
-    getInternalReferenceForApp(appName, refId, path, modifiers, true).on(eventName);
+  public void on(String appName, ReadableMap args) {
+    RNFirebaseDatabaseReference ref = getInternalReferenceForApp(
+      appName,
+      args.getInt("id"),
+      args.getString("path"),
+      args.getArray("modifiers"),
+      true
+    );
 
+    ref.on(this, args.getString("eventType"), args.getString("eventQueryKey"));
   }
 
   /*

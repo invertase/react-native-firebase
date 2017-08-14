@@ -81,10 +81,9 @@ public class Utils {
    * @param path
    * @param dataSnapshot
    * @param refId
-   * @param listenerId
    * @return
    */
-  public static WritableMap snapshotToMap(String name, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName, int refId, int listenerId) {
+  public static WritableMap snapshotToMap(String name, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName, int refId) {
     WritableMap snapshot = Arguments.createMap();
     WritableMap eventMap = Arguments.createMap();
 
@@ -111,7 +110,6 @@ public class Utils {
     eventMap.putString("path", path);
     eventMap.putMap("snapshot", snapshot);
     eventMap.putString("eventName", name);
-    eventMap.putInt("listenerId", listenerId);
     eventMap.putString("previousChildName", previousChildName);
 
     return eventMap;

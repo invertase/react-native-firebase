@@ -22,10 +22,11 @@ import priorityTests from './priorityTests';
 import DatabaseContents from '../../support/DatabaseContents';
 
 const testGroups = [
-  issueSpecificTests, factoryTests, keyTests, parentTests, childTests, rootTests,
-  pushTests, onTests, onValueTests, onChildAddedTests, offTests, onceTests, updateTests,
-  removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
-  priorityTests,
+  // issueSpecificTests, factoryTests, keyTests, parentTests, childTests, rootTests,
+  // pushTests, onTests, onValueTests, onChildAddedTests, offTests, onceTests, updateTests,
+  // removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
+  // priorityTests,
+  onValueTests, onChildAddedTests, offTests,
 ];
 
 function registerTestSuite(testSuite) {
