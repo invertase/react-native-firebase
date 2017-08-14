@@ -1,7 +1,7 @@
 import DatabaseContents from '../../support/DatabaseContents';
 
-function removeTests({ fdescribe, it, firebase }) {
-  fdescribe('ref().remove()', () => {
+function removeTests({ describe, it, firebase }) {
+  describe('ref().remove()', () => {
     it('returns a promise', () => {
       // Setup
 

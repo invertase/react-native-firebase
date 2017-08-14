@@ -1,8 +1,8 @@
 import Promise from 'bluebird';
 import DatabaseContents from '../../support/DatabaseContents';
 
-function updateTests({ fdescribe, it, firebase }) {
-  fdescribe('ref().update()', () => {
+function updateTests({ describe, it, firebase }) {
+  describe('ref().update()', () => {
     it('returns a promise', () => {
       // Setup
 

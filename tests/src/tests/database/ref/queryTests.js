@@ -1,8 +1,8 @@
 import 'should-sinon';
 import Promise from 'bluebird';
 
-function queryTests({ fdescribe, it, firebase, tryCatch }) {
-  fdescribe('ref query', () => {
+function queryTests({ describe, it, firebase, tryCatch }) {
+  describe('ref query', () => {
     it('orderByChild().equalTo()', () => {
       return new Promise((resolve, reject) => {
         const successCb = tryCatch((snapshot) => {

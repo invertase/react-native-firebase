@@ -3,8 +3,8 @@ import sinon from 'sinon';
 
 import DatabaseContents from '../../support/DatabaseContents';
 
-function offTests({ fdescribe, it, xcontext, context, firebase }) {
-  fdescribe('ref().off()', () => {
+function offTests({ describe, it, xcontext, context, firebase }) {
+  describe('ref().off()', () => {
     it('doesn\'t unbind children callbacks', async () => {
       // Setup
 

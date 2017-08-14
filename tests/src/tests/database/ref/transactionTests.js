@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
 
-function onTests({ fdescribe, it, firebase, tryCatch }) {
-  fdescribe('ref.transaction()', () => {
+function onTests({ describe, it, firebase, tryCatch }) {
+  describe('ref.transaction()', () => {
     it('increments a value on a ref', () => {
       return new Promise((resolve, reject) => {
         let valueBefore = 1;

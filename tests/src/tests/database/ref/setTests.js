@@ -1,7 +1,7 @@
 import DatabaseContents from '../../support/DatabaseContents';
 
-function setTests({ fdescribe, it, xit, firebase }) {
-  fdescribe('ref.set()', () => {
+function setTests({ describe, it, xit, firebase }) {
+  describe('ref.set()', () => {
     it('returns a promise', async () => {
       // Setup
 

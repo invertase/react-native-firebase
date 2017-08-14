@@ -1,5 +1,5 @@
-function childTests({ fdescribe, it, context, firebase }) {
-  fdescribe('ref().child', () => {
+function childTests({ describe, it, context, firebase }) {
+  describe('ref().child', () => {
     context('when passed a shallow path', () => {
       it('returns correct child ref', () => {
         // Setup

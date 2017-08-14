@@ -1,7 +1,7 @@
 import DatabaseContents from '../../support/DatabaseContents';
 
-function factoryTests({ fdescribe, it, firebase }) {
-  fdescribe('ref()', () => {
+function factoryTests({ describe, it, firebase }) {
+  describe('ref()', () => {
     it('returns root reference when provided no path', () => {
       // Setup
 

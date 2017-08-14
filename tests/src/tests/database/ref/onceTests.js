@@ -3,8 +3,8 @@ import 'should-sinon';
 
 import DatabaseContents from '../../support/DatabaseContents';
 
-function onceTests({ fdescribe, firebase, it, tryCatch }) {
-  fdescribe('ref().once()', () => {
+function onceTests({ describe, firebase, it, tryCatch }) {
+  describe('ref().once()', () => {
     it('returns a promise', () => {
       // Setup
 

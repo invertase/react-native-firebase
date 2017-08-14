@@ -1,7 +1,7 @@
 import RNfirebase from './../../../firebase/firebase';
 
-function storageTests({ describe, fdescribe, it, firebase, tryCatch }) {
-  fdescribe('ref(:path)', () => {
+function storageTests({ describe, it, firebase, tryCatch }) {
+  describe('ref(:path)', () => {
     it('toString() should return the correct bucket path to the file', () => {
       const app = RNfirebase.app();
       firebase.native.storage().ref('/uploadNope.jpeg').toString()
