@@ -256,16 +256,12 @@ public class RNFirebaseDatabaseReference {
    *
    * @param error
    */
-  private void handleDatabaseError(String queryKey, final DatabaseError error) {
-    WritableMap errMap = Arguments.createMap();
+  private void handleDatabaseError(String queryKey, DatabaseError error) {
+    WritableMap errMap = RNFirebaseDatabase.getJSError(error);
     errMap.putInt("refId", refId);
     errMap.putString("path", path);
     errMap.putString("appName", appName);
     errMap.putString("queryKey", queryKey);
-    errMap.putInt("code", error.getCode());
-    errMap.putString("details", error.getDetails());
-    errMap.putString("message", error.getMessage());
-
     Utils.sendEvent(reactContext, "database_cancel_event", errMap);
   }
 
