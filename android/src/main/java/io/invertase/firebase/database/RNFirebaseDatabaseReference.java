@@ -1,16 +1,14 @@
 package io.invertase.firebase.database;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
 import android.util.Log;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -24,10 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseDatabaseReference {
+class RNFirebaseDatabaseReference {
   private static final String TAG = "RNFirebaseDBReference";
 
-  private int refId;
+  private String key;
   private Query query;
   private String path;
   private String appName;
@@ -41,12 +39,12 @@ public class RNFirebaseDatabaseReference {
   /**
    * @param context
    * @param app
-   * @param id
+   * @param refKey
    * @param refPath
    * @param modifiersArray
    */
-  RNFirebaseDatabaseReference(ReactContext context, String app, int id, String refPath, ReadableArray modifiersArray) {
-    refId = id;
+  RNFirebaseDatabaseReference(ReactContext context, String app, String refKey, String refPath, ReadableArray modifiersArray) {
+    key = refKey;
     appName = app;
     path = refPath;
     reactContext = context;
@@ -62,7 +60,7 @@ public class RNFirebaseDatabaseReference {
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap("value", path, dataSnapshot, null, refId);
+        WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
         promise.resolve(data);
       }
 
@@ -74,7 +72,7 @@ public class RNFirebaseDatabaseReference {
 
     query.addListenerForSingleValueEvent(onceValueEventListener);
 
-    Log.d(TAG, "Added OnceValueEventListener for refId: " + refId);
+    Log.d(TAG, "Added OnceValueEventListener for key: " + key);
   }
 
   /**
@@ -89,7 +87,7 @@ public class RNFirebaseDatabaseReference {
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_added", path, dataSnapshot, previousChildName, refId);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -98,7 +96,7 @@ public class RNFirebaseDatabaseReference {
       public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_changed", path, dataSnapshot, previousChildName, refId);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -107,7 +105,7 @@ public class RNFirebaseDatabaseReference {
       public void onChildRemoved(DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_removed", path, dataSnapshot, null, refId);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
           promise.resolve(data);
         }
       }
@@ -116,7 +114,7 @@ public class RNFirebaseDatabaseReference {
       public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_moved", path, dataSnapshot, previousChildName, refId);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -135,13 +133,14 @@ public class RNFirebaseDatabaseReference {
   /**
    * Handles a React Native JS 'on' request and initializes listeners.
    *
-   * @param eventName
+   * @param database
+   * @param registration
    */
-  void on(RNFirebaseDatabase database, String eventName, String queryKey) {
-    if (eventName.equals("value")) {
-      addValueEventListener(queryKey, database);
+  void on(RNFirebaseDatabase database, String eventType, ReadableMap registration) {
+    if (eventType.equals("value")) {
+      addValueEventListener(registration, database);
     } else {
-      addChildEventListener(queryKey, database, eventName);
+      addChildEventListener(registration, eventType, database);
     }
   }
 
@@ -161,94 +160,100 @@ public class RNFirebaseDatabaseReference {
 
 
   /**
-   * @param queryKey
-   * @param eventName
+   * @param registration
+   * @param eventType
+   * @param database
    */
-  private void addChildEventListener(final String queryKey, final RNFirebaseDatabase database, final String eventName) {
-    if (!database.hasChildEventListener(queryKey)) {
+  private void addChildEventListener(final ReadableMap registration, final String eventType, final RNFirebaseDatabase database) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
+
+    if (!database.hasChildEventListener(eventRegistrationKey)) {
       ChildEventListener childEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_added".equals(eventName)) {
-            handleDatabaseEvent("child_added", queryKey, dataSnapshot, previousChildName);
+          if ("child_added".equals(eventType)) {
+            handleDatabaseEvent("child_added", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_changed".equals(eventName)) {
-            handleDatabaseEvent("child_changed", queryKey, dataSnapshot, previousChildName);
+          if ("child_changed".equals(eventType)) {
+            handleDatabaseEvent("child_changed", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-          if ("child_removed".equals(eventName)) {
-            handleDatabaseEvent("child_removed", queryKey, dataSnapshot, null);
+          if ("child_removed".equals(eventType)) {
+            handleDatabaseEvent("child_removed", registration, dataSnapshot, null);
           }
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_moved".equals(eventName)) {
-            handleDatabaseEvent("child_moved", queryKey, dataSnapshot, previousChildName);
+          if ("child_moved".equals(eventType)) {
+            handleDatabaseEvent("child_moved", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
           query.removeEventListener(this);
-          database.removeChildEventListener(queryKey);
-          handleDatabaseError(queryKey, error);
+          database.removeChildEventListener(eventRegistrationKey);
+          handleDatabaseError(registration, error);
         }
       };
 
-      database.addChildEventListener(queryKey, childEventListener);
+      database.addChildEventListener(eventRegistrationKey, childEventListener);
       query.addChildEventListener(childEventListener);
     }
   }
 
   /**
-   * @param queryKey
+   * @param registration
    */
-  private void addValueEventListener(final String queryKey, final RNFirebaseDatabase database) {
-    if (!database.hasValueEventListener(queryKey)) {
+  private void addValueEventListener(final ReadableMap registration, final RNFirebaseDatabase database) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
+
+    if (!database.hasValueEventListener(eventRegistrationKey)) {
       ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-          handleDatabaseEvent("value", queryKey, dataSnapshot, null);
+          handleDatabaseEvent("value", registration, dataSnapshot, null);
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
           query.removeEventListener(this);
-          database.removeValueEventListener(queryKey);
-          handleDatabaseError(queryKey, error);
+          database.removeValueEventListener(eventRegistrationKey);
+          handleDatabaseError(registration, error);
         }
       };
 
-      database.addValueEventListener(queryKey, valueEventListener);
+      database.addValueEventListener(eventRegistrationKey, valueEventListener);
       query.addValueEventListener(valueEventListener);
     }
   }
 
 
   /**
-   * @param name
+   * @param eventType
    * @param dataSnapshot
    * @param previousChildName
    */
-  private void handleDatabaseEvent(final String name, String queryKey, final DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-    WritableMap evt = Arguments.createMap();
-    WritableMap data = Utils.snapshotToMap(name, path, dataSnapshot, previousChildName, refId);
+  private void handleDatabaseEvent(String eventType, ReadableMap registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+    WritableMap event = Arguments.createMap();
+    WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
 
-    evt.putMap("body", data);
-    evt.putInt("refId", refId);
-    evt.putString("eventName", name);
-    evt.putString("appName", appName);
-    evt.putString("queryKey", queryKey);
+    event.putMap("data", data);
+    event.putString("key", key);
+    event.putString("eventType", eventType);
+    event.putMap("registration", Utils.readableMapToWritableMap(registration));
 
-    Utils.sendEvent(reactContext, "database_on_event", evt);
+    Utils.sendEvent(reactContext, "database_sync_event", event);
   }
 
   /**
@@ -256,13 +261,14 @@ public class RNFirebaseDatabaseReference {
    *
    * @param error
    */
-  private void handleDatabaseError(String queryKey, DatabaseError error) {
-    WritableMap errMap = RNFirebaseDatabase.getJSError(error);
-    errMap.putInt("refId", refId);
-    errMap.putString("path", path);
-    errMap.putString("appName", appName);
-    errMap.putString("queryKey", queryKey);
-    Utils.sendEvent(reactContext, "database_cancel_event", errMap);
+  private void handleDatabaseError(ReadableMap registration, DatabaseError error) {
+    WritableMap event = Arguments.createMap();
+
+    event.putString("key", key);
+    event.putMap("error", RNFirebaseDatabase.getJSError(error));
+    event.putMap("registration", Utils.readableMapToWritableMap(registration));
+
+    Utils.sendEvent(reactContext, "database_sync_event", event);
   }
 
 

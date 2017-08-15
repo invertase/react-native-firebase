@@ -60,23 +60,19 @@ function pushTests({ describe, it, firebase }) {
 
       return ref.once('value')
         .then((snapshot) => {
-          console.log('first once');
           originalListValue = snapshot.val();
           return ref.push(valueToAddToList);
         })
         .then((pushRef) => {
-          console.log('after push');
           newItemRef = pushRef;
           return newItemRef.once('value');
         })
         .then((snapshot) => {
-          console.log('second once');
           newItemValue = snapshot.val();
           newItemValue.should.eql(valueToAddToList);
           return firebase.native.database().ref('tests/types/array').once('value');
         })
         .then((snapshot) => {
-          console.log('third once');
           newListValue = snapshot.val();
           const originalListAsObject = originalListValue.reduce((memo, value, index) => {
             memo[index] = value;

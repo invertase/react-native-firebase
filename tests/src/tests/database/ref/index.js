@@ -26,8 +26,8 @@ const testGroups = [
   pushTests, onTests, onValueTests, onChildAddedTests, onceTests, updateTests,
   removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
   priorityTests,
-  onValueTests, onChildAddedTests, // offTests, // TODO remove for now, until i can fix, want to see the others working first
-  // onTests,
+  onValueTests, onChildAddedTests,
+  offTests,
 ];
 
 function registerTestSuite(testSuite) {

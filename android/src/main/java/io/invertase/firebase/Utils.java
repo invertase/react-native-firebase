@@ -77,20 +77,21 @@ public class Utils {
   }
 
   /**
-   * @param name
-   * @param path
    * @param dataSnapshot
-   * @param refId
+   * @param registration
+   * @param previousChildName
    * @return
    */
-  public static WritableMap snapshotToMap(String name, String path, DataSnapshot dataSnapshot, @Nullable String previousChildName, int refId) {
+  public static WritableMap snapshotToMap(DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+    WritableMap result = Arguments.createMap();
     WritableMap snapshot = Arguments.createMap();
-    WritableMap eventMap = Arguments.createMap();
 
     snapshot.putString("key", dataSnapshot.getKey());
     snapshot.putBoolean("exists", dataSnapshot.exists());
     snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
     snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
+    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
     if (!dataSnapshot.hasChildren()) {
       mapPutValue("value", dataSnapshot.getValue(), snapshot);
@@ -103,16 +104,50 @@ public class Utils {
       }
     }
 
-    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
-    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
-    eventMap.putInt("refId", refId);
-    eventMap.putString("path", path);
-    eventMap.putMap("snapshot", snapshot);
-    eventMap.putString("eventName", name);
-    eventMap.putString("previousChildName", previousChildName);
+    result.putMap("snapshot", snapshot);
+    result.putString("previousChildName", previousChildName);
+    return result;
+  }
 
-    return eventMap;
+  /**
+   *
+   * @param map
+   * @return
+   */
+  public static WritableMap readableMapToWritableMap(ReadableMap map) {
+    WritableMap writableMap = Arguments.createMap();
+
+    ReadableMapKeySetIterator iterator = map.keySetIterator();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      ReadableType type = map.getType(key);
+      switch (type) {
+        case Null:
+          writableMap.putNull(key);
+          break;
+        case Boolean:
+          writableMap.putBoolean(key, map.getBoolean(key));
+          break;
+        case Number:
+          writableMap.putDouble(key, map.getDouble(key));
+          break;
+        case String:
+          writableMap.putString(key, map.getString(key));
+          break;
+        case Map:
+          writableMap.putMap(key, readableMapToWritableMap(map.getMap(key)));
+          break;
+        case Array:
+          // TODO writableMap.putArray(key, readableArrayToWritableArray(map.getArray(key)));
+          break;
+        default:
+          throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+      }
+
+    }
+
+    return writableMap;
   }
 
   /**

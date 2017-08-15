@@ -35,7 +35,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private HashMap<String, ChildEventListener> childEventListeners;
   private HashMap<String, ValueEventListener> valueEventListeners;
-  private SparseArray<RNFirebaseDatabaseReference> references = new SparseArray<>();
+  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<String, RNFirebaseDatabaseReference>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -103,10 +103,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param state
    */
   @ReactMethod
-  public void keepSynced(String appName, int id, String path, ReadableArray modifiers, Boolean state) {
-    getInternalReferenceForApp(appName, id, path, modifiers, false)
-      .getQuery()
-      .keepSynced(state);
+  public void keepSynced(String appName, String key, String path, ReadableArray modifiers, Boolean state) {
+    getInternalReferenceForApp(appName, key, path, modifiers).getQuery().keepSynced(state);
   }
 
 
@@ -410,34 +408,36 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * Subscribe once to a firebase reference.
    *
    * @param appName
-   * @param refId
+   * @param key
    * @param path
    * @param modifiers
    * @param eventName
    * @param promise
    */
   @ReactMethod
-  public void once(String appName, int refId, String path, ReadableArray modifiers, String eventName, Promise promise) {
-    getInternalReferenceForApp(appName, refId, path, modifiers, false).once(eventName, promise);
+  public void once(String appName, String key, String path, ReadableArray modifiers, String eventName, Promise promise) {
+    getInternalReferenceForApp(appName, key, path, modifiers).once(eventName, promise);
   }
 
   /**
    * Subscribe to real time events for the specified database path + modifiers
    *
    * @param appName String
-   * @param args    ReadableMap
+   * @param props   ReadableMap
    */
   @ReactMethod
-  public void on(String appName, ReadableMap args) {
-    RNFirebaseDatabaseReference ref = getInternalReferenceForApp(
-      appName,
-      args.getInt("id"),
-      args.getString("path"),
-      args.getArray("modifiers"),
-      true
+  public void on(String appName, ReadableMap props) {
+    getInternalReferenceForApp(appName, props).on(
+      this,
+      props.getString("eventType"),
+      props.getMap("registration")
     );
+  }
 
-    ref.on(this, args.getString("eventType"), args.getString("eventQueryKey"));
+
+  @ReactMethod
+  public void off(String appName, ReadableMap args) {
+
   }
 
   /*
@@ -511,25 +511,49 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * Return an existing or create a new RNFirebaseDatabaseReference instance.
    *
    * @param appName
-   * @param refId
+   * @param key
    * @param path
    * @param modifiers
-   * @param keep
    * @return
    */
-  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, int refId, String path, ReadableArray modifiers, Boolean keep) {
-    RNFirebaseDatabaseReference existingRef = references.get(refId);
+  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, String key, String path, ReadableArray modifiers) {
+    RNFirebaseDatabaseReference existingRef = references.get(key);
 
     if (existingRef == null) {
       existingRef = new RNFirebaseDatabaseReference(
         getReactApplicationContext(),
         appName,
-        refId,
+        key,
+        path,
+        modifiers
+      );
+    }
+
+    return existingRef;
+  }
+
+  /**
+   * @param appName
+   * @param props
+   * @return
+   */
+  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, ReadableMap props) {
+    String key = props.getString("key");
+    String path = props.getString("path");
+    ReadableArray modifiers = props.getArray("modifiers");
+
+    RNFirebaseDatabaseReference existingRef = references.get(key);
+
+    if (existingRef == null) {
+      existingRef = new RNFirebaseDatabaseReference(
+        getReactApplicationContext(),
+        appName,
+        key,
         path,
         modifiers
       );
 
-      if (keep) references.put(refId, existingRef);
+      references.put(key, existingRef);
     }
 
     return existingRef;
