@@ -5,7 +5,6 @@
 #import "RNFirebaseEvents.h"
 #import <Photos/Photos.h>
 #import "Firebase.h"
-#import "../../../../../../../../../Applications/Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSObject.h"
 
 @implementation RNFirebaseStorage
 
