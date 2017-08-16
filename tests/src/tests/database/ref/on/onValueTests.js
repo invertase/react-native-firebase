@@ -2,10 +2,9 @@ import sinon from 'sinon';
 import 'should-sinon';
 import Promise from 'bluebird';
 
-import RNFirebase from './../../../../../firebase/firebase';
 import DatabaseContents from '../../../support/DatabaseContents';
 
-function onTests({ describe, context, it, fit, firebase, tryCatch }) {
+function onTests({ describe, context, it, firebase, tryCatch }) {
   describe('ref().on(\'value\')', () => {
     // Documented Web API Behaviour
     it('returns the success callback', () => {
@@ -45,6 +44,12 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
 
       await ref.set(1);
 
+      // wait for the set to register internally, they're events
+      // so not immediately available on the next event loop - only need to this do for tests
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 15);
+      });
+
       callback.should.be.calledWith(1);
 
       // Teardown
@@ -76,6 +81,10 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
         const newDataValue = DatabaseContents.NEW[dataRef];
         await ref.set(newDataValue);
 
+        await new Promise((resolve) => {
+          setTimeout(() => resolve(), 5);
+        });
+
         // Assertions
 
         callback.should.be.calledWith(newDataValue);
@@ -84,7 +93,7 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
         // Tear down
 
         ref.off();
-        await ref.set(currentDataValue);
+        return ref.set(currentDataValue);
       });
     });
 
@@ -108,6 +117,9 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
       const childRef = firebase.native.database().ref('tests/types/object/foo2');
       await childRef.set(newDataValue);
 
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
       // Assertions
 
       callback.should.be.calledWith({
@@ -120,7 +132,7 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
       // Tear down
 
       ref.off();
-      await ref.set(currentDataValue);
+      return ref.set(currentDataValue);
     });
 
     it('calls callback when child of the ref is added', async () => {
@@ -143,26 +155,25 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
             const newElementRef = ref.push();
             newKey = newElementRef.key;
             newElementRef.set(37);
-          } else {
-            if (!calledTwice) {
-              calledTwice = true;
-              callbackAfterSet(snapshot.val());
-              const arrayAsObject = currentDataValue.reduce((memo, element, index) => {
-                memo[index] = element;
-                return memo;
-              }, {});
+          } else if (!calledTwice) {
+            calledTwice = true;
+            callbackAfterSet(snapshot.val());
+            const arrayAsObject = currentDataValue.reduce((memo, element, index) => {
+              // eslint-disable-next-line no-param-reassign
+              memo[index] = element;
+              return memo;
+            }, {});
 
-              // Assertions
-              callbackAfterSet.should.be.calledWith({
-                ...arrayAsObject,
-                [newKey]: 37,
-              });
+            // Assertions
+            callbackAfterSet.should.be.calledWith({
+              ...arrayAsObject,
+              [newKey]: 37,
+            });
 
-              // Tear down
-              ref.off(); // TODO
-              ref.set(currentDataValue).then(() => resolve()).catch(() => reject());
-            } // todo throw new Error('On listener called more than two times, expects no more than 2 calls');
-          }
+            // Tear down
+            ref.off(); // TODO
+            ref.set(currentDataValue).then(() => resolve()).catch(() => reject());
+          } // todo throw new Error('On listener called more than two times, expects no more than 2 calls');
         }, reject));
       });
     });
@@ -186,6 +197,9 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
 
       await ref.set(currentDataValue);
 
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
       // Assertions
 
       callback.should.be.calledOnce(); // Callback is not called again
@@ -231,6 +245,10 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
         const newDataValue = DatabaseContents.NEW[dataRef];
         await ref.set(newDataValue);
 
+        await new Promise((resolve) => {
+          setTimeout(() => resolve(), 5);
+        });
+
         callbackA.should.be.calledWith(newDataValue);
         callbackB.should.be.calledWith(newDataValue);
 
@@ -240,6 +258,7 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
         // Tear down
 
         ref.off();
+        return Promise.resolve();
       });
     });
 
@@ -273,7 +292,7 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
           const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
           const currentDataValue = DatabaseContents.DEFAULT[dataRef];
 
-          const context = {
+          const cbContext = {
             callCount: 0,
           };
 
@@ -284,24 +303,28 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
               this.value = snapshot.val();
               this.callCount += 1;
               resolve();
-            }, context);
+            }, cbContext);
           });
 
-          context.value.should.eql(currentDataValue);
-          context.callCount.should.eql(1);
+          cbContext.value.should.eql(currentDataValue);
+          cbContext.callCount.should.eql(1);
 
           const newDataValue = DatabaseContents.NEW[dataRef];
           await ref.set(newDataValue);
 
+          await new Promise((resolve) => {
+            setTimeout(() => resolve(), 5);
+          });
+
           // Assertions
 
-          context.value.should.eql(newDataValue);
-          context.callCount.should.eql(2);
+          cbContext.value.should.eql(newDataValue);
+          cbContext.callCount.should.eql(2);
 
           // Tear down
 
           ref.off();
-          await ref.set(currentDataValue);
+          return ref.set(currentDataValue);
         });
       });
     });
@@ -316,11 +339,14 @@ function onTests({ describe, context, it, fit, firebase, tryCatch }) {
         return new Promise((resolve, reject) => {
           invalidRef.on('value', callback, tryCatch((error) => {
             error.message.should.eql(
-              `Database: Client doesn't have permission to access the desired data. (database/permission-denied).`,
+              'Database: Client doesn\'t have permission to access the desired data. (database/permission-denied).',
             );
+
             error.code.should.eql('DATABASE/PERMISSION-DENIED');
-            error.path.should.eql('nope');
-            error.appName.should.eql(RNFirebase.DEFAULT_APP_NAME);
+
+            // test ref matches
+            error.ref.path.should.eql(invalidRef.path);
+
 
             callback.should.not.be.called();
 
