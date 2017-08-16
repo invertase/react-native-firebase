@@ -135,7 +135,7 @@ class TestSuiteDefinition {
       this.currentTestContext[hookAttribute] = this.currentTestContext[hookAttribute] || [];
       this.currentTestContext[hookAttribute].push({
         callback,
-        timeout: options.timeout || 5000,
+        timeout: options.timeout || 15000,
       });
     } else {
       testDefinitionError(`non-function value ${callback} passed to ${hookName} for '${this.currentTestContext.name}'`);
