@@ -28,7 +28,7 @@
     if (!_listeners[listenerId]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
             NSDictionary *props = [RNFirebaseDatabaseReference snapshotToDict:snapshot];
-            [self sendJSEvent:DATABASE_ON_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}];
+            [self sendJSEvent:DATABASE_SYNC_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
@@ -130,13 +130,13 @@
 }
 
 - (NSDictionary *)getAndSendDatabaseError:(NSError *)error listenerId:(NSNumber *)listenerId {
-    NSDictionary *event = @{@"eventName": DATABASE_CANCEL_EVENT, @"path": _path, @"refId": _refId, @"listenerId": listenerId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]};
+    NSDictionary *event = @{@"eventName": DATABASE_SYNC_EVENT, @"path": _path, @"refId": _refId, @"listenerId": listenerId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]};
 
     @try {
-        [_emitter sendEventWithName:DATABASE_CANCEL_EVENT body:event];
+        [_emitter sendEventWithName:DATABASE_SYNC_EVENT body:event];
     } @catch (NSException *err) {
         NSLog(@"An error occurred in getAndSendDatabaseError: %@", [err debugDescription]);
-        NSLog(@"Tried to send: %@ with %@", DATABASE_CANCEL_EVENT, event);
+        NSLog(@"Tried to send: %@ with %@", DATABASE_SYNC_EVENT, event);
     }
 
     return event;
