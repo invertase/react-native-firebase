@@ -1,5 +1,6 @@
 package io.invertase.firebase.database;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -23,20 +24,21 @@ import com.google.firebase.database.ValueEventListener;
 import io.invertase.firebase.Utils;
 
 class RNFirebaseDatabaseReference {
-  private static final String TAG = "RNFirebaseDBReference";
-
   private String key;
   private Query query;
-  private String path;
   private String appName;
   private ReactContext reactContext;
-
+  private static final String TAG = "RNFirebaseDBReference";
+  private HashMap<String, ChildEventListener> childEventListeners;
+  private HashMap<String, ValueEventListener> valueEventListeners;
 
   Query getQuery() {
     return query;
   }
 
   /**
+   * TODO
+   *
    * @param context
    * @param app
    * @param refKey
@@ -46,9 +48,67 @@ class RNFirebaseDatabaseReference {
   RNFirebaseDatabaseReference(ReactContext context, String app, String refKey, String refPath, ReadableArray modifiersArray) {
     key = refKey;
     appName = app;
-    path = refPath;
     reactContext = context;
-    query = buildDatabaseQueryAtPathAndModifiers(path, modifiersArray);
+    childEventListeners = new HashMap<String, ChildEventListener>();
+    valueEventListeners = new HashMap<String, ValueEventListener>();
+    query = buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
+  }
+
+  /**
+   * Returns true/false whether this internal ref has a specific listener by eventRegistrationKey.
+   *
+   * @param eventRegistrationKey
+   * @return
+   */
+  private Boolean hasEventListener(String eventRegistrationKey) {
+    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(eventRegistrationKey);
+  }
+
+  /**
+   * Returns true/false whether this internal ref has any child or value listeners.
+   *
+   * @return
+   */
+  Boolean hasListeners() {
+    return valueEventListeners.size() > 0 || childEventListeners.size() > 0;
+  }
+
+  /**
+   * TODO
+   *
+   * @param eventRegistrationKey
+   */
+  void removeEventListener(String eventRegistrationKey) {
+    if (valueEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(valueEventListeners.get(eventRegistrationKey));
+      valueEventListeners.remove(eventRegistrationKey);
+    }
+
+    if (childEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(childEventListeners.get(eventRegistrationKey));
+      childEventListeners.remove(eventRegistrationKey);
+    }
+  }
+
+  /**
+   * TODO
+   *
+   * @param eventRegistrationKey
+   * @param listener
+   */
+  private void addEventListener(String eventRegistrationKey, ValueEventListener listener) {
+    valueEventListeners.put(eventRegistrationKey, listener);
+  }
+
+
+  /**
+   * TODO
+   *
+   * @param eventRegistrationKey
+   * @param listener
+   */
+  private void addEventListener(String eventRegistrationKey, ChildEventListener listener) {
+    childEventListeners.put(eventRegistrationKey, listener);
   }
 
   /**
@@ -71,7 +131,6 @@ class RNFirebaseDatabaseReference {
     };
 
     query.addListenerForSingleValueEvent(onceValueEventListener);
-
     Log.d(TAG, "Added OnceValueEventListener for key: " + key);
   }
 
@@ -160,6 +219,8 @@ class RNFirebaseDatabaseReference {
 
 
   /**
+   * TODO
+   *
    * @param registration
    * @param eventType
    * @param database
@@ -168,7 +229,7 @@ class RNFirebaseDatabaseReference {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
     final String registrationCancellationKey = registration.getString("registrationCancellationKey");
 
-    if (!database.hasChildEventListener(eventRegistrationKey)) {
+    if (!hasEventListener(eventRegistrationKey)) {
       ChildEventListener childEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -200,25 +261,26 @@ class RNFirebaseDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          query.removeEventListener(this);
-          database.removeChildEventListener(eventRegistrationKey);
+          removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }
       };
 
-      database.addChildEventListener(eventRegistrationKey, childEventListener);
+      addEventListener(eventRegistrationKey, childEventListener);
       query.addChildEventListener(childEventListener);
     }
   }
 
   /**
+   * TODO
+   * 
    * @param registration
    */
   private void addValueEventListener(final ReadableMap registration, final RNFirebaseDatabase database) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
     final String registrationCancellationKey = registration.getString("registrationCancellationKey");
 
-    if (!database.hasValueEventListener(eventRegistrationKey)) {
+    if (!hasEventListener(eventRegistrationKey)) {
       ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -227,13 +289,12 @@ class RNFirebaseDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          query.removeEventListener(this);
-          database.removeValueEventListener(eventRegistrationKey);
+          removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }
       };
 
-      database.addValueEventListener(eventRegistrationKey, valueEventListener);
+      addEventListener(eventRegistrationKey, valueEventListener);
       query.addValueEventListener(valueEventListener);
     }
   }
@@ -270,44 +331,6 @@ class RNFirebaseDatabaseReference {
 
     Utils.sendEvent(reactContext, "database_sync_event", event);
   }
-
-
-  // todo cleanup below
-
-//  void removeEventListener(int listenerId, String eventName) {
-//    if ("value".equals(eventName)) {
-//      removeValueEventListener(listenerId);
-//    } else {
-//      removeChildEventListener(listenerId);
-//    }
-//  }
-
-//  boolean hasListeners() {
-//    return childEventListeners.size() > 0 || valueEventListeners.size() > 0;
-//  }
-//
-//  public void cleanup() {
-//    Log.d(TAG, "cleaning up database reference " + this);
-//    this.removeChildEventListener(null);
-//    this.removeValueEventListener(null);
-//  }
-
-//  private void removeChildEventListener(Integer listenerId) {
-//    ChildEventListener listener = childEventListeners.get(listenerId);
-//    if (listener != null) {
-//      query.removeEventListener(listener);
-//      childEventListeners.remove(listenerId);
-//    }
-//  }
-//
-//  private void removeValueEventListener(Integer listenerId) {
-//    ValueEventListener listener = valueEventListeners.get(listenerId);
-//    if (listener != null) {
-//      query.removeEventListener(listener);
-//      valueEventListeners.delete(listenerId);
-//    }
-//  }
-
 
   private Query buildDatabaseQueryAtPathAndModifiers(String path, ReadableArray modifiers) {
     FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName);

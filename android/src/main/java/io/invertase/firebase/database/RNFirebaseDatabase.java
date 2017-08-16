@@ -13,7 +13,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ServerValue;
@@ -22,7 +21,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,40 +31,13 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private HashMap<String, ChildEventListener> childEventListeners;
-  private HashMap<String, ValueEventListener> valueEventListeners;
-  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<String, RNFirebaseDatabaseReference>();
+  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
     super(reactContext);
-    childEventListeners = new HashMap<String, ChildEventListener>();
-    valueEventListeners = new HashMap<String, ValueEventListener>();
   }
 
-  Boolean hasValueEventListener(String queryKey) {
-    return valueEventListeners.containsKey(queryKey);
-  }
-
-  Boolean hasChildEventListener(String queryKey) {
-    return childEventListeners.containsKey(queryKey);
-  }
-
-  void addValueEventListener(String queryKey, ValueEventListener listener) {
-    valueEventListeners.put(queryKey, listener);
-  }
-
-  void addChildEventListener(String queryKey, ChildEventListener listener) {
-    childEventListeners.put(queryKey, listener);
-  }
-
-  void removeValueEventListener(String queryKey) {
-    valueEventListeners.remove(queryKey);
-  }
-
-  void removeChildEventListener(String queryKey) {
-    childEventListeners.remove(queryKey);
-  }
 
   /*
    * REACT NATIVE METHODS
@@ -427,17 +398,29 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void on(String appName, ReadableMap props) {
-    getInternalReferenceForApp(appName, props).on(
-      this,
-      props.getString("eventType"),
-      props.getMap("registration")
-    );
+    getInternalReferenceForApp(appName, props)
+      .on(
+        this,
+        props.getString("eventType"),
+        props.getMap("registration")
+      );
   }
 
-
+  /**
+   * Removes the specified event registration key.
+   * If the ref no longer has any listeners the the ref is removed.
+   *
+   * @param key
+   * @param eventRegistrationKey
+   */
   @ReactMethod
-  public void off(String appName, ReadableMap args) {
+  public void off(String key, String eventRegistrationKey) {
+    RNFirebaseDatabaseReference nativeRef = references.get(key);
+    nativeRef.removeEventListener(eventRegistrationKey);
 
+    if (!nativeRef.hasListeners()) {
+      references.remove(key);
+    }
   }
 
   /*
@@ -463,27 +446,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
-  /**
-   * React Method - returns this module name
-   *
-   * @return
-   */
-  @Override
-  public String getName() {
-    return "RNFirebaseDatabase";
-  }
-
-  /**
-   * React Native constants for RNFirebaseDatabase
-   *
-   * @return
-   */
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    constants.put("serverValueTimestamp", ServerValue.TIMESTAMP);
-    return constants;
-  }
 
   /**
    * Get a database instance for a specific firebase app instance
@@ -533,6 +495,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   /**
+   * TODO
+   *
    * @param appName
    * @param props
    * @return
@@ -656,5 +620,27 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     errorMap.putString("code", code);
     errorMap.putString("message", message);
     return errorMap;
+  }
+
+  /**
+   * React Method - returns this module name
+   *
+   * @return
+   */
+  @Override
+  public String getName() {
+    return "RNFirebaseDatabase";
+  }
+
+  /**
+   * React Native constants for RNFirebaseDatabase
+   *
+   * @return
+   */
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("serverValueTimestamp", ServerValue.TIMESTAMP);
+    return constants;
   }
 }
