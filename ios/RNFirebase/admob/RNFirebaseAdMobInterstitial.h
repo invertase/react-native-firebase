@@ -1,14 +1,14 @@
 #ifndef RNFirebaseAdMobInterstitial_h
 #define RNFirebaseAdMobInterstitial_h
 
-#import "React/RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import "RNFirebaseEvents.h"
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-#import "GoogleMobileAds/GADInterstitialDelegate.h"
-#import "GoogleMobileAds/GADInterstitial.h"
-#import "React/RCTEventEmitter.h"
+#import <GoogleMobileAds/GADInterstitialDelegate.h>
+#import <GoogleMobileAds/GADInterstitial.h>
+#import <React/RCTEventEmitter.h>
 #import "RNFirebaseAdMob.h"
 
 @interface RNFirebaseAdMobInterstitial : NSObject <GADInterstitialDelegate>
@@ -31,4 +31,3 @@
 #endif
 
 #endif
-

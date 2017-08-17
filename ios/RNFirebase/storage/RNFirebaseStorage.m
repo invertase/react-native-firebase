@@ -4,7 +4,7 @@
 
 #import "RNFirebaseEvents.h"
 #import <Photos/Photos.h>
-#import "Firebase.h"
+#import <Firebase.h>
 
 @implementation RNFirebaseStorage
 
