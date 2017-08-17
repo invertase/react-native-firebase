@@ -1,6 +1,6 @@
 #import "NativeExpressComponent.h"
 #import "RNFirebaseAdMob.h"
-#import "React/UIView+React.h"
+#import <React/UIView+React.h>
 
 @implementation NativeExpressComponent
 

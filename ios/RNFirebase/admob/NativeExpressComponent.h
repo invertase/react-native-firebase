@@ -3,8 +3,8 @@
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-#import "GoogleMobileAds/GADNativeExpressAdView.h"
-#import "GoogleMobileAds/GADVideoControllerDelegate.h"
+#import <GoogleMobileAds/GADNativeExpressAdView.h>
+#import <GoogleMobileAds/GADVideoControllerDelegate.h>
 
 @interface NativeExpressComponent : UIView <GADNativeExpressAdViewDelegate, GADVideoControllerDelegate>
 

@@ -1,5 +1,5 @@
 #import "RNFirebase.h"
-#import "FirebaseCore/FirebaseCore.h"
+#import <FirebaseCore/FirebaseCore.h>
 
 @implementation RNFirebase
 RCT_EXPORT_MODULE(RNFirebase);

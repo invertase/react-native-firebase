@@ -3,8 +3,8 @@
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-#import "GoogleMobileAds/GADBannerView.h"
-#import "GoogleMobileAds/GADBannerViewDelegate.h"
+#import <GoogleMobileAds/GADBannerView.h>
+#import <GoogleMobileAds/GADBannerViewDelegate.h>
 
 @interface BannerComponent : UIView <GADBannerViewDelegate>
 
