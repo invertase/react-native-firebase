@@ -8,20 +8,17 @@ buildscript {
         classpath 'com.android.tools.build:gradle:2.3.2'
         classpath 'com.google.gms:google-services:3.1.0'
         classpath 'com.google.firebase:firebase-plugins:1.1.0'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
-        mavenLocal()
         jcenter()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        google()
     }
 }
 

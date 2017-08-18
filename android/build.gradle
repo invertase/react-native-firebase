@@ -1,29 +1,24 @@
-// START - required to allow working on this project inside Android Studio
-// YES, jcenter is required twice - it somehow tricks studio into compiling deps below
-// doesn't break anything anywhere else and projects using this lib work as normal
 buildscript {
-    ext.firebaseVersion = '11.0.0'
-
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
-    }
+  ext.firebaseVersion = '11.2.0'
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:2.3.3'
+  }
 }
-// END
 
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  compileSdkVersion 26
+  buildToolsVersion "25.0.3"
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion 26
     versionCode 1
     versionName "1.0"
-    multiDexEnabled true
+    // multiDexEnabled true
   }
   buildTypes {
     release {
@@ -34,20 +29,51 @@ android {
   }
 }
 
-// START - required to allow working on this project inside Android Studio
-// YES, jcenter is required twice - it somehow tricks studio into compiling deps below
-// doesn't break anything anywhere else and projects using this lib work as normal
-// you'll now have code completion/validation and all the other AS goodies.
+
 allprojects {
-    repositories {
-        jcenter()
-    }
+  repositories {
+    jcenter()
+  }
 }
-// END
+
+rootProject.gradle.buildFinished { buildResult ->
+  if (buildResult.getFailure() != null) {
+    try {
+      String message = buildResult.getFailure().properties.get("reportableCauses").toString()
+      if (message.contains("com.android.dex.DexException: Multiple dex files define Lcom/google/") ||
+        message.contains("java.util.zip.ZipException: duplicate entry: com/google/android/gms/")) {
+        logger.log(LogLevel.ERROR, "")
+        logger.log(LogLevel.ERROR, " -----------------------------------------------------------")
+        logger.log(LogLevel.ERROR, "|                    REACT NATIVE FIREBASE                  |")
+        logger.log(LogLevel.ERROR, " ----------------------------------------------------------- ")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  This is a common build error when using libraries that   |")
+        logger.log(LogLevel.ERROR, "|  require google play services.                            |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  This error occurs because different versions of google   |")
+        logger.log(LogLevel.ERROR, "|  play services or google play services modules are being  |")
+        logger.log(LogLevel.ERROR, "|  required by different libraries.                         |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  A temporary fix would be to set:                         |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|             android { multiDexEnabled true }              |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  inside your build gradle, however it is recommended for  |")
+        logger.log(LogLevel.ERROR, "|  your prod build that you de-duplicate these to minimize  |")
+        logger.log(LogLevel.ERROR, "|  bundle size.                                             |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  See http://invertase.link/dupe-dex for how to do this.   |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, " ----------------------------------------------------------- ")
+      }
+    } catch (Exception exception) {}
+  }
+}
+
 
 dependencies {
   compile fileTree(include: ['*.jar'], dir: 'libs')
-  compile 'com.facebook.react:react-native:+'
+  compile "com.facebook.react:react-native:+"  // From node_modules
   compile 'me.leolin:ShortcutBadger:1.1.10@aar'
   compile "com.google.android.gms:play-services-base:$firebaseVersion"
   compile "com.google.firebase:firebase-core:$firebaseVersion"
