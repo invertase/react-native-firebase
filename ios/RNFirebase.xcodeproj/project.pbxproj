@@ -360,7 +360,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${PROJECT_DIR}/../../../ios/Pods/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -387,7 +386,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${PROJECT_DIR}/../../../ios/Pods/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
