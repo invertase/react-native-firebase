@@ -568,11 +568,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * signInWithPhoneNumber
    *
+   * @param appName
    * @param phoneNumber
-   * @param promise
+   * @param phoneAuthRequestKey
    */
   @ReactMethod
-  public void signInWithPhoneNumber(String appName, final String phoneNumber, final Promise promise) {
+  public void signInWithPhoneNumber(final String appName, final String phoneNumber, final String phoneAuthRequestKey) {
     Log.d(TAG, "signInWithPhoneNumber");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -580,48 +581,64 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     // Reset the verification Id
     mVerificationId = null;
 
-    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
-      getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 120, TimeUnit.SECONDS,
+      mReactContext.getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+        public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
           // User has been automatically verified, log them in
           firebaseAuth.signInWithCredential(phoneAuthCredential)
             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
               @Override
               public void onSuccess(AuthResult authResult) {
-                // onAuthStateChanged will pick up the user change
                 Log.d(TAG, "signInWithPhoneNumber:autoVerified:success");
+                WritableMap event = Arguments.createMap();
+                WritableMap user = firebaseUserToMap(authResult.getUser());
+                event.putMap("user", user);
+                event.putString("type", "user");
+                event.putString("appName", appName);
+                event.putString("appName", phoneAuthCredential.getSmsCode());
+                event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+                Utils.sendEvent(mReactContext, "phone_auth_event", event);
               }
             })
             .addOnFailureListener(new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
                 Log.e(TAG, "signInWithPhoneNumber:autoVerified:failure", exception);
-                // TODO: Will this ever error? How do we get it back to the JS side?
-                // promiseRejectAuthException(promise, exception);
+                WritableMap event = Arguments.createMap();
+                WritableMap error = getJSError(exception);
+                event.putMap("error", error);
+                event.putString("type", "error");
+                event.putString("appName", appName);
+                event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+                Utils.sendEvent(mReactContext, "phone_auth_event", event);
               }
             });
         }
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
-          // TODO: Will this ever get sent after we've received an onCodeSent?
-          // If so, then this will cause an exception as the promise has already been used
-          promiseRejectAuthException(promise, e);
+          WritableMap event = Arguments.createMap();
+          WritableMap error = getJSError(e);
+          event.putMap("error", error);
+          event.putString("type", "error");
+          event.putString("appName", appName);
+          event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+          Utils.sendEvent(mReactContext, "phone_auth_event", event);
         }
 
         @Override
         public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-          // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
-          mVerificationId = verificationId;
           WritableMap verificationMap = Arguments.createMap();
+          verificationMap.putString("appName", appName);
+          verificationMap.putString("type", "confirm");
           verificationMap.putString("verificationId", verificationId);
-
-          promise.resolve(verificationMap);
+          verificationMap.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+          Utils.sendEvent(mReactContext, "phone_auth_event", verificationMap);
         }
 
         @Override
-        public void onCodeAutoRetrievalTimeOut (String verificationId) {
+        public void onCodeAutoRetrievalTimeOut(String verificationId) {
           super.onCodeAutoRetrievalTimeOut(verificationId);
           // Purposefully not doing anything with this at the moment
         }
@@ -629,11 +646,11 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void _confirmVerificationCode(String appName, final String verificationCode, final Promise promise) {
+  public void _confirmVerificationCode(final String appName, final String phoneAuthRequestKey, String verificationId, String verificationCode, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
+    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, verificationCode);
 
     firebaseAuth.signInWithCredential(credential)
       .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -641,10 +658,24 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         public void onComplete(@NonNull Task<AuthResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "signInWithCredential:onComplete:success");
+            WritableMap event = Arguments.createMap();
+            WritableMap user = firebaseUserToMap(task.getResult().getUser());
+            event.putMap("user", user);
+            event.putString("type", "user");
+            event.putString("appName", appName);
+            event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+            Utils.sendEvent(mReactContext, "phone_auth_event", event);
             promiseWithUser(task.getResult().getUser(), promise);
           } else {
             Exception exception = task.getException();
             Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+            WritableMap event = Arguments.createMap();
+            WritableMap error = getJSError(exception);
+            event.putMap("error", error);
+            event.putString("type", "error");
+            event.putString("appName", appName);
+            event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
+            Utils.sendEvent(mReactContext, "phone_auth_event", event);
             promiseRejectAuthException(promise, exception);
           }
         }
@@ -1017,6 +1048,17 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param exception
    */
   private void promiseRejectAuthException(Promise promise, Exception exception) {
+    WritableMap error = getJSError(exception);
+    promise.reject(error.getString("code"), error.getString("message"), exception);
+  }
+
+  /**
+   * getJSError
+   *
+   * @param exception
+   */
+  private WritableMap getJSError(Exception exception) {
+    WritableMap error = Arguments.createMap();
     String code = "UNKNOWN";
     String message = exception.getMessage();
     String invalidEmail = "The email address is badly formatted.";
@@ -1024,6 +1066,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     try {
       FirebaseAuthException authException = (FirebaseAuthException) exception;
       code = authException.getErrorCode();
+      error.putString("nativeErrorCode", code);
       message = authException.getMessage();
     } catch (Exception e) {
       Matcher matcher = Pattern.compile("\\[(.*):.*\\]").matcher(message);
@@ -1088,7 +1131,10 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
 
     code = "auth/" + code.toLowerCase().replace("error_", "").replace('_', '-');
-    promise.reject(code, message, exception);
+    error.putString("code", code);
+    error.putString("message", message);
+    error.putString("nativeErrorMessage", exception.getMessage());
+    return error;
   }
 
 

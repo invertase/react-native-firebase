@@ -544,7 +544,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @return
    */
   private static String getCodeWithService(String service, String code) {
-    return service.toUpperCase() + "/" + code.toUpperCase();
+    return service.toLowerCase() + "/" + code.toLowerCase();
   }
 
   /**
