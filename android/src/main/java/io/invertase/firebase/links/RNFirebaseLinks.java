@@ -20,8 +20,10 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 
 import io.invertase.firebase.Utils;
 
@@ -87,25 +89,52 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   }
 
   @ReactMethod
-  public void createLink(final ReadableMap parameters, final Promise promise) {
+  public void createDynamicLink(final ReadableMap parameters, final Promise promise) {
       try {
-        DynamicLink link = buildDynamicLinkFromMap(parameters);
+        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(parameters);
+        Uri link = builder.buildDynamicLink().getUri();
 
-        promise.resolve(link.getUri().toString());
-        Log.d(TAG,link.getUri().toString());
+        Log.d(TAG, "created dynamic link: " + link.toString());
+        promise.resolve(link.toString());
     }
     catch(Exception ex) {
-      promise.reject("Could not build dynamic link", ex);
+      Log.e(TAG, "create dynamic link failure " + ex.getMessage());
+      promise.reject("links/failure", ex.getMessage(), ex);
+    }
+  }
+
+  @ReactMethod
+  public void createShortDynamicLink(final ReadableMap parameters, final Promise promise) {
+      try {
+        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(parameters);
+        Task<ShortDynamicLink> shortLinkTask = builder.buildShortDynamicLink()
+          .addOnCompleteListener(new OnCompleteListener<ShortDynamicLink>() {
+            @Override
+            public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                if (task.isSuccessful()) {
+                    Uri shortLink = task.getResult().getShortLink();
+                    Log.d(TAG, "created short dynamic link: " + shortLink.toString());
+                    promise.resolve(shortLink.toString());
+                } else {
+                    Log.e(TAG, "create shot dynamic link failure " +  task.getException().getMessage());
+                    promise.reject("links/failure", task.getException().getMessage(), task.getException());
+                }
+            }
+          });
+    }
+    catch(Exception ex) {
+      Log.e(TAG, "create short dynamic link failure " + ex.getMessage());
+      promise.reject("links/failure", ex.getMessage(), ex);
     }
   }
 
   /**
-   * Converts a RN ReadableMap into a DynamicLink instance
+   * Converts a RN ReadableMap into a set DynamicLink.Builder instance
    *
    * @param parameters
    * @return
    */
-  private DynamicLink buildDynamicLinkFromMap(ReadableMap parameters) {
+  private DynamicLink.Builder setDynamicLinkBuilderFromMap(ReadableMap parameters) {
     DynamicLink.Builder parametersBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
     try {
@@ -125,7 +154,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       Log.e(TAG, "error while building parameters " + e.getMessage());
     }
 
-    return parametersBuilder.buildDynamicLink();
+    return parametersBuilder;
   }
 
   private void setAndroidParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
