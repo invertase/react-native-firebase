@@ -84,26 +84,7 @@ public class Utils {
    */
   public static WritableMap snapshotToMap(DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     WritableMap result = Arguments.createMap();
-    WritableMap snapshot = Arguments.createMap();
-
-    snapshot.putString("key", dataSnapshot.getKey());
-    snapshot.putBoolean("exists", dataSnapshot.exists());
-    snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
-    snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
-    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
-    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
-
-    if (!dataSnapshot.hasChildren()) {
-      mapPutValue("value", dataSnapshot.getValue(), snapshot);
-    } else {
-      Object value = Utils.castValue(dataSnapshot);
-      if (value instanceof WritableNativeArray) {
-        snapshot.putArray("value", (WritableArray) value);
-      } else {
-        snapshot.putMap("value", (WritableMap) value);
-      }
-    }
-
+    WritableMap snapshot = Utils.snapshotToMap(dataSnapshot);
 
     result.putMap("snapshot", snapshot);
     result.putString("previousChildName", previousChildName);
@@ -161,6 +142,8 @@ public class Utils {
     snapshot.putBoolean("exists", dataSnapshot.exists());
     snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
     snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
+    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
     if (!dataSnapshot.hasChildren()) {
       mapPutValue("value", dataSnapshot.getValue(), snapshot);
@@ -172,9 +155,6 @@ public class Utils {
         snapshot.putMap("value", (WritableMap) value);
       }
     }
-
-    snapshot.putArray("childKeys", Utils.getChildKeys(dataSnapshot));
-    mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
     return snapshot;
   }
