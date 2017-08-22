@@ -82,7 +82,8 @@ class RNFirebaseDatabaseReference {
   }
 
   /**
-   * TODO
+   * Remove an event listener by key, will remove either a ValueEventListener or
+   * a ChildEventListener
    *
    * @param eventRegistrationKey
    */
@@ -204,28 +205,27 @@ class RNFirebaseDatabaseReference {
   /**
    * Handles a React Native JS '.on(..)' request and initializes listeners.
    *
-   * @param database
    * @param registration
    */
-  void on(RNFirebaseDatabase database, String eventType, ReadableMap registration) {
+  void on(String eventType, ReadableMap registration) {
     if (eventType.equals("value")) {
-      addValueEventListener(registration, database);
+      addValueEventListener(registration);
     } else {
-      addChildEventListener(registration, eventType, database);
+      addChildEventListener(registration, eventType);
     }
   }
 
   /**
    * Handles a React Native JS 'once' request.
    *
-   * @param eventName
+   * @param eventType
    * @param promise
    */
-  void once(String eventName, Promise promise) {
-    if (eventName.equals("value")) {
+  void once(String eventType, Promise promise) {
+    if (eventType.equals("value")) {
       addOnceValueEventListener(promise);
     } else {
-      addChildOnceEventListener(eventName, promise);
+      addChildOnceEventListener(eventType, promise);
     }
   }
 
@@ -235,9 +235,8 @@ class RNFirebaseDatabaseReference {
    *
    * @param registration
    * @param eventType
-   * @param database
    */
-  private void addChildEventListener(final ReadableMap registration, final String eventType, final RNFirebaseDatabase database) {
+  private void addChildEventListener(final ReadableMap registration, final String eventType) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
     final String registrationCancellationKey = registration.getString("registrationCancellationKey");
 
@@ -286,11 +285,9 @@ class RNFirebaseDatabaseReference {
    * Add a native .on('value',.. ) event listener.
    *
    * @param registration
-   * @param database
    */
-  private void addValueEventListener(final ReadableMap registration, final RNFirebaseDatabase database) {
+  private void addValueEventListener(final ReadableMap registration) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
-    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
 
     if (!hasEventListener(eventRegistrationKey)) {
       ValueEventListener valueEventListener = new ValueEventListener() {

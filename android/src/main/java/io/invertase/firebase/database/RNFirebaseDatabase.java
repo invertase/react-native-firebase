@@ -382,12 +382,12 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param key
    * @param path
    * @param modifiers
-   * @param eventName
+   * @param eventType
    * @param promise
    */
   @ReactMethod
-  public void once(String appName, String key, String path, ReadableArray modifiers, String eventName, Promise promise) {
-    getInternalReferenceForApp(appName, key, path, modifiers).once(eventName, promise);
+  public void once(String appName, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
+    getInternalReferenceForApp(appName, key, path, modifiers).once(eventType, promise);
   }
 
   /**
@@ -400,7 +400,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   public void on(String appName, ReadableMap props) {
     getInternalReferenceForApp(appName, props)
       .on(
-        this,
         props.getString("eventType"),
         props.getMap("registration")
       );
