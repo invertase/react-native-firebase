@@ -581,7 +581,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     // Reset the verification Id
     mVerificationId = null;
 
-    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 120, TimeUnit.SECONDS,
+    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
       mReactContext.getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
@@ -596,7 +596,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
                 event.putMap("user", user);
                 event.putString("type", "user");
                 event.putString("appName", appName);
-                event.putString("appName", phoneAuthCredential.getSmsCode());
+                event.putString("smsCode", phoneAuthCredential.getSmsCode());
                 event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
                 Utils.sendEvent(mReactContext, "phone_auth_event", event);
               }
@@ -618,6 +618,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
+          Log.d(TAG, "signInWithPhoneNumber:verification:failed");
           WritableMap event = Arguments.createMap();
           WritableMap error = getJSError(e);
           event.putMap("error", error);
@@ -650,6 +651,9 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
+    // Log.d(TAG, "_confirmVerificationCode:verificationId: " + verificationId);
+    // Log.d(TAG, "_confirmVerificationCode:verificationCode: " + verificationCode);
+
     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, verificationCode);
 
     firebaseAuth.signInWithCredential(credential)
@@ -657,7 +661,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         @Override
         public void onComplete(@NonNull Task<AuthResult> task) {
           if (task.isSuccessful()) {
-            Log.d(TAG, "signInWithCredential:onComplete:success");
+            Log.d(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:success");
             WritableMap event = Arguments.createMap();
             WritableMap user = firebaseUserToMap(task.getResult().getUser());
             event.putMap("user", user);
@@ -668,7 +672,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
             promiseWithUser(task.getResult().getUser(), promise);
           } else {
             Exception exception = task.getException();
-            Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+            Log.e(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:failure", exception);
             WritableMap event = Arguments.createMap();
             WritableMap error = getJSError(exception);
             event.putMap("error", error);
