@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Button, Text, TextInput, Image } from 'react-native';
+
 import fb from './firebase';
 const firebase = fb.native;
 
@@ -12,7 +13,7 @@ export default class PhoneAuthTest extends Component {
       user: null,
       message: '',
       codeInput: '',
-      phoneNumber: '+447445255177',
+      phoneNumber: '+44',
       confirmResult: null,
     };
   }
