@@ -12,16 +12,16 @@
 @property RCTEventEmitter *emitter;
 @property FIRDatabaseQuery *query;
 @property NSString *app;
-@property NSNumber *refId;
+@property NSString *key;
 @property NSString *path;
 @property NSMutableDictionary *listeners;
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter app:(NSString *)app refId:(NSNumber *)refId refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
-- (void)addEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName;
-- (void)addSingleEventHandler:(NSString *)eventName resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
-- (void)removeEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName;
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter app:(NSString *)app key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
+- (void)on:(NSString *) eventName registration:(NSDictionary *) registration;
+- (void)once:(NSString *) eventType resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
+- (void)removeEventListener:(NSString *)eventRegistrationKey;
 - (BOOL)hasListeners;
-+ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)snapshot;
++ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)dataSnapshot;
 @end
 
 #else
