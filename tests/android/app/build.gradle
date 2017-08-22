@@ -5,9 +5,9 @@ import com.android.build.OutputFile
 
 project.ext.react = [
         // whether to bundle JS and assets in staging mode
-        bundleInDebug   : true,
-        jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
-        nodeExecutableAndArgs : ["/usr/local/bin/node"]
+        bundleInDebug        : false,
+        jsBundleDirDebug     : "$buildDir/intermediates/assets/debug",
+        nodeExecutableAndArgs: ["/usr/local/bin/node"]
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
