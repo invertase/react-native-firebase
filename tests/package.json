@@ -34,7 +34,6 @@
     "lodash.some": "^4.6.0",
     "react": "16.0.0-alpha.6",
     "react-native": "^0.44.0",
-    "react-native-firebase": "file:..",
     "react-native-simple-toast": "0.0.5",
     "react-native-vector-icons": "^4.0.0",
     "react-navigation": "^1.0.0-beta.9",
@@ -45,7 +44,7 @@
     "redux-thunk": "^2.2.0",
     "should": "^11.2.0",
     "should-sinon": "^0.0.5",
-    "sinon": "https://github.com/greena13/sinon.git"
+    "sinon": "^3.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
