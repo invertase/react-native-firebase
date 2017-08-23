@@ -4,6 +4,7 @@ import { View, Button, Text, TextInput, Image } from 'react-native';
 import fb from './firebase';
 const firebase = fb.native;
 
+if (firebase.auth().currentUser) firebase.auth().signOut();
 const successImageUri = 'https://cdn.pixabay.com/photo/2015/06/09/16/12/icon-803718_1280.png';
 
 export default class PhoneAuthTest extends Component {
@@ -13,7 +14,7 @@ export default class PhoneAuthTest extends Component {
       user: null,
       message: '',
       codeInput: '',
-      phoneNumber: '+44',
+      phoneNumber: '+447',
       confirmResult: null,
     };
   }
@@ -84,6 +85,21 @@ export default class PhoneAuthTest extends Component {
             <Image source={{ uri: successImageUri }} style={{ width: 100, height: 100, marginBottom: 25 }} />
             <Text style={{ fontSize: 25 }}>Signed In!</Text>
             <Text>{JSON.stringify(user)}</Text>
+            <Button
+              title="Logout"
+              color="#841584"
+              onPress={() => {
+                firebase.auth().signOut().then(() => {
+                  this.setState({
+                    user: null,
+                    message: '',
+                    codeInput: '',
+                    phoneNumber: '+44',
+                    confirmResult: null,
+                  });
+                });
+              }}
+            />
           </View>
         ) : null}
       </View>
