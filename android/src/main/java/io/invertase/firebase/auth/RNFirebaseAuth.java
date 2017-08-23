@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,14 +25,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
@@ -563,127 +559,6 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         });
     }
-  }
-
-  /**
-   * signInWithPhoneNumber
-   *
-   * @param appName
-   * @param phoneNumber
-   * @param phoneAuthRequestKey
-   */
-  @ReactMethod
-  public void signInWithPhoneNumber(final String appName, final String phoneNumber, final String phoneAuthRequestKey) {
-    Log.d(TAG, "signInWithPhoneNumber");
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
-    // Reset the verification Id
-    mVerificationId = null;
-
-    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
-      mReactContext.getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        @Override
-        public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-          // User has been automatically verified, log them in
-          firebaseAuth.signInWithCredential(phoneAuthCredential)
-            .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-              @Override
-              public void onSuccess(AuthResult authResult) {
-                Log.d(TAG, "signInWithPhoneNumber:autoVerified:success");
-                WritableMap event = Arguments.createMap();
-                WritableMap user = firebaseUserToMap(authResult.getUser());
-                event.putMap("user", user);
-                event.putString("type", "user");
-                event.putString("appName", appName);
-                event.putString("smsCode", phoneAuthCredential.getSmsCode());
-                event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-                Utils.sendEvent(mReactContext, "phone_auth_event", event);
-              }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                Log.e(TAG, "signInWithPhoneNumber:autoVerified:failure", exception);
-                WritableMap event = Arguments.createMap();
-                WritableMap error = getJSError(exception);
-                event.putMap("error", error);
-                event.putString("type", "error");
-                event.putString("appName", appName);
-                event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-                Utils.sendEvent(mReactContext, "phone_auth_event", event);
-              }
-            });
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-          Log.d(TAG, "signInWithPhoneNumber:verification:failed");
-          WritableMap event = Arguments.createMap();
-          WritableMap error = getJSError(e);
-          event.putMap("error", error);
-          event.putString("type", "error");
-          event.putString("appName", appName);
-          event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-          Utils.sendEvent(mReactContext, "phone_auth_event", event);
-        }
-
-        @Override
-        public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-          WritableMap verificationMap = Arguments.createMap();
-          verificationMap.putString("appName", appName);
-          verificationMap.putString("type", "confirm");
-          verificationMap.putString("verificationId", verificationId);
-          verificationMap.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-          Utils.sendEvent(mReactContext, "phone_auth_event", verificationMap);
-        }
-
-        @Override
-        public void onCodeAutoRetrievalTimeOut(String verificationId) {
-          super.onCodeAutoRetrievalTimeOut(verificationId);
-          // Purposefully not doing anything with this at the moment
-        }
-      });
-  }
-
-  @ReactMethod
-  public void _confirmVerificationCode(final String appName, final String phoneAuthRequestKey, String verificationId, String verificationCode, final Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
-    // Log.d(TAG, "_confirmVerificationCode:verificationId: " + verificationId);
-    // Log.d(TAG, "_confirmVerificationCode:verificationCode: " + verificationCode);
-
-    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, verificationCode);
-
-    firebaseAuth.signInWithCredential(credential)
-      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-          if (task.isSuccessful()) {
-            Log.d(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:success");
-            WritableMap event = Arguments.createMap();
-            WritableMap user = firebaseUserToMap(task.getResult().getUser());
-            event.putMap("user", user);
-            event.putString("type", "user");
-            event.putString("appName", appName);
-            event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-            Utils.sendEvent(mReactContext, "phone_auth_event", event);
-            promiseWithUser(task.getResult().getUser(), promise);
-          } else {
-            Exception exception = task.getException();
-            Log.e(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:failure", exception);
-            WritableMap event = Arguments.createMap();
-            WritableMap error = getJSError(exception);
-            event.putMap("error", error);
-            event.putString("type", "error");
-            event.putString("appName", appName);
-            event.putString("phoneAuthRequestKey", phoneAuthRequestKey);
-            Utils.sendEvent(mReactContext, "phone_auth_event", event);
-            promiseRejectAuthException(promise, exception);
-          }
-        }
-      });
   }
 
   /**
