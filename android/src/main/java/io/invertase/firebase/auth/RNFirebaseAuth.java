@@ -4,6 +4,7 @@ import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,11 +26,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
@@ -86,6 +90,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
             msgMap.putMap("user", firebaseUserToMap(user));
             Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
           } else {
+            msgMap.putString("appName", appName); // for js side distribution
             msgMap.putBoolean("authenticated", false);
             Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
           }
