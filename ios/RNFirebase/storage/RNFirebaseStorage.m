@@ -3,6 +3,7 @@
 #if __has_include(<FirebaseStorage/FIRStorage.h>)
 
 #import "RNFirebaseEvents.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
 
@@ -199,6 +200,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
                  metadata:(NSDictionary *) metadata
                  resolver:(RCTPromiseResolveBlock) resolve
                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     if ([localPath hasPrefix:@"assets-library://"] || [localPath hasPrefix:@"ph://"]) {
         PHFetchResult *assets;
 
@@ -219,7 +221,8 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 if (info[PHImageErrorKey] == nil) {
-                    [self uploadData:appName data:imageData metadata:metadata path:path resolver:resolve rejecter:reject];
+                    firmetadata.contentType = [self utiToMimeType:dataUTI];
+                    [self uploadData:appName data:imageData firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                 } else {
                     reject(@"storage/request-image-data-failed", @"Could not obtain image data for the specified file.", nil);
                 }
@@ -241,7 +244,8 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
 
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         if (exportSession.status == AVAssetExportSessionStatusCompleted) {
-                            [self uploadFile:appName url:tempUrl metadata:metadata path:path resolver:resolve rejecter:reject];
+                            firmetadata.contentType = [self utiToMimeType:exportSession.outputFileType];
+                            [self uploadFile:appName url:tempUrl firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                             // we're not cleaning up the temporary file at the moment, just relying on the OS to do that in it's own time - todo?
                         } else {
                             reject(@"storage/temporary-file-failure", @"Unable to create temporary file for upload.", nil);
@@ -253,8 +257,9 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
             }];
         }
     } else {
+        // TODO: Content type for file?
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
-        [self uploadData:appName data:data metadata:metadata path:path resolver:resolve rejecter:reject];
+        [self uploadData:appName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
     }
 
 }
@@ -264,16 +269,18 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
     return [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:filename];
 }
 
-- (void)uploadFile:(NSString *)appName url:(NSURL *)url metadata:(NSDictionary *)metadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (NSString *)utiToMimeType:(NSString *) dataUTI {
+    return (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)dataUTI, kUTTagClassMIMEType);
+}
+
+- (void)uploadFile:(NSString *)appName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appName:appName];
-    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     FIRStorageUploadTask *uploadTask = [fileRef putFile:url metadata:firmetadata];
     [self addUploadObservers:appName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
-- (void)uploadData:(NSString *)appName data:(NSData *)data metadata:(NSDictionary *)metadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (void)uploadData:(NSString *)appName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appName:appName];
-    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
     FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:firmetadata];
     [self addUploadObservers:appName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
@@ -328,14 +335,12 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
 
 - (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
     NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
-    FIRStorageMetadata *metadata = [[FIRStorageMetadata alloc] initWithDictionary:[task.metadata dictionaryRepresentation]];
+    NSDictionary *metadata = [task.metadata dictionaryRepresentation];
     return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadUrl": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
 }
 
 - (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {
-    NSMutableDictionary *metaCopy = [metadata mutableCopy];
-    [metaCopy removeObjectForKey:@"customMetadata"];
-    FIRStorageMetadata *storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metaCopy];
+    FIRStorageMetadata *storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
     storageMetadata.customMetadata = [metadata[@"customMetadata"] mutableCopy];
     return storageMetadata;
 }
