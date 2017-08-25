@@ -562,6 +562,108 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * signInWithPhoneNumber
+   *
+   * @param appName
+   * @param phoneNumber
+   */
+  @ReactMethod
+  public void signInWithPhoneNumber(String appName, final String phoneNumber, final Promise promise) {
+    Log.d(TAG, "signInWithPhoneNumber");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    // Reset the verification Id
+    mVerificationId = null;
+
+    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
+      mReactContext.getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        private boolean promiseResolved = false;
+
+        @Override
+        public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+          // User has been automatically verified, log them in
+          firebaseAuth.signInWithCredential(phoneAuthCredential)
+            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+              @Override
+              public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                  // onAuthStateChanged will pick up the user change
+                  Log.d(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:success");
+                  // To ensure that there is no hanging promise, we resolve it with a null verificationId
+                  // as calling ConfirmationResult.confirm(code) is invalid in this case anyway
+                  if (!promiseResolved) {
+                    WritableMap verificationMap = Arguments.createMap();
+                    verificationMap.putNull("verificationId");
+                    promise.resolve(verificationMap);
+                  }
+                } else {
+                  // With phone auth, the credential will only every be rejected if the user
+                  // account linked to the phone number has been disabled
+                  Exception exception = task.getException();
+                  Log.e(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure", exception);
+                  if (promiseResolved) {
+                    // In the scenario where an SMS code has been sent, we have no way to report
+                    // back to the front-end that as the promise has already been used
+                  } else {
+                    promiseRejectAuthException(promise, exception);
+                  }
+                }
+              }
+            });
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+          // This callback is invoked in an invalid request for verification is made,
+          // e.g. phone number format is incorrect, or the SMS quota for the project
+          // has been exceeded
+          Log.d(TAG, "signInWithPhoneNumber:verification:failed");
+          promiseRejectAuthException(promise, e);
+        }
+
+        @Override
+        public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+          // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
+          mVerificationId = verificationId;
+          WritableMap verificationMap = Arguments.createMap();
+          verificationMap.putString("verificationId", verificationId);
+          promise.resolve(verificationMap);
+          promiseResolved = true;
+        }
+
+        @Override
+        public void onCodeAutoRetrievalTimeOut(String verificationId) {
+          super.onCodeAutoRetrievalTimeOut(verificationId);
+          // Purposefully not doing anything with this at the moment
+        }
+      });
+  }
+
+  @ReactMethod
+  public void _confirmVerificationCode(String appName, final String verificationCode, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verificationCode);
+
+    firebaseAuth.signInWithCredential(credential)
+      .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:success");
+            promiseWithUser(task.getResult().getUser(), promise);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "_confirmVerificationCode:signInWithCredential:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        }
+      });
+  }
+
+  /**
    * confirmPasswordReset
    *
    * @param code
