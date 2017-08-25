@@ -104,7 +104,7 @@ PODS:
   - React/cxxreact (0.44.3):
     - React/jschelpers
   - React/jschelpers (0.44.3)
-  - RNFirebase (2.1.2):
+  - RNFirebase (2.1.3):
     - React
   - Yoga (0.44.3.React)
 
@@ -151,7 +151,7 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   React: 6361345ebeb769a929e10a06baf0c868d6d03ad5
-  RNFirebase: f796cb5ff9c09f72f181f72a8b9fd972fccc9c49
+  RNFirebase: fbd064a85661d42410d4a509b46fbfe313b5eedf
   Yoga: c90474ca3ec1edba44c97b6c381f03e222a9e287
 
 PODFILE CHECKSUM: 45666f734ebfc8b3b0f2be0a83bc2680caeb502f
