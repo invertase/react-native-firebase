@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>React Native Firebase - A react native firebase library supporting both android and ios native firebase SDK's</title>
-  <meta name="description" content="A react native firebase library supporting both android and ios native firebase SDK's">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <link rel="shortcut icon" type="image/png" href="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/>
+  <title>React Native Firebase - A react native firebase library supporting both android and ios native firebase
+    SDK's</title>
+  <meta name="description"
+        content="A react native firebase library supporting both android and ios native firebase SDK's">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="shortcut icon" type="image/png"
+        href="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67" />
 </head>
 <body>
-  <div id="app"></div>
+<div class="rnfirebase-header">
+  <img src="https://static.invertase.io/assets/React-Native-Firebase.svg" alt="rnfirebase logo">
+  <span><a href="/">React Native Firebase</a></span>
+</div>
+<div id="app"></div>
 </body>
 <script>
   window.$docsify = {
@@ -18,18 +26,17 @@
     loadNavbar: true,
     mergeNavbar: true,
     search: 'auto',
-    themeColor: '#f5820b',
+    themeColor: '#e88634',
     subMaxLevel: 3,
     maxLevel: 4,
     ga: 'UA-98196653-1',
     formatUpdated: '{DD}/{MM}/{YYYY} {HH}:{mm}',
     plugins: [
-      function(hook, vm) {
+      function (hook, vm) {
         hook.beforeEach(function (html) {
           var url = 'https://github.com/invertase/react-native-firebase/blob/master/docs/' + vm.route.file;
           var editHtml = '[:memo: Edit](' + url + ')\n';
-          return editHtml
-            + html
+          return html
             + '\n----\n'
             + '<b>Last updated</b>: {docsify-updated} '
             + editHtml
@@ -43,9 +50,103 @@
     navigator.serviceWorker.register('sw.js')
   }
 </script>
+<link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
+<style>
+  body {
+    padding-top: 35px;
+  }
+
+  .app-name-link {
+    display: none;
+  }
+
+  .sidebar {
+    padding-top: 64px;
+  }
+
+  .github-corner {
+    height: 64px;
+    z-index: 9996;
+  }
+
+  .app-nav {
+    z-index: 9996;
+  }
+
+  .github-corner > svg {
+    height: 64px;
+    width: 64px;
+  }
+
+  .rnfirebase-header {
+    width: 100%;
+    height: 64px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #383838;
+    z-index: 9995;
+    vertical-align: middle;
+  }
+
+  .rnfirebase-header > img {
+    float: left;
+    width: 45px;
+    height: 45px;
+    margin: 10px;
+  }
+
+  .version-select {
+    position: fixed;
+    right: 70px;
+    top: 13px;
+    background: rgb(255, 235, 213);
+    padding: 8px;
+    border: 1px solid #e88634;
+    width: 110px;
+  }
+
+  .rnfirebase-header > span {
+    float: left;
+    height: 64px;
+    font-size: 24px;
+    line-height: 64px;
+    color: #e88634;
+    text-align: center;
+  }
+
+  .rnfirebase-header > span > a {
+    border:none;
+    outline:none;
+    text-decoration:none;
+    color:inherit;
+    -webkit-tap-highlight-color: white;
+  }
+
+  .sidebar-toggle {
+    background-color: rgba(255, 255, 255, 0.92);
+  }
+
+  .app-nav li ul {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: #ccc;
+    border-radius: 2px;
+    box-sizing: border-box;
+    display: none;
+    max-height: calc(100vh - 61px);
+    overflow-y: scroll;
+    padding: 10px 0;
+    position: absolute;
+    right: 8px;
+    text-align: left;
+    top: -16px;
+    white-space: nowrap;
+    width: 111px;
+  }
+</style>
 <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
 <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
-<link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
 <script src="//unpkg.com/docsify/lib/plugins/emoji.min.js"></script>
 <script src="//unpkg.com/docsify/lib/plugins/ga.min.js"></script>
 <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>

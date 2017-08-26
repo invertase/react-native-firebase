@@ -1,10 +1,3 @@
-
-<h1 align="center">
-  <img src="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/><br>
-
-  React Native Firebase
-</h1>
-
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
