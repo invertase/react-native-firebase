@@ -6,11 +6,11 @@ Pod::Spec.new do |s|
   s.version             = package["version"]
   s.summary             = package["description"]
   s.description         = <<-DESC
-                            Integrate firebase into your app using the React Native SDKs.
+                            A well tested feature rich Firebase implementation for React Native, supporting iOS & Android.
                           DESC
-  s.homepage            = "http://invertase.io"
+  s.homepage            = "http://invertase.io/react-native-firebase"
   s.license             = package['license']
-  s.author              = "Mike Diarmid"
+  s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/mikediarmid'
   s.platform            = :ios, "8.0"

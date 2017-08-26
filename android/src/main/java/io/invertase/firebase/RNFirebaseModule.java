@@ -2,11 +2,16 @@ package io.invertase.firebase;
 
 import android.app.Activity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 // react
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -16,6 +21,8 @@ import com.facebook.react.bridge.ReactMethod;
 // play services
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 
 @SuppressWarnings("WeakerAccess")
 public class RNFirebaseModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -40,6 +47,40 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
       if (activity != null) {
         gapi.getErrorDialog(activity, status, 2404).show();
       }
+    }
+  }
+
+  @ReactMethod
+  public void initializeApp(String appName, ReadableMap options, Callback callback) {
+    FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
+
+    builder.setApplicationId(options.getString("appId"));
+    builder.setGcmSenderId(options.getString("messagingSenderId"));
+    builder.setApiKey(options.getString("apiKey"));
+    builder.setProjectId(options.getString("projectId"));
+    builder.setDatabaseUrl(options.getString("databaseURL"));
+    builder.setStorageBucket(options.getString("storageBucket"));
+    // todo firebase sdk has no client id setter
+
+    FirebaseApp.initializeApp(getReactApplicationContext(), builder.build(), appName);
+
+    WritableMap response = Arguments.createMap();
+    response.putString("result", "success");
+    callback.invoke(null, response);
+  }
+
+  @ReactMethod
+  public void deleteApp(String appName, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    if (firebaseApp == null) {
+      promise.resolve(null);
+    } else {
+      // todo ? not implemented on firebase sdk
+      promise.reject(
+        "app/delete-app-failed",
+        "Failed to delete app. The android Firebase SDK currently does not support this functionality"
+      );
     }
   }
 
@@ -79,7 +120,28 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
 
   @Override
   public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
+    FirebaseApp firebaseApp;
+    Map<String, Object> constants = new HashMap<>();
+    List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
+    List<Map<String, Object>> appMapsList = new ArrayList<Map<String, Object>>();
+
+    for (FirebaseApp app : firebaseAppList) {
+      String appName = app.getName();
+      FirebaseOptions appOptions = app.getOptions();
+      Map<String, Object> appProps = new HashMap<>();
+
+      appProps.put("name", appName);
+      appProps.put("apiKey", appOptions.getApiKey());
+      appProps.put("appId", appOptions.getApplicationId());
+      appProps.put("databaseURL", appOptions.getDatabaseUrl());
+      appProps.put("messagingSenderId", appOptions.getGcmSenderId());
+      appProps.put("projectId", appOptions.getProjectId());
+      appProps.put("storageBucket", appOptions.getStorageBucket());
+      // TODO no way to get client id currently from app options
+      appMapsList.add(appProps);
+    }
+
+    constants.put("apps", appMapsList);
     constants.put("googleApiAvailability", getPlayServicesStatus());
     return constants;
   }

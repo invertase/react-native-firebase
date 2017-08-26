@@ -22,7 +22,7 @@ class CoreContainer extends React.Component {
    */
   componentDidMount() {
     if (Platform.OS === 'android') {
-      StatusBar.setBackgroundColor('#0279ba');
+      StatusBar.setBackgroundColor('#1976D2');
     }
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('light-content');

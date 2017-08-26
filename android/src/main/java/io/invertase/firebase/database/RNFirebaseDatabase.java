@@ -1,252 +1,125 @@
 package io.invertase.firebase.database;
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.util.SparseArray;
 
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
-import com.facebook.react.bridge.WritableNativeArray;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.OnDisconnect;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DatabaseReference;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.invertase.firebase.Utils;
 
+
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private HashMap<Integer, RNFirebaseDatabaseReference> mReferences = new HashMap<>();
-  private HashMap<String, RNFirebaseTransactionHandler> mTransactionHandlers = new HashMap<>();
-  private FirebaseDatabase mFirebaseDatabase;
+  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
-  public RNFirebaseDatabase(ReactApplicationContext reactContext) {
+  RNFirebaseDatabase(ReactApplicationContext reactContext) {
     super(reactContext);
-    mFirebaseDatabase = FirebaseDatabase.getInstance();
   }
 
-  @Override
-  public String getName() {
-    return TAG;
-  }
 
-  // Persistence
+  /*
+   * REACT NATIVE METHODS
+   */
+
+  /**
+   * @param appName
+   */
   @ReactMethod
-  public void enablePersistence(
-    final Boolean enable,
-    final Callback callback) {
-    try {
-      mFirebaseDatabase.setPersistenceEnabled(enable);
-    } catch (DatabaseException t) {
-
-    }
-
-    WritableMap res = Arguments.createMap();
-    res.putString("status", "success");
-    callback.invoke(null, res);
+  public void goOnline(String appName) {
+    getDatabaseForApp(appName).goOnline();
   }
 
+  /**
+   * @param appName
+   */
   @ReactMethod
-  public void keepSynced(
-    final String path,
-    final Boolean enable,
-    final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    ref.keepSynced(enable);
-
-    WritableMap res = Arguments.createMap();
-    res.putString("status", "success");
-    res.putString("path", path);
-    callback.invoke(null, res);
+  public void goOffline(String appName) {
+    getDatabaseForApp(appName).goOffline();
   }
 
-  // RNFirebaseDatabase
+  /**
+   * @param appName
+   * @param state
+   */
   @ReactMethod
-  public void set(
-    final String path,
-    final ReadableMap props,
-    final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
-
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-      @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("set", callback, error);
-      }
-    };
-
-    ref.setValue(m.get("value"), listener);
+  public void setPersistence(String appName, Boolean state) {
+    getDatabaseForApp(appName).setPersistenceEnabled(state);
   }
 
+  /**
+   * @param appName
+   * @param path
+   * @param state
+   */
   @ReactMethod
-  public void priority(
-    final String path,
-    final ReadableMap priority,
-    final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    Map<String, Object> priorityMap = Utils.recursivelyDeconstructReadableMap(priority);
-
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-      @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("priority", callback, error);
-      }
-    };
-
-    ref.setPriority(priorityMap.get("value"), listener);
+  public void keepSynced(String appName, String key, String path, ReadableArray modifiers, Boolean state) {
+    getInternalReferenceForApp(appName, key, path, modifiers).getQuery().keepSynced(state);
   }
 
+
+  /*
+   * TRANSACTIONS
+   */
+
+  /**
+   * @param transactionId
+   * @param updates
+   */
   @ReactMethod
-  public void withPriority(
-    final String path,
-    final ReadableMap data,
-    final ReadableMap priority,
-    final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    Map<String, Object> dataMap = Utils.recursivelyDeconstructReadableMap(data);
-    Map<String, Object> priorityMap = Utils.recursivelyDeconstructReadableMap(priority);
+  public void transactionTryCommit(String appName, int transactionId, ReadableMap updates) {
+    RNFirebaseTransactionHandler handler = transactionHandlers.get(transactionId);
 
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-      @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("withPriority", callback, error);
-      }
-    };
-
-    ref.setValue(dataMap.get("value"), priorityMap.get("value"), listener);
-  }
-
-  @ReactMethod
-  public void update(final String path,
-                     final ReadableMap props,
-                     final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
-
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-      @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("update", callback, error);
-      }
-    };
-
-    ref.updateChildren(m, listener);
-  }
-
-  @ReactMethod
-  public void remove(final String path,
-                     final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-      @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("remove", callback, error);
-      }
-    };
-
-    ref.removeValue(listener);
-  }
-
-  @ReactMethod
-  public void push(final String path,
-                   final ReadableMap props,
-                   final Callback callback) {
-
-    Log.d(TAG, "Called push with " + path);
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    DatabaseReference newRef = ref.push();
-
-    final Uri url = Uri.parse(newRef.toString());
-    final String newPath = url.getPath();
-
-    ReadableMapKeySetIterator iterator = props.keySetIterator();
-    if (iterator.hasNextKey()) {
-      Log.d(TAG, "Passed value to push");
-      // lame way to check if the `props` are empty
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
-
-      DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
-        @Override
-        public void onComplete(DatabaseError error, DatabaseReference ref) {
-          if (error != null) {
-            WritableMap err = Arguments.createMap();
-            err.putInt("code", error.getCode());
-            err.putString("details", error.getDetails());
-            err.putString("description", error.getMessage());
-            callback.invoke(err);
-          } else {
-            WritableMap res = Arguments.createMap();
-            res.putString("status", "success");
-            res.putString("ref", newPath);
-            callback.invoke(null, res);
-          }
-        }
-      };
-
-      newRef.setValue(m.get("value"), listener);
-    } else {
-      Log.d(TAG, "No value passed to push: " + newPath);
-      WritableMap res = Arguments.createMap();
-      res.putString("status", "success");
-      res.putString("ref", newPath);
-      callback.invoke(null, res);
+    if (handler != null) {
+      handler.signalUpdateReceived(updates);
     }
   }
 
   /**
+   * Start a native transaction and store it's state in
+   *
+   * @param appName
    * @param path
-   * @param id
+   * @param transactionId
    * @param applyLocally
    */
   @ReactMethod
-  public void startTransaction(final String path, final String id, final Boolean applyLocally) {
+  public void transactionStart(final String appName, final String path, final int transactionId, final Boolean applyLocally) {
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-        DatabaseReference transactionRef = FirebaseDatabase.getInstance().getReference(path);
+        DatabaseReference reference = getReferenceForAppPath(appName, path);
 
-        transactionRef.runTransaction(new Transaction.Handler() {
+        reference.runTransaction(new Transaction.Handler() {
           @Override
           public Transaction.Result doTransaction(MutableData mutableData) {
-            final WritableMap updatesMap = Arguments.createMap();
+            final RNFirebaseTransactionHandler transactionHandler = new RNFirebaseTransactionHandler(transactionId, appName);
+            transactionHandlers.put(transactionId, transactionHandler);
+            final WritableMap updatesMap = transactionHandler.createUpdateMap(mutableData);
 
-            updatesMap.putString("id", id);
-            updatesMap.putString("type", "update");
-
-            if (!mutableData.hasChildren()) {
-              Utils.mapPutValue("value", mutableData.getValue(), updatesMap);
-            } else {
-              Object value = Utils.castValue(mutableData);
-              if (value instanceof WritableNativeArray) {
-                updatesMap.putArray("value", (WritableArray) value);
-              } else {
-                updatesMap.putMap("value", (WritableMap) value);
-              }
-            }
-
-            RNFirebaseTransactionHandler rnFirebaseTransactionHandler = new RNFirebaseTransactionHandler();
-            mTransactionHandlers.put(id, rnFirebaseTransactionHandler);
-
+            // emit the updates to js using an async task
+            // otherwise it gets blocked by the lock await
             AsyncTask.execute(new Runnable() {
               @Override
               public void run() {
@@ -254,247 +127,515 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
               }
             });
 
+            // wait for js to return the updates (js calls transactionTryCommit)
             try {
-              rnFirebaseTransactionHandler.await();
+              transactionHandler.await();
             } catch (InterruptedException e) {
-              rnFirebaseTransactionHandler.interrupted = true;
+              transactionHandler.interrupted = true;
               return Transaction.abort();
             }
 
-            if (rnFirebaseTransactionHandler.abort) {
+            if (transactionHandler.abort) {
               return Transaction.abort();
             }
 
-            mutableData.setValue(rnFirebaseTransactionHandler.value);
+            mutableData.setValue(transactionHandler.value);
             return Transaction.success(mutableData);
           }
 
           @Override
-          public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
-            final WritableMap updatesMap = Arguments.createMap();
-            updatesMap.putString("id", id);
-
-            RNFirebaseTransactionHandler rnFirebaseTransactionHandler = mTransactionHandlers.get(id);
-
-            // TODO error conversion util for database to create web sdk codes based on DatabaseError
-            if (databaseError != null) {
-              updatesMap.putString("type", "error");
-
-              updatesMap.putInt("code", databaseError.getCode());
-              updatesMap.putString("message", databaseError.getMessage());
-            } else if (rnFirebaseTransactionHandler.interrupted) {
-              updatesMap.putString("type", "error");
-
-              updatesMap.putInt("code", 666);
-              updatesMap.putString("message", "RNFirebase transaction was interrupted, aborting.");
-            } else {
-              updatesMap.putString("type", "complete");
-              updatesMap.putBoolean("committed", committed);
-              updatesMap.putMap("snapshot", Utils.snapshotToMap(dataSnapshot));
-            }
-
-            Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", updatesMap);
-            mTransactionHandlers.remove(id);
+          public void onComplete(DatabaseError error, boolean committed, DataSnapshot snapshot) {
+            RNFirebaseTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
+            WritableMap resultMap = transactionHandler.createResultMap(error, committed, snapshot);
+            Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", resultMap);
+            transactionHandlers.delete(transactionId);
           }
+
         }, applyLocally);
       }
     });
   }
 
+
+  /*
+   * ON DISCONNECT
+   */
+
   /**
+   * Set a value on a ref when the client disconnects from the firebase server.
    *
-   * @param id
-   * @param updates
+   * @param appName
+   * @param path
+   * @param props
+   * @param promise
    */
   @ReactMethod
-  public void tryCommitTransaction(final String id, final ReadableMap updates) {
-    Map<String, Object> updatesReturned = Utils.recursivelyDeconstructReadableMap(updates);
-    RNFirebaseTransactionHandler rnFirebaseTransactionHandler = mTransactionHandlers.get(id);
-
-    if (rnFirebaseTransactionHandler != null) {
-      rnFirebaseTransactionHandler.signalUpdateReceived(updatesReturned);
-    }
-  }
-
-  @ReactMethod
-  public void on(final int refId, final String path, final ReadableArray modifiers, final int listenerId, final String eventName, final Callback callback) {
-    RNFirebaseDatabaseReference ref = this.getDBHandle(refId, path, modifiers);
-
-    if (eventName.equals("value")) {
-      ref.addValueEventListener(listenerId);
-    } else {
-      ref.addChildEventListener(listenerId, eventName);
-    }
-
-    WritableMap resp = Arguments.createMap();
-    resp.putString("status", "success");
-    resp.putInt("refId", refId);
-    resp.putString("handle", path);
-    callback.invoke(null, resp);
-  }
-
-  @ReactMethod
-  public void once(final int refId, final String path, final ReadableArray modifiers, final String eventName, final Callback callback) {
-    RNFirebaseDatabaseReference ref = this.getDBHandle(refId, path, modifiers);
-
-    if (eventName.equals("value")) {
-      ref.addOnceValueEventListener(callback);
-    } else {
-      ref.addChildOnceEventListener(eventName, callback);
-    }
-  }
-
-  /**
-   * At the time of this writing, off() only gets called when there are no more subscribers to a given path.
-   * `mListeners` might therefore be out of sync (though javascript isnt listening for those eventNames, so
-   * it doesn't really matter- just polluting the RN bridge a little more than necessary.
-   * off() should therefore clean *everything* up
-   */
-  @ReactMethod
-  public void off(
-    final int refId,
-    final ReadableArray listeners,
-    final Callback callback) {
-
-    RNFirebaseDatabaseReference r = mReferences.get(refId);
-
-    if (r != null) {
-      List<Object> listenersList = Utils.recursivelyDeconstructReadableArray(listeners);
-
-      for (Object l : listenersList) {
-        Map<String, Object> listener = (Map) l;
-        int listenerId = ((Double) listener.get("listenerId")).intValue();
-        String eventName = (String) listener.get("eventName");
-        r.removeEventListener(listenerId, eventName);
-        if (!r.hasListeners()) {
-          mReferences.remove(refId);
-        }
-      }
-    }
-
-    Log.d(TAG, "Removed listeners refId: " + refId + " ; count: " + listeners.size());
-    WritableMap resp = Arguments.createMap();
-    resp.putInt("refId", refId);
-    resp.putString("status", "success");
-    callback.invoke(null, resp);
-  }
-
-  @ReactMethod
-  public void onDisconnectSet(final String path, final ReadableMap props, final Callback callback) {
+  public void onDisconnectSet(String appName, String path, ReadableMap props, final Promise promise) {
     String type = props.getString("type");
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    OnDisconnect od = ref.onDisconnect();
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+
+    OnDisconnect onDisconnect = ref.onDisconnect();
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("onDisconnectSet", callback, error);
+        handlePromise(promise, error);
       }
     };
 
     switch (type) {
       case "object":
         Map<String, Object> map = Utils.recursivelyDeconstructReadableMap(props.getMap("value"));
-        od.setValue(map, listener);
+        onDisconnect.setValue(map, listener);
         break;
       case "array":
         List<Object> list = Utils.recursivelyDeconstructReadableArray(props.getArray("value"));
-        od.setValue(list, listener);
+        onDisconnect.setValue(list, listener);
         break;
       case "string":
-        od.setValue(props.getString("value"), listener);
+        onDisconnect.setValue(props.getString("value"), listener);
         break;
       case "number":
-        od.setValue(props.getDouble("value"), listener);
+        onDisconnect.setValue(props.getDouble("value"), listener);
         break;
       case "boolean":
-        od.setValue(props.getBoolean("value"), listener);
+        onDisconnect.setValue(props.getBoolean("value"), listener);
         break;
       case "null":
-        od.setValue(null, listener);
+        onDisconnect.setValue(null, listener);
         break;
     }
   }
 
+  /**
+   * Update a value on a ref when the client disconnects from the firebase server.
+   *
+   * @param appName
+   * @param path
+   * @param props
+   * @param promise
+   */
   @ReactMethod
-  public void onDisconnectUpdate(final String path, final ReadableMap props, final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
-    OnDisconnect od = ref.onDisconnect();
+  public void onDisconnectUpdate(String appName, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    OnDisconnect ondDisconnect = ref.onDisconnect();
+
     Map<String, Object> map = Utils.recursivelyDeconstructReadableMap(props);
-    od.updateChildren(map, new DatabaseReference.CompletionListener() {
+
+    ondDisconnect.updateChildren(map, new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("onDisconnectUpdate", callback, error);
+        handlePromise(promise, error);
       }
     });
   }
 
+  /**
+   * Remove a ref when the client disconnects from the firebase server.
+   *
+   * @param appName
+   * @param path
+   * @param promise
+   */
   @ReactMethod
-  public void onDisconnectRemove(final String path, final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
+  public void onDisconnectRemove(String appName, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    OnDisconnect onDisconnect = ref.onDisconnect();
 
-    OnDisconnect od = ref.onDisconnect();
-    od.removeValue(new DatabaseReference.CompletionListener() {
+    onDisconnect.removeValue(new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("onDisconnectRemove", callback, error);
+        handlePromise(promise, error);
       }
     });
   }
 
+  /**
+   * Cancel a pending onDisconnect action.
+   *
+   * @param appName
+   * @param path
+   * @param promise
+   */
   @ReactMethod
-  public void onDisconnectCancel(final String path, final Callback callback) {
-    DatabaseReference ref = mFirebaseDatabase.getReference(path);
+  public void onDisconnectCancel(String appName, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    OnDisconnect onDisconnect = ref.onDisconnect();
 
-    OnDisconnect od = ref.onDisconnect();
-    od.cancel(new DatabaseReference.CompletionListener() {
+    onDisconnect.cancel(new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        handleCallback("onDisconnectCancel", callback, error);
+        handlePromise(promise, error);
       }
     });
   }
 
+  /**
+   * @param appName
+   * @param path
+   * @param props
+   * @param promise
+   */
   @ReactMethod
-  public void goOnline() {
-    mFirebaseDatabase.goOnline();
+  public void set(String appName, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    Object value = Utils.recursivelyDeconstructReadableMap(props).get("value");
+
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        handlePromise(promise, error);
+      }
+    };
+
+    ref.setValue(value, listener);
   }
 
+  /**
+   * @param appName
+   * @param path
+   * @param priority
+   * @param promise
+   */
   @ReactMethod
-  public void goOffline() {
-    mFirebaseDatabase.goOffline();
+  public void setPriority(String appName, String path, ReadableMap priority, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    Object priorityValue = Utils.recursivelyDeconstructReadableMap(priority).get("value");
+
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        handlePromise(promise, error);
+      }
+    };
+
+    ref.setPriority(priorityValue, listener);
   }
 
-  private void handleCallback(
-    final String methodName,
-    final Callback callback,
-    final DatabaseError databaseError) {
+  /**
+   * @param appName
+   * @param path
+   * @param data
+   * @param priority
+   * @param promise
+   */
+  @ReactMethod
+  public void setWithPriority(String appName, String path, ReadableMap data, ReadableMap priority, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    Object dataValue = Utils.recursivelyDeconstructReadableMap(data).get("value");
+    Object priorityValue = Utils.recursivelyDeconstructReadableMap(priority).get("value");
+
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        handlePromise(promise, error);
+      }
+    };
+
+    ref.setValue(dataValue, priorityValue, listener);
+  }
+
+  /**
+   * @param appName
+   * @param path
+   * @param props
+   * @param promise
+   */
+  @ReactMethod
+  public void update(String appName, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    Map<String, Object> updates = Utils.recursivelyDeconstructReadableMap(props);
+
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        handlePromise(promise, error);
+      }
+    };
+
+    ref.updateChildren(updates, listener);
+  }
+
+  /**
+   * @param appName
+   * @param path
+   * @param promise
+   */
+  @ReactMethod
+  public void remove(String appName, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, path);
+
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        handlePromise(promise, error);
+      }
+    };
+
+    ref.removeValue(listener);
+  }
+
+
+  /**
+   * Subscribe once to a firebase reference.
+   *
+   * @param appName
+   * @param key
+   * @param path
+   * @param modifiers
+   * @param eventType
+   * @param promise
+   */
+  @ReactMethod
+  public void once(String appName, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
+    getInternalReferenceForApp(appName, key, path, modifiers).once(eventType, promise);
+  }
+
+  /**
+   * Subscribe to real time events for the specified database path + modifiers
+   *
+   * @param appName String
+   * @param props   ReadableMap
+   */
+  @ReactMethod
+  public void on(String appName, ReadableMap props) {
+    getInternalReferenceForApp(appName, props)
+      .on(
+        props.getString("eventType"),
+        props.getMap("registration")
+      );
+  }
+
+  /**
+   * Removes the specified event registration key.
+   * If the ref no longer has any listeners the the ref is removed.
+   *
+   * @param key
+   * @param eventRegistrationKey
+   */
+  @ReactMethod
+  public void off(String key, String eventRegistrationKey) {
+    RNFirebaseDatabaseReference nativeRef = references.get(key);
+    nativeRef.removeEventListener(eventRegistrationKey);
+
+    if (!nativeRef.hasListeners()) {
+      references.remove(key);
+    }
+  }
+
+  /*
+   * INTERNALS/UTILS
+   */
+
+  /**
+   * Resolve null or reject with a js like error if databaseError exists
+   *
+   * @param promise
+   * @param databaseError
+   */
+  static void handlePromise(Promise promise, DatabaseError databaseError) {
     if (databaseError != null) {
-      WritableMap err = Arguments.createMap();
-      err.putInt("code", databaseError.getCode());
-      err.putString("details", databaseError.getDetails());
-      err.putString("description", databaseError.getMessage());
-      callback.invoke(err);
+      WritableMap jsError = getJSError(databaseError);
+      promise.reject(
+        jsError.getString("code"),
+        jsError.getString("message"),
+        databaseError.toException()
+      );
     } else {
-      WritableMap res = Arguments.createMap();
-      res.putString("status", "success");
-      res.putString("method", methodName);
-      callback.invoke(null, res);
+      promise.resolve(null);
     }
   }
 
-  private RNFirebaseDatabaseReference getDBHandle(final int refId, final String path,
-    final ReadableArray modifiers) {
-    RNFirebaseDatabaseReference r = mReferences.get(refId);
 
-    if (r == null) {
-      ReactContext ctx = getReactApplicationContext();
-      r = new RNFirebaseDatabaseReference(ctx, mFirebaseDatabase, refId, path, modifiers);
-      mReferences.put(refId, r);
-    }
-
-    return r;
+  /**
+   * Get a database instance for a specific firebase app instance
+   *
+   * @param appName
+   * @return
+   */
+  static FirebaseDatabase getDatabaseForApp(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    return FirebaseDatabase.getInstance(firebaseApp);
   }
 
+  /**
+   * Get a database reference for a specific app and path
+   *
+   * @param appName
+   * @param path
+   * @return
+   */
+  private DatabaseReference getReferenceForAppPath(String appName, String path) {
+    return getDatabaseForApp(appName).getReference(path);
+  }
+
+  /**
+   * Return an existing or create a new RNFirebaseDatabaseReference instance.
+   *
+   * @param appName
+   * @param key
+   * @param path
+   * @param modifiers
+   * @return
+   */
+  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, String key, String path, ReadableArray modifiers) {
+    RNFirebaseDatabaseReference existingRef = references.get(key);
+
+    if (existingRef == null) {
+      existingRef = new RNFirebaseDatabaseReference(
+        getReactApplicationContext(),
+        appName,
+        key,
+        path,
+        modifiers
+      );
+    }
+
+    return existingRef;
+  }
+
+  /**
+   * TODO
+   *
+   * @param appName
+   * @param props
+   * @return
+   */
+  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, ReadableMap props) {
+    String key = props.getString("key");
+    String path = props.getString("path");
+    ReadableArray modifiers = props.getArray("modifiers");
+
+    RNFirebaseDatabaseReference existingRef = references.get(key);
+
+    if (existingRef == null) {
+      existingRef = new RNFirebaseDatabaseReference(
+        getReactApplicationContext(),
+        appName,
+        key,
+        path,
+        modifiers
+      );
+
+      references.put(key, existingRef);
+    }
+
+    return existingRef;
+  }
+
+  /**
+   * Wrap a message string with the specified service name e.g. 'Database'
+   *
+   * @param message
+   * @param service
+   * @param fullCode
+   * @return
+   */
+  private static String getMessageWithService(String message, String service, String fullCode) {
+    // Service: Error message (service/code).
+    return service + ": " + message + " (" + fullCode.toLowerCase() + ").";
+  }
+
+  /**
+   * Generate a service error code string e.g. 'DATABASE/PERMISSION-DENIED'
+   *
+   * @param service
+   * @param code
+   * @return
+   */
+  private static String getCodeWithService(String service, String code) {
+    return service.toLowerCase() + "/" + code.toLowerCase();
+  }
+
+  /**
+   * Convert as firebase DatabaseError instance into a writable map
+   * with the correct web-like error codes.
+   *
+   * @param nativeError
+   * @return
+   */
+  static WritableMap getJSError(DatabaseError nativeError) {
+    WritableMap errorMap = Arguments.createMap();
+    errorMap.putInt("nativeErrorCode", nativeError.getCode());
+    errorMap.putString("nativeErrorMessage", nativeError.getMessage());
+
+    String code;
+    String message;
+    String service = "Database";
+
+    switch (nativeError.getCode()) {
+      case DatabaseError.DATA_STALE:
+        code = getCodeWithService(service, "data-stale");
+        message = getMessageWithService("The transaction needs to be run again with current data.", service, code);
+        break;
+      case DatabaseError.OPERATION_FAILED:
+        code = getCodeWithService(service, "failure");
+        message = getMessageWithService("The server indicated that this operation failed.", service, code);
+        break;
+      case DatabaseError.PERMISSION_DENIED:
+        code = getCodeWithService(service, "permission-denied");
+        message = getMessageWithService("Client doesn't have permission to access the desired data.", service, code);
+        break;
+      case DatabaseError.DISCONNECTED:
+        code = getCodeWithService(service, "disconnected");
+        message = getMessageWithService("The operation had to be aborted due to a network disconnect.", service, code);
+        break;
+      case DatabaseError.EXPIRED_TOKEN:
+        code = getCodeWithService(service, "expired-token");
+        message = getMessageWithService("The supplied auth token has expired.", service, code);
+        break;
+      case DatabaseError.INVALID_TOKEN:
+        code = getCodeWithService(service, "invalid-token");
+        message = getMessageWithService("The supplied auth token was invalid.", service, code);
+        break;
+      case DatabaseError.MAX_RETRIES:
+        code = getCodeWithService(service, "max-retries");
+        message = getMessageWithService("The transaction had too many retries.", service, code);
+        break;
+      case DatabaseError.OVERRIDDEN_BY_SET:
+        code = getCodeWithService(service, "overridden-by-set");
+        message = getMessageWithService("The transaction was overridden by a subsequent set.", service, code);
+        break;
+      case DatabaseError.UNAVAILABLE:
+        code = getCodeWithService(service, "unavailable");
+        message = getMessageWithService("The service is unavailable.", service, code);
+        break;
+      case DatabaseError.USER_CODE_EXCEPTION:
+        code = getCodeWithService(service, "user-code-exception");
+        message = getMessageWithService("User code called from the Firebase Database runloop threw an exception.", service, code);
+        break;
+      case DatabaseError.NETWORK_ERROR:
+        code = getCodeWithService(service, "network-error");
+        message = getMessageWithService("The operation could not be performed due to a network error.", service, code);
+        break;
+      case DatabaseError.WRITE_CANCELED:
+        code = getCodeWithService(service, "write-cancelled");
+        message = getMessageWithService("The write was canceled by the user.", service, code);
+        break;
+      default:
+        code = getCodeWithService(service, "unknown");
+        message = getMessageWithService("An unknown error occurred.", service, code);
+    }
+
+    errorMap.putString("code", code);
+    errorMap.putString("message", message);
+    return errorMap;
+  }
+
+  /**
+   * React Method - returns this module name
+   *
+   * @return
+   */
+  @Override
+  public String getName() {
+    return "RNFirebaseDatabase";
+  }
+
+  /**
+   * React Native constants for RNFirebaseDatabase
+   *
+   * @return
+   */
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();

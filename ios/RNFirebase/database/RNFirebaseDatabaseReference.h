@@ -3,23 +3,25 @@
 #import <Foundation/Foundation.h>
 
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
+#import <FirebaseDatabase/FIRDatabase.h>
+#import "RNFirebaseDatabase.h"
 #import "RNFirebaseEvents.h"
 #import <React/RCTEventEmitter.h>
-#import "Firebase.h"
 
 @interface RNFirebaseDatabaseReference : NSObject
 @property RCTEventEmitter *emitter;
 @property FIRDatabaseQuery *query;
-@property NSNumber *refId;
+@property NSString *app;
+@property NSString *key;
 @property NSString *path;
 @property NSMutableDictionary *listeners;
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter database:(FIRDatabase *)database refId:(NSNumber *)refId path:(NSString *)path modifiers:(NSArray *)modifiers;
-- (void)addEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName;
-- (void)addSingleEventHandler:(NSString *)eventName callback:(RCTResponseSenderBlock)callback;
-- (void)removeEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName;
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter app:(NSString *)app key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
+- (void)on:(NSString *) eventName registration:(NSDictionary *) registration;
+- (void)once:(NSString *) eventType resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
+- (void)removeEventListener:(NSString *)eventRegistrationKey;
 - (BOOL)hasListeners;
-+ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)snapshot;
++ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)dataSnapshot;
 @end
 
 #else

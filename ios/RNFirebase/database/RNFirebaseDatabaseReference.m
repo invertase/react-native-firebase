@@ -4,106 +4,127 @@
 
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter database:(FIRDatabase *)database refId:(NSNumber *)refId path:(NSString *)path modifiers:(NSArray *)modifiers {
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
+                           app:(NSString *) app
+                           key:(NSString *) key
+                       refPath:(NSString *) refPath
+                     modifiers:(NSArray *) modifiers {
     self = [super init];
     if (self) {
         _emitter = emitter;
-        _refId = refId;
-        _path = path;
-        _query = [self buildQueryAtPathWithModifiers:database path:path modifiers:modifiers];
+        _app = app;
+        _key = key;
+        _path = refPath;
         _listeners = [[NSMutableDictionary alloc] init];
+        _query = [self buildQueryAtPathWithModifiers:refPath modifiers:modifiers];
     }
     return self;
 }
 
-- (void)addEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName {
-    if (!_listeners[listenerId]) {
+- (void)removeEventListener:(NSString *)eventRegistrationKey {
+    FIRDatabaseHandle handle = (FIRDatabaseHandle) [_listeners[eventRegistrationKey] integerValue];
+    if (handle) {
+        [_query removeObserverWithHandle:handle];
+        [_listeners removeObjectForKey:eventRegistrationKey];
+    }
+}
+
+- (void)on:(NSString *) eventType registration:(NSDictionary *) registration {
+    NSString *eventRegistrationKey = registration[@"eventRegistrationKey"];
+    if (![self hasEventListener:eventRegistrationKey]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
-            NSDictionary *props = [RNFirebaseDatabaseReference snapshotToDict:snapshot];
-            [self sendJSEvent:DATABASE_DATA_EVENT title:eventName props:@{@"eventName": eventName, @"refId": _refId, @"listenerId": listenerId, @"path": _path, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}];
+            [self handleDatabaseEvent:eventType registration:registration dataSnapshot:snapshot previousChildName:previousChildName];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
-            [self removeEventHandler:listenerId eventName:eventName];
-            [self getAndSendDatabaseError:error listenerId:listenerId];
+            [self removeEventListener:eventRegistrationKey];
+            [self handleDatabaseError:registration error:error];
         };
-        int eventType = [self eventTypeFromName:eventName];
-        FIRDatabaseHandle handle = [_query observeEventType:eventType andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock withCancelBlock:errorBlock];
-        _listeners[listenerId] = @(handle);
-    } else {
-        NSLog(@"Warning Trying to add duplicate listener for refId: %@ listenerId: %@", _refId, listenerId);
+        FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventType];
+        FIRDatabaseHandle handle = [_query observeEventType:firDataEventType andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock withCancelBlock:errorBlock];
+        _listeners[eventRegistrationKey] = @(handle);
     }
 }
 
-- (void)addSingleEventHandler:(NSString *)eventName callback:(RCTResponseSenderBlock)callback {
-    FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventName];
-
+- (void)once:(NSString *) eventType
+    resolver:(RCTPromiseResolveBlock) resolve
+    rejecter:(RCTPromiseRejectBlock) reject {
+    FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventType];
     [_query observeSingleEventOfType:firDataEventType andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
-        NSDictionary *props = [RNFirebaseDatabaseReference snapshotToDict:snapshot];
-        callback(@[[NSNull null], @{@"eventName": eventName, @"path": _path, @"refId": _refId, @"snapshot": props, @"previousChildName": previousChildName != nil ? previousChildName : [NSNull null]}]);
+        NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:snapshot previousChildName:previousChildName];
+        resolve(data);
     } withCancelBlock:^(NSError *_Nonnull error) {
         NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
-        callback(@[@{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]}]);
+        [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }
 
-- (void)removeEventHandler:(NSNumber *)listenerId eventName:(NSString *)eventName {
-    FIRDatabaseHandle handle = (FIRDatabaseHandle) [_listeners[listenerId] integerValue];
-    if (handle) {
-        [_listeners removeObjectForKey:listenerId];
-        [_query removeObserverWithHandle:handle];
-    }
+- (void)handleDatabaseEvent:(NSString *) eventType
+               registration:(NSDictionary *) registration
+               dataSnapshot:(FIRDataSnapshot *) dataSnapshot
+          previousChildName:(NSString *) previousChildName {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:dataSnapshot previousChildName:previousChildName];
+    
+    [event setValue:data forKey:@"data"];
+    [event setValue:_key forKey:@"key"];
+    [event setValue:eventType forKey:@"eventType"];
+    [event setValue:registration forKey:@"registration"];
+    
+    [_emitter sendEventWithName:DATABASE_SYNC_EVENT body:event];
 }
 
-+ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)snapshot {
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict setValue:snapshot.key forKey:@"key"];
-    NSDictionary *val = snapshot.value;
-    dict[@"value"] = val;
-    // Snapshot ordering
+- (void)handleDatabaseError:(NSDictionary *) registration
+                      error:(NSError *)error {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    [event setValue:_key forKey:@"key"];
+    [event setValue:[RNFirebaseDatabase getJSError:error] forKey:@"error"];
+    [event setValue:registration forKey:@"registration"];
+    
+    [_emitter sendEventWithName:DATABASE_SYNC_EVENT body:event];
+}
+
++ (NSDictionary *)snapshotToDictionary:(FIRDataSnapshot *) dataSnapshot
+                     previousChildName:(NSString *) previousChildName {
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    NSDictionary *snapshot = [RNFirebaseDatabaseReference snapshotToDict:dataSnapshot];
+
+    [result setValue:snapshot forKey:@"snapshot"];
+    [result setValue:previousChildName forKey:@"previousChildName"];
+
+    return result;
+}
+
++ (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)dataSnapshot {
+    NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
+    
+    [snapshot setValue:dataSnapshot.key forKey:@"key"];
+    [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
+    [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
+    [snapshot setValue:@(dataSnapshot.childrenCount) forKey:@"childrenCount"];
+    [snapshot setValue:[RNFirebaseDatabaseReference getChildKeys:dataSnapshot] forKey:@"childKeys"];
+    [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
+    [snapshot setValue:dataSnapshot.value forKey:@"value"];
+    
+    return snapshot;
+}
+
++ (NSMutableArray *) getChildKeys:(FIRDataSnapshot *) snapshot {
     NSMutableArray *childKeys = [NSMutableArray array];
     if (snapshot.childrenCount > 0) {
-        // Since JS does not respect object ordering of keys
-        // we keep a list of the keys and their ordering
-        // in the snapshot event
         NSEnumerator *children = [snapshot children];
         FIRDataSnapshot *child;
         while (child = [children nextObject]) {
             [childKeys addObject:child.key];
         }
     }
-    dict[@"childKeys"] = childKeys;
-    [dict setValue:@(snapshot.hasChildren) forKey:@"hasChildren"];
-    [dict setValue:@(snapshot.exists) forKey:@"exists"];
-    [dict setValue:@(snapshot.childrenCount) forKey:@"childrenCount"];
-    [dict setValue:snapshot.priority forKey:@"priority"];
-    return dict;
+    return childKeys;
 }
 
-- (NSDictionary *)getAndSendDatabaseError:(NSError *)error listenerId:(NSNumber *)listenerId {
-    NSDictionary *event = @{@"eventName": DATABASE_ERROR_EVENT, @"path": _path, @"refId": _refId, @"listenerId": listenerId, @"code": @([error code]), @"details": [error debugDescription], @"message": [error localizedDescription], @"description": [error description]};
-
-    @try {
-        [_emitter sendEventWithName:DATABASE_ERROR_EVENT body:event];
-    } @catch (NSException *err) {
-        NSLog(@"An error occurred in getAndSendDatabaseError: %@", [err debugDescription]);
-        NSLog(@"Tried to send: %@ with %@", DATABASE_ERROR_EVENT, event);
-    }
-
-    return event;
-}
-
-- (void)sendJSEvent:(NSString *)type title:(NSString *)title props:(NSDictionary *)props {
-    @try {
-        [_emitter sendEventWithName:type body:@{@"eventName": title, @"body": props}];
-    } @catch (NSException *err) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
-        NSLog(@"Tried to send: %@ with %@", title, props);
-    }
-}
-
-- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(FIRDatabase *)database path:(NSString *)path modifiers:(NSArray *)modifiers {
-    FIRDatabaseQuery *query = [[database reference] child:path];
+- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *) path
+                                          modifiers:(NSArray *)modifiers {
+    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_app];
+    FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
 
     for (NSDictionary *modifier in modifiers) {
         NSString *type = [modifier valueForKey:@"type"];
@@ -163,6 +184,10 @@
     } else {
         return value;
     }
+}
+
+- (BOOL)hasEventListener:(NSString *) eventRegistrationKey {
+    return _listeners[eventRegistrationKey] != nil;
 }
 
 - (BOOL)hasListeners {

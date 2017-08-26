@@ -1,6 +1,7 @@
 import { setSuiteStatus, setTestStatus } from '../actions/TestActions';
 import analytics from './analytics/index';
 import crash from './crash/index';
+import core from './core/index';
 import database from './database/index';
 import messaging from './messaging/index';
 import storage from './storage/index';
@@ -15,6 +16,7 @@ const testSuiteInstances = [
   analytics,
   messaging,
   crash,
+  core,
   storage,
   config,
   performance,

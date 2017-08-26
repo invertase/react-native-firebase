@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8300A7DB1F3333F5001B16AB /* RNFirebaseDatabaseReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300A7DA1F3333F5001B16AB /* RNFirebaseDatabaseReference.m */; };
+		8300A7AE1F31E143001B16AB /* RNFirebaseDatabaseReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300A7AD1F31E143001B16AB /* RNFirebaseDatabaseReference.m */; };
 		839D916C1EF3E20B0077C7C8 /* RNFirebaseAdMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D914F1EF3E20A0077C7C8 /* RNFirebaseAdMob.m */; };
 		839D916D1EF3E20B0077C7C8 /* RNFirebaseAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91511EF3E20A0077C7C8 /* RNFirebaseAdMobInterstitial.m */; };
 		839D916E1EF3E20B0077C7C8 /* RNFirebaseAdMobRewardedVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91531EF3E20A0077C7C8 /* RNFirebaseAdMobRewardedVideo.m */; };
@@ -36,8 +36,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8300A7D91F3333F5001B16AB /* RNFirebaseDatabaseReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseDatabaseReference.h; sourceTree = "<group>"; };
-		8300A7DA1F3333F5001B16AB /* RNFirebaseDatabaseReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseDatabaseReference.m; sourceTree = "<group>"; };
+		8300A7AC1F31E143001B16AB /* RNFirebaseDatabaseReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseDatabaseReference.h; sourceTree = "<group>"; };
+		8300A7AD1F31E143001B16AB /* RNFirebaseDatabaseReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseDatabaseReference.m; sourceTree = "<group>"; };
 		839D914E1EF3E20A0077C7C8 /* RNFirebaseAdMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseAdMob.h; sourceTree = "<group>"; };
 		839D914F1EF3E20A0077C7C8 /* RNFirebaseAdMob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseAdMob.m; sourceTree = "<group>"; };
 		839D91501EF3E20A0077C7C8 /* RNFirebaseAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseAdMobInterstitial.h; sourceTree = "<group>"; };
@@ -160,8 +160,8 @@
 		839D91601EF3E20A0077C7C8 /* database */ = {
 			isa = PBXGroup;
 			children = (
-				8300A7D91F3333F5001B16AB /* RNFirebaseDatabaseReference.h */,
-				8300A7DA1F3333F5001B16AB /* RNFirebaseDatabaseReference.m */,
+				8300A7AC1F31E143001B16AB /* RNFirebaseDatabaseReference.h */,
+				8300A7AD1F31E143001B16AB /* RNFirebaseDatabaseReference.m */,
 				839D91611EF3E20A0077C7C8 /* RNFirebaseDatabase.h */,
 				839D91621EF3E20A0077C7C8 /* RNFirebaseDatabase.m */,
 			);
@@ -267,7 +267,7 @@
 				839D91741EF3E20B0077C7C8 /* RNFirebaseMessaging.m in Sources */,
 				839D91751EF3E20B0077C7C8 /* RNFirebasePerformance.m in Sources */,
 				839D916D1EF3E20B0077C7C8 /* RNFirebaseAdMobInterstitial.m in Sources */,
-				8300A7DB1F3333F5001B16AB /* RNFirebaseDatabaseReference.m in Sources */,
+				8300A7AE1F31E143001B16AB /* RNFirebaseDatabaseReference.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,14 +360,21 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${PROJECT_DIR}/../../../ios/Pods/**",
+					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseCrash/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseDatabase/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseMessaging/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebasePerformance/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseRemoteConfig/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseStorage/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/Google-Mobile-Ads-SDK/Frameworks/frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
-					"${SRCROOT}/../../../ios/Pods/**",
+					"${SRCROOT}/../../../ios/Pods/Firebase/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -389,14 +396,21 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${PROJECT_DIR}/../../../ios/Pods/**",
+					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseCrash/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseDatabase/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseMessaging/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebasePerformance/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseRemoteConfig/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/FirebaseStorage/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/Google-Mobile-Ads-SDK/Frameworks/frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
-					"${SRCROOT}/../../../ios/Pods/**",
+					"${SRCROOT}/../../../ios/Pods/Firebase/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";

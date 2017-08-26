@@ -6,6 +6,8 @@ import { setupSuites } from './tests/index';
 
 global.Promise = require('bluebird');
 
+console.ignoredYellowBox = ['Setting a timer for a long period of time, i.e. multiple minutes'];
+
 type State = {
   loading: boolean,
   store: any,

@@ -54,7 +54,8 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.40.0"
+    "react-native": ">= 0.40.0",
+    "fbjs": "*"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",

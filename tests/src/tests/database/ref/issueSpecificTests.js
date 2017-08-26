@@ -24,7 +24,6 @@ function issueTests({ describe, it, context, firebase }) {
         // Setup
 
         const ref = firebase.native.database().ref('tests/issues/108');
-
         // Test
 
         return ref

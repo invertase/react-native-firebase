@@ -6,8 +6,8 @@
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 
-#import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
-#import "GoogleMobileAds/GADRewardBasedVideoAd.h"
+#import <GoogleMobileAds/GADRewardBasedVideoAdDelegate.h>
+#import <GoogleMobileAds/GADRewardBasedVideoAd.h>
 #import <React/RCTEventEmitter.h>
 #import "RNFirebaseAdMob.h"
 
@@ -31,4 +31,3 @@
 #endif
 
 #endif
-

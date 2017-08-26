@@ -8,8 +8,7 @@ static NSString *const AUTH_ERROR_EVENT = @"authError";
 static NSString *const AUTH_ANONYMOUS_ERROR_EVENT = @"authAnonymousError";
 
 // Database
-static NSString *const DATABASE_DATA_EVENT = @"database_event";
-static NSString *const DATABASE_ERROR_EVENT = @"database_error";
+static NSString *const DATABASE_SYNC_EVENT = @"database_sync_event";
 static NSString *const DATABASE_TRANSACTION_EVENT = @"database_transaction_event";
 
 static NSString *const DATABASE_VALUE_EVENT = @"value";
