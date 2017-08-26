@@ -19,9 +19,9 @@ firebase.auth().signInAnonymously()
 
 ### Configure Default App Instance
 
-<!-- TODO document elsewhere and place a 'See X link' here-->
+See [configure the default app instance](/core/config-default-app).
 
 ### Configuring RNFirebase
 
-<!-- TODO document elsewhere and place a 'See X link' here-->
+See [configure RNFirebase](/core/config-rnfirebase).
 
