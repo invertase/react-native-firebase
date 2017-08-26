@@ -27,9 +27,8 @@ console.log("storageBucket", defaultApp.options.projectId);
 
 
 <!-- TODO api ref docs: -->
-
- - name: String
- - options: Object
- - delete(): Promise
+ <!-- - name: String -->
+ <!-- - options: Object -->
+ <!-- - delete(): Promise -->
 
 
