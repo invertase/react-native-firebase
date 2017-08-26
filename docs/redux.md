@@ -3,10 +3,11 @@
 Although RNFirebase usage requires a React Native environment, it isn't tightly coupled which allows for full flexibility
 when it comes to integrating with other modules such a [`react-redux`](https://github.com/reactjs/react-redux).
 
-If you wish to use a Redux library designed for Firebase, we suggest taking a look at [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html)
-for implementation with this module.
+## React Redux Firebase
 
-## Standalone integration
+If you wish to use a Redux library designed specifically for Firebase, we suggest taking a look at [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html).
+
+## Standalone Integration
 
 Although the following example works for a basic redux setup, it may differ when integrating with other redux middleware.
 Imagine a simple TODO app, with redux we're able to abstract the Firebase logic out of components which allows for greater
