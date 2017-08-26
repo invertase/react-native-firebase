@@ -5,17 +5,18 @@
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Messaging (FCM), Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
   "main": "index",
   "scripts": {
-    "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
-    "dev": "npm run compile -- --watch",
+    "flow": "flow",
     "lint": "eslint ./src",
+    "dev": "npm run compile -- --watch",
+    "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
     "publish_pages": "gh-pages -d public/",
-    "tests-npm-install": "cd tests && npm install",
+    "docs-serve-local": "docsify serve docs",
     "tests-packager": "cd tests && npm run start",
+    "tests-npm-install": "cd tests && npm install",
+    "tests-pod-install": "cd tests && npm run ios:pod:install",
     "tests-watch-init": "wml add $(node --eval \"console.log(require('path').resolve('./lib'));\") $(node --eval \"console.log(require('path').resolve('./tests/firebase'));\")",
     "tests-watch-start": "watchman watch $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml start",
-    "tests-watch-stop": "watchman watch-del $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml stop",
-    "tests-pod-install": "cd tests && npm run ios:pod:install",
-    "flow": "flow"
+    "tests-watch-stop": "watchman watch-del $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml stop"
   },
   "repository": {
     "type": "git",
