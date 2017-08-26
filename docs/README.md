@@ -1,3 +1,9 @@
+---
+
+!> v3 has not been published yet, for the currently published version see the [v2 docs](/v2/)
+
+---
+
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
@@ -9,6 +15,7 @@
 </div>
 
 ---
+
 
 RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
