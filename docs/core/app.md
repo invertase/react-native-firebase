@@ -5,7 +5,8 @@ RNFirebase supports both initializing apps natively and also via js code over th
 Apps initialized natively are available immediately at app runtime, there is no need to call `initializeApp` for them.
 
 For example, to access the default app initialized via the `Google-Services` `plist` or `json` file:
-```javascipt
+
+```js
 import firebase from 'react-native-firebase';
 
 const defaultApp = firebase.app();
