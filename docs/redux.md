@@ -1,8 +1,9 @@
 # Usage with Redux
 
 Although RNFirebase usage requires a React Native environment, it isn't tightly coupled which allows for full flexibility
-when it comes to integrating with other modules such a [`react-redux`](https://github.com/reactjs/react-redux). If you wish to use
-a Redux library designed for Firebase, we suggest taking a look at [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html)
+when it comes to integrating with other modules such a [`react-redux`](https://github.com/reactjs/react-redux).
+
+If you wish to use a Redux library designed for Firebase, we suggest taking a look at [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html)
 for implementation with this module.
 
 ## Standalone integration
@@ -21,14 +22,14 @@ export const subscribe = () => {
   return (dispatch) => {
     firebase.database().ref('todos').on('value', (snapshot) => {
       const todos = [];
-      
+
       snapshot.forEach((childSnapshot) => {
         todos.push({
           id: childSnapshot.key,
           ...(childSnapshot.val()),
         })
       })
-      
+
       dispatch({
         type: 'TODO_UPDATE',
         todos,
@@ -67,7 +68,7 @@ const todos = (state = {}, action) => {
     case 'TODO_UPDATE':
       return { ...action.todos };
   }
-  
+
   return state;
 }
 
@@ -92,20 +93,20 @@ class Todos extends React.Component {
       subscribe()
     );
   }
-  
+
   onComplete = (id) => {
     this.props.dispatch(
       completeTodo(id)
     );
   };
-  
+
   onAdd = (text) => {
     this.props.dispatch(
       addTodo(text)
     );
   };
-  
-  render() {    
+
+  render() {
     return (
       <FlatList
         data={this.props.todos}

@@ -26,7 +26,7 @@ console.log("storageBucket", defaultApp.options.projectId);
 ```
 
 
-TODO api ref docs:
+<!-- TODO api ref docs: -->
 
  - name: String
  - options: Object
