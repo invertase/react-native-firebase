@@ -1,6 +1,6 @@
 # Usage
 
-After creating a Firebase project and installing the library, we can use it in our project by importing the library in our JavaScript:
+After creating a Firebase project and installing the library, you can then use it in your project by importing the library in your JavaScript code:
 
 ```javascript
 import firebase from 'react-native-firebase';
