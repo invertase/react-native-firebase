@@ -35,7 +35,7 @@
       function (hook, vm) {
         hook.beforeEach(function (html) {
           var url = 'https://github.com/invertase/react-native-firebase/blob/master/docs/' + vm.route.file;
-          var editHtml = '[:memo: Edit](' + url + ')\n';
+          var editHtml = '[:memo: Edit me on Github](' + url + ')\n';
           return html
             + '\n----\n'
             + '<b>Last updated</b>: {docsify-updated} '
