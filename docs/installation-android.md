@@ -161,24 +161,24 @@ If you'd like to take advantage of Firebase's [Performance Monitoring](https://f
 
 In your projects `android/build.gradle` file, add the plugin to your dependencies:
 
-```
+```groovy
 dependencies {
-  ...
+  // ...
   classpath 'com.google.firebase:firebase-plugins:1.1.0'
 }
 ```
 
 At the top of your `android/app/build.gradle` file, below other plugins, apply the `firebase-perf` plugin:
-```
+```groovy
 apply plugin: "com.android.application"
 apply plugin: "com.google.firebase.firebase-perf"
 ```
 
 In the same file, add the `firebase-perf` module to your dependencies:
 
-```
+```groovy
 dependencies {
-  ...
+  // ...
   compile "com.google.firebase:firebase-perf:11.0.0"
 }
 ```
