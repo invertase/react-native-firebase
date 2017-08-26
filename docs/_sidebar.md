@@ -3,15 +3,19 @@
  - [Installation - iOS](/installation-ios)
  - [Installation - Android](/installation-android)
  - [Usage](/usage)
- - [Migration Guide](/migration-guide)
+   - [With Expo](/faq/expo)
+   - [With Redux](/redux)
+ - [Upgrade Guide](/migration-guide)
 
-- Contributing
- - [Guidelines](/contributing/guidelines)
- - [Testing](/contributing/testing)
+---
 
 - Core
  - [App](/core/app)
+   - [Configure default app instance](/core/config-default-app)
  - [Firebase](/core/firebase)
+    - [Configure RNFirebase](/core/config-rnfirebase)
+
+---
 
 - Modules
  - [Admob](/modules/admob)
@@ -25,10 +29,16 @@
  - [Transactions](/modules/transactions)
  - [Performance Monitoring](/modules/perf)
 
+---
+
+- Contributing
+ - [Guidelines](/contributing/guidelines)
+ - [Testing](/contributing/testing)
+
+---
+
 - Other
-  - [Usage with Redux](/redux)
-  - [Project Board](https://github.com/invertase/react-native-firebase/projects)
   - [FAQs / Troubleshooting](/faqs)
-  - [Examples](https://github.com/invertase/react-native-firebase-examples)
-  - [Chat](https://discord.gg/t6bdqMs)
-  - [Gitter](https://gitter.im/invertase/react-native-firebase)
+  - Chat
+    - [Discord](https://discord.gg/t6bdqMs)
+    - [Gitter](https://gitter.im/invertase/react-native-firebase)
