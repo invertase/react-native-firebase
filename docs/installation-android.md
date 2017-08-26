@@ -7,7 +7,7 @@ Next you'll have to add the google-services gradle plugin in order to parse it.
 
 Add the google-services gradle plugin as a dependency in the *project* level build.gradle
 `android/build.gradle`
-```java
+```groovy
 buildscript {
   // ...
   dependencies {
@@ -19,7 +19,7 @@ buildscript {
 
 In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the file (below all dependencies)
 `android/app/build.gradle`
-```java
+```groovy
 apply plugin: 'com.google.gms.google-services'
 ```
 
@@ -29,14 +29,14 @@ RNFirebase is split into separate modules to allow you to only include the Fireb
 
 First add the project path to `android/settings.gradle`:
 
-```
+```groovy
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
 
 Now you need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
 
-```
+```groovy
 dependencies {
   // RNFirebase required dependencies
   compile(project(':react-native-firebase')) {
