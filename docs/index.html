@@ -59,6 +59,15 @@
     background: #383838;
   }
 
+  hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #e8e8e8;
+    margin: 1em 0;
+    padding: 0;
+  }
+
   code[class*="lang-"],
   pre[class*="lang-"] {
     color: white !important;
@@ -255,7 +264,7 @@
   }
 
   body {
-    padding-top: 35px;
+    padding-top: 45px;
   }
 
   .section-link:hover {
@@ -293,8 +302,29 @@
     background: #383838;
     z-index: 9995;
     vertical-align: middle;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   }
 
+  pre {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  }
+
+  .warn {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23);
+  }
+
+  .tip {
+    box-shadow: 0 1px 2px rgba(200,0,0,0.16), 0 1px 2px rgba(0,0,0,0.23);
+  }
+
+  code {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.09), 0 1px 2px rgba(0,0,0,0.13);
+  }
+
+  li > a > code {
+    box-shadow: none;
+  }
   .rnfirebase-header > img {
     float: left;
     width: 45px;
