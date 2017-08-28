@@ -26,7 +26,6 @@ const testGroups = [
   pushTests, onTests, onValueTests, onChildAddedTests, onceTests, updateTests,
   removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
   priorityTests,
-  onValueTests, onChildAddedTests,
   offTests,
 ];
 

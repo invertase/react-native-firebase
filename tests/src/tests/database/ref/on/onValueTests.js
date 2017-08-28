@@ -342,7 +342,7 @@ function onTests({ describe, context, it, firebase, tryCatch }) {
               'Database: Client doesn\'t have permission to access the desired data. (database/permission-denied).',
             );
 
-            error.code.should.eql('DATABASE/PERMISSION-DENIED');
+            error.code.should.eql('database/permission-denied');
 
             // test ref matches
             error.ref.path.should.eql(invalidRef.path);

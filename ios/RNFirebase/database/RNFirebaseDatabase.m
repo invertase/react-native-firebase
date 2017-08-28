@@ -239,7 +239,7 @@ RCT_EXPORT_METHOD(off:(NSString *) key
  eventRegistrationKey:(NSString *) eventRegistrationKey) {
     RNFirebaseDatabaseReference *ref = _dbReferences[key];
     [ref removeEventListener:eventRegistrationKey];
-    
+
     if (![ref hasListeners]) {
         [_dbReferences removeObjectForKey:key];
     }
@@ -287,7 +287,7 @@ RCT_EXPORT_METHOD(off:(NSString *) key
 }
 
 + (NSString *)getCodeWithService:(NSString *)service code:(NSString *)code {
-    return [NSString stringWithFormat:@"%@/%@", [service uppercaseString], [code uppercaseString]];
+    return [NSString stringWithFormat:@"%@/%@", [service lowercaseString], [code lowercaseString]];
 }
 
 + (NSDictionary *)getJSError:(NSError *)nativeError {
