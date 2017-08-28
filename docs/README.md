@@ -1,6 +1,6 @@
 ---
 
-!> v3 has not been published yet, for the currently published version see the [v2 docs](/v2/)
+!> These docs are for the [v3 pre-release](https://github.com/invertase/react-native-firebase/releases/tag/v3.0.0) version, for the currently published release version see the [v2 docs](/v2/)
 
 ---
 
