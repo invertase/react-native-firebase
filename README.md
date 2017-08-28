@@ -37,26 +37,31 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 All in all, RNFirebase provides much faster performance (~2x) over the web SDK and provides device sdk's not found in the web sdk (see the feature table below).
 
 ---
-### Supported Firebase Features
+## Supported Firebase Features
+> The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
-> The Web SDK column indicates what modules from the Firebase Web SDK are usable with React Native.
 
-| Firebase Features      | v1  | v2  | Web SDK |
-| ---------------------- | :---: | :---: | :---: |
-| AdMob                  | ❌ | ✅ | ❌ |
-| Analytics              | ✅ | ✅ | ❌ |
-| App Indexing           | ❌ | ❌ | ❌ |
-| Authentication         | ✅ | ✅ | ✅ |
-| Cloud Messaging        | ✅ | ✅ | ❌ |
-| Crash Reporting        | ✅ | ✅ | ❌ |
-| Dynamic Links          | ❌ | ❌ | ❌ |
-| Invites                | ❌ | ❌ | ❌ |
-| Performance Monitoring | ✅ | ✅ | ❌ |
-| Realtime Database      | ✅ | ✅ | ✅ |
-|  - Offline Persistance | ✅ | ✅ | ❌ |
-|  - Transactions        | ✅ | ✅ | ✅ |
-| Remote Config          | ✅ | ✅ | ❌ |
-| Storage                | ✅ | ✅ | ❌ |
+> '**?**' indicates partial support
+
+| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | Web SDK |
+| ---------------------- | :---: | :---: | :---: | :---: |
+| **AdMob**                  | ❌ | ✅ | ✅ | ❌ |
+| **Analytics**              | ✅ | ✅ | ✅ | ❌ |
+| **App Indexing**           | ❌ | ❌ | ❌ | ❌ |
+| **Authentication**         | ✅ | ✅ | ✅ | ✅ |
+| _-- Phone Auth_            | ❌ | ❌ | ✅ | ❌ |
+| **Core**                   | ❌ |**?**| ✅ | ✅ |
+|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
+| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
+| **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
+| **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
+| **Invites**                | ❌ | ❌ | ❌ | ❌ |
+| **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
+| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
+| _-- Offline Persistence_   | ✅ | ✅ | ✅ |**?**|
+| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ |
+| **Remote Config**          | ✅ | ✅ | ✅ | ❌ |
+| **Storage**                | ✅ | ✅ | ✅ |**?**|
 
 ---
 ### Supported versions - React Native / Firebase
