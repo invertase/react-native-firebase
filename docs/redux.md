@@ -5,7 +5,79 @@ when it comes to integrating with other modules such a [`react-redux`](https://g
 
 ## React Redux Firebase
 
-If you wish to use a Redux library designed specifically for Firebase, we suggest taking a look at [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html).
+[`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0) provides simplified and standardized common redux/firebase logic.
+
+To add `react-redux-firebase` to your project:
+1. Run `npm i --save react-redux-firebase@canary` *we point to canary here to get current progress with v2.0.0*
+1. Pass `react-native-firebase` instance into `reactReduxFirebase` when creating store:
+
+  ```js
+  import { applyMiddleware, compose, createStore } from 'redux';
+  import { getFirebase } from 'react-redux-firebase'
+  import RNFirebase from 'react-native-firebase';
+
+  const reactNativeFirebaseConfig = {
+    debug: true
+  };
+
+  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
+
+  // for more config options, visit http://docs.react-redux-firebase.com/history/v2.0.0/docs/api/compose.html
+  const reduxFirebaseConfig = {
+    userProfile: 'users', // save users profiles to 'users' collection
+  }
+
+  const middleware = [
+    thunk.withExtraArgument({ getFirebase }),
+    // place other middleware here
+  ];
+
+  const store = createStore(
+    reducer,
+    {}, // initial state
+    compose(
+     reactReduxFirebase(firebase, reduxConfig), // pass in react-native-firebase instance instead of config
+     applyMiddleware(...middleware)
+    )
+  )
+  ```
+1. Then in your components you can use `firebaseConnect` to gather data from Firebase and place it into redux:
+
+  ```js
+  import { isLoaded } from 'react-redux-firebase'
+  import { compose } from 'redux';
+  const Todos = ({ todos }) => {
+    if (!isLoaded(todos)) {
+      return <div>Loading...</div>
+    }
+    if (isEmpty(todos)) {
+      return <div>No Todos Found</div>
+    }
+    return (
+      <div>
+        Object.keys(todos).map((key, id) => (
+          <div>
+            {todos[key].text}
+            Complete: {todos[key].isComplete}
+          </div>
+        ))
+      </div>
+    )
+  }
+
+  compose(
+    firebaseConnect([
+      { path: 'todos' }
+    ]),
+    connect(({ firebase: { data: { todos } } }) => {
+      todos
+    })
+  )(Todos)
+  ```
+
+Notice how `connect` is still used to get data out of `redux` since `firebaseConnect` only loads data **into** redux.
+
+For more details, please visit [`react-redux-firebase`'s react-native section](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html#native-modules).
 
 ## Standalone Integration
 
