@@ -4,7 +4,7 @@
 
 <!---
 1) If you're trying to request a feature then please do so via our request board:
-    https://react-native-firebase.canny.io/admin/board/feature-requests/invite
+    https://react-native-firebase.canny.io/feature-requests
 --->
 
 <!---
