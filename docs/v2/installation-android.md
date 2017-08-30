@@ -179,6 +179,6 @@ In the same file, add the `firebase-perf` module to your dependencies:
 ```
 dependencies {
   ...
-  compile "com.google.firebase:firebase-perf:11.0.0"
+  compile "com.google.firebase:firebase-perf:11.0.4"
 }
 ```
