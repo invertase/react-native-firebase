@@ -74,7 +74,7 @@ rootProject.gradle.buildFinished { buildResult ->
 dependencies {
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile "com.facebook.react:react-native:+"  // From node_modules
-  compile 'me.leolin:ShortcutBadger:1.1.10@aar'
+  compile 'me.leolin:ShortcutBadger:1.1.18@aar'
   compile "com.google.android.gms:play-services-base:$firebaseVersion"
   compile "com.google.firebase:firebase-core:$firebaseVersion"
   compile "com.google.firebase:firebase-config:$firebaseVersion"
