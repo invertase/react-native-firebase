@@ -27,7 +27,7 @@ To add `react-redux-firebase` to your project:
 
   export default makeRootReducer;
 
-  // Useful for injecting reducers as part of async routes
+  // *Optional* Useful for injecting reducers as part of async routes
   export const injectReducer = (store, { key, reducer }) => {
     store.asyncReducers[key] = reducer
     store.replaceReducer(makeRootReducer(store.asyncReducers))
@@ -55,17 +55,12 @@ To add `react-redux-firebase` to your project:
     // initialize firebase
     const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
 
-    const middleware = [
-       // make getFirebase available in third argument of thunks
-      thunk.withExtraArgument({ getFirebase }),
-    ];
-
     const store = createStore(
       makeRootReducer(),
       initialState,
       compose(
        reactReduxFirebase(firebase, reduxFirebaseConfig), // pass initialized react-native-firebase app instance
-       applyMiddleware(...middleware)
+        // applyMiddleware(...middleware) // if using middleware
       )
     );
     return store;
@@ -79,7 +74,7 @@ To add `react-redux-firebase` to your project:
   import React from 'react';
   import { Provider } from 'react-redux';
   import createStore from './createStore';
-  import Todos from './Todos';
+  import Home from './Home';
 
   // Store Initialization
   const initialState = { firebase: {} };
@@ -87,7 +82,7 @@ To add `react-redux-firebase` to your project:
 
   const Main = () => (
     <Provider store={store}>
-      <Todos />
+      <Home />
     </Provider>
   );
 
@@ -197,6 +192,25 @@ To add `react-redux-firebase` to your project:
 Full source with styling available [in the react-native-firebase example for react-redux-firebase](https://github.com/prescottprue/react-redux-firebase/tree/v2.0.0/examples/complete/react-native-firebase)
 
 For more details, please visit [`react-redux-firebase`'s react-native section](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html#native-modules).
+
+#### Thunks
+`react-redux-firebase` provides the `getFirebase` helper for easy access to Firebase helper methods. Using this feature is as easy as passing it in while creating your store:
+
+  ```js
+  const middleware = [
+     // make getFirebase available in third argument of thunks
+    thunk.withExtraArgument({ getFirebase }),
+  ];
+
+  const store = createStore(
+    makeRootReducer(),
+    initialState,
+    compose(
+     reactReduxFirebase(firebase, reduxFirebaseConfig),
+     applyMiddleware(...middleware) // pass in middleware
+    )
+  );
+  ```
 
 ## Standalone Integration
 
