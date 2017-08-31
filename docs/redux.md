@@ -8,76 +8,209 @@ when it comes to integrating with other modules such a [`react-redux`](https://g
 [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0) provides simplified and standardized common redux/firebase logic.
 
 To add `react-redux-firebase` to your project:
+1. Make sure you already have `redux`, `react-redux`, `redux-thunk` installed (if not, run `npm i --save redux react-redux redux-thunk`)
 1. Run `npm i --save react-redux-firebase@canary` *we point to canary here to get current progress with v2.0.0*
-1. Pass `react-native-firebase` instance into `reactReduxFirebase` when creating store:
+1. Add `firebaseStateReducer` under `firebase` key within reducer:
 
+  **reducers.js**
+  ```js
+  import { combineReducers } from 'redux';
+  import { firebaseStateReducer } from 'react-redux-firebase';
+
+  export const makeRootReducer = (asyncReducers) => {
+    return combineReducers({
+      // Add sync reducers here
+      firebase: firebaseStateReducer,
+      ...asyncReducers
+    });
+  };
+
+  export default makeRootReducer;
+
+  // *Optional* Useful for injecting reducers as part of async routes
+  export const injectReducer = (store, { key, reducer }) => {
+    store.asyncReducers[key] = reducer
+    store.replaceReducer(makeRootReducer(store.asyncReducers))
+  };
+  ```
+1. Pass `react-native-firebase` App instance into `reactReduxFirebase` when creating store:
+
+  **createStore.js**
   ```js
   import { applyMiddleware, compose, createStore } from 'redux';
-  import { getFirebase } from 'react-redux-firebase'
   import RNFirebase from 'react-native-firebase';
+  import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
+  import thunk from 'redux-thunk';
+  import makeRootReducer from './reducers';
 
   const reactNativeFirebaseConfig = {
     debug: true
   };
-
-  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
-
   // for more config options, visit http://docs.react-redux-firebase.com/history/v2.0.0/docs/api/compose.html
   const reduxFirebaseConfig = {
     userProfile: 'users', // save users profiles to 'users' collection
+  };
+
+  export default (initialState = { firebase: {} }) => {
+    // initialize firebase
+    const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
+
+    const store = createStore(
+      makeRootReducer(),
+      initialState,
+      compose(
+       reactReduxFirebase(firebase, reduxFirebaseConfig), // pass initialized react-native-firebase app instance
+        // applyMiddleware(...middleware) // if using middleware
+      )
+    );
+    return store;
+  };
+  ```
+
+1. Wrap in `Provider` from `react-redux`:
+
+  **index.js**
+  ```js
+  import React from 'react';
+  import { Provider } from 'react-redux';
+  import createStore from './createStore';
+  import Home from './Home';
+
+  // Store Initialization
+  const initialState = { firebase: {} };
+  let store = createStore(initialState);
+
+  const Main = () => (
+    <Provider store={store}>
+      <Home />
+    </Provider>
+  );
+
+  export default Main;
+  ```
+
+1. Then you can use the `firebaseConnect` HOC to wrap your components. It makes it easy to set listeners which gather data from Firebase and place it into redux:
+
+  **Home.js**
+  ```js
+  import React from 'react';
+  import { compose } from 'redux';
+  import { connect } from 'react-redux';
+  import { isLoaded, isEmpty, firebaseConnect } from 'react-redux-firebase';
+  import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+  import NewTodo from './NewTodo';
+  import Todos from './Todos';
+
+  class Home extends React.Component {
+    state = {
+      text: null
+    }
+
+    completeTodo = (key, todo) => {
+      return this.props.firebase.update(`todos/${key}`, { done: !todo.done })
+    }
+
+    addTodo = () => {
+      const { text } = this.state;
+      return this.props.firebase.push('todos', { text, completed: false });
+    }
+
+    render() {
+      const { todos } = this.props;
+
+      return (
+        <View>
+          <Text>Todos</Text>
+          <NewTodo
+            onNewTouch={this.addTodo}
+            newValue={this.state.text}
+            onInputChange={(v) => this.setState({text: v})}
+          />
+          {
+            !isLoaded(todos)
+              ? <ActivityIndicator size="large" style={{ marginTop: 100 }}/>
+              : null
+          }
+          {
+            isLoaded(todos) && !isEmpty(todos)
+              ?
+                <Todos
+                  todos={todos}
+                  onItemTouch={this.completeTodo}
+                />
+              :
+                <View style={styles.container}>
+                  <Text>No Todos Found</Text>
+                </View>
+          }
+        </View>
+      );
+    }
   }
 
+  export default compose(
+    firebaseConnect([
+       // create listener for firebase data -> redux
+      { path: 'todos', queryParams: ['limitToLast=15'] }
+    ]),
+    connect((state) => ({
+      // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
+      todos: state.firebase.ordered.todos, // todos ordered array from redux -> props.todos
+    }))
+  )(Home);
+  ```
+
+  **Todos.js**
+  ```js
+  import React from 'react'
+  import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableHighlight
+  } from 'react-native';
+
+  const Todos = ({ todos, onItemTouch }) => (
+    <FlatList
+      data={todos.reverse()}
+      renderItem={({ item: { key, value } }) => (
+        <TouchableHighlight onPress={() => onItemTouch(key, value)}>
+          <View>
+            <Text>{value.text}</Text>
+            <Text>Done: {value.done === true ? 'True' : 'False'}</Text>
+          </View>
+        </TouchableHighlight>
+      )}
+    />
+  )
+
+  export default Todos;
+  ```
+  Notice how `connect` is still used to get data out of `redux` since `firebaseConnect` only loads data **into** redux.
+
+Full source with styling available [in the react-native-firebase example for react-redux-firebase](https://github.com/prescottprue/react-redux-firebase/tree/v2.0.0/examples/complete/react-native-firebase)
+
+For more details, please visit [`react-redux-firebase`'s react-native section](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html#native-modules).
+
+#### Thunks
+`react-redux-firebase` provides the `getFirebase` helper for easy access to Firebase helper methods. Using this feature is as easy as passing it in while creating your store:
+
+  ```js
   const middleware = [
+     // make getFirebase available in third argument of thunks
     thunk.withExtraArgument({ getFirebase }),
-    // place other middleware here
   ];
 
   const store = createStore(
-    reducer,
-    {}, // initial state
+    makeRootReducer(),
+    initialState,
     compose(
-     reactReduxFirebase(firebase, reduxConfig), // pass in react-native-firebase instance instead of config
-     applyMiddleware(...middleware)
+     reactReduxFirebase(firebase, reduxFirebaseConfig),
+     applyMiddleware(...middleware) // pass in middleware
     )
-  )
+  );
   ```
-1. Then in your components you can use `firebaseConnect` to gather data from Firebase and place it into redux:
-
-  ```js
-  import { isLoaded } from 'react-redux-firebase'
-  import { compose } from 'redux';
-  const Todos = ({ todos }) => {
-    if (!isLoaded(todos)) {
-      return <div>Loading...</div>
-    }
-    if (isEmpty(todos)) {
-      return <div>No Todos Found</div>
-    }
-    return (
-      <div>
-        Object.keys(todos).map((key, id) => (
-          <div>
-            {todos[key].text}
-            Complete: {todos[key].isComplete}
-          </div>
-        ))
-      </div>
-    )
-  }
-
-  compose(
-    firebaseConnect([
-      { path: 'todos' }
-    ]),
-    connect(({ firebase: { data: { todos } } }) => {
-      todos
-    })
-  )(Todos)
-  ```
-
-Notice how `connect` is still used to get data out of `redux` since `firebaseConnect` only loads data **into** redux.
-
-For more details, please visit [`react-redux-firebase`'s react-native section](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html#native-modules).
 
 ## Standalone Integration
 
