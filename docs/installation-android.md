@@ -42,21 +42,21 @@ dependencies {
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:11.0.4"
+  compile "com.google.firebase:firebase-core:11.2.0"
 
   // If you are receiving Google Play API availability issues, add the following dependency
-  compile "com.google.android.gms:play-services-base:11.0.4"
+  compile "com.google.android.gms:play-services-base:11.2.0"
 
   // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.0.4"
-  compile "com.google.firebase:firebase-analytics:11.0.4"
-  compile "com.google.firebase:firebase-auth:11.0.4"
-  compile "com.google.firebase:firebase-config:11.0.4"
-  compile "com.google.firebase:firebase-crash:11.0.4"
-  compile "com.google.firebase:firebase-database:11.0.4"
-  compile "com.google.firebase:firebase-messaging:11.0.4"
-  compile "com.google.firebase:firebase-perf:11.0.4"
-  compile "com.google.firebase:firebase-storage:11.0.4"
+  compile "com.google.firebase:firebase-ads:11.2.0"
+  compile "com.google.firebase:firebase-analytics:11.2.0"
+  compile "com.google.firebase:firebase-auth:11.2.0"
+  compile "com.google.firebase:firebase-config:11.2.0"
+  compile "com.google.firebase:firebase-crash:11.2.0"
+  compile "com.google.firebase:firebase-database:11.2.0"
+  compile "com.google.firebase:firebase-messaging:11.2.0"
+  compile "com.google.firebase:firebase-perf:11.2.0"
+  compile "com.google.firebase:firebase-storage:11.2.0"
 }
 ```
 
@@ -179,6 +179,6 @@ In the same file, add the `firebase-perf` module to your dependencies:
 ```groovy
 dependencies {
   // ...
-  compile "com.google.firebase:firebase-perf:11.0.0"
+  compile "com.google.firebase:firebase-perf:11.2.0"
 }
 ```

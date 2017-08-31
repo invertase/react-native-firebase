@@ -38,6 +38,7 @@
 ---
 
 - Other
+  - [Feature Requests](https://react-native-firebase.canny.io/feature-requests)
   - [FAQs / Troubleshooting](/faqs)
   - Chat
     - [Discord](https://discord.gg/t6bdqMs)

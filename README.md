@@ -13,7 +13,7 @@
 
 <hr>
 
-> [Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs)
+> [Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](https://react-native-firebase.canny.io/feature-requests)
 
 <hr>
 
@@ -74,10 +74,10 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > The table below shows the minimum supported versions of the Firebase SDKs for each version of `react-native-firebase`
 
-|                        | v1  | v2  |
-| ---------------------- | :---: | :---: |
-| Firebase Android SDK   | 10.2.0+ | 11.0.0 + |
-| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  |
+|                        | v1  | v2  | v3  |
+| ---------------------- | :---: | :---: | :---: |
+| Firebase Android SDK   | 10.2.0+ | 11.0.0 + | 11.2.0 + |
+| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  | 4.0.0 +  |
 
 ---
 
