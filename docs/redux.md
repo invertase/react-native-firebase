@@ -8,7 +8,8 @@ when it comes to integrating with other modules such a [`react-redux`](https://g
 [`react-redux-firebase`](http://docs.react-redux-firebase.com/history/v2.0.0) provides simplified and standardized common redux/firebase logic.
 
 To add `react-redux-firebase` to your project:
-1. Run `npm i --save react-redux react-redux-firebase@canary` *we point to canary here to get current progress with v2.0.0*
+1. Make sure you already have `redux`, `react-redux`, `redux-thunk` installed (if not, run `npm i --save redux react-redux redux-thunk`)
+1. Run `npm i --save react-redux-firebase@canary` *we point to canary here to get current progress with v2.0.0*
 1. Add `firebaseStateReducer` under `firebase` key within reducer:
 
   **reducers.js**
@@ -32,7 +33,7 @@ To add `react-redux-firebase` to your project:
     store.replaceReducer(makeRootReducer(store.asyncReducers))
   };
   ```
-1. Pass `react-native-firebase` instance into `reactReduxFirebase` when creating store:
+1. Pass `react-native-firebase` App instance into `reactReduxFirebase` when creating store:
 
   **createStore.js**
   ```js
@@ -61,7 +62,7 @@ To add `react-redux-firebase` to your project:
 
     const store = createStore(
       makeRootReducer(),
-      initialState, // initial state
+      initialState,
       compose(
        reactReduxFirebase(firebase, reduxFirebaseConfig), // pass initialized react-native-firebase app instance
        applyMiddleware(...middleware)
@@ -70,6 +71,7 @@ To add `react-redux-firebase` to your project:
     return store;
   };
   ```
+
 1. Wrap in `Provider` from `react-redux`:
 
   **index.js**
@@ -92,7 +94,7 @@ To add `react-redux-firebase` to your project:
   export default Main;
   ```
 
-1. Then you can use the `firebaseConnect` HOC to wrap your components. It helps to set listeners which gather data from Firebase and place it into redux:
+1. Then you can use the `firebaseConnect` HOC to wrap your components. It makes it easy to set listeners which gather data from Firebase and place it into redux:
 
   **Home.js**
   ```js
