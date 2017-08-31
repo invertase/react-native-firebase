@@ -1,11 +1,11 @@
 #ifndef RNFirebaseAdMob_h
 #define RNFirebaseAdMob_h
-
-#import <React/RCTBridgeModule.h>
+#import <Foundation/Foundation.h>
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
 #import "Firebase.h"
 #import "RNFirebaseEvents.h"
+#import <React/RCTBridgeModule.h>
 #import "React/RCTEventEmitter.h"
 #import "GoogleMobileAds/GADInterstitialDelegate.h"
 #import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
@@ -23,8 +23,7 @@
 @end
 
 #else
-@interface RNFirebaseAdMob : NSObject {
-}
+@interface RNFirebaseAdMob : NSObject
 @end
 #endif
 

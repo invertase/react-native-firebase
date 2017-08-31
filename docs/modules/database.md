@@ -192,3 +192,13 @@ const ref = firebase.database
             .child('roomId');
 ref.keepSynced(true);
 ```
+
+#### Security rules and offline persistence
+
+Bear in mind that security rules live on the firebase server and **not in the client**. In other words, when offline, your app knows nothing about your database's security rules. This can lead to unexpected behaviour, which is explained in detail in the following blog post: https://firebase.googleblog.com/2016/11/what-happens-to-database-listeners-when-security-rules-reject-an-update.html
+
+Some examples of behaviour you may not expect but may encounter are:
+
+- Values that should not be readable, according to your security rules, are readable if they were created on the same device.
+- Values are readable even when not authenticated, if they were created on the same device.
+- Locations are writable even when they should not be, according to your security rules. This is more likely to cause unwanted behaviour when your app is offline, because when it is *online* the SDK will very quickly roll back the write once the server returns a permission error.

@@ -16,4 +16,5 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "8.0"
   s.preserve_paths      = 'README.md', 'package.json', '*.js'
   s.source_files        = 'ios/RNFirebase/**/*.{h,m}'
+  s.dependency          'React'
 end

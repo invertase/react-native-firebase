@@ -3,14 +3,15 @@
 #if __has_include(<FirebaseRemoteConfig/FirebaseRemoteConfig.h>)
 #import "FirebaseRemoteConfig/FirebaseRemoteConfig.h"
 #import <React/RCTConvert.h>
+#import <React/RCTUtils.h>
 
 NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value)
 {
     switch(value){
         case FIRRemoteConfigFetchStatusNoFetchYet:
             return @"config/no_fetch_yet";
-        case FIRRemoteConfigFetchStatusFailure:
-            return @"config/failure";
+        case FIRRemoteConfigFetchStatusSuccess:
+            return @"config/success";
         case FIRRemoteConfigFetchStatusThrottled:
             return @"config/throttled";
         default:

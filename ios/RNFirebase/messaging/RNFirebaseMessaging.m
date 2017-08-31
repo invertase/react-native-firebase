@@ -145,6 +145,24 @@ RCT_EXPORT_MODULE()
     [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data}];
 }
 
++ (void)willPresentNotification:(UNNotification *)notification withCompletionHandler:(nonnull RCTWillPresentNotificationCallback)completionHandler
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.request.content.userInfo];
+    [data setValue:@"will_present_notification" forKey:@"_notificationType"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+}
+
++ (void)didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(nonnull RCTNotificationResponseCallback)completionHandler
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
+    [data setValue:@"notification_response" forKey:@"_notificationType"];
+    [data setValue:@YES forKey:@"opened_from_tray"];
+    if (response.actionIdentifier) {
+        [data setValue:response.actionIdentifier forKey:@"_actionIdentifier"];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+}
+
 - (id)init {
     self = [super init];
     if (self != nil) {

@@ -10,6 +10,8 @@ Badge notification is well known on the iOS platform, but also supported by diff
 This library uses the [ShortcutBadger](https://github.com/leolin310148/ShortcutBadger) library to set the badge number
 also on Android. A list of supported launcher can be found there.
 
+!> [iOS] Please note: In order for iOS devices to receive Cloud Messages, ensure you [request permissions](http://invertase.io/react-native-firebase/#/modules/cloud-messaging?id=ios-requestpermissions).
+
 ## API
 
 ### subscribeToTopic(topic: string)

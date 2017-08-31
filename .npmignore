@@ -1,7 +1,7 @@
 node_modules
 npm-debug.log
 *.DS_Store
-
+.github
 # Xcode
 *.pbxuser
 *.mode1v3
@@ -11,7 +11,8 @@ npm-debug.log
 project.xcworkspace/
 xcuserdata/
 
-# Android
+# Example
+example/
 
 # Built application files
 android/*/build/
@@ -63,4 +64,3 @@ yarn.lock
 tests
 lib/.watchmanconfig
 buddybuild_postclone.sh
-

@@ -27,6 +27,39 @@ apply plugin: 'com.google.gms.google-services'
 
 RNFirebase is split into separate modules to allow you to only include the Firebase functionality that you need in your application.
 
+First add the project path to `android/settings.gradle`:
+
+```
+include ':react-native-firebase'
+project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
+```
+
+Now you need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
+
+```
+dependencies {
+  // RNFirebase required dependencies
+  compile(project(':react-native-firebase')) {
+    transitive = false
+  }
+  compile "com.google.firebase:firebase-core:11.0.4"
+
+  // If you are receiving Google Play API availability issues, add the following dependency
+  compile "com.google.android.gms:play-services-base:11.0.4"
+
+  // RNFirebase optional dependencies
+  compile "com.google.firebase:firebase-ads:11.0.4"
+  compile "com.google.firebase:firebase-analytics:11.0.4"
+  compile "com.google.firebase:firebase-auth:11.0.4"
+  compile "com.google.firebase:firebase-config:11.0.4"
+  compile "com.google.firebase:firebase-crash:11.0.4"
+  compile "com.google.firebase:firebase-database:11.0.4"
+  compile "com.google.firebase:firebase-messaging:11.0.4"
+  compile "com.google.firebase:firebase-perf:11.0.4"
+  compile "com.google.firebase:firebase-storage:11.0.4"
+}
+```
+
 To install `react-native-firebase` in your project, you'll need to import the packages you need from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list them as packages for ReactNative in the `getPackages()` function:
 
 ```java
@@ -42,7 +75,7 @@ import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase R
 import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
-import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Performance
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
 // ...
 public class MainApplication extends Application implements ReactApplication {
@@ -68,35 +101,6 @@ public class MainApplication extends Application implements ReactApplication {
   };
   // ...
 }
-```
-You'll also need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
-
-```
-dependencies {
-  // RNFirebase Required dependencies
-  compile(project(':react-native-firebase')) {
-    transitive = false
-  }
-  compile "com.google.firebase:firebase-core:11.0.0"
-
-  // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.0.0"
-  compile "com.google.firebase:firebase-analytics:11.0.0"
-  compile "com.google.firebase:firebase-auth:11.0.0"
-  compile "com.google.firebase:firebase-config:11.0.0"
-  compile "com.google.firebase:firebase-crash:11.0.0"
-  compile "com.google.firebase:firebase-database:11.0.0"
-  compile "com.google.firebase:firebase-messaging:11.0.0"
-  compile "com.google.firebase:firebase-perf:11.0.0"
-  compile "com.google.firebase:firebase-storage:11.0.0"
-}
-```
-
-Add the project path to `android/settings.gradle`:
-
-```
-include ':react-native-firebase'
-project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
 
 ## 3) Cloud Messaging (optional)
@@ -152,7 +156,7 @@ If you would like to schedule local notifications then you also need to add the 
 
 ## 4) Performance Monitoring (optional)
 
-If you'd like to take advantage of Firebases [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
+If you'd like to take advantage of Firebase's [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
  to your project setup are required:
 
 In your projects `android/build.gradle` file, add the plugin to your dependencies:
