@@ -10,72 +10,160 @@ when it comes to integrating with other modules such a [`react-redux`](https://g
 To add `react-redux-firebase` to your project:
 1. Run `npm i --save react-redux-firebase@canary` *we point to canary here to get current progress with v2.0.0*
 1. Pass `react-native-firebase` instance into `reactReduxFirebase` when creating store:
+  **reducers.js**
+  ```js
+  import { combineReducers } from 'redux'
+  import { firebaseStateReducer } from 'react-redux-firebase'
 
+  export const makeRootReducer = (asyncReducers) => {
+    return combineReducers({
+      // Add sync reducers here
+      firebase: firebaseStateReducer,
+      ...asyncReducers
+    })
+  }
+
+  export default makeRootReducer
+
+  // Useful for injecting reducers as part of async routes
+  export const injectReducer = (store, { key, reducer }) => {
+    store.asyncReducers[key] = reducer
+    store.replaceReducer(makeRootReducer(store.asyncReducers))
+  }
+  ```
+
+  **createStore.js**
   ```js
   import { applyMiddleware, compose, createStore } from 'redux';
-  import { getFirebase } from 'react-redux-firebase'
+  import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
   import RNFirebase from 'react-native-firebase';
+  import makeRootReducer from './reducers';
 
   const reactNativeFirebaseConfig = {
     debug: true
   };
-
-  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
-
   // for more config options, visit http://docs.react-redux-firebase.com/history/v2.0.0/docs/api/compose.html
   const reduxFirebaseConfig = {
     userProfile: 'users', // save users profiles to 'users' collection
-  }
+  };
 
-  const middleware = [
-    thunk.withExtraArgument({ getFirebase }),
-    // place other middleware here
-  ];
+  export default (initialState = {}) => {
+    // initialize firebase
+    const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
 
-  const store = createStore(
-    reducer,
-    {}, // initial state
-    compose(
-     reactReduxFirebase(firebase, reduxConfig), // pass in react-native-firebase instance instead of config
-     applyMiddleware(...middleware)
+    const middleware = [
+       // make getFirebase available in third argument of thunks
+      thunk.withExtraArgument({ getFirebase }),
+    ];
+
+    const store = createStore(
+      makeRootReducer(),
+      initialState, // initial state
+      compose(
+       reactReduxFirebase(firebase, reduxConfig), // pass initialized react-native-firebase app instance
+       applyMiddleware(...middleware)
+      )
     )
-  )
+  }
   ```
+  **index.js**
+  ```js
+  import React from 'react';
+  import { Provider } from 'react-redux';
+  import createStore from './createStore';
+  import Todos from './Todos';
+
+  // Store Initialization
+  const initialState = { firebase: {} };
+  const store = createStore(initialState);
+
+  export default const Main = () => (
+    <Provider store={store}>
+      <Todos />
+    </Provider>
+  );
+  ```
+
 1. Then in your components you can use `firebaseConnect` to gather data from Firebase and place it into redux:
 
+  **Todos.js**
   ```js
-  import { isLoaded } from 'react-redux-firebase'
   import { compose } from 'redux';
-  const Todos = ({ todos }) => {
+  import { View, Text, StyleSheet } from 'react-native'
+  import { isLoaded, isEmpty } from 'react-redux-firebase';
+  import MessageView from './MessageView';
+
+  const testTodo = { text: 'Build Things', isComplete: false }
+
+  const Todos = ({ todos, firebase }) => {
     if (!isLoaded(todos)) {
-      return <div>Loading...</div>
+      return <MessageView message="Loading..." />
     }
     if (isEmpty(todos)) {
-      return <div>No Todos Found</div>
+      return (
+        <MessageView
+          message="No Todos Found"
+          onNewTouch={() => firebase.push('todos', testTodo)}
+          showNew
+        />
+      )
     }
     return (
-      <div>
-        Object.keys(todos).map((key, id) => (
-          <div>
-            {todos[key].text}
-            Complete: {todos[key].isComplete}
-          </div>
-        ))
-      </div>
+      <View>
+        <Text>Todos</Text>
+        {
+          Object.keys(todos).map((key, id) => (
+            <View key={key}>
+              <Text>{todos[key].text}</Text>
+              <Text>Complete: {todos[key].isComplete}</Text>
+            </View>
+          ))
+        }
+      </View>
     )
-  }
+  };
 
-  compose(
+  export default compose(
     firebaseConnect([
-      { path: 'todos' }
+      { path: 'todos' } // create listener for firebase data -> redux
     ]),
-    connect(({ firebase: { data: { todos } } }) => {
-      todos
+    connect((state) => {
+      todos: state.firebase.data.todos, // todos data from redux -> props.todos
     })
   )(Todos)
   ```
+  Notice how `connect` is still used to get data out of `redux` since `firebaseConnect` only loads data **into** redux.
 
-Notice how `connect` is still used to get data out of `redux` since `firebaseConnect` only loads data **into** redux.
+  **MessageView.js**
+  ```js
+  import { View, Text, StyleSheet } from 'react-native'
+
+  const MessageView = ({ message, showNew = null, onNewTouch }) => (
+    <View style={styles.container}>
+      <Text>{message}</Text>
+      {
+        showNew &&
+          <TouchableOpacity style={styles.button} onPress={onNewTouch}>
+            <Text>Save</Text>
+          </TouchableOpacity>
+      }
+    </View>
+  );
+
+  export default MessageView;
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    button: {
+      height: 100,
+      marginTop: 10
+    }
+  });
+  ```
 
 For more details, please visit [`react-redux-firebase`'s react-native section](http://docs.react-redux-firebase.com/history/v2.0.0/docs/recipes/react-native.html#native-modules).
 
