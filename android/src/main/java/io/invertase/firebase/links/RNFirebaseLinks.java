@@ -141,14 +141,13 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
 
       parametersBuilder.setLink(Uri.parse((String)m.get("link")));
-      parametersBuilder.setDynamicLinkDomain((String)m.get("domain"));
+      parametersBuilder.setDynamicLinkDomain((String)m.get("dynamicLinkDomain"));
 
       setAndroidParameters(m, parametersBuilder);
       setIosParameters(m, parametersBuilder);
       //setNavigationInfoParameters(m, parametersBuilder);
       setSocialMetaTagParameters(m, parametersBuilder);
-      setGoogleAnalyticsParameters(m, parametersBuilder);
-      setItunesConnectAnalyticsParameters(m, parametersBuilder);
+      setAnalyticsParameters(m, parametersBuilder);
 
     } catch (Exception e) {
       Log.e(TAG, "error while building parameters " + e.getMessage());
@@ -158,121 +157,129 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   }
 
   private void setAndroidParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> androidParameters = (Map<String, Object>) m.get("androidParameters");
+    Map<String, Object> androidParameters = (Map<String, Object>) m.get("androidInfo");
     if (androidParameters != null) {
       DynamicLink.AndroidParameters.Builder androidParametersBuilder =
-        androidParameters.containsKey("packageName") ?
-        new DynamicLink.AndroidParameters.Builder((String)androidParameters.get("packageName")) :
+        androidParameters.containsKey("androidPackageName") ?
+        new DynamicLink.AndroidParameters.Builder((String)androidParameters.get("androidPackageName")) :
         new DynamicLink.AndroidParameters.Builder();
 
-      if (androidParameters.containsKey("fallbackUrl")) {
-        androidParametersBuilder.setFallbackUrl(Uri.parse((String)androidParameters.get("fallbackUrl")));
+      if (androidParameters.containsKey("androidFallbackLink")) {
+        androidParametersBuilder.setFallbackUrl(Uri.parse((String)androidParameters.get("androidFallbackLink")));
       }
-      if (androidParameters.containsKey("minimumVersion")) {
-        androidParametersBuilder.setMinimumVersion(((Double)androidParameters.get("minimumVersion")).intValue());
+      if (androidParameters.containsKey("androidMinPackageVersionCode")) {
+        androidParametersBuilder.setMinimumVersion(((Double)androidParameters.get("androidMinPackageVersionCode")).intValue());
       }
       parametersBuilder.setAndroidParameters(androidParametersBuilder.build());
     }
   }
 
   private void setIosParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> iosParameters = (Map<String, Object>) m.get("iosParameters");
+    Map<String, Object> iosParameters = (Map<String, Object>) m.get("iosInfo");
     //TODO: see what happens if bundleId is missing
-    if (iosParameters != null && iosParameters.containsKey("bundleId")) {
-      DynamicLink.IosParameters.Builder iosParametersBuilder = new DynamicLink.IosParameters.Builder((String)iosParameters.get("bundleId"));
-      if (iosParameters.containsKey("appStoreId")) {
-        iosParametersBuilder.setAppStoreId((String)iosParameters.get("appStoreId"));
+    if (iosParameters != null && iosParameters.containsKey("iosBundleId")) {
+      DynamicLink.IosParameters.Builder iosParametersBuilder = new DynamicLink.IosParameters.Builder((String)iosParameters.get("iosBundleId"));
+      if (iosParameters.containsKey("iosAppStoreId")) {
+        iosParametersBuilder.setAppStoreId((String)iosParameters.get("iosAppStoreId"));
       }
-      if (iosParameters.containsKey("customScheme")) {
-        iosParametersBuilder.setCustomScheme((String)iosParameters.get("customScheme"));
+      if (iosParameters.containsKey("iosCustomScheme")) {
+        iosParametersBuilder.setCustomScheme((String)iosParameters.get("iosCustomScheme"));
       }
-      if (iosParameters.containsKey("fallbackUrl")) {
-        iosParametersBuilder.setFallbackUrl(Uri.parse((String)iosParameters.get("fallbackUrl")));
+      if (iosParameters.containsKey("iosFallbackLink")) {
+        iosParametersBuilder.setFallbackUrl(Uri.parse((String)iosParameters.get("iosFallbackLink")));
       }
-      if (iosParameters.containsKey("ipadBundleId")) {
-        iosParametersBuilder.setIpadBundleId((String)iosParameters.get("ipadBundleId"));
+      if (iosParameters.containsKey("iosIpadBundleId")) {
+        iosParametersBuilder.setIpadBundleId((String)iosParameters.get("iosIpadBundleId"));
       }
-      if (iosParameters.containsKey("ipadFallbackUrl")) {
-        iosParametersBuilder.setIpadFallbackUrl(Uri.parse((String)iosParameters.get("ipadFallbackUrl")));
+      if (iosParameters.containsKey("iosIpadFallbackLink")) {
+        iosParametersBuilder.setIpadFallbackUrl(Uri.parse((String)iosParameters.get("iosIpadFallbackLink")));
       }
-      if (iosParameters.containsKey("minimumVersion")) {
-        iosParametersBuilder.setMinimumVersion((String)iosParameters.get("minimumVersion"));
+      if (iosParameters.containsKey("iosMinPackageVersionCode")) {
+        iosParametersBuilder.setMinimumVersion((String)iosParameters.get("iosMinPackageVersionCode"));
       }
       parametersBuilder.setIosParameters(iosParametersBuilder.build());
     }
   }
 
   // private void setNavigationInfoParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-  //   Map<String, Object> navigationInfoParameters = (Map<String, Object>) m.get("navigationInfoParameters");
+  //   Map<String, Object> navigationInfoParameters = (Map<String, Object>) m.get("navigationInfo");
   //   if (navigationInfoParameters != null) {
   //     DynamicLink.NavigationInfoParameters.Builder navigationInfoParametersBuilder =
   //       new DynamicLink.NavigationInfoParameters.Builder();
   //
-  //     if (navigationInfoParameters.containsKey("forcedRedirectEnabled")) {
-  //       navigationInfoParametersBuilder.setForcedRedirectEnabled((boolean)navigationInfoParameters.get("forcedRedirectEnabled"));
+  //     if (navigationInfoParameters.containsKey("enableForcedRedirect")) {
+  //       navigationInfoParametersBuilder.setForcedRedirectEnabled((boolean)navigationInfoParameters.get("enableForcedRedirect"));
   //     }
   //     parametersBuilder.setNavigationInfoParameters(navigationInfoParametersBuilder.build());
   //   }
   // }
 
   private void setSocialMetaTagParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) m.get("socialMetaTagParameters");
+    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) m.get("socialMetaTagInfo");
     if (socialMetaTagParameters != null) {
       DynamicLink.SocialMetaTagParameters.Builder socialMetaTagParametersBuilder =
         new DynamicLink.SocialMetaTagParameters.Builder();
 
-      if (socialMetaTagParameters.containsKey("description")) {
-        socialMetaTagParametersBuilder.setDescription((String)socialMetaTagParameters.get("description"));
+      if (socialMetaTagParameters.containsKey("socialDescription")) {
+        socialMetaTagParametersBuilder.setDescription((String)socialMetaTagParameters.get("socialDescription"));
       }
-      if (socialMetaTagParameters.containsKey("imageUrl")) {
-        socialMetaTagParametersBuilder.setImageUrl(Uri.parse((String)socialMetaTagParameters.get("imageUrl")));
+      if (socialMetaTagParameters.containsKey("socialImageLink")) {
+        socialMetaTagParametersBuilder.setImageUrl(Uri.parse((String)socialMetaTagParameters.get("socialImageLink")));
       }
-      if (socialMetaTagParameters.containsKey("title")) {
-        socialMetaTagParametersBuilder.setTitle((String)socialMetaTagParameters.get("title"));
+      if (socialMetaTagParameters.containsKey("socialTitle")) {
+        socialMetaTagParametersBuilder.setTitle((String)socialMetaTagParameters.get("socialTitle"));
       }
       parametersBuilder.setSocialMetaTagParameters(socialMetaTagParametersBuilder.build());
     }
   }
 
+  private void setAnalyticsParameters (final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> analyticsParameters = (Map<String, Object>) m.get("analyticsInfo");
+    if (analyticsParameters != null) {
+        setGoogleAnalyticsParameters(analyticsParameters, parametersBuilder);
+        setItunesConnectAnalyticsParameters(analyticsParameters, parametersBuilder);
+    }
+  }
+
   private void setGoogleAnalyticsParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> googleAnalyticsParameters = (Map<String, Object>) m.get("googleAnalyticsParameters");
+    Map<String, Object> googleAnalyticsParameters = (Map<String, Object>) m.get("googlePlayAnalytics");
     if (googleAnalyticsParameters != null) {
       DynamicLink.GoogleAnalyticsParameters.Builder googleAnalyticsParametersBuilder =
         new DynamicLink.GoogleAnalyticsParameters.Builder();
 
-      if (googleAnalyticsParameters.containsKey("campaign")) {
-        googleAnalyticsParametersBuilder.setCampaign((String)googleAnalyticsParameters.get("campaign"));
+      if (googleAnalyticsParameters.containsKey("utmCampaign")) {
+        googleAnalyticsParametersBuilder.setCampaign((String)googleAnalyticsParameters.get("utmCampaign"));
       }
-      if (googleAnalyticsParameters.containsKey("content")) {
-        googleAnalyticsParametersBuilder.setContent((String)googleAnalyticsParameters.get("content"));
+      if (googleAnalyticsParameters.containsKey("utmContent")) {
+        googleAnalyticsParametersBuilder.setContent((String)googleAnalyticsParameters.get("utmContent"));
       }
-      if (googleAnalyticsParameters.containsKey("medium")) {
-        googleAnalyticsParametersBuilder.setMedium((String)googleAnalyticsParameters.get("medium"));
+      if (googleAnalyticsParameters.containsKey("utmMedium")) {
+        googleAnalyticsParametersBuilder.setMedium((String)googleAnalyticsParameters.get("utmMedium"));
       }
-      if (googleAnalyticsParameters.containsKey("source")) {
-        googleAnalyticsParametersBuilder.setSource((String)googleAnalyticsParameters.get("source"));
+      if (googleAnalyticsParameters.containsKey("utmSource")) {
+        googleAnalyticsParametersBuilder.setSource((String)googleAnalyticsParameters.get("utmSource"));
       }
-      if (googleAnalyticsParameters.containsKey("term")) {
-        googleAnalyticsParametersBuilder.setTerm((String)googleAnalyticsParameters.get("term"));
+      if (googleAnalyticsParameters.containsKey("utmTerm")) {
+        googleAnalyticsParametersBuilder.setTerm((String)googleAnalyticsParameters.get("utmTerm"));
       }
       parametersBuilder.setGoogleAnalyticsParameters(googleAnalyticsParametersBuilder.build());
     }
   }
 
   private void setItunesConnectAnalyticsParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> itunesConnectAnalyticsParameters = (Map<String, Object>) m.get("itunesConnectAnalyticsParameters");
+    Map<String, Object> itunesConnectAnalyticsParameters = (Map<String, Object>) m.get("itunesConnectAnalytics");
     if (itunesConnectAnalyticsParameters != null) {
       DynamicLink.ItunesConnectAnalyticsParameters.Builder itunesConnectAnalyticsParametersBuilder =
         new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
 
-      if (itunesConnectAnalyticsParameters.containsKey("affiliateToken")) {
-        itunesConnectAnalyticsParametersBuilder.setAffiliateToken((String)itunesConnectAnalyticsParameters.get("affiliateToken"));
+      if (itunesConnectAnalyticsParameters.containsKey("at")) {
+        itunesConnectAnalyticsParametersBuilder.setAffiliateToken((String)itunesConnectAnalyticsParameters.get("at"));
       }
-      if (itunesConnectAnalyticsParameters.containsKey("campaignToken")) {
-        itunesConnectAnalyticsParametersBuilder.setCampaignToken((String)itunesConnectAnalyticsParameters.get("campaignToken"));
+      if (itunesConnectAnalyticsParameters.containsKey("ct")) {
+        itunesConnectAnalyticsParametersBuilder.setCampaignToken((String)itunesConnectAnalyticsParameters.get("ct"));
       }
-      if (itunesConnectAnalyticsParameters.containsKey("providerToken")) {
-        itunesConnectAnalyticsParametersBuilder.setProviderToken((String)itunesConnectAnalyticsParameters.get("providerToken"));
+      if (itunesConnectAnalyticsParameters.containsKey("pt")) {
+        itunesConnectAnalyticsParametersBuilder.setProviderToken((String)itunesConnectAnalyticsParameters.get("pt"));
       }
       parametersBuilder.setItunesConnectAnalyticsParameters(itunesConnectAnalyticsParametersBuilder.build());
     }
