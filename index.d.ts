@@ -455,6 +455,10 @@ declare module "react-native-firebase" {
        */
       reauthenticate(credential: Credential): Promise<void>
       /**
+       * Link the user with a 3rd party credential provider.
+       */
+      linkWithCredential(credential: Credential): Promise<User>
+      /**
        * Refreshes the current user.
        */
       reload(): Promise<void>
