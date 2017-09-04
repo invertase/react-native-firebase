@@ -51,47 +51,49 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     Activity activity = getCurrentActivity();
     if (activity == null) {
       return;
+      }
+
+      FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(activity.getIntent())
+        .addOnSuccessListener(activity, new OnSuccessListener<PendingDynamicLinkData>() {
+          @Override
+          public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+            // Get deep link from result (may be null if no link is found)
+            if (pendingDynamicLinkData != null) {
+              Uri deepLinkUri = pendingDynamicLinkData.getLink();
+              String deepLink = deepLinkUri.toString();
+              // TODO: Validate that this is called when opening from a deep link
+              if (initialLink == null) {
+                initialLink = deepLink;
+              }
+              Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", deepLink);
+            }
+          }
+        })
+        .addOnFailureListener(activity, new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            Log.w(TAG, "getDynamicLink:onFailure", e);
+          }
+        });
     }
 
-    FirebaseDynamicLinks.getInstance()
-      .getDynamicLink(activity.getIntent())
-      .addOnSuccessListener(activity, new OnSuccessListener<PendingDynamicLinkData>() {
-        @Override
-        public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-          // Get deep link from result (may be null if no link is found)
-          if (pendingDynamicLinkData != null) {
-            Uri deepLinkUri = pendingDynamicLinkData.getLink();
-            String deepLink = deepLinkUri.toString();
-            // TODO: Validate that this is called when opening from a deep link
-            if (initialLink == null) {
-              initialLink = deepLink;
-            }
-            Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", deepLink);
-          }
-        }
-      })
-      .addOnFailureListener(activity, new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception e) {
-          Log.w(TAG, "getDynamicLink:onFailure", e);
-        }
-      });
-  }
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+      // Not required for this module
+    }
 
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    // Not required for this module
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    // TODO: Do I need to re-register the links handler for each new intent?
-  }
+    @Override
+    public void onNewIntent(Intent intent) {
+      // TODO: Do I need to re-register the links handler for each new intent?
+    }
 
   @ReactMethod
   public void createDynamicLink(final ReadableMap parameters, final Promise promise) {
       try {
-        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(parameters);
+        Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
+
+        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(m);
         Uri link = builder.buildDynamicLink().getUri();
 
         Log.d(TAG, "created dynamic link: " + link.toString());
@@ -106,8 +108,11 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   @ReactMethod
   public void createShortDynamicLink(final ReadableMap parameters, final Promise promise) {
       try {
-        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(parameters);
-        Task<ShortDynamicLink> shortLinkTask = builder.buildShortDynamicLink()
+        Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
+
+        DynamicLink.Builder builder = setDynamicLinkBuilderFromMap(m);
+
+        Task<ShortDynamicLink> shortLinkTask = getShortDynamicLinkTask(builder, m)
           .addOnCompleteListener(new OnCompleteListener<ShortDynamicLink>() {
             @Override
             public void onComplete(@NonNull Task<ShortDynamicLink> task) {
@@ -128,18 +133,24 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
-  /**
-   * Converts a RN ReadableMap into a set DynamicLink.Builder instance
-   *
-   * @param parameters
-   * @return
-   */
-  private DynamicLink.Builder setDynamicLinkBuilderFromMap(ReadableMap parameters) {
+  private Task<ShortDynamicLink> getShortDynamicLinkTask(final DynamicLink.Builder builder ,final Map<String, Object> m) {
+    Map<String, Object> suffixParameters = (Map<String, Object>) m.get("suffix");
+    if (suffixParameters != null) {
+      String option = (String) suffixParameters.get("option");
+      if (option.equals("SHORT")) {
+        return builder.buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT);
+      }
+      else if (option.equals("UNGUESSABLE")) {
+        return builder.buildShortDynamicLink(ShortDynamicLink.Suffix.UNGUESSABLE);
+      }
+    }
+    return builder.buildShortDynamicLink();
+  }
+
+  private DynamicLink.Builder setDynamicLinkBuilderFromMap(final Map<String, Object> m) {
     DynamicLink.Builder parametersBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
     try {
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
-
       parametersBuilder.setLink(Uri.parse((String)m.get("link")));
       parametersBuilder.setDynamicLinkDomain((String)m.get("dynamicLinkDomain"));
 
