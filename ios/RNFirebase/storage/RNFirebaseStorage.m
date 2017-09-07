@@ -336,7 +336,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
 - (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
     NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
     NSDictionary *metadata = [task.metadata dictionaryRepresentation];
-    return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadUrl": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
+    return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadURL": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
 }
 
 - (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {

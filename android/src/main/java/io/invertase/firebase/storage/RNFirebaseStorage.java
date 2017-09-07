@@ -496,7 +496,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
 
     if (taskSnapshot != null) {
       resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-      resp.putString("downloadUrl", taskSnapshot.getDownloadUrl() != null ? taskSnapshot.getDownloadUrl().toString() : null);
+      resp.putString("downloadURL", taskSnapshot.getDownloadUrl() != null ? taskSnapshot.getDownloadUrl().toString() : null);
 
       StorageMetadata d = taskSnapshot.getMetadata();
       if (d != null) {
