@@ -83,4 +83,4 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 ### License
 
-- MIT
+- See LICENSE.md
