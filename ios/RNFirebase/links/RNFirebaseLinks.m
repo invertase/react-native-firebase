@@ -7,8 +7,8 @@
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    FIRDynamicLinkComponents *components = [self setDynamicLinkBuilderFromMap:metadata];
-    
+    FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
+
     if (components == nil) {
         reject(@"links/failure", @"error", nil);
     } else {
@@ -19,8 +19,8 @@ RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTProm
 }
 
 RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    FIRDynamicLinkComponents *components = [self setDynamicLinkBuilderFromMap:metadata];
-    
+    FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
+
     [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
                                         NSArray *_Nullable warnings,
                                         NSError *_Nullable error) {
@@ -35,7 +35,7 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 }
 
 
-- (FIRDynamicLinkComponents *)setDynamicLinkBuilderFromMap:(NSDictionary *)metadata {
+- (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
     NSURL *link = [NSURL URLWithString:metadata[@"link"]];
     FIRDynamicLinkComponents *components =
     [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
