@@ -60,6 +60,19 @@ dependencies {
 }
 ```
 
+Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the 
+required reference to the repositories section of the *project* level build.gradle
+`android/build.gradle`
+```allprojects {
+    repositories {
+         // ...
+        maven {
+            url 'https://maven.google.com'
+        }
+    }
+}
+```
+
 To install `react-native-firebase` in your project, you'll need to import the packages you need from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list them as packages for ReactNative in the `getPackages()` function:
 
 ```java
