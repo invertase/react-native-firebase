@@ -45,7 +45,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'com.google.gms:google-services:3.0.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -67,19 +67,22 @@ You need to make a couple of changes to your `app/build.gradle` file.  Update th
 compile(project(':react-native-firebase')) {
   transitive = false
 }
-compile "com.google.firebase:firebase-core:11.0.0"
+compile "com.google.firebase:firebase-core:11.0.4"
+
+// If you are receiving Google Play API availability issues, add the following dependency
+compile "com.google.android.gms:play-services-base:11.0.4"
 ```
 Add each of the firebase modules you need from the following list:
 ```groovy
-compile "com.google.firebase:firebase-ads:11.0.0"
-compile "com.google.firebase:firebase-analytics:11.0.0"
-compile "com.google.firebase:firebase-auth:11.0.0"
-compile "com.google.firebase:firebase-config:11.0.0"
-compile "com.google.firebase:firebase-crash:11.0.0"
-compile "com.google.firebase:firebase-database:11.0.0"
-compile "com.google.firebase:firebase-messaging:11.0.0"
-compile "com.google.firebase:firebase-perf:11.0.0"
-compile "com.google.firebase:firebase-storage:11.0.0"
+compile "com.google.firebase:firebase-ads:11.0.4"
+compile "com.google.firebase:firebase-analytics:11.0.4"
+compile "com.google.firebase:firebase-auth:11.0.4"
+compile "com.google.firebase:firebase-config:11.0.4"
+compile "com.google.firebase:firebase-crash:11.0.4"
+compile "com.google.firebase:firebase-database:11.0.4"
+compile "com.google.firebase:firebase-messaging:11.0.4"
+compile "com.google.firebase:firebase-perf:11.0.4"
+compile "com.google.firebase:firebase-storage:11.0.4"
 ```
 
 
@@ -93,7 +96,10 @@ compile "com.google.firebase:firebase-storage:11.0.0"
 Update `MainApplication.java` and import the modules you require / currently use:
 
 ```java
-import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
+// Required package
+import io.invertase.firebase.RNFirebasePackage; // <-- Keep this line
+// Optional packages - add as appropriate
+import io.invertase.firebase.admob.RNFirebaseAdMobPackage; // Firebase AdMob
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
 import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase Remote Config
@@ -109,9 +115,8 @@ Add the packages to the `getPackages()` method as required:
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new RNFirebasePackage(),  // <-- Keep this line - it's the only one that's required
-
-          // add these optional packages as appropriate
+          new RNFirebasePackage(), // <-- Keep this line
+          // Add these packages as appropriate
           new RNFirebaseAdMobPackage(),
           new RNFirebaseAnalyticsPackage(),
           new RNFirebaseAuthPackage(),
