@@ -386,7 +386,9 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(setBadgeNumber: (NSInteger*) number) {
-    [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+    }
 }
 
 RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
