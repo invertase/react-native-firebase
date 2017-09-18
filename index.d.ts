@@ -307,22 +307,27 @@ declare module "react-native-firebase" {
         [key: string]: any;
       }
 
+      type QueryEventType = "value" | "child_added" | "child_removed" | "child_changed" | "child_moved";
+      type QuerySuccessCallback = (snapshot: DataSnapshot, previousChildId?: string | null) => void;
+      type QueryErrorCallback = (e: Error) => void;
+
       interface Query {
         endAt(value: number | string | boolean | null, key?: string): database.Query;
         equalTo(value: number | string | boolean | null, key?: string): database.Query;
         isEqual(other: database.Query | null): boolean;
         limitToFirst(limit: number): database.Query;
         limitToLast(limit: number): database.Query;
-        off(eventType?: string,
-            callback?: (a: database.DataSnapshot, b?: string | null) => any,
-            context?: Object | null): any;
-        on(eventType: string,
-           callback: (a: database.DataSnapshot | null, b?: string) => any,
-           cancelCallbackOrContext?: Object | null, context?: Object | null): (a: database.DataSnapshot | null, b?: string) => any;
-        once(eventType: string,
-             successCallback?: (a: database.DataSnapshot, b?: string) => any,
-             failureCallbackOrContext?: Object | null,
-             context?: Object | null): Promise<any>;
+        off(eventType?: QueryEventType,
+          callback?: QuerySuccessCallback,
+          context?: Object): void;
+        on(eventType: QueryEventType,
+          callback: QuerySuccessCallback,
+          cancelCallbackOrContext?: QueryErrorCallback,
+          context?: Object): (a: database.DataSnapshot | null, b?: string) => QuerySuccessCallback;
+        once(eventType: QueryEventType,
+          successCallback?: QuerySuccessCallback,
+          failureCallbackOrContext?: QueryErrorCallback,
+          context?: Object): Promise<DataSnapshot>;
         orderByChild(path: string): database.Query;
         orderByKey(): database.Query;
         orderByPriority(): database.Query;
@@ -348,12 +353,15 @@ declare module "react-native-firebase" {
         val(): any;
       }
 
+      interface ThenableReference<T> extends Promise<T> {}
+      interface ThenableReference<T> extends Reference {}
+
       interface Reference extends database.Query {
         child(path: string): database.Reference;
         key: string | null;
         onDisconnect(): any;
         parent: database.Reference | null;
-        push(value?: any, onComplete?: (a: RnError | null) => any): any
+        push(value?: any, onComplete?: (a: RnError | null) => any): ThenableReference<any>
         remove(onComplete?: (a: RnError | null) => any): Promise<any>;
         root: database.Reference;
         set(value: any, onComplete?: (a: RnError | null) => any): Promise<any>;
