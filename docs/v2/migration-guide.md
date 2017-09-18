@@ -75,7 +75,6 @@ compile "com.google.android.gms:play-services-base:11.0.4"
 Add each of the firebase modules you need from the following list:
 ```groovy
 compile "com.google.firebase:firebase-ads:11.0.4"
-compile "com.google.firebase:firebase-analytics:11.0.4"
 compile "com.google.firebase:firebase-auth:11.0.4"
 compile "com.google.firebase:firebase-config:11.0.4"
 compile "com.google.firebase:firebase-crash:11.0.4"
@@ -171,5 +170,3 @@ target 'ReactNativeFirebaseDemo' do
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 end
 ```
-
-

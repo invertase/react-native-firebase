@@ -15,7 +15,6 @@ target 'ReactNativeFirebaseDemo' do
 
   pod 'Firebase/AdMob'
   pod 'Firebase/Auth'
-  pod 'Firebase/Analytics'
   pod 'Firebase/Core'
   pod 'Firebase/Crash'
   pod 'Firebase/Database'

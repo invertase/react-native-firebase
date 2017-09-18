@@ -79,7 +79,6 @@ dependencies {
   compile "com.google.firebase:firebase-core:$firebaseVersion"
   compile "com.google.firebase:firebase-config:$firebaseVersion"
   compile "com.google.firebase:firebase-auth:$firebaseVersion"
-  compile "com.google.firebase:firebase-analytics:$firebaseVersion"
   compile "com.google.firebase:firebase-database:$firebaseVersion"
   compile "com.google.firebase:firebase-storage:$firebaseVersion"
   compile "com.google.firebase:firebase-messaging:$firebaseVersion"

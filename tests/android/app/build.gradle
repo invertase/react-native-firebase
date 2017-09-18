@@ -83,7 +83,6 @@ dependencies {
     compile "com.google.android.gms:play-services-base:$firebaseVersion"
     compile "com.google.firebase:firebase-ads:$firebaseVersion"
     compile "com.google.firebase:firebase-ads:$firebaseVersion"
-    compile "com.google.firebase:firebase-analytics:$firebaseVersion"
     compile "com.google.firebase:firebase-auth:$firebaseVersion"
     compile "com.google.firebase:firebase-config:$firebaseVersion"
     compile "com.google.firebase:firebase-core:$firebaseVersion"

@@ -49,7 +49,6 @@ dependencies {
 
   // RNFirebase optional dependencies
   compile "com.google.firebase:firebase-ads:11.2.0"
-  compile "com.google.firebase:firebase-analytics:11.2.0"
   compile "com.google.firebase:firebase-auth:11.2.0"
   compile "com.google.firebase:firebase-config:11.2.0"
   compile "com.google.firebase:firebase-crash:11.2.0"
@@ -60,7 +59,7 @@ dependencies {
 }
 ```
 
-Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the 
+Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the
 required reference to the repositories section of the *project* level build.gradle
 `android/build.gradle`
 ```allprojects {

@@ -65,7 +65,6 @@ pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
 # [OPTIONAL PODS] - comment out pods for firebase products you won't be using.
 pod 'Firebase/AdMob'
-pod 'Firebase/Analytics'
 pod 'Firebase/Auth'
 pod 'Firebase/Crash'
 pod 'Firebase/Database'
