@@ -62,7 +62,9 @@ dependencies {
 Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the
 required reference to the repositories section of the *project* level build.gradle
 `android/build.gradle`
-```allprojects {
+
+```groovy
+allprojects {
     repositories {
          // ...
         maven {
