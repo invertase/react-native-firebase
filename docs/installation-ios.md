@@ -83,6 +83,16 @@ pod 'React', :path => '../node_modules/react-native', :subspecs => [
   'Core',
   # Add any other subspecs you want to use in your project
 ]
+
+#Also add this at the very bottom of your Podfile
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
+end
 ```
 
 Run `pod install`.
