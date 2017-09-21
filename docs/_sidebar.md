@@ -42,4 +42,3 @@
   - [FAQs / Troubleshooting](/faqs)
   - Chat
     - [Discord](https://discord.gg/t6bdqMs)
-    - [Gitter](https://gitter.im/invertase/react-native-firebase)

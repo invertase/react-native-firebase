@@ -27,4 +27,3 @@
   - [FAQs / Troubleshooting](/v2/faqs)
   - [Examples](https://github.com/invertase/react-native-firebase-examples)
   - [Chat](https://discord.gg/t6bdqMs)
-  - [Gitter](https://gitter.im/invertase/react-native-firebase)

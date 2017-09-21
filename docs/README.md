@@ -10,7 +10,6 @@
 [![Package Quality](https://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
-[![Chat](https://img.shields.io/badge/chat-on%20gitter-a0e7a0.svg?style=flat-square)](https://gitter.im/invertase/react-native-firebase)
 [![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
 </div>
 
