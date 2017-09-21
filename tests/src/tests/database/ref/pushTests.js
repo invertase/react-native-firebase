@@ -61,10 +61,11 @@ function pushTests({ describe, it, firebase }) {
       return ref.once('value')
         .then((snapshot) => {
           originalListValue = snapshot.val();
-          return ref.push(valueToAddToList);
+          newItemRef = ref.push(valueToAddToList);
+          return newItemRef;
         })
-        .then((pushRef) => {
-          newItemRef = pushRef;
+        .then((val) => {
+            // val should be void
           return newItemRef.once('value');
         })
         .then((snapshot) => {
