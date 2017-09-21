@@ -54,6 +54,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private String mVerificationId;
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
+  private HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
 
 
   RNFirebaseAuth(ReactApplicationContext reactContext) {
@@ -88,11 +89,11 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
             msgMap.putBoolean("authenticated", true);
             msgMap.putString("appName", appName); // for js side distribution
             msgMap.putMap("user", firebaseUserToMap(user));
-            Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
+            Utils.sendEvent(mReactContext, "auth_state_changed", msgMap);
           } else {
             msgMap.putString("appName", appName); // for js side distribution
             msgMap.putBoolean("authenticated", false);
-            Utils.sendEvent(mReactContext, "onAuthStateChanged", msgMap);
+            Utils.sendEvent(mReactContext, "auth_state_changed", msgMap);
           }
         }
       };
@@ -117,6 +118,58 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     if (mAuthListener != null) {
       firebaseAuth.removeAuthStateListener(mAuthListener);
       mAuthListeners.remove(appName);
+    }
+  }
+
+  /**
+   * Add a new id token listener - if one doesn't exist already
+   */
+  @ReactMethod
+  public void addIdTokenListener(final String appName) {
+    Log.d(TAG, "addIdTokenListener");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    if (!mIdTokenListeners.containsKey(appName)) {
+      FirebaseAuth.IdTokenListener newIdTokenListener = new FirebaseAuth.IdTokenListener() {
+        @Override
+        public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
+          FirebaseUser user = firebaseAuth.getCurrentUser();
+          WritableMap msgMap = Arguments.createMap();
+          if (user != null) {
+            msgMap.putBoolean("authenticated", true);
+            msgMap.putString("appName", appName); // for js side distribution
+            msgMap.putMap("user", firebaseUserToMap(user));
+            Utils.sendEvent(mReactContext, "auth_id_token_changed", msgMap);
+          } else {
+            msgMap.putString("appName", appName); // for js side distribution
+            msgMap.putBoolean("authenticated", false);
+            Utils.sendEvent(mReactContext, "auth_id_token_changed", msgMap);
+          }
+        }
+      };
+
+      firebaseAuth.addIdTokenListener(newIdTokenListener);
+      mIdTokenListeners.put(appName, newIdTokenListener);
+    }
+  }
+
+  /**
+   * Removes the current id token listener
+   */
+  @ReactMethod
+  public void removeIdTokenListener(String appName) {
+    Log.d(TAG, "removeIdTokenListener");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    FirebaseAuth.IdTokenListener mIdTokenListener = mIdTokenListeners.get(appName);
+
+    if (mIdTokenListener != null) {
+      firebaseAuth.removeIdTokenListener(mIdTokenListener);
+      mIdTokenListeners.remove(appName);
     }
   }
 

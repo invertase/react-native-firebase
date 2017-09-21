@@ -12,6 +12,7 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self != nil) {
         _authStateHandlers = [[NSMutableDictionary alloc] init];
+        _idTokenHandlers = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -50,6 +51,41 @@ RCT_EXPORT_METHOD(removeAuthStateListener:
         [_authStateHandlers removeObjectForKey:appName];
     }
 }
+
+/**
+ addIdTokenListener
+
+ */
+RCT_EXPORT_METHOD(addIdTokenListener:
+                  (NSString *) appName) {
+
+    if (![_idTokenHandlers valueForKey:appName]) {
+        FIRApp *firApp = [FIRApp appNamed:appName];
+        FIRIDTokenDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firApp] addIDTokenDidChangeListener:^(FIRAuth * _Nonnull auth, FIRUser * _Nullable user) {
+            if (user != nil) {
+                [self sendJSEventWithAppName:appName title:AUTH_ID_TOKEN_CHANGED_EVENT props:[@{@"authenticated": @(true), @"user": [self firebaseUserToDict:user]} mutableCopy]];
+            } else {
+                [self sendJSEventWithAppName:appName title:AUTH_ID_TOKEN_CHANGED_EVENT props:[@{@"authenticated": @(false)} mutableCopy]];
+            }
+        }];
+
+        _idTokenHandlers[appName] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    }
+}
+
+/**
+ removeAuthStateListener
+
+ */
+RCT_EXPORT_METHOD(removeIdTokenListener:
+                  (NSString *) appName) {
+    if ([_idTokenHandlers valueForKey:appName]) {
+        FIRApp *firApp = [FIRApp appNamed:appName];
+        [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[_idTokenHandlers valueForKey:appName]];
+        [_idTokenHandlers removeObjectForKey:appName];
+    }
+}
+
 
 
 /**
@@ -1073,7 +1109,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[AUTH_CHANGED_EVENT, AUTH_ANONYMOUS_ERROR_EVENT, AUTH_ERROR_EVENT];
+    return @[AUTH_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT];
 }
 
 @end
