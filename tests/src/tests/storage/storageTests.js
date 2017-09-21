@@ -71,7 +71,7 @@ function storageTests({ describe, it, firebase, tryCatch }) {
           uploadTaskSnapshot.state.should.eql(firebase.native.storage.TaskState.SUCCESS);
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
-          uploadTaskSnapshot.downloadUrl.should.be.a.String();
+          uploadTaskSnapshot.downloadURL.should.be.a.String();
           resolve();
         }, reject);
 
