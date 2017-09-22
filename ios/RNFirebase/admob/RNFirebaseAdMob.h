@@ -9,7 +9,6 @@
 #import "React/RCTEventEmitter.h"
 #import "GoogleMobileAds/GADInterstitialDelegate.h"
 #import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
-#import "GoogleMobileAds/GADAdDelegate.h"
 
 
 @interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule>
