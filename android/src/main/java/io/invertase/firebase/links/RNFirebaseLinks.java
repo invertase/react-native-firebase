@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.Map;
 
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -27,14 +28,14 @@ import com.google.android.gms.tasks.OnFailureListener;
 
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseLinks extends ReactContextBaseJavaModule implements ActivityEventListener {
+public class RNFirebaseLinks extends ReactContextBaseJavaModule implements ActivityEventListener ,LifecycleEventListener {
   private final static String TAG = RNFirebaseLinks.class.getCanonicalName();
   private String initialLink = null;
 
   public RNFirebaseLinks(ReactApplicationContext reactContext) {
     super(reactContext);
-    //getReactApplicationContext().addActivityEventListener(this);
-    //registerLinksHandler();
+    getReactApplicationContext().addActivityEventListener(this);
+    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   @Override
@@ -52,7 +53,6 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     if (activity == null) {
       return;
     }
-
     FirebaseDynamicLinks.getInstance()
       .getDynamicLink(activity.getIntent())
       .addOnSuccessListener(activity, new OnSuccessListener<PendingDynamicLinkData>() {
@@ -62,10 +62,10 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
           if (pendingDynamicLinkData != null) {
             Uri deepLinkUri = pendingDynamicLinkData.getLink();
             String deepLink = deepLinkUri.toString();
-            // TODO: Validate that this is called when opening from a deep link
             if (initialLink == null) {
               initialLink = deepLink;
             }
+            Log.d(TAG, "sending a dynamic_link_received event!");
             Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", deepLink);
           }
         }
@@ -84,8 +84,19 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   }
 
   @Override
-  public void onNewIntent(Intent intent) {
-    // TODO: Do I need to re-register the links handler for each new intent?
+  public void onNewIntent(Intent intent) {}
+
+  @Override
+  public void onHostResume() {
+      registerLinksHandler();
+  }
+
+  @Override
+  public void onHostPause() {}
+
+  @Override
+  public void onHostDestroy() {
+    initialLink = null;
   }
 
   @ReactMethod
