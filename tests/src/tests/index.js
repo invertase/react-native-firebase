@@ -10,6 +10,10 @@ import config from './config/index';
 import performance from './perf/index';
 import admob from './admob/index';
 
+window.getCoverage = function getCoverage() {
+  return (JSON.stringify(global.__coverage__));
+};
+
 const testSuiteInstances = [
   database,
   auth,
