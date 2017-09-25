@@ -1,5 +1,6 @@
 package io.invertase.firebase.auth;
 
+import android.app.Activity;
 import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -719,6 +720,62 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         }
       });
+  }
+
+  /**
+   * verifyPhoneNumber
+   *
+   * @param appName
+   * @param phoneNumber
+   * @param timeout
+   */
+  @ReactMethod
+  public void verifyPhoneNumber(String appName, final String phoneNumber, final int timeout) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    final Activity activity = mReactContext.getCurrentActivity();
+
+    Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
+
+    if (activity != null) {
+      PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, timeout, TimeUnit.SECONDS,
+        activity, new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+          @Override
+          public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+            // User has been automatically verified, log them in
+            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
+            // todo
+          }
+
+          @Override
+          public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // e.g. phone number format is incorrect, or the SMS quota for the project
+            // has been exceeded
+            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
+            WritableMap eventMap = Arguments.createMap();
+            eventMap.putMap("error", getJSError(e));
+            Utils.sendEvent(mReactContext, "phone_auth_state_changed", eventMap);
+            // todo
+          }
+
+          @Override
+          public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            WritableMap verificationMap = Arguments.createMap();
+            verificationMap.putString("verificationId", verificationId);
+            Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
+            // todo
+          }
+
+          @Override
+          public void onCodeAutoRetrievalTimeOut(String verificationId) {
+            super.onCodeAutoRetrievalTimeOut(verificationId);
+            Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
+            // todo
+          }
+        });
+    }
   }
 
   /**
