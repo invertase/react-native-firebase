@@ -11,12 +11,12 @@
     "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
     "publish_pages": "gh-pages -d public/",
     "docs-serve-local": "docsify serve docs",
+    "test-cli": "node ./bin/test.js",
     "tests-packager": "cd tests && npm run start",
     "tests-npm-install": "cd tests && npm install",
     "tests-pod-install": "cd tests && npm run ios:pod:install",
-    "tests-watch-init": "wml add $(node --eval \"console.log(require('path').resolve('./lib'));\") $(node --eval \"console.log(require('path').resolve('./tests/firebase'));\")",
-    "tests-watch-start": "watchman watch $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml start",
-    "tests-watch-stop": "watchman watch-del $(node --eval \"console.log(require('path').resolve('./lib'));\") && wml stop"
+    "tests-watch-start": "npm run test-cli watch init start",
+    "tests-watch-stop": "npm run test-cli watch stop"
   },
   "repository": {
     "type": "git",
@@ -74,6 +74,7 @@
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-native": "^0.44.0",
+    "shelljs": "^0.7.8",
     "wml": "0.0.82"
   },
   "dependencies": {
