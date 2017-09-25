@@ -1,6 +1,7 @@
 package io.invertase.firebase.auth;
 
 import android.app.Activity;
+import android.os.Parcel;
 import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -730,7 +731,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param timeout
    */
   @ReactMethod
-  public void verifyPhoneNumber(String appName, final String phoneNumber, final int timeout) {
+  public void verifyPhoneNumber(final String appName, final String phoneNumber, final String requestKey, final int timeout) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final Activity activity = mReactContext.getCurrentActivity();
@@ -743,9 +744,18 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
           @Override
           public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-            // User has been automatically verified, log them in
             Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
-            // todo
+            WritableMap state = Arguments.createMap();
+            Parcel p1 = Parcel.obtain();
+
+            phoneAuthCredential.writeToParcel(p1, 0);
+            String verificationId = p1.readString();
+            String smsCode = p1.readString();
+
+            p1.recycle();
+            state.putString("code", smsCode);
+            state.putString("verificationId", verificationId);
+            sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
           }
 
           @Override
@@ -754,25 +764,27 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
             // e.g. phone number format is incorrect, or the SMS quota for the project
             // has been exceeded
             Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
-            WritableMap eventMap = Arguments.createMap();
-            eventMap.putMap("error", getJSError(e));
-            Utils.sendEvent(mReactContext, "phone_auth_state_changed", eventMap);
-            // todo
+            WritableMap state = Arguments.createMap();
+            state.putMap("error", getJSError(e));
+            sendPhoneStateEvent(appName, requestKey, "onVerificationFailed", state);
           }
 
           @Override
           public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            WritableMap verificationMap = Arguments.createMap();
-            verificationMap.putString("verificationId", verificationId);
+            // todo forceResendingToken ?
             Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
-            // todo
+            WritableMap state = Arguments.createMap();
+            state.putString("verificationId", verificationId);
+            sendPhoneStateEvent(appName, requestKey, "onCodeSent", state);
           }
 
           @Override
           public void onCodeAutoRetrievalTimeOut(String verificationId) {
             super.onCodeAutoRetrievalTimeOut(verificationId);
             Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
-            // todo
+            WritableMap state = Arguments.createMap();
+            state.putString("verificationId", verificationId);
+            sendPhoneStateEvent(appName, requestKey, "onCodeAutoRetrievalTimeout", state);
           }
         });
     }
@@ -1326,5 +1338,20 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     userMap.putArray("providerData", convertProviderData(user.getProviderData()));
 
     return userMap;
+  }
+
+  /**
+   * @param appName
+   * @param requestKey
+   * @param type
+   * @param state
+   */
+  private void sendPhoneStateEvent(String appName, String requestKey, String type, WritableMap state) {
+    WritableMap eventMap = Arguments.createMap();
+    eventMap.putString("appName", appName);
+    eventMap.putString("requestKey", requestKey);
+    eventMap.putString("type", type);
+    eventMap.putMap("state", state);
+    Utils.sendEvent(mReactContext, "phone_auth_state_changed", eventMap);
   }
 }
