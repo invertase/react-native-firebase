@@ -5,11 +5,12 @@
 
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLinks.h>)
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RNFirebaseLinks : NSObject<RCTBridgeModule> {
+@interface RNFirebaseLinks : RCTEventEmitter<RCTBridgeModule> {
 
 }
-
++ (void)sendDynamicLink:(nonnull NSURL *)link;
 @end
 
 #else

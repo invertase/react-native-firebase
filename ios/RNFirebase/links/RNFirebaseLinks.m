@@ -2,13 +2,50 @@
 #import "Firebase.h"
 
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLink.h>)
+#import "RNFirebaseEvents.h"
 @implementation RNFirebaseLinks
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    FIRDynamicLinkComponents *components = [self setDynamicLinkBuilderFromMap:metadata];
++ (void)sendDynamicLink:(nonnull NSURL *)link {
+    [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED object:self userInfo:@{@"link": link}];
+}
+
+
+- (id)init {
+    self = [super init];
+    if (self != nil) {
+        NSLog(@"Setting up RNFirebaseLinks instance");
+        [self initialiseLinks];
+    }
+    return self;
+}
+
+- (void)initialiseLinks {
+    // Establish Firebase managed data channel
+    //[FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+
     
+    // Set up internal listener to send notification over bridge
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(sendEvent:)
+                                                 name:LINKS_DYNAMIC_LINK_RECEIVED
+                                               object:nil];
+    
+    // Set this as a delegate for FIRMessaging
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [FIRMessaging messaging].delegate = self;
+//    });
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
+
     if (components == nil) {
         reject(@"links/failure", @"error", nil);
     } else {
@@ -19,8 +56,8 @@ RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTProm
 }
 
 RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    FIRDynamicLinkComponents *components = [self setDynamicLinkBuilderFromMap:metadata];
-    
+    FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
+
     [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
                                         NSArray *_Nullable warnings,
                                         NSError *_Nullable error) {
@@ -34,8 +71,12 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }];
 }
 
+RCT_EXPORT_METHOD(getInitialLink: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(nil);
+}
 
-- (FIRDynamicLinkComponents *)setDynamicLinkBuilderFromMap:(NSDictionary *)metadata {
+
+- (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
     NSURL *link = [NSURL URLWithString:metadata[@"link"]];
     FIRDynamicLinkComponents *components =
     [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
@@ -173,6 +214,15 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
         }
         components.options = options;
     }
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[LINKS_DYNAMIC_LINK_RECEIVED];
+}
+
+- (void)sendEvent:(NSNotification *)notification {
+        NSURL* dynamicLink = notification.userInfo[@"link"];
+        [self sendEventWithName:LINKS_DYNAMIC_LINK_RECEIVED body:dynamicLink.absoluteString];
 }
 
 @end
