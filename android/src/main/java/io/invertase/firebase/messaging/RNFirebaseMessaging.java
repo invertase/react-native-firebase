@@ -74,13 +74,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
 
   @ReactMethod
   public void deleteInstanceId(Promise promise){
-      try {
-          FirebaseInstanceId.getInstance().deleteInstanceId();
-          promise.resolve(null);
-      } catch (IOException e) {
-          e.printStackTrace();
-          promise.reject(null, e.getMessage());
-      }
+    Log.d(TAG, "Deleting instance id");
+    FirebaseInstanceId.getInstance().deleteInstanceId();
+    promise.resolve(null);
   }
 
   @ReactMethod
