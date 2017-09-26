@@ -258,7 +258,13 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
 }
 
 RCT_EXPORT_METHOD(deleteInstanceId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(nil);
+    [FIRInstanceID instanceID] deleteIDWithHandler:^(NSError * _Nullable error) {
+        if (!error) {
+            resolve(nil);
+        } else {
+            reject(@"instance_id_error", @"Failed to delete instance id", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
