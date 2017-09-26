@@ -3,45 +3,90 @@
 
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLink.h>)
 #import "RNFirebaseEvents.h"
+
+
+static void sendDynamicLink(NSURL *url, id sender) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
+                                                        object:sender
+                                                      userInfo:@{@"url": url.absoluteString}];
+}
+
 @implementation RNFirebaseLinks
 
 RCT_EXPORT_MODULE();
 
-+ (void)sendDynamicLink:(nonnull NSURL *)link {
-    [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED object:self userInfo:@{@"link": link}];
-}
+
 
 
 - (id)init {
     self = [super init];
     if (self != nil) {
         NSLog(@"Setting up RNFirebaseLinks instance");
-        [self initialiseLinks];
+        [self initializeLinks];
     }
     return self;
 }
 
-- (void)initialiseLinks {
-    // Establish Firebase managed data channel
-    //[FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-
-    
+- (void)initializeLinks {
     // Set up internal listener to send notification over bridge
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sendEvent:)
+                                             selector:@selector(sendDynamicLinkEvent:)
                                                  name:LINKS_DYNAMIC_LINK_RECEIVED
                                                object:nil];
-    
-    // Set this as a delegate for FIRMessaging
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [FIRMessaging messaging].delegate = self;
-//    });
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    sendDynamicLink(url, self);
+    return YES;
+}
+
++ (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation
+{
+    sendDynamicLink(url, self);
+    return YES;
+}
+
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        sendDynamicLink(userActivity.webpageURL, self);
+    }
+    return YES;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[LINKS_DYNAMIC_LINK_RECEIVED];
+}
+
+- (void)sendDynamicLinkEvent:(NSNotification *)notification {
+    [self sendEventWithName:LINKS_DYNAMIC_LINK_RECEIVED body:notification.userInfo[@"url"]];
+}
+
+RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSURL *initialLink = nil;
+    if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+        initialLink = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+    } else {
+        NSDictionary *userActivityDictionary =
+        self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+        if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
+            initialLink = ((NSUserActivity*) userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
+        }
+    }
+    NSString* initialLinkString = initialLink ? initialLink.absoluteString : (id)kCFNull;
+    resolve(initialLinkString);
+}
 
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
@@ -69,10 +114,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
         NSLog(@"Short URL: %@", shortLink.absoluteString);
         resolve(shortLink.absoluteString);
     }];
-}
-
-RCT_EXPORT_METHOD(getInitialLink: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(nil);
 }
 
 
@@ -216,14 +257,6 @@ RCT_EXPORT_METHOD(getInitialLink: (RCTPromiseResolveBlock)resolve rejecter:(RCTP
     }
 }
 
-- (NSArray<NSString *> *)supportedEvents {
-    return @[LINKS_DYNAMIC_LINK_RECEIVED];
-}
-
-- (void)sendEvent:(NSNotification *)notification {
-        NSURL* dynamicLink = notification.userInfo[@"link"];
-        [self sendEventWithName:LINKS_DYNAMIC_LINK_RECEIVED body:dynamicLink.absoluteString];
-}
 
 @end
 
