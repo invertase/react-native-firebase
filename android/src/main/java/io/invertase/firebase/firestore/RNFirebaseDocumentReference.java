@@ -69,11 +69,14 @@ public class RNFirebaseDocumentReference {
 
   public void set(final ReadableMap data, final ReadableMap options, final Promise promise) {
     Map<String, Object> map = Utils.recursivelyDeconstructReadableMap(data);
+    Task<Void> task;
     SetOptions setOptions = null;
     if (options != null && options.hasKey("merge") && options.getBoolean("merge")) {
-      setOptions = SetOptions.merge();
+      task = this.ref.set(map, SetOptions.merge());
+    } else {
+      task = this.ref.set(map);
     }
-    this.ref.set(map, setOptions).addOnCompleteListener(new OnCompleteListener<Void>() {
+    task.addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
       public void onComplete(@NonNull Task<Void> task) {
         if (task.isSuccessful()) {
@@ -89,7 +92,7 @@ public class RNFirebaseDocumentReference {
     });
   }
 
-  public void update(final ReadableMap data, final ReadableMap options, final Promise promise) {
+  public void update(final ReadableMap data, final Promise promise) {
     Map<String, Object> map = Utils.recursivelyDeconstructReadableMap(data);
     this.ref.update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override

@@ -67,11 +67,12 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
           break;
         case "SET":
           Map<String, Object> options = (Map) write.get("options");
-          SetOptions setOptions = null;
           if (options != null && options.containsKey("merge") && (boolean)options.get("merge")) {
-            setOptions = SetOptions.merge();
+            batch = batch.set(ref, data, SetOptions.merge());
+          } else {
+            batch = batch.set(ref, data);
           }
-          batch = batch.set(ref, data, setOptions);
+
           break;
         case "UPDATE":
           batch = batch.update(ref, data);
@@ -135,9 +136,9 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void documentUpdate(String appName, String path, ReadableMap data, ReadableMap options, final Promise promise) {
+  public void documentUpdate(String appName, String path, ReadableMap data, final Promise promise) {
     RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
-    ref.update(data, options, promise);
+    ref.update(data, promise);
   }
 
   /*
