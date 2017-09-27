@@ -80,8 +80,8 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
       FirebaseInstanceId.getInstance().deleteInstanceId();
       promise.resolve(null);
     } catch (IOException e) {
-      e.printStackTrace();
-      promise.reject(null,e.getMessage());
+      Log.e(TAG, e.getMessage());
+      promise.reject(null, e.getMessage());
     }
   }
 
