@@ -43,7 +43,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   @ReactMethod
   public void collectionGet(String appName, String path, ReadableArray filters,
                             ReadableArray orders, ReadableMap options, final Promise promise) {
-    RNFirebaseCollectionReference ref = getCollectionForAppPath(appName, path, filters, orders, options);
+    RNFirebaseFirestoreCollectionReference ref = getCollectionForAppPath(appName, path, filters, orders, options);
     ref.get(promise);
   }
 
@@ -102,25 +102,25 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void documentCollections(String appName, String path, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.collections(promise);
   }
 
   @ReactMethod
   public void documentCreate(String appName, String path, ReadableMap data, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.create(data, promise);
   }
 
   @ReactMethod
   public void documentDelete(String appName, String path, ReadableMap options, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.delete(options, promise);
   }
 
   @ReactMethod
   public void documentGet(String appName, String path, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.get(promise);
   }
 
@@ -131,13 +131,13 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void documentSet(String appName, String path, ReadableMap data, ReadableMap options, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.set(data, options, promise);
   }
 
   @ReactMethod
   public void documentUpdate(String appName, String path, ReadableMap data, final Promise promise) {
-    RNFirebaseDocumentReference ref = getDocumentForAppPath(appName, path);
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.update(data, promise);
   }
 
@@ -181,11 +181,11 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
    * @param options
    * @param path  @return
    */
-  private RNFirebaseCollectionReference getCollectionForAppPath(String appName, String path,
-                                                                ReadableArray filters,
-                                                                ReadableArray orders,
-                                                                ReadableMap options) {
-    return new RNFirebaseCollectionReference(appName, path, filters, orders, options);
+  private RNFirebaseFirestoreCollectionReference getCollectionForAppPath(String appName, String path,
+                                                                         ReadableArray filters,
+                                                                         ReadableArray orders,
+                                                                         ReadableMap options) {
+    return new RNFirebaseFirestoreCollectionReference(appName, path, filters, orders, options);
   }
 
   /**
@@ -195,8 +195,8 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
    * @param path
    * @return
    */
-  private RNFirebaseDocumentReference getDocumentForAppPath(String appName, String path) {
-    return new RNFirebaseDocumentReference(appName, path);
+  private RNFirebaseFirestoreDocumentReference getDocumentForAppPath(String appName, String path) {
+    return new RNFirebaseFirestoreDocumentReference(appName, path);
   }
 
   /**

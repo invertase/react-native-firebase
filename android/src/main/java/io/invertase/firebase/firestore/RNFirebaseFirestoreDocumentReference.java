@@ -18,13 +18,13 @@ import java.util.Map;
 import io.invertase.firebase.Utils;
 
 
-public class RNFirebaseDocumentReference {
-  private static final String TAG = "RNFBDocumentReference";
+public class RNFirebaseFirestoreDocumentReference {
+  private static final String TAG = "RNFBFSDocumentReference";
   private final String appName;
   private final String path;
   private final DocumentReference ref;
 
-  RNFirebaseDocumentReference(String appName, String path) {
+  RNFirebaseFirestoreDocumentReference(String appName, String path) {
     this.appName = appName;
     this.path = path;
     this.ref = RNFirebaseFirestore.getFirestoreForApp(appName).document(path);

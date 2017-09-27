@@ -18,8 +18,8 @@ import java.util.Map;
 
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseCollectionReference {
-  private static final String TAG = "RNFBCollectionReference";
+public class RNFirebaseFirestoreCollectionReference {
+  private static final String TAG = "RNFSCollectionReference";
   private final String appName;
   private final String path;
   private final ReadableArray filters;
@@ -27,8 +27,8 @@ public class RNFirebaseCollectionReference {
   private final ReadableMap options;
   private final Query query;
 
-  RNFirebaseCollectionReference(String appName, String path, ReadableArray filters,
-                                ReadableArray orders, ReadableMap options) {
+  RNFirebaseFirestoreCollectionReference(String appName, String path, ReadableArray filters,
+                                         ReadableArray orders, ReadableMap options) {
     this.appName = appName;
     this.path = path;
     this.filters = filters;
