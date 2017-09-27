@@ -44,9 +44,7 @@ public class FirestoreSerialize {
     WritableMap queryMap = Arguments.createMap();
 
     List<DocumentChange> documentChanges = querySnapshot.getDocumentChanges();
-    if (!documentChanges.isEmpty()) {
-      queryMap.putArray(KEY_CHANGES, documentChangesToWritableArray(documentChanges));
-    }
+    queryMap.putArray(KEY_CHANGES, documentChangesToWritableArray(documentChanges));
 
     // documents
     WritableArray documents = Arguments.createArray();

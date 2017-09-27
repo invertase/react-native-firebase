@@ -216,8 +216,8 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("deleteFieldValue", FieldValue.delete());
-    constants.put("serverTimestampFieldValue", FieldValue.serverTimestamp());
+    constants.put("deleteFieldValue", FieldValue.delete().toString());
+    constants.put("serverTimestampFieldValue", FieldValue.serverTimestamp().toString());
     return constants;
   }
 }

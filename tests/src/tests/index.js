@@ -1,26 +1,28 @@
 import { setSuiteStatus, setTestStatus } from '../actions/TestActions';
-import analytics from './analytics/index';
-import crash from './crash/index';
-import core from './core/index';
-import database from './database/index';
-import messaging from './messaging/index';
-import storage from './storage/index';
-import auth from './auth/index';
-import config from './config/index';
-import performance from './perf/index';
-import admob from './admob/index';
+import analytics from './analytics';
+import crash from './crash';
+import core from './core';
+import database from './database';
+import messaging from './messaging';
+import storage from './storage';
+import auth from './auth';
+import config from './config';
+import performance from './perf';
+import admob from './admob';
+import firestore from './firestore';
 
 const testSuiteInstances = [
-  database,
-  auth,
-  analytics,
-  messaging,
-  crash,
-  core,
-  storage,
-  config,
-  performance,
   admob,
+  analytics,
+  auth,
+  config,
+  core,
+  crash,
+  database,
+  firestore,
+  messaging,
+  performance,
+  storage,
 ];
 
 /*
