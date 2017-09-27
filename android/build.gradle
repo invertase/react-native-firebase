@@ -33,6 +33,10 @@ android {
 allprojects {
   repositories {
     jcenter()
+    mavenLocal()
+    maven {
+      url "https://maven.google.com"
+    }
   }
 }
 
@@ -78,11 +82,12 @@ dependencies {
   compile "com.google.android.gms:play-services-base:$firebaseVersion"
   compile "com.google.firebase:firebase-core:$firebaseVersion"
   compile "com.google.firebase:firebase-config:$firebaseVersion"
-  compile "com.google.firebase:firebase-auth:$firebaseVersion"
+  compile "com.google.firebase:firebase-auth:11.3.0"
   compile "com.google.firebase:firebase-database:$firebaseVersion"
   compile "com.google.firebase:firebase-storage:$firebaseVersion"
   compile "com.google.firebase:firebase-messaging:$firebaseVersion"
   compile "com.google.firebase:firebase-crash:$firebaseVersion"
   compile "com.google.firebase:firebase-perf:$firebaseVersion"
   compile "com.google.firebase:firebase-ads:$firebaseVersion"
+  compile 'com.google.firebase:firebase-firestore:11.3.0'
 }
