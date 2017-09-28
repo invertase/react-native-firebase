@@ -29,6 +29,7 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseLinks extends ReactContextBaseJavaModule implements ActivityEventListener {
   private final static String TAG = RNFirebaseLinks.class.getCanonicalName();
+  private String initialLink = null;
 
   public RNFirebaseLinks(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -52,13 +53,12 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
             // Get deep link from result (may be null if no link is found or run on the same intent again)
             if (pendingDynamicLinkData != null) {
               Uri deepLinkUri = pendingDynamicLinkData.getLink();
-              String deepLink = deepLinkUri.toString();
-              Log.d(TAG, "getInitialLink: received a dynamic link: " + deepLink);
-              promise.resolve(deepLink);
-            } else {
-              Log.d(TAG, "getInitialLink: no pendingDynamicLinkData." );
-              promise.resolve(null);
+              initialLink = deepLinkUri.toString();
+              Log.d(TAG, "getInitialLink: received a new dynamic link from pendingDynamicLinkData");
             }
+              Log.d(TAG, "getInitialLink: initial link is: " + initialLink );
+              promise.resolve(initialLink);
+
           }
         })
         .addOnFailureListener(activity, new OnFailureListener() {
@@ -70,7 +70,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
         });
     } else {
       Log.d(TAG, "getInitialLink: activity is null" );
-      promise.resolve(null);
+      promise.resolve(initialLink);
     }
   }
 
@@ -88,7 +88,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
           if (pendingDynamicLinkData != null) {
             Uri deepLinkUri = pendingDynamicLinkData.getLink();
             String deepLink = deepLinkUri.toString();
-            Log.d(TAG, "handleLink: sending a dynamic link: " + deepLink);
+            Log.d(TAG, "handleLink: sending link: " + deepLink);
             Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", deepLink);
           }
         }
