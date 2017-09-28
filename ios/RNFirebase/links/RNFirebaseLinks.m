@@ -9,14 +9,12 @@ static void sendDynamicLink(NSURL *url, id sender) {
     [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
                                                         object:sender
                                                       userInfo:@{@"url": url.absoluteString}];
+    NSLog(@"sendDynamicLinkSuccess: %@", url.absoluteString);
 }
 
 @implementation RNFirebaseLinks
 
 RCT_EXPORT_MODULE();
-
-
-
 
 - (id)init {
     self = [super init];
@@ -85,6 +83,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
         }
     }
     NSString* initialLinkString = initialLink ? initialLink.absoluteString : (id)kCFNull;
+    NSLog(@"getInitialLink: link is: %@", initialLinkString);
     resolve(initialLinkString);
 }
 
@@ -95,7 +94,7 @@ RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTProm
         reject(@"links/failure", @"error", nil);
     } else {
         NSURL *longLink =  components.url;
-        NSLog(@"Long URL: %@", longLink.absoluteString);
+        NSLog(@"created long dynamic link: %@", longLink.absoluteString);
         resolve(longLink.absoluteString);
     }
 }
@@ -111,11 +110,10 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
             reject(@"links/failure", error.description, nil);
         }
         NSURL *shortLink = shortURL;
-        NSLog(@"Short URL: %@", shortLink.absoluteString);
+        NSLog(@"created short dynamic link: %@", shortLink.absoluteString);
         resolve(shortLink.absoluteString);
     }];
 }
-
 
 - (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
     NSURL *link = [NSURL URLWithString:metadata[@"link"]];
@@ -124,7 +122,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     [self setAndroidParameters:metadata components:components];
     [self setIosParameters:metadata components:components];
     [self setSocialMetaTagParameters:metadata components:components];
-    [self setAnalyticsParameters:metadata components:components];
     [self setSuffixParameters:metadata components:components];
     return components;
 }
@@ -191,57 +188,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }
 }
 
-- (void)setAnalyticsParameters:(NSDictionary *)metadata
-                    components:(FIRDynamicLinkComponents *)components {
-    NSDictionary *analyticsParametersDict = metadata[@"analyticsInfo"];
-    if (analyticsParametersDict) {
-        [self setGoogleAnalyticsParameters:metadata components:components];
-        [self setItunesConnectAnalyticsParameters:metadata components:components];
-    }
-}
-
-- (void)setGoogleAnalyticsParameters:(NSDictionary *)metadata
-                          components:(FIRDynamicLinkComponents *)components {
-    NSDictionary *analyticsParametersDict = metadata[@"googlePlayAnalytics"];
-    if (analyticsParametersDict) {
-        FIRDynamicLinkGoogleAnalyticsParameters *analyticsParams = [FIRDynamicLinkGoogleAnalyticsParameters parameters];
-        if (analyticsParametersDict[@"utmSource"]) {
-            analyticsParams.source = analyticsParametersDict[@"utmSource"];
-        }
-        if (analyticsParametersDict[@"utmMedium"]) {
-            analyticsParams.medium = analyticsParametersDict[@"utmMedium"];
-        }
-        if (analyticsParametersDict[@"utmCampaign"]) {
-            analyticsParams.campaign = analyticsParametersDict[@"utmCampaign"];
-        }
-        if (analyticsParametersDict[@"utmTerm"]) {
-            analyticsParams.term = analyticsParametersDict[@"utmTerm"];
-        }
-        if (analyticsParametersDict[@"utmContent"]) {
-            analyticsParams.content = analyticsParametersDict[@"utmContent"];
-        }
-        components.analyticsParameters = analyticsParams;
-    }
-}
-
-- (void)setItunesConnectAnalyticsParameters:(NSDictionary *)metadata
-                                 components:(FIRDynamicLinkComponents *)components {
-    NSDictionary *appStoreParametersDict = metadata[@"itunesConnectAnalytics"];
-    if (appStoreParametersDict) {
-        FIRDynamicLinkItunesConnectAnalyticsParameters *appStoreParams = [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
-        if (appStoreParametersDict[@"at"]) {
-            appStoreParams.affiliateToken = appStoreParametersDict[@"at"];
-        }
-        if (appStoreParametersDict[@"ct"]) {
-            appStoreParams.campaignToken = appStoreParametersDict[@"ct"];
-        }
-        if (appStoreParametersDict[@"pt"]) {
-            appStoreParams.providerToken = appStoreParametersDict[@"pt"];
-        }
-        components.iTunesConnectParameters = appStoreParams;
-    }
-}
-
 - (void)setSuffixParameters:(NSDictionary *)metadata
                                  components:(FIRDynamicLinkComponents *)components {
     NSDictionary *suffixParametersDict = metadata[@"suffix"];
@@ -256,7 +202,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
         components.options = options;
     }
 }
-
 
 @end
 

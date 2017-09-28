@@ -2,7 +2,6 @@
 #define RNFirebaseLinks_h
 #import <Foundation/Foundation.h>
 
-
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLinks.h>)
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
