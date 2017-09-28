@@ -84,7 +84,9 @@
 + (NSDictionary *)snapshotToDictionary:(FIRDocumentSnapshot *)documentSnapshot {
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
     [snapshot setValue:documentSnapshot.reference.path forKey:@"path"];
-    [snapshot setValue:documentSnapshot.data forKey:@"data"];
+    if (documentSnapshot.exists) {
+        [snapshot setValue:documentSnapshot.data forKey:@"data"];
+    }
     // Missing fields from web SDK
     // createTime
     // readTime

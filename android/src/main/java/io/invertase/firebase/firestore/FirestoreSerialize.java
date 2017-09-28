@@ -31,7 +31,9 @@ public class FirestoreSerialize {
     WritableMap documentMap = Arguments.createMap();
 
     documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
-    documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
+    if (documentSnapshot.exists()) {
+      documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
+    }
     // Missing fields from web SDK
     // createTime
     // readTime
