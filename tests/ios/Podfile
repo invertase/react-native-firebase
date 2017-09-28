@@ -19,6 +19,7 @@ target 'ReactNativeFirebaseDemo' do
   pod 'Firebase/Crash'
   pod 'Firebase/Database'
   pod 'Firebase/DynamicLinks'
+  pod 'Firestore', :podspec => 'https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.7.0/Firestore.podspec.json'
   pod 'Firebase/Messaging'
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage'

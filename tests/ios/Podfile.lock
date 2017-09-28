@@ -1,4 +1,10 @@
 PODS:
+  - BoringSSL (8.2):
+    - BoringSSL/Implementation (= 8.2)
+    - BoringSSL/Interface (= 8.2)
+  - BoringSSL/Implementation (8.2):
+    - BoringSSL/Interface (= 8.2)
+  - BoringSSL/Interface (8.2)
   - Firebase/AdMob (4.1.0):
     - Firebase/Core
     - Google-Mobile-Ads-SDK (= 7.22.0)
@@ -77,6 +83,13 @@ PODS:
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
+  - Firestore (0.7.0):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseAuth (~> 4.1)
+    - FirebaseCore (~> 4.0)
+    - gRPC-ProtoRPC (~> 1.0)
+    - leveldb-library (~> 1.18)
+    - Protobuf (~> 3.1)
   - Google-Mobile-Ads-SDK (7.22.0)
   - GoogleToolboxForMac/DebugUtils (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
@@ -90,6 +103,22 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
+  - gRPC (1.4.2):
+    - gRPC-Core (= 1.4.2)
+    - gRPC-RxLibrary (= 1.4.2)
+  - gRPC-Core (1.4.2):
+    - gRPC-Core/Implementation (= 1.4.2)
+    - gRPC-Core/Interface (= 1.4.2)
+  - gRPC-Core/Implementation (1.4.2):
+    - BoringSSL (~> 8.0)
+    - gRPC-Core/Interface (= 1.4.2)
+    - nanopb (~> 0.3)
+  - gRPC-Core/Interface (1.4.2)
+  - gRPC-ProtoRPC (1.4.2):
+    - gRPC (= 1.4.2)
+    - gRPC-RxLibrary (= 1.4.2)
+    - Protobuf (~> 3.0)
+  - gRPC-RxLibrary (1.4.2)
   - GTMSessionFetcher/Core (1.1.11)
   - leveldb-library (1.18.3)
   - nanopb (0.3.8):
@@ -121,11 +150,14 @@ DEPENDENCIES:
   - Firebase/Performance
   - Firebase/RemoteConfig
   - Firebase/Storage
+  - Firestore (from `https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.7.0/Firestore.podspec.json`)
   - React (from `../node_modules/react-native`)
   - RNFirebase (from `./../../`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
+  Firestore:
+    :podspec: https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.7.0/Firestore.podspec.json
   React:
     :path: "../node_modules/react-native"
   RNFirebase:
@@ -134,6 +166,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  BoringSSL: 4135ae556ee2b82ee85477c39ba917a3dd5424ba
   Firebase: ebebf41db7f10e0c7668b6eaaa857fbe599aa478
   FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
   FirebaseAuth: 8d1d2389cf82f891048d6d50d27d044f55ae09a6
@@ -146,8 +179,13 @@ SPEC CHECKSUMS:
   FirebasePerformance: 36bdb0500213b459ae991766801d5dc5399ff231
   FirebaseRemoteConfig: 5b3e3301ef2f237b1b588e8ef3211b5a22e9e15d
   FirebaseStorage: 661fc1f8d4131891d256b62e82a45ace8b3f0c3b
+  Firestore: 80f352a0b5260500b11d7e4626b81a19d4eba312
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
+  gRPC: 74b57d3c8a9366e09493828e0a1d27f6d69a79fd
+  gRPC-Core: 642d29e59e5490374622b0629c2dd1c4c111775c
+  gRPC-ProtoRPC: 675ef3d484c06967ed2a5f5ee0e510a3756f755e
+  gRPC-RxLibrary: 7a25c5c25282669a82d1783d7e8a036f53e8ef27
   GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
   leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
@@ -156,6 +194,6 @@ SPEC CHECKSUMS:
   RNFirebase: 60be8c01b94551a12e7be5431189e8ee8cefcdd3
   Yoga: c90474ca3ec1edba44c97b6c381f03e222a9e287
 
-PODFILE CHECKSUM: 46b6a553f3c9fd264b449806b373d33b4af518b5
+PODFILE CHECKSUM: 49e66d8a1599e426396a3ba88a24baacc7f5423c
 
 COCOAPODS: 1.2.1
