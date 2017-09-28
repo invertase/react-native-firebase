@@ -93,6 +93,8 @@ public class FirestoreSerialize {
 
     documentChangeMap.putMap(KEY_DOC_CHANGE_DOCUMENT,
       snapshotToWritableMap(documentChange.getDocument()));
+    documentChangeMap.putInt(KEY_DOC_CHANGE_NEW_INDEX, documentChange.getNewIndex());
+    documentChangeMap.putInt(KEY_DOC_CHANGE_OLD_INDEX, documentChange.getOldIndex());
 
     return documentChangeMap;
   }

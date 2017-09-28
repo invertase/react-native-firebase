@@ -55,14 +55,14 @@ public class RNFirebaseFirestoreCollectionReference {
 
   private Query buildQuery() {
     Query query = RNFirebaseFirestore.getFirestoreForApp(appName).collection(path);
-    query = applyFilters(query, filters);
-    query = applyOrders(query, orders);
-    query = applyOptions(query, options);
+    query = applyFilters(query);
+    query = applyOrders(query);
+    query = applyOptions(query);
 
     return query;
   }
 
-  private Query applyFilters(Query query, ReadableArray filters) {
+  private Query applyFilters(Query query) {
     List<Object> filtersList = Utils.recursivelyDeconstructReadableArray(filters);
 
     for (Object f : filtersList) {
@@ -92,7 +92,7 @@ public class RNFirebaseFirestoreCollectionReference {
     return query;
   }
 
-  private Query applyOrders(Query query, ReadableArray orders) {
+  private Query applyOrders(Query query) {
     List<Object> ordersList = Utils.recursivelyDeconstructReadableArray(orders);
     for (Object o : ordersList) {
       Map<String, Object> order = (Map) o;
@@ -104,7 +104,7 @@ public class RNFirebaseFirestoreCollectionReference {
     return query;
   }
 
-  private Query applyOptions(Query query, ReadableMap options) {
+  private Query applyOptions(Query query) {
     if (options.hasKey("endAt")) {
       ReadableArray endAtArray = options.getArray("endAt");
       query = query.endAt(Utils.recursivelyDeconstructReadableArray(endAtArray));
