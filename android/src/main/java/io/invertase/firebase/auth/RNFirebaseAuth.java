@@ -746,15 +746,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
             Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
             WritableMap state = Arguments.createMap();
-            Parcel p1 = Parcel.obtain();
 
-            phoneAuthCredential.writeToParcel(p1, 0);
-            String verificationId = p1.readString();
-            String smsCode = p1.readString();
-
-            p1.recycle();
-            state.putString("code", smsCode);
-            state.putString("verificationId", verificationId);
+            Parcel parcel = Parcel.obtain();
+            phoneAuthCredential.writeToParcel(parcel, 0);
+            // TODO Read values - to get verification id
+            parcel.recycle();
+            state.putString("code", phoneAuthCredential.getSmsCode());
+            state.putString("verificationId", "");
             sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
           }
 
