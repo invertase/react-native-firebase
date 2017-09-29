@@ -2,6 +2,7 @@
 
 #if __has_include(<FirebaseStorage/FIRStorage.h>)
 #import "RNFirebaseEvents.h"
+#import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import "Firebase.h"
 
@@ -270,7 +271,20 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path localPath:(NSString *)localPath meta
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData * imageData, NSString * dataUTI, UIImageOrientation orientation, NSDictionary * info) {
                 if (info[PHImageErrorKey] == nil) {
-                    [self uploadData:imageData metadata:metadata path:path resolver:resolve rejecter:reject];
+                    if (UTTypeConformsTo((__bridge CFStringRef)dataUTI, kUTTypeJPEG)) {
+                        [self uploadData:imageData metadata:metadata path:path resolver:resolve rejecter:reject];
+                    } else {
+                        // if the image UTI is not JPEG then convert to JPEG, e.g. HEI
+                        CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+                        NSDictionary *imageInfo = (__bridge NSDictionary*)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
+                        NSDictionary *imageMetadata = [imageInfo copy];
+                        NSMutableData *imageDataJPEG = [NSMutableData data];
+                        CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageDataJPEG, kUTTypeJPEG, 1, NULL);
+                        CGImageDestinationAddImageFromSource(destination, source, 0, (__bridge CFDictionaryRef)imageMetadata);
+                        CGImageDestinationFinalize(destination);
+
+                        [self uploadData:[NSData dataWithData:imageDataJPEG] metadata:metadata path:path resolver:resolve rejecter:reject];
+                    }
                 } else {
                     reject(@"storage/request-image-data-failed", @"Could not obtain image data for the specified file.", nil);
                 }
