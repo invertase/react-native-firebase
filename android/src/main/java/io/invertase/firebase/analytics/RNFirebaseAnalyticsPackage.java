@@ -1,5 +1,7 @@
 package io.invertase.firebase.analytics;
 
+import android.support.annotation.RequiresPermission;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -13,6 +15,9 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class RNFirebaseAnalyticsPackage implements ReactPackage {
+  @RequiresPermission(
+    allOf = {"android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.WAKE_LOCK"}
+  )
   public RNFirebaseAnalyticsPackage() {
   }
 
