@@ -8,7 +8,7 @@ declare module "react-native-firebase" {
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
 
-    log: any
+    log: any;
 
     analytics(): RNFirebase.Analytics;
 
@@ -22,7 +22,7 @@ declare module "react-native-firebase" {
       ServerValue: {
         TIMESTAMP: number
       }
-    }
+    };
 
     /**RNFirebase mimics the Web Firebase SDK Storage,
      * whilst providing some iOS and Android specific functionality.
