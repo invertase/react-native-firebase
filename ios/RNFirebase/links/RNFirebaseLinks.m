@@ -9,7 +9,7 @@ static void sendDynamicLink(NSURL *url, id sender) {
     [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
                                                         object:sender
                                                       userInfo:@{@"url": url.absoluteString}];
-    NSLog(@"sendDynamicLinkSuccess: %@", url.absoluteString);
+    NSLog(@"sendDynamicLink Success: %@", url.absoluteString);
 }
 
 @implementation RNFirebaseLinks
@@ -20,12 +20,12 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self != nil) {
         NSLog(@"Setting up RNFirebaseLinks instance");
-        [self initializeLinks];
+        [self initialiseLinks];
     }
     return self;
 }
 
-- (void)initializeLinks {
+- (void)initialiseLinks {
     // Set up internal listener to send notification over bridge
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(sendDynamicLinkEvent:)
@@ -40,8 +40,13 @@ RCT_EXPORT_MODULE();
 + (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    sendDynamicLink(url, self);
-    return YES;
+    FIRDynamicLink *dynamicLink =
+    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    if (dynamicLink) {
+        sendDynamicLink(dynamicLink.url, self);
+        return YES;
+    }
+    return NO;
 }
 
 + (BOOL)application:(UIApplication *)application
@@ -49,18 +54,33 @@ RCT_EXPORT_MODULE();
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-    sendDynamicLink(url, self);
-    return YES;
+    FIRDynamicLink *dynamicLink =
+    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    if (dynamicLink) {
+        sendDynamicLink(dynamicLink.url, self);
+        return YES;
+    }
+    return NO;
 }
 
 + (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray *))restorationHandler
 {
-    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        sendDynamicLink(userActivity.webpageURL, self);
-    }
-    return YES;
+    BOOL handled = [[FIRDynamicLinks dynamicLinks]
+                    handleUniversalLink:userActivity.webpageURL
+                    completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+                        if (error != nil){
+                            NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                        }
+                        else {
+                            if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+                                NSURL* url = dynamicLink ? dynamicLink.url : userActivity.webpageURL;
+                                sendDynamicLink(url, self);
+                            }
+                        }
+                    }];
+    return handled;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -71,27 +91,55 @@ continueUserActivity:(NSUserActivity *)userActivity
     [self sendEventWithName:LINKS_DYNAMIC_LINK_RECEIVED body:notification.userInfo[@"url"]];
 }
 
+-(void)handleInitialLinkFromCustomSchemeURL:(NSURL*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+    FIRDynamicLink *dynamicLink =
+    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : (id)kCFNull;
+    NSLog(@"initial link is: %@", urlString);
+    resolve(urlString);
+}
+
+-(void)handleInitialLinkFromUniversalLinkURL:(NSDictionary *)userActivityDictionary resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+    NSUserActivity* userActivity = (NSUserActivity*) userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
+    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb])
+    {
+        [[FIRDynamicLinks dynamicLinks]
+         handleUniversalLink:userActivity.webpageURL
+         completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+             if (error != nil){
+                 NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                 reject(@"links/failure", @"Failed to handle universal link", error);
+             }
+             else {
+                 NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
+                 NSLog(@"initial link is: %@", urlString);
+                 resolve(urlString);
+             }
+         }];
+    }
+    else {
+        NSLog(@"no initial link");
+        resolve((id)kCFNull);
+    }
+}
+
 RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    NSURL *initialLink = nil;
     if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-        initialLink = self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+        NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+        [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];
+        
     } else {
         NSDictionary *userActivityDictionary =
         self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-        if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
-            initialLink = ((NSUserActivity*) userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
-        }
+        [self handleInitialLinkFromUniversalLinkURL:userActivityDictionary resolver:resolve rejecter:reject];
     }
-    NSString* initialLinkString = initialLink ? initialLink.absoluteString : (id)kCFNull;
-    NSLog(@"getInitialLink: link is: %@", initialLinkString);
-    resolve(initialLinkString);
 }
 
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-
+    
     if (components == nil) {
-        reject(@"links/failure", @"error", nil);
+        reject(@"links/failure", @"Failed to create Dynamic Link", nil);
     } else {
         NSURL *longLink =  components.url;
         NSLog(@"created long dynamic link: %@", longLink.absoluteString);
@@ -101,13 +149,13 @@ RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTProm
 
 RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-
+    
     [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
                                         NSArray *_Nullable warnings,
                                         NSError *_Nullable error) {
         if (error) {
-            NSLog(@"create short dynamic link failure %@", error.description);
-            reject(@"links/failure", error.description, nil);
+            NSLog(@"create short dynamic link failure %@", [error localizedDescription]);
+            reject(@"links/failure", @"Failed to create Short Dynamic Link", error);
         }
         NSURL *shortLink = shortURL;
         NSLog(@"created short dynamic link: %@", shortLink.absoluteString);
@@ -189,7 +237,7 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 }
 
 - (void)setSuffixParameters:(NSDictionary *)metadata
-                                 components:(FIRDynamicLinkComponents *)components {
+                 components:(FIRDynamicLinkComponents *)components {
     NSDictionary *suffixParametersDict = metadata[@"suffix"];
     if (suffixParametersDict) {
         FIRDynamicLinkComponentsOptions *options = [FIRDynamicLinkComponentsOptions options];
