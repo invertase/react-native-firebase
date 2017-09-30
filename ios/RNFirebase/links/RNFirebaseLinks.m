@@ -40,20 +40,17 @@ RCT_EXPORT_MODULE();
 + (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    FIRDynamicLink *dynamicLink =
-    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-    if (dynamicLink) {
-        sendDynamicLink(dynamicLink.url, self);
-        return YES;
-    }
-    return NO;
+    return [self handleLinkFromCustomSchemeURL:url];
 }
 
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
-{
+         annotation:(id)annotation {
+    return [self handleLinkFromCustomSchemeURL:url];
+}
+
++(BOOL)handleLinkFromCustomSchemeURL:(NSURL *)url {
     FIRDynamicLink *dynamicLink =
     [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     if (dynamicLink) {
@@ -65,8 +62,7 @@ RCT_EXPORT_MODULE();
 
 + (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler
-{
+ restorationHandler:(void (^)(NSArray *))restorationHandler {
     BOOL handled = [[FIRDynamicLinks dynamicLinks]
                     handleUniversalLink:userActivity.webpageURL
                     completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
