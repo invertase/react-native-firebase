@@ -3,13 +3,12 @@
 #import <Foundation/Foundation.h>
 
 #if __has_include(<GoogleMobileAds/GADMobileAds.h>)
-#import "Firebase.h"
+#import <Firebase.h>
 #import "RNFirebaseEvents.h"
 #import <React/RCTBridgeModule.h>
-#import "React/RCTEventEmitter.h"
-#import "GoogleMobileAds/GADInterstitialDelegate.h"
-#import "GoogleMobileAds/GADRewardBasedVideoAdDelegate.h"
-#import "GoogleMobileAds/GADAdDelegate.h"
+#import <React/RCTEventEmitter.h>
+#import <GoogleMobileAds/GADInterstitialDelegate.h>
+#import <GoogleMobileAds/GADRewardBasedVideoAdDelegate.h>
 
 
 @interface RNFirebaseAdMob : RCTEventEmitter <RCTBridgeModule>

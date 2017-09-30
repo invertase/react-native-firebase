@@ -1,18 +1,15 @@
 package io.invertase.firebase.database;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import android.support.annotation.Nullable;
-import android.telecom.Call;
-import android.util.Log;
-
 import java.util.Map;
-import java.util.Set;
+import java.util.List;
+import java.util.HashMap;
 
-import com.facebook.react.bridge.Callback;
+import android.util.Log;
+import android.support.annotation.Nullable;
+
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -26,333 +23,500 @@ import com.google.firebase.database.ValueEventListener;
 
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseDatabaseReference {
+class RNFirebaseDatabaseReference {
+  private String key;
+  private Query query;
+  private String appName;
+  private ReactContext reactContext;
   private static final String TAG = "RNFirebaseDBReference";
+  private HashMap<String, ChildEventListener> childEventListeners;
+  private HashMap<String, ValueEventListener> valueEventListeners;
 
-  private Query mQuery;
-  private int mRefId;
-  private String mPath;
-  private Map<Integer, ChildEventListener> mChildEventListeners = new HashMap<>();
-  private Map<Integer, ValueEventListener> mValueEventListeners = new HashMap<>();
-  private ReactContext mReactContext;
-
-  public RNFirebaseDatabaseReference(final ReactContext context,
-                                     final FirebaseDatabase firebaseDatabase,
-                                     final int refId,
-                                     final String path,
-                                     final ReadableArray modifiersArray) {
-    mReactContext = context;
-    mRefId = refId;
-    mPath = path;
-    mQuery = this.buildDatabaseQueryAtPathAndModifiers(firebaseDatabase, path, modifiersArray);
+  /**
+   * RNFirebase wrapper around FirebaseDatabaseReference,
+   * handles Query generation and event listeners.
+   *
+   * @param context
+   * @param app
+   * @param refKey
+   * @param refPath
+   * @param modifiersArray
+   */
+  RNFirebaseDatabaseReference(ReactContext context, String app, String refKey, String refPath, ReadableArray modifiersArray) {
+    key = refKey;
+    query = null;
+    appName = app;
+    reactContext = context;
+    childEventListeners = new HashMap<>();
+    valueEventListeners = new HashMap<>();
+    buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
   }
 
-  public void addChildEventListener(final int listenerId, final String eventName) {
-    if (!mChildEventListeners.containsKey(listenerId)) {
-      ChildEventListener childEventListener = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_added".equals(eventName)) {
-            handleDatabaseEvent("child_added", listenerId, dataSnapshot, previousChildName);
-          }
-        }
 
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_changed".equals(eventName)) {
-            handleDatabaseEvent("child_changed", listenerId, dataSnapshot, previousChildName);
-          }
-        }
+  /**
+   * Used outside of class for keepSynced etc.
+   *
+   * @return Query
+   */
+  Query getQuery() {
+    return query;
+  }
 
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-          if ("child_removed".equals(eventName)) {
-            handleDatabaseEvent("child_removed", listenerId, dataSnapshot, null);
-          }
-        }
+  /**
+   * Returns true/false whether this internal ref has a specific listener by eventRegistrationKey.
+   *
+   * @param eventRegistrationKey
+   * @return
+   */
+  private Boolean hasEventListener(String eventRegistrationKey) {
+    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(eventRegistrationKey);
+  }
 
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-          if ("child_moved".equals(eventName)) {
-            handleDatabaseEvent("child_moved", listenerId, dataSnapshot, previousChildName);
-          }
-        }
+  /**
+   * Returns true/false whether this internal ref has any child or value listeners.
+   *
+   * @return
+   */
+  Boolean hasListeners() {
+    return valueEventListeners.size() > 0 || childEventListeners.size() > 0;
+  }
 
-        @Override
-        public void onCancelled(DatabaseError error) {
-          removeChildEventListener(listenerId);
-          handleDatabaseError(listenerId, error);
-        }
-      };
-      mChildEventListeners.put(listenerId, childEventListener);
-      mQuery.addChildEventListener(childEventListener);
-      Log.d(TAG, "Added ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId);
-    } else {
-      Log.d(TAG, "ChildEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
+  /**
+   * Remove an event listener by key, will remove either a ValueEventListener or
+   * a ChildEventListener
+   *
+   * @param eventRegistrationKey
+   */
+  void removeEventListener(String eventRegistrationKey) {
+    if (valueEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(valueEventListeners.get(eventRegistrationKey));
+      valueEventListeners.remove(eventRegistrationKey);
+    }
+
+    if (childEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(childEventListeners.get(eventRegistrationKey));
+      childEventListeners.remove(eventRegistrationKey);
     }
   }
 
-  public void addValueEventListener(final int listenerId) {
-    if (!mValueEventListeners.containsKey(listenerId)) {
-      ValueEventListener valueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-          handleDatabaseEvent("value", listenerId, dataSnapshot, null);
-        }
+  /**
+   * Add a ValueEventListener to the query and internally keep a reference to it.
+   *
+   * @param eventRegistrationKey
+   * @param listener
+   */
+  private void addEventListener(String eventRegistrationKey, ValueEventListener listener) {
+    valueEventListeners.put(eventRegistrationKey, listener);
+    query.addValueEventListener(listener);
 
-        @Override
-        public void onCancelled(DatabaseError error) {
-          removeValueEventListener(listenerId);
-          handleDatabaseError(listenerId, error);
-        }
-      };
-      mValueEventListeners.put(listenerId, valueEventListener);
-      mQuery.addValueEventListener(valueEventListener);
-      Log.d(TAG, "Added ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId);
-    } else {
-      Log.d(TAG, "ValueEventListener for refId: " + mRefId + " listenerId: " + listenerId + " already exists");
-    }
   }
 
-  void addOnceValueEventListener(final Callback callback) {
-    final ValueEventListener onceValueEventListener = new ValueEventListener() {
+
+  /**
+   * Add a ChildEventListener to the query and internally keep a reference to it.
+   *
+   * @param eventRegistrationKey
+   * @param listener
+   */
+  private void addEventListener(String eventRegistrationKey, ChildEventListener listener) {
+    childEventListeners.put(eventRegistrationKey, listener);
+    query.addChildEventListener(listener);
+
+  }
+
+  /**
+   * Listen for a single .once('value',..) event from firebase.
+   *
+   * @param promise
+   */
+  private void addOnceValueEventListener(final Promise promise) {
+    ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap("value", mRefId, null, mPath, dataSnapshot, null);
-        callback.invoke(null, data);
+        WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
+        promise.resolve(data);
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
-        WritableMap err = Arguments.createMap();
-        err.putInt("refId", mRefId);
-        err.putString("path", mPath);
-        err.putInt("code", error.getCode());
-        err.putString("details", error.getDetails());
-        err.putString("message", error.getMessage());
-        callback.invoke(err);
+        RNFirebaseDatabase.handlePromise(promise, error);
       }
     };
 
-    mQuery.addListenerForSingleValueEvent(onceValueEventListener);
-    Log.d(TAG, "Added OnceValueEventListener for refId: " + mRefId);
+    query.addListenerForSingleValueEvent(onceValueEventListener);
+    Log.d(TAG, "Added OnceValueEventListener for key: " + key);
   }
 
-  void addChildOnceEventListener(final String eventName, final Callback callback) {
+  /**
+   * Listen for single '.once(child_X, ...)' event from firebase.
+   *
+   * @param eventName
+   * @param promise
+   */
+  private void addChildOnceEventListener(final String eventName, final Promise promise) {
     ChildEventListener childEventListener = new ChildEventListener() {
       @Override
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_added", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          promise.resolve(data);
         }
       }
 
       @Override
       public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_changed", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          promise.resolve(data);
         }
       }
 
       @Override
       public void onChildRemoved(DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_removed", mRefId, null, mPath, dataSnapshot, null);
-          callback.invoke(null, data);
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
+          promise.resolve(data);
         }
       }
 
       @Override
       public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventName)) {
-          mQuery.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap("child_moved", mRefId, null, mPath, dataSnapshot, previousChildName);
-          callback.invoke(null, data);
+          query.removeEventListener(this);
+          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          promise.resolve(data);
         }
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
-        mQuery.removeEventListener(this);
-        WritableMap err = Arguments.createMap();
-        err.putInt("refId", mRefId);
-        err.putString("path", mPath);
-        err.putInt("code", error.getCode());
-        err.putString("details", error.getDetails());
-        err.putString("message", error.getMessage());
-        callback.invoke(err);
+        query.removeEventListener(this);
+        RNFirebaseDatabase.handlePromise(promise, error);
       }
     };
 
-    mQuery.addChildEventListener(childEventListener);
+    query.addChildEventListener(childEventListener);
   }
 
-  void removeEventListener(int listenerId, String eventName) {
-    if ("value".equals(eventName)) {
-      this.removeValueEventListener(listenerId);
+
+  /**
+   * Handles a React Native JS '.on(..)' request and initializes listeners.
+   *
+   * @param registration
+   */
+  void on(String eventType, ReadableMap registration) {
+    if (eventType.equals("value")) {
+      addValueEventListener(registration);
     } else {
-      this.removeChildEventListener(listenerId);
+      addChildEventListener(registration, eventType);
     }
   }
 
-  boolean hasListeners() {
-    return !mChildEventListeners.isEmpty() || !mValueEventListeners.isEmpty();
-  }
-
-  public void cleanup() {
-    Log.d(TAG, "cleaning up database reference " + this);
-    this.removeChildEventListener(null);
-    this.removeValueEventListener(null);
-  }
-
-  private void removeChildEventListener(Integer listenerId) {
-    ChildEventListener listener = mChildEventListeners.remove(listenerId);
-    if (listener != null) {
-      mQuery.removeEventListener(listener);
+  /**
+   * Handles a React Native JS 'once' request.
+   *
+   * @param eventType
+   * @param promise
+   */
+  void once(String eventType, Promise promise) {
+    if (eventType.equals("value")) {
+      addOnceValueEventListener(promise);
+    } else {
+      addChildOnceEventListener(eventType, promise);
     }
   }
 
-  private void removeValueEventListener(Integer listenerId) {
-    ValueEventListener listener = mValueEventListeners.remove(listenerId);
-    if (listener != null) {
-      mQuery.removeEventListener(listener);
+
+  /**
+   * Add a native .on('child_X',.. ) event listener.
+   *
+   * @param registration
+   * @param eventType
+   */
+  private void addChildEventListener(final ReadableMap registration, final String eventType) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
+
+    if (!hasEventListener(eventRegistrationKey)) {
+      ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_added".equals(eventType)) {
+            handleDatabaseEvent("child_added", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_changed".equals(eventType)) {
+            handleDatabaseEvent("child_changed", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+          if ("child_removed".equals(eventType)) {
+            handleDatabaseEvent("child_removed", registration, dataSnapshot, null);
+          }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_moved".equals(eventType)) {
+            handleDatabaseEvent("child_moved", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+          removeEventListener(eventRegistrationKey);
+          handleDatabaseError(registration, error);
+        }
+      };
+
+      addEventListener(eventRegistrationKey, childEventListener);
     }
   }
 
-  private void handleDatabaseEvent(final String name, final Integer listenerId, final DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-    WritableMap data = Utils.snapshotToMap(name, mRefId, listenerId, mPath, dataSnapshot, previousChildName);
-    WritableMap evt = Arguments.createMap();
-    evt.putString("eventName", name);
-    evt.putMap("body", data);
+  /**
+   * Add a native .on('value',.. ) event listener.
+   *
+   * @param registration
+   */
+  private void addValueEventListener(final ReadableMap registration) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
 
-    Utils.sendEvent(mReactContext, "database_event", evt);
-  }
+    if (!hasEventListener(eventRegistrationKey)) {
+      ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+          handleDatabaseEvent("value", registration, dataSnapshot, null);
+        }
 
-  private void handleDatabaseError(final Integer listenerId, final DatabaseError error) {
-    WritableMap errMap = Arguments.createMap();
+        @Override
+        public void onCancelled(DatabaseError error) {
+          removeEventListener(eventRegistrationKey);
+          handleDatabaseError(registration, error);
+        }
+      };
 
-    errMap.putInt("refId", mRefId);
-    if (listenerId != null) {
-      errMap.putInt("listenerId", listenerId);
+      addEventListener(eventRegistrationKey, valueEventListener);
     }
-    errMap.putString("path", mPath);
-    errMap.putInt("code", error.getCode());
-    errMap.putString("details", error.getDetails());
-    errMap.putString("message", error.getMessage());
-
-    Utils.sendEvent(mReactContext, "database_error", errMap);
   }
 
-  private Query buildDatabaseQueryAtPathAndModifiers(final FirebaseDatabase firebaseDatabase,
-                                                     final String path,
-                                                     final ReadableArray modifiers) {
-    Query query = firebaseDatabase.getReference(path);
+  /**
+   * Handles value/child update events.
+   *
+   * @param eventType
+   * @param dataSnapshot
+   * @param previousChildName
+   */
+  private void handleDatabaseEvent(String eventType, ReadableMap registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+    WritableMap event = Arguments.createMap();
+    WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+
+    event.putMap("data", data);
+    event.putString("key", key);
+    event.putString("eventType", eventType);
+    event.putMap("registration", Utils.readableMapToWritableMap(registration));
+
+    Utils.sendEvent(reactContext, "database_sync_event", event);
+  }
+
+  /**
+   * Handles a database listener cancellation error.
+   *
+   * @param error
+   */
+  private void handleDatabaseError(ReadableMap registration, DatabaseError error) {
+    WritableMap event = Arguments.createMap();
+
+    event.putString("key", key);
+    event.putMap("error", RNFirebaseDatabase.getJSError(error));
+    event.putMap("registration", Utils.readableMapToWritableMap(registration));
+
+    Utils.sendEvent(reactContext, "database_sync_event", event);
+  }
+
+  /**
+   * @param path
+   * @param modifiers
+   * @return
+   */
+  private void buildDatabaseQueryAtPathAndModifiers(String path, ReadableArray modifiers) {
+    FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName);
+
+    query = firebaseDatabase.getReference(path);
     List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);
 
     for (Object m : modifiersList) {
-      Map<String, Object> modifier = (Map) m;
+      Map modifier = (Map) m;
       String type = (String) modifier.get("type");
       String name = (String) modifier.get("name");
 
       if ("orderBy".equals(type)) {
-        if ("orderByKey".equals(name)) {
-          query = query.orderByKey();
-        } else if ("orderByPriority".equals(name)) {
-          query = query.orderByPriority();
-        } else if ("orderByValue".equals(name)) {
-          query = query.orderByValue();
-        } else if ("orderByChild".equals(name)) {
-          String key = (String) modifier.get("key");
-          query = query.orderByChild(key);
-        }
+        applyOrderByModifier(name, type, modifier);
       } else if ("limit".equals(type)) {
-        int limit = ((Double)modifier.get("limit")).intValue();
-        if ("limitToLast".equals(name)) {
-          query = query.limitToLast(limit);
-        } else if ("limitToFirst".equals(name)) {
-          query = query.limitToFirst(limit);
-        }
+        applyLimitModifier(name, type, modifier);
       } else if ("filter".equals(type)) {
-        String valueType = (String) modifier.get("valueType");
-        String key = (String) modifier.get("key");
-        if ("equalTo".equals(name)) {
-          if ("number".equals(valueType)) {
-            double value = (Double) modifier.get("value");
-            if (key == null) {
-              query = query.equalTo(value);
-            } else {
-              query = query.equalTo(value, key);
-            }
-          } else if ("boolean".equals(valueType)) {
-            boolean value = (Boolean) modifier.get("value");
-            if (key == null) {
-              query = query.equalTo(value);
-            } else {
-              query = query.equalTo(value, key);
-            }
-          } else if ("string".equals(valueType)) {
-            String value = (String) modifier.get("value");
-            if (key == null) {
-              query = query.equalTo(value);
-            } else {
-              query = query.equalTo(value, key);
-            }
-          }
-        } else if ("endAt".equals(name)) {
-          if ("number".equals(valueType)) {
-            double value = (Double) modifier.get("value");
-            if (key == null) {
-              query = query.endAt(value);
-            } else {
-              query = query.endAt(value, key);
-            }
-          } else if ("boolean".equals(valueType)) {
-            boolean value = (Boolean) modifier.get("value");
-            if (key == null) {
-              query = query.endAt(value);
-            } else {
-              query = query.endAt(value, key);
-            }
-          } else if ("string".equals(valueType)) {
-            String value = (String) modifier.get("value");
-            if (key == null) {
-              query = query.endAt(value);
-            } else {
-              query = query.endAt(value, key);
-            }
-          }
-        } else if ("startAt".equals(name)) {
-          if ("number".equals(valueType)) {
-            double value = (Double) modifier.get("value");
-            if (key == null) {
-              query = query.startAt(value);
-            } else {
-              query = query.startAt(value, key);
-            }
-          } else if ("boolean".equals(valueType)) {
-            boolean value = (Boolean) modifier.get("value");
-            if (key == null) {
-              query = query.startAt(value);
-            } else {
-              query = query.startAt(value, key);
-            }
-          } else if ("string".equals(valueType)) {
-            String value = (String) modifier.get("value");
-            if (key == null) {
-              query = query.startAt(value);
-            } else {
-              query = query.startAt(value, key);
-            }
-          }
-        }
+        applyFilterModifier(name, modifier);
       }
     }
+  }
 
-    return query;
+  /* =================
+   *  QUERY MODIFIERS
+   * =================
+   */
+
+  /**
+   * @param name
+   * @param type
+   * @param modifier
+   */
+  private void applyOrderByModifier(String name, String type, Map modifier) {
+    switch (name) {
+      case "orderByKey":
+        query = query.orderByKey();
+        break;
+      case "orderByPriority":
+        query = query.orderByPriority();
+        break;
+      case "orderByValue":
+        query = query.orderByValue();
+        break;
+      case "orderByChild":
+        String key = (String) modifier.get("key");
+        query = query.orderByChild(key);
+    }
+  }
+
+  /**
+   * @param name
+   * @param type
+   * @param modifier
+   */
+  private void applyLimitModifier(String name, String type, Map modifier) {
+    int limit = ((Double) modifier.get("limit")).intValue();
+    if ("limitToLast".equals(name)) {
+      query = query.limitToLast(limit);
+    } else if ("limitToFirst".equals(name)) {
+      query = query.limitToFirst(limit);
+    }
+  }
+
+  /**
+   * @param name
+   * @param modifier
+   */
+  private void applyFilterModifier(String name, Map modifier) {
+    String valueType = (String) modifier.get("valueType");
+    String key = (String) modifier.get("key");
+    if ("equalTo".equals(name)) {
+      applyEqualToFilter(key, valueType, modifier);
+    } else if ("endAt".equals(name)) {
+      applyEndAtFilter(key, valueType, modifier);
+    } else if ("startAt".equals(name)) {
+      applyStartAtFilter(key, valueType, modifier);
+    }
+  }
+
+
+  /* ===============
+   *  QUERY FILTERS
+   * ===============
+   */
+
+  /**
+   * @param key
+   * @param valueType
+   * @param modifier
+   */
+  private void applyEqualToFilter(String key, String valueType, Map modifier) {
+    if ("number".equals(valueType)) {
+      double value = (Double) modifier.get("value");
+      if (key == null) {
+        query = query.equalTo(value);
+      } else {
+        query = query.equalTo(value, key);
+      }
+    } else if ("boolean".equals(valueType)) {
+      boolean value = (Boolean) modifier.get("value");
+      if (key == null) {
+        query = query.equalTo(value);
+      } else {
+        query = query.equalTo(value, key);
+      }
+    } else if ("string".equals(valueType)) {
+      String value = (String) modifier.get("value");
+      if (key == null) {
+        query = query.equalTo(value);
+      } else {
+        query = query.equalTo(value, key);
+      }
+    }
+  }
+
+  /**
+   * @param key
+   * @param valueType
+   * @param modifier
+   */
+  private void applyEndAtFilter(String key, String valueType, Map modifier) {
+    if ("number".equals(valueType)) {
+      double value = (Double) modifier.get("value");
+      if (key == null) {
+        query = query.endAt(value);
+      } else {
+        query = query.endAt(value, key);
+      }
+    } else if ("boolean".equals(valueType)) {
+      boolean value = (Boolean) modifier.get("value");
+      if (key == null) {
+        query = query.endAt(value);
+      } else {
+        query = query.endAt(value, key);
+      }
+    } else if ("string".equals(valueType)) {
+      String value = (String) modifier.get("value");
+      if (key == null) {
+        query = query.endAt(value);
+      } else {
+        query = query.endAt(value, key);
+      }
+    }
+  }
+
+  /**
+   * @param key
+   * @param valueType
+   * @param modifier
+   */
+  private void applyStartAtFilter(String key, String valueType, Map modifier) {
+    if ("number".equals(valueType)) {
+      double value = (Double) modifier.get("value");
+      if (key == null) {
+        query = query.startAt(value);
+      } else {
+        query = query.startAt(value, key);
+      }
+    } else if ("boolean".equals(valueType)) {
+      boolean value = (Boolean) modifier.get("value");
+      if (key == null) {
+        query = query.startAt(value);
+      } else {
+        query = query.startAt(value, key);
+      }
+    } else if ("string".equals(valueType)) {
+      String value = (String) modifier.get("value");
+      if (key == null) {
+        query = query.startAt(value);
+      } else {
+        query = query.startAt(value, key);
+      }
+    }
   }
 }

@@ -142,6 +142,7 @@ RCT_EXPORT_MODULE()
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
     [data setValue:@"local_notification" forKey:@"_notificationType"];
+    [data setValue:@(RCTSharedApplication().applicationState == UIApplicationStateInactive) forKey:@"opened_from_tray"];
     [[NSNotificationCenter defaultCenter] postNotificationName:MESSAGING_NOTIFICATION_RECEIVED object:self userInfo:@{@"data": data}];
 }
 
@@ -254,6 +255,16 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecte
 
 RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     resolve([FIRMessaging messaging].FCMToken);
+}
+
+RCT_EXPORT_METHOD(deleteInstanceId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [FIRInstanceID instanceID] deleteIDWithHandler:^(NSError * _Nullable error) {
+        if (!error) {
+            resolve(nil);
+        } else {
+            reject(@"instance_id_error", @"Failed to delete instance id", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(requestPermissions:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -385,7 +396,9 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(setBadgeNumber: (NSInteger*) number) {
-    [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+    });
 }
 
 RCT_EXPORT_METHOD(getBadgeNumber: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {

@@ -1,5 +1,5 @@
 function configTests({ before, describe, it, firebase }) {
-
+  // todo tests are buggy - shows success but doesn't actually run tests
   /* Remote config service values = {
    foo: true,
    foobar: 'barbaz',
@@ -61,7 +61,6 @@ function configTests({ before, describe, it, firebase }) {
     it('it get all keys as an array', () => {
       return firebase.native.config().getKeysByPrefix()
         .then((result) => {
-          console.log(result)
           result.should.be.Array();
           return Promise.resolve();
         });

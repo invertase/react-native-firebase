@@ -3,17 +3,19 @@
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![Package Quality](http://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
-[![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
-[![Chat](https://img.shields.io/badge/chat-on%20gitter-a0e7a0.svg?style=flat-square)](https://gitter.im/invertase/react-native-firebase)
 [![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
 
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
 
+<!---
+[![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
+-->
+
 <hr>
 
-> [Documentation](https://invertase.io/react-native-firebase) <b>|</b> [iOS Install Guide](http://invertase.io/react-native-firebase/#/installation-ios) <b>|</b> [Android Install Guide](http://invertase.io/react-native-firebase/#/installation-android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs)
+> [Current Docs](http://invertase.link/docs) <b>|</b> [@next Docs](http://invertase.link/v3) <b>|</b> [iOS Install Guide](http://invertase.link/ios) <b>|</b> [Android Install Guide](http://invertase.link/android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
 
 <hr>
 
@@ -37,26 +39,31 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 All in all, RNFirebase provides much faster performance (~2x) over the web SDK and provides device sdk's not found in the web sdk (see the feature table below).
 
 ---
-### Supported Firebase Features
+## Supported Firebase Features
+> The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
-> The Web SDK column indicates what modules from the Firebase Web SDK are usable with React Native.
 
-| Firebase Features      | v1  | v2  | Web SDK |
-| ---------------------- | :---: | :---: | :---: |
-| AdMob                  | ❌ | ✅ | ❌ |
-| Analytics              | ✅ | ✅ | ❌ |
-| App Indexing           | ❌ | ❌ | ❌ |
-| Authentication         | ✅ | ✅ | ✅ |
-| Cloud Messaging        | ✅ | ✅ | ❌ |
-| Crash Reporting        | ✅ | ✅ | ❌ |
-| Dynamic Links          | ❌ | ❌ | ❌ |
-| Invites                | ❌ | ❌ | ❌ |
-| Performance Monitoring | ✅ | ✅ | ❌ |
-| Realtime Database      | ✅ | ✅ | ✅ |
-|  - Offline Persistance | ✅ | ✅ | ❌ |
-|  - Transactions        | ✅ | ✅ | ✅ |
-| Remote Config          | ✅ | ✅ | ❌ |
-| Storage                | ✅ | ✅ | ❌ |
+> '**?**' indicates partial support
+
+| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | Web SDK |
+| ---------------------- | :---: | :---: | :---: | :---: |
+| **AdMob**                  | ❌ | ✅ | ✅ | ❌ |
+| **Analytics**              | ✅ | ✅ | ✅ | ❌ |
+| **App Indexing**           | ❌ | ❌ | ❌ | ❌ |
+| **Authentication**         | ✅ | ✅ | ✅ | ✅ |
+| _-- Phone Auth_            | ❌ | ❌ | ✅ | ❌ |
+| **Core**                   | ❌ |**?**| ✅ | ✅ |
+|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
+| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
+| **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
+| **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
+| **Invites**                | ❌ | ❌ | ❌ | ❌ |
+| **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
+| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
+| _-- Offline Persistence_   | ✅ | ✅ | ✅ |**?**|
+| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ |
+| **Remote Config**          | ✅ | ✅ | ✅ | ❌ |
+| **Storage**                | ✅ | ✅ | ✅ |**?**|
 
 ---
 ### Supported versions - React Native / Firebase
@@ -69,13 +76,13 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > The table below shows the minimum supported versions of the Firebase SDKs for each version of `react-native-firebase`
 
-|                        | v1  | v2  |
-| ---------------------- | :---: | :---: |
-| Firebase Android SDK   | 10.2.0+ | 11.0.0 + |
-| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  |
+|                        | v1  | v2  | v3  |
+| ---------------------- | :---: | :---: | :---: |
+| Firebase Android SDK   | 10.2.0+ | 11.0.0 + | 11.2.0 + |
+| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  | 4.0.0 +  |
 
 ---
 
 ### License
 
-- MIT
+- See [LICENSE](/LICENSE)

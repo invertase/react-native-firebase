@@ -89,7 +89,13 @@ function offTests({ describe, it, xcontext, context, firebase }) {
 
         // Check childAddedCallback is really attached
         await ref.push(DatabaseContents.DEFAULT.number);
-        valueCallback.should.be.callCount(2);
+
+        // stinky test fix - it's all async now so it's not returned within same event loop
+        await new Promise((resolve) => {
+          setTimeout(() => resolve(), 15);
+        });
+
+        valueCallback.should.be.calledTwice();
         childAddedCallback.should.be.callCount(arrayLength + 1);
 
         // Returns nothing
@@ -117,10 +123,9 @@ function offTests({ describe, it, xcontext, context, firebase }) {
       });
 
       context('that is invalid', () => {
-        it('does nothing', () => {
+        it('throws an exception', () => {
           const ref = firebase.native.database().ref('tests/types/array');
-
-          should(ref.off('invalid'), undefined);
+          (() => ref.off('invalid')).should.throw('Query.off failed: First argument must be a valid string event type: "value, child_added, child_removed, child_changed, child_moved"');
         });
       });
 
@@ -225,7 +230,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
       });
 
       context('that has been added multiple times', () => {
-        it('must be called as many times completely remove', async () => {
+        it('must be called as many times to completely remove', async () => {
           // Setup
 
           const spyA = sinon.spy();
@@ -249,7 +254,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-            }, 1000);
+            }, 15);
           });
 
           spyA.should.be.calledTwice();
@@ -261,9 +266,16 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           // Trigger the event the callback is listening to
           await ref.set(DatabaseContents.DEFAULT.number);
 
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
           // Callback should have been called only once because one of the attachments
           // has been removed
-          spyA.should.be.callCount(3);
+          spyA.should.be.calledThrice();
 
           // Undo the second attachment
           const resp2 = await ref.off('value', callbackA);
@@ -272,8 +284,15 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           // Trigger the event the callback is listening to
           await ref.set(DatabaseContents.DEFAULT.number);
 
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
           // Callback should not have been called any more times
-          spyA.should.be.callCount(3);
+          spyA.should.be.calledThrice();
         });
       });
     });

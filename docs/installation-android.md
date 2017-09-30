@@ -7,7 +7,7 @@ Next you'll have to add the google-services gradle plugin in order to parse it.
 
 Add the google-services gradle plugin as a dependency in the *project* level build.gradle
 `android/build.gradle`
-```java
+```groovy
 buildscript {
   // ...
   dependencies {
@@ -19,7 +19,7 @@ buildscript {
 
 In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the file (below all dependencies)
 `android/app/build.gradle`
-```java
+```groovy
 apply plugin: 'com.google.gms.google-services'
 ```
 
@@ -29,34 +29,48 @@ RNFirebase is split into separate modules to allow you to only include the Fireb
 
 First add the project path to `android/settings.gradle`:
 
-```
+```groovy
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 ```
 
 Now you need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
 
-```
+```groovy
 dependencies {
   // RNFirebase required dependencies
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:11.0.4"
+  compile "com.google.firebase:firebase-core:11.2.0"
 
   // If you are receiving Google Play API availability issues, add the following dependency
-  compile "com.google.android.gms:play-services-base:11.0.4"
+  compile "com.google.android.gms:play-services-base:11.2.0"
 
   // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.0.4"
-  compile "com.google.firebase:firebase-analytics:11.0.4"
-  compile "com.google.firebase:firebase-auth:11.0.4"
-  compile "com.google.firebase:firebase-config:11.0.4"
-  compile "com.google.firebase:firebase-crash:11.0.4"
-  compile "com.google.firebase:firebase-database:11.0.4"
-  compile "com.google.firebase:firebase-messaging:11.0.4"
-  compile "com.google.firebase:firebase-perf:11.0.4"
-  compile "com.google.firebase:firebase-storage:11.0.4"
+  compile "com.google.firebase:firebase-ads:11.2.0"
+  compile "com.google.firebase:firebase-auth:11.2.0"
+  compile "com.google.firebase:firebase-config:11.2.0"
+  compile "com.google.firebase:firebase-crash:11.2.0"
+  compile "com.google.firebase:firebase-database:11.2.0"
+  compile "com.google.firebase:firebase-messaging:11.2.0"
+  compile "com.google.firebase:firebase-perf:11.2.0"
+  compile "com.google.firebase:firebase-storage:11.2.0"
+}
+```
+
+Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the
+required reference to the repositories section of the *project* level build.gradle
+`android/build.gradle`
+
+```groovy
+allprojects {
+    repositories {
+         // ...
+        maven {
+            url 'https://maven.google.com'
+        }
+    }
 }
 ```
 
@@ -161,24 +175,24 @@ If you'd like to take advantage of Firebase's [Performance Monitoring](https://f
 
 In your projects `android/build.gradle` file, add the plugin to your dependencies:
 
-```
+```groovy
 dependencies {
-  ...
+  // ...
   classpath 'com.google.firebase:firebase-plugins:1.1.0'
 }
 ```
 
 At the top of your `android/app/build.gradle` file, below other plugins, apply the `firebase-perf` plugin:
-```
+```groovy
 apply plugin: "com.android.application"
 apply plugin: "com.google.firebase.firebase-perf"
 ```
 
 In the same file, add the `firebase-perf` module to your dependencies:
 
-```
+```groovy
 dependencies {
-  ...
-  compile "com.google.firebase:firebase-perf:11.0.0"
+  // ...
+  compile "com.google.firebase:firebase-perf:11.2.0"
 }
 ```

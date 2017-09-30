@@ -81,7 +81,7 @@ const unsubscribe = firebase.storage()
                         });
 ```
 
-## TODO
+<!-- TODO -->
 
 There are a few methods which have not yet been implemented for Storage:
 

@@ -62,8 +62,7 @@ function onceTests({ describe, firebase, it, tryCatch }) {
 
         const failureCb = tryCatch((error) => {
           // Assertion
-
-          error.message.includes('permission_denied').should.be.true();
+          error.code.includes('database/permission-denied').should.be.true();
           resolve();
         }, reject);
 

@@ -1,9 +1,8 @@
+---
 
-<h1 align="center">
-  <img src="https://camo.githubusercontent.com/6c827e5a0bb91259f82a1f4923ab7efa4891b119/687474703a2f2f692e696d6775722e636f6d2f303158514c30782e706e67"/><br>
+!> These docs are for the [v3 pre-release](https://github.com/invertase/react-native-firebase/releases/tag/v3.0.0) version, for the currently published release version see the [v2 docs](/v2/)
 
-  React Native Firebase
-</h1>
+---
 
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
@@ -11,11 +10,11 @@
 [![Package Quality](https://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
-[![Chat](https://img.shields.io/badge/chat-on%20gitter-a0e7a0.svg?style=flat-square)](https://gitter.im/invertase/react-native-firebase)
 [![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
 </div>
 
 ---
+
 
 RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
@@ -30,24 +29,30 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 ---
 
 ## Supported Firebase Features
-> The Web SDK column indicates what modules from the Firebase Web SDK are usable within React Native.
+> The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
-| Firebase Features      | v1  | v2  | Web SDK |
-| ---------------------- | :---: | :---: | :---: |
-| AdMob                  | ❌ | ✅ | ❌ |
-| Analytics              | ✅ | ✅ | ❌ |
-| App Indexing           | ❌ | ❌ | ❌ |
-| Authentication         | ✅ | ✅ | ✅ |
-| Cloud Messaging (FCM)  | ✅ | ✅ | ❌ |
-| Crash Reporting        | ✅ | ✅ | ❌ |
-| Dynamic Links          | ❌ | ❌ | ❌ |
-| Invites                | ❌ | ❌ | ❌ |
-| Performance Monitoring | ✅ | ✅ | ❌ |
-| Realtime Database      | ✅ | ✅ | ✅ |
-|  - Offline Persistence | ✅ | ✅ | ❌ |
-|  - Transactions        | ✅ | ✅ | ✅ |
-| Remote Config          | ✅ | ✅ | ❌ |
-| Storage                | ✅ | ✅ | ❌ |
+
+> '**?**' indicates partial support
+
+| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | Web SDK |
+| ---------------------- | :---: | :---: | :---: | :---: |
+| **AdMob**                  | ❌ | ✅ | ✅ | ❌ |
+| **Analytics**              | ✅ | ✅ | ✅ | ❌ |
+| **App Indexing**           | ❌ | ❌ | ❌ | ❌ |
+| **Authentication**         | ✅ | ✅ | ✅ | ✅ |
+| _-- Phone Auth_            | ❌ | ❌ | ✅ | ❌ |
+| **Core**                   | ❌ |**?**| ✅ | ✅ |
+|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
+| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
+| **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
+| **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
+| **Invites**                | ❌ | ❌ | ❌ | ❌ |
+| **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
+| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
+| _-- Offline Persistence_   | ✅ | ✅ | ✅ |**?**|
+| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ |
+| **Remote Config**          | ✅ | ✅ | ✅ | ❌ |
+| **Storage**                | ✅ | ✅ | ✅ |**?**|
 
 ---
 ### Supported versions - React Native / Firebase
@@ -60,7 +65,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > The table below shows the minimum supported versions of the Firebase SDKs for each version of `react-native-firebase`
 
-|                        | v1  | v2  |
-| ---------------------- | :---: | :---: |
-| Firebase Android SDK   | 10.2.0+ | 11.0.0 + |
-| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  |
+|                        | v1  | v2  | v3  |
+| ---------------------- | :---: | :---: | :---: |
+| Firebase Android SDK   | 10.2.0+ | 11.0.0 + | 11.2.0 + |
+| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  | 4.0.0 +  |

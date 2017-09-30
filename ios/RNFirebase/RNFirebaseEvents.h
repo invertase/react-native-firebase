@@ -3,13 +3,11 @@
 
 #import <Foundation/Foundation.h>
 
-static NSString *const AUTH_CHANGED_EVENT = @"onAuthStateChanged";
-static NSString *const AUTH_ERROR_EVENT = @"authError";
-static NSString *const AUTH_ANONYMOUS_ERROR_EVENT = @"authAnonymousError";
+static NSString *const AUTH_CHANGED_EVENT = @"auth_state_changed";
+static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
 
 // Database
-static NSString *const DATABASE_DATA_EVENT = @"database_event";
-static NSString *const DATABASE_ERROR_EVENT = @"database_error";
+static NSString *const DATABASE_SYNC_EVENT = @"database_sync_event";
 static NSString *const DATABASE_TRANSACTION_EVENT = @"database_transaction_event";
 
 static NSString *const DATABASE_VALUE_EVENT = @"value";

@@ -1,7 +1,7 @@
 #import "RNFirebaseCrash.h"
 
 #if __has_include(<FirebaseCrash/FIRCrashLog.h>)
-#import "FirebaseCrash/FIRCrashLog.h"
+#import <FirebaseCrash/FIRCrashLog.h>
 
 @implementation RNFirebaseCrash
 RCT_EXPORT_MODULE();

@@ -50,7 +50,12 @@ Follow the instructions to install Cocoapods and create your Podfile [here](http
 - Uncomment the `# platform :ios, '9.0'` line by removing the `#` character
 - Change the version as required
 
-### 2.1) Add the required pods
+### 2.1) Check the Podfile platform version
+We recommend using a minimum platform version of at least 9.0 for your application to ensure that the correct version of the Firebase libraries are used.  To do this, you need to uncomment or make sure the following line is present at the top of your `Podfile`:
+
+`platform :ios, '9.0'`
+
+### 2.2) Add the required pods
 Simply add the following to your `Podfile` either at the top level, or within the main project target:
 
 ```ruby
@@ -60,7 +65,6 @@ pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
 # [OPTIONAL PODS] - comment out pods for firebase products you won't be using.
 pod 'Firebase/AdMob'
-pod 'Firebase/Analytics'
 pod 'Firebase/Auth'
 pod 'Firebase/Crash'
 pod 'Firebase/Database'
@@ -79,6 +83,16 @@ pod 'React', :path => '../node_modules/react-native', :subspecs => [
   'Core',
   # Add any other subspecs you want to use in your project
 ]
+
+#Also add this at the very bottom of your Podfile
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
+end
 ```
 
 Run `pod install`.

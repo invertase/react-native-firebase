@@ -13,10 +13,12 @@ class Test extends React.Component {
     return {
       title,
       headerTintColor: '#ffffff',
-      headerStyle: { backgroundColor: '#0288d1' },
-      headerRight: <View style={{ marginRight: 8 }}>
-        <TestControlButton testId={testId} />
-      </View>,
+      headerStyle: { backgroundColor: '#1976D2' },
+      headerRight: (
+        <View style={{ marginRight: 8 }}>
+          <TestControlButton testId={testId} />
+        </View>
+      ),
     };
   };
 
@@ -52,31 +54,38 @@ class Test extends React.Component {
   }
 
   render() {
-    const { test: { stackTrace, description, func, status, time }, testContextName } = this.props;
+    const { test: { stackTrace, message, description, func, status, time }, testContextName } = this.props;
 
     return (
       <View style={styles.container}>
         {Test.renderBanner({ status, time })}
-        <View >
-          <ScrollView style={styles.sectionContainer}>
+        <ScrollView >
+          <View style={styles.sectionContainer}>
             <Text style={styles.heading}>{testContextName}</Text>
             <Text style={styles.description}>{description}</Text>
-          </ScrollView>
-          <ScrollView style={styles.sectionContainer}>
-            <Text style={styles.heading}>Test Error</Text>
+          </View>
+          {message ? <View style={styles.sectionContainer}>
+            <Text style={styles.headingWarn}>Test Error Message</Text>
+            <Text style={styles.message}>{message || 'None.'}</Text>
+          </View> : null }
+          {stackTrace ? <View style={styles.sectionContainer}>
+            <Text style={styles.headingWarn}>Test Error Stack</Text>
             <Text style={styles.description}>
-              <Text>{stackTrace || 'None.'}</Text>
+              {stackTrace || 'None.'}
             </Text>
-          </ScrollView>
-          <Text style={styles.heading}>
-            Test Code Preview
-          </Text>
-          <ScrollView style={styles.sectionContainer}>
+          </View> : null }
+          <View style={styles.sectionContainer}>
+            <Text style={styles.heading}>
+              Test Code Preview
+            </Text>
             <Text style={styles.description}>
-              {beautify(removeLastLine(removeFirstLine(func.toString())), { indent_size: 4, break_chained_methods: true })}
+              {beautify(removeLastLine(removeFirstLine(func.toString())), {
+                indent_size: 4,
+                break_chained_methods: true,
+              })}
             </Text>
-          </ScrollView>
-        </View>
+          </View>
+        </ScrollView>
       </View>
     );
   }
@@ -87,7 +96,8 @@ Test.propTypes = {
     status: PropTypes.string,
     time: PropTypes.number,
     func: PropTypes.function,
-    stackTrace: PropTypes.function,
+    stackTrace: PropTypes.string,
+    message: PropTypes.string,
     description: PropTypes.string,
   }).isRequired,
 
@@ -101,29 +111,57 @@ Test.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
   sectionContainer: {
     minHeight: 100,
+    backgroundColor: '#fff',
   },
   heading: {
     padding: 5,
-    backgroundColor: '#0288d1',
-    fontWeight: '600',
+    elevation: 3,
+    backgroundColor: '#2196F3',
+    fontWeight: '400',
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 14,
+  },
+  headingWarn: {
+    padding: 5,
+    elevation: 3,
+    backgroundColor: '#FFC107',
+    fontWeight: '400',
+    color: '#212121',
+    fontSize: 14,
   },
   description: {
     padding: 5,
-    fontSize: 14,
+    fontSize: 12,
+  },
+  message: {
+    padding: 5,
+    fontSize: 12,
+    width: '100%',
+    minHeight: 100,
   },
 });
+
+/*
+ .dark-primary-color    { background: #1976D2; }
+ .default-primary-color { background: #2196F3; }
+ .light-primary-color   { background: #BBDEFB; }
+ .text-primary-color    { color: #FFFFFF; }
+ .accent-color          { background: #FFC107; }
+ .primary-text-color    { color: #212121; }
+ .secondary-text-color  { color: #757575; }
+ .divider-color         { border-color: #BDBDBD; }
+
+ */
 
 function select({ tests, testContexts }, { navigation: { state: { params: { testId } } } }) {
   const test = tests[testId];
   let testContext = testContexts[test.testContextId];
 
-  while(testContext.parentContextId && testContexts[testContext.parentContextId].parentContextId) {
+  while (testContext.parentContextId && testContexts[testContext.parentContextId].parentContextId) {
     testContext = testContexts[testContext.parentContextId];
   }
   return {

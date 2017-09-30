@@ -1,5 +1,7 @@
 package io.invertase.firebase.storage;
 
+import android.support.annotation.RequiresPermission;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -13,6 +15,9 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class RNFirebaseStoragePackage implements ReactPackage {
+  @RequiresPermission(
+    allOf = {"android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"}
+  )
   public RNFirebaseStoragePackage() {
   }
 
@@ -35,7 +40,7 @@ public class RNFirebaseStoragePackage implements ReactPackage {
    * listed here. Also listing a native module here doesn't imply that the JS implementation of it
    * will be automatically included in the JS bundle.
    */
-  // TODO: Removed in 0.47.0. Here for backwards compatability
+  // TODO: Removed in 0.47.0. Here for backwards compatibility
   public List<Class<? extends JavaScriptModule>> createJSModules() {
     return Collections.emptyList();
   }
