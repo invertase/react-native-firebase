@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLinks.h>)
+#import <Firebase.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 

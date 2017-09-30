@@ -1,5 +1,4 @@
 #import "RNFirebaseLinks.h"
-#import "Firebase.h"
 
 #if __has_include(<FirebaseDynamicLinks/FIRDynamicLink.h>)
 #import "RNFirebaseEvents.h"
@@ -123,7 +122,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
     if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
         NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
         [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];
-        
+
     } else {
         NSDictionary *userActivityDictionary =
         self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
@@ -133,7 +132,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-    
+
     if (components == nil) {
         reject(@"links/failure", @"Failed to create Dynamic Link", nil);
     } else {
@@ -145,7 +144,7 @@ RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTProm
 
 RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-    
+
     [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
                                         NSArray *_Nullable warnings,
                                         NSError *_Nullable error) {
