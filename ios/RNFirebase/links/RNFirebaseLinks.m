@@ -172,9 +172,9 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 - (void)setAndroidParameters:(NSDictionary *)metadata
                   components:(FIRDynamicLinkComponents *)components {
     NSDictionary *androidParametersDict = metadata[@"androidInfo"];
-    if (androidParametersDict && androidParametersDict[@"packageName"]) {
+    if (androidParametersDict && androidParametersDict[@"androidPackageName"]) {
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
-                                                          parametersWithPackageName: androidParametersDict[@"packageName"]];
+                                                          parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
         }
