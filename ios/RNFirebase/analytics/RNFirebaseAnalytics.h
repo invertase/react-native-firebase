@@ -4,7 +4,6 @@
 
 #if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 
 @interface RNFirebaseAnalytics : NSObject <RCTBridgeModule> {
 
