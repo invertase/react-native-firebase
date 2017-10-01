@@ -738,53 +738,83 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
 
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+      @Override
+      public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+        Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
+        WritableMap state = Arguments.createMap();
+
+        Parcel parcel = Parcel.obtain();
+        phoneAuthCredential.writeToParcel(parcel, 0);
+
+        // verificationId
+        parcel.setDataPosition(16);
+        String verificationId = parcel.readString();
+
+        // sms Code
+        parcel.setDataPosition(parcel.dataPosition() + 8);
+        String code = parcel.readString();
+
+        state.putString("code", code);
+        state.putString("verificationId", verificationId);
+        parcel.recycle();
+        sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
+      }
+
+      @Override
+      public void onVerificationFailed(FirebaseException e) {
+        // This callback is invoked in an invalid request for verification is made,
+        // e.g. phone number format is incorrect, or the SMS quota for the project
+        // has been exceeded
+        Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
+        WritableMap state = Arguments.createMap();
+        state.putMap("error", getJSError(e));
+        sendPhoneStateEvent(appName, requestKey, "onVerificationFailed", state);
+      }
+
+      @Override
+      public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+        Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
+        WritableMap state = Arguments.createMap();
+        state.putString("verificationId", verificationId);
+
+        // todo forceResendingToken  - it's actually just an empty class ... no actual token >.>
+        // Parcel parcel = Parcel.obtain();
+        // forceResendingToken.writeToParcel(parcel, 0);
+        //
+        // // verificationId
+        // parcel.setDataPosition(0);
+        // int int1 = parcel.readInt();
+        // String token = parcel.readString();
+        //
+        // state.putString("refreshToken", token);
+        // parcel.recycle();
+
+        state.putString("verificationId", verificationId);
+        sendPhoneStateEvent(appName, requestKey, "onCodeSent", state);
+      }
+
+      @Override
+      public void onCodeAutoRetrievalTimeOut(String verificationId) {
+        super.onCodeAutoRetrievalTimeOut(verificationId);
+        Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
+        WritableMap state = Arguments.createMap();
+        state.putString("verificationId", verificationId);
+        sendPhoneStateEvent(appName, requestKey, "onCodeAutoRetrievalTimeout", state);
+      }
+    };
+
     if (activity != null) {
-      PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, timeout, TimeUnit.SECONDS,
-        activity, new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-          @Override
-          public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
-            WritableMap state = Arguments.createMap();
-
-            Parcel parcel = Parcel.obtain();
-            phoneAuthCredential.writeToParcel(parcel, 0);
-            // TODO Read values - to get verification id
-            parcel.recycle();
-            state.putString("code", phoneAuthCredential.getSmsCode());
-            state.putString("verificationId", "");
-            sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
-          }
-
-          @Override
-          public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // e.g. phone number format is incorrect, or the SMS quota for the project
-            // has been exceeded
-            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
-            WritableMap state = Arguments.createMap();
-            state.putMap("error", getJSError(e));
-            sendPhoneStateEvent(appName, requestKey, "onVerificationFailed", state);
-          }
-
-          @Override
-          public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            // todo forceResendingToken ?
-            Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
-            WritableMap state = Arguments.createMap();
-            state.putString("verificationId", verificationId);
-            sendPhoneStateEvent(appName, requestKey, "onCodeSent", state);
-          }
-
-          @Override
-          public void onCodeAutoRetrievalTimeOut(String verificationId) {
-            super.onCodeAutoRetrievalTimeOut(verificationId);
-            Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
-            WritableMap state = Arguments.createMap();
-            state.putString("verificationId", verificationId);
-            sendPhoneStateEvent(appName, requestKey, "onCodeAutoRetrievalTimeout", state);
-          }
-        });
+      PhoneAuthProvider.getInstance(firebaseAuth)
+        .verifyPhoneNumber(
+          phoneNumber,
+          timeout,
+          TimeUnit.SECONDS,
+          activity,
+          callbacks
+          // ,PhoneAuthProvider.ForceResendingToken.zzboe() // TODO FORCE RESENDING
+        );
     }
   }
 
