@@ -33,6 +33,14 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   private String mInitialLink = null;
   private boolean mInitialLinkInitialized = false;
 
+  private interface ResolveHandler {
+    void onResolved(String url);
+  }
+
+  private interface  ErrorHandler {
+    void onError(Exception e);
+  }
+
   public RNFirebaseLinks(ReactApplicationContext reactContext) {
     super(reactContext);
     getReactApplicationContext().addActivityEventListener(this);
@@ -44,11 +52,28 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     return "RNFirebaseLinks";
   }
 
-  private void resloveLink(Intent intent, OnSuccessListener<PendingDynamicLinkData> successListener, OnFailureListener failureListener) {
+
+  private void resloveLink(Intent intent, final ResolveHandler resolveHandler, final ErrorHandler errorHandler) {
     FirebaseDynamicLinks.getInstance()
       .getDynamicLink(intent)
-      .addOnSuccessListener(successListener)
-      .addOnFailureListener(failureListener);
+      .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+        @Override
+        public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+          if (pendingDynamicLinkData != null) {
+            Uri deepLinkUri = pendingDynamicLinkData.getLink();
+            String url = deepLinkUri.toString();
+            resolveHandler.onResolved(url);
+          } else {
+            resolveHandler.onResolved(null);
+          }
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception e) {
+          errorHandler.onError(e);
+        }
+      });
   }
 
   @ReactMethod
@@ -58,22 +83,21 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     } else {
       Activity activity = getCurrentActivity();
       if (activity != null) {
-        resloveLink(activity.getIntent(), new OnSuccessListener<PendingDynamicLinkData>() {
+        resloveLink(activity.getIntent(), new ResolveHandler() {
           @Override
-          public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-            if (pendingDynamicLinkData != null) {
-              Uri deepLinkUri = pendingDynamicLinkData.getLink();
-              mInitialLink = deepLinkUri.toString();
+          public void onResolved(String url) {
+            if (url != null) {
+              mInitialLink = url;
               Log.d(TAG, "getInitialLink received a new dynamic link from pendingDynamicLinkData");
             }
             Log.d(TAG, "initial link is: " + mInitialLink);
             promise.resolve(mInitialLink);
             mInitialLinkInitialized = true;
           }
-        }, new OnFailureListener() {
+        }, new ErrorHandler() {
           @Override
-          public void onFailure(@NonNull Exception e) {
-            Log.e(TAG, "getInitialLink: failed to getDynamicLink", e);
+          public void onError(Exception e) {
+            Log.e(TAG, "getInitialLink: failed to resolve link", e);
             promise.reject("links/getDynamicLink", e.getMessage(), e);
           }
         });
@@ -84,24 +108,6 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
-  private void handleLink(Intent intent) {
-    resloveLink(intent, new OnSuccessListener<PendingDynamicLinkData>() {
-      @Override
-      public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-        if (pendingDynamicLinkData != null) {
-          Uri deepLinkUri = pendingDynamicLinkData.getLink();
-          Log.d(TAG, "handleLink: sending link: " + deepLinkUri.toString());
-          Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", deepLinkUri.toString());
-        }
-      }
-    }, new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        Log.e(TAG, "handleLink: failed to getDynamicLink", e);
-      }
-    });
-  }
-
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     // Not required for this module
@@ -109,7 +115,20 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
 
   @Override
   public void onNewIntent(Intent intent) {
-    handleLink(intent);
+    resloveLink(intent, new ResolveHandler() {
+      @Override
+      public void onResolved(String url) {
+        if (url != null) {
+          Log.d(TAG, "handleLink: sending link: " + url);
+          Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", url);
+        }
+      }
+    }, new ErrorHandler() {
+      @Override
+      public void onError(Exception e) {
+        Log.e(TAG, "handleLink: failed to resolve link", e);
+      }
+    });
   }
 
   @Override
