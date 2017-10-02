@@ -4,13 +4,16 @@
 
 #if __has_include(<Firestore/FIRFirestore.h>)
 
-- (id)initWithPath:(NSString *) app
+- (id)initWithPath:(RCTEventEmitter *)emitter
+               app:(NSString *) app
               path:(NSString *) path {
     self = [super init];
     if (self) {
+        _emitter = emitter;
         _app = app;
         _path = path;
         _ref = [[RNFirebaseFirestore getFirestoreForApp:_app] documentWithPath:_path];
+        _listeners = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -46,6 +49,34 @@
     }];
 }
 
+- (void)offSnapshot:(NSNumber *) listenerId {
+    id<FIRListenerRegistration> listener = _listeners[listenerId];
+    if (listener) {
+        [_listeners removeObjectForKey:listenerId];
+        [listener remove];
+    }
+}
+
+- (void)onSnapshot:(NSNumber *) listenerId {
+    if (_listeners[listenerId] == nil) {
+        id listenerBlock = ^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
+            if (error) {
+                id<FIRListenerRegistration> listener = _listeners[listenerId];
+                if (listener) {
+                    [_listeners removeObjectForKey:listenerId];
+                    [listener remove];
+                }
+                [self handleDocumentSnapshotError:listenerId error:error];
+            } else {
+                [self handleDocumentSnapshotEvent:listenerId documentSnapshot:snapshot];
+            }
+        };
+        
+        id<FIRListenerRegistration> listener = [_ref addSnapshotListener:listenerBlock];
+        _listeners[listenerId] = listener;
+    }
+}
+
 - (void)set:(NSDictionary *) data
     options:(NSDictionary *) options
    resolver:(RCTPromiseResolveBlock) resolve
@@ -67,6 +98,10 @@
     [_ref updateData:data completion:^(NSError * _Nullable error) {
         [RNFirebaseFirestoreDocumentReference handleWriteResponse:error resolver:resolve rejecter:reject];
     }];
+}
+
+- (BOOL)hasListeners {
+    return [[_listeners allKeys] count] > 0;
 }
 
 + (void)handleWriteResponse:(NSError *) error
@@ -93,6 +128,28 @@
     // updateTime
     
     return snapshot;
+}
+
+- (void)handleDocumentSnapshotError:(NSNumber *)listenerId
+                              error:(NSError *)error {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    [event setValue:_app forKey:@"appName"];
+    [event setValue:_path forKey:@"path"];
+    [event setValue:listenerId forKey:@"listenerId"];
+    [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
+    
+    [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
+}
+
+- (void)handleDocumentSnapshotEvent:(NSNumber *)listenerId
+                   documentSnapshot:(FIRDocumentSnapshot *)documentSnapshot {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    [event setValue:_app forKey:@"appName"];
+    [event setValue:_path forKey:@"path"];
+    [event setValue:listenerId forKey:@"listenerId"];
+    [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"document"];
+    
+    [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
 }
 
 #endif

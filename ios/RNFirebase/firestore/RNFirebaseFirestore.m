@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE();
 - (id)init {
     self = [super init];
     if (self != nil) {
-        
+        _documentReferences = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -109,6 +109,24 @@ RCT_EXPORT_METHOD(documentGetAll:(NSString *) appName
     // Not supported on iOS out of the box
 }
 
+RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appName
+                                 path:(NSString *) path
+                           listenerId:(nonnull NSNumber *) listenerId) {
+    RNFirebaseFirestoreDocumentReference *ref = [self getCachedDocumentForAppPath:appName path:path];
+    [ref offSnapshot:listenerId];
+    
+    if (![ref hasListeners]) {
+        [self clearCachedDocumentForAppPath:appName path:path];
+    }
+}
+
+RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appName
+                                path:(NSString *) path
+                          listenerId:(nonnull NSNumber *) listenerId) {
+    RNFirebaseFirestoreDocumentReference *ref = [self getCachedDocumentForAppPath:appName path:path];
+    [ref onSnapshot:listenerId];
+}
+
 RCT_EXPORT_METHOD(documentSet:(NSString *) appName
                          path:(NSString *) path
                          data:(NSDictionary *) data
@@ -130,10 +148,8 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
  * INTERNALS/UTILS
  */
 + (void)promiseRejectException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
-    // TODO
-    // NSDictionary *jsError = [RNFirebaseDatabase getJSError:databaseError];
-    // reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], databaseError);
-    reject(@"TODO", [error description], error);
+    NSDictionary *jsError = [RNFirebaseFirestore getJSError:error];
+    reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], error);
 }
 
 + (FIRFirestore *)getFirestoreForApp:(NSString *)appName {
@@ -145,12 +161,60 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
     return [[RNFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:appName path:path filters:filters orders:orders options:options];
 }
 
+- (RNFirebaseFirestoreDocumentReference *)getCachedDocumentForAppPath:(NSString *)appName path:(NSString *)path {
+    NSString *key = [NSString stringWithFormat:@"%@/%@", appName, path];
+    RNFirebaseFirestoreDocumentReference *ref = _documentReferences[key];
+    
+    if (ref == nil) {
+        ref = [self getDocumentForAppPath:appName path:path];
+        _documentReferences[key] = ref;
+    }
+    return ref;
+}
+
+- (void)clearCachedDocumentForAppPath:(NSString *)appName path:(NSString *)path {
+    NSString *key = [NSString stringWithFormat:@"%@/%@", appName, path];
+    [_documentReferences removeObjectForKey:key];
+}
+
 - (RNFirebaseFirestoreDocumentReference *)getDocumentForAppPath:(NSString *)appName path:(NSString *)path {
-    return [[RNFirebaseFirestoreDocumentReference alloc] initWithPath:appName path:path];
+    return [[RNFirebaseFirestoreDocumentReference alloc] initWithPath:self app:appName path:path];
+}
+
+// TODO: Move to error util for use in other modules
++ (NSString *)getMessageWithService:(NSString *)message service:(NSString *)service fullCode:(NSString *)fullCode {
+    return [NSString stringWithFormat:@"%@: %@ (%@).", service, message, [fullCode lowercaseString]];
+}
+
++ (NSString *)getCodeWithService:(NSString *)service code:(NSString *)code {
+    return [NSString stringWithFormat:@"%@/%@", [service lowercaseString], [code lowercaseString]];
+}
+
++ (NSDictionary *)getJSError:(NSError *)nativeError {
+    NSMutableDictionary *errorMap = [[NSMutableDictionary alloc] init];
+    [errorMap setValue:@(nativeError.code) forKey:@"nativeErrorCode"];
+    [errorMap setValue:[nativeError localizedDescription] forKey:@"nativeErrorMessage"];
+    
+    NSString *code;
+    NSString *message;
+    NSString *service = @"Firestore";
+    
+    // TODO: Proper error codes
+    switch (nativeError.code) {
+        default:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"unknown"];
+            message = [RNFirebaseFirestore getMessageWithService:@"An unknown error occurred." service:service fullCode:code];
+            break;
+    }
+    
+    [errorMap setValue:code forKey:@"code"];
+    [errorMap setValue:message forKey:@"message"];
+    
+    return errorMap;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[DATABASE_SYNC_EVENT, DATABASE_TRANSACTION_EVENT];
+    return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT];
 }
 
 @end
