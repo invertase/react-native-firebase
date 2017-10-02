@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -47,7 +48,7 @@ public class RNFirebaseFirestoreCollectionReference {
           promise.resolve(data);
         } else {
           Log.e(TAG, "get:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(promise, task.getException());
+          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException)task.getException());
         }
       }
     });

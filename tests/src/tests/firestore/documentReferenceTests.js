@@ -1,3 +1,5 @@
+import sinon from 'sinon';
+import 'should-sinon';
 import should from 'should';
 
 function collectionReferenceTests({ describe, it, context, firebase }) {
@@ -23,6 +25,221 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
             const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
             should.equal(doc.exists, false);
           });
+      });
+    });
+
+    context('onSnapshot()', () => {
+      it('calls callback with the initial data and then when value changes', () => {
+        return new Promise(async (resolve) => {
+          const docRef = firebase.native.firestore().doc('document-tests/doc1');
+          const currentDataValue = { name: 'doc1' };
+          const newDataValue = { name: 'updated' };
+
+          const callback = sinon.spy();
+
+          // Test
+
+          let unsubscribe;
+          await new Promise((resolve2) => {
+            unsubscribe = docRef.onSnapshot((snapshot) => {
+              callback(snapshot.data());
+              resolve2();
+            });
+          });
+
+          callback.should.be.calledWith(currentDataValue);
+
+          await docRef.set(newDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          // Assertions
+
+          callback.should.be.calledWith(newDataValue);
+          callback.should.be.calledTwice();
+
+          // Tear down
+
+          unsubscribe();
+
+          resolve();
+        });
+      });
+    });
+
+    context('onSnapshot()', () => {
+      it('doesn\'t call callback when the ref is updated with the same value', async () => {
+        return new Promise(async (resolve) => {
+          const docRef = firebase.native.firestore().doc('document-tests/doc1');
+          const currentDataValue = { name: 'doc1' };
+
+          const callback = sinon.spy();
+
+          // Test
+
+          let unsubscribe;
+          await new Promise((resolve2) => {
+            unsubscribe = docRef.onSnapshot((snapshot) => {
+              callback(snapshot.data());
+              resolve2();
+            });
+          });
+
+          callback.should.be.calledWith(currentDataValue);
+
+          await docRef.set(currentDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          // Assertions
+
+          callback.should.be.calledOnce(); // Callback is not called again
+
+          // Tear down
+
+          unsubscribe();
+
+          resolve();
+        });
+      });
+    });
+
+    context('onSnapshot()', () => {
+      it('allows binding multiple callbacks to the same ref', () => {
+        return new Promise(async (resolve) => {
+          // Setup
+          const docRef = firebase.native.firestore().doc('document-tests/doc1');
+          const currentDataValue = { name: 'doc1' };
+          const newDataValue = { name: 'updated' };
+
+          const callbackA = sinon.spy();
+          const callbackB = sinon.spy();
+
+          // Test
+          let unsubscribeA;
+          let unsubscribeB;
+          await new Promise((resolve2) => {
+            unsubscribeA = docRef.onSnapshot((snapshot) => {
+              callbackA(snapshot.data());
+              resolve2();
+            });
+          });
+
+          await new Promise((resolve2) => {
+            unsubscribeB = docRef.onSnapshot((snapshot) => {
+              callbackB(snapshot.data());
+              resolve2();
+            });
+          });
+
+          callbackA.should.be.calledWith(currentDataValue);
+          callbackA.should.be.calledOnce();
+
+          callbackB.should.be.calledWith(currentDataValue);
+          callbackB.should.be.calledOnce();
+
+          await docRef.set(newDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          callbackA.should.be.calledWith(newDataValue);
+          callbackB.should.be.calledWith(newDataValue);
+
+          callbackA.should.be.calledTwice();
+          callbackB.should.be.calledTwice();
+
+          // Tear down
+
+          unsubscribeA();
+          unsubscribeB();
+
+          resolve();
+        });
+      });
+    });
+
+    context('onSnapshot()', () => {
+      it('listener stops listening when unsubscribed', () => {
+        return new Promise(async (resolve) => {
+          // Setup
+          const docRef = firebase.native.firestore().doc('document-tests/doc1');
+          const currentDataValue = { name: 'doc1' };
+          const newDataValue = { name: 'updated' };
+
+          const callbackA = sinon.spy();
+          const callbackB = sinon.spy();
+
+          // Test
+          let unsubscribeA;
+          let unsubscribeB;
+          await new Promise((resolve2) => {
+            unsubscribeA = docRef.onSnapshot((snapshot) => {
+              callbackA(snapshot.data());
+              resolve2();
+            });
+          });
+
+          await new Promise((resolve2) => {
+            unsubscribeB = docRef.onSnapshot((snapshot) => {
+              callbackB(snapshot.data());
+              resolve2();
+            });
+          });
+
+          callbackA.should.be.calledWith(currentDataValue);
+          callbackA.should.be.calledOnce();
+
+          callbackB.should.be.calledWith(currentDataValue);
+          callbackB.should.be.calledOnce();
+
+          await docRef.set(newDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          callbackA.should.be.calledWith(newDataValue);
+          callbackB.should.be.calledWith(newDataValue);
+
+          callbackA.should.be.calledTwice();
+          callbackB.should.be.calledTwice();
+
+          // Unsubscribe A
+
+          unsubscribeA();
+
+          await docRef.set(currentDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          callbackB.should.be.calledWith(currentDataValue);
+
+          callbackA.should.be.calledTwice();
+          callbackB.should.be.calledThrice();
+
+          // Unsubscribe B
+
+          unsubscribeB();
+
+          await docRef.set(newDataValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          callbackA.should.be.calledTwice();
+          callbackB.should.be.calledThrice();
+
+          resolve();
+        });
       });
     });
 
