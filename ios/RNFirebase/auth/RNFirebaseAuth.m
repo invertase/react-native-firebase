@@ -558,6 +558,9 @@ RCT_EXPORT_METHOD(checkActionCode:
                 case FIRActionCodeOperationUnknown:
                     actionType = @"UNKNOWN";
                     break;
+                case FIRActionCodeOperationRecoverEmail:
+                    actionType = @"RECOVER_EMAIL";
+                    break;
             }
 
             NSDictionary *result = @{@"data": @{@"email": [info dataForKey:FIRActionCodeEmailKey], @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],}, @"actionType": actionType,};
