@@ -53,6 +53,20 @@ firebase.messaging().getToken()
   });
 ```
 
+### deleteInstanceId(): `Promise<any>`
+
+Reset Instance ID and revokes all tokens.
+
+```javascript
+firebase.messaging().deleteInstanceId()
+  .then(() => {
+    console.log('Deleted instance id successfully');
+  })
+  .catch((error: any) => {
+    console.log(`Cannot delete instance id: ${error.message}`);
+  });
+```
+
 ### onTokenRefresh(listener: `Function<string>`)
 
 On the event a devices FCM token is refreshed by Google, the new token is returned in a callback listener.

@@ -8,7 +8,7 @@ declare module "react-native-firebase" {
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
 
-    log: any
+    log: any;
 
     analytics(): RNFirebase.Analytics;
 
@@ -22,7 +22,7 @@ declare module "react-native-firebase" {
       ServerValue: {
         TIMESTAMP: number
       }
-    }
+    };
 
     /**RNFirebase mimics the Web Firebase SDK Storage,
      * whilst providing some iOS and Android specific functionality.
@@ -608,6 +608,10 @@ declare module "react-native-firebase" {
          * This token can be used in the Firebase console to send messages to directly.
          */
         getToken(forceRefresh?: Boolean): Promise<string>
+        /**
+         * Reset Instance ID and revokes all tokens.
+         */
+        deleteInstanceId(): Promise<any>
         /**
          * On the event a devices FCM token is refreshed by Google,
          *  the new token is returned in a callback listener.

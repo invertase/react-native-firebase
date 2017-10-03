@@ -27,6 +27,7 @@ import com.google.firebase.messaging.RemoteMessage.Notification;
 
 import io.invertase.firebase.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +71,18 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements L
   public void getToken(Promise promise) {
     Log.d(TAG, "Firebase token: " + FirebaseInstanceId.getInstance().getToken());
     promise.resolve(FirebaseInstanceId.getInstance().getToken());
+  }
+
+  @ReactMethod
+  public void deleteInstanceId(Promise promise){
+    try {
+      Log.d(TAG, "Deleting instance id");
+      FirebaseInstanceId.getInstance().deleteInstanceId();
+      promise.resolve(null);
+    } catch (IOException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(null, e.getMessage());
+    }
   }
 
   @ReactMethod

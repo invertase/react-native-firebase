@@ -64,3 +64,6 @@ yarn.lock
 tests
 lib/.watchmanconfig
 buddybuild_postclone.sh
+bin/test.js
+.github
+example

@@ -11,6 +11,10 @@ import performance from './perf';
 import admob from './admob';
 import firestore from './firestore';
 
+window.getCoverage = function getCoverage() {
+  return (JSON.stringify(global.__coverage__));
+};
+
 const testSuiteInstances = [
   admob,
   analytics,
