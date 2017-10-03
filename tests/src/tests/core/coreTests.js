@@ -58,16 +58,17 @@ function coreTests({ describe, it }) {
       return Promise.resolve();
     });
 
-    it('it should initialize dynamic apps', () => {
-      return RNFirebase
-        .initializeApp(Platform.OS === 'ios' ? iosTestConfig : androidTestConfig, 'testsCoreApp')
-        .onReady()
-        .then((newApp) => {
-          newApp.name.should.equal('TESTSCOREAPP');
-          newApp.options.apiKey.should.equal((Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey);
-          return newApp.delete();
-        });
-    });
+    // TODO add back in when android sdk support becomes available
+    // it('it should initialize dynamic apps', () => {
+    //   return RNFirebase
+    //     .initializeApp(Platform.OS === 'ios' ? iosTestConfig : androidTestConfig, 'testsCoreApp')
+    //     .onReady()
+    //     .then((newApp) => {
+    //       newApp.name.should.equal('TESTSCOREAPP');
+    //       newApp.options.apiKey.should.equal((Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey);
+    //       return newApp.delete();
+    //     });
+    // });
   });
 }
 
