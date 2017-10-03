@@ -25,11 +25,12 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseFirestoreDocumentReference {
   private static final String TAG = "RNFBFSDocumentReference";
+  private static Map<String, ListenerRegistration> documentSnapshotListeners = new HashMap<>();
+
   private final String appName;
   private final String path;
   private ReactContext reactContext;
   private final DocumentReference ref;
-  private Map<Integer, ListenerRegistration> documentSnapshotListeners = new HashMap<>();
 
   RNFirebaseFirestoreDocumentReference(ReactContext reactContext, String appName, String path) {
     this.appName = appName;
@@ -79,14 +80,14 @@ public class RNFirebaseFirestoreDocumentReference {
     });
   }
 
-  public void offSnapshot(final int listenerId) {
+  public static void offSnapshot(final String listenerId) {
     ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
     }
   }
 
-  public void onSnapshot(final int listenerId) {
+  public void onSnapshot(final String listenerId) {
     if (!documentSnapshotListeners.containsKey(listenerId)) {
       final EventListener<DocumentSnapshot> listener = new EventListener<DocumentSnapshot>() {
         @Override
@@ -154,7 +155,7 @@ public class RNFirebaseFirestoreDocumentReference {
    * INTERNALS/UTILS
    */
 
-  public boolean hasListeners() {
+  boolean hasListeners() {
     return !documentSnapshotListeners.isEmpty();
   }
 
@@ -164,14 +165,14 @@ public class RNFirebaseFirestoreDocumentReference {
    * @param listenerId
    * @param documentSnapshot
    */
-  private void handleDocumentSnapshotEvent(int listenerId, DocumentSnapshot documentSnapshot) {
+  private void handleDocumentSnapshotEvent(String listenerId, DocumentSnapshot documentSnapshot) {
     WritableMap event = Arguments.createMap();
     WritableMap data = FirestoreSerialize.snapshotToWritableMap(documentSnapshot);
 
     event.putString("appName", appName);
     event.putString("path", path);
-    event.putInt("listenerId", listenerId);
-    event.putMap("document", data);
+    event.putString("listenerId", listenerId);
+    event.putMap("documentSnapshot", data);
 
     Utils.sendEvent(reactContext, "firestore_document_sync_event", event);
   }
@@ -182,12 +183,12 @@ public class RNFirebaseFirestoreDocumentReference {
    * @param listenerId
    * @param exception
    */
-  private void handleDocumentSnapshotError(int listenerId, FirebaseFirestoreException exception) {
+  private void handleDocumentSnapshotError(String listenerId, FirebaseFirestoreException exception) {
     WritableMap event = Arguments.createMap();
 
     event.putString("appName", appName);
     event.putString("path", path);
-    event.putInt("listenerId", listenerId);
+    event.putString("listenerId", listenerId);
     event.putMap("error", RNFirebaseFirestore.getJSError(exception));
 
     Utils.sendEvent(reactContext, "firestore_document_sync_event", event);

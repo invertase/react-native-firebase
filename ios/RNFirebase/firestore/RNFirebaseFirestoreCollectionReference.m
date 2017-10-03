@@ -4,19 +4,27 @@
 
 #if __has_include(<Firestore/FIRFirestore.h>)
 
-- (id)initWithPathAndModifiers:(NSString *) app
+static NSMutableDictionary *_listeners;
+
+- (id)initWithPathAndModifiers:(RCTEventEmitter *) emitter
+                           app:(NSString *) app
                           path:(NSString *) path
                        filters:(NSArray *) filters
                         orders:(NSArray *) orders
                        options:(NSDictionary *) options {
     self = [super init];
     if (self) {
+        _emitter = emitter;
         _app = app;
         _path = path;
         _filters = filters;
         _orders = orders;
         _options = options;
         _query = [self buildQuery];
+    }
+    // Initialise the static listeners object if required
+    if (!_listeners) {
+        _listeners = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -31,6 +39,33 @@
             resolve(data);
         }
     }];
+}
+
++ (void)offSnapshot:(NSString *) listenerId {
+    id<FIRListenerRegistration> listener = _listeners[listenerId];
+    if (listener) {
+        [_listeners removeObjectForKey:listenerId];
+        [listener remove];
+    }
+}
+
+- (void)onSnapshot:(NSString *) listenerId {
+    if (_listeners[listenerId] == nil) {
+        id listenerBlock = ^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+            if (error) {
+                id<FIRListenerRegistration> listener = _listeners[listenerId];
+                if (listener) {
+                    [_listeners removeObjectForKey:listenerId];
+                    [listener remove];
+                }
+                [self handleQuerySnapshotError:listenerId error:error];
+            } else {
+                [self handleQuerySnapshotEvent:listenerId querySnapshot:snapshot];
+            }
+        };
+        id<FIRListenerRegistration> listener = [_query addSnapshotListener:listenerBlock];
+        _listeners[listenerId] = listener;
+    }
 }
 
 - (FIRQuery *)buildQuery {
@@ -94,6 +129,28 @@
         query = [query queryStartingAtValues:_options[@"startAt"]];
     }
     return query;
+}
+
+- (void)handleQuerySnapshotError:(NSString *)listenerId
+                           error:(NSError *)error {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    [event setValue:_app forKey:@"appName"];
+    [event setValue:_path forKey:@"path"];
+    [event setValue:listenerId forKey:@"listenerId"];
+    [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
+    
+    [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
+}
+
+- (void)handleQuerySnapshotEvent:(NSString *)listenerId
+                   querySnapshot:(FIRQuerySnapshot *)querySnapshot {
+    NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
+    [event setValue:_app forKey:@"appName"];
+    [event setValue:_path forKey:@"path"];
+    [event setValue:listenerId forKey:@"listenerId"];
+    [event setValue:[RNFirebaseFirestoreCollectionReference snapshotToDictionary:querySnapshot] forKey:@"querySnapshot"];
+    
+    [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
 }
 
 + (NSDictionary *)snapshotToDictionary:(FIRQuerySnapshot *)querySnapshot {

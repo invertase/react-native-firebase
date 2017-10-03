@@ -4,6 +4,8 @@
 
 #if __has_include(<Firestore/FIRFirestore.h>)
 
+static NSMutableDictionary *_listeners;
+
 - (id)initWithPath:(RCTEventEmitter *)emitter
                app:(NSString *) app
               path:(NSString *) path {
@@ -13,6 +15,9 @@
         _app = app;
         _path = path;
         _ref = [[RNFirebaseFirestore getFirestoreForApp:_app] documentWithPath:_path];
+    }
+    // Initialise the static listeners object if required
+    if (!_listeners) {
         _listeners = [[NSMutableDictionary alloc] init];
     }
     return self;
@@ -49,7 +54,7 @@
     }];
 }
 
-- (void)offSnapshot:(NSNumber *) listenerId {
++ (void)offSnapshot:(NSString *) listenerId {
     id<FIRListenerRegistration> listener = _listeners[listenerId];
     if (listener) {
         [_listeners removeObjectForKey:listenerId];
@@ -57,7 +62,7 @@
     }
 }
 
-- (void)onSnapshot:(NSNumber *) listenerId {
+- (void)onSnapshot:(NSString *) listenerId {
     if (_listeners[listenerId] == nil) {
         id listenerBlock = ^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
             if (error) {
@@ -130,7 +135,7 @@
     return snapshot;
 }
 
-- (void)handleDocumentSnapshotError:(NSNumber *)listenerId
+- (void)handleDocumentSnapshotError:(NSString *)listenerId
                               error:(NSError *)error {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     [event setValue:_app forKey:@"appName"];
@@ -141,13 +146,13 @@
     [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
 }
 
-- (void)handleDocumentSnapshotEvent:(NSNumber *)listenerId
+- (void)handleDocumentSnapshotEvent:(NSString *)listenerId
                    documentSnapshot:(FIRDocumentSnapshot *)documentSnapshot {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     [event setValue:_app forKey:@"appName"];
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
-    [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"document"];
+    [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"documentSnapshot"];
     
     [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
 }

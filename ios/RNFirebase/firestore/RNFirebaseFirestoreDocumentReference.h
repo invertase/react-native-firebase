@@ -15,15 +15,14 @@
 @property NSString *app;
 @property NSString *path;
 @property FIRDocumentReference *ref;
-@property NSMutableDictionary *listeners;
 
 - (id)initWithPath:(RCTEventEmitter *)emitter app:(NSString *)app path:(NSString *)path;
 - (void)collections:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)create:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)delete:(NSDictionary *)options resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
-- (void)offSnapshot:(NSNumber *)listenerId;
-- (void)onSnapshot:(NSNumber *)listenerId;
++ (void)offSnapshot:(NSString *)listenerId;
+- (void)onSnapshot:(NSString *)listenerId;
 - (void)set:(NSDictionary *)data options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)update:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (BOOL)hasListeners;

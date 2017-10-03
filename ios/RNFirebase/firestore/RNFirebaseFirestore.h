@@ -10,8 +10,6 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RNFirebaseFirestore : RCTEventEmitter <RCTBridgeModule> {}
-@property NSMutableDictionary *collectionReferences;
-@property NSMutableDictionary *documentReferences;
 
 + (void)promiseRejectException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 

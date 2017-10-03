@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE();
 - (id)init {
     self = [super init];
     if (self != nil) {
-        _documentReferences = [[NSMutableDictionary alloc] init];
+        
     }
     return self;
 }
@@ -26,6 +26,25 @@ RCT_EXPORT_METHOD(collectionGet:(NSString *) appName
                        resolver:(RCTPromiseResolveBlock) resolve
                        rejecter:(RCTPromiseRejectBlock) reject) {
     [[self getCollectionForAppPath:appName path:path filters:filters orders:orders options:options] get:resolve rejecter:reject];
+}
+
+RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *) appName
+                                   path:(NSString *) path
+                                filters:(NSArray *) filters
+                                 orders:(NSArray *) orders
+                                options:(NSDictionary *) options
+                             listenerId:(nonnull NSString *) listenerId) {
+    [RNFirebaseFirestoreCollectionReference offSnapshot:listenerId];
+}
+
+RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appName
+                                  path:(NSString *) path
+                               filters:(NSArray *) filters
+                                orders:(NSArray *) orders
+                               options:(NSDictionary *) options
+                            listenerId:(nonnull NSString *) listenerId) {
+    RNFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appName path:path filters:filters orders:orders options:options];
+    [ref onSnapshot:listenerId];
 }
 
 RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
@@ -111,19 +130,14 @@ RCT_EXPORT_METHOD(documentGetAll:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appName
                                  path:(NSString *) path
-                           listenerId:(nonnull NSNumber *) listenerId) {
-    RNFirebaseFirestoreDocumentReference *ref = [self getCachedDocumentForAppPath:appName path:path];
-    [ref offSnapshot:listenerId];
-    
-    if (![ref hasListeners]) {
-        [self clearCachedDocumentForAppPath:appName path:path];
-    }
+                           listenerId:(nonnull NSString *) listenerId) {
+    [RNFirebaseFirestoreDocumentReference offSnapshot:listenerId];
 }
 
 RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appName
                                 path:(NSString *) path
-                          listenerId:(nonnull NSNumber *) listenerId) {
-    RNFirebaseFirestoreDocumentReference *ref = [self getCachedDocumentForAppPath:appName path:path];
+                          listenerId:(nonnull NSString *) listenerId) {
+    RNFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appName path:path];
     [ref onSnapshot:listenerId];
 }
 
@@ -158,23 +172,7 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
 }
 
 - (RNFirebaseFirestoreCollectionReference *)getCollectionForAppPath:(NSString *)appName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options {
-    return [[RNFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:appName path:path filters:filters orders:orders options:options];
-}
-
-- (RNFirebaseFirestoreDocumentReference *)getCachedDocumentForAppPath:(NSString *)appName path:(NSString *)path {
-    NSString *key = [NSString stringWithFormat:@"%@/%@", appName, path];
-    RNFirebaseFirestoreDocumentReference *ref = _documentReferences[key];
-    
-    if (ref == nil) {
-        ref = [self getDocumentForAppPath:appName path:path];
-        _documentReferences[key] = ref;
-    }
-    return ref;
-}
-
-- (void)clearCachedDocumentForAppPath:(NSString *)appName path:(NSString *)path {
-    NSString *key = [NSString stringWithFormat:@"%@/%@", appName, path];
-    [_documentReferences removeObjectForKey:key];
+    return [[RNFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:self app:appName path:path filters:filters orders:orders options:options];
 }
 
 - (RNFirebaseFirestoreDocumentReference *)getDocumentForAppPath:(NSString *)appName path:(NSString *)path {

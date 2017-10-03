@@ -4,16 +4,21 @@ package io.invertase.firebase.firestore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,21 +26,26 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseFirestoreCollectionReference {
   private static final String TAG = "RNFSCollectionReference";
+  private static Map<String, ListenerRegistration> collectionSnapshotListeners = new HashMap<>();
+
   private final String appName;
   private final String path;
   private final ReadableArray filters;
   private final ReadableArray orders;
   private final ReadableMap options;
   private final Query query;
+  private ReactContext reactContext;
 
-  RNFirebaseFirestoreCollectionReference(String appName, String path, ReadableArray filters,
-                                         ReadableArray orders, ReadableMap options) {
+  RNFirebaseFirestoreCollectionReference(ReactContext reactContext, String appName, String path,
+                                         ReadableArray filters, ReadableArray orders,
+                                         ReadableMap options) {
     this.appName = appName;
     this.path = path;
     this.filters = filters;
     this.orders = orders;
     this.options = options;
     this.query = buildQuery();
+    this.reactContext = reactContext;
   }
 
   void get(final Promise promise) {
@@ -52,6 +62,42 @@ public class RNFirebaseFirestoreCollectionReference {
         }
       }
     });
+  }
+
+  public static void offSnapshot(final String listenerId) {
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+    }
+  }
+
+  public void onSnapshot(final String listenerId) {
+    if (!collectionSnapshotListeners.containsKey(listenerId)) {
+      final EventListener<QuerySnapshot> listener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException exception) {
+          if (exception == null) {
+            handleQuerySnapshotEvent(listenerId, querySnapshot);
+          } else {
+            ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
+            if (listenerRegistration != null) {
+              listenerRegistration.remove();
+            }
+            handleQuerySnapshotError(listenerId, exception);
+          }
+        }
+      };
+      ListenerRegistration listenerRegistration = this.query.addSnapshotListener(listener);
+      collectionSnapshotListeners.put(listenerId, listenerRegistration);
+    }
+  }
+
+  /*
+   * INTERNALS/UTILS
+   */
+
+  boolean hasListeners() {
+    return !collectionSnapshotListeners.isEmpty();
   }
 
   private Query buildQuery() {
@@ -133,5 +179,40 @@ public class RNFirebaseFirestoreCollectionReference {
       query = query.startAt(Utils.recursivelyDeconstructReadableArray(startAtArray));
     }
     return query;
+  }
+
+  /**
+   * Handles documentSnapshot events.
+   *
+   * @param listenerId
+   * @param querySnapshot
+   */
+  private void handleQuerySnapshotEvent(String listenerId, QuerySnapshot querySnapshot) {
+    WritableMap event = Arguments.createMap();
+    WritableMap data = FirestoreSerialize.snapshotToWritableMap(querySnapshot);
+
+    event.putString("appName", appName);
+    event.putString("path", path);
+    event.putString("listenerId", listenerId);
+    event.putMap("querySnapshot", data);
+
+    Utils.sendEvent(reactContext, "firestore_collection_sync_event", event);
+  }
+
+  /**
+   * Handles a documentSnapshot error event
+   *
+   * @param listenerId
+   * @param exception
+   */
+  private void handleQuerySnapshotError(String listenerId, FirebaseFirestoreException exception) {
+    WritableMap event = Arguments.createMap();
+
+    event.putString("appName", appName);
+    event.putString("path", path);
+    event.putString("listenerId", listenerId);
+    event.putMap("error", RNFirebaseFirestore.getJSError(exception));
+
+    Utils.sendEvent(reactContext, "firestore_collection_sync_event", event);
   }
 }

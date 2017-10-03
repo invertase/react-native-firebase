@@ -49,6 +49,8 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
 
           callback.should.be.calledWith(currentDataValue);
 
+          // Update the document
+
           await docRef.set(newDataValue);
 
           await new Promise((resolve2) => {

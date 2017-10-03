@@ -32,8 +32,6 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseFirestore";
-  private HashMap<String, RNFirebaseFirestoreCollectionReference> collectionReferences = new HashMap<>();
-  private HashMap<String, RNFirebaseFirestoreDocumentReference> documentReferences = new HashMap<>();
   // private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseFirestore(ReactApplicationContext reactContext) {
@@ -50,6 +48,20 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     RNFirebaseFirestoreCollectionReference ref = getCollectionForAppPath(appName, path, filters, orders, options);
     ref.get(promise);
   }
+
+  @ReactMethod
+  public void collectionOffSnapshot(String appName, String path, ReadableArray filters,
+                                    ReadableArray orders, ReadableMap options, String listenerId) {
+    RNFirebaseFirestoreCollectionReference.offSnapshot(listenerId);
+  }
+
+  @ReactMethod
+  public void collectionOnSnapshot(String appName, String path, ReadableArray filters,
+                                   ReadableArray orders, ReadableMap options, String listenerId) {
+    RNFirebaseFirestoreCollectionReference ref = getCollectionForAppPath(appName, path, filters, orders, options);
+    ref.onSnapshot(listenerId);
+  }
+
 
   @ReactMethod
   public void documentBatch(final String appName, final ReadableArray writes,
@@ -134,18 +146,13 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void documentOffSnapshot(String appName, String path, int listenerId) {
-    RNFirebaseFirestoreDocumentReference ref = getCachedDocumentForAppPath(appName, path);
-    ref.offSnapshot(listenerId);
-
-    if (!ref.hasListeners()) {
-      clearCachedDocumentForAppPath(appName, path);
-    }
+  public void documentOffSnapshot(String appName, String path, String listenerId) {
+    RNFirebaseFirestoreDocumentReference.offSnapshot(listenerId);
   }
 
   @ReactMethod
-  public void documentOnSnapshot(String appName, String path, int listenerId) {
-    RNFirebaseFirestoreDocumentReference ref = getCachedDocumentForAppPath(appName, path);
+  public void documentOnSnapshot(String appName, String path, String listenerId) {
+    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.onSnapshot(listenerId);
   }
 
@@ -204,36 +211,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
                                                                          ReadableArray filters,
                                                                          ReadableArray orders,
                                                                          ReadableMap options) {
-    return new RNFirebaseFirestoreCollectionReference(appName, path, filters, orders, options);
-  }
-
-  /**
-   * Get a cached document reference for a specific app and path
-   *
-   * @param appName
-   * @param path
-   * @return
-   */
-  private RNFirebaseFirestoreDocumentReference getCachedDocumentForAppPath(String appName, String path) {
-    String key = appName + "/" + path;
-    RNFirebaseFirestoreDocumentReference ref = documentReferences.get(key);
-    if (ref == null) {
-      ref = getDocumentForAppPath(appName, path);
-      documentReferences.put(key, ref);
-    }
-    return ref;
-  }
-
-  /**
-   * Clear a cached document reference for a specific app and path
-   *
-   * @param appName
-   * @param path
-   * @return
-   */
-  private void clearCachedDocumentForAppPath(String appName, String path) {
-    String key = appName + "/" + path;
-    documentReferences.remove(key);
+    return new RNFirebaseFirestoreCollectionReference(this.getReactApplicationContext(), appName, path, filters, orders, options);
   }
 
   /**
