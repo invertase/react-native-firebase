@@ -5,7 +5,7 @@
 [![Package Quality](http://npm.packagequality.com/shield/react-native-firebase.svg?style=flat-square)](http://packagequality.com/#?package=react-native-firebase)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
 [![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
-[![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/RNFirebase)
+[![Twitter Follow](https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow)](https://twitter.com/rnfirebase)
 
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
@@ -72,11 +72,11 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`
 
-|                        | 1.X.X       | 2.0.X       | 2.1.X    | 3.0.X    |
-|------------------------|-------------|-------------|----------|----------|
-| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +   | 0.48 +   |
-| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 + | 11.3.0 + |
-| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +  | 4.2.0 +  |
+|                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |
+|------------------------|-------------|-------------|-----------------|----------|
+| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   |
+| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.3.0 + |
+| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.2.0 +  |
 
 ---
 
