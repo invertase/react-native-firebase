@@ -1,8 +1,8 @@
 {
   "name": "react-native-firebase",
-  "version": "3.0.0-alpha.5",
+  "version": "3.0.0",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Firestore, Messaging (FCM), Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Cloud Firestore, Messaging (FCM), Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
   "main": "index",
   "scripts": {
     "flow": "flow",
@@ -38,6 +38,9 @@
     "admob",
     "auth",
     "config",
+    "firestore",
+    "cloud-firestore",
+    "datastore",
     "remote-config",
     "transactions",
     "react-native",
@@ -56,7 +59,7 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.40.0",
+    "react-native": ">= 0.47.0",
     "fbjs": "*"
   },
   "devDependencies": {

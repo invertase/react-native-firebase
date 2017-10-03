@@ -8,7 +8,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow)](https://twitter.com/rnfirebase)
 
 
-**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple.
+**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. We even support both databases: Realtime Database and Cloud Firestore!
 
 <!---
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
@@ -16,7 +16,7 @@
 
 <hr>
 
-> [Current Docs](http://invertase.link/docs) <b>|</b> [@next Docs](http://invertase.link/v3) <b>|</b> [iOS Install Guide](http://invertase.link/ios) <b>|</b> [Android Install Guide](http://invertase.link/android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
+> [Docs](http://invertase.link/v3-docs) <b>|</b> [iOS Install Guide](http://invertase.link/ios) <b>|</b> [Android Install Guide](http://invertase.link/android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
 
 <hr>
 
