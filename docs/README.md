@@ -1,8 +1,3 @@
----
-
-!> These docs are for the [v3 pre-release](https://github.com/invertase/react-native-firebase/releases/tag/v3.0.0) version, for the currently published release version see the [v2 docs](/v2/)
-
----
 
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
