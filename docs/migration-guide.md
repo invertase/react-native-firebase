@@ -19,10 +19,13 @@ The below is a quick summary of steps to take when migrating from v2 to v3 of RN
 
 
 
-##### 3) Update your JS code to reflect deprecations/breaking changes:
+##### 3) Update your code to reflect deprecations/breaking changes if needed:
 
+- ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **[breaking]** [database] enabling database persistence (setPersistence) via JS is no longer supported - this is to prevent several race conditions. See sub points on how to enable these natively.
+  - [android] add `FirebaseDatabase.getInstance().setPersistenceEnabled(true);` to your `MainActivity` `onCreate` method.
+  - [ios]  add `[FIRDatabase database].persistenceEnabled = YES;` after the `[FIRApp configure];` line  inside your `AppDelegate` `didFinishLaunchingWithOptions` method.
 - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **[breaking]** [app] `new RNFirebase()` is no longer supported. See below for information about app initialisation.
-- ![#f03c15](https://placehold.it/15/fdfd96/000000?text=+) **[deprecated]** [app] `initializeApp()` for apps that are already initialised natively (i.e. the default app initialised via google-services plist/json) will now log a deprecation warning.  
+- ![#f03c15](https://placehold.it/15/fdfd96/000000?text=+) **[deprecated]** [app] `initializeApp()` for apps that are already initialised natively (i.e. the default app initialised via google-services plist/json) will now log a deprecation warning.
   - As these apps are already initialised natively there's no need to call `initializeApp` in your JS code. For now, calling it will just return the app that's already internally initialised - in a future version this will throw an `already initialized` exception.
   - Accessing apps can now be done the same way as the web sdk, simply call `firebase.app()` to get the default app, or with the name of specific app as the first arg, e.g. `const meow = firebase.app('catsApp');` to get a specific app.
 - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **[breaking]** [auth] Third party providers now user `providerId` rather than `provider` as per the Web SDK.  If you are manually creating your credentials, you will need to update the field name.
@@ -33,14 +36,12 @@ The below is a quick summary of steps to take when migrating from v2 to v3 of RN
 
 
 
-
-
-
 ##### 4) Android - Update `android/build.gradle`:
 
 
 - Check you are using google-services 3.1.0 or greater:
 - You must add `maven { url 'https://maven.google.com' }` to your `android/build.gradle` as follows:
+
 ```groovy
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
@@ -80,9 +81,7 @@ allprojects {
 ##### 5) Android - Update `app/build.gradle`:
 
 
-- You must update all your Firebase dependencies to 11.4.2.
-
-
+- You must update all your Firebase & play services dependencies to 11.4.2.
 
 
 
@@ -91,6 +90,8 @@ allprojects {
 - You need to check that you're running at least version 4.3.0 of the Firebase Pods
   - Run `pod outdated`
   - Run `pod update`
+
+Add the `Firebase/Firestore` if you plan on using firestore.
 
 ## From v1 to v2
 
