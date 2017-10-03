@@ -8,7 +8,14 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow)](https://twitter.com/rnfirebase)
 
 
-**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. We even support both databases: Realtime Database and Cloud Firestore!
+**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. 
+
+---
+
+We also support **both** databases: Realtime Database and Cloud Firestore!
+
+---
+
 
 <!---
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
