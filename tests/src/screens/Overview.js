@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { StyleSheet, View, Text, ListView, TouchableHighlight } from 'react-native';
 import { connect } from 'react-redux';
 import some from 'lodash.some';

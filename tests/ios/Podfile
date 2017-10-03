@@ -8,10 +8,16 @@ target 'ReactNativeFirebaseDemo' do
   # use_frameworks!
 
   react_native_path = "../node_modules/react-native"
-  pod "Yoga", :path => "#{react_native_path}/ReactCommon/yoga"
+  pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
   # Pods for ReactNativeFirebaseDemo
-  pod 'React', :path => '../node_modules/react-native'
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+   'Core',
+   'BatchedBridge',
+   'RCTText',
+   'RCTNetwork',
+   'RCTWebSocket',
+   ]
 
   pod 'Firebase/AdMob'
   pod 'Firebase/Auth'
@@ -26,4 +32,12 @@ target 'ReactNativeFirebaseDemo' do
 
 
   pod 'RNFirebase', :path => './../../'
+
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      if target.name == "React"
+        target.remove_from_project
+      end
+    end
+  end
 end

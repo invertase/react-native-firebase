@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Toast from 'react-native-simple-toast';
+// import Toast from 'react-native-simple-toast';
 
 import RunStatus from '../../lib/RunStatus';
 import { runTests } from '../tests/index';
@@ -28,7 +28,7 @@ class TestSuiteControlButton extends Component {
 
     runTests(testSuiteTests, { focusedTestIds, pendingTestIds });
 
-    Toast.show(`Running ${name} tests.`);
+    // Toast.show(`Running ${name} tests.`);
   }
 
   toggleOnlyShowFailingTests() {

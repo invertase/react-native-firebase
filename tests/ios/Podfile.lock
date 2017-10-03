@@ -1,83 +1,82 @@
 PODS:
-  - Firebase/AdMob (4.1.0):
+  - Firebase/AdMob (4.2.0):
     - Firebase/Core
-    - Google-Mobile-Ads-SDK (= 7.22.0)
-  - Firebase/Auth (4.1.0):
+    - Google-Mobile-Ads-SDK (= 7.24.0)
+  - Firebase/Auth (4.2.0):
     - Firebase/Core
-    - FirebaseAuth (= 4.1.0)
-  - Firebase/Core (4.1.0):
+    - FirebaseAuth (= 4.2.0)
+  - Firebase/Core (4.2.0):
     - FirebaseAnalytics (= 4.0.3)
-    - FirebaseCore (= 4.0.5)
-  - Firebase/Crash (4.1.0):
+    - FirebaseCore (= 4.0.7)
+  - Firebase/Crash (4.2.0):
     - Firebase/Core
-    - FirebaseCrash (= 2.0.1)
-  - Firebase/Database (4.1.0):
+    - FirebaseCrash (= 2.0.2)
+  - Firebase/Database (4.2.0):
     - Firebase/Core
-    - FirebaseDatabase (= 4.0.1)
-  - Firebase/DynamicLinks (4.1.0):
+    - FirebaseDatabase (= 4.0.3)
+  - Firebase/DynamicLinks (4.2.0):
     - Firebase/Core
     - FirebaseDynamicLinks (= 2.1.0)
-  - Firebase/Messaging (4.1.0):
+  - Firebase/Messaging (4.2.0):
     - Firebase/Core
-    - FirebaseMessaging (= 2.0.1)
-  - Firebase/Performance (4.1.0):
+    - FirebaseMessaging (= 2.0.3)
+  - Firebase/Performance (4.2.0):
     - Firebase/Core
-    - FirebasePerformance (= 1.0.3)
-  - Firebase/RemoteConfig (4.1.0):
+    - FirebasePerformance (= 1.0.5)
+  - Firebase/RemoteConfig (4.2.0):
     - Firebase/Core
-    - FirebaseRemoteConfig (= 2.0.2)
-  - Firebase/Storage (4.1.0):
+    - FirebaseRemoteConfig (= 2.0.3)
+  - Firebase/Storage (4.2.0):
     - Firebase/Core
-    - FirebaseStorage (= 2.0.1)
+    - FirebaseStorage (= 2.0.2)
   - FirebaseAnalytics (4.0.3):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseAuth (4.1.0):
+  - FirebaseAuth (4.2.0):
     - FirebaseAnalytics (~> 4.0)
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (4.0.5):
+  - FirebaseCore (4.0.7):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseCrash (2.0.1):
+  - FirebaseCrash (2.0.2):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - Protobuf (~> 3.1)
-  - FirebaseDatabase (4.0.1):
+  - FirebaseDatabase (4.0.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - leveldb-library (~> 1.18)
   - FirebaseDynamicLinks (2.1.0):
     - FirebaseAnalytics (~> 4.0)
-  - FirebaseInstanceID (2.0.1):
-    - FirebaseCore (~> 4.0)
-  - FirebaseMessaging (2.0.1):
+  - FirebaseInstanceID (2.0.3)
+  - FirebaseMessaging (2.0.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
-  - FirebasePerformance (1.0.3):
+  - FirebasePerformance (1.0.5):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.1)
-  - FirebaseRemoteConfig (2.0.2):
+  - FirebaseRemoteConfig (2.0.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - Protobuf (~> 3.1)
-  - FirebaseStorage (2.0.1):
+  - FirebaseStorage (2.0.2):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - Google-Mobile-Ads-SDK (7.22.0)
+  - Google-Mobile-Ads-SDK (7.24.0)
   - GoogleToolboxForMac/DebugUtils (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - GoogleToolboxForMac/Defines (2.1.1)
@@ -90,7 +89,7 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
-  - GTMSessionFetcher/Core (1.1.11)
+  - GTMSessionFetcher/Core (1.1.12)
   - leveldb-library (1.18.3)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
@@ -98,17 +97,33 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.4.0)
-  - React (0.44.3):
-    - React/Core (= 0.44.3)
-  - React/Core (0.44.3):
-    - React/cxxreact
-    - Yoga (= 0.44.3.React)
-  - React/cxxreact (0.44.3):
-    - React/jschelpers
-  - React/jschelpers (0.44.3)
+  - React (0.49.0-rc.6):
+    - React/Core (= 0.49.0-rc.6)
+  - React/BatchedBridge (0.49.0-rc.6):
+    - React/Core
+    - React/cxxreact_legacy
+  - React/Core (0.49.0-rc.6):
+    - yoga (= 0.49.0-rc.6.React)
+  - React/cxxreact_legacy (0.49.0-rc.6):
+    - React/jschelpers_legacy
+  - React/DevSupport (0.49.0-rc.6):
+    - React/Core
+    - React/RCTWebSocket
+  - React/fishhook (0.49.0-rc.6)
+  - React/jschelpers_legacy (0.49.0-rc.6)
+  - React/RCTBlob (0.49.0-rc.6):
+    - React/Core
+  - React/RCTNetwork (0.49.0-rc.6):
+    - React/Core
+  - React/RCTText (0.49.0-rc.6):
+    - React/Core
+  - React/RCTWebSocket (0.49.0-rc.6):
+    - React/Core
+    - React/fishhook
+    - React/RCTBlob
   - RNFirebase (3.0.0-alpha.5):
     - React
-  - Yoga (0.44.3.React)
+  - yoga (0.49.0-rc.6.React)
 
 DEPENDENCIES:
   - Firebase/AdMob
@@ -121,41 +136,46 @@ DEPENDENCIES:
   - Firebase/Performance
   - Firebase/RemoteConfig
   - Firebase/Storage
-  - React (from `../node_modules/react-native`)
+  - React/BatchedBridge (from `../node_modules/react-native`)
+  - React/Core (from `../node_modules/react-native`)
+  - React/DevSupport (from `../node_modules/react-native`)
+  - React/RCTNetwork (from `../node_modules/react-native`)
+  - React/RCTText (from `../node_modules/react-native`)
+  - React/RCTWebSocket (from `../node_modules/react-native`)
   - RNFirebase (from `./../../`)
-  - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "./../../"
-  Yoga:
+  yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Firebase: ebebf41db7f10e0c7668b6eaaa857fbe599aa478
+  Firebase: 9548cae14d69718add12d75a5b312893f7ef89c7
   FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
-  FirebaseAuth: 8d1d2389cf82f891048d6d50d27d044f55ae09a6
-  FirebaseCore: 7d876ea97a830cbe62ba7fbbe7670c833a324ba0
-  FirebaseCrash: bce9fbfb7dd6cc850a41fe39740a2292e6b61f2e
-  FirebaseDatabase: 94c38c783d23dc6679441050772d42e801d06e9e
+  FirebaseAuth: 22f8a5170f31d1f111141950590f071f35df3229
+  FirebaseCore: 9a6cc1e3eaf75905390f9220596ad4fd8f92faee
+  FirebaseCrash: cded0fc566c03651aea606a101bc156085f333ca
+  FirebaseDatabase: '03940adcac54ce30db06f1fc2136f8581734ce2c'
   FirebaseDynamicLinks: ed4cb6c42705aaa5e841ed2d76e3a4bddbec10c1
-  FirebaseInstanceID: 0500e3cb54a1a4e01a8cffcc09323b8bb8fc7e1e
-  FirebaseMessaging: b45ff9ef5d932600d3f78ff43168e7c5707aa7dc
-  FirebasePerformance: 36bdb0500213b459ae991766801d5dc5399ff231
-  FirebaseRemoteConfig: 5b3e3301ef2f237b1b588e8ef3211b5a22e9e15d
-  FirebaseStorage: 661fc1f8d4131891d256b62e82a45ace8b3f0c3b
-  Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
+  FirebaseInstanceID: a4fc702b5a026f7322964376047f1a3f1f7cc6ff
+  FirebaseMessaging: eaf1bfff0193170c04ea3ba3bfe983f68f893118
+  FirebasePerformance: d0dc2a1d3dc1bca249d154cb40ee4eae25b455ad
+  FirebaseRemoteConfig: 1c982f73af48ec048c8fa8621d5178cfdffac9aa
+  FirebaseStorage: 0cca42d9b889a0227c3a50121f45a4469fc9eb27
+  Google-Mobile-Ads-SDK: f405b7acb098fe89e6fcd05fdbf400c1a5bcb935
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
+  GTMSessionFetcher: ebaa1f79a5366922c1735f1566901f50beba23b7
   leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
-  React: 6361345ebeb769a929e10a06baf0c868d6d03ad5
+  React: e6ef6a41ec6dd1b7941417d60ca582bf5e9c739d
   RNFirebase: 60be8c01b94551a12e7be5431189e8ee8cefcdd3
-  Yoga: c90474ca3ec1edba44c97b6c381f03e222a9e287
+  yoga: f9485d2ebf0ca773db2d727ea71b1aa8c9f3e075
 
-PODFILE CHECKSUM: 46b6a553f3c9fd264b449806b373d33b4af518b5
+PODFILE CHECKSUM: de6bb6c2ad60b7ad1f6c01aa01268ec04eb389a9
 
 COCOAPODS: 1.2.1

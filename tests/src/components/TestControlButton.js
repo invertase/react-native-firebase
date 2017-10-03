@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Toast from 'react-native-simple-toast';
+// import Toast from 'react-native-simple-toast';
 
 import RunStatus from '../../lib/RunStatus';
 import { runTest } from '../tests/index';
@@ -24,7 +24,7 @@ class TestControlButton extends Component {
     const { test: { id, description } } = this.props;
 
     runTest(id);
-    Toast.show(`Running ${description}.`);
+    // Toast.show(`Running ${description}.`);
   }
 
   render() {
