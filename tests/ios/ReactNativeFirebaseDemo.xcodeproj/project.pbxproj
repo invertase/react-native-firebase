@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -37,6 +36,7 @@
 		E51DA6317685417F97A59475 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C76E33ACF004369AEB318B1 /* libRNVectorIcons.a */; };
 		EA30CACE4CB84AC1BAE59432 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4935BEDE99B9436581953E77 /* Entypo.ttf */; };
 		F57EC9E3C5414A99821B73F4 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB5BB32AF70B41678974C6B4 /* EvilIcons.ttf */; };
+		58EAF3FA628941C98A02BAE4 /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 528FC2DCD44F4567A3FE9F59 /* Feather.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -322,6 +322,7 @@
 		CC24EB30F0484352BD65FFC1 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		DB5BB32AF70B41678974C6B4 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		FD3DFC8253C74B6298AFD3B7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		528FC2DCD44F4567A3FE9F59 /* Feather.ttf */ = {isa = PBXFileReference; name = "Feather.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -597,6 +598,7 @@
 				CC24EB30F0484352BD65FFC1 /* Octicons.ttf */,
 				FD3DFC8253C74B6298AFD3B7 /* SimpleLineIcons.ttf */,
 				182271FFECD74C3B92960E1D /* Zocial.ttf */,
+				528FC2DCD44F4567A3FE9F59 /* Feather.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -990,6 +992,7 @@
 				885057F5D1FA461AAAE0B487 /* Octicons.ttf in Resources */,
 				42A0E8F428A74B23B4C7D95A /* SimpleLineIcons.ttf in Resources */,
 				D46EBD0604CE40EFB18F8A35 /* Zocial.ttf in Resources */,
+				58EAF3FA628941C98A02BAE4 /* Feather.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

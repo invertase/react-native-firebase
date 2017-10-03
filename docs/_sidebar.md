@@ -24,6 +24,7 @@
  - [Cloud Messaging](/modules/cloud-messaging)
  - [Crash Reporting](/modules/crash)
  - [Database](/modules/database)
+ - [Firestore (Beta)](/modules/firestore)
  - [Remote Config](/modules/config)
  - [Storage](/modules/storage)
  - [Transactions](/modules/transactions)

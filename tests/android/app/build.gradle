@@ -71,7 +71,7 @@ android {
     }
 }
 
-project.ext.firebaseVersion = '11.2.0'
+project.ext.firebaseVersion = '11.4.2'
 
 dependencies {
 //    compile(project(':react-native-firebase')) {
@@ -82,7 +82,6 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.google.android.gms:play-services-base:$firebaseVersion"
     compile "com.google.firebase:firebase-ads:$firebaseVersion"
-    compile "com.google.firebase:firebase-ads:$firebaseVersion"
     compile "com.google.firebase:firebase-auth:$firebaseVersion"
     compile "com.google.firebase:firebase-config:$firebaseVersion"
     compile "com.google.firebase:firebase-core:$firebaseVersion"
@@ -91,6 +90,7 @@ dependencies {
     compile "com.google.firebase:firebase-messaging:$firebaseVersion"
     compile "com.google.firebase:firebase-perf:$firebaseVersion"
     compile "com.google.firebase:firebase-storage:$firebaseVersion"
+    compile "com.google.firebase:firebase-firestore:$firebaseVersion"
     compile "com.android.support:appcompat-v7:26.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
