@@ -558,6 +558,9 @@ RCT_EXPORT_METHOD(checkActionCode:
                 case FIRActionCodeOperationUnknown:
                     actionType = @"UNKNOWN";
                     break;
+                case FIRActionCodeOperationRecoverEmail:
+                    actionType = @"RECOVER_EMAIL";
+                    break;
             }
 
             NSDictionary *result = @{@"data": @{@"email": [info dataForKey:FIRActionCodeEmailKey], @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],}, @"actionType": actionType,};
@@ -654,7 +657,7 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber:(NSString *) appName
             rejecter:(RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [FIRApp appNamed:appName];
 
-    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
@@ -675,21 +678,29 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber:(NSString *) appName
  @param RCTPromiseRejectBlock reject
  @return
  */
-//   public void verifyPhoneNumber(final String appName, final String phoneNumber, final String requestKey, final int timeout) {
-
 RCT_EXPORT_METHOD(verifyPhoneNumber:(NSString *) appName
                   phoneNumber:(NSString *) phoneNumber
                   requestKey:(NSString *) requestKey) {
     FIRApp *firApp = [FIRApp appNamed:appName];
     
-    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
         if (error) {
             NSDictionary * jsError = [self getJSError:(error)];
-            // TODO emit error
+            NSMutableDictionary * props =  [@{
+                                              @"type": @"onVerificationFailed",
+                                              @"requestKey":requestKey,
+                                              @"state": @{@"error": jsError},
+                                          } mutableCopy];
+            [self sendJSEventWithAppName:appName title:PHONE_AUTH_STATE_CHANGED_EVENT props: props];
         } else {
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:verificationID forKey:@"authVerificationID"];
-            // TODO emit code send
+            NSMutableDictionary * props =  [@{
+                                              @"type": @"onCodeSent",
+                                              @"requestKey":requestKey,
+                                              @"state": @{@"verificationId": verificationID},
+                                          } mutableCopy];
+            [self sendJSEventWithAppName:appName title:PHONE_AUTH_STATE_CHANGED_EVENT props: props];
         }
     }];
 }
