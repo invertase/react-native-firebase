@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(deleteApp:
 
 /**
  * React native constant exports - exports native firebase apps mainly
- * @return
+ * @return NSDictionary
  */
 - (NSDictionary *)constantsToExport {
     NSMutableDictionary *constants = [NSMutableDictionary new];
