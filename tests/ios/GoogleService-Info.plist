@@ -7,34 +7,34 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>17067372085-h95lq6v2fbjdl2i1f6pl26iurah37i8p.apps.googleusercontent.com</string>
+	<string>305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.17067372085-h95lq6v2fbjdl2i1f6pl26iurah37i8p</string>
+	<string>com.googleusercontent.apps.305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib</string>
 	<key>API_KEY</key>
-	<string>AIzaSyC8ZEruBCvS_6woF8_l07ILy1eXaD6J4vQ</string>
+	<string>AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A</string>
 	<key>GCM_SENDER_ID</key>
-	<string>17067372085</string>
+	<string>305229645282</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.invertase.ReactNativeFirebaseDemo</string>
 	<key>PROJECT_ID</key>
-	<string>rnfirebase</string>
+	<string>rnfirebase-b9ad4</string>
 	<key>STORAGE_BUCKET</key>
-	<string>rnfirebase.appspot.com</string>
+	<string>rnfirebase-b9ad4.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:17067372085:ios:7b45748cb1117d2d</string>
+	<string>1:305229645282:ios:7b45748cb1117d2d</string>
 	<key>DATABASE_URL</key>
-	<string>https://rnfirebase-5579a.firebaseio.com</string>
+	<string>https://rnfirebase-b9ad4.firebaseio.com</string>
 </dict>
 </plist>

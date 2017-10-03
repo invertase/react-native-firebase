@@ -3,9 +3,9 @@
 
 #import <Foundation/Foundation.h>
 
-#if __has_include(<Firestore/FIRFirestore.h>)
+#if __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
 
-#import <Firestore/FIRFirestore.h>
+#import <FirebaseFirestore/FirebaseFirestore.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
@@ -24,4 +24,3 @@
 #endif
 
 #endif
-

@@ -3,9 +3,9 @@
 
 #import <Foundation/Foundation.h>
 
-#if __has_include(<Firestore/FIRFirestore.h>)
+#if __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
 
-#import <Firestore/Firestore.h>
+#import <FirebaseFirestore/FirebaseFirestore.h>
 #import <React/RCTEventEmitter.h>
 #import "RNFirebaseEvents.h"
 #import "RNFirebaseFirestore.h"

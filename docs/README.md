@@ -64,5 +64,5 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 |                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |
 |------------------------|-------------|-------------|-----------------|----------|
 | React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   |
-| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.3.0 + |
-| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.2.0 +  |
+| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.4.2 + |
+| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.3.0 +  |

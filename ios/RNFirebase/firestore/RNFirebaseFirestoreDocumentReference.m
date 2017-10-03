@@ -2,7 +2,7 @@
 
 @implementation RNFirebaseFirestoreDocumentReference
 
-#if __has_include(<Firestore/FIRFirestore.h>)
+#if __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
 
 static NSMutableDictionary *_listeners;
 
@@ -76,7 +76,7 @@ static NSMutableDictionary *_listeners;
                 [self handleDocumentSnapshotEvent:listenerId documentSnapshot:snapshot];
             }
         };
-        
+
         id<FIRListenerRegistration> listener = [_ref addSnapshotListener:listenerBlock];
         _listeners[listenerId] = listener;
     }
@@ -131,7 +131,7 @@ static NSMutableDictionary *_listeners;
     // createTime
     // readTime
     // updateTime
-    
+
     return snapshot;
 }
 
@@ -142,7 +142,7 @@ static NSMutableDictionary *_listeners;
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
-    
+
     [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
 }
 
@@ -153,12 +153,10 @@ static NSMutableDictionary *_listeners;
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"documentSnapshot"];
-    
+
     [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
 }
 
 #endif
 
 @end
-
-

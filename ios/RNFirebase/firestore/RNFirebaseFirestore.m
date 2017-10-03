@@ -1,6 +1,6 @@
 #import "RNFirebaseFirestore.h"
 
-#if __has_include(<Firestore/FIRFirestore.h>)
+#if __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
 
 #import <Firebase.h>
 #import "RNFirebaseEvents.h"
@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE();
 - (id)init {
     self = [super init];
     if (self != nil) {
-        
+
     }
     return self;
 }
@@ -54,14 +54,14 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
                        rejecter:(RCTPromiseRejectBlock) reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appName];
     FIRWriteBatch *batch = [firestore batch];
-    
+
     for (NSDictionary *write in writes) {
         NSString *type = write[@"type"];
         NSString *path = write[@"path"];
         NSDictionary *data = write[@"data"];
-        
+
         FIRDocumentReference *ref = [firestore documentWithPath:path];
-        
+
         if ([type isEqualToString:@"DELETE"]) {
             batch = [batch deleteDocument:ref];
         } else if ([type isEqualToString:@"SET"]) {
@@ -192,11 +192,11 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
     NSMutableDictionary *errorMap = [[NSMutableDictionary alloc] init];
     [errorMap setValue:@(nativeError.code) forKey:@"nativeErrorCode"];
     [errorMap setValue:[nativeError localizedDescription] forKey:@"nativeErrorMessage"];
-    
+
     NSString *code;
     NSString *message;
     NSString *service = @"Firestore";
-    
+
     // TODO: Proper error codes
     switch (nativeError.code) {
         default:
@@ -204,10 +204,10 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
             message = [RNFirebaseFirestore getMessageWithService:@"An unknown error occurred." service:service fullCode:code];
             break;
     }
-    
+
     [errorMap setValue:code forKey:@"code"];
     [errorMap setValue:message forKey:@"message"];
-    
+
     return errorMap;
 }
 
@@ -221,4 +221,3 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
 @implementation RNFirebaseFirestore
 @end
 #endif
-

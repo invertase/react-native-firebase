@@ -2,7 +2,7 @@
 
 @implementation RNFirebaseFirestoreCollectionReference
 
-#if __has_include(<Firestore/FIRFirestore.h>)
+#if __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
 
 static NSMutableDictionary *_listeners;
 
@@ -73,7 +73,7 @@ static NSMutableDictionary *_listeners;
     query = [self applyFilters:query];
     query = [self applyOrders:query];
     query = [self applyOptions:query];
-    
+
     return query;
 }
 
@@ -83,7 +83,7 @@ static NSMutableDictionary *_listeners;
         NSString *operator = filter[@"operator"];
         // TODO: Validate this works
         id value = filter[@"value"];
-        
+
         if ([operator isEqualToString:@"EQUAL"]) {
             query = [query queryWhereField:fieldPath isEqualTo:value];
         } else if ([operator isEqualToString:@"GREATER_THAN"]) {
@@ -103,7 +103,7 @@ static NSMutableDictionary *_listeners;
     for (NSDictionary *order in _orders) {
         NSString *direction = order[@"direction"];
         NSString *fieldPath = order[@"fieldPath"];
-        
+
         query = [query queryOrderedByField:fieldPath descending:([direction isEqualToString:@"DESCENDING"])];
     }
     return query;
@@ -138,7 +138,7 @@ static NSMutableDictionary *_listeners;
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
-    
+
     [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
 }
 
@@ -149,7 +149,7 @@ static NSMutableDictionary *_listeners;
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreCollectionReference snapshotToDictionary:querySnapshot] forKey:@"querySnapshot"];
-    
+
     [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
 }
 
@@ -157,7 +157,7 @@ static NSMutableDictionary *_listeners;
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
     [snapshot setValue:[self documentChangesToArray:querySnapshot.documentChanges] forKey:@"changes"];
     [snapshot setValue:[self documentSnapshotsToArray:querySnapshot.documents] forKey:@"documents"];
-    
+
     return snapshot;
 }
 
@@ -166,7 +166,7 @@ static NSMutableDictionary *_listeners;
     for (FIRDocumentChange *change in documentChanges) {
         [changes addObject:[self documentChangeToDictionary:change]];
     }
-    
+
     return changes;
 }
 
@@ -175,7 +175,7 @@ static NSMutableDictionary *_listeners;
     [change setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentChange.document] forKey:@"document"];
     [change setValue:@(documentChange.newIndex) forKey:@"newIndex"];
     [change setValue:@(documentChange.oldIndex) forKey:@"oldIndex"];
-    
+
     if (documentChange.type == FIRDocumentChangeTypeAdded) {
         [change setValue:@"added" forKey:@"type"];
     } else if (documentChange.type == FIRDocumentChangeTypeRemoved) {
@@ -183,7 +183,7 @@ static NSMutableDictionary *_listeners;
     } else if (documentChange.type == FIRDocumentChangeTypeModified) {
         [change setValue:@"modified" forKey:@"type"];
     }
-    
+
     return change;
 }
 
@@ -192,11 +192,10 @@ static NSMutableDictionary *_listeners;
     for (FIRDocumentSnapshot *snapshot in documentSnapshots) {
         [snapshots addObject:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:snapshot]];
     }
-    
+
     return snapshots;
 }
 
 #endif
 
 @end
-

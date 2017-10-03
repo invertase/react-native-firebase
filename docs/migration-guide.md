@@ -80,7 +80,7 @@ allprojects {
 ##### 5) Android - Update `app/build.gradle`:
 
 
-- You must update all your Firebase dependencies to 11.3.0.
+- You must update all your Firebase dependencies to 11.4.2.
 
 
 
@@ -88,7 +88,7 @@ allprojects {
 
 ##### 6) iOS - Update podfile:
 
-- You need to check that you're running at least version 4.2.0 of the Firebase Pods
+- You need to check that you're running at least version 4.3.0 of the Firebase Pods
   - Run `pod outdated`
   - Run `pod update`
 
