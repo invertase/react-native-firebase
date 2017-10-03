@@ -53,6 +53,7 @@ dependencies {
   compile "com.google.firebase:firebase-config:11.2.0"
   compile "com.google.firebase:firebase-crash:11.2.0"
   compile "com.google.firebase:firebase-database:11.2.0"
+  compile "com.google.firebase:firebase-firestore:11.2.0"
   compile "com.google.firebase:firebase-messaging:11.2.0"
   compile "com.google.firebase:firebase-perf:11.2.0"
   compile "com.google.firebase:firebase-storage:11.2.0"
@@ -88,6 +89,7 @@ import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase Remote Config
 import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage; // Firebase Firestore
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
 import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Performance
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
@@ -107,6 +109,7 @@ public class MainApplication extends Application implements ReactApplication {
           new RNFirebaseRemoteConfigPackage(),
           new RNFirebaseCrashPackage(),
           new RNFirebaseDatabasePackage(),
+          new RNFirebaseFirestorePackage(),
           new RNFirebaseMessagingPackage(),
           new RNFirebasePerformancePackage(),
           new RNFirebaseStoragePackage()
