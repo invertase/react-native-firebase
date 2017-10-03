@@ -10,7 +10,12 @@
 
 **RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. 
 
-We even support both databases: Realtime Database and Cloud Firestore!
+---
+
+We also support **both** databases: Realtime Database and Cloud Firestore!
+
+---
+
 
 <!---
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
