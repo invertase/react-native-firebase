@@ -4,6 +4,7 @@
 #if __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
 #import "RNFirebaseEvents.h"
 #import <FirebaseMessaging/FirebaseMessaging.h>
+#import <FirebaseInstanceID/FIRInstanceID.h>
 
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTConvert.h>
@@ -258,7 +259,7 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
 }
 
 RCT_EXPORT_METHOD(deleteInstanceId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [FIRInstanceID instanceID] deleteIDWithHandler:^(NSError * _Nullable error) {
+    [[FIRInstanceID instanceID] deleteIDWithHandler:^(NSError * _Nullable error) {
         if (!error) {
             resolve(nil);
         } else {
