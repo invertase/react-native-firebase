@@ -667,6 +667,33 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber:(NSString *) appName
     }];
 }
 
+/**
+ verifyPhoneNumber
+ 
+ @param string phoneNumber
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+//   public void verifyPhoneNumber(final String appName, final String phoneNumber, final String requestKey, final int timeout) {
+
+RCT_EXPORT_METHOD(verifyPhoneNumber:(NSString *) appName
+                  phoneNumber:(NSString *) phoneNumber
+                  requestKey:(NSString *) requestKey) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+    
+    [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+        if (error) {
+            NSDictionary * jsError = [self getJSError:(error)];
+            // TODO emit error
+        } else {
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:verificationID forKey:@"authVerificationID"];
+            // TODO emit code send
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(_confirmVerificationCode:(NSString *) appName
             verificationCode:(NSString *) verificationCode
             resolver:(RCTPromiseResolveBlock) resolve
@@ -843,9 +870,9 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
 /**
  getCredentialForProvider
 
- @param provider
- @param authToken
- @param authTokenSecret
+ @param provider string
+ @param authToken string
+ @param authTokenSecret string
  @return FIRAuthCredential
  */
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
@@ -893,9 +920,20 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
  @param error NSError
  */
 - (void)promiseRejectAuthException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
+    NSDictionary * jsError = [self getJSError:(error)];
+    reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], error);
+}
+
+/**
+ Reject a promise with an auth exception
+ 
+ @param error NSError
+ */
+- (NSDictionary *)getJSError:(NSError *)error {
     NSString *code = @"auth/unknown";
     NSString *message = [error localizedDescription];
-
+    NSString *nativeErrorMessage = [error localizedDescription];
+    
     switch (error.code) {
         case FIRAuthErrorCodeInvalidCustomToken:
             code = @"auth/invalid-custom-token";
@@ -969,7 +1007,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
             code = @"auth/internal-error";
             message = @"An internal error has occurred, please try again.";
             break;
-
+            
             // unsure of the below codes so leaving them as the default error message
         case FIRAuthErrorCodeTooManyRequests:
             code = @"auth/too-many-requests";
@@ -1004,9 +1042,14 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
         default:
             break;
     }
-
-    reject(code, message, error);
+    
+    return @{
+             @"code": code,
+             @"message": message,
+             @"nativeErrorMessage": nativeErrorMessage,
+           };
 }
+
 
 /**
  Resolve or reject a promise based on FIRUser value existance
@@ -1109,7 +1152,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[AUTH_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT];
+    return @[AUTH_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT, PHONE_AUTH_STATE_CHANGED_EVENT];
 }
 
 @end
