@@ -1,7 +1,7 @@
 
 # Firestore (Beta)
 
-RNFirebase mimics the [Firestore Web SDK](https://firebase.google.com/docs/database/web/read-and-write), whilst
+RNFirebase mimics the [Firestore Web SDK](https://firebase.google.com/docs/reference/js/firebase.firestore), whilst
 providing support for devices in low/no data connection state.
 
 All Firestore operations are accessed via `firestore()`.
