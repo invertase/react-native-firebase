@@ -249,7 +249,7 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
       it('should create Document', () => {
         return firebase.native.firestore()
           .doc('document-tests/doc2')
-          .set({ name: 'doc2' })
+          .set({ name: 'doc2', testArray: [] })
           .then(async () => {
             const doc = await firebase.native.firestore().doc('document-tests/doc2').get();
             doc.data().name.should.equal('doc2');

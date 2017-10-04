@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ public class FirestoreSerialize {
         writableArray.pushMap((objectMapToWritable((Map<String, Object>) item)));
       } else if (itemClass == Arrays.class) {
         writableArray.pushArray(objectArrayToWritable((Object[]) item));
-      } else if (itemClass == List.class) {
+      } else if (itemClass == List.class || itemClass == ArrayList.class) {
         List<Object> list = (List<Object>) item;
         Object[] listAsArray = list.toArray(new Object[list.size()]);
         writableArray.pushArray(objectArrayToWritable(listAsArray));
@@ -185,7 +186,7 @@ public class FirestoreSerialize {
         map.putMap(key, (objectMapToWritable((Map<String, Object>) value)));
       } else if (valueClass == Arrays.class) {
         map.putArray(key, objectArrayToWritable((Object[]) value));
-      } else if (valueClass == List.class) {
+      } else if (valueClass == List.class || valueClass == ArrayList.class) {
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
         map.putArray(key, objectArrayToWritable(array));
