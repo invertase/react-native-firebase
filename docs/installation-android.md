@@ -67,7 +67,12 @@ required reference to the repositories section of the *project* level build.grad
 ```groovy
 allprojects {
     repositories {
-         // ...
+        // ...
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
+        },
+        // Add this below the existing maven property above:
         maven {
             url 'https://maven.google.com'
         }
