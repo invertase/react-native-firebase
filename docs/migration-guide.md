@@ -66,7 +66,9 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
-        // ADD THIS SECTION HERE
+        // -------------------------------------------------
+        // Add this below the existing maven property above
+        // -------------------------------------------------
         maven {
             url 'https://maven.google.com'
         }
