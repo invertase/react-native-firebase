@@ -4,9 +4,9 @@
 RNFirebase mimics the [Firestore Web SDK](https://firebase.google.com/docs/reference/js/firebase.firestore), whilst
 providing support for devices in low/no data connection state.
 
-All Firestore operations are accessed via `firestore()`.
+All Firestore operations are accessed via `firestore()`. For detailed documentation of the supported methods demonstrated below please use the official firestore web sdk guides.
 
-Please note that Persistence (offline support) is enabled by default with Firestore on iOS and Android.
+?> Please note that Persistence (offline support) is enabled by default with Firestore on iOS and Android.
 
 ## Add and Manage Data
 
@@ -14,6 +14,8 @@ Please note that Persistence (offline support) is enabled by default with Firest
 
 Read information about a collection example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .collection('posts')
   .get()
@@ -31,6 +33,8 @@ firebase.firestore()
 
 Add to a collection example (generated ID):
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .collection('posts')
   .add({
@@ -44,6 +48,8 @@ firebase.firestore()
 
 Add to a collection example (manual ID):
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .collection('posts')
   .doc('post1')
@@ -60,6 +66,8 @@ firebase.firestore()
 
 There are multiple ways to read a document.  The following are equivalent examples:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .doc('posts/posts1')
   .get((documentSnapshot) => {
@@ -76,6 +84,8 @@ firebase.firestore()
 
 Create a document example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .doc('posts/posts1')
   .set({
@@ -89,6 +99,8 @@ firebase.firestore()
 
 Updating a document example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .doc('posts/posts1')
   .update({
@@ -101,6 +113,8 @@ firebase.firestore()
 
 Deleting a document example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .doc('posts/posts1')
   .delete()
@@ -114,6 +128,8 @@ firebase.firestore()
 Writes, updates and deletes to documents can be batched and committed atomically as follows:
 
 ```javascript
+import firebase from 'react-native-firebase';
+
 const ayRef = firebase.firestore().doc('places/AY');
 const lRef = firebase.firestore().doc('places/LON');
 const nycRef = firebase.firestore().doc('places/NYC');
@@ -145,6 +161,8 @@ Coming soon
 
 Listen to collection updates example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .collection('cities')
   .where('state', '==', 'CA')
@@ -161,6 +179,8 @@ The snapshot handler will receive a new query snapshot every time the query resu
 
 Listen to document updates example:
 ```javascript
+import firebase from 'react-native-firebase';
+
 firebase.firestore()
   .doc('posts/post1')
   .onSnapshot((documentSnapshot) => {

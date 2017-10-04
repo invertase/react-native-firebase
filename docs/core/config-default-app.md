@@ -2,7 +2,7 @@
 
 ### Enable Database Persistence
 
-Enabling database persistence (setPersistence) via JS for the default is no longer supported. This breaking change was added in v3 to prevent several race condition issues.
+Enabling database persistence (setPersistence) via JS for the default app is no longer supported. This breaking change was added in v3 to prevent several race condition issues around.
 
 You can still however easily enable this natively for the default app instance:
 
