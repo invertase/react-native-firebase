@@ -12,7 +12,7 @@ buildscript {
   // ...
   dependencies {
     // ...
-    classpath 'com.google.gms:google-services:3.0.0'
+    classpath 'com.google.gms:google-services:3.1.1'
   }
 }
 ```
@@ -42,25 +42,25 @@ dependencies {
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:11.2.0"
+  compile "com.google.firebase:firebase-core:11.4.2"
 
   // If you are receiving Google Play API availability issues, add the following dependency
-  compile "com.google.android.gms:play-services-base:11.2.0"
+  compile "com.google.android.gms:play-services-base:11.4.2"
 
   // RNFirebase optional dependencies
-  compile "com.google.firebase:firebase-ads:11.2.0"
-  compile "com.google.firebase:firebase-auth:11.2.0"
-  compile "com.google.firebase:firebase-config:11.2.0"
-  compile "com.google.firebase:firebase-crash:11.2.0"
-  compile "com.google.firebase:firebase-database:11.2.0"
-  compile "com.google.firebase:firebase-firestore:11.2.0"
-  compile "com.google.firebase:firebase-messaging:11.2.0"
-  compile "com.google.firebase:firebase-perf:11.2.0"
-  compile "com.google.firebase:firebase-storage:11.2.0"
+  compile "com.google.firebase:firebase-ads:11.4.2"
+  compile "com.google.firebase:firebase-auth:11.4.2"
+  compile "com.google.firebase:firebase-config:11.4.2"
+  compile "com.google.firebase:firebase-crash:11.4.2"
+  compile "com.google.firebase:firebase-database:11.4.2"
+  compile "com.google.firebase:firebase-firestore:11.4.2"
+  compile "com.google.firebase:firebase-messaging:11.4.2"
+  compile "com.google.firebase:firebase-perf:11.4.2"
+  compile "com.google.firebase:firebase-storage:11.4.2"
 }
 ```
 
-Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the
+Google Play services from 11.4.2 onwards require their dependencies to be downloaded from Google's Maven respository so add the
 required reference to the repositories section of the *project* level build.gradle
 `android/build.gradle`
 
@@ -196,6 +196,6 @@ In the same file, add the `firebase-perf` module to your dependencies:
 ```groovy
 dependencies {
   // ...
-  compile "com.google.firebase:firebase-perf:11.2.0"
+  compile "com.google.firebase:firebase-perf:11.4.2"
 }
 ```
