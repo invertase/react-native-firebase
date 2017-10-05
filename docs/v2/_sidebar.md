@@ -1,4 +1,4 @@
-- !! Old Version of RNFirebase !! 
+- ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) Viewing old RNFirebase version ![#f03c15](https://placehold.it/15/f03c15/000000?text=+)
 
 - Getting started
  - [Initial setup](/v2/initial-setup)
