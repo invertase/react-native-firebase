@@ -9,6 +9,7 @@ import auth from './auth/index';
 import config from './config/index';
 import performance from './perf/index';
 import admob from './admob/index';
+import links from './links/index';
 
 window.getCoverage = function getCoverage() {
   return (JSON.stringify(global.__coverage__));
@@ -25,6 +26,7 @@ const testSuiteInstances = [
   config,
   performance,
   admob,
+  links,
 ];
 
 /*
