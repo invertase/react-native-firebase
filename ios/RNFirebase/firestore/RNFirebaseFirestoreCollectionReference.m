@@ -157,6 +157,12 @@ static NSMutableDictionary *_listeners;
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
     [snapshot setValue:[self documentChangesToArray:querySnapshot.documentChanges] forKey:@"changes"];
     [snapshot setValue:[self documentSnapshotsToArray:querySnapshot.documents] forKey:@"documents"];
+    if (querySnapshot.metadata) {
+        NSMutableDictionary *metadata = [[NSMutableDictionary alloc] init];
+        [metadata setValue:@(querySnapshot.metadata.fromCache) forKey:@"fromCache"];
+        [metadata setValue:@(querySnapshot.metadata.hasPendingWrites) forKey:@"hasPendingWrites"];
+        [snapshot setValue:metadata forKey:@"metadata"];
+    }
 
     return snapshot;
 }

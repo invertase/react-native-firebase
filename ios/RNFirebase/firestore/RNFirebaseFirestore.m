@@ -49,7 +49,6 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
                          writes:(NSArray *) writes
-                  commitOptions:(NSDictionary *) commitOptions
                        resolver:(RCTPromiseResolveBlock) resolve
                        rejecter:(RCTPromiseRejectBlock) reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appName];
@@ -80,13 +79,7 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
         if (error) {
             [RNFirebaseFirestore promiseRejectException:reject error:error];
         } else {
-            NSMutableArray *result = [[NSMutableArray alloc] init];
-            for (NSDictionary *write in writes) {
-                // Missing fields from web SDK
-                // writeTime
-                [result addObject:@{}];
-            }
-            resolve(result);
+            resolve(nil);
         }
     }];
 }
@@ -108,10 +101,9 @@ RCT_EXPORT_METHOD(documentCreate:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentDelete:(NSString *) appName
                             path:(NSString *) path
-                         options:(NSDictionary *) options
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] delete:options resolver:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appName path:path] delete:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(documentGet:(NSString *) appName

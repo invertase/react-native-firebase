@@ -20,6 +20,7 @@ public class FirestoreSerialize {
   private static final String KEY_DOC_CHANGE_OLD_INDEX = "oldIndex";
   private static final String KEY_DOC_CHANGE_TYPE = "type";
   private static final String KEY_DOCUMENTS = "documents";
+  private static final String KEY_METADATA = "metadata";
   private static final String KEY_PATH = "path";
 
   /**
@@ -35,10 +36,13 @@ public class FirestoreSerialize {
     if (documentSnapshot.exists()) {
       documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
     }
-    // Missing fields from web SDK
-    // createTime
-    // readTime
-    // updateTime
+    // metadata
+    if (documentSnapshot.getMetadata() != null) {
+      WritableMap metadata = Arguments.createMap();
+      metadata.putBoolean("fromCache", documentSnapshot.getMetadata().isFromCache());
+      metadata.putBoolean("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+      documentMap.putMap(KEY_METADATA, metadata);
+    }
 
     return documentMap;
   }
@@ -56,6 +60,14 @@ public class FirestoreSerialize {
       documents.pushMap(snapshotToWritableMap(documentSnapshot));
     }
     queryMap.putArray(KEY_DOCUMENTS, documents);
+
+    // metadata
+    if (querySnapshot.getMetadata() != null) {
+      WritableMap metadata = Arguments.createMap();
+      metadata.putBoolean("fromCache", querySnapshot.getMetadata().isFromCache());
+      metadata.putBoolean("hasPendingWrites", querySnapshot.getMetadata().hasPendingWrites());
+      queryMap.putMap(KEY_METADATA, metadata);
+    }
 
     return queryMap;
   }
