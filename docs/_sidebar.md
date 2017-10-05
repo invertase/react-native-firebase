@@ -10,8 +10,9 @@
 ---
 
 - Core
- - [App](/core/app)
-   - [Configure default app instance](/core/config-default-app)
+ - [Apps](/core/app)
+   - [Default App](/core/default-app)
+   - [Dynamically Initialize Apps](/core/initialize-apps)
  - [Firebase](/core/firebase)
     - [Configure RNFirebase](/core/config-rnfirebase)
 
