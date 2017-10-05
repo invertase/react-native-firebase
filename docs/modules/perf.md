@@ -1,7 +1,5 @@
 # Performance Monitoring
 
-!> Performance monitoring requires react-native-firebase version 1.2.0.
-
 ?> Android: If you plan on using this module in your own application, please ensure the optional setup instructions for
 [Android](http://invertase.io/react-native-firebase/#/installation-android?id=_4-performance-monitoring-optional) have been followed.
 

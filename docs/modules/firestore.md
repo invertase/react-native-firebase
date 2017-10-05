@@ -1,10 +1,9 @@
 
 # Firestore (Beta)
 
-RNFirebase mimics the [Firestore Web SDK](https://firebase.google.com/docs/reference/js/firebase.firestore), whilst
-providing support for devices in low/no data connection state.
+RNFirebase mimics the [Firestore Web SDK](https://firebase.google.com/docs/reference/js/firebase.firestore) by providing a bridge to the native Android and iOS Firestore SDK's.
 
-All Firestore operations are accessed via `firestore()`. For detailed documentation of the supported methods demonstrated below please use the official firestore web sdk guides.
+All Firestore operations are accessed via `firebase.firestore()`. For detailed documentation of the supported methods demonstrated below please use the official firestore web sdk guides.
 
 ?> Please note that Persistence (offline support) is enabled by default with Firestore on iOS and Android.
 
