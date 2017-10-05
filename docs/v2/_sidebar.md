@@ -1,4 +1,4 @@
-!> Old Version of RNFirebase
+- !! Old Version of RNFirebase !! 
 
 - Getting started
  - [Initial setup](/v2/initial-setup)
