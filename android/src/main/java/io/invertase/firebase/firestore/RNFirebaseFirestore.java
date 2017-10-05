@@ -243,7 +243,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
         break;
       case CANCELLED:
         code = ErrorUtils.getCodeWithService(service, "cancelled");
-        message = ErrorUtils.getMessageWithService("The operation was cancelled (typically by the caller).", service, code);
+        message = ErrorUtils.getMessageWithService("The operation was cancelled.", service, code);
         break;
       case UNKNOWN:
         code = ErrorUtils.getCodeWithService(service, "unknown");
