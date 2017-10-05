@@ -190,10 +190,30 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
+  private DynamicLink.Builder getDynamicLinkBuilderFromMap(final Map<String, Object> m) {
+    DynamicLink.Builder parametersBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
+    Map<String, Object> dynamicLinkInfo = (Map<String, Object>) m.get("dynamicLinkInfo");
+    if (dynamicLinkInfo != null) {
+      try {
+        parametersBuilder.setLink(Uri.parse((String) dynamicLinkInfo.get("link")));
+        parametersBuilder.setDynamicLinkDomain((String) dynamicLinkInfo.get("dynamicLinkDomain"));
+
+        setAndroidParameters(dynamicLinkInfo, parametersBuilder);
+        setIosParameters(dynamicLinkInfo, parametersBuilder);
+        setSocialMetaTagParameters(dynamicLinkInfo, parametersBuilder);
+
+      } catch (Exception e) {
+        Log.e(TAG, "error while building parameters " + e.getMessage());
+        throw e;
+      }
+    }
+    return parametersBuilder;
+  }
+
   private Task<ShortDynamicLink> getShortDynamicLinkTask(final DynamicLink.Builder builder, final Map<String, Object> m) {
-    Map<String, Object> suffixParameters = (Map<String, Object>) m.get("suffix");
-    if (suffixParameters != null) {
-      String option = (String) suffixParameters.get("option");
+    Map<String, Object> suffix = (Map<String, Object>) m.get("suffix");
+    if (suffix != null) {
+      String option = (String) suffix.get("option");
       if ("SHORT".equals(option)) {
         return builder.buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT);
       } else if ("UNGUESSABLE".equals(option)) {
@@ -203,80 +223,93 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     return builder.buildShortDynamicLink();
   }
 
-  private DynamicLink.Builder getDynamicLinkBuilderFromMap(final Map<String, Object> m) {
-    DynamicLink.Builder parametersBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
-    try {
-      parametersBuilder.setLink(Uri.parse((String) m.get("link")));
-      parametersBuilder.setDynamicLinkDomain((String) m.get("dynamicLinkDomain"));
 
-      setAndroidParameters(m, parametersBuilder);
-      setIosParameters(m, parametersBuilder);
-      setSocialMetaTagParameters(m, parametersBuilder);
-
-    } catch (Exception e) {
-      Log.e(TAG, "error while building parameters " + e.getMessage());
-    }
-    return parametersBuilder;
-  }
-
-  private void setAndroidParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> androidParameters = (Map<String, Object>) m.get("androidInfo");
+  private void setAndroidParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> androidParameters = (Map<String, Object>) dynamicLinkInfo.get("androidInfo");
     if (androidParameters != null) {
       DynamicLink.AndroidParameters.Builder androidParametersBuilder =
         androidParameters.containsKey("androidPackageName") ?
           new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("androidPackageName")) :
           new DynamicLink.AndroidParameters.Builder();
+      androidParameters.remove("androidPackageName");
 
       if (androidParameters.containsKey("androidFallbackLink")) {
         androidParametersBuilder.setFallbackUrl(Uri.parse((String) androidParameters.get("androidFallbackLink")));
+        androidParameters.remove("androidFallbackLink");
       }
       if (androidParameters.containsKey("androidMinPackageVersionCode")) {
-        androidParametersBuilder.setMinimumVersion(((Double) androidParameters.get("androidMinPackageVersionCode")).intValue());
+        androidParametersBuilder.setMinimumVersion(Integer.parseInt((String) androidParameters.get("androidMinPackageVersionCode")));
+        androidParameters.remove("androidMinPackageVersionCode");
+      }
+
+      if (androidParameters.size() > 0) {
+        throw new IllegalArgumentException("Invalid arguments: " + androidParameters.keySet().toString());
       }
       parametersBuilder.setAndroidParameters(androidParametersBuilder.build());
     }
   }
 
-  private void setIosParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> iosParameters = (Map<String, Object>) m.get("iosInfo");
-    if (iosParameters != null && iosParameters.containsKey("iosBundleId")) {
+  private void setIosParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> iosParameters = (Map<String, Object>) dynamicLinkInfo.get("iosInfo");
+    if (iosParameters != null) {
+      if (!iosParameters.containsKey("iosBundleId")) {
+        throw new IllegalArgumentException("no iosBundleId was specified.");
+      }
       DynamicLink.IosParameters.Builder iosParametersBuilder = new DynamicLink.IosParameters.Builder((String) iosParameters.get("iosBundleId"));
+      iosParameters.remove("iosBundleId");
       if (iosParameters.containsKey("iosAppStoreId")) {
         iosParametersBuilder.setAppStoreId((String) iosParameters.get("iosAppStoreId"));
+        iosParameters.remove("iosAppStoreId");
       }
       if (iosParameters.containsKey("iosCustomScheme")) {
         iosParametersBuilder.setCustomScheme((String) iosParameters.get("iosCustomScheme"));
+        iosParameters.remove("iosCustomScheme");
       }
       if (iosParameters.containsKey("iosFallbackLink")) {
         iosParametersBuilder.setFallbackUrl(Uri.parse((String) iosParameters.get("iosFallbackLink")));
+        iosParameters.remove("iosFallbackLink");
       }
       if (iosParameters.containsKey("iosIpadBundleId")) {
         iosParametersBuilder.setIpadBundleId((String) iosParameters.get("iosIpadBundleId"));
+        iosParameters.remove("iosIpadBundleId");
       }
       if (iosParameters.containsKey("iosIpadFallbackLink")) {
         iosParametersBuilder.setIpadFallbackUrl(Uri.parse((String) iosParameters.get("iosIpadFallbackLink")));
+        iosParameters.remove("iosIpadFallbackLink");
       }
       if (iosParameters.containsKey("iosMinPackageVersionCode")) {
         iosParametersBuilder.setMinimumVersion((String) iosParameters.get("iosMinPackageVersionCode"));
+        iosParameters.remove("iosMinPackageVersionCode");
+      }
+
+      if (iosParameters.size() > 0) {
+        throw new IllegalArgumentException("Invalid arguments: " + iosParameters.keySet().toString());
       }
       parametersBuilder.setIosParameters(iosParametersBuilder.build());
     }
   }
 
-  private void setSocialMetaTagParameters(final Map<String, Object> m, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) m.get("socialMetaTagInfo");
+  private void setSocialMetaTagParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) dynamicLinkInfo.get("socialMetaTagInfo");
     if (socialMetaTagParameters != null) {
       DynamicLink.SocialMetaTagParameters.Builder socialMetaTagParametersBuilder =
         new DynamicLink.SocialMetaTagParameters.Builder();
 
       if (socialMetaTagParameters.containsKey("socialDescription")) {
         socialMetaTagParametersBuilder.setDescription((String) socialMetaTagParameters.get("socialDescription"));
+        socialMetaTagParameters.remove("socialDescription");
       }
       if (socialMetaTagParameters.containsKey("socialImageLink")) {
         socialMetaTagParametersBuilder.setImageUrl(Uri.parse((String) socialMetaTagParameters.get("socialImageLink")));
+        socialMetaTagParameters.remove("socialImageLink");
       }
       if (socialMetaTagParameters.containsKey("socialTitle")) {
         socialMetaTagParametersBuilder.setTitle((String) socialMetaTagParameters.get("socialTitle"));
+        socialMetaTagParameters.remove("socialTitle");
+      }
+
+      if (socialMetaTagParameters.size() > 0) {
+        throw new IllegalArgumentException("Invalid arguments: " + socialMetaTagParameters.keySet().toString());
       }
       parametersBuilder.setSocialMetaTagParameters(socialMetaTagParametersBuilder.build());
     }
