@@ -59,7 +59,8 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.47.0",
+    "react-native": ">= 0.48.0",
+    "prop-types": ">= 15.5.10",
     "fbjs": "*"
   },
   "devDependencies": {
@@ -82,8 +83,7 @@
     "wml": "0.0.82"
   },
   "dependencies": {
-    "bows": "^1.6.0",
-    "prop-types": "^15.5.10"
+    "bows": "^1.6.0"
   },
   "rnpm": {
     "android": {
