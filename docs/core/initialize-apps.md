@@ -30,6 +30,9 @@ const iosConfig = {
   storageBucket: 'x',
   messagingSenderId: 'x',
   projectId: 'x',
+
+  // enable persistence by adding the below flag
+  persistence: true,
 };
 
 // pluck values from your `google-services.json` file you created on the firebase console
@@ -41,6 +44,9 @@ const androidConfig = {
   storageBucket: 'x',
   messagingSenderId: 'x',
   projectId: 'x',
+
+  // enable persistence by adding the below flag
+  persistence: true,
 };
 
 const kittensApp = firebase.initializeApp(
