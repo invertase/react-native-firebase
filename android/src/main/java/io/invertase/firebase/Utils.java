@@ -78,7 +78,6 @@ public class Utils {
 
   /**
    * @param dataSnapshot
-   * @param registration
    * @param previousChildName
    * @return
    */

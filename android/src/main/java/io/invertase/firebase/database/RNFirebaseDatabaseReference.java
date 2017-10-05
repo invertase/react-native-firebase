@@ -29,8 +29,8 @@ class RNFirebaseDatabaseReference {
   private String appName;
   private ReactContext reactContext;
   private static final String TAG = "RNFirebaseDBReference";
-  private HashMap<String, ChildEventListener> childEventListeners;
-  private HashMap<String, ValueEventListener> valueEventListeners;
+  private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
+  private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
 
   /**
    * RNFirebase wrapper around FirebaseDatabaseReference,
@@ -47,8 +47,6 @@ class RNFirebaseDatabaseReference {
     query = null;
     appName = app;
     reactContext = context;
-    childEventListeners = new HashMap<>();
-    valueEventListeners = new HashMap<>();
     buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
   }
 

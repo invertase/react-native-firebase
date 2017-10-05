@@ -813,7 +813,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           TimeUnit.SECONDS,
           activity,
           callbacks
-          // ,PhoneAuthProvider.ForceResendingToken.zzboe() // TODO FORCE RESENDING
+          //, PhoneAuthProvider.ForceResendingToken.zzboe() // TODO FORCE RESENDING
         );
     }
   }

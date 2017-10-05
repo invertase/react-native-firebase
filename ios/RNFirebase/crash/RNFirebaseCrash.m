@@ -7,15 +7,15 @@
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(log:(NSString *)message) {
-  FIRCrashLog(message);
+  FIRCrashLog(@"%@", message);
 }
 
 RCT_EXPORT_METHOD(logcat:(nonnull NSNumber *) level tag:(NSString *) tag message:(NSString *) message) {
-  FIRCrashLog(message);
+  FIRCrashLog(@"%@", message);
 }
 
 RCT_EXPORT_METHOD(report:(NSString *) message) {
-  FIRCrashLog(message);
+  FIRCrashLog(@"%@", message);
   assert(NO);
 }
 

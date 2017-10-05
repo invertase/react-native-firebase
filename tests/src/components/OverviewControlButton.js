@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import some from 'lodash.some';
 import { connect } from 'react-redux';
 
-import Toast from 'react-native-simple-toast';
+// import Toast from 'react-native-simple-toast';
 
 import { runTests } from '../tests/index';
 import RunStatus from '../../lib/RunStatus';
@@ -26,7 +26,7 @@ class OverviewControlButton extends Component {
   handleOnPress() {
     const { focusedTestIds, pendingTestIds, tests } = this.props;
     runTests(tests, { focusedTestIds, pendingTestIds });
-    Toast.show('Running all suite tests.');
+    // Toast.show('Running all suite tests.');
   }
 
   render() {

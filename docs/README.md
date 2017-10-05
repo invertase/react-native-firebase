@@ -1,8 +1,3 @@
----
-
-!> These docs are for the [v3 pre-release](https://github.com/invertase/react-native-firebase/releases/tag/v3.0.0) version, for the currently published release version see the [v2 docs](/v2/)
-
----
 
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
@@ -11,6 +6,7 @@
 [![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
 [![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
+[![Twitter Follow](https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow)](https://twitter.com/rnfirebase)
 </div>
 
 ---
@@ -46,6 +42,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
 | **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
 | **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
+| **Firestore**              | ❌ | ❌ | ✅ | ❌ |
 | **Invites**                | ❌ | ❌ | ❌ | ❌ |
 | **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
 | **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
@@ -57,15 +54,10 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 ---
 ### Supported versions - React Native / Firebase
 
-> The table below shows the supported version of `react-native-firebase` for different React Native versions
+> The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`
 
-|                                 | v0.36 - v0.39  | v0.40 - v0.46  | v0.47 +
-| ------------------------------- | :---: | :---: | :---: |
-| react-native-firebase           | 1.X.X | 2.X.X | 2.1.X |
-
-> The table below shows the minimum supported versions of the Firebase SDKs for each version of `react-native-firebase`
-
-|                        | v1  | v2  | v3  |
-| ---------------------- | :---: | :---: | :---: |
-| Firebase Android SDK   | 10.2.0+ | 11.0.0 + | 11.2.0 + |
-| Firebase iOS SDK       | 3.15.0+ | 4.0.0 +  | 4.0.0 +  |
+|                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |
+|------------------------|-------------|-------------|-----------------|----------|
+| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   |
+| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.4.2 + |
+| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.3.0 +  |

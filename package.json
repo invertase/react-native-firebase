@@ -1,8 +1,8 @@
 {
   "name": "react-native-firebase",
-  "version": "3.0.0-alpha.5",
+  "version": "3.0.0",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Auth, Database, Messaging (FCM), Remote Config, Storage, Admob, Analytics, Crash Reporting, and Performance.",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Messaging (FCM), Remote Config, Storage and Performance.",
   "main": "index",
   "scripts": {
     "flow": "flow",
@@ -38,12 +38,20 @@
     "admob",
     "auth",
     "config",
+    "digits",
+    "phone-auth",
+    "sms",
+    "firestore",
+    "cloud-firestore",
+    "datastore",
     "remote-config",
     "transactions",
     "react-native",
     "react-native-firebase",
     "firebase",
     "fcm",
+    "apn",
+    "gcm",
     "analytics",
     "messaging",
     "database",
@@ -51,11 +59,12 @@
     "ios",
     "crash",
     "firestack",
-    "performance"
+    "performance",
+    "firestore"
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": ">= 0.40.0",
+    "react-native": ">= 0.48.0",
     "fbjs": "*"
   },
   "devDependencies": {
@@ -70,22 +79,25 @@
     "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.46.0",
-    "react": "^15.3.0",
-    "react-dom": "^15.3.0",
-    "react-native": "^0.44.0",
+    "flow-bin": "^0.55.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-native": "^0.48.0",
     "shelljs": "^0.7.8",
     "wml": "0.0.82"
   },
   "dependencies": {
     "bows": "^1.6.0",
-    "prop-types": "^15.5.10"
+    "prop-types": "^15.6.0"
   },
   "rnpm": {
     "android": {
       "buildPatch": "    compile(project(':react-native-firebase')) {\n        transitive = false\n    }\n",
-      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;\nimport io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;",
-      "packageInstance": "new RNFirebasePackage(),\n            new RNFirebaseAnalyticsPackage()"
+      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
+      "packageInstance": "new RNFirebasePackage()"
+    },
+    "commands": {
+      "postlink": "node node_modules/react-native-firebase/scripts/rnpm-postlink"
     }
   }
 }
