@@ -49,7 +49,6 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
                          writes:(NSArray *) writes
-                  commitOptions:(NSDictionary *) commitOptions
                        resolver:(RCTPromiseResolveBlock) resolve
                        rejecter:(RCTPromiseRejectBlock) reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appName];
@@ -80,13 +79,7 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
         if (error) {
             [RNFirebaseFirestore promiseRejectException:reject error:error];
         } else {
-            NSMutableArray *result = [[NSMutableArray alloc] init];
-            for (NSDictionary *write in writes) {
-                // Missing fields from web SDK
-                // writeTime
-                [result addObject:@{}];
-            }
-            resolve(result);
+            resolve(nil);
         }
     }];
 }
@@ -108,10 +101,9 @@ RCT_EXPORT_METHOD(documentCreate:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentDelete:(NSString *) appName
                             path:(NSString *) path
-                         options:(NSDictionary *) options
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] delete:options resolver:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appName path:path] delete:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(documentGet:(NSString *) appName
@@ -197,8 +189,75 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
     NSString *message;
     NSString *service = @"Firestore";
 
-    // TODO: Proper error codes
     switch (nativeError.code) {
+        case FIRFirestoreErrorCodeOK:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"ok"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Ok." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeCancelled:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"cancelled"];
+            message = [RNFirebaseFirestore getMessageWithService:@"The operation was cancelled." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeUnknown:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"unknown"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Unknown error or an error from a different error domain." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeInvalidArgument:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"invalid-argument"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Client specified an invalid argument." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeDeadlineExceeded:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"deadline-exceeded"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Deadline expired before operation could complete." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeNotFound:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"not-found"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Some requested document was not found." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeAlreadyExists:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"already-exists"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Some document that we attempted to create already exists." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodePermissionDenied:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"permission-denied"];
+            message = [RNFirebaseFirestore getMessageWithService:@"The caller does not have permission to execute the specified operation." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeResourceExhausted:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"resource-exhausted"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeFailedPrecondition:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"failed-precondition"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Operation was rejected because the system is not in a state required for the operation`s execution." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeAborted:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"aborted"];
+            message = [RNFirebaseFirestore getMessageWithService:@"The operation was aborted, typically due to a concurrency issue like transaction aborts, etc." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeOutOfRange:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"out-of-range"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Operation was attempted past the valid range." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeUnimplemented:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"unimplemented"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Operation is not implemented or not supported/enabled." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeInternal:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"internal"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Internal errors." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeUnavailable:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"unavailable"];
+            message = [RNFirebaseFirestore getMessageWithService:@"The service is currently unavailable." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeDataLoss:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"data-loss"];
+            message = [RNFirebaseFirestore getMessageWithService:@"Unrecoverable data loss or corruption." service:service fullCode:code];
+            break;
+        case FIRFirestoreErrorCodeUnauthenticated:
+            code = [RNFirebaseFirestore getCodeWithService:service code:@"unauthenticated"];
+            message = [RNFirebaseFirestore getMessageWithService:@"The request does not have valid authentication credentials for the operation." service:service fullCode:code];
+            break;
         default:
             code = [RNFirebaseFirestore getCodeWithService:service code:@"unknown"];
             message = [RNFirebaseFirestore getMessageWithService:@"An unknown error occurred." service:service fullCode:code];
