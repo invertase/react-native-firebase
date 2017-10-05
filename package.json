@@ -65,7 +65,6 @@
   "peerDependencies": {
     "react": "*",
     "react-native": ">= 0.48.0",
-    "prop-types": ">= 15.5.10",
     "fbjs": "*"
   },
   "devDependencies": {
@@ -81,14 +80,15 @@
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.55.0",
-    "react": "^15.3.0",
-    "react-dom": "^15.3.0",
-    "react-native": "^0.44.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-native": "^0.48.0",
     "shelljs": "^0.7.8",
     "wml": "0.0.82"
   },
   "dependencies": {
-    "bows": "^1.6.0"
+    "bows": "^1.6.0",
+    "prop-types": "^15.6.0"
   },
   "rnpm": {
     "android": {
