@@ -1,3 +1,5 @@
+!> Old Version of RNFirebase
+
 - Getting started
  - [Initial setup](/v2/initial-setup)
  - [Installation - iOS](/v2/installation-ios)
