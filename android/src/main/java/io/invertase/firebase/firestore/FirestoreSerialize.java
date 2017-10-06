@@ -7,7 +7,6 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -161,7 +160,7 @@ public class FirestoreSerialize {
         Object[] listAsArray = list.toArray(new Object[list.size()]);
         writableArray.pushArray(objectArrayToWritable(listAsArray));
       } else {
-        throw new RuntimeException("Cannot convert object of type " + item);
+        throw new RuntimeException("Cannot convert object of type " + itemClass);
       }
     }
 
@@ -198,7 +197,7 @@ public class FirestoreSerialize {
         Object[] array = list.toArray(new Object[list.size()]);
         map.putArray(key, objectArrayToWritable(array));
       } else {
-        throw new RuntimeException("Cannot convert object of type " + value);
+        throw new RuntimeException("Cannot convert object of type " + valueClass);
       }
     }
   }
