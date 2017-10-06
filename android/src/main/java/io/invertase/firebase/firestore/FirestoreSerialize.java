@@ -8,7 +8,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -155,11 +154,9 @@ public class FirestoreSerialize {
         writableArray.pushDouble(((Float) item).doubleValue());
       } else if (itemClass == String.class) {
         writableArray.pushString(item.toString());
-      } else if (itemClass == Map.class) {
+      } else if (Map.class.isAssignableFrom(itemClass)) {
         writableArray.pushMap((objectMapToWritable((Map<String, Object>) item)));
-      } else if (itemClass == Arrays.class) {
-        writableArray.pushArray(objectArrayToWritable((Object[]) item));
-      } else if (itemClass == List.class || itemClass == ArrayList.class) {
+      } else if (List.class.isAssignableFrom(itemClass)) {
         List<Object> list = (List<Object>) item;
         Object[] listAsArray = list.toArray(new Object[list.size()]);
         writableArray.pushArray(objectArrayToWritable(listAsArray));
@@ -194,11 +191,9 @@ public class FirestoreSerialize {
         map.putDouble(key, ((Float) value).doubleValue());
       } else if (valueClass == String.class) {
         map.putString(key, value.toString());
-      } else if (valueClass == Map.class) {
+      } else if (Map.class.isAssignableFrom(valueClass)) {
         map.putMap(key, (objectMapToWritable((Map<String, Object>) value)));
-      } else if (valueClass == Arrays.class) {
-        map.putArray(key, objectArrayToWritable((Object[]) value));
-      } else if (valueClass == List.class || valueClass == ArrayList.class) {
+      }  else if (List.class.isAssignableFrom(valueClass)) {
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
         map.putArray(key, objectArrayToWritable(array));
