@@ -196,12 +196,23 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     if (dynamicLinkInfo != null) {
       try {
         parametersBuilder.setLink(Uri.parse((String) dynamicLinkInfo.get("link")));
+        dynamicLinkInfo.remove("link");
+
         parametersBuilder.setDynamicLinkDomain((String) dynamicLinkInfo.get("dynamicLinkDomain"));
+        dynamicLinkInfo.remove("dynamicLinkDomain");
 
         setAndroidParameters(dynamicLinkInfo, parametersBuilder);
-        setIosParameters(dynamicLinkInfo, parametersBuilder);
-        setSocialMetaTagParameters(dynamicLinkInfo, parametersBuilder);
+        dynamicLinkInfo.remove("androidInfo");
 
+        setIosParameters(dynamicLinkInfo, parametersBuilder);
+        dynamicLinkInfo.remove("iosInfo");
+
+        setSocialMetaTagParameters(dynamicLinkInfo, parametersBuilder);
+        dynamicLinkInfo.remove("socialMetaTagInfo");
+
+        if (dynamicLinkInfo.size() > 0) {
+          throw new IllegalArgumentException("Invalid arguments: " + dynamicLinkInfo.keySet().toString());
+        }
       } catch (Exception e) {
         Log.e(TAG, "error while building parameters " + e.getMessage());
         throw e;
@@ -227,10 +238,12 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   private void setAndroidParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
     Map<String, Object> androidParameters = (Map<String, Object>) dynamicLinkInfo.get("androidInfo");
     if (androidParameters != null) {
+      if (!androidParameters.containsKey("androidPackageName")) {
+        throw new IllegalArgumentException("no androidPackageName was specified.");
+      }
+
       DynamicLink.AndroidParameters.Builder androidParametersBuilder =
-        androidParameters.containsKey("androidPackageName") ?
-          new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("androidPackageName")) :
-          new DynamicLink.AndroidParameters.Builder();
+        new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("androidPackageName"));
       androidParameters.remove("androidPackageName");
 
       if (androidParameters.containsKey("androidFallbackLink")) {
@@ -255,8 +268,10 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       if (!iosParameters.containsKey("iosBundleId")) {
         throw new IllegalArgumentException("no iosBundleId was specified.");
       }
-      DynamicLink.IosParameters.Builder iosParametersBuilder = new DynamicLink.IosParameters.Builder((String) iosParameters.get("iosBundleId"));
+      DynamicLink.IosParameters.Builder iosParametersBuilder =
+        new DynamicLink.IosParameters.Builder((String) iosParameters.get("iosBundleId"));
       iosParameters.remove("iosBundleId");
+
       if (iosParameters.containsKey("iosAppStoreId")) {
         iosParametersBuilder.setAppStoreId((String) iosParameters.get("iosAppStoreId"));
         iosParameters.remove("iosAppStoreId");

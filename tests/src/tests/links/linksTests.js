@@ -4,7 +4,6 @@ function linksTests({ describe, it, firebase, tryCatch }) {
   describe('test links', () => {
     const links = firebase.native.links();
     const link = 'https://yoursite.example.com';
-    const linkString = 'https%3A%2F%2Fyoursite.example.com';
     const dynamicLinkDomain = 'x59dg.app.goo.gl';
 
     const androidPackageName = 'com.reactnativefirebasedemo';
@@ -50,46 +49,70 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
       const result = await links.createDynamicLink(data);
 
-      const expectedUrl = `https://${dynamicLinkDomain}?sd=${
-        socialDescription}&si=${
-          socialImageLink}&st=${
-            socialTitle}&afl=${
-              androidFallbackLink}&amv=${
-                androidMinPackageVersionCode}&apn=${
-                  androidPackageName}&ibi=${
-                    iosBundleId}&ifl=${
-                      iosFallbackLink}&isi=${
-                        iosAppStoreId}&ius=${
-                          iosCustomScheme}&ipbi=${
-                            iosIpadBundleId}&ipfl=${
-                              iosIpadFallbackLink}&link=${linkString}`;
+      const expectedParameters = { sd: socialDescription,
+        si: socialImageLink,
+        st: socialTitle,
+        afl: androidFallbackLink,
+        amv: androidMinPackageVersionCode,
+        apn: androidPackageName,
+        ibi: iosBundleId,
+        ifl: iosFallbackLink,
+        isi: iosAppStoreId,
+        ius: iosCustomScheme,
+        ipbi: iosIpadBundleId,
+        ipfl: iosIpadFallbackLink,
+        link,
+      };
+      result.should.startWith(`https://${dynamicLinkDomain}`);
+
+      Object.keys(expectedParameters).forEach((key) => {
+        const val = expectedParameters[key];
+        const encodedVal = encodeURIComponent(val);
+        const encodedValWithPeriod = encodedVal.replace(/\./g, '%2E');
+        (result.includes(`${key}=${val}`) ||
+        result.includes(`${key}=${encodedVal}`) ||
+        result.includes(`${key}=${encodedValWithPeriod}`)).should.be.true();
+      });
+      Promise.resolve();
+    });
+
+    it('create long dynamic link with minimal parameters', async () => {
+      const data = {
+        dynamicLinkInfo: {
+          link,
+          dynamicLinkDomain,
+        },
+      };
+
+      const result = await links.createDynamicLink(data);
+      console.log(result);
+      const expectedUrl = `https://${dynamicLinkDomain}?link=${encodeURIComponent(link)}`;
 
       result.should.eql(expectedUrl);
       Promise.resolve();
     });
 
-    it('create long dynamic link with few parameters', async () => {
-      const data = {
-        dynamicLinkInfo: {
-          link,
-          dynamicLinkDomain,
-          androidInfo: {
-            androidPackageName,
-          },
-          iosInfo: {
-            iosBundleId,
-          },
-        },
-      };
+    it('fail to create long dynamic link with empty data object', () => {
+      return new Promise((resolve, reject) => {
+        const success = tryCatch(() => {
+          // Assertion
+          reject(new Error('createDynamicLink did not fail.'));
+        }, reject);
 
-      const result = await links.createDynamicLink(data);
+        const failure = tryCatch((error) => {
+          // Assertion
+          error.code.includes('links/failure').should.be.true();
+          resolve();
+        }, reject);
 
-      const expectedUrl = `https://${dynamicLinkDomain}?apn=${
-        androidPackageName}&ibi=${
-          iosBundleId}&link=${linkString}`;
+        const data = { };
 
-      result.should.eql(expectedUrl);
-      Promise.resolve();
+        // Test
+
+        links.createDynamicLink(data)
+        .then(success)
+        .catch(failure);
+      });
     });
 
     it('fail to create long dynamic link without iosBundleId', () => {
@@ -127,6 +150,81 @@ function linksTests({ describe, it, firebase, tryCatch }) {
               socialDescription,
               socialImageLink,
             },
+          },
+        };
+
+        // Test
+
+        links.createDynamicLink(data)
+        .then(success)
+        .catch(failure);
+      });
+    });
+
+    it('fail to create long dynamic link without androidPackageName', () => {
+      return new Promise((resolve, reject) => {
+        const success = tryCatch(() => {
+          // Assertion
+          reject(new Error('createDynamicLink did not fail.'));
+        }, reject);
+
+        const failure = tryCatch((error) => {
+          // Assertion
+          error.code.includes('links/failure').should.be.true();
+          resolve();
+        }, reject);
+
+        // Setup
+        const data = {
+          dynamicLinkInfo: {
+            link,
+            dynamicLinkDomain,
+            androidInfo: {
+              androidFallbackLink,
+              androidMinPackageVersionCode,
+            },
+            iosInfo: {
+              iosBundleId,
+              iosFallbackLink,
+              iosCustomScheme,
+              iosIpadFallbackLink,
+              iosIpadBundleId,
+              iosAppStoreId,
+            },
+            socialMetaTagInfo: {
+              socialTitle,
+              socialDescription,
+              socialImageLink,
+            },
+          },
+        };
+
+        // Test
+
+        links.createDynamicLink(data)
+        .then(success)
+        .catch(failure);
+      });
+    });
+
+    it('fail to create long dynamic link with unsupported dynamicLinkInfo parameters', () => {
+      return new Promise((resolve, reject) => {
+        const success = tryCatch(() => {
+          // Assertion
+          reject(new Error('createDynamicLink did not fail.'));
+        }, reject);
+
+        const failure = tryCatch((error) => {
+          // Assertion
+          error.code.includes('links/failure').should.be.true();
+          resolve();
+        }, reject);
+
+        const data = {
+          dynamicLinkInfo: {
+            link,
+            dynamicLinkDomain,
+            someInvalidParameter: 'invalid',
           },
         };
 
