@@ -37,18 +37,6 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     return TAG;
   }
 
-  @ReactMethod
-  public void promptPlayServices() {
-    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
-    int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
-
-    if (status != ConnectionResult.SUCCESS && gapi.isUserResolvableError(status)) {
-      Activity activity = getCurrentActivity();
-      if (activity != null) {
-        gapi.getErrorDialog(activity, status, 2404).show();
-      }
-    }
-  }
 
   @ReactMethod
   public void initializeApp(String appName, ReadableMap options, Callback callback) {
@@ -84,6 +72,9 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     }
   }
 
+  /**
+   * @return
+   */
   private WritableMap getPlayServicesStatus() {
     GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
     final int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
@@ -99,18 +90,50 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
     return result;
   }
 
+  /**
+   * Prompt the device user to update play services
+   */
+  @ReactMethod
+  public void promptPlayServices() {
+    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
+    int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
+
+    if (status != ConnectionResult.SUCCESS && gapi.isUserResolvableError(status)) {
+      Activity activity = getCurrentActivity();
+      if (activity != null) {
+        gapi.getErrorDialog(activity, status, status).show();
+      }
+    }
+  }
+
+  /**
+   * Prompt the device user to update play services
+   */
+  @ReactMethod
+  public void makePlayServicesAvailable() {
+    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
+    int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
+
+    if (status != ConnectionResult.SUCCESS) {
+      Activity activity = getCurrentActivity();
+      if (activity != null) {
+        gapi.makeGooglePlayServicesAvailable(activity);
+      }
+    }
+  }
+
   @Override
   public void onHostResume() {
-    WritableMap params = Arguments.createMap();
-    params.putBoolean("isForeground", true);
-    Utils.sendEvent(getReactApplicationContext(), "RNFirebaseAppState", params);
+//    WritableMap params = Arguments.createMap();
+//    params.putBoolean("isForeground", true);
+//    Utils.sendEvent(getReactApplicationContext(), "RNFirebaseAppState", params);
   }
 
   @Override
   public void onHostPause() {
-    WritableMap params = Arguments.createMap();
-    params.putBoolean("isForeground", false);
-    Utils.sendEvent(getReactApplicationContext(), "RNFirebaseAppState", params);
+//    WritableMap params = Arguments.createMap();
+//    params.putBoolean("isForeground", false);
+//    Utils.sendEvent(getReactApplicationContext(), "RNFirebaseAppState", params);
   }
 
   @Override
@@ -137,7 +160,7 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule implements Life
       appProps.put("messagingSenderId", appOptions.getGcmSenderId());
       appProps.put("projectId", appOptions.getProjectId());
       appProps.put("storageBucket", appOptions.getStorageBucket());
-      // TODO no way to get client id currently from app options
+      // TODO no way to get client id currently from app options - firebase sdk issue
       appMapsList.add(appProps);
     }
 
