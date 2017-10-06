@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -85,7 +86,7 @@ public class RNFirebaseFirestoreDocumentReference {
     }
   }
 
-  public void onSnapshot(final String listenerId) {
+  public void onSnapshot(final String listenerId, final ReadableMap docListenOptions) {
     if (!documentSnapshotListeners.containsKey(listenerId)) {
       final EventListener<DocumentSnapshot> listener = new EventListener<DocumentSnapshot>() {
         @Override
@@ -101,7 +102,11 @@ public class RNFirebaseFirestoreDocumentReference {
           }
         }
       };
-      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(listener);
+      DocumentListenOptions options = new DocumentListenOptions();
+      if (docListenOptions != null && docListenOptions.hasKey("includeMetadataChanges") && docListenOptions.getBoolean("includeMetadataChanges")) {
+        options.includeMetadataChanges();
+      }
+      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(options, listener);
       documentSnapshotListeners.put(listenerId, listenerRegistration);
     }
   }
