@@ -388,10 +388,22 @@ function documentReferenceTests({ describe, it, context, firebase }) {
     });
 
     context('update()', () => {
-      it('should update Document', () => {
+      it('should update Document using object', () => {
         return firebase.native.firestore()
           .doc('document-tests/doc1')
-          .set({ name: 'updated' })
+          .update({ name: 'updated' })
+          .then(async () => {
+            const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
+            doc.data().name.should.equal('updated');
+          });
+      });
+    });
+
+    context('update()', () => {
+      it('should update Document using key/value pairs', () => {
+        return firebase.native.firestore()
+          .doc('document-tests/doc1')
+          .update('name', 'updated')
           .then(async () => {
             const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
             doc.data().name.should.equal('updated');

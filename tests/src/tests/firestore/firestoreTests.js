@@ -36,7 +36,7 @@ function firestoreTests({ describe, it, context, firebase }) {
             .set(nycRef, { name: 'New York City' })
             .set(sfRef, { name: 'San Francisco' })
             .update(nycRef, { population: 1000000 })
-            .update(sfRef, { name: 'San Fran' })
+            .update(sfRef, 'name', 'San Fran')
             .set(lRef, { population: 3000000 }, { merge: true })
             .delete(ayRef)
             .commit()
