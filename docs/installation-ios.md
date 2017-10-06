@@ -5,8 +5,9 @@ Please note that there is a known issue when using Cocoapods with the `use_frame
 ## 1) Setup GoogleService-Info.plist
 Setup the `GoogleService-Info.plist` file by following the instructions and adding it to the root of your project at `ios/[YOUR APP NAME]/GoogleService-Info.plist` [here](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app).
 
-**NOTE:** Unfortunately pasting the file into the directory doesn't automatically add the file to the iOS project. You need to manually add it (which I only know how to do within XCode) by
+**NOTE:** Unfortunately pasting the file into the directory doesn't automatically add the file to the iOS project. You need to manually add it by
 
+  1. Open <project root>/ios/'project name'.xcworkspace via XCode
   1. Right click on your project
   1. Click "Add files to 'project name'"
   1. Select the .plist file
