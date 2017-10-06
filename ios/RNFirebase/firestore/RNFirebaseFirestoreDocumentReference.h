@@ -22,7 +22,7 @@
 - (void)delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 + (void)offSnapshot:(NSString *)listenerId;
-- (void)onSnapshot:(NSString *)listenerId;
+- (void)onSnapshot:(NSString *)listenerId docListenOptions:(NSDictionary *) docListenOptions;
 - (void)set:(NSDictionary *)data options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)update:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (BOOL)hasListeners;

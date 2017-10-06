@@ -49,7 +49,8 @@ static NSMutableDictionary *_listeners;
     }
 }
 
-- (void)onSnapshot:(NSString *) listenerId {
+- (void)onSnapshot:(NSString *) listenerId
+queryListenOptions:(NSDictionary *) queryListenOptions {
     if (_listeners[listenerId] == nil) {
         id listenerBlock = ^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
             if (error) {
@@ -63,7 +64,18 @@ static NSMutableDictionary *_listeners;
                 [self handleQuerySnapshotEvent:listenerId querySnapshot:snapshot];
             }
         };
-        id<FIRListenerRegistration> listener = [_query addSnapshotListener:listenerBlock];
+        
+        FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
+        if (queryListenOptions) {
+            if (queryListenOptions[@"includeDocumentMetadataChanges"]) {
+                [options includeDocumentMetadataChanges:TRUE];
+            }
+            if (queryListenOptions[@"includeQueryMetadataChanges"]) {
+                [options includeQueryMetadataChanges:TRUE];
+            }
+        }
+        
+        id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];
         _listeners[listenerId] = listener;
     }
 }

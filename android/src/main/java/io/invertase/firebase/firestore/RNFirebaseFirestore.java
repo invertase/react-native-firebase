@@ -57,9 +57,10 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void collectionOnSnapshot(String appName, String path, ReadableArray filters,
-                                   ReadableArray orders, ReadableMap options, String listenerId) {
+                                   ReadableArray orders, ReadableMap options, String listenerId,
+                                   ReadableMap queryListenOptions) {
     RNFirebaseFirestoreCollectionReference ref = getCollectionForAppPath(appName, path, filters, orders, options);
-    ref.onSnapshot(listenerId);
+    ref.onSnapshot(listenerId, queryListenOptions);
   }
 
 
@@ -145,9 +146,10 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void documentOnSnapshot(String appName, String path, String listenerId) {
+  public void documentOnSnapshot(String appName, String path, String listenerId,
+                                 ReadableMap docListenOptions) {
     RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
-    ref.onSnapshot(listenerId);
+    ref.onSnapshot(listenerId, docListenOptions);
   }
 
   @ReactMethod
