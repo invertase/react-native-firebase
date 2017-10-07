@@ -69,6 +69,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         const val = expectedParameters[key];
         const encodedVal = encodeURIComponent(val);
         const encodedValWithPeriod = encodedVal.replace(/\./g, '%2E');
+        console.log(`val: ${val}, eval: ${encodedVal}, evalP: ${encodedValWithPeriod}, url: ${result}`);
         (result.includes(`${key}=${val}`) ||
         result.includes(`${key}=${encodedVal}`) ||
         result.includes(`${key}=${encodedValWithPeriod}`)).should.be.true();
@@ -85,10 +86,10 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       };
 
       const result = await links.createDynamicLink(data);
-      console.log(result);
-      const expectedUrl = `https://${dynamicLinkDomain}?link=${encodeURIComponent(link)}`;
-
-      result.should.eql(expectedUrl);
+      const expectedUrl = `https://${dynamicLinkDomain}/?link=${encodeURIComponent(link)}`;
+      const expectedUrlWithEncodedPeriod = `https://${dynamicLinkDomain}/?link=${
+        encodeURIComponent(link).replace(/\./g, '%2E')}`;
+      [expectedUrl, expectedUrlWithEncodedPeriod].should.matchAny(result);
       Promise.resolve();
     });
 
