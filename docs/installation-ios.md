@@ -2,10 +2,14 @@
 
 Please note that there is a known issue when using Cocoapods with the `use_frameworks!` enabled.  This is explained [here](https://github.com/invertase/react-native-firebase/issues/252#issuecomment-316340974).  Unfortunately we don't currently have a workaround, but are engaging with Firebase directly to try and resolve the problem.
 
-## 1) Setup GoogleService-Info.plist
+## 1) Link RNFirebase
+
+Run `react-native link react-native-firebase`
+
+## 2) Setup GoogleService-Info.plist
 Setup the `GoogleService-Info.plist` file by following the instructions and adding it to the root of your project at `ios/[YOUR APP NAME]/GoogleService-Info.plist` [here](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app).
 
-### 1.1) Initialisation
+### 2.1) Initialisation
 Make sure you've added the following to the top of your `ios/[YOUR APP NAME]]/AppDelegate.m` file:
 
 `#import <Firebase.h>`
@@ -14,11 +18,11 @@ and this to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` me
 
 `[FIRApp configure];`
 
-## 2) Setup RNFirebase
+## 3) Setup Firebase Pods
 
-Unfortunately, due to the fact that Firebase is much easier to setup using Cocoapods, *we do not recommend* `react-native link` as it is not customisable enough for our needs and we have had numerous problems reported.
+Firebase recommends using Cocoapods to install the Firebase SDK.
 
-### 2.0) If you don't already have Cocoapods set up
+### 3.0) If you don't already have Cocoapods set up
 Follow the instructions to install Cocoapods and create your Podfile [here](https://firebase.google.com/docs/ios/setup#add_the_sdk).
 
 **NOTE: The Podfile needs to be initialised in the `ios` directory of your project. Make sure to update cocoapods libs first by running `pod update`**
@@ -50,18 +54,17 @@ Follow the instructions to install Cocoapods and create your Podfile [here](http
 - Uncomment the `# platform :ios, '9.0'` line by removing the `#` character
 - Change the version as required
 
-### 2.1) Check the Podfile platform version
+### 3.1) Check the Podfile platform version
 We recommend using a minimum platform version of at least 9.0 for your application to ensure that the correct version of the Firebase libraries are used.  To do this, you need to uncomment or make sure the following line is present at the top of your `Podfile`:
 
 `platform :ios, '9.0'`
 
-### 2.2) Add the required pods
+### 3.2) Add the required pods
 Simply add the following to your `Podfile` either at the top level, or within the main project target:
 
 ```ruby
 # Required by RNFirebase
 pod 'Firebase/Core'
-pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
 # [OPTIONAL PODS] - comment out pods for firebase products you won't be using.
 pod 'Firebase/AdMob'
@@ -75,27 +78,6 @@ pod 'Firebase/RemoteConfig'
 pod 'Firebase/Storage'
 ```
 
-If you do not already have React and Yoga installed as pods, then add Yoga and React to your `Podfile` as follows:
-
-```ruby
-pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
-pod 'React', :path => '../node_modules/react-native', :subspecs => [
-  'BatchedBridge', # Required For React Native 0.45.0+
-  'Core',
-  # Add any other subspecs you want to use in your project
-]
-
-#Also add this at the very bottom of your Podfile
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    if target.name == "React"
-      target.remove_from_project
-    end
-  end
-end
-```
-
 Run `pod install`.
 
 **NOTE: You need to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on.**
@@ -106,24 +88,24 @@ Run `pod install`.
 **Resolution**
 - Run `npm install --save react-native-firebase` from the root of your project
 
-## 3) Cloud Messaging (optional)
+## 4) Cloud Messaging (optional)
 
 If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) then, you need to:
 
 **NOTE: FCM does not work on the iOS simulator, you must test is using a real device.  This is a restriction enforced by Apple for some unknown reason.**
 
-### 3.1) Set up certificates
+### 4.1) Set up certificates
 
 Follow the instructions at https://firebase.google.com/docs/cloud-messaging/ios/certs
 
-### 3.2) Enable capabilities
+### 4.2) Enable capabilities
 
 In Xcode, enable the following capabilities:
 
 1) Push Notifications
 2) Background modes > Remote notifications
 
-### 3.3) Update `AppDelegate.h`
+### 4.3) Update `AppDelegate.h`
 
 Add the following import:
 
@@ -133,7 +115,7 @@ Change the interface descriptor to:
 
 `@interface AppDelegate : UIResponder <UIApplicationDelegate,UNUserNotificationCenterDelegate>`
 
-### 3.4) Update `AppDelegate.m`
+### 4.4) Update `AppDelegate.m`
 
 Add the following import:
 
@@ -172,7 +154,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 ```
 
-### 3.5) Debugging
+### 4.5) Debugging
 
 If you're having problems with messages not being received, check out the following blog post for help:
 
