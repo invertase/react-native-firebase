@@ -147,6 +147,8 @@ public class FirestoreSerialize {
         writableArray.pushBoolean((Boolean) item);
       } else if (itemClass == Integer.class) {
         writableArray.pushDouble(((Integer) item).doubleValue());
+      } else if (itemClass == Long.class) {
+        writableArray.pushDouble(((Long) item).doubleValue());
       } else if (itemClass == Double.class) {
         writableArray.pushDouble((Double) item);
       } else if (itemClass == Float.class) {
@@ -184,6 +186,8 @@ public class FirestoreSerialize {
         map.putBoolean(key, (Boolean) value);
       } else if (valueClass == Integer.class) {
         map.putDouble(key, ((Integer) value).doubleValue());
+      } else if (valueClass == Long.class) {
+        map.putDouble(key, ((Long) value).doubleValue());
       } else if (valueClass == Double.class) {
         map.putDouble(key, (Double) value);
       } else if (valueClass == Float.class) {
