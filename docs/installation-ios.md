@@ -166,17 +166,21 @@ https://firebase.googleblog.com/2017/01/debugging-firebase-cloud-messaging-on.ht
 
 If you plan on using [Firebase Dynamic Links](https://firebase.google.com/docs/dynamic-links/) then, you need to:
 
-### 5.1)  create a new URL type
+### 5.1) Setup
+
+Make sure to setup dynamic links for iOS as described [here](https://firebase.google.com/docs/dynamic-links/ios/receive#set-up-firebase-and-the-dynamic-links-sdk)
+
+### 5.2)  create a new URL type
 
 In the Info tab of your app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to either your bundle identifier or a unique value.
 
-### 5.2) Enable Associated Domains capability
+### 5.3) Enable Associated Domains capability
 
 In the Capabilities tab of your app's Xcode project, enable Associated Domains and
 add the following to the Associated Domains list:
 `applinks:app_code.app.goo.gl` where `app_code` is your dynamic links domain application code.
 
-### 5.3) Update `AppDelegate.m`
+### 5.4) Update `AppDelegate.m`
 
 Add the following import:
 

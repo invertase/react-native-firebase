@@ -7,7 +7,7 @@ All Dynamic Links operations are accessed via `firebase.links()`
 
 ## Create Dynamic Links
 
-RNFirebase mimics [The REST API](https://firebase.google.com/docs/dynamic-links/rest) for Dynamic Links creation.
+RNFirebase mimics [Firebase's REST API](https://firebase.google.com/docs/dynamic-links/rest) for Dynamic Links creation.
 The differences from the REST API are:
 1. The input for the methods is a javascript object instead of a JSON object.
 2. The response contains the URL string only.
@@ -22,7 +22,7 @@ Creates a long dynamic link.
 firebase.links().createDynamicLink({
   dynamicLinkInfo: {
     dynamicLinkDomain: "abc123.app.goo.gl",
-    link: "https://example.com/",
+    link: "https://example.com?param1=foo&param2=bar",
     androidInfo: {
       androidPackageName: "com.example.android"
     },
@@ -43,7 +43,7 @@ Creates a short dynamic link.
 ```javascript
 firebase.links().createShortDynamicLink(dynamicLinkInfo: {
     dynamicLinkDomain: "abc123.app.goo.gl",
-    link: "https://example.com/",
+    link: "https://example.com?param1=foo&param2=bar",
     androidInfo: {
       androidPackageName: "com.example.android"
     },
@@ -108,7 +108,7 @@ firebase.links().getInitialLink().then((url) => {
 });
 ```
 
-#### `onLink(listener: Function): () => any`
+#### `onLink(listener: Function<String>): Function`
 
 On a new URL, the payload URL is passed to the listener callback. This method is only triggered when the app is running. Use getInitialLink for URLs which cause the app to open.
 In order to subscribe to the listener, call to the method with a callback and save the returned function.
@@ -116,7 +116,7 @@ When you want to unsubscribe, just call the function that returned at subscripti
 
 ```javascript
 // Subscribe
-const unsubscribe = firebase.links().onLink().then((url) => {
+const unsubscribe = firebase.links().onLink((url) => {
   //...
 });
 

@@ -215,7 +215,9 @@ dependencies {
 If you plan on using [Firebase Dynamic
 Links](https://firebase.google.com/docs/dynamic-links/):
 
-In `android/app/src/main/AndroidManifest.xml`, add a new intent filter to the activity that handles deep links for your app, and specify the host and the scheme:
+Make sure to setup dynamic links for Android as described [here](https://firebase.google.com/docs/dynamic-links/android/receive#set-up-firebase-and-the-dynamic-links-sdk)
+
+In `android/app/src/main/AndroidManifest.xml`, add a new intent filter to the activity that handles deep links for your app (for react-native this is usually MainActivity), and specify the host and the scheme:
 
 ```xml
 <intent-filter>
