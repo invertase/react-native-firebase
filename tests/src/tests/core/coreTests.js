@@ -48,13 +48,14 @@ function coreTests({ describe, it }) {
 
     it('it should provide an array of apps', () => {
       should.equal(!!RNFirebase.apps.length, true);
-      should.equal(RNFirebase.apps[0]._name, RNFirebase.DEFAULT_APP_NAME);
+      should.equal(RNFirebase.apps[0]._name, RNFirebase.utils.DEFAULT_APP_NAME);
       should.equal(RNFirebase.apps[0].name, '[DEFAULT]');
       return Promise.resolve();
     });
 
+    // todo move to UTILS module tests
     it('it should provide the sdk version', () => {
-      should.equal(!!RNFirebase.SDK_VERSION.length, true);
+      should.equal(!!RNFirebase.utils.VERSIONS['react-native-firebase'].length, true);
       return Promise.resolve();
     });
 

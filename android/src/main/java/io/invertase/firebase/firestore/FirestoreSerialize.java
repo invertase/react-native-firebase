@@ -15,13 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -154,8 +147,34 @@ public class FirestoreSerialize {
     WritableArray writableArray = Arguments.createArray();
 
     for (Object item : array) {
-      WritableMap typeMap = buildTypeMap(item);
-      writableArray.pushMap(typeMap);
+      if (item == null) {
+        writableArray.pushNull();
+        continue;
+      }
+
+      Class itemClass = item.getClass();
+
+      if (itemClass == Boolean.class) {
+        writableArray.pushBoolean((Boolean) item);
+      } else if (itemClass == Integer.class) {
+        writableArray.pushDouble(((Integer) item).doubleValue());
+      } else if (itemClass == Long.class) {
+        writableArray.pushDouble(((Long) item).doubleValue());
+      } else if (itemClass == Double.class) {
+        writableArray.pushDouble((Double) item);
+      } else if (itemClass == Float.class) {
+        writableArray.pushDouble(((Float) item).doubleValue());
+      } else if (itemClass == String.class) {
+        writableArray.pushString(item.toString());
+      } else if (Map.class.isAssignableFrom(itemClass)) {
+        writableArray.pushMap((objectMapToWritable((Map<String, Object>) item)));
+      } else if (List.class.isAssignableFrom(itemClass)) {
+        List<Object> list = (List<Object>) item;
+        Object[] listAsArray = list.toArray(new Object[list.size()]);
+        writableArray.pushArray(objectArrayToWritable(listAsArray));
+      } else {
+        throw new RuntimeException("Cannot convert object of type " + itemClass);
+      }
     }
 
     return writableArray;
@@ -178,8 +197,9 @@ public class FirestoreSerialize {
         typeMap.putString("type", "boolean");
         typeMap.putBoolean("value", (Boolean) value);
       } else if (valueClass == Integer.class) {
-        typeMap.putString("type", "number");
-        typeMap.putDouble("value", ((Integer) value).doubleValue());
+        map.putDouble(key, ((Integer) value).doubleValue());
+      } else if (valueClass == Long.class) {
+        map.putDouble(key, ((Long) value).doubleValue());
       } else if (valueClass == Double.class) {
         typeMap.putString("type", "number");
         typeMap.putDouble("value", (Double) value);
@@ -187,16 +207,10 @@ public class FirestoreSerialize {
         typeMap.putString("type", "number");
         typeMap.putDouble("value", ((Float) value).doubleValue());
       } else if (valueClass == String.class) {
-        typeMap.putString("type", "string");
-        typeMap.putString("value", value.toString());
-      } else if (valueClass == Map.class || valueClass == HashMap.class) {
-        typeMap.putString("type", "object");
-        typeMap.putMap("value", (objectMapToWritable((Map<String, Object>) value)));
-      } else if (valueClass == Arrays.class) {
-        typeMap.putString("type", "array");
-        typeMap.putArray("value", objectArrayToWritable((Object[]) value));
-      } else if (valueClass == List.class || valueClass == ArrayList.class) {
-        typeMap.putString("type", "array");
+        map.putString(key, value.toString());
+      } else if (Map.class.isAssignableFrom(valueClass)) {
+        map.putMap(key, (objectMapToWritable((Map<String, Object>) value)));
+      }  else if (List.class.isAssignableFrom(valueClass)) {
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
         typeMap.putArray("value", objectArrayToWritable(array));
@@ -213,6 +227,7 @@ public class FirestoreSerialize {
         typeMap.putString("type", "date");
         typeMap.putString("value", DATE_FORMAT.format((Date) value));
       } else {
+        // TODO: Changed to log an error rather than crash - is this correct?
         Log.e(TAG, "buildTypeMap", new RuntimeException("Cannot convert object of type " + valueClass));
         typeMap.putString("type", "null");
         typeMap.putNull("value");
