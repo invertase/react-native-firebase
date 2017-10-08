@@ -90,8 +90,9 @@ Only the following parameters are currently supported:
   }
 }
 ```
+?> Please note that when using `androidInfo` or `iosInfo`, `androidPackageName` and `iosBundleId` are mandatory (respectively).
 
-For more information ([see reference](https://firebase.google.com/docs/reference/dynamic-links/link-shortener))
+For more information [see reference](https://firebase.google.com/docs/reference/dynamic-links/link-shortener)
 
 ## Receive Dynamic Links
 
@@ -99,7 +100,7 @@ For more information ([see reference](https://firebase.google.com/docs/reference
 
 #### `getInitialLink(): Promise<String>`
 
-Call getInitialLink to access the URL that the app has been launched from.
+Call getInitialLink to access the URL that the app has been launched from. If the app was not launched from a URL, the return value is null.
 
 ```javascript
 firebase.links().getInitialLink().then((url) => {
@@ -111,7 +112,7 @@ firebase.links().getInitialLink().then((url) => {
 
 On a new URL, the payload URL is passed to the listener callback. This method is only triggered when the app is running. Use getInitialLink for URLs which cause the app to open.
 In order to subscribe to the listener, call to the method with a callback and save the returned function.
-When you want to unsubscribe, just call the method that returned at subscription.
+When you want to unsubscribe, just call the function that returned at subscription.
 
 ```javascript
 // Subscribe

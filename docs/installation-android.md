@@ -210,7 +210,7 @@ dependencies {
 }
 ```
 
-## 5) Dynamic Links (optional)
+## 7) Dynamic Links (optional)
 
 If you plan on using [Firebase Dynamic
 Links](https://firebase.google.com/docs/dynamic-links/):
