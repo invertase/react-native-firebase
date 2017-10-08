@@ -1,4 +1,6 @@
 import should from 'should';
+import URL from 'url-parse';
+import queryString from 'query-string';
 
 function linksTests({ describe, it, firebase, tryCatch }) {
   describe('test links', () => {
@@ -63,16 +65,15 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         ipfl: iosIpadFallbackLink,
         link,
       };
-      result.should.startWith(`https://${dynamicLinkDomain}`);
+
+      const url = new URL(result);
+      url.protocol.should.eql('https:');
+      url.hostname.should.eql(dynamicLinkDomain);
+      const params = queryString.parse(url.query);
 
       Object.keys(expectedParameters).forEach((key) => {
         const val = expectedParameters[key];
-        const encodedVal = encodeURIComponent(val);
-        const encodedValWithPeriod = encodedVal.replace(/\./g, '%2E');
-        console.log(`val: ${val}, eval: ${encodedVal}, evalP: ${encodedValWithPeriod}, url: ${result}`);
-        (result.includes(`${key}=${val}`) ||
-        result.includes(`${key}=${encodedVal}`) ||
-        result.includes(`${key}=${encodedValWithPeriod}`)).should.be.true();
+        params[key].should.eql(val);
       });
     });
 
@@ -86,12 +87,11 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
       const result = await links.createDynamicLink(data);
 
-      result.should.startWith(`https://${dynamicLinkDomain}`);
-
-      const encodedLink = encodeURIComponent(link);
-      const encodedLinkWithEncodedPeriod = encodeURIComponent(link).replace(/\./g, '%2E');
-      (result.includes(`link=${encodedLink}`) ||
-      result.includes(`link=${encodedLinkWithEncodedPeriod}`)).should.be.true();
+      const url = new URL(result);
+      url.protocol.should.eql('https:');
+      url.hostname.should.eql(dynamicLinkDomain);
+      const params = queryString.parse(url.query);
+      params.link.should.eql(link);
     });
 
     it('fail to create long dynamic link with empty data object', () => {

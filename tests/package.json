@@ -33,6 +33,7 @@
     "lodash.groupby": "^4.6.0",
     "lodash.some": "^4.6.0",
     "prop-types": "^15.6.0",
+    "query-string": "^5.0.0",
     "react": "^16.0.0",
     "react-native": "^0.49.1",
     "react-native-vector-icons": "^4.0.0",
@@ -45,7 +46,8 @@
     "redux-thunk": "^2.2.0",
     "should": "^11.2.0",
     "should-sinon": "^0.0.5",
-    "sinon": "^3.2.1"
+    "sinon": "^3.2.1",
+    "url-parse": "^1.1.9"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
