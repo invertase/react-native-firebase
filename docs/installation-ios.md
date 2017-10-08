@@ -11,8 +11,8 @@ Setup the `GoogleService-Info.plist` file by following the instructions and addi
 
 Adding the file into the directory doesn't automatically add the file to the iOS project. You need to then manually add it by doing the following:
 
-  - 2.1. Open `<project root>/ios/'project name'.xcworkspace` file via XCode
-    - 2.1.1. If you've not got a `.xcworkspace` file yet then you'll need to come back to these steps after setting up your pods + pod install (step 3 on this page)
+  - 2.1. Open `<project root>/ios/'project name'.xcworkspace` file via XCode
+    - 2.1.1. If you've not got a `.xcworkspace` file yet then you'll need to come back to these steps after setting up your pods + pod install (step 3 on this page)
   - 2.2. Right click on your project
   - 2.3. Click "Add files to 'project name'"
   - 2.4. Select the .plist file you copied into your project
