@@ -41,7 +41,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 |  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
 | **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
 | **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
-| **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
+| **Dynamic Links**          | ❌ | ❌ | ✅ | ❌ |
 | **Firestore**              | ❌ | ❌ | ✅ | ❌ |
 | **Invites**                | ❌ | ❌ | ❌ | ❌ |
 | **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |

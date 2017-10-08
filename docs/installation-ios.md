@@ -177,3 +177,68 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 If you're having problems with messages not being received, check out the following blog post for help:
 
 https://firebase.googleblog.com/2017/01/debugging-firebase-cloud-messaging-on.html
+
+
+
+## 4) Dynamic Links (optional)
+
+If you plan on using [Firebase Dynamic Links](https://firebase.google.com/docs/dynamic-links/) then, you need to:
+
+### 4.1)  create a new URL type
+
+In the Info tab of your app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to either your bundle identifier or a unique value.
+
+### 4.2) Enable Associated Domains capability
+
+In the Capabilities tab of your app's Xcode project, enable Associated Domains and
+add the following to the Associated Domains list:
+`applinks:app_code.app.goo.gl` where `app_code` is your dynamic links domain application code.
+
+### 4.3) Update `AppDelegate.m`
+
+Add the following import:
+
+`#import "RNFirebaseLinks.h"`
+
+Add the following to the `didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` method before `[FIRApp Configure]`:
+
+`[FIROptions defaultOptions].deepLinkURLScheme = CUSTOM_URL_SCHEME;`
+where `CUSTOM_URL_SCHEME` is the custom URL scheme you defined in your  Xcode project.
+
+ In the application:openURL:sourceApplication:annotation: (for iOS 8 and older) add the following:
+
+```objectivec
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<NSString *, id> *)options {
+    return [RNFirebaseLinks application:application
+                                  openURL:url
+                                  options:options];
+}
+```
+
+ In the application:openURL:options: (for iOS 9) add the following:
+
+ ```objectivec
+ - (BOOL)application:(UIApplication *)application
+             openURL:(NSURL *)url
+   sourceApplication:(NSString *)sourceApplication
+          annotation:(id)annotation {
+      return [RNFirebaseLinks application:application
+                                    openURL:url
+                          sourceApplication:sourceApplication
+                                 annotation:annotation];
+ }
+ ```
+
+ In the application:continueUserActivity:restorationHandler (Universal Links on iOS 9 and newer) add the following:
+
+```objectivec
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray *))restorationHandler {
+     return [RNFirebaseLinks application:application
+                      continueUserActivity:userActivity
+                        restorationHandler:restorationHandler];
+}
+```
