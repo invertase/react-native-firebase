@@ -28,6 +28,16 @@ function documentReferenceTests({ describe, it, context, firebase }) {
       });
     });
 
+    context('get()', () => {
+      it('should return DocumentReference field', async () => {
+        const docRef = firebase.native.firestore().doc('users/6hyiyxQ00JzdWlKFyH3E');
+        const doc = await docRef.get();
+        console.log('Doc', doc);
+        should.equal(doc.exists, true);
+        await docRef.set(doc.data());
+      });
+    });
+
     context('onSnapshot()', () => {
       it('calls callback with the initial data and then when value changes', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
