@@ -9,6 +9,8 @@ Run `react-native link react-native-firebase`
 ## 2) Setup GoogleService-Info.plist
 Setup the `GoogleService-Info.plist` file by following the instructions and adding it to the root of your project at `ios/[YOUR APP NAME]/GoogleService-Info.plist` [here](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app).
 
+**NOTE: GoogleService-Info.plist must be added via Xcode's "Add Files to <ProjectName>" File menu option.  Copying directly to the project folder will not work.
+
 ### 2.1) Initialisation
 Make sure you've added the following to the top of your `ios/[YOUR APP NAME]]/AppDelegate.m` file:
 
