@@ -86,10 +86,13 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       };
 
       const result = await links.createDynamicLink(data);
-      const expectedUrl = `https://${dynamicLinkDomain}/?link=${encodeURIComponent(link)}`;
-      const expectedUrlWithEncodedPeriod = `https://${dynamicLinkDomain}/?link=${
-        encodeURIComponent(link).replace(/\./g, '%2E')}`;
-      [expectedUrl, expectedUrlWithEncodedPeriod].should.matchAny(result);
+
+      result.should.startWith(`https://${dynamicLinkDomain}`);
+
+      const encodedLink = encodeURIComponent(link);
+      const encodedLinkWithEncodedPeriod = encodeURIComponent(link).replace(/\./g, '%2E');
+      (result.includes(`link=${encodedLink}`) ||
+      result.includes(`link=${encodedLinkWithEncodedPeriod}`)).should.be.true();
       Promise.resolve();
     });
 
