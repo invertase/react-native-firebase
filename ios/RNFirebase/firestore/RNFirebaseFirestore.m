@@ -42,9 +42,10 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appName
                                filters:(NSArray *) filters
                                 orders:(NSArray *) orders
                                options:(NSDictionary *) options
-                            listenerId:(nonnull NSString *) listenerId) {
+                            listenerId:(nonnull NSString *) listenerId
+                    queryListenOptions:(NSDictionary *) queryListenOptions) {
     RNFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appName path:path filters:filters orders:orders options:options];
-    [ref onSnapshot:listenerId];
+    [ref onSnapshot:listenerId queryListenOptions:queryListenOptions];
 }
 
 RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
@@ -128,9 +129,10 @@ RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appName
 
 RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appName
                                 path:(NSString *) path
-                          listenerId:(nonnull NSString *) listenerId) {
+                          listenerId:(nonnull NSString *) listenerId
+                    docListenOptions:(NSDictionary *) docListenOptions) {
     RNFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appName path:path];
-    [ref onSnapshot:listenerId];
+    [ref onSnapshot:listenerId docListenOptions:docListenOptions];
 }
 
 RCT_EXPORT_METHOD(documentSet:(NSString *) appName
