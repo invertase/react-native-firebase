@@ -1,4 +1,6 @@
 import should from 'should';
+import URL from 'url-parse';
+import queryString from 'query-string';
 
 function linksTests({ describe, it, firebase, tryCatch }) {
   describe('test links', () => {
@@ -63,16 +65,15 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         ipfl: iosIpadFallbackLink,
         link,
       };
-      result.should.startWith(`https://${dynamicLinkDomain}`);
+
+      const url = new URL(result);
+      url.protocol.should.eql('https:');
+      url.hostname.should.eql(dynamicLinkDomain);
+      const params = queryString.parse(url.query);
 
       Object.keys(expectedParameters).forEach((key) => {
         const val = expectedParameters[key];
-        const encodedVal = encodeURIComponent(val);
-        const encodedValWithPeriod = encodedVal.replace(/\./g, '%2E');
-        console.log(`val: ${val}, eval: ${encodedVal}, evalP: ${encodedValWithPeriod}, url: ${result}`);
-        (result.includes(`${key}=${val}`) ||
-        result.includes(`${key}=${encodedVal}`) ||
-        result.includes(`${key}=${encodedValWithPeriod}`)).should.be.true();
+        val.should.eql(params[key]);
       });
     });
 
