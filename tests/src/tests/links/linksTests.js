@@ -74,7 +74,6 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         result.includes(`${key}=${encodedVal}`) ||
         result.includes(`${key}=${encodedValWithPeriod}`)).should.be.true();
       });
-      Promise.resolve();
     });
 
     it('create long dynamic link with minimal parameters', async () => {
@@ -93,7 +92,6 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       const encodedLinkWithEncodedPeriod = encodeURIComponent(link).replace(/\./g, '%2E');
       (result.includes(`link=${encodedLink}`) ||
       result.includes(`link=${encodedLinkWithEncodedPeriod}`)).should.be.true();
-      Promise.resolve();
     });
 
     it('fail to create long dynamic link with empty data object', () => {
@@ -382,7 +380,6 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
       const response = await fetch(result);
       url.should.eql(response.url);
-      Promise.resolve();
     });
 
     it('create short (short) dynamic link with all supported parameters', async () => {
@@ -420,21 +417,19 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
       const response = await fetch(result);
       url.should.eql(response.url);
-      Promise.resolve();
     });
 
     it('getInitialLink should return null', async () => {
       const initialLink = await links.getInitialLink();
       should(initialLink).be.null();
-      Promise.resolve();
     });
 
     it('should listen to link', () => {
       const unsubscribe = links.onLink((url: string) => {
+        console.log(url);
         // handle link
       });
       unsubscribe();
-      Promise.resolve();
     });
   });
 }
