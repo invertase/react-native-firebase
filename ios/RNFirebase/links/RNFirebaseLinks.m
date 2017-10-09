@@ -171,30 +171,16 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 }
 
 - (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
-    NSMutableDictionary* dynamicLinkInfoMetadata = metadata[@"dynamicLinkInfo"];
+    NSDictionary* dynamicLinkInfoMetadata = metadata[@"dynamicLinkInfo"];
     @try {
         NSURL *link = [NSURL URLWithString:dynamicLinkInfoMetadata[@"link"]];
-        [dynamicLinkInfoMetadata removeObjectForKey:@"link"];
-        
         FIRDynamicLinkComponents *components =
         [FIRDynamicLinkComponents componentsWithLink:link domain:dynamicLinkInfoMetadata[@"dynamicLinkDomain"]];
-        [dynamicLinkInfoMetadata removeObjectForKey:@"dynamicLinkDomain"];
         
         [self setAndroidParameters:dynamicLinkInfoMetadata components:components];
-        [dynamicLinkInfoMetadata removeObjectForKey:@"androidInfo"];
-        
         [self setIosParameters:dynamicLinkInfoMetadata components:components];
-        [dynamicLinkInfoMetadata removeObjectForKey:@"iosInfo"];
-        
         [self setSocialMetaTagParameters:dynamicLinkInfoMetadata components:components];
-        [dynamicLinkInfoMetadata removeObjectForKey:@"socialMetaTagInfo"];
         
-        if ([dynamicLinkInfoMetadata count] > 0) {
-            @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"Invalid arguments"
-                    userInfo:nil];
-        }
         return components;
     }
     @catch(NSException * e) {
@@ -203,109 +189,77 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }
 }
 
-- (void)setAndroidParameters:(NSMutableDictionary *)metadata
+- (void)setAndroidParameters:(NSDictionary *)metadata
                   components:(FIRDynamicLinkComponents *)components {
-    NSMutableDictionary *androidParametersDict = metadata[@"androidInfo"];
+    NSDictionary *androidParametersDict = metadata[@"androidInfo"];
     if (androidParametersDict) {
         if (!androidParametersDict[@"androidPackageName"]) {
             @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"no androidPackageName was specified"
+                    exceptionWithName:@"missing arguments"
+                    reason:@"no androidPackageName was specified."
                     userInfo:nil];
         }
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
-        [androidParametersDict removeObjectForKey:@"androidPackageName"];
-        
+
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
-            [androidParametersDict removeObjectForKey:@"androidFallbackLink"];
         }
         if (androidParametersDict[@"androidMinPackageVersionCode"]) {
             androidParams.minimumVersion = [androidParametersDict[@"androidMinPackageVersionCode"] integerValue];
-            [androidParametersDict removeObjectForKey:@"androidMinPackageVersionCode"];
             
-        }
-        if ([androidParametersDict count] > 0) {
-            @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"Invalid arguments"
-                    userInfo:nil];
         }
         components.androidParameters = androidParams;
     }
 }
 
-- (void)setIosParameters:(NSMutableDictionary *)metadata
+- (void)setIosParameters:(NSDictionary *)metadata
               components:(FIRDynamicLinkComponents *)components {
-    NSMutableDictionary *iosParametersDict = metadata[@"iosInfo"];
+    NSDictionary *iosParametersDict = metadata[@"iosInfo"];
     if (iosParametersDict) {
         if (!iosParametersDict[@"iosBundleId"]) {
             @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"no iosBundleId was specified"
+                    exceptionWithName:@"missing arguments"
+                    reason:@"no iosBundleId was specified."
                     userInfo:nil];
         }
         FIRDynamicLinkIOSParameters *iOSParams = [FIRDynamicLinkIOSParameters
                                                   parametersWithBundleID:iosParametersDict[@"iosBundleId"]];
-        [iosParametersDict removeObjectForKey:@"iosBundleId"];
         if (iosParametersDict[@"iosAppStoreId"]) {
             iOSParams.appStoreID = iosParametersDict[@"iosAppStoreId"];
-            [iosParametersDict removeObjectForKey:@"iosAppStoreId"];
         }
         if (iosParametersDict[@"iosCustomScheme"]) {
             iOSParams.customScheme = iosParametersDict[@"iosCustomScheme"];
-            [iosParametersDict removeObjectForKey:@"iosCustomScheme"];
         }
         if (iosParametersDict[@"iosFallbackLink"]) {
             iOSParams.fallbackURL = [NSURL URLWithString:iosParametersDict[@"iosFallbackLink"]];
-            [iosParametersDict removeObjectForKey:@"iosFallbackLink"];
         }
         if (iosParametersDict[@"iosIpadBundleId"]) {
             iOSParams.iPadBundleID = iosParametersDict[@"iosIpadBundleId"];
-            [iosParametersDict removeObjectForKey:@"iosIpadBundleId"];
         }
         if (iosParametersDict[@"iosIpadFallbackLink"]) {
             iOSParams.iPadFallbackURL = [NSURL URLWithString:iosParametersDict[@"iosIpadFallbackLink"]];
-            [iosParametersDict removeObjectForKey:@"iosIpadFallbackLink"];
         }
         if (iosParametersDict[@"iosMinPackageVersionCode"]) {
             iOSParams.minimumAppVersion = iosParametersDict[@"iosMinPackageVersionCode"];
-            [iosParametersDict removeObjectForKey:@"iosMinPackageVersionCode"];
-        }
-        
-        if ([iosParametersDict count] > 0) {
-            @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"Invalid arguments"
-                    userInfo:nil];
         }
         components.iOSParameters = iOSParams;
     }
 }
 
-- (void)setSocialMetaTagParameters:(NSMutableDictionary *)metadata
+- (void)setSocialMetaTagParameters:(NSDictionary *)metadata
                         components:(FIRDynamicLinkComponents *)components {
-    NSMutableDictionary *socialParamsDict = metadata[@"socialMetaTagInfo"];
+    NSDictionary *socialParamsDict = metadata[@"socialMetaTagInfo"];
     if (socialParamsDict) {
         FIRDynamicLinkSocialMetaTagParameters *socialParams = [FIRDynamicLinkSocialMetaTagParameters parameters];
         if (socialParamsDict[@"socialTitle"]) {
             socialParams.title = socialParamsDict[@"socialTitle"];
-            [socialParamsDict removeObjectForKey:@"socialTitle"];
         }
         if (socialParamsDict[@"socialDescription"]) {
             socialParams.descriptionText = socialParamsDict[@"socialDescription"];
-            [socialParamsDict removeObjectForKey:@"socialDescription"];
         }
         if (socialParamsDict[@"socialImageLink"]) {
             socialParams.imageURL = [NSURL URLWithString:socialParamsDict[@"socialImageLink"]];
-            [socialParamsDict removeObjectForKey:@"socialImageLink"];
-        }
-        if ([socialParamsDict count] > 0) {
-            @throw [NSException
-                    exceptionWithName:@"Invalid arguments"
-                    reason:@"Invalid arguments"
-                    userInfo:nil];
         }
         components.socialMetaTagParameters = socialParams;
     }
@@ -332,4 +286,5 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 @implementation RNFirebaseLinks
 @end
 #endif
+
 
