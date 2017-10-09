@@ -101,9 +101,8 @@ function linksTests({ describe, it, firebase, tryCatch }) {
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(() => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
           resolve();
         }, reject);
 
@@ -126,7 +125,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('no iosBundleId was specified.');
           resolve();
         }, reject);
 
@@ -172,7 +171,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('no androidPackageName was specified.');
           resolve();
         }, reject);
 
@@ -218,7 +217,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('Invalid Parameters.');
           resolve();
         }, reject);
 
@@ -247,7 +246,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('Invalid Parameters.');
           resolve();
         }, reject);
 
@@ -283,7 +282,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('Invalid Parameters.');
           resolve();
         }, reject);
 
@@ -319,7 +318,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.code.includes('links/failure').should.be.true();
+          error.message.should.equal('Invalid Parameters.');
           resolve();
         }, reject);
 

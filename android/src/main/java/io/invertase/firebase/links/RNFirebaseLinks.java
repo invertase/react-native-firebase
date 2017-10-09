@@ -196,23 +196,10 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     if (dynamicLinkInfo != null) {
       try {
         parametersBuilder.setLink(Uri.parse((String) dynamicLinkInfo.get("link")));
-        dynamicLinkInfo.remove("link");
-
         parametersBuilder.setDynamicLinkDomain((String) dynamicLinkInfo.get("dynamicLinkDomain"));
-        dynamicLinkInfo.remove("dynamicLinkDomain");
-
         setAndroidParameters(dynamicLinkInfo, parametersBuilder);
-        dynamicLinkInfo.remove("androidInfo");
-
         setIosParameters(dynamicLinkInfo, parametersBuilder);
-        dynamicLinkInfo.remove("iosInfo");
-
         setSocialMetaTagParameters(dynamicLinkInfo, parametersBuilder);
-        dynamicLinkInfo.remove("socialMetaTagInfo");
-
-        if (dynamicLinkInfo.size() > 0) {
-          throw new IllegalArgumentException("Invalid arguments: " + dynamicLinkInfo.keySet().toString());
-        }
       } catch (Exception e) {
         Log.e(TAG, "error while building parameters " + e.getMessage());
         throw e;
@@ -244,19 +231,12 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
 
       DynamicLink.AndroidParameters.Builder androidParametersBuilder =
         new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("androidPackageName"));
-      androidParameters.remove("androidPackageName");
 
       if (androidParameters.containsKey("androidFallbackLink")) {
         androidParametersBuilder.setFallbackUrl(Uri.parse((String) androidParameters.get("androidFallbackLink")));
-        androidParameters.remove("androidFallbackLink");
       }
       if (androidParameters.containsKey("androidMinPackageVersionCode")) {
         androidParametersBuilder.setMinimumVersion(Integer.parseInt((String) androidParameters.get("androidMinPackageVersionCode")));
-        androidParameters.remove("androidMinPackageVersionCode");
-      }
-
-      if (androidParameters.size() > 0) {
-        throw new IllegalArgumentException("Invalid arguments: " + androidParameters.keySet().toString());
       }
       parametersBuilder.setAndroidParameters(androidParametersBuilder.build());
     }
@@ -270,35 +250,24 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       }
       DynamicLink.IosParameters.Builder iosParametersBuilder =
         new DynamicLink.IosParameters.Builder((String) iosParameters.get("iosBundleId"));
-      iosParameters.remove("iosBundleId");
 
       if (iosParameters.containsKey("iosAppStoreId")) {
         iosParametersBuilder.setAppStoreId((String) iosParameters.get("iosAppStoreId"));
-        iosParameters.remove("iosAppStoreId");
       }
       if (iosParameters.containsKey("iosCustomScheme")) {
         iosParametersBuilder.setCustomScheme((String) iosParameters.get("iosCustomScheme"));
-        iosParameters.remove("iosCustomScheme");
       }
       if (iosParameters.containsKey("iosFallbackLink")) {
         iosParametersBuilder.setFallbackUrl(Uri.parse((String) iosParameters.get("iosFallbackLink")));
-        iosParameters.remove("iosFallbackLink");
       }
       if (iosParameters.containsKey("iosIpadBundleId")) {
         iosParametersBuilder.setIpadBundleId((String) iosParameters.get("iosIpadBundleId"));
-        iosParameters.remove("iosIpadBundleId");
       }
       if (iosParameters.containsKey("iosIpadFallbackLink")) {
         iosParametersBuilder.setIpadFallbackUrl(Uri.parse((String) iosParameters.get("iosIpadFallbackLink")));
-        iosParameters.remove("iosIpadFallbackLink");
       }
       if (iosParameters.containsKey("iosMinPackageVersionCode")) {
         iosParametersBuilder.setMinimumVersion((String) iosParameters.get("iosMinPackageVersionCode"));
-        iosParameters.remove("iosMinPackageVersionCode");
-      }
-
-      if (iosParameters.size() > 0) {
-        throw new IllegalArgumentException("Invalid arguments: " + iosParameters.keySet().toString());
       }
       parametersBuilder.setIosParameters(iosParametersBuilder.build());
     }
@@ -312,19 +281,12 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
 
       if (socialMetaTagParameters.containsKey("socialDescription")) {
         socialMetaTagParametersBuilder.setDescription((String) socialMetaTagParameters.get("socialDescription"));
-        socialMetaTagParameters.remove("socialDescription");
       }
       if (socialMetaTagParameters.containsKey("socialImageLink")) {
         socialMetaTagParametersBuilder.setImageUrl(Uri.parse((String) socialMetaTagParameters.get("socialImageLink")));
-        socialMetaTagParameters.remove("socialImageLink");
       }
       if (socialMetaTagParameters.containsKey("socialTitle")) {
         socialMetaTagParametersBuilder.setTitle((String) socialMetaTagParameters.get("socialTitle"));
-        socialMetaTagParameters.remove("socialTitle");
-      }
-
-      if (socialMetaTagParameters.size() > 0) {
-        throw new IllegalArgumentException("Invalid arguments: " + socialMetaTagParameters.keySet().toString());
       }
       parametersBuilder.setSocialMetaTagParameters(socialMetaTagParametersBuilder.build());
     }
