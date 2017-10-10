@@ -6,6 +6,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.DocumentChange;
@@ -15,12 +16,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.invertase.firebase.Utils;
+
 public class FirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_DATA = "data";
   private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
@@ -143,38 +152,12 @@ public class FirestoreSerialize {
    * @param array Object[]
    * @return WritableArray
    */
-  static WritableArray objectArrayToWritable(Object[] array) {
+  private static WritableArray objectArrayToWritable(Object[] array) {
     WritableArray writableArray = Arguments.createArray();
 
     for (Object item : array) {
-      if (item == null) {
-        writableArray.pushNull();
-        continue;
-      }
-
-      Class itemClass = item.getClass();
-
-      if (itemClass == Boolean.class) {
-        writableArray.pushBoolean((Boolean) item);
-      } else if (itemClass == Integer.class) {
-        writableArray.pushDouble(((Integer) item).doubleValue());
-      } else if (itemClass == Long.class) {
-        writableArray.pushDouble(((Long) item).doubleValue());
-      } else if (itemClass == Double.class) {
-        writableArray.pushDouble((Double) item);
-      } else if (itemClass == Float.class) {
-        writableArray.pushDouble(((Float) item).doubleValue());
-      } else if (itemClass == String.class) {
-        writableArray.pushString(item.toString());
-      } else if (Map.class.isAssignableFrom(itemClass)) {
-        writableArray.pushMap((objectMapToWritable((Map<String, Object>) item)));
-      } else if (List.class.isAssignableFrom(itemClass)) {
-        List<Object> list = (List<Object>) item;
-        Object[] listAsArray = list.toArray(new Object[list.size()]);
-        writableArray.pushArray(objectArrayToWritable(listAsArray));
-      } else {
-        throw new RuntimeException("Cannot convert object of type " + itemClass);
-      }
+      WritableMap typeMap = buildTypeMap(item);
+      writableArray.pushMap(typeMap);
     }
 
     return writableArray;
@@ -191,44 +174,47 @@ public class FirestoreSerialize {
       typeMap.putString("type", "null");
       typeMap.putNull("value");
     } else {
-      Class valueClass = value.getClass();
-
-      if (valueClass == Boolean.class) {
+      if (value instanceof Boolean) {
         typeMap.putString("type", "boolean");
         typeMap.putBoolean("value", (Boolean) value);
-      } else if (valueClass == Integer.class) {
-        map.putDouble(key, ((Integer) value).doubleValue());
-      } else if (valueClass == Long.class) {
-        map.putDouble(key, ((Long) value).doubleValue());
-      } else if (valueClass == Double.class) {
+      } else if (value instanceof Integer) {
+        typeMap.putString("type", "number");
+        typeMap.putDouble("value", ((Integer) value).doubleValue());
+      } else if (value instanceof Long) {
+        typeMap.putString("type", "number");
+        typeMap.putDouble("value", ((Long) value).doubleValue());
+      } else if (value instanceof Double) {
         typeMap.putString("type", "number");
         typeMap.putDouble("value", (Double) value);
-      } else if (valueClass == Float.class) {
+      } else if (value instanceof Float) {
         typeMap.putString("type", "number");
         typeMap.putDouble("value", ((Float) value).doubleValue());
-      } else if (valueClass == String.class) {
-        map.putString(key, value.toString());
-      } else if (Map.class.isAssignableFrom(valueClass)) {
-        map.putMap(key, (objectMapToWritable((Map<String, Object>) value)));
-      }  else if (List.class.isAssignableFrom(valueClass)) {
+      } else if (value instanceof String) {
+        typeMap.putString("type", "string");
+        typeMap.putString("value", (String) value);
+      } else if (Map.class.isAssignableFrom(value.getClass())) {
+        typeMap.putString("type", "object");
+        typeMap.putMap("value", objectMapToWritable((Map<String, Object>) value));
+      }  else if (List.class.isAssignableFrom(value.getClass())) {
+        typeMap.putString("type", "array");
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
         typeMap.putArray("value", objectArrayToWritable(array));
-      } else if (valueClass == DocumentReference.class) {
+      } else if (value instanceof DocumentReference) {
         typeMap.putString("type", "reference");
         typeMap.putString("value", ((DocumentReference) value).getPath());
-      } else if (valueClass == GeoPoint.class) {
+      } else if (value instanceof GeoPoint) {
         typeMap.putString("type", "geopoint");
         WritableMap geoPoint = Arguments.createMap();
         geoPoint.putDouble("latitude", ((GeoPoint) value).getLatitude());
         geoPoint.putDouble("longitude", ((GeoPoint) value).getLongitude());
         typeMap.putMap("value", geoPoint);
-      } else if (valueClass == Date.class) {
+      } else if (value instanceof Date) {
         typeMap.putString("type", "date");
         typeMap.putString("value", DATE_FORMAT.format((Date) value));
       } else {
         // TODO: Changed to log an error rather than crash - is this correct?
-        Log.e(TAG, "buildTypeMap", new RuntimeException("Cannot convert object of type " + valueClass));
+        Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
         typeMap.putString("type", "null");
         typeMap.putNull("value");
       }
@@ -249,7 +235,7 @@ public class FirestoreSerialize {
     return map;
   }
 
-  static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
+  private static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
     List<Object> list = new ArrayList<>();
     if (readableArray != null) {
       for (int i = 0; i < readableArray.size(); i++) {
@@ -259,7 +245,7 @@ public class FirestoreSerialize {
     return list;
   }
 
-  static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
+  private static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
     String type = typeMap.getString("type");
     if ("boolean".equals(type)) {
       return typeMap.getBoolean("value");
@@ -291,5 +277,24 @@ public class FirestoreSerialize {
       Log.e(TAG, "parseTypeMap", new RuntimeException("Cannot convert object of type " + type));
       return null;
     }
+  }
+
+  public static List<Object> parseDocumentBatches(FirebaseFirestore firestore, ReadableArray readableArray) {
+    List<Object> writes = new ArrayList<>(readableArray.size());
+    for (int i = 0; i < readableArray.size(); i++) {
+      Map<String, Object> write = new HashMap<>();
+      ReadableMap map = readableArray.getMap(i);
+      if (map.hasKey("data")) {
+        write.put("data", parseReadableMap(firestore, map.getMap("data")));
+      }
+      if (map.hasKey("options")) {
+        write.put("options", Utils.recursivelyDeconstructReadableMap(map.getMap("options")));
+      }
+      write.put("path", map.getString("path"));
+      write.put("type", map.getString("type"));
+
+      writes.add(write);
+    }
+    return writes;
   }
 }

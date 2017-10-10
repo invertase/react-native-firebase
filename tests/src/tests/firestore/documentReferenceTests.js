@@ -2,6 +2,7 @@ import sinon from 'sinon';
 import 'should-sinon';
 import should from 'should';
 
+
 function documentReferenceTests({ describe, it, context, firebase }) {
   describe('DocumentReference', () => {
     context('class', () => {
@@ -25,16 +26,6 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
             should.equal(doc.exists, false);
           });
-      });
-    });
-
-    context('get()', () => {
-      it('should return DocumentReference field', async () => {
-        const docRef = firebase.native.firestore().doc('users/6hyiyxQ00JzdWlKFyH3E');
-        const doc = await docRef.get();
-        console.log('Doc', doc);
-        should.equal(doc.exists, true);
-        await docRef.set(doc.data());
       });
     });
 
@@ -418,6 +409,43 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
             doc.data().name.should.equal('updated');
           });
+      });
+    });
+
+    context('types', () => {
+      it('should handle Date field', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/reference');
+        await docRef.set({
+          field: new Date(),
+        });
+
+        const doc = await docRef.get();
+        doc.data().field.should.be.instanceof(Date);
+      });
+    });
+
+    context('types', () => {
+      it('should handle DocumentReference field', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/reference');
+        await docRef.set({
+          field: firebase.native.firestore().doc('test/field'),
+        });
+
+        const doc = await docRef.get();
+        should.equal(doc.data().field.path, 'test/field');
+      });
+    });
+
+    context('types', () => {
+      it('should handle GeoPoint field', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/reference');
+        await docRef.set({
+          field: new firebase.native.firestore.GeoPoint(1.01, 1.02),
+        });
+
+        const doc = await docRef.get();
+        should.equal(doc.data().field.latitude, 1.01);
+        should.equal(doc.data().field.longitude, 1.02);
       });
     });
   });

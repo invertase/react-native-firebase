@@ -69,7 +69,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
                             final Promise promise) {
     FirebaseFirestore firestore = getFirestoreForApp(appName);
     WriteBatch batch = firestore.batch();
-    final List<Object> writesArray = Utils.recursivelyDeconstructReadableArray(writes);
+    final List<Object> writesArray = FirestoreSerialize.parseDocumentBatches(firestore, writes);
 
     for (Object w : writesArray) {
       Map<String, Object> write = (Map) w;
