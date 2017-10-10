@@ -25,27 +25,25 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
     it('create long dynamic link with all supported parameters', async () => {
       const data = {
-        dynamicLinkInfo: {
-          link,
-          dynamicLinkDomain,
-          androidInfo: {
-            androidPackageName,
-            androidFallbackLink,
-            androidMinPackageVersionCode,
-          },
-          iosInfo: {
-            iosBundleId,
-            iosFallbackLink,
-            iosCustomScheme,
-            iosIpadFallbackLink,
-            iosIpadBundleId,
-            iosAppStoreId,
-          },
-          socialMetaTagInfo: {
-            socialTitle,
-            socialDescription,
-            socialImageLink,
-          },
+        link,
+        dynamicLinkDomain,
+        androidInfo: {
+          androidPackageName,
+          androidFallbackLink,
+          androidMinPackageVersionCode,
+        },
+        iosInfo: {
+          iosBundleId,
+          iosFallbackLink,
+          iosCustomScheme,
+          iosIpadFallbackLink,
+          iosIpadBundleId,
+          iosAppStoreId,
+        },
+        socialMetaTagInfo: {
+          socialTitle,
+          socialDescription,
+          socialImageLink,
         },
       };
 
@@ -79,10 +77,8 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
     it('create long dynamic link with minimal parameters', async () => {
       const data = {
-        dynamicLinkInfo: {
-          link,
-          dynamicLinkDomain,
-        },
+        link,
+        dynamicLinkDomain,
       };
 
       const result = await links.createDynamicLink(data);
@@ -101,12 +97,36 @@ function linksTests({ describe, it, firebase, tryCatch }) {
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch(() => {
+        const failure = tryCatch((error) => {
           // Assertion
+          error.message.should.equal('No dynamicLinkDomain was specified.');
           resolve();
         }, reject);
 
         const data = { };
+
+        // Test
+
+        links.createDynamicLink(data)
+        .then(success)
+        .catch(failure);
+      });
+    });
+
+    it('fail to create long dynamic link without link object', () => {
+      return new Promise((resolve, reject) => {
+        const success = tryCatch(() => {
+          // Assertion
+          reject(new Error('createDynamicLink did not fail.'));
+        }, reject);
+
+        const failure = tryCatch((error) => {
+          // Assertion
+          error.message.should.equal('No link was specified.');
+          resolve();
+        }, reject);
+
+        const data = { dynamicLinkDomain };
 
         // Test
 
@@ -125,32 +145,30 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.message.should.equal('no iosBundleId was specified.');
+          error.message.should.equal('No iosBundleId was specified.');
           resolve();
         }, reject);
 
         // Setup
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            androidInfo: {
-              androidPackageName,
-              androidFallbackLink,
-              androidMinPackageVersionCode,
-            },
-            iosInfo: {
-              iosFallbackLink,
-              iosCustomScheme,
-              iosIpadFallbackLink,
-              iosIpadBundleId,
-              iosAppStoreId,
-            },
-            socialMetaTagInfo: {
-              socialTitle,
-              socialDescription,
-              socialImageLink,
-            },
+          link,
+          dynamicLinkDomain,
+          androidInfo: {
+            androidPackageName,
+            androidFallbackLink,
+            androidMinPackageVersionCode,
+          },
+          iosInfo: {
+            iosFallbackLink,
+            iosCustomScheme,
+            iosIpadFallbackLink,
+            iosIpadBundleId,
+            iosAppStoreId,
+          },
+          socialMetaTagInfo: {
+            socialTitle,
+            socialDescription,
+            socialImageLink,
           },
         };
 
@@ -171,32 +189,30 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         const failure = tryCatch((error) => {
           // Assertion
-          error.message.should.equal('no androidPackageName was specified.');
+          error.message.should.equal('No androidPackageName was specified.');
           resolve();
         }, reject);
 
         // Setup
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            androidInfo: {
-              androidFallbackLink,
-              androidMinPackageVersionCode,
-            },
-            iosInfo: {
-              iosBundleId,
-              iosFallbackLink,
-              iosCustomScheme,
-              iosIpadFallbackLink,
-              iosIpadBundleId,
-              iosAppStoreId,
-            },
-            socialMetaTagInfo: {
-              socialTitle,
-              socialDescription,
-              socialImageLink,
-            },
+          link,
+          dynamicLinkDomain,
+          androidInfo: {
+            androidFallbackLink,
+            androidMinPackageVersionCode,
+          },
+          iosInfo: {
+            iosBundleId,
+            iosFallbackLink,
+            iosCustomScheme,
+            iosIpadFallbackLink,
+            iosIpadBundleId,
+            iosAppStoreId,
+          },
+          socialMetaTagInfo: {
+            socialTitle,
+            socialDescription,
+            socialImageLink,
           },
         };
 
@@ -208,7 +224,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       });
     });
 
-    it('fail to create long dynamic link with unsupported dynamicLinkInfo parameters', () => {
+    it('fail to create long dynamic link with unsupported parameter', () => {
       return new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
@@ -222,11 +238,9 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         }, reject);
 
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            someInvalidParameter: 'invalid',
-          },
+          link,
+          dynamicLinkDomain,
+          someInvalidParameter: 'invalid',
         };
 
         // Test
@@ -251,17 +265,15 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         }, reject);
 
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            androidInfo: {
-              androidPackageName,
-            },
-            iosInfo: {
-              iosBundleId,
-              someInvalidParameter: 'invalid',
-              someOtherParameter: 'invalid',
-            },
+          link,
+          dynamicLinkDomain,
+          androidInfo: {
+            androidPackageName,
+          },
+          iosInfo: {
+            iosBundleId,
+            someInvalidParameter: 'invalid',
+            someOtherParameter: 'invalid',
           },
         };
 
@@ -287,17 +299,15 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         }, reject);
 
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            androidInfo: {
-              androidPackageName,
-              someInvalidParameter: 'invalid',
-              someOtherParameter: 'invalid',
-            },
-            iosInfo: {
-              iosBundleId,
-            },
+          link,
+          dynamicLinkDomain,
+          androidInfo: {
+            androidPackageName,
+            someInvalidParameter: 'invalid',
+            someOtherParameter: 'invalid',
+          },
+          iosInfo: {
+            iosBundleId,
           },
         };
 
@@ -323,19 +333,17 @@ function linksTests({ describe, it, firebase, tryCatch }) {
         }, reject);
 
         const data = {
-          dynamicLinkInfo: {
-            link,
-            dynamicLinkDomain,
-            androidInfo: {
-              androidPackageName,
-            },
-            iosInfo: {
-              iosBundleId,
-            },
-            socialMetaTagInfo: {
-              someInvalidParameter: 'invalid',
-              someOtherParameter: 'invalid',
-            },
+          link,
+          dynamicLinkDomain,
+          androidInfo: {
+            androidPackageName,
+          },
+          iosInfo: {
+            iosBundleId,
+          },
+          socialMetaTagInfo: {
+            someInvalidParameter: 'invalid',
+            someOtherParameter: 'invalid',
           },
         };
 
@@ -350,27 +358,25 @@ function linksTests({ describe, it, firebase, tryCatch }) {
     it('create short (unguessable) dynamic link with all supported parameters', async () => {
       const url = 'https://www.google.co.il/search?q=react+native+firebase';
       const data = {
-        dynamicLinkInfo: {
-          link: url,
-          dynamicLinkDomain,
-          androidInfo: {
-            androidPackageName,
-            androidFallbackLink,
-            androidMinPackageVersionCode,
-          },
-          iosInfo: {
-            iosBundleId,
-            iosFallbackLink,
-            iosCustomScheme,
-            iosIpadFallbackLink,
-            iosIpadBundleId,
-            iosAppStoreId,
-          },
-          socialMetaTagInfo: {
-            socialTitle,
-            socialDescription,
-            socialImageLink,
-          },
+        link: url,
+        dynamicLinkDomain,
+        androidInfo: {
+          androidPackageName,
+          androidFallbackLink,
+          androidMinPackageVersionCode,
+        },
+        iosInfo: {
+          iosBundleId,
+          iosFallbackLink,
+          iosCustomScheme,
+          iosIpadFallbackLink,
+          iosIpadBundleId,
+          iosAppStoreId,
+        },
+        socialMetaTagInfo: {
+          socialTitle,
+          socialDescription,
+          socialImageLink,
         },
       };
 
@@ -384,27 +390,25 @@ function linksTests({ describe, it, firebase, tryCatch }) {
     it('create short (short) dynamic link with all supported parameters', async () => {
       const url = 'https://www.google.co.il/search?q=react+native+firebase';
       const data = {
-        dynamicLinkInfo: {
-          link: url,
-          dynamicLinkDomain,
-          androidInfo: {
-            androidPackageName,
-            androidFallbackLink,
-            androidMinPackageVersionCode,
-          },
-          iosInfo: {
-            iosBundleId,
-            iosFallbackLink,
-            iosCustomScheme,
-            iosIpadFallbackLink,
-            iosIpadBundleId,
-            iosAppStoreId,
-          },
-          socialMetaTagInfo: {
-            socialTitle,
-            socialDescription,
-            socialImageLink,
-          },
+        link: url,
+        dynamicLinkDomain,
+        androidInfo: {
+          androidPackageName,
+          androidFallbackLink,
+          androidMinPackageVersionCode,
+        },
+        iosInfo: {
+          iosBundleId,
+          iosFallbackLink,
+          iosCustomScheme,
+          iosIpadFallbackLink,
+          iosIpadBundleId,
+          iosAppStoreId,
+        },
+        socialMetaTagInfo: {
+          socialTitle,
+          socialDescription,
+          socialImageLink,
         },
         suffix: {
           option: 'SHORT',

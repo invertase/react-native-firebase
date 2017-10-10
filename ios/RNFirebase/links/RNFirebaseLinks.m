@@ -171,15 +171,14 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 }
 
 - (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
-    NSDictionary* dynamicLinkInfoMetadata = metadata[@"dynamicLinkInfo"];
     @try {
-        NSURL *link = [NSURL URLWithString:dynamicLinkInfoMetadata[@"link"]];
+        NSURL *link = [NSURL URLWithString:metadata[@"link"]];
         FIRDynamicLinkComponents *components =
-        [FIRDynamicLinkComponents componentsWithLink:link domain:dynamicLinkInfoMetadata[@"dynamicLinkDomain"]];
+        [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
         
-        [self setAndroidParameters:dynamicLinkInfoMetadata components:components];
-        [self setIosParameters:dynamicLinkInfoMetadata components:components];
-        [self setSocialMetaTagParameters:dynamicLinkInfoMetadata components:components];
+        [self setAndroidParameters:metadata components:components];
+        [self setIosParameters:metadata components:components];
+        [self setSocialMetaTagParameters:metadata components:components];
         
         return components;
     }
@@ -193,12 +192,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
                   components:(FIRDynamicLinkComponents *)components {
     NSDictionary *androidParametersDict = metadata[@"androidInfo"];
     if (androidParametersDict) {
-        if (!androidParametersDict[@"androidPackageName"]) {
-            @throw [NSException
-                    exceptionWithName:@"missing arguments"
-                    reason:@"no androidPackageName was specified."
-                    userInfo:nil];
-        }
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
 
@@ -207,7 +200,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
         }
         if (androidParametersDict[@"androidMinPackageVersionCode"]) {
             androidParams.minimumVersion = [androidParametersDict[@"androidMinPackageVersionCode"] integerValue];
-            
         }
         components.androidParameters = androidParams;
     }
@@ -217,12 +209,6 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
               components:(FIRDynamicLinkComponents *)components {
     NSDictionary *iosParametersDict = metadata[@"iosInfo"];
     if (iosParametersDict) {
-        if (!iosParametersDict[@"iosBundleId"]) {
-            @throw [NSException
-                    exceptionWithName:@"missing arguments"
-                    reason:@"no iosBundleId was specified."
-                    userInfo:nil];
-        }
         FIRDynamicLinkIOSParameters *iOSParams = [FIRDynamicLinkIOSParameters
                                                   parametersWithBundleID:iosParametersDict[@"iosBundleId"]];
         if (iosParametersDict[@"iosAppStoreId"]) {

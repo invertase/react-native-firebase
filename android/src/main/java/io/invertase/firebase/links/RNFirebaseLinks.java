@@ -37,7 +37,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     void onResolved(String url);
   }
 
-  private interface  ErrorHandler {
+  private interface ErrorHandler {
     void onError(Exception e);
   }
 
@@ -53,7 +53,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   }
 
 
-  private void resloveLink(Intent intent, final ResolveHandler resolveHandler, final ErrorHandler errorHandler) {
+  private void resolveLink(Intent intent, final ResolveHandler resolveHandler, final ErrorHandler errorHandler) {
     FirebaseDynamicLinks.getInstance()
       .getDynamicLink(intent)
       .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
@@ -83,7 +83,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     } else {
       Activity activity = getCurrentActivity();
       if (activity != null) {
-        resloveLink(activity.getIntent(), new ResolveHandler() {
+        resolveLink(activity.getIntent(), new ResolveHandler() {
           @Override
           public void onResolved(String url) {
             if (url != null) {
@@ -115,7 +115,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
 
   @Override
   public void onNewIntent(Intent intent) {
-    resloveLink(intent, new ResolveHandler() {
+    resolveLink(intent, new ResolveHandler() {
       @Override
       public void onResolved(String url) {
         if (url != null) {
@@ -150,9 +150,9 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   @ReactMethod
   public void createDynamicLink(final ReadableMap parameters, final Promise promise) {
     try {
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
+      Map<String, Object> metaData = Utils.recursivelyDeconstructReadableMap(parameters);
 
-      DynamicLink.Builder builder = getDynamicLinkBuilderFromMap(m);
+      DynamicLink.Builder builder = getDynamicLinkBuilderFromMap(metaData);
       Uri link = builder.buildDynamicLink().getUri();
 
       Log.d(TAG, "created dynamic link: " + link.toString());
@@ -166,11 +166,11 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   @ReactMethod
   public void createShortDynamicLink(final ReadableMap parameters, final Promise promise) {
     try {
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(parameters);
+      Map<String, Object> metaData = Utils.recursivelyDeconstructReadableMap(parameters);
 
-      DynamicLink.Builder builder = getDynamicLinkBuilderFromMap(m);
+      DynamicLink.Builder builder = getDynamicLinkBuilderFromMap(metaData);
 
-      Task<ShortDynamicLink> shortLinkTask = getShortDynamicLinkTask(builder, m)
+      Task<ShortDynamicLink> shortLinkTask = getShortDynamicLinkTask(builder, metaData)
         .addOnCompleteListener(new OnCompleteListener<ShortDynamicLink>() {
           @Override
           public void onComplete(@NonNull Task<ShortDynamicLink> task) {
@@ -190,26 +190,23 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
-  private DynamicLink.Builder getDynamicLinkBuilderFromMap(final Map<String, Object> m) {
+  private DynamicLink.Builder getDynamicLinkBuilderFromMap(final Map<String, Object> metaData) {
     DynamicLink.Builder parametersBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
-    Map<String, Object> dynamicLinkInfo = (Map<String, Object>) m.get("dynamicLinkInfo");
-    if (dynamicLinkInfo != null) {
-      try {
-        parametersBuilder.setLink(Uri.parse((String) dynamicLinkInfo.get("link")));
-        parametersBuilder.setDynamicLinkDomain((String) dynamicLinkInfo.get("dynamicLinkDomain"));
-        setAndroidParameters(dynamicLinkInfo, parametersBuilder);
-        setIosParameters(dynamicLinkInfo, parametersBuilder);
-        setSocialMetaTagParameters(dynamicLinkInfo, parametersBuilder);
-      } catch (Exception e) {
-        Log.e(TAG, "error while building parameters " + e.getMessage());
-        throw e;
-      }
+    try {
+      parametersBuilder.setLink(Uri.parse((String) metaData.get("link")));
+      parametersBuilder.setDynamicLinkDomain((String) metaData.get("dynamicLinkDomain"));
+      setAndroidParameters(metaData, parametersBuilder);
+      setIosParameters(metaData, parametersBuilder);
+      setSocialMetaTagParameters(metaData, parametersBuilder);
+    } catch (Exception e) {
+      Log.e(TAG, "error while building parameters " + e.getMessage());
+      throw e;
     }
     return parametersBuilder;
   }
 
-  private Task<ShortDynamicLink> getShortDynamicLinkTask(final DynamicLink.Builder builder, final Map<String, Object> m) {
-    Map<String, Object> suffix = (Map<String, Object>) m.get("suffix");
+  private Task<ShortDynamicLink> getShortDynamicLinkTask(final DynamicLink.Builder builder, final Map<String, Object> metaData) {
+    Map<String, Object> suffix = (Map<String, Object>) metaData.get("suffix");
     if (suffix != null) {
       String option = (String) suffix.get("option");
       if ("SHORT".equals(option)) {
@@ -222,13 +219,9 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   }
 
 
-  private void setAndroidParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> androidParameters = (Map<String, Object>) dynamicLinkInfo.get("androidInfo");
+  private void setAndroidParameters(final Map<String, Object> metaData, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> androidParameters = (Map<String, Object>) metaData.get("androidInfo");
     if (androidParameters != null) {
-      if (!androidParameters.containsKey("androidPackageName")) {
-        throw new IllegalArgumentException("no androidPackageName was specified.");
-      }
-
       DynamicLink.AndroidParameters.Builder androidParametersBuilder =
         new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("androidPackageName"));
 
@@ -242,12 +235,9 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
-  private void setIosParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> iosParameters = (Map<String, Object>) dynamicLinkInfo.get("iosInfo");
+  private void setIosParameters(final Map<String, Object> metaData, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> iosParameters = (Map<String, Object>) metaData.get("iosInfo");
     if (iosParameters != null) {
-      if (!iosParameters.containsKey("iosBundleId")) {
-        throw new IllegalArgumentException("no iosBundleId was specified.");
-      }
       DynamicLink.IosParameters.Builder iosParametersBuilder =
         new DynamicLink.IosParameters.Builder((String) iosParameters.get("iosBundleId"));
 
@@ -273,8 +263,8 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
     }
   }
 
-  private void setSocialMetaTagParameters(final Map<String, Object> dynamicLinkInfo, final DynamicLink.Builder parametersBuilder) {
-    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) dynamicLinkInfo.get("socialMetaTagInfo");
+  private void setSocialMetaTagParameters(final Map<String, Object> metaData, final DynamicLink.Builder parametersBuilder) {
+    Map<String, Object> socialMetaTagParameters = (Map<String, Object>) metaData.get("socialMetaTagInfo");
     if (socialMetaTagParameters != null) {
       DynamicLink.SocialMetaTagParameters.Builder socialMetaTagParametersBuilder =
         new DynamicLink.SocialMetaTagParameters.Builder();
