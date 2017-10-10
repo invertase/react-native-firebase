@@ -23,7 +23,7 @@ We also support **both** databases: Realtime Database and Cloud Firestore!
 
 <hr>
 
-> [Docs](http://invertase.link/v3-docs) <b>|</b> [iOS Install Guide](http://invertase.link/ios) <b>|</b> [Android Install Guide](http://invertase.link/android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
+> [Docs](http://invertase.link/v3-docs) <b>|</b> [Starter App](https://github.com/invertase/react-native-firebase-starter) <b>|</b> [iOS Install Guide](http://invertase.link/ios) <b>|</b> [Android Install Guide](http://invertase.link/android) <b>|</b> [FAQs](http://invertase.io/react-native-firebase/#/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
 
 <hr>
 

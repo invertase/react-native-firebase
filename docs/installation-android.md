@@ -1,6 +1,10 @@
 # Android Installation
 
-## 1) Setup google-services.json
+## 1) Link RNFirebase
+
+Run `react-native link react-native-firebase`
+
+## 2) Setup google-services.json
 Download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console. This file should be downloaded to `YOUR_PROJECT/android/app/google-services.json`.
 
 Next you'll have to add the google-services gradle plugin in order to parse it.
@@ -23,28 +27,19 @@ In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the f
 apply plugin: 'com.google.gms.google-services'
 ```
 
-## 2) Link RNFirebase
+## 3) Setup Firebase
 
-RNFirebase is split into separate modules to allow you to only include the Firebase functionality that you need in your application.
-
-First add the project path to `android/settings.gradle`:
-
-```groovy
-include ':react-native-firebase'
-project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
-```
-
-Now you need to include RNFirebase and the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
+Now you need to the required Firebase dependencies in our `android/app/build.gradle` so that they are compiled as part of React Native. In the `dependencies` listing, add the appropriate `compile` lines:
 
 ```groovy
 dependencies {
-  // RNFirebase required dependencies
+  // This should be added already
   compile(project(':react-native-firebase')) {
     transitive = false
   }
-  compile "com.google.firebase:firebase-core:11.4.2"
 
-  // If you are receiving Google Play API availability issues, add the following dependency
+  // RNFirebase required dependencies
+  compile "com.google.firebase:firebase-core:11.4.2"
   compile "com.google.android.gms:play-services-base:11.4.2"
 
   // RNFirebase optional dependencies
@@ -60,7 +55,7 @@ dependencies {
 }
 ```
 
-Google Play services from 11.4.2 onwards require their dependencies to be downloaded from Google's Maven respository so add the
+Google Play services from 11.2.0 onwards require their dependencies to be downloaded from Google's Maven respository so add the
 required reference to the repositories section of the *project* level build.gradle
 `android/build.gradle`
 
@@ -83,13 +78,17 @@ allprojects {
 }
 ```
 
+## 4) Install RNFirebase modules
+
+RNFirebase is split into separate modules to allow you to only include the Firebase functionality that you need in your application.
+
 To install `react-native-firebase` in your project, you'll need to import the packages you need from `io.invertase.firebase` in your project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list them as packages for ReactNative in the `getPackages()` function:
 
 ```java
 package com.youcompany.application;
 // ...
 // Required package
-import io.invertase.firebase.RNFirebasePackage; // <-- Add this line
+import io.invertase.firebase.RNFirebasePackage; // <-- This should be added already
 // Optional packages - add as appropriate
 import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
@@ -109,7 +108,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-          new RNFirebasePackage(),  // <-- Add this line
+          new RNFirebasePackage(),  // <-- This should be added already
           // Add these packages as appropriate
           new RNFirebaseAdMobPackage(),
           new RNFirebaseAnalyticsPackage(),
@@ -128,7 +127,7 @@ public class MainApplication extends Application implements ReactApplication {
 }
 ```
 
-## 3) Cloud Messaging (optional)
+## 5) Cloud Messaging (optional)
 
 If you plan on using [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/), add the following to `android/app/src/main/AndroidManifest.xml`.
 
@@ -179,7 +178,7 @@ If you would like to schedule local notifications then you also need to add the 
   </receiver>
 ```
 
-## 4) Performance Monitoring (optional)
+## 6) Performance Monitoring (optional)
 
 If you'd like to take advantage of Firebase's [Performance Monitoring](https://firebase.google.com/docs/perf-mon/), the following additions
  to your project setup are required:

@@ -1,33 +1,16 @@
 package io.invertase.firebase.firestore;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FirestoreSerialize {
-  private static final String TAG = "FirestoreSerialize";
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_DATA = "data";
   private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
@@ -138,8 +121,7 @@ public class FirestoreSerialize {
   static WritableMap objectMapToWritable(Map<String, Object> map) {
     WritableMap writableMap = Arguments.createMap();
     for (Map.Entry<String, Object> entry : map.entrySet()) {
-      WritableMap typeMap = buildTypeMap(entry.getValue());
-      writableMap.putMap(entry.getKey(), typeMap);
+      putValue(writableMap, entry.getKey(), entry.getValue());
     }
     return writableMap;
   }
@@ -154,127 +136,73 @@ public class FirestoreSerialize {
     WritableArray writableArray = Arguments.createArray();
 
     for (Object item : array) {
-      WritableMap typeMap = buildTypeMap(item);
-      writableArray.pushMap(typeMap);
+      if (item == null) {
+        writableArray.pushNull();
+        continue;
+      }
+
+      Class itemClass = item.getClass();
+
+      if (itemClass == Boolean.class) {
+        writableArray.pushBoolean((Boolean) item);
+      } else if (itemClass == Integer.class) {
+        writableArray.pushDouble(((Integer) item).doubleValue());
+      } else if (itemClass == Long.class) {
+        writableArray.pushDouble(((Long) item).doubleValue());
+      } else if (itemClass == Double.class) {
+        writableArray.pushDouble((Double) item);
+      } else if (itemClass == Float.class) {
+        writableArray.pushDouble(((Float) item).doubleValue());
+      } else if (itemClass == String.class) {
+        writableArray.pushString(item.toString());
+      } else if (Map.class.isAssignableFrom(itemClass)) {
+        writableArray.pushMap((objectMapToWritable((Map<String, Object>) item)));
+      } else if (List.class.isAssignableFrom(itemClass)) {
+        List<Object> list = (List<Object>) item;
+        Object[] listAsArray = list.toArray(new Object[list.size()]);
+        writableArray.pushArray(objectArrayToWritable(listAsArray));
+      } else {
+        throw new RuntimeException("Cannot convert object of type " + itemClass);
+      }
     }
 
     return writableArray;
   }
 
   /**
-   * Detects an objects type and creates a Map to represent the type and value.
+   * Detects an objects type and calls the relevant WritableMap setter method to add the value.
    *
+   * @param map   WritableMap
+   * @param key   String
    * @param value Object
    */
-  private static WritableMap buildTypeMap(Object value) {
-    WritableMap typeMap = Arguments.createMap();
+  static void putValue(WritableMap map, String key, Object value) {
     if (value == null) {
-      typeMap.putString("type", "null");
-      typeMap.putNull("value");
+      map.putNull(key);
     } else {
       Class valueClass = value.getClass();
 
       if (valueClass == Boolean.class) {
-        typeMap.putString("type", "boolean");
-        typeMap.putBoolean("value", (Boolean) value);
+        map.putBoolean(key, (Boolean) value);
       } else if (valueClass == Integer.class) {
-        typeMap.putString("type", "number");
-        typeMap.putDouble("value", ((Integer) value).doubleValue());
+        map.putDouble(key, ((Integer) value).doubleValue());
+      } else if (valueClass == Long.class) {
+        map.putDouble(key, ((Long) value).doubleValue());
       } else if (valueClass == Double.class) {
-        typeMap.putString("type", "number");
-        typeMap.putDouble("value", (Double) value);
+        map.putDouble(key, (Double) value);
       } else if (valueClass == Float.class) {
-        typeMap.putString("type", "number");
-        typeMap.putDouble("value", ((Float) value).doubleValue());
+        map.putDouble(key, ((Float) value).doubleValue());
       } else if (valueClass == String.class) {
-        typeMap.putString("type", "string");
-        typeMap.putString("value", value.toString());
-      } else if (valueClass == Map.class || valueClass == HashMap.class) {
-        typeMap.putString("type", "object");
-        typeMap.putMap("value", (objectMapToWritable((Map<String, Object>) value)));
-      } else if (valueClass == Arrays.class) {
-        typeMap.putString("type", "array");
-        typeMap.putArray("value", objectArrayToWritable((Object[]) value));
-      } else if (valueClass == List.class || valueClass == ArrayList.class) {
-        typeMap.putString("type", "array");
+        map.putString(key, value.toString());
+      } else if (Map.class.isAssignableFrom(valueClass)) {
+        map.putMap(key, (objectMapToWritable((Map<String, Object>) value)));
+      }  else if (List.class.isAssignableFrom(valueClass)) {
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
-        typeMap.putArray("value", objectArrayToWritable(array));
-      } else if (valueClass == DocumentReference.class) {
-        typeMap.putString("type", "reference");
-        typeMap.putString("value", ((DocumentReference) value).getPath());
-      } else if (valueClass == GeoPoint.class) {
-        typeMap.putString("type", "geopoint");
-        WritableMap geoPoint = Arguments.createMap();
-        geoPoint.putDouble("latitude", ((GeoPoint) value).getLatitude());
-        geoPoint.putDouble("longitude", ((GeoPoint) value).getLongitude());
-        typeMap.putMap("value", geoPoint);
-      } else if (valueClass == Date.class) {
-        typeMap.putString("type", "date");
-        typeMap.putString("value", DATE_FORMAT.format((Date) value));
+        map.putArray(key, objectArrayToWritable(array));
       } else {
-        Log.e(TAG, "buildTypeMap", new RuntimeException("Cannot convert object of type " + valueClass));
-        typeMap.putString("type", "null");
-        typeMap.putNull("value");
+        throw new RuntimeException("Cannot convert object of type " + valueClass);
       }
-    }
-
-    return typeMap;
-  }
-
-  static Map<String, Object> parseReadableMap(FirebaseFirestore firestore, ReadableMap readableMap) {
-    Map<String, Object> map = new HashMap<>();
-    if (readableMap != null) {
-      ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
-      while (iterator.hasNextKey()) {
-        String key = iterator.nextKey();
-        map.put(key, parseTypeMap(firestore, readableMap.getMap(key)));
-      }
-    }
-    return map;
-  }
-
-  static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
-    List<Object> list = new ArrayList<>();
-    if (readableArray != null) {
-      for (int i = 0; i < readableArray.size(); i++) {
-        list.add(parseTypeMap(firestore, readableArray.getMap(i)));
-      }
-    }
-    return list;
-  }
-
-  static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
-    String type = typeMap.getString("type");
-    if ("boolean".equals(type)) {
-      return typeMap.getBoolean("value");
-    } else if ("number".equals(type)) {
-      return typeMap.getDouble("value");
-    } else if ("string".equals(type)) {
-      return typeMap.getString("value");
-    } else if ("null".equals(type)) {
-      return null;
-    } else if ("array".equals(type)) {
-      return parseReadableArray(firestore, typeMap.getArray("value"));
-    } else if ("object".equals(type)) {
-      return parseReadableMap(firestore, typeMap.getMap("value"));
-    } else if ("reference".equals(type)) {
-      String path = typeMap.getString("value");
-      return firestore.document(path);
-    } else if ("geopoint".equals(type)) {
-      ReadableMap geoPoint = typeMap.getMap("value");
-      return new GeoPoint(geoPoint.getDouble("latitude"), geoPoint.getDouble("longitude"));
-    } else if ("date".equals(type)) {
-      try {
-        String date = typeMap.getString("value");
-        return DATE_FORMAT.parse(date);
-      } catch (ParseException exception) {
-        Log.e(TAG, "parseTypeMap", exception);
-        return null;
-      }
-    } else {
-      Log.e(TAG, "parseTypeMap", new RuntimeException("Cannot convert object of type " + type));
-      return null;
     }
   }
 }
