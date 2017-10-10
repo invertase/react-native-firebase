@@ -12,6 +12,11 @@ To add Firebase to your project, make sure to create a project in the [Firebase 
 
 Each platform uses a different setup method after creating the project.
 
+## Starter Project
+
+Fresh project and want to skip most of the setup? Check out our [starter app](
+http://invertase.link/starter).
+
 ## iOS
 
 For iOS, follow the instructions [here](/installation-ios).
