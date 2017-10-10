@@ -274,7 +274,7 @@ public class FirestoreSerialize {
         return null;
       }
     } else {
-      Log.e(TAG, "parseTypeMap", new RuntimeException("Cannot convert object of type " + type));
+      Log.e(TAG, "parseTypeMap: Cannot convert object of type " + type);
       return null;
     }
   }

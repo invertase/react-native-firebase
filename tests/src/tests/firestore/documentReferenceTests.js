@@ -413,6 +413,18 @@ function documentReferenceTests({ describe, it, context, firebase }) {
     });
 
     context('types', () => {
+      it('should handle Boolean field', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/reference');
+        await docRef.set({
+          field: true,
+        });
+
+        const doc = await docRef.get();
+        should.equal(doc.data().field, true);
+      });
+    });
+
+    context('types', () => {
       it('should handle Date field', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/reference');
         await docRef.set({

@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
     for (NSDictionary *write in writes) {
         NSString *type = write[@"type"];
         NSString *path = write[@"path"];
-        NSDictionary *data = write[@"data"];
+        NSDictionary *data = [RNFirebaseFirestoreDocumentReference parseJSMap:firestore jsMap:write[@"data"]];
 
         FIRDocumentReference *ref = [firestore documentWithPath:path];
 
