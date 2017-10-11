@@ -62,10 +62,10 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | _-- Phone Auth_            | ❌ | ❌ | ✅ | ❌ |
 | **Core**                   | ❌ |**?**| ✅ | ✅ |
 |  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
+| **Cloud Firestore**        | ❌ | ❌ | ✅ | ❌ |
 | **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
 | **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
 | **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
-| **Firestore**              | ❌ | ❌ | ✅ | ❌ |
 | **Invites**                | ❌ | ❌ | ❌ | ❌ |
 | **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
 | **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
