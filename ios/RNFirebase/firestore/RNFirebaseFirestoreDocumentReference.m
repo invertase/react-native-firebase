@@ -147,7 +147,11 @@ static NSMutableDictionary *_listeners;
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
 
-    [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
+    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+    // until a better solution comes around
+    if (_emitter.bridge) {
+        [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
+    }
 }
 
 - (void)handleDocumentSnapshotEvent:(NSString *)listenerId
@@ -158,7 +162,11 @@ static NSMutableDictionary *_listeners;
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"documentSnapshot"];
 
-    [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
+    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+    // until a better solution comes around
+    if (_emitter.bridge) {
+        [_emitter sendEventWithName:FIRESTORE_DOCUMENT_SYNC_EVENT body:event];
+    }
 }
 
 

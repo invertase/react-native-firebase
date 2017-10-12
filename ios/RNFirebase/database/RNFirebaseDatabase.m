@@ -87,7 +87,11 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         dispatch_barrier_async(_transactionQueue, ^{
             [_transactions setValue:transactionState forKey:transactionId];
             NSDictionary *updateMap = [self createTransactionUpdateMap:appName transactionId:transactionId updatesData:currentData];
-            [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
+            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+            // until a better solution comes around
+            if (self.bridge) {
+                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
+            }
         });
 
         // wait for the js event handler to call tryCommitTransaction
@@ -114,7 +118,11 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         andCompletionBlock:
         ^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
             NSDictionary *resultMap = [self createTransactionResultMap:appName transactionId:transactionId error:databaseError committed:committed snapshot:snapshot];
-            [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:resultMap];
+            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+            // until a better solution comes around
+            if (self.bridge) {
+                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:resultMap];
+            }
         }
         withLocalEvents:
         applyLocally];

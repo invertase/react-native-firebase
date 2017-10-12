@@ -151,7 +151,11 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
 
-    [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
+    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+    // until a better solution comes around
+    if (_emitter.bridge) {
+        [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
+    }
 }
 
 - (void)handleQuerySnapshotEvent:(NSString *)listenerId
@@ -162,7 +166,11 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreCollectionReference snapshotToDictionary:querySnapshot] forKey:@"querySnapshot"];
 
-    [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
+    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
+    // until a better solution comes around
+    if (_emitter.bridge) {
+        [_emitter sendEventWithName:FIRESTORE_COLLECTION_SYNC_EVENT body:event];
+    }
 }
 
 + (NSDictionary *)snapshotToDictionary:(FIRQuerySnapshot *)querySnapshot {
