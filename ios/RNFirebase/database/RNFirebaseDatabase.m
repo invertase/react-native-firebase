@@ -396,6 +396,11 @@ RCT_EXPORT_METHOD(off:(NSString *) key
     return @[DATABASE_SYNC_EVENT, DATABASE_TRANSACTION_EVENT];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else

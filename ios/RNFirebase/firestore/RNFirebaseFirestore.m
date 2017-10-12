@@ -276,6 +276,11 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
     return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else

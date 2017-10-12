@@ -448,6 +448,11 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString *)completionHandlerId) {
     return @[MESSAGING_TOKEN_REFRESHED, MESSAGING_NOTIFICATION_RECEIVED];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else

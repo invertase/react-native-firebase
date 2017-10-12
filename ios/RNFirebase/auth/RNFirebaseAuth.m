@@ -1166,6 +1166,11 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     return @[AUTH_CHANGED_EVENT, AUTH_ID_TOKEN_CHANGED_EVENT, PHONE_AUTH_STATE_CHANGED_EVENT];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else

@@ -45,6 +45,11 @@ RCT_EXPORT_METHOD(incrementCounter:
     [[self getOrCreateTrace:identifier] incrementCounterNamed:event];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else
