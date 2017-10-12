@@ -6,13 +6,26 @@ import TestSuite from '../../../lib/TestSuite';
  */
 import collectionReferenceTests from './collectionReferenceTests';
 import documentReferenceTests from './documentReferenceTests';
+import fieldValueTests from './fieldValueTests';
 import firestoreTests from './firestoreTests';
+
+export const COL_1 = {
+  baz: true,
+  daz: 123,
+  foo: 'bar',
+  gaz: 12.1234567,
+  naz: null,
+};
+
+export const DOC_1 = { name: 'doc1' };
+export const DOC_2 = { name: 'doc2', title: 'Document 2' };
 
 const suite = new TestSuite('Firestore', 'firebase.firestore()', firebase);
 
 const testGroups = [
   collectionReferenceTests,
   documentReferenceTests,
+  fieldValueTests,
   firestoreTests,
 ];
 
@@ -21,28 +34,22 @@ function firestoreTestSuite(testSuite) {
     this.collectionTestsCollection = testSuite.firebase.native.firestore().collection('collection-tests');
     this.documentTestsCollection = testSuite.firebase.native.firestore().collection('document-tests');
     this.firestoreTestsCollection = testSuite.firebase.native.firestore().collection('firestore-tests');
-    // Clean the collections in case the last run failed
+    // Make sure the collections are cleaned and initialised correctly
     await cleanCollection(this.collectionTestsCollection);
     await cleanCollection(this.documentTestsCollection);
     await cleanCollection(this.firestoreTestsCollection);
 
-    await this.collectionTestsCollection.add({
-      baz: true,
-      daz: 123,
-      foo: 'bar',
-      gaz: 12.1234567,
-      naz: null,
-    });
+    const tasks = [];
+    tasks.push(this.collectionTestsCollection.doc('col1').set(COL_1));
+    tasks.push(this.documentTestsCollection.doc('doc1').set(DOC_1));
+    tasks.push(this.documentTestsCollection.doc('doc2').set(DOC_2));
 
-    await this.documentTestsCollection.doc('doc1').set({
-      name: 'doc1',
-    });
+    await Promise.all(tasks);
   });
 
   testSuite.afterEach(async () => {
-    await cleanCollection(this.collectionTestsCollection);
-    await cleanCollection(this.documentTestsCollection);
-    await cleanCollection(this.firestoreTestsCollection);
+    // All data will be cleaned an re-initialised before each test
+    // Adding a clean here slows down the test suite dramatically
   });
 
   testGroups.forEach((testGroup) => {

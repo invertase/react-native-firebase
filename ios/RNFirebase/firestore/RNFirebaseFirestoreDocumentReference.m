@@ -260,7 +260,7 @@ static NSMutableDictionary *_listeners;
     } else if ([type isEqualToString:@"reference"]) {
         return [firestore documentWithPath:value];
     } else if ([type isEqualToString:@"geopoint"]) {
-        NSDictionary* geopoint = (NSDictionary*)value;
+        NSDictionary *geopoint = (NSDictionary*)value;
         NSNumber *latitude = geopoint[@"latitude"];
         NSNumber *longitude = geopoint[@"longitude"];
         return [[FIRGeoPoint alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
@@ -268,6 +268,16 @@ static NSMutableDictionary *_listeners;
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
         return [dateFormatter dateFromString:value];
+    } else if ([type isEqualToString:@"fieldvalue"]) {
+        NSString *string = (NSString*)value;
+        if ([string isEqualToString:@"delete"]) {
+            return [FIRFieldValue fieldValueForDelete];
+        } else if ([string isEqualToString:@"timestamp"]) {
+            return [FIRFieldValue fieldValueForServerTimestamp];
+        } else {
+            // TODO: Log warning
+            return nil;
+        }
     } else if ([type isEqualToString:@"boolean"] || [type isEqualToString:@"number"] || [type isEqualToString:@"string"] || [type isEqualToString:@"null"]) {
         return value;
     } else {

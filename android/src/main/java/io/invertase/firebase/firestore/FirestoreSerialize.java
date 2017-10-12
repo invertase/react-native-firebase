@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -271,6 +272,16 @@ public class FirestoreSerialize {
         return DATE_FORMAT.parse(date);
       } catch (ParseException exception) {
         Log.e(TAG, "parseTypeMap", exception);
+        return null;
+      }
+    } else if ("fieldvalue".equals(type)) {
+      String value = typeMap.getString("value");
+      if ("delete".equals(value)) {
+        return FieldValue.delete();
+      } else if ("timestamp".equals(value)) {
+        return FieldValue.serverTimestamp();
+      } else {
+        Log.e(TAG, "parseTypeMap: Invalid fieldvalue: " + value);
         return null;
       }
     } else {
