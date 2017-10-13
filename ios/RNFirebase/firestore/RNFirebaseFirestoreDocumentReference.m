@@ -217,7 +217,7 @@ static NSMutableDictionary *_listeners;
     } else if ([value isKindOfClass:[NSDate class]]) {
         typeMap[@"type"] = @"date";
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
         typeMap[@"value"] = [dateFormatter stringFromDate:(NSDate *)value];
     } else if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber *number = (NSNumber *)value;
@@ -274,7 +274,7 @@ static NSMutableDictionary *_listeners;
         return [[FIRGeoPoint alloc] initWithLatitude:[latitude doubleValue] longitude:[longitude doubleValue]];
     } else if ([type isEqualToString:@"date"]) {
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
         return [dateFormatter dateFromString:value];
     } else if ([type isEqualToString:@"fieldvalue"]) {
         NSString *string = (NSString*)value;
