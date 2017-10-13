@@ -30,7 +30,7 @@ import io.invertase.firebase.Utils;
 
 public class FirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_DATA = "data";
   private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
