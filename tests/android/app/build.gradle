@@ -92,6 +92,7 @@ dependencies {
     compile "com.google.firebase:firebase-perf:$firebaseVersion"
     compile "com.google.firebase:firebase-storage:$firebaseVersion"
     compile "com.google.firebase:firebase-firestore:$firebaseVersion"
+    compile "com.google.firebase:firebase-invites:$firebaseVersion"
     compile "com.android.support:appcompat-v7:26.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }

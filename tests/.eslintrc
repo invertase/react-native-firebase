@@ -36,6 +36,7 @@
   },
   "globals": {
     "__DEV__": true,
-    "window": true
+    "window": true,
+    "fetch": true,
   }
 }

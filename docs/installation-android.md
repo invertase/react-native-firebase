@@ -49,6 +49,7 @@ dependencies {
   compile "com.google.firebase:firebase-crash:11.4.2"
   compile "com.google.firebase:firebase-database:11.4.2"
   compile "com.google.firebase:firebase-firestore:11.4.2"
+  compile "com.google.firebase:firebase-invites:11.4.2"
   compile "com.google.firebase:firebase-messaging:11.4.2"
   compile "com.google.firebase:firebase-perf:11.4.2"
   compile "com.google.firebase:firebase-storage:11.4.2"
@@ -97,6 +98,7 @@ import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase R
 import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
 import io.invertase.firebase.firestore.RNFirebaseFirestorePackage; // Firebase Firestore
+import io.invertase.firebase.links.RNFirebaseLinksPackage; // Firebase Links
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
 import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Performance
 import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
@@ -117,6 +119,7 @@ public class MainApplication extends Application implements ReactApplication {
           new RNFirebaseCrashPackage(),
           new RNFirebaseDatabasePackage(),
           new RNFirebaseFirestorePackage(),
+          new RNFirebaseLinksPackage(),
           new RNFirebaseMessagingPackage(),
           new RNFirebasePerformancePackage(),
           new RNFirebaseStoragePackage()
@@ -205,4 +208,23 @@ dependencies {
   // ...
   compile "com.google.firebase:firebase-perf:11.4.2"
 }
+```
+
+## 7) Dynamic Links (optional)
+
+If you plan on using [Firebase Dynamic
+Links](https://firebase.google.com/docs/dynamic-links/):
+
+Make sure to setup dynamic links for Android as described [here](https://firebase.google.com/docs/dynamic-links/android/receive#set-up-firebase-and-the-dynamic-links-sdk)
+
+In `android/app/src/main/AndroidManifest.xml`, add a new intent filter to the activity that handles deep links for your app (for react-native this is usually MainActivity), and specify the host and the scheme:
+
+```xml
+<intent-filter>
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:host="yoursite.example.com" android:scheme="http"/>
+    <data android:host="yoursite.example.com" android:scheme="https"/>
+</intent-filter>
 ```

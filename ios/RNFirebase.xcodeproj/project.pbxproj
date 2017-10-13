@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17AF4F6B1F59CDBF00C02336 /* RNFirebaseLinks.m in Sources */ = {isa = PBXBuildFile; fileRef = 17AF4F6A1F59CDBF00C02336 /* RNFirebaseLinks.m */; };
 		8300A7AE1F31E143001B16AB /* RNFirebaseDatabaseReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8300A7AD1F31E143001B16AB /* RNFirebaseDatabaseReference.m */; };
 		8323CF061F6FBD870071420B /* BannerComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8323CEFF1F6FBD870071420B /* BannerComponent.m */; };
 		8323CF071F6FBD870071420B /* NativeExpressComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8323CF011F6FBD870071420B /* NativeExpressComponent.m */; };
@@ -43,6 +44,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17AF4F691F59CDBF00C02336 /* RNFirebaseLinks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseLinks.h; sourceTree = "<group>"; };
+		17AF4F6A1F59CDBF00C02336 /* RNFirebaseLinks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseLinks.m; sourceTree = "<group>"; };
 		8300A7AC1F31E143001B16AB /* RNFirebaseDatabaseReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseDatabaseReference.h; sourceTree = "<group>"; };
 		8300A7AD1F31E143001B16AB /* RNFirebaseDatabaseReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseDatabaseReference.m; sourceTree = "<group>"; };
 		8323CEFE1F6FBD870071420B /* BannerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BannerComponent.h; sourceTree = "<group>"; };
@@ -105,9 +108,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		17AF4F681F59CDBF00C02336 /* links */ = {
+			isa = PBXGroup;
+			children = (
+				17AF4F691F59CDBF00C02336 /* RNFirebaseLinks.h */,
+				17AF4F6A1F59CDBF00C02336 /* RNFirebaseLinks.m */,
+			);
+			name = links;
+			path = RNFirebase/links;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				17AF4F681F59CDBF00C02336 /* links */,
 				839D914D1EF3E20A0077C7C8 /* admob */,
 				839D91541EF3E20A0077C7C8 /* analytics */,
 				839D91571EF3E20A0077C7C8 /* auth */,
@@ -117,11 +131,11 @@
 				8376F70D1F7C141500D45A85 /* firestore */,
 				839D91631EF3E20A0077C7C8 /* messaging */,
 				839D91661EF3E20A0077C7C8 /* perf */,
-				839D91691EF3E20A0077C7C8 /* storage */,
+				134814211AA4EA7D00B7C361 /* Products */,
 				D950369C1D19C77400F7094D /* RNFirebase.h */,
 				D950369D1D19C77400F7094D /* RNFirebase.m */,
 				839D91771EF3E22F0077C7C8 /* RNFirebaseEvents.h */,
-				134814211AA4EA7D00B7C361 /* Products */,
+				839D91691EF3E20A0077C7C8 /* storage */,
 			);
 			sourceTree = "<group>";
 		};
@@ -301,6 +315,7 @@
 			files = (
 				839D916E1EF3E20B0077C7C8 /* RNFirebaseAdMobRewardedVideo.m in Sources */,
 				839D916C1EF3E20B0077C7C8 /* RNFirebaseAdMob.m in Sources */,
+				17AF4F6B1F59CDBF00C02336 /* RNFirebaseLinks.m in Sources */,
 				8376F7161F7C149100D45A85 /* RNFirebaseFirestoreCollectionReference.m in Sources */,
 				839D91761EF3E20B0077C7C8 /* RNFirebaseStorage.m in Sources */,
 				8376F7151F7C149100D45A85 /* RNFirebaseFirestore.m in Sources */,
