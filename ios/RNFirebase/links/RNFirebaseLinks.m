@@ -1,6 +1,7 @@
 #import "RNFirebaseLinks.h"
 
-#if __has_include(<FirebaseDynamicLinks/FIRDynamicLink.h>)
+#if __has_include(<FirebaseDynamicLinks/FirebaseDynamicLinks.h>)
+#import <Firebase.h>
 #import "RNFirebaseEvents.h"
 
 
@@ -49,11 +50,12 @@ RCT_EXPORT_MODULE();
     return [self handleLinkFromCustomSchemeURL:url];
 }
 
-+(BOOL)handleLinkFromCustomSchemeURL:(NSURL *)url {
++ (BOOL)handleLinkFromCustomSchemeURL:(NSURL *)url {
     FIRDynamicLink *dynamicLink =
     [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-    if (dynamicLink) {
-        sendDynamicLink(dynamicLink.url, self);
+    if (dynamicLink && dynamicLink.url) {
+        NSURL* dynamicLinkUrl = dynamicLink.url;
+        sendDynamicLink(dynamicLinkUrl, self);
         return YES;
     }
     return NO;
@@ -194,7 +196,7 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     if (androidParametersDict) {
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
-
+        
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
         }
