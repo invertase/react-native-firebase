@@ -1,3 +1,5 @@
+!> This is our old documentation site, please use the new and improved documentation site: https://rnfirebase.io/
+
 
 <div style="text-align: center;">
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
