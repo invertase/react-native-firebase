@@ -100,7 +100,7 @@ Sign in the user with a 3rd party credential provider. `credential` requires the
 
 ```javascript
 const credential = {
-  provider: 'facebook',
+  provider: 'facebook.com',
   token: '12345',
   secret: '6789',
 };
@@ -210,7 +210,7 @@ Reauthenticate the current user with credentials:
 
 ```javascript
 const credentials = {
-  provider: 'facebook',
+  provider: 'facebook.com',
   token: '12345',
   secret: '6789',
 };
