@@ -416,7 +416,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   @ReactMethod
   public void off(String key, String eventRegistrationKey) {
     RNFirebaseDatabaseReference nativeRef = references.get(key);
-    if (nativeRef) {
+    if (nativeRef != null) {
       nativeRef.removeEventListener(eventRegistrationKey);
 
       if (!nativeRef.hasListeners()) {
