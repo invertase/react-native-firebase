@@ -85,21 +85,6 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
     }];
 }
 
-RCT_EXPORT_METHOD(documentCollections:(NSString *) appName
-                                 path:(NSString *) path
-                             resolver:(RCTPromiseResolveBlock) resolve
-                             rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] get:resolve rejecter:reject];
-}
-
-RCT_EXPORT_METHOD(documentCreate:(NSString *) appName
-                            path:(NSString *) path
-                            data:(NSDictionary *) data
-                        resolver:(RCTPromiseResolveBlock) resolve
-                        rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] create:data resolver:resolve rejecter:reject];
-}
-
 RCT_EXPORT_METHOD(documentDelete:(NSString *) appName
                             path:(NSString *) path
                         resolver:(RCTPromiseResolveBlock) resolve
