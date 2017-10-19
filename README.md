@@ -1,4 +1,4 @@
-# React Native Firebase<a href="https://invertase.io/react-native-firebase"><img align="left" src="http://i.imgur.com/01XQL0x.png"></a>
+# React Native Firebase<a href="https://rnfirebase.io"><img align="left" src="http://i.imgur.com/01XQL0x.png"></a>
 
 [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
 [![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
