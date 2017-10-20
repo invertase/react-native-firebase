@@ -794,7 +794,15 @@ RCT_EXPORT_METHOD(unlink:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self promiseWithUser:resolve rejecter:reject user:_user];
+                // This is here to protect against bugs in the iOS SDK which don't
+                // correctly refresh the user object when unlinking certain accounts
+                [user reloadWithCompletion:^(NSError * _Nullable error) {
+                    if (error) {
+                        [self promiseRejectAuthException:reject error:error];
+                    } else {
+                        [self promiseWithUser:resolve rejecter:reject user:user];
+                    }
+                }];
             }
         }];
     } else {
