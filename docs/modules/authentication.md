@@ -297,7 +297,7 @@ LoginManager
   .logInWithReadPermissions(['public_profile', 'email'])
   .then((result) => {
     if (result.isCancelled) {
-      return Promise.resolve('cancelled');
+      return Promise.reject('cancelled');
     }
     console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
     // get the access token
