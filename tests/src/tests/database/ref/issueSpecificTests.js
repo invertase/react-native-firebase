@@ -94,14 +94,13 @@ function issueTests({ describe, it, context, firebase }) {
 
         return ref
           .orderByChild('number')
-          .limitToLast(2)
+          .limitToLast(1)
           .once('value')
           .then((snapshot) => {
             const val = snapshot.val();
             // Assertion
-            val.key2.should.eql(DatabaseContents.ISSUES[521].key2);
             val.key3.should.eql(DatabaseContents.ISSUES[521].key3);
-            should.equal(Object.keys(val).length, 2);
+            should.equal(Object.keys(val).length, 1);
 
             return Promise.resolve();
           });
@@ -185,14 +184,13 @@ function issueTests({ describe, it, context, firebase }) {
 
         return ref
           .orderByChild('string')
-          .limitToLast(2)
+          .limitToLast(1)
           .once('value')
           .then((snapshot) => {
             const val = snapshot.val();
             // Assertion
-            val.key2.should.eql(DatabaseContents.ISSUES[521].key2);
             val.key3.should.eql(DatabaseContents.ISSUES[521].key3);
-            should.equal(Object.keys(val).length, 2);
+            should.equal(Object.keys(val).length, 1);
 
             return Promise.resolve();
           });

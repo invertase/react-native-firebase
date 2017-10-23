@@ -39,7 +39,7 @@ RCT_EXPORT_METHOD(keepSynced:(NSString *) appName
                         path:(NSString *) path
                    modifiers:(NSArray *) modifiers
                        state:(BOOL) state) {
-    FIRDatabaseQuery *query = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers keep:false].query;
+    FIRDatabaseQuery *query = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers].query;
     [query keepSynced:state];
 }
 
@@ -233,13 +233,13 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
              eventName:(NSString *) eventName
               resolver:(RCTPromiseResolveBlock) resolve
               rejecter:(RCTPromiseRejectBlock) reject) {
-    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers keep:false];
+    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers];
     [ref once:eventName resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(on:(NSString *) appName
                props:(NSDictionary *) props) {
-    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:props[@"key"] path:props[@"path"] modifiers:props[@"modifiers"] keep:false];
+    RNFirebaseDatabaseReference *ref = [self getCachedInternalReferenceForApp:appName props:props];
     [ref on:props[@"eventType"] registration:props[@"registration"]];
 }
 
@@ -278,15 +278,20 @@ RCT_EXPORT_METHOD(off:(NSString *) key
     return [[RNFirebaseDatabase getDatabaseForApp:appName] referenceWithPath:path];
 }
 
-- (RNFirebaseDatabaseReference *)getInternalReferenceForApp:(NSString *)appName key:(NSString *)key path:(NSString *)path modifiers:(NSArray *)modifiers keep:(BOOL)keep {
-    RNFirebaseDatabaseReference *ref = _dbReferences[key];
+- (RNFirebaseDatabaseReference *)getInternalReferenceForApp:(NSString *)appName key:(NSString *)key path:(NSString *)path modifiers:(NSArray *)modifiers {
+    return [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName key:key refPath:path modifiers:modifiers];
+}
 
+- (RNFirebaseDatabaseReference *)getCachedInternalReferenceForApp:(NSString *)appName props:(NSDictionary *)props {
+    NSString *key = props[@"key"];
+    NSString *path = props[@"path"];
+    NSDictionary *modifiers = props[@"modifiers"];
+    
+    RNFirebaseDatabaseReference *ref = _dbReferences[key];
+    
     if (ref == nil) {
         ref = [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName key:key refPath:path modifiers:modifiers];
-
-        if (keep) {
-            _dbReferences[key] = ref;
-        }
+        _dbReferences[key] = ref;
     }
     return ref;
 }
