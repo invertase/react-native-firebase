@@ -84,6 +84,30 @@ function issueTests({ describe, it, context, firebase }) {
     });
   });
 
+  describe('issue_489', () => {
+    context('long numbers should', () => {
+      it('return as longs', async () => {
+        // Setup
+
+        const long1Ref = firebase.native.database().ref('tests/issues/489/long1');
+        const long2Ref = firebase.native.database().ref('tests/issues/489/long2');
+        const long2 = 1234567890123456;
+
+        // Test
+
+        let snapshot = await long1Ref.once('value');
+        snapshot.val().should.eql(DatabaseContents.ISSUES[489].long1);
+
+
+        await long2Ref.set(long2);
+        snapshot = await long2Ref.once('value');
+        snapshot.val().should.eql(long2);
+
+        return Promise.resolve();
+      });
+    });
+  });
+
   describe('issue_521', () => {
     context('orderByChild (numerical field) and limitToLast', () => {
       it('once() returns correct results', async () => {

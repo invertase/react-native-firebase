@@ -92,6 +92,10 @@ export default {
       },
     },
 
+    489: {
+      long1: 1508777379000,
+    },
+
     // https://github.com/invertase/react-native-firebase/issues/521
     521: {
       key1: {
