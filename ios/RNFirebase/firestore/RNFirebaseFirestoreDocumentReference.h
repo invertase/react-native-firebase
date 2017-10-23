@@ -17,8 +17,6 @@
 @property FIRDocumentReference *ref;
 
 - (id)initWithPath:(RCTEventEmitter *)emitter app:(NSString *)app path:(NSString *)path;
-- (void)collections:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
-- (void)create:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 + (void)offSnapshot:(NSString *)listenerId;

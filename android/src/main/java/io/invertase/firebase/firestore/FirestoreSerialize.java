@@ -25,12 +25,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import io.invertase.firebase.Utils;
 
 public class FirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+  private static final DateFormat READ_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  private static final DateFormat WRITE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_DATA = "data";
   private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
@@ -40,6 +42,12 @@ public class FirestoreSerialize {
   private static final String KEY_DOCUMENTS = "documents";
   private static final String KEY_METADATA = "metadata";
   private static final String KEY_PATH = "path";
+
+  static {
+    // Javascript Date.toISOString is always formatted to UTC
+    // We set the read TimeZone to UTC to account for this
+    READ_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+  }
 
   /**
    * Convert a DocumentSnapshot instance into a React Native WritableMap
@@ -212,7 +220,7 @@ public class FirestoreSerialize {
         typeMap.putMap("value", geoPoint);
       } else if (value instanceof Date) {
         typeMap.putString("type", "date");
-        typeMap.putString("value", DATE_FORMAT.format((Date) value));
+        typeMap.putString("value", WRITE_DATE_FORMAT.format((Date) value));
       } else {
         // TODO: Changed to log an error rather than crash - is this correct?
         Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
@@ -269,7 +277,7 @@ public class FirestoreSerialize {
     } else if ("date".equals(type)) {
       try {
         String date = typeMap.getString("value");
-        return DATE_FORMAT.parse(date);
+        return READ_DATE_FORMAT.parse(date);
       } catch (ParseException exception) {
         Log.e(TAG, "parseTypeMap", exception);
         return null;

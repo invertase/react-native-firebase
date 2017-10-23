@@ -23,17 +23,6 @@ static NSMutableDictionary *_listeners;
     return self;
 }
 
-- (void)collections:(RCTPromiseResolveBlock) resolve
-           rejecter:(RCTPromiseRejectBlock) reject {
-    // Not supported on iOS
-}
-
-- (void)create:(NSDictionary *) data
-      resolver:(RCTPromiseResolveBlock) resolve
-      rejecter:(RCTPromiseRejectBlock) reject {
-    // Not supported on iOS out of the box
-}
-
 - (void)delete:(RCTPromiseResolveBlock) resolve
       rejecter:(RCTPromiseRejectBlock) reject {
     [_ref deleteDocumentWithCompletion:^(NSError * _Nullable error) {
@@ -176,7 +165,7 @@ static NSMutableDictionary *_listeners;
         NSDictionary *typeMap = [RNFirebaseFirestoreDocumentReference buildTypeMap:obj];
         map[key] = typeMap;
     }];
-    
+
     return map;
 }
 
@@ -186,7 +175,7 @@ static NSMutableDictionary *_listeners;
         NSDictionary *typeMap = [RNFirebaseFirestoreDocumentReference buildTypeMap:obj];
         [array addObject:typeMap];
     }];
-    
+
     return array;
 }
 
@@ -231,7 +220,7 @@ static NSMutableDictionary *_listeners;
         // TODO: Log an error
         typeMap[@"type"] = @"null";
     }
-    
+
     return typeMap;
 }
 

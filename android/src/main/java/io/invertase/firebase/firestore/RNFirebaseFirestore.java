@@ -112,18 +112,6 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void documentCollections(String appName, String path, final Promise promise) {
-    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
-    ref.collections(promise);
-  }
-
-  @ReactMethod
-  public void documentCreate(String appName, String path, ReadableMap data, final Promise promise) {
-    RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
-    ref.create(data, promise);
-  }
-
-  @ReactMethod
   public void documentDelete(String appName, String path, final Promise promise) {
     RNFirebaseFirestoreDocumentReference ref = getDocumentForAppPath(appName, path);
     ref.delete(promise);

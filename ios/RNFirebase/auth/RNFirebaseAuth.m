@@ -794,7 +794,15 @@ RCT_EXPORT_METHOD(unlink:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self promiseWithUser:resolve rejecter:reject user:_user];
+                // This is here to protect against bugs in the iOS SDK which don't
+                // correctly refresh the user object when unlinking certain accounts
+                [user reloadWithCompletion:^(NSError * _Nullable error) {
+                    if (error) {
+                        [self promiseRejectAuthException:reject error:error];
+                    } else {
+                        [self promiseWithUser:resolve rejecter:reject user:user];
+                    }
+                }];
             }
         }];
     } else {
@@ -889,15 +897,15 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
     FIRAuthCredential *credential;
 
-    if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
-    } else if ([provider compare:@"facebook" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
     } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
-    } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken verificationCode:authTokenSecret];

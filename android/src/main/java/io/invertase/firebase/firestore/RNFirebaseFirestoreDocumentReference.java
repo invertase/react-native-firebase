@@ -40,14 +40,6 @@ public class RNFirebaseFirestoreDocumentReference {
     this.ref = RNFirebaseFirestore.getFirestoreForApp(appName).document(path);
   }
 
-  public void collections(Promise promise) {
-    // Not supported on Android
-  }
-
-  public void create(ReadableMap data, Promise promise) {
-    // Not supported on Android out of the box
-  }
-
   public void delete(final Promise promise) {
     this.ref.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override

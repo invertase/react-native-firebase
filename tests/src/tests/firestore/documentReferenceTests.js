@@ -426,13 +426,15 @@ function documentReferenceTests({ describe, it, context, firebase }) {
 
     context('types', () => {
       it('should handle Date field', async () => {
+        const date = new Date();
         const docRef = firebase.native.firestore().doc('document-tests/reference');
         await docRef.set({
-          field: new Date(),
+          field: date,
         });
 
         const doc = await docRef.get();
         doc.data().field.should.be.instanceof(Date);
+        should.equal(doc.data().field.toISOString(), date.toISOString());
       });
     });
 

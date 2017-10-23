@@ -246,10 +246,12 @@ RCT_EXPORT_METHOD(on:(NSString *) appName
 RCT_EXPORT_METHOD(off:(NSString *) key
  eventRegistrationKey:(NSString *) eventRegistrationKey) {
     RNFirebaseDatabaseReference *ref = _dbReferences[key];
-    [ref removeEventListener:eventRegistrationKey];
+    if (ref) {
+        [ref removeEventListener:eventRegistrationKey];
 
-    if (![ref hasListeners]) {
-        [_dbReferences removeObjectForKey:key];
+        if (![ref hasListeners]) {
+            [_dbReferences removeObjectForKey:key];
+        }
     }
 }
 
