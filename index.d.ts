@@ -392,7 +392,7 @@ declare module "react-native-firebase" {
        * it is recommended it is always sent as your current class name,
        * for example on Android it will always show as 'MainActivity' if not specified.
        */
-      setCurrentScreen(screenName: string, screenClassOverride?: string): void
+      setCurrentScreen(screenName: string | null, screenClassOverride?: string): void
       /**
        * Sets the minimum engagement time required before starting a session.
        * The default value is 10000 (10 seconds)
@@ -410,11 +410,11 @@ declare module "react-native-firebase" {
        *
        * firebase.analytics().setUserId(id);
        */
-      setUserId(id: string): void
+      setUserId(id: string | null): void
       /**
        * Sets a key/value pair of data on the current user.
        */
-      setUserProperty(name: string, value: string): void;
+      setUserProperty(name: string, value: string | null): void;
       [key: string]: any;
     }
 
