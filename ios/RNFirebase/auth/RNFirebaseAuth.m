@@ -309,8 +309,7 @@ RCT_EXPORT_METHOD(updateEmail:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
-                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+                [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
             }
         }];
     } else {
