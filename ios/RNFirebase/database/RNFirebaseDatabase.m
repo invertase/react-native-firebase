@@ -5,6 +5,7 @@
 #import <Firebase.h>
 #import "RNFirebaseDatabaseReference.h"
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseUtil.h"
 
 @implementation RNFirebaseDatabase
 RCT_EXPORT_MODULE();
@@ -87,11 +88,7 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         dispatch_barrier_async(_transactionQueue, ^{
             [_transactions setValue:transactionState forKey:transactionId];
             NSDictionary *updateMap = [self createTransactionUpdateMap:appName transactionId:transactionId updatesData:currentData];
-            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-            // until a better solution comes around
-            if (self.bridge) {
-                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
-            }
+            [RNFirebaseUtil sendJSEvent:self name:DATABASE_TRANSACTION_EVENT body:updateMap];
         });
 
         // wait for the js event handler to call tryCommitTransaction
@@ -118,11 +115,7 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         andCompletionBlock:
         ^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
             NSDictionary *resultMap = [self createTransactionResultMap:appName transactionId:transactionId error:databaseError committed:committed snapshot:snapshot];
-            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-            // until a better solution comes around
-            if (self.bridge) {
-                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:resultMap];
-            }
+            [RNFirebaseUtil sendJSEvent:self name:DATABASE_TRANSACTION_EVENT body:resultMap];
         }
         withLocalEvents:
         applyLocally];
@@ -286,9 +279,9 @@ RCT_EXPORT_METHOD(off:(NSString *) key
     NSString *key = props[@"key"];
     NSString *path = props[@"path"];
     NSDictionary *modifiers = props[@"modifiers"];
-    
+
     RNFirebaseDatabaseReference *ref = _dbReferences[key];
-    
+
     if (ref == nil) {
         ref = [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName key:key refPath:path modifiers:modifiers];
         _dbReferences[key] = ref;

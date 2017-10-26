@@ -3,6 +3,7 @@
 @import UserNotifications;
 #if __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseUtil.h"
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <FirebaseInstanceID/FIRInstanceID.h>
 
@@ -217,7 +218,7 @@ RCT_EXPORT_MODULE()
         data[@"_completionHandlerId"] = completionHandlerId;
     }
 
-    [self sendEventWithName:MESSAGING_NOTIFICATION_RECEIVED body:data];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_NOTIFICATION_RECEIVED body:data];
 }
 
 
@@ -234,13 +235,13 @@ RCT_EXPORT_MODULE()
 // ** Start FIRMessagingDelegate methods **
 // Handle data messages in the background
 - (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    [self sendEventWithName:MESSAGING_NOTIFICATION_RECEIVED body:[remoteMessage appData]];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_NOTIFICATION_RECEIVED body:[remoteMessage appData]];
 }
 
 // Listen for token refreshes
 - (void)messaging:(nonnull FIRMessaging *)messaging didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
     NSLog(@"FCM registration token: %@", fcmToken);
-    [self sendEventWithName:MESSAGING_TOKEN_REFRESHED body:fcmToken];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:fcmToken];
 }
 // ** End FIRMessagingDelegate methods **
 

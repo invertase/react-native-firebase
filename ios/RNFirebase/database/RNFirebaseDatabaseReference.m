@@ -71,11 +71,7 @@
     [event setValue:eventType forKey:@"eventType"];
     [event setValue:registration forKey:@"registration"];
     
-    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-    // until a better solution comes around
-    if (_emitter.bridge) {
-        [_emitter sendEventWithName:DATABASE_SYNC_EVENT body:event];
-    }
+    [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
 - (void)handleDatabaseError:(NSDictionary *) registration
@@ -85,11 +81,7 @@
     [event setValue:[RNFirebaseDatabase getJSError:error] forKey:@"error"];
     [event setValue:registration forKey:@"registration"];
     
-    // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-    // until a better solution comes around
-    if (_emitter) {
-        [_emitter sendEventWithName:DATABASE_SYNC_EVENT body:event];
-    }
+    [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
 + (NSDictionary *)snapshotToDictionary:(FIRDataSnapshot *) dataSnapshot

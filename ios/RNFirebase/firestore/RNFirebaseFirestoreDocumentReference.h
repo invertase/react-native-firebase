@@ -9,6 +9,7 @@
 #import <React/RCTEventEmitter.h>
 #import "RNFirebaseEvents.h"
 #import "RNFirebaseFirestore.h"
+#import "RNFirebaseUtil.h"
 
 @interface RNFirebaseFirestoreDocumentReference : NSObject
 @property RCTEventEmitter *emitter;
