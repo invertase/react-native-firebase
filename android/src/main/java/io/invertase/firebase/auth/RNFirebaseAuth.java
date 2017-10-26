@@ -33,6 +33,7 @@ import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -1287,7 +1288,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     for (UserInfo userInfo : providerData) {
       // remove 'firebase' provider data - android fb sdk
       // should not be returning this as the ios/web ones don't
-      if (!userInfo.getProviderId().equals("firebase")) {
+      if (!FirebaseAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())) {
         WritableMap userInfoMap = Arguments.createMap();
         userInfoMap.putString("providerId", userInfo.getProviderId());
         userInfoMap.putString("uid", userInfo.getUid());
@@ -1308,7 +1309,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           userInfoMap.putNull("phoneNumber");
         }
 
-        userInfoMap.putString("email", userInfo.getEmail());
+        // The Android SDK is missing the email property for the email provider, so we use UID instead
+        if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())) {
+          userInfoMap.putString("email", userInfo.getUid());
+        } else {
+          userInfoMap.putString("email", userInfo.getEmail());
+        }
 
         output.pushMap(userInfoMap);
       }
