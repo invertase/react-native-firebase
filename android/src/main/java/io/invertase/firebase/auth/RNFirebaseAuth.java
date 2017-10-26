@@ -55,6 +55,7 @@ import io.invertase.firebase.Utils;
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
   private String mVerificationId;
+  private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
   private HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
@@ -739,10 +740,16 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
 
+    // Reset the credential
+    mCredential = null;
+
     PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
       @Override
       public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+        // Cache the credential to protect against null verificationId
+        mCredential = phoneAuthCredential;
+
         Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
         WritableMap state = Arguments.createMap();
 
@@ -1069,6 +1076,15 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
       case "phone":
+        // If the phone number is auto-verified quickly, then the verificationId can be null
+        // We cached the credential as part of the verifyPhoneNumber request to be re-used here
+        // if possible
+        if (authToken == null && mCredential != null) {
+          PhoneAuthCredential credential = mCredential;
+          // Reset the cached credential
+          mCredential = null;
+          return credential;
+        }
         return PhoneAuthProvider.getCredential(authToken, authSecret);
       case "password":
         return EmailAuthProvider.getCredential(authToken, authSecret);
