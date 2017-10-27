@@ -1312,21 +1312,22 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
         final Uri photoUrl = userInfo.getPhotoUrl();
 
-        if (photoUrl != null) {
+        if (photoUrl != null && !"".equals(photoUrl)) {
           userInfoMap.putString("photoURL", photoUrl.toString());
         } else {
           userInfoMap.putNull("photoURL");
         }
 
         final String phoneNumber = userInfo.getPhoneNumber();
-        if (phoneNumber != null) {
+        if (phoneNumber != null && !"".equals(phoneNumber)) {
           userInfoMap.putString("phoneNumber", phoneNumber);
         } else {
           userInfoMap.putNull("phoneNumber");
         }
 
         // The Android SDK is missing the email property for the email provider, so we use UID instead
-        if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())) {
+        if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
+          && (userInfo.getEmail() == null || "".equals(userInfo.getEmail()))) {
           userInfoMap.putString("email", userInfo.getUid());
         } else {
           userInfoMap.putString("email", userInfo.getEmail());
@@ -1361,25 +1362,25 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     userMap.putBoolean("emailVerified", verified);
     userMap.putBoolean("isAnonymous", user.isAnonymous());
 
-    if (email != null) {
+    if (email != null && !"".equals(email)) {
       userMap.putString("email", email);
     } else {
       userMap.putNull("email");
     }
 
-    if (name != null) {
+    if (name != null && !"".equals(name)) {
       userMap.putString("displayName", name);
     } else {
       userMap.putNull("displayName");
     }
 
-    if (photoUrl != null) {
+    if (photoUrl != null && !"".equals(photoUrl)) {
       userMap.putString("photoURL", photoUrl.toString());
     } else {
       userMap.putNull("photoURL");
     }
 
-    if (phoneNumber != null) {
+    if (phoneNumber != null && !"".equals(phoneNumber)) {
       userMap.putString("phoneNumber", phoneNumber);
     } else {
       userMap.putNull("phoneNumber");
