@@ -1299,7 +1299,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param providerData List<UserInfo> user.getProviderData()
    * @return WritableArray array
    */
-  private WritableArray convertProviderData(List<? extends UserInfo> providerData) {
+  private WritableArray convertProviderData(List<? extends UserInfo> providerData, FirebaseUser user) {
     WritableArray output = Arguments.createArray();
     for (UserInfo userInfo : providerData) {
       // remove 'firebase' provider data - android fb sdk
@@ -1319,7 +1319,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         }
 
         final String phoneNumber = userInfo.getPhoneNumber();
-        if (phoneNumber != null && !"".equals(phoneNumber)) {
+        // The Android SDK is missing the phone number property for the phone provider when the
+        // user first signs up using their phone number.  Use the phone number from the user
+        // object instead
+        if (PhoneAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
+          && (userInfo.getPhoneNumber() == null || "".equals(userInfo.getPhoneNumber()))) {
+          userInfoMap.putString("phoneNumber", user.getPhoneNumber());
+        } else if (phoneNumber != null && !"".equals(phoneNumber)) {
           userInfoMap.putString("phoneNumber", phoneNumber);
         } else {
           userInfoMap.putNull("phoneNumber");
@@ -1329,8 +1335,10 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
           && (userInfo.getEmail() == null || "".equals(userInfo.getEmail()))) {
           userInfoMap.putString("email", userInfo.getUid());
-        } else {
+        } else if (userInfo.getEmail() != null && !"".equals(userInfo.getEmail())) {
           userInfoMap.putString("email", userInfo.getEmail());
+        } else {
+          userInfoMap.putNull("email");
         }
 
         output.pushMap(userInfoMap);
@@ -1386,7 +1394,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       userMap.putNull("phoneNumber");
     }
 
-    userMap.putArray("providerData", convertProviderData(user.getProviderData()));
+    userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));
 
     return userMap;
   }
