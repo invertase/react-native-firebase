@@ -3,10 +3,14 @@ package io.invertase.firebase;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -216,6 +220,32 @@ public class Utils {
       }
       return null;
     }
+  }
+
+  public static Object[] toArray(List<Object> values) {
+    return values.toArray(new Object[values.size()]);
+  }
+
+  public static List<Object> maybeDates(List<Object> values) {
+    List<Object> result = new ArrayList<>(values.size());
+    for (Object val : values) {
+      result.add(maybeDate(val));
+    }
+    return result;
+  }
+
+  public static Object maybeDate(Object value) {
+    if (value instanceof String) {
+      // DateFormat is not thread safe.
+      DateFormat READ_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      READ_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+      try {
+        return READ_DATE_FORMAT.parse((String)value);
+      } catch (ParseException exception) {
+
+      }
+    }
+    return value;
   }
 
   /**
