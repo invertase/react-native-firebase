@@ -128,6 +128,9 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     if (_options[@"endBefore"]) {
         query = [query queryEndingBeforeValues:_options[@"endBefore"]];
     }
+    if (_options[@"limit"]) {
+        query = [query queryLimitedTo:_options[@"limit"]];
+    }
     if (_options[@"offset"]) {
         // iOS doesn't support offset
     }
