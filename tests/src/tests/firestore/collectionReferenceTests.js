@@ -569,6 +569,19 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
               );
             });
         });
+
+        it('handles snapshots', async () => {
+          const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').endAt(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
       });
 
       context('endBefore', () => {
@@ -598,6 +611,19 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
 
         it('handles strings', () => {
           return collectionTests.orderBy('foo').endBefore('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+
+        it('handles snapshots', async () => {
+          const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').endBefore(collectionSnapshot.docs[2])
             .get()
             .then((querySnapshot) => {
               should.equal(querySnapshot.size, 2);
@@ -645,6 +671,19 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
               );
             });
         });
+
+        it('handles snapshots', async () => {
+          const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').startAt(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
       });
 
       context('startAfter', () => {
@@ -674,6 +713,19 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
 
         it('handles strings', () => {
           return collectionTests.orderBy('foo').startAfter('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+
+        it('handles snapshot', async () => {
+          const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').startAfter(collectionSnapshot.docs[2])
             .get()
             .then((querySnapshot) => {
               should.equal(querySnapshot.size, 2);

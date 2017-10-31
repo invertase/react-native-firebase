@@ -236,7 +236,7 @@ public class FirestoreSerialize {
     return map;
   }
 
-  private static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
+  static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
     List<Object> list = new ArrayList<>();
     if (readableArray != null) {
       for (int i = 0; i < readableArray.size(); i++) {
@@ -246,7 +246,7 @@ public class FirestoreSerialize {
     return list;
   }
 
-  public static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
+  static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
     String type = typeMap.getString("type");
     if ("boolean".equals(type)) {
       return typeMap.getBoolean("value");

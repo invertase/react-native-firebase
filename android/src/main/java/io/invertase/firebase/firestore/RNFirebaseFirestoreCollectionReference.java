@@ -120,7 +120,7 @@ public class RNFirebaseFirestoreCollectionReference {
     Query query = firestore.collection(path);
     query = applyFilters(firestore, query);
     query = applyOrders(query);
-    query = applyOptions(query);
+    query = applyOptions(firestore, query);
 
     return query;
   }
@@ -166,14 +166,14 @@ public class RNFirebaseFirestoreCollectionReference {
     return query;
   }
 
-  private Query applyOptions(Query query) {
+  private Query applyOptions(FirebaseFirestore firestore, Query query) {
     if (options.hasKey("endAt")) {
-      ReadableArray endAtArray = options.getArray("endAt");
-      query = query.endAt(Utils.recursivelyDeconstructReadableArray(endAtArray));
+      List<Object> endAtList = FirestoreSerialize.parseReadableArray(firestore, options.getArray("endAt"));
+      query = query.endAt(endAtList.toArray());
     }
     if (options.hasKey("endBefore")) {
-      ReadableArray endBeforeArray = options.getArray("endBefore");
-      query = query.endBefore(Utils.recursivelyDeconstructReadableArray(endBeforeArray));
+      List<Object> endBeforeList = FirestoreSerialize.parseReadableArray(firestore, options.getArray("endBefore"));
+      query = query.endBefore(endBeforeList.toArray());
     }
     if (options.hasKey("limit")) {
       int limit = options.getInt("limit");
@@ -186,12 +186,12 @@ public class RNFirebaseFirestoreCollectionReference {
       // Android doesn't support selectFields
     }
     if (options.hasKey("startAfter")) {
-      ReadableArray startAfterArray = options.getArray("startAfter");
-      query = query.startAfter(Utils.recursivelyDeconstructReadableArray(startAfterArray));
+      List<Object> startAfterList= FirestoreSerialize.parseReadableArray(firestore, options.getArray("startAfter"));
+      query = query.startAfter(startAfterList.toArray());
     }
     if (options.hasKey("startAt")) {
-      ReadableArray startAtArray = options.getArray("startAt");
-      query = query.startAt(Utils.recursivelyDeconstructReadableArray(startAtArray));
+      List<Object> startAtList= FirestoreSerialize.parseReadableArray(firestore, options.getArray("startAt"));
+      query = query.startAt(startAtList.toArray());
     }
     return query;
   }

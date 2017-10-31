@@ -85,7 +85,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     FIRQuery *query = (FIRQuery*)[firestore collectionWithPath:_path];
     query = [self applyFilters:firestore query:query];
     query = [self applyOrders:query];
-    query = [self applyOptions:query];
+    query = [self applyOptions:firestore query:query];
 
     return query;
 }
@@ -123,12 +123,13 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     return query;
 }
 
-- (FIRQuery *)applyOptions:(FIRQuery *) query {
+- (FIRQuery *)applyOptions:(FIRFirestore *) firestore
+                     query:(FIRQuery *) query {
     if (_options[@"endAt"]) {
-        query = [query queryEndingAtValues:_options[@"endAt"]];
+        query = [query queryEndingAtValues:[RNFirebaseFirestoreDocumentReference parseJSArray:firestore jsArray:_options[@"endAt"]]];
     }
     if (_options[@"endBefore"]) {
-        query = [query queryEndingBeforeValues:_options[@"endBefore"]];
+        query = [query queryEndingBeforeValues:[RNFirebaseFirestoreDocumentReference parseJSArray:firestore jsArray:_options[@"endBefore"]]];
     }
     if (_options[@"limit"]) {
         query = [query queryLimitedTo:[_options[@"limit"] intValue]];
@@ -140,10 +141,10 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
         // iOS doesn't support selectFields
     }
     if (_options[@"startAfter"]) {
-        query = [query queryStartingAfterValues:_options[@"startAfter"]];
+        query = [query queryStartingAfterValues:[RNFirebaseFirestoreDocumentReference parseJSArray:firestore jsArray:_options[@"startAfter"]]];
     }
     if (_options[@"startAt"]) {
-        query = [query queryStartingAtValues:_options[@"startAt"]];
+        query = [query queryStartingAtValues:[RNFirebaseFirestoreDocumentReference parseJSArray:firestore jsArray:_options[@"startAt"]]];
     }
     return query;
 }
