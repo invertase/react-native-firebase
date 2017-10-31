@@ -2,9 +2,9 @@ import sinon from 'sinon';
 import 'should-sinon';
 import should from 'should';
 
-import { COL_1 } from './index';
+import { COL_1, cleanCollection } from './index';
 
-function collectionReferenceTests({ describe, it, context, firebase }) {
+function collectionReferenceTests({ describe, it, context, firebase, before, after }) {
   describe('CollectionReference', () => {
     context('class', () => {
       it('should return instance methods', () => {
@@ -445,6 +445,26 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
           });
       });
 
+      it('correctly handles == date values', () => {
+        return firebase.native.firestore()
+          .collection('collection-tests')
+          .where('timestamp', '==', COL_1.timestamp)
+          .get()
+          .then((querySnapshot) => {
+            should.equal(querySnapshot.size, 1);
+          });
+      });
+
+      it('correctly handles == geopoint values', () => {
+        return firebase.native.firestore()
+          .collection('collection-tests')
+          .where('geopoint', '==', COL_1.geopoint)
+          .get()
+          .then((querySnapshot) => {
+            should.equal(querySnapshot.size, 1);
+          });
+      });
+
       it('correctly handles >= number values', () => {
         return firebase.native.firestore()
           .collection('collection-tests')
@@ -455,6 +475,16 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
             querySnapshot.forEach((documentSnapshot) => {
               should.equal(documentSnapshot.data().daz, 123);
             });
+          });
+      });
+
+      it('correctly handles >= geopoint values', () => {
+        return firebase.native.firestore()
+          .collection('collection-tests')
+          .where('geopoint', '>=', new firebase.native.firestore.GeoPoint(-1, -1))
+          .get()
+          .then((querySnapshot) => {
+            should.equal(querySnapshot.size, 1);
           });
       });
 
@@ -469,6 +499,194 @@ function collectionReferenceTests({ describe, it, context, firebase }) {
               should.equal(documentSnapshot.data().gaz, 12.1234567);
             });
           });
+      });
+
+      it('correctly handles limit', async () => {
+        const collectionTests = firebase.native.firestore().collection('collection-tests2');
+        await Promise.all([
+          collectionTests.doc('col1').set(COL_1),
+          collectionTests.doc('col2').set({ ...COL_1, daz: 234 }),
+          collectionTests.doc('col3').set({ ...COL_1, daz: 234 }),
+          collectionTests.doc('col4').set({ ...COL_1, daz: 234 }),
+          collectionTests.doc('col5').set({ ...COL_1, daz: 234 }),
+        ]);
+
+        return collectionTests.limit(3)
+          .get()
+          .then((querySnapshot) => {
+            should.equal(querySnapshot.size, 3);
+            return cleanCollection(collectionTests);
+          });
+      });
+    });
+
+    context('cursors', () => {
+      let collectionTests;
+      before(async () => {
+        collectionTests = firebase.native.firestore().collection('collection-tests2');
+        await Promise.all([
+          collectionTests.doc('col1').set({ ...COL_1, foo: 'bar0' }),
+          collectionTests.doc('col2').set({ ...COL_1, foo: 'bar1', daz: 234, timestamp: new Date(2017, 2, 11, 10, 0, 0) }),
+          collectionTests.doc('col3').set({ ...COL_1, foo: 'bar2', daz: 345, timestamp: new Date(2017, 2, 12, 10, 0, 0) }),
+          collectionTests.doc('col4').set({ ...COL_1, foo: 'bar3', daz: 456, timestamp: new Date(2017, 2, 13, 10, 0, 0) }),
+          collectionTests.doc('col5').set({ ...COL_1, foo: 'bar4', daz: 567, timestamp: new Date(2017, 2, 14, 10, 0, 0) }),
+        ]);
+      });
+
+      context('endAt', () => {
+        it('handles dates', () => {
+          return collectionTests.orderBy('timestamp').endAt(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
+
+        it('handles numbers', () => {
+          return collectionTests.orderBy('daz').endAt(345)
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
+
+        it('handles strings', () => {
+          return collectionTests.orderBy('foo').endAt('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
+      });
+
+      context('endBefore', () => {
+        it('handles dates', () => {
+          return collectionTests.orderBy('timestamp').endBefore(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+
+        it('handles numbers', () => {
+          return collectionTests.orderBy('daz').endBefore(345)
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+
+        it('handles strings', () => {
+          return collectionTests.orderBy('foo').endBefore('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+      });
+
+      context('startAt', () => {
+        it('handles dates', () => {
+          return collectionTests.orderBy('timestamp').startAt(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
+
+        it('handles numbers', () => {
+          return collectionTests.orderBy('daz').startAt(345)
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
+
+        it('handles strings', () => {
+          return collectionTests.orderBy('foo').startAt('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
+      });
+
+      context('startAfter', () => {
+        it('handles dates', () => {
+          return collectionTests.orderBy('timestamp').startAfter(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+
+        it('handles numbers', () => {
+          return collectionTests.orderBy('daz').startAfter(345)
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+
+        it('handles strings', () => {
+          return collectionTests.orderBy('foo').startAfter('bar2')
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+      });
+
+      after(() => {
+        return cleanCollection(collectionTests);
       });
     });
   });

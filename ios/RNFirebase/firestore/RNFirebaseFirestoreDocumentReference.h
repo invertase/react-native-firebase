@@ -27,6 +27,7 @@
 - (BOOL)hasListeners;
 + (NSDictionary *)snapshotToDictionary:(FIRDocumentSnapshot *)documentSnapshot;
 +(NSDictionary *)parseJSMap:(FIRFirestore *) firestore jsMap:(NSDictionary *) jsMap;
++(id)parseJSTypeMap:(FIRFirestore *) firestore jsTypeMap:(NSDictionary *) jsTypeMap;
 @end
 
 #else

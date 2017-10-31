@@ -81,20 +81,22 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
 }
 
 - (FIRQuery *)buildQuery {
-    FIRQuery *query = (FIRQuery*)[[RNFirebaseFirestore getFirestoreForApp:_app] collectionWithPath:_path];
-    query = [self applyFilters:query];
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:_app];
+    FIRQuery *query = (FIRQuery*)[firestore collectionWithPath:_path];
+    query = [self applyFilters:firestore query:query];
     query = [self applyOrders:query];
     query = [self applyOptions:query];
 
     return query;
 }
 
-- (FIRQuery *)applyFilters:(FIRQuery *) query {
+- (FIRQuery *)applyFilters:(FIRFirestore *) firestore
+                     query:(FIRQuery *) query {
     for (NSDictionary *filter in _filters) {
         NSString *fieldPath = filter[@"fieldPath"];
         NSString *operator = filter[@"operator"];
-        // TODO: Validate this works
-        id value = filter[@"value"];
+        NSDictionary *jsValue = filter[@"value"];
+        id value = [RNFirebaseFirestoreDocumentReference parseJSTypeMap:firestore jsTypeMap:jsValue];
 
         if ([operator isEqualToString:@"EQUAL"]) {
             query = [query queryWhereField:fieldPath isEqualTo:value];

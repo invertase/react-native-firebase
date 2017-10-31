@@ -246,7 +246,7 @@ public class FirestoreSerialize {
     return list;
   }
 
-  private static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
+  public static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
     String type = typeMap.getString("type");
     if ("boolean".equals(type)) {
       return typeMap.getBoolean("value");

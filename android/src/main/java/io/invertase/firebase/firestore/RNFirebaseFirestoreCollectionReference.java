@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -115,22 +116,22 @@ public class RNFirebaseFirestoreCollectionReference {
   }
 
   private Query buildQuery() {
-    Query query = RNFirebaseFirestore.getFirestoreForApp(appName).collection(path);
-    query = applyFilters(query);
+    FirebaseFirestore firestore = RNFirebaseFirestore.getFirestoreForApp(appName);
+    Query query = firestore.collection(path);
+    query = applyFilters(firestore, query);
     query = applyOrders(query);
     query = applyOptions(query);
 
     return query;
   }
 
-  private Query applyFilters(Query query) {
-    List<Object> filtersList = Utils.recursivelyDeconstructReadableArray(filters);
-
-    for (Object f : filtersList) {
-      Map<String, Object> filter = (Map) f;
-      String fieldPath = (String) filter.get("fieldPath");
-      String operator = (String) filter.get("operator");
-      Object value = filter.get("value");
+  private Query applyFilters(FirebaseFirestore firestore, Query query) {
+    for (int i = 0; i < filters.size(); i++) {
+      ReadableMap filter = filters.getMap(i);
+      String fieldPath = filter.getString("fieldPath");
+      String operator = filter.getString("operator");
+      ReadableMap jsValue = filter.getMap("value");
+      Object value = FirestoreSerialize.parseTypeMap(firestore, jsValue);
 
       switch (operator) {
         case "EQUAL":
