@@ -26,6 +26,10 @@ import java.util.Map;
 
 import io.invertase.firebase.Utils;
 
+import static io.invertase.firebase.Utils.maybeDates;
+import static io.invertase.firebase.Utils.recursivelyDeconstructReadableArray;
+import static io.invertase.firebase.Utils.toArray;
+
 public class RNFirebaseFirestoreCollectionReference {
   private static final String TAG = "RNFSCollectionReference";
   private static Map<String, ListenerRegistration> collectionSnapshotListeners = new HashMap<>();
@@ -124,13 +128,13 @@ public class RNFirebaseFirestoreCollectionReference {
   }
 
   private Query applyFilters(Query query) {
-    List<Object> filtersList = Utils.recursivelyDeconstructReadableArray(filters);
+    List<Object> filtersList = recursivelyDeconstructReadableArray(filters);
 
     for (Object f : filtersList) {
       Map<String, Object> filter = (Map) f;
       String fieldPath = (String) filter.get("fieldPath");
       String operator = (String) filter.get("operator");
-      Object value = filter.get("value");
+      Object value = Utils.maybeDate(filter.get("value"));
 
       switch (operator) {
         case "EQUAL":
@@ -154,7 +158,7 @@ public class RNFirebaseFirestoreCollectionReference {
   }
 
   private Query applyOrders(Query query) {
-    List<Object> ordersList = Utils.recursivelyDeconstructReadableArray(orders);
+    List<Object> ordersList = recursivelyDeconstructReadableArray(orders);
     for (Object o : ordersList) {
       Map<String, Object> order = (Map) o;
       String direction = (String) order.get("direction");
@@ -168,11 +172,11 @@ public class RNFirebaseFirestoreCollectionReference {
   private Query applyOptions(Query query) {
     if (options.hasKey("endAt")) {
       ReadableArray endAtArray = options.getArray("endAt");
-      query = query.endAt(Utils.recursivelyDeconstructReadableArray(endAtArray));
+      query = query.endAt(toArray(maybeDates(recursivelyDeconstructReadableArray(endAtArray))));
     }
     if (options.hasKey("endBefore")) {
       ReadableArray endBeforeArray = options.getArray("endBefore");
-      query = query.endBefore(Utils.recursivelyDeconstructReadableArray(endBeforeArray));
+      query = query.endBefore(toArray(maybeDates(recursivelyDeconstructReadableArray(endBeforeArray))));
     }
     if (options.hasKey("limit")) {
       int limit = options.getInt("limit");
@@ -186,11 +190,11 @@ public class RNFirebaseFirestoreCollectionReference {
     }
     if (options.hasKey("startAfter")) {
       ReadableArray startAfterArray = options.getArray("startAfter");
-      query = query.startAfter(Utils.recursivelyDeconstructReadableArray(startAfterArray));
+      query = query.startAfter(toArray(maybeDates(recursivelyDeconstructReadableArray(startAfterArray))));
     }
     if (options.hasKey("startAt")) {
       ReadableArray startAtArray = options.getArray("startAt");
-      query = query.startAt(Utils.recursivelyDeconstructReadableArray(startAtArray));
+      query = query.startAt(toArray(maybeDates(recursivelyDeconstructReadableArray(startAtArray))));
     }
     return query;
   }

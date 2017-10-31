@@ -64,7 +64,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
                 [self handleQuerySnapshotEvent:listenerId querySnapshot:snapshot];
             }
         };
-        
+
         FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
         if (queryListenOptions) {
             if (queryListenOptions[@"includeDocumentMetadataChanges"]) {
@@ -74,7 +74,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
                 [options includeQueryMetadataChanges:TRUE];
             }
         }
-        
+
         id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];
         _listeners[listenerId] = listener;
     }
@@ -89,12 +89,39 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
     return query;
 }
 
+- (NSArray*)maybeDates:(NSArray*) values {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[values count]];
+    [values enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [result addObject:[self maybeDate:obj]];
+    }];
+    return result;
+}
+
+- (id)maybeDate:(id) value {
+    if ([value isKindOfClass:[NSString class]]) {
+
+        static NSDateFormatter *formatter;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            formatter = [NSDateFormatter new];
+            formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+            formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+            formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+        });
+        NSDate *date = [formatter dateFromString:value];
+        if (date) {
+            return date;
+        }
+    }
+    return value;
+}
+
 - (FIRQuery *)applyFilters:(FIRQuery *) query {
     for (NSDictionary *filter in _filters) {
         NSString *fieldPath = filter[@"fieldPath"];
         NSString *operator = filter[@"operator"];
         // TODO: Validate this works
-        id value = filter[@"value"];
+        id value = [self maybeDate:filter[@"value"]];
 
         if ([operator isEqualToString:@"EQUAL"]) {
             query = [query queryWhereField:fieldPath isEqualTo:value];
@@ -123,13 +150,13 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
 
 - (FIRQuery *)applyOptions:(FIRQuery *) query {
     if (_options[@"endAt"]) {
-        query = [query queryEndingAtValues:_options[@"endAt"]];
+        query = [query queryEndingAtValues:[self maybeDates:_options[@"endAt"]]];
     }
     if (_options[@"endBefore"]) {
-        query = [query queryEndingBeforeValues:_options[@"endBefore"]];
+        query = [query queryEndingBeforeValues:[self maybeDates:_options[@"endBefore"]]];
     }
     if (_options[@"limit"]) {
-        query = [query queryLimitedTo:_options[@"limit"]];
+        query = [query queryLimitedTo:[_options[@"limit"] intValue]];
     }
     if (_options[@"offset"]) {
         // iOS doesn't support offset
@@ -138,10 +165,10 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
         // iOS doesn't support selectFields
     }
     if (_options[@"startAfter"]) {
-        query = [query queryStartingAfterValues:_options[@"startAfter"]];
+        query = [query queryStartingAfterValues:[self maybeDates:_options[@"startAfter"]]];
     }
     if (_options[@"startAt"]) {
-        query = [query queryStartingAtValues:_options[@"startAt"]];
+        query = [query queryStartingAtValues:[self maybeDates:_options[@"startAt"]]];
     }
     return query;
 }
