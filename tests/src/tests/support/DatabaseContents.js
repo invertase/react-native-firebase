@@ -91,5 +91,28 @@ export default {
         uid: 'aNYxLexOb2WsXGOPiEAu47q5bxH3',
       },
     },
+
+    489: {
+      long1: 1508777379000,
+    },
+
+    // https://github.com/invertase/react-native-firebase/issues/521
+    521: {
+      key1: {
+        name: 'Item 1',
+        number: 1,
+        string: 'item1',
+      },
+      key3: {
+        name: 'Item 3',
+        number: 3,
+        string: 'item3',
+      },
+      key2: {
+        name: 'Item 2',
+        number: 2,
+        string: 'item2',
+      },
+    },
   },
 };
