@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import android.net.Uri;
-import android.database.Cursor;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
@@ -339,16 +337,12 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     Log.i(TAG, "putFile: " + localPath + " to " + path);
 
     try {
-      Uri file;
-      if (localPath.startsWith("content://")) {
-        String realPath = getRealPathFromURI(localPath);
-        file = Uri.fromFile(new File(realPath));
-      } else {
-        file = Uri.fromFile(new File(localPath));
-      }
+      Uri file = getURI(localPath);
+      InputStream inputStream = getReactApplicationContext().getContentResolver()
+        .openInputStream(file);
 
       StorageMetadata md = buildMetadataFromMap(metadata);
-      UploadTask uploadTask = reference.putFile(file, md);
+      UploadTask uploadTask = reference.putStream(inputStream, md);
 
       // register observers to listen for when the download is done or if it fails
       uploadTask
@@ -415,24 +409,18 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
   }
 
   /**
-   * Internal helper to convert content:// uri's to a real path
+   * Create a Uri from the path, defaulting to file when there is no supplied scheme
    *
    * @param uri
    * @return
    */
-  private String getRealPathFromURI(final String uri) {
-    Cursor cursor = null;
-    try {
-      String[] proj = {MediaStore.Images.Media.DATA};
-      cursor = getReactApplicationContext().getContentResolver().query(Uri.parse(uri), proj, null, null, null);
-      int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-      cursor.moveToFirst();
-      return cursor.getString(column_index);
-    } finally {
-      if (cursor != null) {
-        cursor.close();
-      }
+  private Uri getURI(final String uri) {
+    Uri parsed = Uri.parse(uri);
+
+    if (parsed.getScheme() == null || parsed.getScheme().isEmpty()) {
+      return Uri.fromFile(new File(uri));
     }
+    return parsed;
   }
 
   /**
