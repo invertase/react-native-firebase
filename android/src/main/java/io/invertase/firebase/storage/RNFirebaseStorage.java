@@ -338,11 +338,8 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
 
     try {
       Uri file = getURI(localPath);
-      InputStream inputStream = getReactApplicationContext().getContentResolver()
-        .openInputStream(file);
-
       StorageMetadata md = buildMetadataFromMap(metadata);
-      UploadTask uploadTask = reference.putStream(inputStream, md);
+      UploadTask uploadTask = reference.putFile(file, md);
 
       // register observers to listen for when the download is done or if it fails
       uploadTask
