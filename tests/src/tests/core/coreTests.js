@@ -53,11 +53,11 @@ function coreTests({ describe, it }) {
       return Promise.resolve();
     });
 
-    // todo move to UTILS module tests
-    it('it should provide the sdk version', () => {
-      should.equal(!!RNFirebase.utils.VERSIONS['react-native-firebase'].length, true);
-      return Promise.resolve();
-    });
+    // // todo move to UTILS module tests
+    // it('it should provide the sdk version', () => {
+    //   should.equal(!!RNFirebase.utils.VERSIONS['react-native-firebase'].length, true);
+    //   return Promise.resolve();
+    // });
 
     // TODO add back in when android sdk support becomes available
     // it('it should initialize dynamic apps', () => {
