@@ -150,7 +150,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (3.0.5):
+  - RNFirebase (3.1.0-alpha.1):
     - React
   - yoga (0.49.1.React)
 
@@ -176,11 +176,11 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   React:
-    :path: "../node_modules/react-native"
+    :path: ../node_modules/react-native
   RNFirebase:
-    :path: "./../../"
+    :path: ./../../
   yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga"
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   BoringSSL: 19083b821ef3ae0f758fae15482e183003b1e265
@@ -199,7 +199,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 0cca42d9b889a0227c3a50121f45a4469fc9eb27
   Google-Mobile-Ads-SDK: ed8004a7265b424568dc84f3d2bbe3ea3fff958f
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  gRPC: '07788969b862af21491908f82b83d17ac08c94cd'
+  gRPC: 07788969b862af21491908f82b83d17ac08c94cd
   gRPC-Core: f707ade59c559fe718e27713189607d03b15f571
   gRPC-ProtoRPC: de7505e493a9d1b6b96c8ea8f976c73100fdf53f
   gRPC-RxLibrary: 17b9699beb0a838b95b57832244f9ead18e66777
@@ -208,9 +208,9 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
   React: cf892fb84b7d06bf5fea7f328e554c6dcabe85ee
-  RNFirebase: 7c86b4efd2860700048d927f34db237fbce1d5fc
+  RNFirebase: 0467ca8122b9257acd7f1bb6de1670d9fd51cede
   yoga: 3abf02d6d9aeeb139b4c930eb1367feae690a35a
 
 PODFILE CHECKSUM: b5674be55653f5dda937c8b794d0479900643d45
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
