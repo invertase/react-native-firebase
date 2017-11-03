@@ -31,8 +31,6 @@ import io.invertase.firebase.Utils;
 
 public class FirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
-  private static final DateFormat READ_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-  private static final DateFormat WRITE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_DATA = "data";
   private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
@@ -42,12 +40,6 @@ public class FirestoreSerialize {
   private static final String KEY_DOCUMENTS = "documents";
   private static final String KEY_METADATA = "metadata";
   private static final String KEY_PATH = "path";
-
-  static {
-    // Javascript Date.toISOString is always formatted to UTC
-    // We set the read TimeZone to UTC to account for this
-    READ_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-  }
 
   /**
    * Convert a DocumentSnapshot instance into a React Native WritableMap
@@ -220,7 +212,7 @@ public class FirestoreSerialize {
         typeMap.putMap("value", geoPoint);
       } else if (value instanceof Date) {
         typeMap.putString("type", "date");
-        typeMap.putString("value", WRITE_DATE_FORMAT.format((Date) value));
+        typeMap.putDouble("value", ((Date) value).getTime());
       } else {
         // TODO: Changed to log an error rather than crash - is this correct?
         Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
@@ -244,7 +236,7 @@ public class FirestoreSerialize {
     return map;
   }
 
-  private static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
+  static List<Object> parseReadableArray(FirebaseFirestore firestore, ReadableArray readableArray) {
     List<Object> list = new ArrayList<>();
     if (readableArray != null) {
       for (int i = 0; i < readableArray.size(); i++) {
@@ -254,7 +246,7 @@ public class FirestoreSerialize {
     return list;
   }
 
-  private static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
+  static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
     String type = typeMap.getString("type");
     if ("boolean".equals(type)) {
       return typeMap.getBoolean("value");
@@ -275,13 +267,8 @@ public class FirestoreSerialize {
       ReadableMap geoPoint = typeMap.getMap("value");
       return new GeoPoint(geoPoint.getDouble("latitude"), geoPoint.getDouble("longitude"));
     } else if ("date".equals(type)) {
-      try {
-        String date = typeMap.getString("value");
-        return READ_DATE_FORMAT.parse(date);
-      } catch (ParseException exception) {
-        Log.e(TAG, "parseTypeMap", exception);
-        return null;
-      }
+      Double time = typeMap.getDouble("value");
+      return new Date(time.longValue());
     } else if ("fieldvalue".equals(type)) {
       String value = typeMap.getString("value");
       if ("delete".equals(value)) {

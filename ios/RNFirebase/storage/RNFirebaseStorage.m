@@ -3,6 +3,7 @@
 #if __has_include(<FirebaseStorage/FIRStorage.h>)
 
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseUtil.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
@@ -392,12 +393,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
 }
 
 - (void)sendJSEvent:(NSString *)appName type:(NSString *)type path:(NSString *)path title:(NSString *)title props:(NSDictionary *)props {
-    @try {
-        [self sendEventWithName:type body:@{@"eventName": title, @"appName": appName, @"path": path, @"body": props}];
-    } @catch (NSException *err) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
-        NSLog(@"Tried to send: %@ with %@", title, props);
-    }
+    [RNFirebaseUtil sendJSEvent:self name:type body:@{@"eventName": title, @"appName": appName, @"path": path, @"body": props}];
 }
 
 /**

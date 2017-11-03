@@ -1,5 +1,6 @@
 #import "RNFirebaseAuth.h"
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseUtil.h"
 #import "RCTDefines.h"
 
 
@@ -28,9 +29,9 @@ RCT_EXPORT_METHOD(addAuthStateListener:
         FIRApp *firApp = [FIRApp appNamed:appName];
         FIRAuthStateDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firApp] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
             if (user != nil) {
-                [self sendJSEventWithAppName:appName title:AUTH_CHANGED_EVENT props:[@{@"authenticated": @(true), @"user": [self firebaseUserToDict:user]} mutableCopy]];
+                [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:AUTH_CHANGED_EVENT body:@{@"authenticated": @(true), @"user": [self firebaseUserToDict:user]}];
             } else {
-                [self sendJSEventWithAppName:appName title:AUTH_CHANGED_EVENT props:[@{@"authenticated": @(false)} mutableCopy]];
+                [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:AUTH_CHANGED_EVENT body:@{@"authenticated": @(false)}];
             }
         }];
 
@@ -63,9 +64,9 @@ RCT_EXPORT_METHOD(addIdTokenListener:
         FIRApp *firApp = [FIRApp appNamed:appName];
         FIRIDTokenDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firApp] addIDTokenDidChangeListener:^(FIRAuth * _Nonnull auth, FIRUser * _Nullable user) {
             if (user != nil) {
-                [self sendJSEventWithAppName:appName title:AUTH_ID_TOKEN_CHANGED_EVENT props:[@{@"authenticated": @(true), @"user": [self firebaseUserToDict:user]} mutableCopy]];
+                [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{@"authenticated": @(true), @"user": [self firebaseUserToDict:user]}];
             } else {
-                [self sendJSEventWithAppName:appName title:AUTH_ID_TOKEN_CHANGED_EVENT props:[@{@"authenticated": @(false)} mutableCopy]];
+                [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{@"authenticated": @(false)}];
             }
         }];
 
@@ -248,14 +249,7 @@ RCT_EXPORT_METHOD(reload:
     FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
 
     if (user) {
-        [user reloadWithCompletion:^(NSError *_Nullable error) {
-            if (error) {
-                [self promiseRejectAuthException:reject error:error];
-            } else {
-                FIRUser *userAfterReload = [FIRAuth authWithApp:firApp].currentUser;
-                [self promiseWithUser:resolve rejecter:reject user:userAfterReload];
-            }
-        }];
+        [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
     } else {
         [self promiseNoUser:resolve rejecter:reject isError:YES];
     }
@@ -315,8 +309,7 @@ RCT_EXPORT_METHOD(updateEmail:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
-                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+                [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
             }
         }];
     } else {
@@ -399,8 +392,7 @@ RCT_EXPORT_METHOD(updateProfile:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
-                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+                [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
             }
         }];
     } else {
@@ -686,21 +678,21 @@ RCT_EXPORT_METHOD(verifyPhoneNumber:(NSString *) appName
     [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
         if (error) {
             NSDictionary * jsError = [self getJSError:(error)];
-            NSMutableDictionary * props =  [@{
-                                              @"type": @"onVerificationFailed",
-                                              @"requestKey":requestKey,
-                                              @"state": @{@"error": jsError},
-                                          } mutableCopy];
-            [self sendJSEventWithAppName:appName title:PHONE_AUTH_STATE_CHANGED_EVENT props: props];
+            NSDictionary *body = @{
+                                   @"type": @"onVerificationFailed",
+                                   @"requestKey":requestKey,
+                                   @"state": @{@"error": jsError},
+                                  };
+            [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
         } else {
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:verificationID forKey:@"authVerificationID"];
-            NSMutableDictionary * props =  [@{
-                                              @"type": @"onCodeSent",
-                                              @"requestKey":requestKey,
-                                              @"state": @{@"verificationId": verificationID},
-                                          } mutableCopy];
-            [self sendJSEventWithAppName:appName title:PHONE_AUTH_STATE_CHANGED_EVENT props: props];
+            NSDictionary *body = @{
+                                   @"type": @"onCodeSent",
+                                   @"requestKey":requestKey,
+                                   @"state": @{@"verificationId": verificationID},
+                                  };
+            [RNFirebaseUtil sendJSEventWithAppName:self appName:appName name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
         }
     }];
 }
@@ -794,15 +786,7 @@ RCT_EXPORT_METHOD(unlink:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                // This is here to protect against bugs in the iOS SDK which don't
-                // correctly refresh the user object when unlinking certain accounts
-                [user reloadWithCompletion:^(NSError * _Nullable error) {
-                    if (error) {
-                        [self promiseRejectAuthException:reject error:error];
-                    } else {
-                        [self promiseWithUser:resolve rejecter:reject user:user];
-                    }
-                }];
+                [self reloadAndReturnUser:user resolver:resolve rejecter: reject];
             }
         }];
     } else {
@@ -916,6 +900,19 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     return credential;
 }
 
+// This is here to protect against bugs in the iOS SDK which don't
+// correctly refresh the user object when performing certain operations
+- (void)reloadAndReturnUser:(FIRUser *)user
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject {
+    [user reloadWithCompletion:^(NSError * _Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseWithUser:resolve rejecter:reject user:user];
+        }
+    }];
+}
 
 /**
  Resolve or reject a promise based on isError value
@@ -1085,31 +1082,6 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
         [self promiseNoUser:resolve rejecter:reject isError:YES];
     }
 
-}
-
-
-/**
- wrapper for sendEventWithName for auth events
-
- @param title sendEventWithName
- @param props <#props description#>
- */
-- (void)sendJSEvent:(NSString *)title props:(NSDictionary *)props {
-    @try {
-        [self sendEventWithName:title body:props];
-    } @catch (NSException *error) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [error debugDescription]);
-    }
-}
-
-- (void)sendJSEventWithAppName:(NSString *)appName title:(NSString *)title props:(NSMutableDictionary *)props {
-    props[@"appName"] = appName;
-
-    @try {
-        [self sendEventWithName:title body:props];
-    } @catch (NSException *error) {
-        NSLog(@"An error occurred in sendJSEvent: %@", [error debugDescription]);
-    }
 }
 
 /**

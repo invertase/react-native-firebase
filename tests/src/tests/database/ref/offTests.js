@@ -297,6 +297,167 @@ function offTests({ describe, it, xcontext, context, firebase }) {
       });
     });
 
+    context('when 2 different child_added callbacks on the same path', () => {
+      context('that has been added and removed in the same order', () => {
+        it('must be completely removed', async () => {
+          // Setup
+
+          const spyA = sinon.spy();
+          let callbackA;
+
+          const spyB = sinon.spy();
+          let callbackB;
+
+          const ref = firebase.native.database().ref('tests/types/array');
+          const arrayLength = DatabaseContents.DEFAULT.array.length;
+          // Attach callbackA
+          await new Promise((resolve) => {
+            callbackA = () => {
+              spyA();
+              resolve();
+            };
+            ref.on('child_added', callbackA);
+          });
+
+          // Attach callbackB
+          await new Promise((resolve) => {
+            callbackB = () => {
+              spyB();
+              resolve();
+            };
+            ref.on('child_added', callbackB);
+          });
+
+          // Add a delay to ensure that the .on() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          spyA.should.have.callCount(arrayLength);
+          spyB.should.have.callCount(arrayLength);
+
+          // Undo the first callback
+          const resp = await ref.off('child_added', callbackA);
+          should(resp, undefined);
+
+          // Trigger the event the callback is listening to
+          await ref.push(DatabaseContents.DEFAULT.number);
+
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          // CallbackA should have been called zero more times its attachment
+          // has been removed, and callBackB only one more time becuase it's still attached
+          spyA.should.have.callCount(arrayLength);
+          spyB.should.have.callCount(arrayLength + 1);
+
+          // Undo the second attachment
+          const resp2 = await ref.off('child_added', callbackB);
+          should(resp2, undefined);
+
+          // Trigger the event the callback is listening to
+          await ref.push(DatabaseContents.DEFAULT.number);
+
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          // Both Callbacks should not have been called any more times
+          spyA.should.have.callCount(arrayLength);
+          spyB.should.have.callCount(arrayLength + 1);
+        });
+      });
+
+      // ******This test is failed*******
+      context('that has been added and removed in reverse order', () => {
+        it('must be completely removed', async () => {
+          // Setup
+
+          const spyA = sinon.spy();
+          let callbackA;
+
+          const spyB = sinon.spy();
+          let callbackB;
+
+          const ref = firebase.native.database().ref('tests/types/array');
+          const arrayLength = DatabaseContents.DEFAULT.array.length;
+          // Attach callbackA
+          await new Promise((resolve) => {
+            callbackA = () => {
+              spyA();
+              resolve();
+            };
+            ref.on('child_added', callbackA);
+          });
+
+          // Attach callbackB
+          await new Promise((resolve) => {
+            callbackB = () => {
+              spyB();
+              resolve();
+            };
+            ref.on('child_added', callbackB);
+          });
+
+          // Add a delay to ensure that the .on() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          spyA.should.have.callCount(arrayLength);
+          spyB.should.have.callCount(arrayLength);
+
+          // Undo the second callback
+          const resp = await ref.off('child_added', callbackB);
+          should(resp, undefined);
+
+          // Trigger the event the callback is listening to
+          await ref.push(DatabaseContents.DEFAULT.number);
+
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          // CallbackB should have been called zero more times its attachment
+          // has been removed, and callBackA only one more time becuase it's still attached
+          spyA.should.have.callCount(arrayLength + 1);
+          spyB.should.have.callCount(arrayLength);
+
+          // Undo the second attachment
+          const resp2 = await ref.off('child_added', callbackA);
+          should(resp2, undefined);
+
+          // Trigger the event the callback is listening to
+          await ref.push(DatabaseContents.DEFAULT.number);
+
+          // Add a delay to ensure that the .set() has had time to be registered
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 15);
+          });
+
+          // Both Callbacks should not have been called any more times
+          spyA.should.have.callCount(arrayLength + 1);
+          spyB.should.have.callCount(arrayLength);
+        });
+      });
+    });
+
     xcontext('when a context', () => {
       /**
        * @todo Add tests for when a context is passed. Not sure what the intended
