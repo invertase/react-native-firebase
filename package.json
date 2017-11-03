@@ -16,7 +16,8 @@
     "tests-npm-install": "cd tests && npm install",
     "tests-pod-install": "cd tests && npm run ios:pod:install",
     "tests-watch-start": "npm run test-cli watch init start",
-    "tests-watch-stop": "npm run test-cli watch stop"
+    "tests-watch-stop": "npm run test-cli watch stop",
+    "postinstall": "opencollective postinstall"
   },
   "repository": {
     "type": "git",
@@ -88,6 +89,7 @@
   },
   "dependencies": {
     "bows": "^1.6.0",
+    "opencollective": "^1.0.3",
     "prop-types": "^15.6.0"
   },
   "rnpm": {
@@ -99,5 +101,10 @@
     "commands": {
       "postlink": "node node_modules/react-native-firebase/scripts/rnpm-postlink"
     }
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-native-firebase",
+    "logo": "https://opencollective.com/opencollective/logo.txt"
   }
 }
