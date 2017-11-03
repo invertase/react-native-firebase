@@ -9,6 +9,7 @@
 #import <React/RCTEventEmitter.h>
 #import "RNFirebaseEvents.h"
 #import "RNFirebaseFirestore.h"
+#import "RNFirebaseUtil.h"
 
 @interface RNFirebaseFirestoreDocumentReference : NSObject
 @property RCTEventEmitter *emitter;
@@ -25,7 +26,10 @@
 - (void)update:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (BOOL)hasListeners;
 + (NSDictionary *)snapshotToDictionary:(FIRDocumentSnapshot *)documentSnapshot;
-+(NSDictionary *)parseJSMap:(FIRFirestore *) firestore jsMap:(NSDictionary *) jsMap;
++ (NSDictionary *)parseJSMap:(FIRFirestore *) firestore jsMap:(NSDictionary *) jsMap;
++ (NSArray *)parseJSArray:(FIRFirestore *) firestore jsArray:(NSArray *) jsArray;
++ (id)parseJSTypeMap:(FIRFirestore *) firestore jsTypeMap:(NSDictionary *) jsTypeMap;
+
 @end
 
 #else

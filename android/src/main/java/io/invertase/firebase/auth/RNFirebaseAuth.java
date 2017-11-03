@@ -33,6 +33,7 @@ import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -54,6 +55,7 @@ import io.invertase.firebase.Utils;
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
   private String mVerificationId;
+  private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
   private HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
@@ -738,10 +740,16 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
 
+    // Reset the credential
+    mCredential = null;
+
     PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
       @Override
       public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+        // Cache the credential to protect against null verificationId
+        mCredential = phoneAuthCredential;
+
         Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
         WritableMap state = Arguments.createMap();
 
@@ -1068,6 +1076,15 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
       case "phone":
+        // If the phone number is auto-verified quickly, then the verificationId can be null
+        // We cached the credential as part of the verifyPhoneNumber request to be re-used here
+        // if possible
+        if (authToken == null && mCredential != null) {
+          PhoneAuthCredential credential = mCredential;
+          // Reset the cached credential
+          mCredential = null;
+          return credential;
+        }
         return PhoneAuthProvider.getCredential(authToken, authSecret);
       case "password":
         return EmailAuthProvider.getCredential(authToken, authSecret);
@@ -1282,12 +1299,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param providerData List<UserInfo> user.getProviderData()
    * @return WritableArray array
    */
-  private WritableArray convertProviderData(List<? extends UserInfo> providerData) {
+  private WritableArray convertProviderData(List<? extends UserInfo> providerData, FirebaseUser user) {
     WritableArray output = Arguments.createArray();
     for (UserInfo userInfo : providerData) {
       // remove 'firebase' provider data - android fb sdk
       // should not be returning this as the ios/web ones don't
-      if (!userInfo.getProviderId().equals("firebase")) {
+      if (!FirebaseAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())) {
         WritableMap userInfoMap = Arguments.createMap();
         userInfoMap.putString("providerId", userInfo.getProviderId());
         userInfoMap.putString("uid", userInfo.getUid());
@@ -1295,20 +1312,34 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
         final Uri photoUrl = userInfo.getPhotoUrl();
 
-        if (photoUrl != null) {
+        if (photoUrl != null && !"".equals(photoUrl)) {
           userInfoMap.putString("photoURL", photoUrl.toString());
         } else {
           userInfoMap.putNull("photoURL");
         }
 
         final String phoneNumber = userInfo.getPhoneNumber();
-        if (phoneNumber != null) {
+        // The Android SDK is missing the phone number property for the phone provider when the
+        // user first signs up using their phone number.  Use the phone number from the user
+        // object instead
+        if (PhoneAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
+          && (userInfo.getPhoneNumber() == null || "".equals(userInfo.getPhoneNumber()))) {
+          userInfoMap.putString("phoneNumber", user.getPhoneNumber());
+        } else if (phoneNumber != null && !"".equals(phoneNumber)) {
           userInfoMap.putString("phoneNumber", phoneNumber);
         } else {
           userInfoMap.putNull("phoneNumber");
         }
 
-        userInfoMap.putString("email", userInfo.getEmail());
+        // The Android SDK is missing the email property for the email provider, so we use UID instead
+        if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
+          && (userInfo.getEmail() == null || "".equals(userInfo.getEmail()))) {
+          userInfoMap.putString("email", userInfo.getUid());
+        } else if (userInfo.getEmail() != null && !"".equals(userInfo.getEmail())) {
+          userInfoMap.putString("email", userInfo.getEmail());
+        } else {
+          userInfoMap.putNull("email");
+        }
 
         output.pushMap(userInfoMap);
       }
@@ -1339,31 +1370,31 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     userMap.putBoolean("emailVerified", verified);
     userMap.putBoolean("isAnonymous", user.isAnonymous());
 
-    if (email != null) {
+    if (email != null && !"".equals(email)) {
       userMap.putString("email", email);
     } else {
       userMap.putNull("email");
     }
 
-    if (name != null) {
+    if (name != null && !"".equals(name)) {
       userMap.putString("displayName", name);
     } else {
       userMap.putNull("displayName");
     }
 
-    if (photoUrl != null) {
+    if (photoUrl != null && !"".equals(photoUrl)) {
       userMap.putString("photoURL", photoUrl.toString());
     } else {
       userMap.putNull("photoURL");
     }
 
-    if (phoneNumber != null) {
+    if (phoneNumber != null && !"".equals(phoneNumber)) {
       userMap.putString("phoneNumber", phoneNumber);
     } else {
       userMap.putNull("phoneNumber");
     }
 
-    userMap.putArray("providerData", convertProviderData(user.getProviderData()));
+    userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));
 
     return userMap;
   }

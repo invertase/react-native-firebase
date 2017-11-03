@@ -26,7 +26,8 @@
 		839D91731EF3E20B0077C7C8 /* RNFirebaseDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91621EF3E20A0077C7C8 /* RNFirebaseDatabase.m */; };
 		839D91741EF3E20B0077C7C8 /* RNFirebaseMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91651EF3E20A0077C7C8 /* RNFirebaseMessaging.m */; };
 		839D91751EF3E20B0077C7C8 /* RNFirebasePerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91681EF3E20A0077C7C8 /* RNFirebasePerformance.m */; };
-		839D91761EF3E20B0077C7C8 /* RNFirebaseStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D916B1EF3E20A0077C7C8 /* RNFirebaseStorage.m */; };
+		83C3EEEE1FA1EACC00B64D3C /* RNFirebaseUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C3EEEC1FA1EACC00B64D3C /* RNFirebaseUtil.m */; };
+		BA84AE571FA9E59800E79390 /* RNFirebaseStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = BA84AE561FA9E59800E79390 /* RNFirebaseStorage.m */; };
 		D950369E1D19C77400F7094D /* RNFirebase.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* RNFirebase.m */; };
 /* End PBXBuildFile section */
 
@@ -82,9 +83,11 @@
 		839D91651EF3E20A0077C7C8 /* RNFirebaseMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseMessaging.m; sourceTree = "<group>"; };
 		839D91671EF3E20A0077C7C8 /* RNFirebasePerformance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebasePerformance.h; sourceTree = "<group>"; };
 		839D91681EF3E20A0077C7C8 /* RNFirebasePerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebasePerformance.m; sourceTree = "<group>"; };
-		839D916A1EF3E20A0077C7C8 /* RNFirebaseStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseStorage.h; sourceTree = "<group>"; };
-		839D916B1EF3E20A0077C7C8 /* RNFirebaseStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseStorage.m; sourceTree = "<group>"; };
 		839D91771EF3E22F0077C7C8 /* RNFirebaseEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseEvents.h; path = RNFirebase/RNFirebaseEvents.h; sourceTree = "<group>"; };
+		83C3EEEC1FA1EACC00B64D3C /* RNFirebaseUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseUtil.m; path = RNFirebase/RNFirebaseUtil.m; sourceTree = "<group>"; };
+		83C3EEED1FA1EACC00B64D3C /* RNFirebaseUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseUtil.h; path = RNFirebase/RNFirebaseUtil.h; sourceTree = "<group>"; };
+		BA84AE551FA9E59800E79390 /* RNFirebaseStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseStorage.h; sourceTree = "<group>"; };
+		BA84AE561FA9E59800E79390 /* RNFirebaseStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseStorage.m; sourceTree = "<group>"; };
 		D950369C1D19C77400F7094D /* RNFirebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebase.h; path = RNFirebase/RNFirebase.h; sourceTree = "<group>"; };
 		D950369D1D19C77400F7094D /* RNFirebase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebase.m; path = RNFirebase/RNFirebase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -121,6 +124,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				BA84AE541FA9E59800E79390 /* storage */,
 				17AF4F681F59CDBF00C02336 /* links */,
 				839D914D1EF3E20A0077C7C8 /* admob */,
 				839D91541EF3E20A0077C7C8 /* analytics */,
@@ -131,11 +135,12 @@
 				8376F70D1F7C141500D45A85 /* firestore */,
 				839D91631EF3E20A0077C7C8 /* messaging */,
 				839D91661EF3E20A0077C7C8 /* perf */,
-				134814211AA4EA7D00B7C361 /* Products */,
 				D950369C1D19C77400F7094D /* RNFirebase.h */,
 				D950369D1D19C77400F7094D /* RNFirebase.m */,
 				839D91771EF3E22F0077C7C8 /* RNFirebaseEvents.h */,
-				839D91691EF3E20A0077C7C8 /* storage */,
+				83C3EEED1FA1EACC00B64D3C /* RNFirebaseUtil.h */,
+				83C3EEEC1FA1EACC00B64D3C /* RNFirebaseUtil.m */,
+				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -247,11 +252,11 @@
 			path = RNFirebase/perf;
 			sourceTree = "<group>";
 		};
-		839D91691EF3E20A0077C7C8 /* storage */ = {
+		BA84AE541FA9E59800E79390 /* storage */ = {
 			isa = PBXGroup;
 			children = (
-				839D916A1EF3E20A0077C7C8 /* RNFirebaseStorage.h */,
-				839D916B1EF3E20A0077C7C8 /* RNFirebaseStorage.m */,
+				BA84AE551FA9E59800E79390 /* RNFirebaseStorage.h */,
+				BA84AE561FA9E59800E79390 /* RNFirebaseStorage.m */,
 			);
 			name = storage;
 			path = RNFirebase/storage;
@@ -317,7 +322,6 @@
 				839D916C1EF3E20B0077C7C8 /* RNFirebaseAdMob.m in Sources */,
 				17AF4F6B1F59CDBF00C02336 /* RNFirebaseLinks.m in Sources */,
 				8376F7161F7C149100D45A85 /* RNFirebaseFirestoreCollectionReference.m in Sources */,
-				839D91761EF3E20B0077C7C8 /* RNFirebaseStorage.m in Sources */,
 				8376F7151F7C149100D45A85 /* RNFirebaseFirestore.m in Sources */,
 				839D91701EF3E20B0077C7C8 /* RNFirebaseAuth.m in Sources */,
 				8323CF091F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.m in Sources */,
@@ -326,7 +330,9 @@
 				839D91711EF3E20B0077C7C8 /* RNFirebaseRemoteConfig.m in Sources */,
 				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
 				839D91731EF3E20B0077C7C8 /* RNFirebaseDatabase.m in Sources */,
+				BA84AE571FA9E59800E79390 /* RNFirebaseStorage.m in Sources */,
 				8323CF071F6FBD870071420B /* NativeExpressComponent.m in Sources */,
+				83C3EEEE1FA1EACC00B64D3C /* RNFirebaseUtil.m in Sources */,
 				839D91721EF3E20B0077C7C8 /* RNFirebaseCrash.m in Sources */,
 				839D91741EF3E20B0077C7C8 /* RNFirebaseMessaging.m in Sources */,
 				839D91751EF3E20B0077C7C8 /* RNFirebasePerformance.m in Sources */,

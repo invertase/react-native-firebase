@@ -5,6 +5,7 @@
 #import <Firebase.h>
 #import "RNFirebaseDatabaseReference.h"
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseUtil.h"
 
 @implementation RNFirebaseDatabase
 RCT_EXPORT_MODULE();
@@ -39,7 +40,7 @@ RCT_EXPORT_METHOD(keepSynced:(NSString *) appName
                         path:(NSString *) path
                    modifiers:(NSArray *) modifiers
                        state:(BOOL) state) {
-    FIRDatabaseQuery *query = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers keep:false].query;
+    FIRDatabaseQuery *query = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers].query;
     [query keepSynced:state];
 }
 
@@ -87,11 +88,7 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         dispatch_barrier_async(_transactionQueue, ^{
             [_transactions setValue:transactionState forKey:transactionId];
             NSDictionary *updateMap = [self createTransactionUpdateMap:appName transactionId:transactionId updatesData:currentData];
-            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-            // until a better solution comes around
-            if (self.bridge) {
-                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:updateMap];
-            }
+            [RNFirebaseUtil sendJSEvent:self name:DATABASE_TRANSACTION_EVENT body:updateMap];
         });
 
         // wait for the js event handler to call tryCommitTransaction
@@ -118,11 +115,7 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *) appName
         andCompletionBlock:
         ^(NSError *_Nullable databaseError, BOOL committed, FIRDataSnapshot *_Nullable snapshot) {
             NSDictionary *resultMap = [self createTransactionResultMap:appName transactionId:transactionId error:databaseError committed:committed snapshot:snapshot];
-            // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
-            // until a better solution comes around
-            if (self.bridge) {
-                [self sendEventWithName:DATABASE_TRANSACTION_EVENT body:resultMap];
-            }
+            [RNFirebaseUtil sendJSEvent:self name:DATABASE_TRANSACTION_EVENT body:resultMap];
         }
         withLocalEvents:
         applyLocally];
@@ -233,13 +226,13 @@ RCT_EXPORT_METHOD(once:(NSString *) appName
              eventName:(NSString *) eventName
               resolver:(RCTPromiseResolveBlock) resolve
               rejecter:(RCTPromiseRejectBlock) reject) {
-    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers keep:false];
+    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:key path:path modifiers:modifiers];
     [ref once:eventName resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(on:(NSString *) appName
                props:(NSDictionary *) props) {
-    RNFirebaseDatabaseReference *ref = [self getInternalReferenceForApp:appName key:props[@"key"] path:props[@"path"] modifiers:props[@"modifiers"] keep:false];
+    RNFirebaseDatabaseReference *ref = [self getCachedInternalReferenceForApp:appName props:props];
     [ref on:props[@"eventType"] registration:props[@"registration"]];
 }
 
@@ -278,15 +271,20 @@ RCT_EXPORT_METHOD(off:(NSString *) key
     return [[RNFirebaseDatabase getDatabaseForApp:appName] referenceWithPath:path];
 }
 
-- (RNFirebaseDatabaseReference *)getInternalReferenceForApp:(NSString *)appName key:(NSString *)key path:(NSString *)path modifiers:(NSArray *)modifiers keep:(BOOL)keep {
+- (RNFirebaseDatabaseReference *)getInternalReferenceForApp:(NSString *)appName key:(NSString *)key path:(NSString *)path modifiers:(NSArray *)modifiers {
+    return [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName key:key refPath:path modifiers:modifiers];
+}
+
+- (RNFirebaseDatabaseReference *)getCachedInternalReferenceForApp:(NSString *)appName props:(NSDictionary *)props {
+    NSString *key = props[@"key"];
+    NSString *path = props[@"path"];
+    NSDictionary *modifiers = props[@"modifiers"];
+
     RNFirebaseDatabaseReference *ref = _dbReferences[key];
 
     if (ref == nil) {
         ref = [[RNFirebaseDatabaseReference alloc] initWithPathAndModifiers:self app:appName key:key refPath:path modifiers:modifiers];
-
-        if (keep) {
-            _dbReferences[key] = ref;
-        }
+        _dbReferences[key] = ref;
     }
     return ref;
 }
