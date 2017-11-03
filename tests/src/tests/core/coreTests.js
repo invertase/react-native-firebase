@@ -25,6 +25,11 @@ const iosTestConfig = {
   projectId: 'rnfirebase-b9ad4',
 };
 
+function rand(from = 1, to = 9999) {
+  const r = Math.random();
+  return Math.floor(r * ((to - from) + from));
+}
+
 function coreTests({ describe, it }) {
   describe('Core', () => {
     it('it should create js apps for natively initialized apps', () => {
@@ -53,23 +58,19 @@ function coreTests({ describe, it }) {
       return Promise.resolve();
     });
 
-    // // todo move to UTILS module tests
-    // it('it should provide the sdk version', () => {
-    //   should.equal(!!RNFirebase.utils.VERSIONS['react-native-firebase'].length, true);
-    //   return Promise.resolve();
-    // });
-
-    // TODO add back in when android sdk support becomes available
-    // it('it should initialize dynamic apps', () => {
-    //   return RNFirebase
-    //     .initializeApp(Platform.OS === 'ios' ? iosTestConfig : androidTestConfig, 'testsCoreApp')
-    //     .onReady()
-    //     .then((newApp) => {
-    //       newApp.name.should.equal('TESTSCOREAPP');
-    //       newApp.options.apiKey.should.equal((Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey);
-    //       return newApp.delete();
-    //     });
-    // });
+    it('it should initialize dynamic apps', () => {
+      const name = `testscoreapp${rand()}`;
+      return RNFirebase
+        .initializeApp(Platform.OS === 'ios' ? iosTestConfig : androidTestConfig, name)
+        .onReady()
+        .then((newApp) => {
+          newApp.name.should.equal(name.toUpperCase());
+          newApp.options.apiKey.should.equal((Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey);
+          // TODO add back in when android sdk support for deleting apps becomes available
+          // return newApp.delete();
+          return Promise.resolve();
+        });
+    });
   });
 }
 
