@@ -52,37 +52,37 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > '**?**' indicates partial support
 
-| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | Web SDK |
-| ---------------------- | :---: | :---: | :---: | :---: |
-| **AdMob**                  | ❌ | ✅ | ✅ | ❌ |
-| **Analytics**              | ✅ | ✅ | ✅ | ❌ |
-| **App Indexing**           | ❌ | ❌ | ❌ | ❌ |
-| **Authentication**         | ✅ | ✅ | ✅ | ✅ |
-| _-- Phone Auth_            | ❌ | ❌ | ✅ | ❌ |
-| **Core**                   | ❌ |**?**| ✅ | ✅ |
-|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ |
-| **Cloud Firestore**        | ❌ | ❌ | ✅ | ❌ |
-| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ |**?**|
-| **Crash Reporting**        | ✅ | ✅ | ✅ | ❌ |
-| **Dynamic Links**          | ❌ | ❌ | ❌ | ❌ |
-| **Invites**                | ❌ | ❌ | ❌ | ❌ |
-| **Performance Monitoring** | ✅ | ✅ | ✅ | ❌ |
-| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ |
-| _-- Offline Persistence_   | ✅ | ✅ | ✅ |**?**|
-| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ |
-| **Remote Config**          | ✅ | ✅ | ✅ | ❌ |
-| **Storage**                | ✅ | ✅ | ✅ |**?**|
+| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | v3.1.x | Web SDK |
+| ---------------------- | :---: | :---: | :---: | :---: | :---: |
+| **AdMob**                  | ❌ | ✅ | ✅ | ✅ | ❌ |
+| **Analytics**              | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **App Indexing**           | ❌ | ❌ | ❌ | ✅ | ❌ |
+| **Authentication**         | ✅ | ✅ | ✅ | ✅ | ✅ |
+| _-- Phone Auth_            | ❌ | ❌ | ✅ | ✅ | ❌ |
+| **Core**                   | ❌ |**?**| ✅ | ✅ | ✅ |
+|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ | ✅ |
+| **Cloud Firestore**        | ❌ | ❌ | ✅ | ✅ | ❌ |
+| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ | ✅ |**?**|
+| **Crash Reporting**        | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Dynamic Links**          | ❌ | ❌ | ❌ | ✅ | ❌ |
+| **Invites**                | ❌ | ❌ | ❌ |**?**| ❌ |
+| **Performance Monitoring** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ | ✅ |
+| _-- Offline Persistence_   | ✅ | ✅ | ✅ | ✅ |**?**|
+| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Remote Config**          | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Storage**                | ✅ | ✅ | ✅ | ✅ |**?**|
 
 ---
 ### Supported versions - React Native / Firebase
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`
 
-|                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |
-|------------------------|-------------|-------------|-----------------|----------|
-| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   |
-| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.4.2 + |
-| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.3.0 +  |
+|                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |  3.1.X   |
+|------------------------|-------------|-------------|-----------------|----------|----------|
+| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   | 0.48 +   |
+| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.4.2 + | 11.4.2 + |
+| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.3.0 +  | 4.5.0 +  |
 
 ---
 
