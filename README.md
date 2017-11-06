@@ -1,41 +1,23 @@
-# React Native Firebase<a href="https://rnfirebase.io"><img align="left" src="http://i.imgur.com/01XQL0x.png"></a>
+<p align="center">
+  <a href="https://rnfirebase.io">
+    <img src="http://i.imgur.com/01XQL0x.png"><br/>
+    <h3>React Native Firebase</h3>
+  </a>
+</p>
 
-[![Backers on Open Collective](https://opencollective.com/react-native-firebase/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/react-native-firebase/sponsors/badge.svg)](#sponsors) [![npm version](https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
-[![NPM downloads](https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square)](https://www.npmjs.com/package/react-native-firebase)
-[![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square)](https://discord.gg/t6bdqMs)
-[![Donate](https://img.shields.io/badge/Donate-Patreon-green.svg?style=flat-square)](https://www.patreon.com/invertase)
-[![Twitter Follow](https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow)](https://twitter.com/rnfirebase)
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
+  <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg" alt="Backers on Open Collective"></a>
+  <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg" alt="Sponsors on Open Collective"></a>
+  <a href="https://discord.gg/t6bdqMs"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square" alt="Chat"></a>
+  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
+</p>
 
+## Introduction
 
-**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. 
-
----
-
-We also support **both** databases: Realtime Database and Cloud Firestore!
-
----
-
-
-<!---
-[![License](https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square)](/LICENSE)
--->
-
-<hr>
-
-> [Docs](https://rnfirebase.io/) <b>|</b> [Starter App](https://github.com/invertase/react-native-firebase-starter) <b>|</b> [iOS Install Guide](https://rnfirebase.io/docs/v3.0.*/installation/ios) <b>|</b> [Android Install Guide](https://rnfirebase.io/docs/v3.0.*/installation/android) <b>|</b> [FAQs](https://rnfirebase.io/docs/v3.0.*/faqs) <b>|</b> [Feature Requests](http://invertase.link/requests)
-
-<hr>
-
-### Install
-```bash
-npm i react-native-firebase --save
-```
-
-<hr>
-
-### Why
-
-RNFirebase is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
+**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. It is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
 
 Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library will work with React Native, it is mainly built for the web.
 
@@ -46,6 +28,7 @@ The native SDKs also allow us to hook into device sdk's which are not possible w
 All in all, RNFirebase provides much faster performance (~2x) over the web SDK and provides device sdk's not found in the web sdk (see the feature table below).
 
 ---
+
 ## Supported Firebase Features
 > The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
@@ -61,7 +44,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | _-- Phone Auth_            | ❌ | ❌ | ✅ | ✅ | ❌ |
 | **Core**                   | ❌ |**?**| ✅ | ✅ | ✅ |
 |  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Cloud Firestore**        | ❌ | ❌ | ✅ | ✅ | ❌ |
+| **Cloud Firestore**        | ❌ | ❌ | ✅ | ✅ |**?**|
 | **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ | ✅ |**?**|
 | **Crash Reporting**        | ✅ | ✅ | ✅ | ✅ | ❌ |
 | **Dynamic Links**          | ❌ | ❌ | ❌ | ✅ | ❌ |
@@ -86,18 +69,41 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 ---
 
-## Contributors
+## Documentation
 
-This project exists thanks to all the people who contribute. [[Contribute]](CONTRIBUTING.md).
+To check out our latest docs, visit [rnfirebase.io](https://rnfirebase.io)
+
+## Questions
+
+For questions and support please use our [Discord chat](https://discord.gg/t6bdqMs) or [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase). The issue list of this repo is **exclusively** for bug reports.
+
+## Issues
+
+Please make sure to complete the issue template before opening an issue. Issues not conforming to the guidelines may be closed immediately.
+
+## Feature Requests
+
+For feature requests please use our [Canny Board](http://invertase.link/requests).
+
+## Changelog
+
+Detailed changes for each release are documented in the [releases notes](https://github.com/invertase/react-native-firebase/releases).
+
+<hr>
+
+## Contribution
+
+Please make sure to read the [Contributing Guide](CONTRIBUTING.md) before making a pull request.
+
+Thank you to all the people who have already contributed to RNFirebase!
+
 <a href="graphs/contributors"><img src="https://opencollective.com/react-native-firebase/contributors.svg?width=890" /></a>
-
 
 ## Backers
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/react-native-firebase#backer)]
 
 <a href="https://opencollective.com/react-native-firebase#backers" target="_blank"><img src="https://opencollective.com/react-native-firebase/backers.svg?width=890"></a>
-
 
 ## Sponsors
 
@@ -114,8 +120,6 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://opencollective.com/react-native-firebase/sponsor/8/website" target="_blank"><img src="https://opencollective.com/react-native-firebase/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/react-native-firebase/sponsor/9/website" target="_blank"><img src="https://opencollective.com/react-native-firebase/sponsor/9/avatar.svg"></a>
 
-
-
-### License
+## License
 
 - See [LICENSE](/LICENSE)
