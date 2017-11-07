@@ -16,6 +16,9 @@ export const COL_1 = {
   gaz: 12.1234567,
   geopoint: new firebase.native.firestore.GeoPoint(0, 0),
   naz: null,
+  object: {
+    daz: 123,
+  },
   timestamp: new Date(2017, 2, 10, 10, 0, 0),
 };
 
