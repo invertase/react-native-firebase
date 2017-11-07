@@ -481,14 +481,18 @@ RCT_EXPORT_METHOD(signInWithCredential:
  @return
  */
 RCT_EXPORT_METHOD(confirmPasswordReset:
-    (NSString *) code
+        (NSString *) appName
+            code:
+            (NSString *) code
             newPassword:
             (NSString *) newPassword
             resolver:
             (RCTPromiseResolveBlock) resolve
             rejecter:
             (RCTPromiseRejectBlock) reject) {
-    [[FIRAuth auth] confirmPasswordResetWithCode:code newPassword:newPassword completion:^(NSError *_Nullable error) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+    
+    [[FIRAuth authWithApp:firApp] confirmPasswordResetWithCode:code newPassword:newPassword completion:^(NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
@@ -507,12 +511,16 @@ RCT_EXPORT_METHOD(confirmPasswordReset:
  * @return
  */
 RCT_EXPORT_METHOD(applyActionCode:
-    (NSString *) code
+        (NSString *) appName
+            code:
+            (NSString *) code
             resolver:
             (RCTPromiseResolveBlock) resolve
             rejecter:
             (RCTPromiseRejectBlock) reject) {
-    [[FIRAuth auth] applyActionCode:code completion:^(NSError *_Nullable error) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+    
+    [[FIRAuth authWithApp:firApp] applyActionCode:code completion:^(NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
@@ -530,12 +538,16 @@ RCT_EXPORT_METHOD(applyActionCode:
  * @return
  */
 RCT_EXPORT_METHOD(checkActionCode:
-    (NSString *) code
+        (NSString *) appName
+            code:
+            (NSString *) code
             resolver:
             (RCTPromiseResolveBlock) resolve
             rejecter:
             (RCTPromiseRejectBlock) reject) {
-    [[FIRAuth auth] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error) {
+    FIRApp *firApp = [FIRApp appNamed:appName];
+    
+    [[FIRAuth authWithApp:firApp] checkActionCode:code completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
