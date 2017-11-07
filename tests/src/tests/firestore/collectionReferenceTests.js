@@ -737,6 +737,43 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
         });
       });
 
+      context('onSnapshot()', () => {
+        it('gets called correctly', async () => {
+          const collectionRef = collectionTests.orderBy('timestamp').endAt(new Date(2017, 2, 12, 10, 0, 0));
+          const newDocValue = { ...COL_1, foo: 'updated' };
+
+          const callback = sinon.spy();
+
+          // Test
+
+          let unsubscribe;
+          await new Promise((resolve2) => {
+            unsubscribe = collectionRef.onSnapshot((snapshot) => {
+              callback(snapshot.docs.map(doc => doc.data().daz));
+              resolve2();
+            });
+          });
+
+          callback.should.be.calledWith([123, 234, 345]);
+
+          const docRef = firebase.native.firestore().doc('collection-tests2/col1');
+          await docRef.set(newDocValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          // Assertions
+
+          callback.should.be.calledWith([123, 234, 345]);
+          callback.should.be.calledTwice();
+
+          // Tear down
+
+          unsubscribe();
+        });
+      });
+
       after(() => {
         return cleanCollection(collectionTests);
       });
