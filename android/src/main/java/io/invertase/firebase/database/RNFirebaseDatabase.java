@@ -72,6 +72,16 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   }
 
   /**
+   * @param appName
+   * @param size
+   */
+  @ReactMethod
+  public void setPersistenceCacheSizeBytes(String appName, int size) {
+    getDatabaseForApp(appName).setPersistenceCacheSizeBytes((long) size);
+  }
+
+
+  /**
    * @param enabled
    */
   @ReactMethod
