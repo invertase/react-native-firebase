@@ -35,6 +35,10 @@ RCT_EXPORT_METHOD(setPersistence:(NSString *) appName
     [RNFirebaseDatabase getDatabaseForApp:appName].persistenceEnabled = state;
 }
 
+RCT_EXPORT_METHOD(enableLogging:(BOOL) enabled) {
+    [FIRDatabase setLoggingEnabled:enabled];
+}
+
 RCT_EXPORT_METHOD(keepSynced:(NSString *) appName
                          key:(NSString *) key
                         path:(NSString *) path
