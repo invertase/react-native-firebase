@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -345,7 +346,8 @@ class RNFirebaseDatabaseReference {
    * @return
    */
   private void buildDatabaseQueryAtPathAndModifiers(String path, ReadableArray modifiers) {
-    FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName);
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
 
     query = firebaseDatabase.getReference(path);
     List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);

@@ -90,7 +90,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     for (FirebaseApp app : firebaseAppList) {
       if (enableLogging) {
-        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.INFO);
+        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.DEBUG);
       } else {
         FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.WARN);
       }
@@ -484,9 +484,17 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param appName
    * @return
    */
-  static FirebaseDatabase getDatabaseForApp(String appName) {
+  private FirebaseDatabase getDatabaseForApp(String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    return FirebaseDatabase.getInstance(firebaseApp);
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
+
+    if (enableLogging) {
+      firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
+    } else {
+      firebaseDatabase.setLogLevel(Logger.Level.WARN);
+    }
+
+    return firebaseDatabase;
   }
 
   /**
