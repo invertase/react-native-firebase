@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE();
     if (_traces[identifier]) {
         return _traces[identifier];
     }
-    FIRTrace *trace = [FIRPerformance startTraceWithName:identifier];
+    FIRTrace *trace = [FIRPerformance traceWithName:identifier];
     _traces[identifier] = trace;
     return trace;
 }
