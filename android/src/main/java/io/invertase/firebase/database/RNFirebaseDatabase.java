@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.ServerValue;
@@ -32,6 +33,7 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
+  private boolean enableLogging = false;
   private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
@@ -68,6 +70,23 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   public void setPersistence(String appName, Boolean state) {
     getDatabaseForApp(appName).setPersistenceEnabled(state);
   }
+
+  /**
+   * @param enabled
+   */
+  @ReactMethod
+  public void enableLogging(Boolean enabled) {
+    enableLogging = enabled;
+    List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
+    for (FirebaseApp app : firebaseAppList) {
+      if (enableLogging) {
+        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.INFO);
+      } else {
+        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.WARN);
+      }
+    }
+  }
+
 
   /**
    * @param appName
