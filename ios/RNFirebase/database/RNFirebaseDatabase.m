@@ -35,6 +35,11 @@ RCT_EXPORT_METHOD(setPersistence:(NSString *) appName
     [RNFirebaseDatabase getDatabaseForApp:appName].persistenceEnabled = state;
 }
 
+RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes:(NSString *) appName
+                  size:(NSInteger *) size) {
+    [RNFirebaseDatabase getDatabaseForApp:appName].persistenceCacheSizeBytes = (NSUInteger)size;
+}
+
 RCT_EXPORT_METHOD(enableLogging:(BOOL) enabled) {
     [FIRDatabase setLoggingEnabled:enabled];
 }
