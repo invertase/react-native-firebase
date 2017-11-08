@@ -500,9 +500,12 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
             });
           });
       });
+    });
 
-      it('correctly handles limit', async () => {
-        const collectionTests = firebase.native.firestore().collection('collection-tests2');
+    context('limit', () => {
+      let collectionTests;
+      before(async () => {
+        collectionTests = firebase.native.firestore().collection('collection-tests2');
         await Promise.all([
           collectionTests.doc('col1').set(COL_1),
           collectionTests.doc('col2').set({ ...COL_1, daz: 234 }),
@@ -510,13 +513,42 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
           collectionTests.doc('col4').set({ ...COL_1, daz: 234 }),
           collectionTests.doc('col5').set({ ...COL_1, daz: 234 }),
         ]);
+      });
 
+      it('correctly works with get()', async () => {
         return collectionTests.limit(3)
           .get()
           .then((querySnapshot) => {
             should.equal(querySnapshot.size, 3);
             return cleanCollection(collectionTests);
           });
+      });
+
+      it('correctly works with onSnapshot()', async () => {
+        const collectionRef = collectionTests.limit(3);
+        const callback = sinon.spy();
+
+        // Test
+
+        let unsubscribe;
+        await new Promise((resolve2) => {
+          unsubscribe = collectionRef.onSnapshot((snapshot) => {
+            callback(snapshot.size);
+            resolve2();
+          });
+        });
+
+        // Assertions
+
+        callback.should.be.calledWith(3);
+
+        // Tear down
+
+        unsubscribe();
+      });
+
+      after(() => {
+        return cleanCollection(collectionTests);
       });
     });
 
@@ -526,10 +558,10 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
         collectionTests = firebase.native.firestore().collection('collection-tests2');
         await Promise.all([
           collectionTests.doc('col1').set({ ...COL_1, foo: 'bar0' }),
-          collectionTests.doc('col2').set({ ...COL_1, foo: 'bar1', daz: 234, timestamp: new Date(2017, 2, 11, 10, 0, 0) }),
-          collectionTests.doc('col3').set({ ...COL_1, foo: 'bar2', daz: 345, timestamp: new Date(2017, 2, 12, 10, 0, 0) }),
-          collectionTests.doc('col4').set({ ...COL_1, foo: 'bar3', daz: 456, timestamp: new Date(2017, 2, 13, 10, 0, 0) }),
-          collectionTests.doc('col5').set({ ...COL_1, foo: 'bar4', daz: 567, timestamp: new Date(2017, 2, 14, 10, 0, 0) }),
+          collectionTests.doc('col2').set({ ...COL_1, foo: 'bar1', daz: 234, object: { daz: 234 }, timestamp: new Date(2017, 2, 11, 10, 0, 0) }),
+          collectionTests.doc('col3').set({ ...COL_1, foo: 'bar2', daz: 345, object: { daz: 345 }, timestamp: new Date(2017, 2, 12, 10, 0, 0) }),
+          collectionTests.doc('col4').set({ ...COL_1, foo: 'bar3', daz: 456, object: { daz: 456 }, timestamp: new Date(2017, 2, 13, 10, 0, 0) }),
+          collectionTests.doc('col5').set({ ...COL_1, foo: 'bar4', daz: 567, object: { daz: 567 }, timestamp: new Date(2017, 2, 14, 10, 0, 0) }),
         ]);
       });
 
@@ -734,6 +766,43 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
                 [456, 567],
               );
             });
+        });
+      });
+
+      context('onSnapshot()', () => {
+        it('gets called correctly', async () => {
+          const collectionRef = collectionTests.orderBy('object.daz').endAt(345);
+          const newDocValue = { ...COL_1, object: { daz: 346 } };
+
+          const callback = sinon.spy();
+
+          // Test
+
+          let unsubscribe;
+          await new Promise((resolve2) => {
+            unsubscribe = collectionRef.onSnapshot((snapshot) => {
+              callback(snapshot.docs.map(doc => doc.data().daz));
+              resolve2();
+            });
+          });
+
+          callback.should.be.calledWith([123, 234, 345]);
+
+          const docRef = firebase.native.firestore().doc('collection-tests2/col1');
+          await docRef.set(newDocValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          // Assertions
+
+          callback.should.be.calledWith([234, 345]);
+          callback.should.be.calledTwice();
+
+          // Tear down
+
+          unsubscribe();
         });
       });
 
