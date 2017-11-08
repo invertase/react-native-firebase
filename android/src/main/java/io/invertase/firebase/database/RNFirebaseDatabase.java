@@ -488,11 +488,12 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
 
-    if (enableLogging) {
-      firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
-    } else {
-      firebaseDatabase.setLogLevel(Logger.Level.WARN);
-    }
+// todo errors  'calls must be made before any other usage of database instance
+//    if (enableLogging) {
+//      firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
+//    } else {
+//      firebaseDatabase.setLogLevel(Logger.Level.WARN);
+//    }
 
     return firebaseDatabase;
   }
