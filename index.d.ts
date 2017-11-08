@@ -5,6 +5,11 @@
 
 declare module "react-native-firebase" {
 
+  type AuthProvider = {
+    PROVIDER_ID: string,
+    credential: (token: string, secret?: string) => object,
+  };
+
   export default class FireBase {
     constructor(config?: RNFirebase.configurationOptions)
 
@@ -12,16 +17,29 @@ declare module "react-native-firebase" {
 
     analytics(): RNFirebase.Analytics;
 
-    auth(): RNFirebase.auth.Auth;
-
     on(type: string, handler: (msg: any) => void): any;
 
-    /** mimics firebase Web SDK */
     database: {
       (): RNFirebase.database.Database
       ServerValue: {
         TIMESTAMP: number
       }
+    };
+
+    auth: {
+      (): RNFirebase.auth.Auth
+      EmailAuthProvider: AuthProvider,
+      PhoneAuthProvider: AuthProvider,
+      GoogleAuthProvider: AuthProvider,
+      GithubAuthProvider: AuthProvider,
+      TwitterAuthProvider: AuthProvider,
+      FacebookAuthProvider: AuthProvider,
+      PhoneAuthState: {
+        CODE_SENT: string,
+        AUTO_VERIFY_TIMEOUT: string,
+        AUTO_VERIFIED: string,
+        ERROR: string,
+      },
     };
 
     /**RNFirebase mimics the Web Firebase SDK Storage,
@@ -144,14 +162,17 @@ declare module "react-native-firebase" {
            nextOrObserver: (snapshot: any) => any,
            error: (error: RnError) => any,
            complete: (complete: any) => any): any
+
         /**
          * is not currently supported by react-native-firebase
          */
         pause(): void
+
         /**
          * is not currently supported by react-native-firebase
          */
         resume(): void
+
         /**
          * is not currently supported by react-native-firebase
          */
@@ -166,45 +187,65 @@ declare module "react-native-firebase" {
          *  @return {Promise}
          * */
         downloadFile(filePath: string): StorageTask<any>;
+
         /**
          * Upload a file path
          * @returns {Promise}
          */
         putFile(filePath: string, metadata?: any): StorageTask<any>;
+
         setMaxDownloadRetryTime(time: number): void
+
         [key: string]: any;
       }
 
       interface Storage {
         maxOperationRetryTime: number;
         maxUploadRetryTime: number;
+
         ref(path?: string): storage.RNStorage;
+
         refFromURL(url: string): storage.RNStorage;
+
         setMaxOperationRetryTime(time: number): any;
+
         setMaxUploadRetryTime(time: number): any;
       }
 
       interface Reference {
         bucket: string;
+
         child(path: string): storage.Reference;
+
         delete(): Promise<any>;
+
         fullPath: string;
+
         getDownloadURL(): Promise<any>;
+
         getMetadata(): Promise<any>;
+
         name: string;
         parent: storage.Reference | null;
+
         put(data: any | Uint8Array | ArrayBuffer,
             metadata?: storage.UploadMetadata): storage.UploadTask;
+
         putString(data: string, format?: storage.StringFormat,
                   metadata?: storage.UploadMetadata): storage.UploadTask;
+
         root: storage.Reference;
         storage: storage.Storage;
+
         toString(): string;
+
         updateMetadata(metadata: storage.SettableMetadata): Promise<any>;
       }
+
       interface UploadMetadata extends storage.SettableMetadata {
         md5Hash?: string | null;
       }
+
       interface SettableMetadata {
         cacheControl?: string | null;
         contentDisposition?: string | null;
@@ -224,12 +265,18 @@ declare module "react-native-firebase" {
 
       interface UploadTask {
         cancel(): boolean;
+
         catch(onRejected: (a: RnError) => any): Promise<any>;
+
         on(event: storage.TaskEvent, nextOrObserver?: null | Object,
            error?: ((a: RnError) => any) | null, complete?: (() => any) | null): Function;
+
         pause(): boolean;
+
         resume(): boolean;
+
         snapshot: storage.UploadTaskSnapshot;
+
         then(onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
              onRejected?: ((a: RnError) => any) | null): Promise<any>;
       }
@@ -280,32 +327,40 @@ declare module "react-native-firebase" {
          * Returns a new firebase reference instance
          * */
         ref(path?: string): RnReference
+
         /**
          * register listener
          */
         on(path: string, modifiersString: string, modifiers: Array<string>, eventName: string, cb: () => void, errorCb: () => void): any
+
         /**
          * unregister listener
          */
         off(path: string, modifiersString: string, eventName?: string, origCB?: () => void): any
+
         /**
          * Removes all event handlers and their native subscriptions
          */
         cleanup(): Promise<any>
+
         /**
          * connect to firebase backend
          */
         goOnline(): void
+
         /**
          * disconnect to firebase backend
          */
         goOffline(): void
+
         [key: string]: any;
       }
 
       interface RnReference extends Reference {
         keepSynced(bool: boolean): any
+
         filter(name: string, value: any, key?: string): any;
+
         [key: string]: any;
       }
 
@@ -315,77 +370,120 @@ declare module "react-native-firebase" {
 
       interface Query {
         endAt(value: number | string | boolean | null, key?: string): database.Query;
+
         equalTo(value: number | string | boolean | null, key?: string): database.Query;
+
         isEqual(other: database.Query | null): boolean;
+
         limitToFirst(limit: number): database.Query;
+
         limitToLast(limit: number): database.Query;
+
         off(eventType?: QueryEventType,
-          callback?: QuerySuccessCallback,
-          context?: Object): void;
+            callback?: QuerySuccessCallback,
+            context?: Object): void;
+
         on(eventType: QueryEventType,
-          callback: QuerySuccessCallback,
-          cancelCallbackOrContext?: QueryErrorCallback,
-          context?: Object): (a: database.DataSnapshot | null, b?: string) => QuerySuccessCallback;
+           callback: QuerySuccessCallback,
+           cancelCallbackOrContext?: QueryErrorCallback,
+           context?: Object): (a: database.DataSnapshot | null, b?: string) => QuerySuccessCallback;
+
         once(eventType: QueryEventType,
-          successCallback?: QuerySuccessCallback,
-          failureCallbackOrContext?: QueryErrorCallback,
-          context?: Object): Promise<DataSnapshot>;
+             successCallback?: QuerySuccessCallback,
+             failureCallbackOrContext?: QueryErrorCallback,
+             context?: Object): Promise<DataSnapshot>;
+
         orderByChild(path: string): database.Query;
+
         orderByKey(): database.Query;
+
         orderByPriority(): database.Query;
+
         orderByValue(): database.Query;
+
         ref: database.Reference;
+
         startAt(value: number | string | boolean | null, key?: string): database.Query;
+
         toJSON(): Object;
+
         toString(): string;
       }
 
       interface DataSnapshot {
         child(path: string): database.DataSnapshot;
+
         exists(): boolean;
+
         exportVal(): any;
+
         forEach(action: (a: database.DataSnapshot) => boolean): boolean;
+
         getPriority(): string | number | null;
+
         hasChild(path: string): boolean;
+
         hasChildren(): boolean;
+
         key: string | null;
+
         numChildren(): number;
+
         ref: database.Reference;
+
         toJSON(): Object | null;
+
         val(): any;
       }
 
-      interface ThenableReference<T> extends Promise<T> {}
-      interface ThenableReference<T> extends Reference {}
+      interface ThenableReference<T> extends Promise<T> {
+      }
+
+      interface ThenableReference<T> extends Reference {
+      }
 
       interface Reference extends database.Query {
         child(path: string): database.Reference;
+
         key: string | null;
+
         onDisconnect(): any;
+
         parent: database.Reference | null;
+
         push(value?: any, onComplete?: (a: RnError | null) => any): ThenableReference<any>
+
         remove(onComplete?: (a: RnError | null) => any): Promise<any>;
+
         root: database.Reference;
+
         set(value: any, onComplete?: (a: RnError | null) => any): Promise<any>;
+
         setPriority(priority: string | number | null,
                     onComplete: (a: RnError | null) => any): Promise<any>;
+
         setWithPriority(newVal: any, newPriority: string | number | null,
                         onComplete?: (a: RnError | null) => any): Promise<any>;
+
         transaction(transactionUpdate: (a: any) => any,
                     onComplete?: (a: RnError | null, b: boolean,
                                   c: database.DataSnapshot | null) => any,
                     applyLocally?: boolean): Promise<any>;
+
         update(values: Object, onComplete?: (a: RnError | null) => any): Promise<any>;
       }
     }
+
     /**
      * firebase Analytics
      */
     interface Analytics {
       /**Log a custom event with optional params. */
       logEvent(event: string, params?: Object): void
+
       /** Sets whether analytics collection is enabled for this app on this device. */
       setAnalyticsCollectionEnabled(enabled: boolean): void
+
       /**
        * Sets the current screen name, which specifies the current visual context in your app.
        * Whilst screenClassOverride is optional,
@@ -393,16 +491,19 @@ declare module "react-native-firebase" {
        * for example on Android it will always show as 'MainActivity' if not specified.
        */
       setCurrentScreen(screenName: string | null, screenClassOverride?: string): void
+
       /**
        * Sets the minimum engagement time required before starting a session.
        * The default value is 10000 (10 seconds)
        */
       setMinimumSessionDuration(miliseconds: number): void
+
       /**
        * Sets the duration of inactivity that terminates the current session.
        * The default value is 1800000 (30 minutes).
        */
       setSessionTimeoutDuration(miliseconds: number): void
+
       /**
        * Gives a user a uniqiue identificaition.
        * @example
@@ -411,10 +512,12 @@ declare module "react-native-firebase" {
        * firebase.analytics().setUserId(id);
        */
       setUserId(id: string | null): void
+
       /**
        * Sets a key/value pair of data on the current user.
        */
       setUserProperty(name: string, value: string | null): void;
+
       [key: string]: any;
     }
 
@@ -452,43 +555,52 @@ declare module "react-native-firebase" {
        *  - The user's unique ID.
        */
       uid: string
+
       /**
        * Delete the current user.
        */
       delete(): Promise<void>
+
       /**
        * Returns the users authentication token.
        */
       getToken(): Promise<string>
+
       /**
        * Reauthenticate the current user with credentials:
        */
       reauthenticate(credential: Credential): Promise<void>
+
       /**
        * Link the user with a 3rd party credential provider.
        */
       linkWithCredential(credential: Credential): Promise<User>
+
       /**
        * Refreshes the current user.
        */
       reload(): Promise<void>
+
       /**
        * Sends a verification email to a user.
        * This will Promise reject is the user is anonymous.
        */
       sendEmailVerification(): Promise<void>
+
       /**
        * Updates the user's email address.
        * See Firebase docs for more information on security & email validation.
        * This will Promise reject is the user is anonymous.
        */
       updateEmail(email: string): Promise<void>
+
       /**
        * Important: this is a security sensitive operation that requires the user to have recently signed in.
        * If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.
        * This will Promise reject is the user is anonymous.
        */
       updatePassword(password: string): Promise<void>
+
       /**
        * Updates a user's profile data.
        * Profile data should be an object of fields to update:
@@ -524,6 +636,7 @@ declare module "react-native-firebase" {
          * Returns the currently signed-in user (or null). See the User class documentation for further usage.
          */
         currentUser: User | null
+
         /**
          * Listen for changes in the users auth state (logging in and out).
          * This method returns a unsubscribe function to stop listening to events.
@@ -531,26 +644,31 @@ declare module "react-native-firebase" {
          */
         onAuthStateChanged(nextOrObserver: Object, error?: (a: RnError) => any,
                            completed?: () => any): () => any;
+
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
          * The method accepts two parameters, an email and a password.
          */
         createUserWithEmailAndPassword(email: string, password: string): Promise<User>
+
         /**
          * To sign a user in with their email and password, use the signInWithEmailAndPassword() function.
          * It accepts two parameters, the user's email and password:
          */
         signInWithEmailAndPassword(email: string, password: string): Promise<User>
+
         /**
          * Sign an anonymous user.
          * If the user has already signed in, that user will be returned
          */
         signInAnonymously(): Promise<User>
+
         /**
          * Sign in the user with a 3rd party credential provider.
          * credential requires the following properties:
          */
         signInWithCredential(credential: Credential): Promise<User>
+
         /**
          * Sign a user in with a self-signed JWT token.
          * To sign a user using a self-signed custom token,
@@ -558,6 +676,7 @@ declare module "react-native-firebase" {
          * It accepts one parameter, the custom token:
          */
         signInWithCustomToken(token: string): Promise<User>
+
         /**
          * Sends a password reset email to the given email address.
          * Unlike the web SDK,
@@ -579,11 +698,13 @@ declare module "react-native-firebase" {
          * Checks a verification code sent to the user by email or other out-of-band mechanism.
          */
         checkActionCode(code: string): Promise<ActionCodeInfo>
+
         /**
          * Completes the password reset process,
          * given a confirmation code and new password.
          */
         signOut(): Promise<void>
+
         [key: string]: any;
       }
     }
@@ -595,30 +716,36 @@ declare module "react-native-firebase" {
          * Subscribes the device to a topic.
          */
         subscribeToTopic(topic: string): void
+
         /**
          * Unsubscribes the device from a topic.
          */
         unsubscribeFromTopic(topic: string): void
+
         /**
          * When the application has been opened from a notification
          * getInitialNotification is called and the notification payload is returned.
          * Use onMessage for notifications when the app is running.
          */
         getInitialNotification(): Promise<any>
+
         /**
          * Returns the devices FCM token.
          * This token can be used in the Firebase console to send messages to directly.
          */
         getToken(forceRefresh?: Boolean): Promise<string>
+
         /**
          * Reset Instance ID and revokes all tokens.
          */
         deleteInstanceId(): Promise<any>
+
         /**
          * On the event a devices FCM token is refreshed by Google,
          *  the new token is returned in a callback listener.
          */
         onTokenRefresh(listener: (token: string) => any): () => any
+
         /**
          * On a new message,
          * the payload object is passed to the listener callback.
@@ -626,14 +753,17 @@ declare module "react-native-firebase" {
          * Use getInitialNotification for notifications which cause the app to open.
          */
         onMessage(listener: (message: any) => any): () => any
+
         /**
          * Create a local notification from the device itself.
          */
         createLocalNotification(notification: any): any
+
         /**
          * Schedule a local notification to be shown on the device.
          */
         scheduleLocalNotification(notification: any): any
+
         /**
          * Returns an array of all currently scheduled notifications.
          * ```
@@ -644,35 +774,42 @@ declare module "react-native-firebase" {
          * ```
          */
         getScheduledLocalNotifications(): Promise<any[]>
+
         /**
          * Cancels a location notification by ID,
          * or all notifications by *.
          */
         cancelLocalNotification(id: string): void
+
         /**
          * Removes all delivered notifications from device by ID,
          * or all notifications by *.
          */
         removeDeliveredNotification(id: string): void
+
         /**
          * IOS
          * Requests app notification permissions in an Alert dialog.
          */
         requestPermissions(): void
+
         /**
          * Sets the badge number on the iOS app icon.
          */
         setBadgeNumber(value: number): void
+
         /**
          * Returns the current badge number on the app icon.
          */
         getBadgeNumber(): Promise<number>
+
         /**
          * Send an upstream message
          * @param senderId
          * @param payload
          */
         send(senderId: string, payload: RemoteMessage): any
+
         NOTIFICATION_TYPE: Object
         REMOTE_NOTIFICATION_RESULT: Object
         WILL_PRESENT_RESULT: Object
@@ -693,16 +830,19 @@ declare module "react-native-firebase" {
       interface Crash {
         /** Logs a message that will appear in a subsequent crash report. */
         log(message: string): void
+
         /**
          * Android: Logs a message that will appear in a subsequent crash report as well as in logcat.
          * iOS: Logs the message in the subsequest crash report only (same as log).
          */
         logcat(level: number, tag: string, message: string): void
+
         /**
          * Files a crash report, along with any previous logs to Firebase.
          * An Error object must be passed into the report method.
          */
         report(error: RnError, maxStackSize: Number): void
+
         [key: string]: any;
       }
     }
