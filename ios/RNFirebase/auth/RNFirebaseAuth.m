@@ -335,7 +335,7 @@ RCT_EXPORT_METHOD(updatePassword:
             (RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [FIRApp appNamed:appName];
 
-    FIRUser *user = [FIRAuth auth].currentUser;
+    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
 
     if (user) {
         [user updatePassword:password completion:^(NSError *_Nullable error) {
