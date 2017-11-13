@@ -8,6 +8,8 @@
 
 + (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(NSDictionary *)body;
 + (void)sendJSEventWithAppName:(RCTEventEmitter *)emitter appName:(NSString *)appName name:(NSString *)name body:(NSDictionary *)body;
++ (UIViewController*)topViewController;
++ (UIViewController*)topViewControllerWithRootViewController:(UIViewController*)viewController;
 
 @end
 

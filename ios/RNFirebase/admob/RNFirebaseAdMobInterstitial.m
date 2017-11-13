@@ -27,7 +27,7 @@
 
 - (void)show {
     if (_interstitial.isReady) {
-        [_interstitial presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];
+        [_interstitial presentFromRootViewController:[RNFirebaseUtil topViewController]];
     }
 }
 
