@@ -45,8 +45,10 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
     content.userInfo = details;
     content.badge = [RCTConvert NSNumber:details[@"badge"]];
 
-    if(details[@"show_in_foreground"]) {
-        [content setValue:@YES forKeyPath:@"shouldAlwaysAlertWhileAppIsForeground"];
+    if([details objectForKey:@"show_in_foreground"] != nil) {
+        if([(NSNumber *)details[@"show_in_foreground"] boolValue] == YES) {
+            [content setValue:@YES forKeyPath:@"shouldAlwaysAlertWhileAppIsForeground"];
+        }
     }
     
     NSDate *fireDate = [RCTConvert NSDate:details[@"fire_date"]];
