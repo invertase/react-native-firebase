@@ -1,24 +1,28 @@
 {
   "name": "react-native-firebase",
-  "version": "3.1.0",
+  "version": "3.1.1-alpha.4",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Messaging (FCM), Remote Config, Storage and Performance.",
-  "main": "index",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "npm run build-lib && npm run build-flow",
+    "build-flow": "flow-copy-source -i */__tests__* lib dist",
+    "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__",
+    "clean": "rimraf dist/",
     "flow": "flow",
     "lint": "eslint ./src",
-    "dev": "npm run compile -- --watch",
-    "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
-    "publish_pages": "gh-pages -d public/",
-    "docs-serve-local": "docsify serve docs",
+    "prepublish": "npm run clean && npm run build",
+    "postinstall": "opencollective postinstall",
     "test-cli": "node ./bin/test.js",
     "tests-packager": "cd tests && npm run start",
     "tests-npm-install": "cd tests && npm install",
     "tests-pod-install": "cd tests && npm run ios:pod:install",
     "tests-watch-start": "npm run test-cli watch init start",
-    "tests-watch-stop": "npm run test-cli watch stop",
-    "postinstall": "opencollective postinstall"
+    "tests-watch-stop": "npm run test-cli watch stop"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase.git"
@@ -70,9 +74,11 @@
     "fbjs": "*"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^7.0.0",
     "babel-jest": "^14.1.0",
     "babel-preset-react-native": "^1.9.0",
+    "babel-preset-react-native-syntax": "^1.0.0",
     "debug": "^2.2.0",
     "enzyme": "^2.4.1",
     "eslint": "^4.11.0",
@@ -82,9 +88,11 @@
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.4.0",
     "flow-bin": "^0.56.0",
+    "flow-copy-source": "^1.2.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-native": "^0.48.0",
+    "react-native": "^0.50.3",
+    "rimraf": "^2.6.2",
     "shelljs": "^0.7.8",
     "wml": "0.0.82"
   },
