@@ -208,7 +208,7 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
   React: cf892fb84b7d06bf5fea7f328e554c6dcabe85ee
-  RNFirebase: a76befd482c5e84df7f69893358abda498ee9f76
+  RNFirebase: 1b8adf4dfe740fbc4a69a147715c2edfd041eb92
   yoga: 3abf02d6d9aeeb139b4c930eb1367feae690a35a
 
 PODFILE CHECKSUM: b5674be55653f5dda937c8b794d0479900643d45
