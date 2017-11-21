@@ -13,11 +13,12 @@
 @property RCTEventEmitter *emitter;
 @property FIRDatabaseQuery *query;
 @property NSString *appDisplayName;
+@property NSString *dbURL;
 @property NSString *key;
 @property NSString *path;
 @property NSMutableDictionary *listeners;
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName dbURL:(NSString *)dbURL key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
 - (void)on:(NSString *) eventName registration:(NSDictionary *) registration;
 - (void)once:(NSString *) eventType resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)removeEventListener:(NSString *)eventRegistrationKey;
