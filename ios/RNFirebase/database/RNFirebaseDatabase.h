@@ -18,6 +18,8 @@
 
 + (FIRDatabase *)getDatabaseForApp:(NSString *)appName;
 
++ (FIRDatabase *)getDatabaseForApp:(NSString *)appName URL:(NSString *) url;
+
 + (NSDictionary *)getJSError:(NSError *)nativeError;
 
 + (NSString *)getMessageWithService:(NSString *)message service:(NSString *)service fullCode:(NSString *)fullCode;

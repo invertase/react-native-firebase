@@ -6,6 +6,7 @@
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
                            app:(NSString *) app
+                         dbURL:(NSString *) dbURL
                            key:(NSString *) key
                        refPath:(NSString *) refPath
                      modifiers:(NSArray *) modifiers {
@@ -13,6 +14,7 @@
     if (self) {
         _emitter = emitter;
         _app = app;
+        _dbURL = dbURL;
         _key = key;
         _path = refPath;
         _listeners = [[NSMutableDictionary alloc] init];
@@ -65,12 +67,12 @@
           previousChildName:(NSString *) previousChildName {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:dataSnapshot previousChildName:previousChildName];
-    
+
     [event setValue:data forKey:@"data"];
     [event setValue:_key forKey:@"key"];
     [event setValue:eventType forKey:@"eventType"];
     [event setValue:registration forKey:@"registration"];
-    
+
     [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
@@ -80,7 +82,7 @@
     [event setValue:_key forKey:@"key"];
     [event setValue:[RNFirebaseDatabase getJSError:error] forKey:@"error"];
     [event setValue:registration forKey:@"registration"];
-    
+
     [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
@@ -97,7 +99,7 @@
 
 + (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)dataSnapshot {
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
-    
+
     [snapshot setValue:dataSnapshot.key forKey:@"key"];
     [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
     [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
@@ -105,7 +107,7 @@
     [snapshot setValue:[RNFirebaseDatabaseReference getChildKeys:dataSnapshot] forKey:@"childKeys"];
     [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
     [snapshot setValue:dataSnapshot.value forKey:@"value"];
-    
+
     return snapshot;
 }
 
@@ -123,7 +125,7 @@
 
 - (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *) path
                                           modifiers:(NSArray *)modifiers {
-    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_app];
+    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_app URL:_dbURL];
     FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
 
     for (NSDictionary *modifier in modifiers) {
