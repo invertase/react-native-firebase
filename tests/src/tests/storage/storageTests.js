@@ -1,4 +1,4 @@
-import RNfirebase from './../../../firebase/firebase';
+import RNfirebase from './../../../firebase';
 
 function storageTests({ describe, it, firebase, tryCatch }) {
   describe('ref(:path)', () => {
