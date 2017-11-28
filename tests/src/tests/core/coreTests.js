@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import should from 'should';
 
-import RNFirebase from './../../../firebase/firebase';
+import RNFirebase from './../../../firebase';
 
 const androidTestConfig = {
   // firebase android sdk completely ignores client id
