@@ -18,6 +18,10 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
+RCT_EXPORT_METHOD(enableLogging:(BOOL) enabled) {
+    [FIRFirestore enableLogging:enabled];
+}
+
 RCT_EXPORT_METHOD(collectionGet:(NSString *) appName
                            path:(NSString *) path
                         filters:(NSArray *) filters
