@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.Logger;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
@@ -35,6 +36,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private boolean enableLogging = false;
   private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -89,6 +91,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     enableLogging = enabled;
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     for (FirebaseApp app : firebaseAppList) {
+      loggingLevelSet.put(app.getName(), enabled);
+
       if (enableLogging) {
         FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.DEBUG);
       } else {
@@ -488,12 +492,21 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
 
-// todo errors  'calls must be made before any other usage of database instance
-//    if (enableLogging) {
-//      firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
-//    } else {
-//      firebaseDatabase.setLogLevel(Logger.Level.WARN);
-//    }
+    if (enableLogging && !loggingLevelSet.get(firebaseDatabase.getApp().getName())) {
+      try {
+        loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
+        firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
+      } catch (DatabaseException dex) {
+        // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
+      }
+    } else if (!enableLogging && loggingLevelSet.get(firebaseDatabase.getApp().getName())) {
+      try {
+        loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
+        firebaseDatabase.setLogLevel(Logger.Level.WARN);
+      } catch (DatabaseException dex) {
+        // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
+      }
+    }
 
     return firebaseDatabase;
   }
