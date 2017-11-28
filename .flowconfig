@@ -76,6 +76,9 @@
 # Ignore dist folder
 .*/dist/.*
 
+# Ignore tests project
+.*/tests/.*
+
 [include]
 node_modules/fbjs/lib
 
