@@ -491,15 +491,16 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private FirebaseDatabase getDatabaseForApp(String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
+    Boolean logLevel = loggingLevelSet.get(firebaseDatabase.getApp().getName());
 
-    if (enableLogging && !loggingLevelSet.get(firebaseDatabase.getApp().getName())) {
+    if (enableLogging && (logLevel == null || !logLevel)) {
       try {
         loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
         firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
       } catch (DatabaseException dex) {
         // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
       }
-    } else if (!enableLogging && loggingLevelSet.get(firebaseDatabase.getApp().getName())) {
+    } else if (!enableLogging && (logLevel != null && logLevel)) {
       try {
         loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
         firebaseDatabase.setLogLevel(Logger.Level.WARN);
