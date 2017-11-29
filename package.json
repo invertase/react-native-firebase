@@ -12,7 +12,7 @@
     "flow": "flow",
     "lint": "eslint ./src",
     "prepublish": "npm run clean && npm run build",
-    "postinstall": "opencollective postinstall",
+    "postinstall": "npm run clean && npm run build && opencollective postinstall",
     "test-cli": "node ./bin/test.js",
     "tests-packager": "cd tests && npm run start",
     "tests-npm-install": "cd tests && npm install",
