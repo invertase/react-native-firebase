@@ -1167,6 +1167,25 @@ RCT_EXPORT_METHOD(useDeviceLanguage:
 }
 
 /**
+ * React native constant exports - exports native firebase apps mainly
+ * @return NSDictionary
+ */
+- (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    NSDictionary *firApps = [FIRApp allApps];
+    NSMutableDictionary *appLanguage = [NSMutableDictionary new];
+
+    for (id key in firApps) {
+        FIRApp *firApp = firApps[key];
+
+        appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
+    }
+
+    constants[@"APP_LANGUAGE"] = appLanguage;
+    return constants;
+}
+
+/**
  Converts a FIRUser instance into a dictionary to send via RNBridge
 
  @param user FIRUser
