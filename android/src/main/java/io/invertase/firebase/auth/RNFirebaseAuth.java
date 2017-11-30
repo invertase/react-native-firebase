@@ -1129,6 +1129,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * fetchProvidersForEmail
    *
+   * @param appName
    * @param promise
    */
   @ReactMethod
@@ -1161,6 +1162,31 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         }
       });
+  }
+
+  /**
+   * Set the language code for the auth module
+   * @param appName
+   * @param code
+   */
+  @ReactMethod
+  public void setLanguageCode(String appName, String code) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.setLanguageCode(code);
+  }
+
+  /**
+   * Use the device language
+   * @param appName
+   */
+  @ReactMethod
+  public void useDeviceLanguage(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.useAppLanguage();
   }
 
   /* ------------------
