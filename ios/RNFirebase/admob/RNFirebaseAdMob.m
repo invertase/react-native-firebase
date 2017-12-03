@@ -210,6 +210,8 @@ RCT_EXPORT_METHOD(clearInterstitial:
         return kGADAdSizeLeaderboard;
     } else if ([value isEqualToString:@"SMART_BANNER"]) {
         return kGADAdSizeSmartBannerPortrait;
+    } else if ([value isEqualToString:@"SMART_BANNER_LANDSCAPE"]) {
+        return kGADAdSizeSmartBannerLandscape;
     } else {
         return kGADAdSizeBanner;
     }
