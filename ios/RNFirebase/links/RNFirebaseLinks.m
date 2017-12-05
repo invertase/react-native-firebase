@@ -16,7 +16,7 @@ static void sendDynamicLink(NSURL *url, id sender) {
 
 RCT_EXPORT_MODULE();
 
-static NSURL *installLink;
+static NSURL *initialLink;
 
 - (id)init {
     self = [super init];
@@ -53,8 +53,8 @@ static NSURL *installLink;
 }
 
 + (BOOL)handleLinkFromCustomSchemeURL:(NSURL *)url {
-    if(!installLink) {
-        installLink = url;
+    if(!initialLink) {
+        initialLink = url;
     }
     FIRDynamicLink *dynamicLink =
     [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
@@ -129,8 +129,8 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
     if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
         NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
         [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];
-    } else if(installLink) {
-        [self handleInitialLinkFromCustomSchemeURL:installLink resolver:resolve rejecter:reject];
+    } else if(initialLink) {
+        [self handleInitialLinkFromCustomSchemeURL:initialLink resolver:resolve rejecter:reject];
     } else {
         NSDictionary *userActivityDictionary =
         self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
