@@ -13,6 +13,7 @@
 		8323CF071F6FBD870071420B /* NativeExpressComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8323CF011F6FBD870071420B /* NativeExpressComponent.m */; };
 		8323CF081F6FBD870071420B /* RNFirebaseAdMobBannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8323CF031F6FBD870071420B /* RNFirebaseAdMobBannerManager.m */; };
 		8323CF091F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8323CF051F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.m */; };
+		833693131FD824EF00AA806B /* RNFirebaseCrashlytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 833693121FD824EF00AA806B /* RNFirebaseCrashlytics.m */; };
 		8376F7141F7C149100D45A85 /* RNFirebaseFirestoreDocumentReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F70E1F7C149000D45A85 /* RNFirebaseFirestoreDocumentReference.m */; };
 		8376F7151F7C149100D45A85 /* RNFirebaseFirestore.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F7101F7C149000D45A85 /* RNFirebaseFirestore.m */; };
 		8376F7161F7C149100D45A85 /* RNFirebaseFirestoreCollectionReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F7111F7C149000D45A85 /* RNFirebaseFirestoreCollectionReference.m */; };
@@ -57,6 +58,8 @@
 		8323CF031F6FBD870071420B /* RNFirebaseAdMobBannerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseAdMobBannerManager.m; sourceTree = "<group>"; };
 		8323CF041F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseAdMobNativeExpressManager.h; sourceTree = "<group>"; };
 		8323CF051F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseAdMobNativeExpressManager.m; sourceTree = "<group>"; };
+		833693111FD824EF00AA806B /* RNFirebaseCrashlytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFirebaseCrashlytics.h; path = RNFirebase/fabric/crashlytics/RNFirebaseCrashlytics.h; sourceTree = SOURCE_ROOT; };
+		833693121FD824EF00AA806B /* RNFirebaseCrashlytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFirebaseCrashlytics.m; path = RNFirebase/fabric/crashlytics/RNFirebaseCrashlytics.m; sourceTree = SOURCE_ROOT; };
 		8376F70E1F7C149000D45A85 /* RNFirebaseFirestoreDocumentReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseFirestoreDocumentReference.m; sourceTree = "<group>"; };
 		8376F70F1F7C149000D45A85 /* RNFirebaseFirestore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseFirestore.h; sourceTree = "<group>"; };
 		8376F7101F7C149000D45A85 /* RNFirebaseFirestore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseFirestore.m; sourceTree = "<group>"; };
@@ -124,6 +127,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				8336930F1FD80DE800AA806B /* fabric */,
 				BA84AE541FA9E59800E79390 /* storage */,
 				17AF4F681F59CDBF00C02336 /* links */,
 				839D914D1EF3E20A0077C7C8 /* admob */,
@@ -142,6 +146,23 @@
 				83C3EEEC1FA1EACC00B64D3C /* RNFirebaseUtil.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		8336930F1FD80DE800AA806B /* fabric */ = {
+			isa = PBXGroup;
+			children = (
+				833693101FD80DF500AA806B /* crashlytics */,
+			);
+			path = fabric;
+			sourceTree = "<group>";
+		};
+		833693101FD80DF500AA806B /* crashlytics */ = {
+			isa = PBXGroup;
+			children = (
+				833693111FD824EF00AA806B /* RNFirebaseCrashlytics.h */,
+				833693121FD824EF00AA806B /* RNFirebaseCrashlytics.m */,
+			);
+			path = crashlytics;
 			sourceTree = "<group>";
 		};
 		8376F70D1F7C141500D45A85 /* firestore */ = {
@@ -328,6 +349,7 @@
 				8376F7141F7C149100D45A85 /* RNFirebaseFirestoreDocumentReference.m in Sources */,
 				839D916F1EF3E20B0077C7C8 /* RNFirebaseAnalytics.m in Sources */,
 				839D91711EF3E20B0077C7C8 /* RNFirebaseRemoteConfig.m in Sources */,
+				833693131FD824EF00AA806B /* RNFirebaseCrashlytics.m in Sources */,
 				D950369E1D19C77400F7094D /* RNFirebase.m in Sources */,
 				839D91731EF3E20B0077C7C8 /* RNFirebaseDatabase.m in Sources */,
 				BA84AE571FA9E59800E79390 /* RNFirebaseStorage.m in Sources */,
