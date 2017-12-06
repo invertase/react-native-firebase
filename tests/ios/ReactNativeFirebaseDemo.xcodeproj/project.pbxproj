@@ -636,6 +636,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				C015646CE8F8CB4B578CE178 /* [CP] Embed Pods Frameworks */,
 				6AE1012F46FF8A4D1D818A12 /* [CP] Copy Pods Resources */,
+				8336933B1FD8559A00AA806B /* Fabric */,
 			);
 			buildRules = (
 			);
@@ -1043,7 +1044,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ReactNativeFirebaseDemo/Pods-ReactNativeFirebaseDemo-resources.sh",
-				"$PODS_CONFIGURATION_BUILD_DIR/gRPC/gRPCCertificates.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/gRPC/gRPCCertificates.bundle,
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -1053,6 +1054,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ReactNativeFirebaseDemo/Pods-ReactNativeFirebaseDemo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8336933B1FD8559A00AA806B /* Fabric */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = Fabric;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\"";
 		};
 		C015646CE8F8CB4B578CE178 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

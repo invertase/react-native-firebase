@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
@@ -93,6 +94,9 @@ dependencies {
     compile "com.google.firebase:firebase-storage:$firebaseVersion"
     compile "com.google.firebase:firebase-firestore:$firebaseVersion"
     compile "com.google.firebase:firebase-invites:$firebaseVersion"
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
     compile "com.android.support:appcompat-v7:26.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
