@@ -262,24 +262,28 @@ RCT_EXPORT_METHOD(reload:
  @param RCTPromiseRejectBlock reject
  @return return
  */
-RCT_EXPORT_METHOD(sendEmailVerification:
-    (NSString *) appName
-            resolver:
-            (RCTPromiseResolveBlock) resolve
-            rejecter:
-            (RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(sendEmailVerification:(NSString *) appName
+                     actionCodeSettings:(NSDictionary *) actionCodeSettings
+                               resolver:(RCTPromiseResolveBlock) resolve
+                               rejecter:(RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [FIRApp appNamed:appName];
 
     FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
     if (user) {
-        [user sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
+        id handler = ^(NSError *_Nullable error) {
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
                 FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
                 [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
             }
-        }];
+        };
+        if (actionCodeSettings) {
+            FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+            [user sendEmailVerificationWithActionCodeSettings:settings completion:handler];
+        } else {
+            [user sendEmailVerificationWithCompletion:handler];
+        }
     } else {
         [self promiseNoUser:resolve rejecter:reject isError:YES];
     }
@@ -582,23 +586,27 @@ RCT_EXPORT_METHOD(checkActionCode:
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(sendPasswordResetEmail:
-    (NSString *) appName
-            email:
-            (NSString *) email
-            resolver:
-            (RCTPromiseResolveBlock) resolve
-            rejecter:
-            (RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *) appName
+                                   email:(NSString *) email
+                      actionCodeSettings:(NSDictionary *) actionCodeSettings
+                                resolver:(RCTPromiseResolveBlock) resolve
+                                rejecter:(RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [FIRApp appNamed:appName];
 
-    [[FIRAuth authWithApp:firApp] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
+    id handler = ^(NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else {
             [self promiseNoUser:resolve rejecter:reject isError:NO];
         }
-    }];
+    };
+    
+    if (actionCodeSettings) {
+        FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+        [[FIRAuth authWithApp:firApp] sendPasswordResetWithEmail:email actionCodeSettings:settings completion:handler];
+    } else {
+        [[FIRAuth authWithApp:firApp] sendPasswordResetWithEmail:email completion:handler];
+    }
 }
 
 /**
@@ -1152,6 +1160,30 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     }
 
     return userDict;
+}
+
+- (FIRActionCodeSettings *)buildActionCodeSettings:(NSDictionary *)actionCodeSettings {
+    FIRActionCodeSettings *settings = [[FIRActionCodeSettings alloc] init];
+    NSDictionary *android = actionCodeSettings[@"android"];
+    BOOL handleCodeInApp = actionCodeSettings[@"handleCodeInApp"];
+    NSDictionary *ios = actionCodeSettings[@"iOS"];
+    NSString *url = actionCodeSettings[@"url"];
+    if (android) {
+        BOOL installApp = android[@"installApp"];
+        NSString *minimumVersion = android[@"minimumVersion"];
+        NSString *packageName = android[@"packageName"];
+        [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
+    }
+    if (handleCodeInApp) {
+        [settings setHandleCodeInApp:handleCodeInApp];
+    }
+    if (ios && ios[@"bundleId"]) {
+        [settings setIOSBundleID:ios[@"bundleId"]];
+    }
+    if (url) {
+        [settings setURL:[NSURL URLWithString:url]];
+    }
+    return settings;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
