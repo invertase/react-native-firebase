@@ -265,13 +265,6 @@
 			remoteGlobalIDString = 3D383D621EBD27B9005632C8;
 			remoteInfo = "double-conversion-tvOS";
 		};
-		997890041E69DE2900F6820C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C7C48FEEC8E34DE4BB5DE211 /* RNFirebase.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E26E29F41BBE54B800BF9CD9;
-			remoteInfo = RNFirebase;
-		};
 		997890071E69DE2900F6820C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8BE028F5B04B4DC3BEF0305F /* RNVectorIcons.xcodeproj */;
@@ -320,7 +313,6 @@
 		8EE7622B1E718A8600B1E0F6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		93FF19757985B70080544398 /* Pods-ReactNativeFirebaseDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeFirebaseDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-ReactNativeFirebaseDemo/Pods-ReactNativeFirebaseDemo.release.xcconfig"; sourceTree = "<group>"; };
 		BBEE706291534F5F948A3805 /* libLRDRCTSimpleToast.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libLRDRCTSimpleToast.a; sourceTree = "<group>"; };
-		C7C48FEEC8E34DE4BB5DE211 /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 		CC24EB30F0484352BD65FFC1 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		DB5BB32AF70B41678974C6B4 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		FD3DFC8253C74B6298AFD3B7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
@@ -521,7 +513,6 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
-				C7C48FEEC8E34DE4BB5DE211 /* RNFirebase.xcodeproj */,
 				8BE028F5B04B4DC3BEF0305F /* RNVectorIcons.xcodeproj */,
 			);
 			name = Libraries;
@@ -566,14 +557,6 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* ReactNativeFirebaseDemo.app */,
 				00E356EE1AD99517003FC87E /* ReactNativeFirebaseDemoTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		99788FE61E69DE2900F6820C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				997890051E69DE2900F6820C /* RNFirebase.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -721,10 +704,6 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-				},
-				{
-					ProductGroup = 99788FE61E69DE2900F6820C /* Products */;
-					ProjectRef = C7C48FEEC8E34DE4BB5DE211 /* RNFirebase.xcodeproj */;
 				},
 				{
 					ProductGroup = 99788FE81E69DE2900F6820C /* Products */;
@@ -955,13 +934,6 @@
 			fileType = archive.ar;
 			path = "libdouble-conversion.a";
 			remoteRef = 8EC7AC3A1F8397E50041B0FE /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		997890051E69DE2900F6820C /* RNFirebase.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RNFirebase.framework;
-			remoteRef = 997890041E69DE2900F6820C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		997890081E69DE2900F6820C /* libRNVectorIcons.a */ = {
