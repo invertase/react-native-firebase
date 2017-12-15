@@ -454,7 +454,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${SRCROOT}/../../../ios/Pods/Crashlytics/Frameworks/iOS",
+					"${SRCROOT}/../../../ios/Pods/Crashlytics/iOS",
 					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
@@ -499,7 +499,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
-					"${SRCROOT}/../../../ios/Pods/Crashlytics/Frameworks/iOS",
+					"${SRCROOT}/../../../ios/Pods/Crashlytics/iOS",
 					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
