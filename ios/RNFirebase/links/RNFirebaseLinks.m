@@ -268,6 +268,11 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
 
 #else
