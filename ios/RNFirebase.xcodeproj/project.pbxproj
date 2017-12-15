@@ -454,6 +454,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
+					"${SRCROOT}/../../../ios/Pods/Crashlytics/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
@@ -472,8 +474,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../react-native/React/**",
-					"${SRCROOT}/../../../ios/Pods/Firebase/**",
+					"${SRCROOT}/../../../ios/Crashlytics/**",
+					"${SRCROOT}/../../../ios/Fabric/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
+					"${SRCROOT}/../../../ios/Pods/Firebase/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -495,6 +499,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}",
+					"${SRCROOT}/../../../ios/Pods/Crashlytics/Frameworks",
+					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
 					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
@@ -513,8 +519,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../react-native/React/**",
-					"${SRCROOT}/../../../ios/Pods/Firebase/**",
+					"${SRCROOT}/../../../ios/Crashlytics/**",
+					"${SRCROOT}/../../../ios/Fabric/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
+					"${SRCROOT}/../../../ios/Pods/Firebase/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
