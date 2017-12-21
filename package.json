@@ -64,7 +64,8 @@
     "firestack",
     "performance",
     "firestore",
-    "dynamic-links"
+    "dynamic-links",
+    "crashlytics"
   ],
   "peerDependencies": {
     "react": "*",
