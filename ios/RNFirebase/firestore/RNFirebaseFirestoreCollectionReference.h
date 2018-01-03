@@ -13,14 +13,14 @@
 
 @interface RNFirebaseFirestoreCollectionReference : NSObject
 @property RCTEventEmitter *emitter;
-@property NSString *app;
+@property NSString *appDisplayName;
 @property NSString *path;
 @property NSArray *filters;
 @property NSArray *orders;
 @property NSDictionary *options;
 @property FIRQuery *query;
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter app:(NSString *)app path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options;
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options;
 - (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 + (void)offSnapshot:(NSString *)listenerId;
 - (void)onSnapshot:(NSString *)listenerId queryListenOptions:(NSDictionary *) queryListenOptions;
