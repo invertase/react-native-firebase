@@ -12,12 +12,12 @@
 @interface RNFirebaseDatabaseReference : NSObject
 @property RCTEventEmitter *emitter;
 @property FIRDatabaseQuery *query;
-@property NSString *app;
+@property NSString *appDisplayName;
 @property NSString *key;
 @property NSString *path;
 @property NSMutableDictionary *listeners;
 
-- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter app:(NSString *)app key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
+- (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName key:(NSString *)key refPath:(NSString *)refPath modifiers:(NSArray *)modifiers;
 - (void)on:(NSString *) eventName registration:(NSDictionary *) registration;
 - (void)once:(NSString *) eventType resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)removeEventListener:(NSString *)eventRegistrationKey;

@@ -53,7 +53,7 @@ function coreTests({ describe, it }) {
 
     it('it should provide an array of apps', () => {
       should.equal(!!RNFirebase.apps.length, true);
-      should.equal(RNFirebase.apps.includes(RNFirebase.app(RNFirebase.utils.DEFAULT_APP_NAME)), true);
+      should.equal(RNFirebase.apps.includes(RNFirebase.app('[DEFAULT]')), true);
       return Promise.resolve();
     });
 
