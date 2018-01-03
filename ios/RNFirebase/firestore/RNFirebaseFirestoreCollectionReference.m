@@ -7,7 +7,7 @@
 static NSMutableDictionary *_listeners;
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *) emitter
-                           app:(NSString *) app
+                appDisplayName:(NSString *) appDisplayName
                           path:(NSString *) path
                        filters:(NSArray *) filters
                         orders:(NSArray *) orders
@@ -15,7 +15,7 @@ static NSMutableDictionary *_listeners;
     self = [super init];
     if (self) {
         _emitter = emitter;
-        _app = app;
+        _appDisplayName = appDisplayName;
         _path = path;
         _filters = filters;
         _orders = orders;
@@ -64,7 +64,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
                 [self handleQuerySnapshotEvent:listenerId querySnapshot:snapshot];
             }
         };
-        
+
         FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
         if (queryListenOptions) {
             if (queryListenOptions[@"includeDocumentMetadataChanges"]) {
@@ -74,14 +74,14 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
                 [options includeQueryMetadataChanges:TRUE];
             }
         }
-        
+
         id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];
         _listeners[listenerId] = listener;
     }
 }
 
 - (FIRQuery *)buildQuery {
-    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:_app];
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:_appDisplayName];
     FIRQuery *query = (FIRQuery*)[firestore collectionWithPath:_path];
     query = [self applyFilters:firestore query:query];
     query = [self applyOrders:query];
@@ -152,7 +152,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
 - (void)handleQuerySnapshotError:(NSString *)listenerId
                            error:(NSError *)error {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-    [event setValue:_app forKey:@"appName"];
+    [event setValue:_appDisplayName forKey:@"appName"];
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
@@ -163,7 +163,7 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
 - (void)handleQuerySnapshotEvent:(NSString *)listenerId
                    querySnapshot:(FIRQuerySnapshot *)querySnapshot {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-    [event setValue:_app forKey:@"appName"];
+    [event setValue:_appDisplayName forKey:@"appName"];
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreCollectionReference snapshotToDictionary:querySnapshot] forKey:@"querySnapshot"];
