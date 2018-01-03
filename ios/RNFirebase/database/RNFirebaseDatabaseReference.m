@@ -5,14 +5,14 @@
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
-                           app:(NSString *) app
+                appDisplayName:(NSString *) appDisplayName
                            key:(NSString *) key
                        refPath:(NSString *) refPath
                      modifiers:(NSArray *) modifiers {
     self = [super init];
     if (self) {
         _emitter = emitter;
-        _app = app;
+        _appDisplayName = appDisplayName;
         _key = key;
         _path = refPath;
         _listeners = [[NSMutableDictionary alloc] init];
@@ -123,7 +123,7 @@
 
 - (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *) path
                                           modifiers:(NSArray *)modifiers {
-    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_app];
+    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_appDisplayName];
     FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
 
     for (NSDictionary *modifier in modifiers) {
