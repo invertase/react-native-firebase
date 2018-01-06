@@ -31,6 +31,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -322,25 +323,32 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void sendPasswordResetEmail(String appName, final String email, final Promise promise) {
+  public void sendPasswordResetEmail(String appName, final String email,
+                                     ReadableMap actionCodeSettings, final Promise promise) {
     Log.d(TAG, "sendPasswordResetEmail");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.sendPasswordResetEmail(email)
-      .addOnCompleteListener(new OnCompleteListener<Void>() {
-        @Override
-        public void onComplete(@NonNull Task<Void> task) {
-          if (task.isSuccessful()) {
-            Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
-            promiseNoUser(promise, false);
-          } else {
-            Exception exception = task.getException();
-            Log.e(TAG, "sendPasswordResetEmail:onComplete:failure", exception);
-            promiseRejectAuthException(promise, exception);
-          }
+    OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
+          promiseNoUser(promise, false);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "sendPasswordResetEmail:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
         }
-      });
+      }
+    };
+
+    if (actionCodeSettings == null) {
+      firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(listener);
+    } else {
+      ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+      firebaseAuth.sendPasswordResetEmail(email, settings).addOnCompleteListener(listener);
+    }
   }
 
   /**
@@ -440,7 +448,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void sendEmailVerification(String appName, final Promise promise) {
+  public void sendEmailVerification(String appName, ReadableMap actionCodeSettings, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -451,20 +459,26 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       promiseNoUser(promise, false);
       Log.e(TAG, "sendEmailVerification:failure:noCurrentUser");
     } else {
-      user.sendEmailVerification()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "sendEmailVerification:onComplete:success");
-              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "sendEmailVerification:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
+      OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "sendEmailVerification:onComplete:success");
+            promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "sendEmailVerification:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
           }
-        });
+        }
+      };
+
+      if (actionCodeSettings == null) {
+        user.sendEmailVerification().addOnCompleteListener(listener);
+      } else {
+        ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+        user.sendEmailVerification(settings).addOnCompleteListener(listener);
+      }
     }
   }
 
@@ -1424,6 +1438,30 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));
 
     return userMap;
+  }
+
+  private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
+    ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
+    ReadableMap android = actionCodeSettings.getMap("android");
+    ReadableMap ios = actionCodeSettings.getMap("iOS");
+    String url = actionCodeSettings.getString("url");
+    if (android != null) {
+      boolean installApp = android.hasKey("installApp") ? android.getBoolean("installApp") : false;
+      String minimumVersion = android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
+      String packageName = android.getString("packageName");
+      builder = builder.setAndroidPackageName(packageName, installApp, minimumVersion);
+    }
+    if (actionCodeSettings.hasKey("handleCodeInApp")) {
+      builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
+    }
+    if (ios != null && ios.hasKey("bundleId")) {
+      builder = builder.setIOSBundleId(ios.getString("bundleId"));
+    }
+    if (url != null) {
+      builder = builder.setUrl(url);
+    }
+
+    return builder.build();
   }
 
   /**

@@ -1,6 +1,7 @@
 import { setSuiteStatus, setTestStatus } from '../actions/TestActions';
 import analytics from './analytics';
 import crash from './crash';
+import crashlytics from './crashlytics';
 import core from './core';
 import database from './database';
 import messaging from './messaging';
@@ -23,6 +24,7 @@ const testSuiteInstances = [
   config,
   core,
   crash,
+  crashlytics,
   database,
   firestore,
   messaging,
