@@ -22,17 +22,17 @@ RCT_EXPORT_METHOD(enableLogging:(BOOL) enabled) {
     [FIRFirestore enableLogging:enabled];
 }
 
-RCT_EXPORT_METHOD(collectionGet:(NSString *) appName
+RCT_EXPORT_METHOD(collectionGet:(NSString *) appDisplayName
                            path:(NSString *) path
                         filters:(NSArray *) filters
                          orders:(NSArray *) orders
                         options:(NSDictionary *) options
                        resolver:(RCTPromiseResolveBlock) resolve
                        rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getCollectionForAppPath:appName path:path filters:filters orders:orders options:options] get:resolve rejecter:reject];
+    [[self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options] get:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *) appName
+RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *) appDisplayName
                                    path:(NSString *) path
                                 filters:(NSArray *) filters
                                  orders:(NSArray *) orders
@@ -41,22 +41,22 @@ RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *) appName
     [RNFirebaseFirestoreCollectionReference offSnapshot:listenerId];
 }
 
-RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appName
+RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appDisplayName
                                   path:(NSString *) path
                                filters:(NSArray *) filters
                                 orders:(NSArray *) orders
                                options:(NSDictionary *) options
                             listenerId:(nonnull NSString *) listenerId
                     queryListenOptions:(NSDictionary *) queryListenOptions) {
-    RNFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appName path:path filters:filters orders:orders options:options];
+    RNFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options];
     [ref onSnapshot:listenerId queryListenOptions:queryListenOptions];
 }
 
-RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
+RCT_EXPORT_METHOD(documentBatch:(NSString *) appDisplayName
                          writes:(NSArray *) writes
                        resolver:(RCTPromiseResolveBlock) resolve
                        rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appName];
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
     FIRWriteBatch *batch = [firestore batch];
 
     for (NSDictionary *write in writes) {
@@ -89,56 +89,56 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appName
     }];
 }
 
-RCT_EXPORT_METHOD(documentDelete:(NSString *) appName
+RCT_EXPORT_METHOD(documentDelete:(NSString *) appDisplayName
                             path:(NSString *) path
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] delete:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appDisplayName path:path] delete:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentGet:(NSString *) appName
+RCT_EXPORT_METHOD(documentGet:(NSString *) appDisplayName
                          path:(NSString *) path
                      resolver:(RCTPromiseResolveBlock) resolve
                      rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] get:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appDisplayName path:path] get:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentGetAll:(NSString *) appName
+RCT_EXPORT_METHOD(documentGetAll:(NSString *) appDisplayName
                        documents:(NSString *) documents
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
     // Not supported on iOS out of the box
 }
 
-RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appName
+RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appDisplayName
                                  path:(NSString *) path
                            listenerId:(nonnull NSString *) listenerId) {
     [RNFirebaseFirestoreDocumentReference offSnapshot:listenerId];
 }
 
-RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appName
+RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appDisplayName
                                 path:(NSString *) path
                           listenerId:(nonnull NSString *) listenerId
                     docListenOptions:(NSDictionary *) docListenOptions) {
-    RNFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appName path:path];
+    RNFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
     [ref onSnapshot:listenerId docListenOptions:docListenOptions];
 }
 
-RCT_EXPORT_METHOD(documentSet:(NSString *) appName
+RCT_EXPORT_METHOD(documentSet:(NSString *) appDisplayName
                          path:(NSString *) path
                          data:(NSDictionary *) data
                       options:(NSDictionary *) options
                      resolver:(RCTPromiseResolveBlock) resolve
                      rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] set:data options:options resolver:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appDisplayName path:path] set:data options:options resolver:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
+RCT_EXPORT_METHOD(documentUpdate:(NSString *) appDisplayName
                             path:(NSString *) path
                             data:(NSDictionary *) data
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    [[self getDocumentForAppPath:appName path:path] update:data resolver:resolve rejecter:reject];
+    [[self getDocumentForAppPath:appDisplayName path:path] update:data resolver:resolve rejecter:reject];
 }
 
 /*
@@ -149,17 +149,17 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appName
     reject([jsError valueForKey:@"code"], [jsError valueForKey:@"message"], error);
 }
 
-+ (FIRFirestore *)getFirestoreForApp:(NSString *)appName {
-    FIRApp *app = [FIRApp appNamed:appName];
++ (FIRFirestore *)getFirestoreForApp:(NSString *)appDisplayName {
+    FIRApp *app = [RNFirebaseUtil getApp:appDisplayName];
     return [FIRFirestore firestoreForApp:app];
 }
 
-- (RNFirebaseFirestoreCollectionReference *)getCollectionForAppPath:(NSString *)appName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options {
-    return [[RNFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:self app:appName path:path filters:filters orders:orders options:options];
+- (RNFirebaseFirestoreCollectionReference *)getCollectionForAppPath:(NSString *)appDisplayName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options {
+    return [[RNFirebaseFirestoreCollectionReference alloc] initWithPathAndModifiers:self appDisplayName:appDisplayName path:path filters:filters orders:orders options:options];
 }
 
-- (RNFirebaseFirestoreDocumentReference *)getDocumentForAppPath:(NSString *)appName path:(NSString *)path {
-    return [[RNFirebaseFirestoreDocumentReference alloc] initWithPath:self app:appName path:path];
+- (RNFirebaseFirestoreDocumentReference *)getDocumentForAppPath:(NSString *)appDisplayName path:(NSString *)path {
+    return [[RNFirebaseFirestoreDocumentReference alloc] initWithPath:self appDisplayName:appDisplayName path:path];
 }
 
 // TODO: Move to error util for use in other modules

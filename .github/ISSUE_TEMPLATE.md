@@ -1,14 +1,13 @@
 <!---
-  - BEFORE YOU MAKE AN ISSUE -
--->
+BEFORE YOU MAKE AN ISSUE
 
-<!---
-1) If you're trying to request a feature then please do so via our request board:
-    https://react-native-firebase.canny.io/feature-requests
---->
+The issue list of this repo is exclusively for bug reports.
 
-<!---
-2) If this is a setup issue then please make sure you've correctly followed the setup guides, most setup issues such as 'duplicate dex files', 'default app has not been initialized' etc are all down to an incorrect setup as the guides haven't been correctly followed.
+1) For feature requests, please use our Canny board: https://react-native-firebase.canny.io/feature-requests
+
+2) For questions and support please use our Discord chat: https://discord.gg/t6bdqMs or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
+
+3) If this is a setup issue then please make sure you've correctly followed the setup guides, most setup issues such as 'duplicate dex files', 'default app has not been initialized' etc are all down to an incorrect setup as the guides haven't been correctly followed.
 -->
 
 ### Issue
