@@ -363,7 +363,7 @@ function authTests({ tryCatch, describe, it, firebase }) {
         throw new Error('Expected language code to be "en".');
       }
       firebase.native.auth().languageCode = 'fr';
-      if (firebase.native.auth().languageCode !== 'en') {
+      if (firebase.native.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
       firebase.native.auth().languageCode = 'en';
