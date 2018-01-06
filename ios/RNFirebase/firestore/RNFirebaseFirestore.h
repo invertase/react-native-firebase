@@ -13,7 +13,7 @@
 
 + (void)promiseRejectException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 
-+ (FIRFirestore *)getFirestoreForApp:(NSString *)appName;
++ (FIRFirestore *)getFirestoreForApp:(NSString *)appDisplayName;
 + (NSDictionary *)getJSError:(NSError *)nativeError;
 
 @end

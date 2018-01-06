@@ -804,6 +804,41 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
 
           unsubscribe();
         });
+
+        it('gets called correctly when combined with where', async () => {
+          const collectionRef = collectionTests.where('baz', '==', true).orderBy('daz');
+          const newDocValue = { ...COL_1, daz: 678 };
+
+          const callback = sinon.spy();
+
+          // Test
+
+          let unsubscribe;
+          await new Promise((resolve2) => {
+            unsubscribe = collectionRef.onSnapshot((snapshot) => {
+              callback(snapshot.docs.map(doc => doc.data().daz));
+              resolve2();
+            });
+          });
+
+          callback.should.be.calledWith([123, 234, 345, 456, 567]);
+
+          const docRef = firebase.native.firestore().doc('collection-tests2/col6');
+          await docRef.set(newDocValue);
+
+          await new Promise((resolve2) => {
+            setTimeout(() => resolve2(), 5);
+          });
+
+          // Assertions
+
+          callback.should.be.calledWith([123, 234, 345, 456, 567, 678]);
+          callback.should.be.calledTwice();
+
+          // Tear down
+
+          unsubscribe();
+        });
       });
 
       after(() => {
