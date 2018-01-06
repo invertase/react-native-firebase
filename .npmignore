@@ -1,4 +1,6 @@
 node_modules
+coverage.json
+coverage
 npm-debug.log
 *.DS_Store
 .github
