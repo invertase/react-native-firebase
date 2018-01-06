@@ -714,11 +714,6 @@ declare module "react-native-firebase" {
          */
         signOut(): Promise<void>
 
-        /**
-         * Sets the language for the auth instance to the device language
-         */
-        useDeviceLanguage(): void
-
         [key: string]: any;
       }
     }
