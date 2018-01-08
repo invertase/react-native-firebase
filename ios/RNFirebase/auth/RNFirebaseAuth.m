@@ -928,10 +928,10 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
  @return
  */
 RCT_EXPORT_METHOD(setLanguageCode:
-    (NSString *) appName
+    (NSString *) appDisplayName
             code:
             (NSString *) code) {
-    FIRApp *firApp = [FIRApp appNamed:appName];
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
     [FIRAuth authWithApp:firApp].languageCode = code;
 }
@@ -943,8 +943,8 @@ RCT_EXPORT_METHOD(setLanguageCode:
  @return
  */
 RCT_EXPORT_METHOD(useDeviceLanguage:
-    (NSString *) appName) {
-    FIRApp *firApp = [FIRApp appNamed:appName];
+    (NSString *) appDisplayName) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
      [[FIRAuth authWithApp:firApp] useAppLanguage];
 }
