@@ -1,5 +1,6 @@
 node_modules
-coverage.json
+coverage.android.json
+coverage.ios.json
 coverage
 npm-debug.log
 *.DS_Store
