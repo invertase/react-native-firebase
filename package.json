@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run build-lib && npm run build-flow",
+    "build": "genversion lib/version.js && npm run build-lib && npm run build-flow",
     "build-flow": "flow-copy-source -i */__tests__* lib dist",
     "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
     "clean": "rimraf dist/",
@@ -88,6 +88,7 @@
     "eslint-plugin-react": "^7.4.0",
     "flow-bin": "^0.56.0",
     "flow-copy-source": "^1.2.1",
+    "genversion": "^2.0.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-native": "^0.50.3",

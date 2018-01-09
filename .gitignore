@@ -77,3 +77,4 @@ local.properties
 **/ios/Pods/**
 **/ios/ReactNativeFirebaseDemo.xcworkspace/
 dist
+version.js
