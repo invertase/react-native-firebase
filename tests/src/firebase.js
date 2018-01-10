@@ -1,9 +1,11 @@
 import { Platform } from 'react-native';
 
 import firebase from 'firebase';
-import RNfirebase from './../firebase/firebase';
-
+import RNfirebase from './../firebase';
 import DatabaseContents from './tests/support/DatabaseContents';
+
+RNfirebase.database.enableLogging(true);
+RNfirebase.firestore.enableLogging(true);
 
 const config = {
   apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
@@ -38,9 +40,11 @@ const ios = {
 
 const instances = {
   web: firebase.initializeApp(config),
-  native: RNfirebase.app(),
+  native: RNfirebase,
   another: RNfirebase.initializeApp(Platform.OS === 'ios' ? ios : android, 'anotherApp'),
 };
+
+
 
 console.log('RNApps -->', RNfirebase.apps);
 

@@ -64,6 +64,10 @@ declare module "react-native-firebase" {
      */
     crash(): RNFirebase.crash.Crash;
 
+    static fabric: {
+      crashlytics(): RNFirebase.crashlytics.Crashlytics;
+    };
+
     apps: Array<string>;
     googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
 
@@ -844,6 +848,51 @@ declare module "react-native-firebase" {
         report(error: RnError, maxStackSize: Number): void
 
         [key: string]: any;
+      }
+    }
+
+    namespace crashlytics {
+
+      interface Crashlytics {
+        /**
+         * Forces a crash. Useful for testing your application is set up correctly.
+         */
+        crash(): void;
+
+        /**
+         * Logs a message that will appear in any subsequent crash reports.
+         */
+        log(message: string): void;
+
+        /**
+         * Logs a non fatal exception.
+         */
+        recordError(code: number, message: string): void;
+
+        /**
+         * Set a boolean value to show alongside any subsequent crash reports.
+         */
+        setBoolValue(key: string, value: boolean): void;
+
+        /**
+         * Set a float value to show alongside any subsequent crash reports.
+         */
+        setFloatValue(key: string, value: number): void;
+
+        /**
+         * Set an integer value to show alongside any subsequent crash reports.
+         */
+        setIntValue(key: string, value: number): void;
+
+        /**
+         * Set a string value to show alongside any subsequent crash reports.
+         */
+        setStringValue(key: string, value: string): void;
+
+        /**
+         * Set the user ID to show alongside any subsequent crash reports.
+         */
+        setUserIdentifier(userId: string): void;
       }
     }
   }

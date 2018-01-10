@@ -1,5 +1,5 @@
 require 'json'
-package = JSON.parse(File.read('package.json'))
+package = JSON.parse(File.read('../package.json'))
 
 Pod::Spec.new do |s|
   s.name                = "RNFirebase"
@@ -12,9 +12,8 @@ Pod::Spec.new do |s|
   s.license             = package['license']
   s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
-  s.social_media_url    = 'http://twitter.com/mikediarmid'
-  s.platform            = :ios, "8.0"
-  s.preserve_paths      = 'README.md', 'package.json', '*.js'
-  s.source_files        = 'ios/RNFirebase/**/*.{h,m}'
+  s.social_media_url    = 'http://twitter.com/RNFirebase'
+  s.platform            = :ios, "9.0"
+  s.source_files        = 'RNFirebase/**/*.{h,m}'
   s.dependency          'React'
 end

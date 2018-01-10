@@ -142,6 +142,8 @@ class RNFirebaseAdMobUtils {
         return AdSize.LEADERBOARD;
       case "SMART_BANNER":
         return AdSize.SMART_BANNER;
+      case "SMART_BANNER_LANDSCAPE":
+        return AdSize.SMART_BANNER;		
     }
   }
 }

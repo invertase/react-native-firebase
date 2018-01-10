@@ -1,6 +1,7 @@
 package io.invertase.firebase.database;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Promise;
@@ -13,6 +14,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.Logger;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.OnDisconnect;
@@ -35,6 +37,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private boolean enableLogging = false;
   private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -89,10 +92,19 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     enableLogging = enabled;
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     for (FirebaseApp app : firebaseAppList) {
-      if (enableLogging) {
-        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.DEBUG);
-      } else {
-        FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.WARN);
+      loggingLevelSet.put(app.getName(), enabled);
+      try {
+        if (enableLogging) {
+          FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.DEBUG);
+        } else {
+          FirebaseDatabase.getInstance(app).setLogLevel(Logger.Level.WARN);
+        }
+      } catch (DatabaseException dex) {
+        // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
+        // only occurs in dev after reloading or if user has actually incorrectly called it.
+        Log.w(TAG, "WARNING: enableLogging(bool) must be called before any other use of database(). \n" +
+          "If you are sure you've done this then this message can be ignored during development as \n" +
+          "RN reloads can cause false positives. APP: " + app.getName());
       }
     }
   }
@@ -487,13 +499,31 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private FirebaseDatabase getDatabaseForApp(String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
+    Boolean logLevel = loggingLevelSet.get(firebaseDatabase.getApp().getName());
 
-// todo errors  'calls must be made before any other usage of database instance
-//    if (enableLogging) {
-//      firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
-//    } else {
-//      firebaseDatabase.setLogLevel(Logger.Level.WARN);
-//    }
+    if (enableLogging && (logLevel == null || !logLevel)) {
+      try {
+        loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
+        firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
+      } catch (DatabaseException dex) {
+        // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
+        // only occurs in dev after reloading or if user has actually incorrectly called it.
+        Log.w(TAG, "WARNING: enableLogging(bool) must be called before any other use of database(). \n" +
+          "If you are sure you've done this then this message can be ignored during development as \n" +
+          "RN reloads can cause false positives. APP: " + firebaseDatabase.getApp().getName());
+      }
+    } else if (!enableLogging && (logLevel != null && logLevel)) {
+      try {
+        loggingLevelSet.put(firebaseDatabase.getApp().getName(), enableLogging);
+        firebaseDatabase.setLogLevel(Logger.Level.WARN);
+      } catch (DatabaseException dex) {
+        // do nothing - to catch 'calls to setLogLevel must be made for use of database' errors
+        // only occurs in dev after reloading or if user has actually incorrectly called it.
+        Log.w(TAG, "WARNING: enableLogging(bool) must be called before any other use of database(). \n" +
+          "If you are sure you've done this then this message can be ignored during development as \n" +
+          "RN reloads can cause false positives. APP: " + firebaseDatabase.getApp().getName());
+      }
+    }
 
     return firebaseDatabase;
   }

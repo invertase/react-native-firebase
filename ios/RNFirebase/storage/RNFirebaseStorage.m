@@ -23,11 +23,11 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
  @param NSString path
  */
-RCT_EXPORT_METHOD(delete:(NSString *) appName
+RCT_EXPORT_METHOD(delete:(NSString *) appDisplayName
                     path:(NSString *) path
                 resolver:(RCTPromiseResolveBlock) resolve
                 rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
 
     [fileRef deleteWithCompletion:^(NSError *_Nullable error) {
         if (error != nil) {
@@ -44,11 +44,11 @@ RCT_EXPORT_METHOD(delete:(NSString *) appName
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
  @param NSString path
  */
-RCT_EXPORT_METHOD(getDownloadURL:(NSString *) appName
+RCT_EXPORT_METHOD(getDownloadURL:(NSString *) appDisplayName
                             path:(NSString *) path
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
 
     [fileRef downloadURLWithCompletion:^(NSURL *_Nullable URL, NSError *_Nullable error) {
         if (error != nil) {
@@ -65,11 +65,11 @@ RCT_EXPORT_METHOD(getDownloadURL:(NSString *) appName
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
  @param NSString path
  */
-RCT_EXPORT_METHOD(getMetadata:(NSString *) appName
+RCT_EXPORT_METHOD(getMetadata:(NSString *) appDisplayName
                          path:(NSString *) path
                      resolver:(RCTPromiseResolveBlock) resolve
                      rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
 
     [fileRef metadataWithCompletion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
         if (error != nil) {
@@ -87,12 +87,12 @@ RCT_EXPORT_METHOD(getMetadata:(NSString *) appName
  @param NSString path
  @param NSDictionary metadata
  */
-RCT_EXPORT_METHOD(updateMetadata:(NSString *) appName
+RCT_EXPORT_METHOD(updateMetadata:(NSString *) appDisplayName
                             path:(NSString *) path
                         metadata:(NSDictionary *) metadata
                         resolver:(RCTPromiseResolveBlock) resolve
                         rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
 
     [fileRef updateMetadata:firmetadata completion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
@@ -111,12 +111,12 @@ RCT_EXPORT_METHOD(updateMetadata:(NSString *) appName
  @param NSString path
  @param NSString localPath
  */
-RCT_EXPORT_METHOD(downloadFile:(NSString *) appName
+RCT_EXPORT_METHOD(downloadFile:(NSString *) appDisplayName
                           path:(NSString *) path
                      localPath:(NSString *) localPath
                       resolver:(RCTPromiseResolveBlock) resolve
                       rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     NSURL *localFile = [NSURL fileURLWithPath:localPath];
     FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
 
@@ -124,25 +124,25 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appName
     [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download resumed, also fires when the upload starts
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download paused
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download reported progress
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // download completed successfully
         NSDictionary *resp = [self getDownloadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_DOWNLOAD_SUCCESS props:resp];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_DOWNLOAD_SUCCESS props:resp];
         resolve(resp);
     }];
 
@@ -161,9 +161,10 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appName
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  @param NSNumber milliseconds
  */
-RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSString *) appName
-                             milliseconds:(NSNumber *) milliseconds) {
-    [[FIRStorage storageForApp:[FIRApp appNamed:appName]] setMaxDownloadRetryTime:[milliseconds doubleValue]];
+RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSString *) appDisplayName
+                             milliseconds:(nonnull NSNumber *) milliseconds) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    [[FIRStorage storageForApp:firApp] setMaxDownloadRetryTime:[milliseconds doubleValue]];
 }
 
 /**
@@ -172,9 +173,10 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSString *) appName
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
  @param NSNumber milliseconds
  */
-RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSString *) appName
-                              milliseconds:(NSNumber *) milliseconds) {
-    [[FIRStorage storageForApp:[FIRApp appNamed:appName]] setMaxOperationRetryTime:[milliseconds doubleValue]];
+RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSString *) appDisplayName
+                              milliseconds:(nonnull NSNumber *) milliseconds) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    [[FIRStorage storageForApp:firApp] setMaxOperationRetryTime:[milliseconds doubleValue]];
 }
 
 /**
@@ -182,9 +184,10 @@ RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSString *) appName
 
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
  */
-RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSString *) appName
-                           milliseconds:(NSNumber *) milliseconds) {
-    [[FIRStorage storageForApp:[FIRApp appNamed:appName]] setMaxUploadRetryTime:[milliseconds doubleValue]];
+RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSString *) appDisplayName
+                           milliseconds:(nonnull NSNumber *) milliseconds) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    [[FIRStorage storageForApp:firApp] setMaxUploadRetryTime:[milliseconds doubleValue]];
 }
 
 /**
@@ -195,7 +198,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSString *) appName
  @param NSString localPath
  @param NSDictionary metadata
  */
-RCT_EXPORT_METHOD(putFile:(NSString *) appName
+RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
                      path:(NSString *) path
                 localPath:(NSString *) localPath
                  metadata:(NSDictionary *) metadata
@@ -224,7 +227,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
                 if (info[PHImageErrorKey] == nil) {
                     if (UTTypeConformsTo((__bridge CFStringRef)dataUTI, kUTTypeJPEG)) {
                         firmetadata.contentType = [self utiToMimeType:dataUTI];
-                        [self uploadData:appName data:imageData firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
+                        [self uploadData:appDisplayName data:imageData firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                     } else {
                         // if the image UTI is not JPEG then convert to JPEG, e.g. HEI
                         CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
@@ -236,7 +239,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
                         CGImageDestinationFinalize(destination);
                         // Manually set mimetype to JPEG
                         firmetadata.contentType = @"image/jpeg";
-                        [self uploadData:appName data:[NSData dataWithData:imageDataJPEG] firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
+                        [self uploadData:appDisplayName data:[NSData dataWithData:imageDataJPEG] firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                     }
                 } else {
                     reject(@"storage/request-image-data-failed", @"Could not obtain image data for the specified file.", nil);
@@ -260,7 +263,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         if (exportSession.status == AVAssetExportSessionStatusCompleted) {
                             firmetadata.contentType = [self utiToMimeType:exportSession.outputFileType];
-                            [self uploadFile:appName url:tempUrl firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
+                            [self uploadFile:appDisplayName url:tempUrl firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                             // we're not cleaning up the temporary file at the moment, just relying on the OS to do that in it's own time - todo?
                         } else {
                             reject(@"storage/temporary-file-failure", @"Unable to create temporary file for upload.", nil);
@@ -274,7 +277,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
     } else {
         // TODO: Content type for file?
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
-        [self uploadData:appName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
+        [self uploadData:appDisplayName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
     }
 
 }
@@ -288,42 +291,42 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
     return (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)dataUTI, kUTTagClassMIMEType);
 }
 
-- (void)uploadFile:(NSString *)appName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+- (void)uploadFile:(NSString *)appDisplayName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     FIRStorageUploadTask *uploadTask = [fileRef putFile:url metadata:firmetadata];
-    [self addUploadObservers:appName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
+    [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
-- (void)uploadData:(NSString *)appName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-    FIRStorageReference *fileRef = [self getReference:path appName:appName];
+- (void)uploadData:(NSString *)appDisplayName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+    FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:firmetadata];
-    [self addUploadObservers:appName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
+    [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
-- (void)addUploadObservers:(NSString *)appName uploadTask:(FIRStorageUploadTask *)uploadTask path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (void)addUploadObservers:(NSString *)appDisplayName uploadTask:(FIRStorageUploadTask *)uploadTask path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     // listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload resumed, also fires when the upload starts
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload paused
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload reported progress
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload completed successfully
         NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:resp];
-        [self sendJSEvent:appName type:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:resp];
+        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
         resolve(resp);
     }];
 
@@ -335,12 +338,13 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
 }
 
 - (FIRStorageReference *)getReference:(NSString *)path
-                              appName:(NSString *)appName {
+                       appDisplayName:(NSString *)appDisplayName {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
     if ([path hasPrefix:@"url::"]) {
         NSString *url = [path substringFromIndex:5];
-        return [[FIRStorage storageForApp:[FIRApp appNamed:appName]] referenceForURL:url];
+        return [[FIRStorage storageForApp:firApp] referenceForURL:url];
     } else {
-        return [[FIRStorage storageForApp:[FIRApp appNamed:appName]] referenceWithPath:path];
+        return [[FIRStorage storageForApp:firApp] referenceWithPath:path];
     }
 }
 
@@ -387,13 +391,13 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appName
     return @[STORAGE_EVENT, STORAGE_ERROR];
 }
 
-- (void)sendJSError:(NSString *)appName error:(NSError *)error path:(NSString *)path {
+- (void)sendJSError:(NSString *)appDisplayName error:(NSError *)error path:(NSString *)path {
     NSDictionary *evt = @{@"path": path, @"message": [error debugDescription]};
-    [self sendJSEvent:appName type:STORAGE_ERROR path:path title:STORAGE_ERROR props:evt];
+    [self sendJSEvent:appDisplayName type:STORAGE_ERROR path:path title:STORAGE_ERROR props:evt];
 }
 
-- (void)sendJSEvent:(NSString *)appName type:(NSString *)type path:(NSString *)path title:(NSString *)title props:(NSDictionary *)props {
-    [RNFirebaseUtil sendJSEvent:self name:type body:@{@"eventName": title, @"appName": appName, @"path": path, @"body": props}];
+- (void)sendJSEvent:(NSString *)appDisplayName type:(NSString *)type path:(NSString *)path title:(NSString *)title props:(NSDictionary *)props {
+    [RNFirebaseUtil sendJSEvent:self name:type body:@{@"eventName": title, @"appName": appDisplayName, @"path": path, @"body": props}];
 }
 
 /**

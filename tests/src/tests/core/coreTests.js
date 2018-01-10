@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import should from 'should';
 
-import RNFirebase from './../../../firebase/firebase';
+import RNFirebase from './../../../firebase';
 
 const androidTestConfig = {
   // firebase android sdk completely ignores client id
@@ -53,8 +53,7 @@ function coreTests({ describe, it }) {
 
     it('it should provide an array of apps', () => {
       should.equal(!!RNFirebase.apps.length, true);
-      should.equal(RNFirebase.apps[0]._name, RNFirebase.utils.DEFAULT_APP_NAME);
-      should.equal(RNFirebase.apps[0].name, '[DEFAULT]');
+      should.equal(RNFirebase.apps.includes(RNFirebase.app('[DEFAULT]')), true);
       return Promise.resolve();
     });
 

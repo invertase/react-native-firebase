@@ -11,6 +11,15 @@ npm-debug.log
 project.xcworkspace/
 xcuserdata/
 
+# Config files
+.babelrc
+.editorconfig
+.eslintrc
+.flowconfig
+.watchmanconfig
+buddybuild_postclone.sh
+jsconfig.json
+
 # Example
 example/
 
