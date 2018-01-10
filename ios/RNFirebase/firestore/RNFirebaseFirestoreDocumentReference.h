@@ -13,11 +13,11 @@
 
 @interface RNFirebaseFirestoreDocumentReference : NSObject
 @property RCTEventEmitter *emitter;
-@property NSString *app;
+@property NSString *appDisplayName;
 @property NSString *path;
 @property FIRDocumentReference *ref;
 
-- (id)initWithPath:(RCTEventEmitter *)emitter app:(NSString *)app path:(NSString *)path;
+- (id)initWithPath:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName path:(NSString *)path;
 - (void)delete:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 + (void)offSnapshot:(NSString *)listenerId;

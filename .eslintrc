@@ -34,7 +34,13 @@
     "import/extensions": 0,
     "import/no-unresolved": 0,
     "import/no-extraneous-dependencies": 0,
-    "react/jsx-filename-extension": 0
+    "react/jsx-filename-extension": 0,
+    "no-unused-expressions": 0,
+    "flowtype/no-unused-expressions": ['error', {
+      allowShortCircuit: false,
+      allowTernary: false,
+      allowTaggedTemplates: false,
+    }]
   },
   "globals": {
     "__DEV__": true,

@@ -2,9 +2,13 @@ buildscript {
   ext.firebaseVersion = '11.4.2'
   repositories {
     jcenter()
+    maven {
+      url 'https://maven.fabric.io/public'
+    }
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:2.3.3'
+    classpath 'io.fabric.tools:gradle:1.24.4'
   }
 }
 
@@ -91,4 +95,7 @@ dependencies {
   compile "com.google.firebase:firebase-ads:$firebaseVersion"
   compile "com.google.firebase:firebase-firestore:$firebaseVersion"
   compile "com.google.firebase:firebase-invites:$firebaseVersion"
+  compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    transitive = true
+  }
 }
