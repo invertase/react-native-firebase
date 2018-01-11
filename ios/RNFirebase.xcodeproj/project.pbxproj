@@ -453,22 +453,8 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"${BUILT_PRODUCTS_DIR}",
-					"${SRCROOT}/../../../ios/Pods/Crashlytics/iOS",
-					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseCrash/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseDatabase/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseDynamicLinks/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseFirestore/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseInstanceID/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseMessaging/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebasePerformance/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseRemoteConfig/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseStorage/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/Google-Mobile-Ads-SDK/Frameworks/frameworks",
+					"${BUILT_PRODUCTS_DIR}/**",
+					"${SRCROOT}/../../../ios/Pods/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
 				);
 				HEADER_SEARCH_PATHS = (
@@ -496,22 +482,8 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"${BUILT_PRODUCTS_DIR}",
-					"${SRCROOT}/../../../ios/Pods/Crashlytics/iOS",
-					"${SRCROOT}/../../../ios/Pods/Fabric/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseAnalytics/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseAuth/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseCore/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseCrash/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseDatabase/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseDynamicLinks/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseFirestore/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseInstanceID/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseMessaging/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebasePerformance/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseRemoteConfig/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/FirebaseStorage/Frameworks",
-					"${SRCROOT}/../../../ios/Pods/Google-Mobile-Ads-SDK/Frameworks/frameworks",
+					"${BUILT_PRODUCTS_DIR}/**",
+					"${SRCROOT}/../../../ios/Pods/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
 				);
 				HEADER_SEARCH_PATHS = (
