@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -269,6 +270,8 @@ public class FirestoreSerialize {
     } else if ("date".equals(type)) {
       Double time = typeMap.getDouble("value");
       return new Date(time.longValue());
+    } else if ("documentid".equals(type)) {
+      return FieldPath.documentId();
     } else if ("fieldvalue".equals(type)) {
       String value = typeMap.getString("value");
       if ("delete".equals(value)) {
