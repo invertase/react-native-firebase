@@ -500,6 +500,19 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
             });
           });
       });
+
+      it('correctly handles FieldPath', () => {
+        return firebase.native.firestore()
+          .collection('collection-tests')
+          .where(new firebase.native.firestore.FieldPath('baz'), '==', true)
+          .get()
+          .then((querySnapshot) => {
+            should.equal(querySnapshot.size, 1);
+            querySnapshot.forEach((documentSnapshot) => {
+              should.equal(documentSnapshot.data().baz, true);
+            });
+          });
+      });
     });
 
     context('limit', () => {
@@ -614,6 +627,31 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
               );
             });
         });
+
+        it('works with FieldPath', () => {
+          return collectionTests.orderBy(new firebase.native.firestore.FieldPath('timestamp')).endAt(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
+
+        it('handles snapshots with FieldPath', async () => {
+          const collectionSnapshot = await collectionTests.orderBy(new firebase.native.firestore.FieldPath('foo')).get();
+          return collectionTests.orderBy('foo').endAt(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234, 345],
+              );
+            });
+        });
       });
 
       context('endBefore', () => {
@@ -655,6 +693,31 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
 
         it('handles snapshots', async () => {
           const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').endBefore(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+
+        it('works with FieldPath', () => {
+          return collectionTests.orderBy(new firebase.native.firestore.FieldPath('timestamp')).endBefore(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [123, 234],
+              );
+            });
+        });
+
+        it('handles snapshots with FieldPath', async () => {
+          const collectionSnapshot = await collectionTests.orderBy(new firebase.native.firestore.FieldPath('foo')).get();
           return collectionTests.orderBy('foo').endBefore(collectionSnapshot.docs[2])
             .get()
             .then((querySnapshot) => {
@@ -716,6 +779,31 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
               );
             });
         });
+
+        it('works with FieldPath', () => {
+          return collectionTests.orderBy(new firebase.native.firestore.FieldPath('timestamp')).startAt(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
+
+        it('handles snapshots with FieldPath', async () => {
+          const collectionSnapshot = await collectionTests.orderBy(new firebase.native.firestore.FieldPath('foo')).get();
+          return collectionTests.orderBy('foo').startAt(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 3);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [345, 456, 567],
+              );
+            });
+        });
       });
 
       context('startAfter', () => {
@@ -757,6 +845,31 @@ function collectionReferenceTests({ describe, it, context, firebase, before, aft
 
         it('handles snapshot', async () => {
           const collectionSnapshot = await collectionTests.orderBy('foo').get();
+          return collectionTests.orderBy('foo').startAfter(collectionSnapshot.docs[2])
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+
+        it('works with FieldPath', () => {
+          return collectionTests.orderBy(new firebase.native.firestore.FieldPath('timestamp')).startAfter(new Date(2017, 2, 12, 10, 0, 0))
+            .get()
+            .then((querySnapshot) => {
+              should.equal(querySnapshot.size, 2);
+              should.deepEqual(
+                querySnapshot.docs.map(doc => doc.data().daz),
+                [456, 567],
+              );
+            });
+        });
+
+        it('handles snapshots with FieldPath', async () => {
+          const collectionSnapshot = await collectionTests.orderBy(new firebase.native.firestore.FieldPath('foo')).get();
           return collectionTests.orderBy('foo').startAfter(collectionSnapshot.docs[2])
             .get()
             .then((querySnapshot) => {
