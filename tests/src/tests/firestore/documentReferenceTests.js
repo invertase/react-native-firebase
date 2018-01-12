@@ -66,9 +66,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('doesn\'t call callback when the ref is updated with the same value', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
         const currentDataValue = { name: 'doc1' };
@@ -101,9 +99,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('allows binding multiple callbacks to the same ref', async () => {
         // Setup
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
@@ -153,9 +149,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         unsubscribeA();
         unsubscribeB();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('listener stops listening when unsubscribed', async () => {
         // Setup
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
@@ -228,9 +222,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         callbackA.should.be.calledTwice();
         callbackB.should.be.calledThrice();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports options and callbacks', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
         const currentDataValue = { name: 'doc1' };
@@ -266,9 +258,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports observer', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
         const currentDataValue = { name: 'doc1' };
@@ -308,9 +298,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports options and observer', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/doc1');
         const currentDataValue = { name: 'doc1' };
@@ -361,9 +349,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             doc.data().name.should.equal('doc2');
           });
       });
-    });
 
-    context('set()', () => {
       it('should merge Document', () => {
         return firebase.native.firestore()
           .doc('document-tests/doc1')
@@ -374,9 +360,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             doc.data().merge.should.equal('merge');
           });
       });
-    });
 
-    context('set()', () => {
       it('should overwrite Document', () => {
         return firebase.native.firestore()
           .doc('document-tests/doc1')
@@ -398,9 +382,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             doc.data().name.should.equal('updated');
           });
       });
-    });
 
-    context('update()', () => {
       it('should update Document using key/value pairs', () => {
         return firebase.native.firestore()
           .doc('document-tests/doc1')
@@ -408,6 +390,40 @@ function documentReferenceTests({ describe, it, context, firebase }) {
           .then(async () => {
             const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
             doc.data().name.should.equal('updated');
+          });
+      });
+
+      it('should update Document using FieldPath/value pair', () => {
+        return firebase.native.firestore()
+          .doc('document-tests/doc1')
+          .update(new firebase.native.firestore.FieldPath('name'), 'Name')
+          .then(async () => {
+            const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
+            doc.data().name.should.equal('Name');
+          });
+      });
+
+      it('should update Document using nested FieldPath and value pair', () => {
+        return firebase.native.firestore()
+          .doc('document-tests/doc1')
+          .update(new firebase.native.firestore.FieldPath('nested', 'name'), 'Nested Name')
+          .then(async () => {
+            const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
+            doc.data().nested.name.should.equal('Nested Name');
+          });
+      });
+
+      it('should update Document using multiple FieldPath/value pairs', () => {
+        return firebase.native.firestore()
+          .doc('document-tests/doc1')
+          .update(
+            new firebase.native.firestore.FieldPath('nested', 'firstname'), 'First Name',
+            new firebase.native.firestore.FieldPath('nested', 'lastname'), 'Last Name',
+          )
+          .then(async () => {
+            const doc = await firebase.native.firestore().doc('document-tests/doc1').get();
+            doc.data().nested.firstname.should.equal('First Name');
+            doc.data().nested.lastname.should.equal('Last Name');
           });
       });
     });
@@ -422,9 +438,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         const doc = await docRef.get();
         should.equal(doc.data().field, true);
       });
-    });
 
-    context('types', () => {
       it('should handle Date field', async () => {
         const date = new Date();
         const docRef = firebase.native.firestore().doc('document-tests/reference');
@@ -437,9 +451,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         should.equal(doc.data().field.toISOString(), date.toISOString());
         should.equal(doc.data().field.getTime(), date.getTime());
       });
-    });
 
-    context('types', () => {
       it('should handle DocumentReference field', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/reference');
         await docRef.set({
@@ -449,9 +461,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         const doc = await docRef.get();
         should.equal(doc.data().field.path, 'test/field');
       });
-    });
 
-    context('types', () => {
       it('should handle GeoPoint field', async () => {
         const docRef = firebase.native.firestore().doc('document-tests/reference');
         await docRef.set({
