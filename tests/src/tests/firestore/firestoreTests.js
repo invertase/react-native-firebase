@@ -37,6 +37,13 @@ function firestoreTests({ describe, it, context, firebase }) {
             .set(sfRef, { name: 'San Francisco' })
             .update(nycRef, { population: 1000000 })
             .update(sfRef, 'name', 'San Fran')
+            .update(sfRef, new firebase.native.firestore.FieldPath('name'), 'San Fran FieldPath')
+            .update(sfRef, new firebase.native.firestore.FieldPath('nested', 'name'), 'Nested Nme')
+            .update(
+              sfRef,
+              new firebase.native.firestore.FieldPath('nested', 'firstname'), 'First Name',
+              new firebase.native.firestore.FieldPath('nested', 'lastname'), 'Last Name',
+            )
             .set(lRef, { population: 3000000 }, { merge: true })
             .delete(ayRef)
             .commit()
@@ -53,7 +60,9 @@ function firestoreTests({ describe, it, context, firebase }) {
               nycDoc.data().population.should.equal(1000000);
 
               const sfDoc = await sfRef.get();
-              sfDoc.data().name.should.equal('San Fran');
+              sfDoc.data().name.should.equal('San Fran FieldPath');
+              sfDoc.data().nested.firstname.should.equal('First Name');
+              sfDoc.data().nested.lastname.should.equal('Last Name');
             });
       });
     });
