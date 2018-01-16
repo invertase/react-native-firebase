@@ -610,25 +610,6 @@ RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *) appDisplayName
     }
 }
 
-/**
- getCurrentUser
-
- @param RCTPromiseResolveBlock resolve
- @param RCTPromiseRejectBlock reject
- @return
- */
-RCT_EXPORT_METHOD(getCurrentUser:
-    (NSString *) appDisplayName
-            resolver:
-            (RCTPromiseResolveBlock) resolve
-            rejecter:
-            (RCTPromiseRejectBlock) reject) {
-    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
-
-    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
-    [self promiseWithUser:resolve rejecter:reject user:user];
-}
-
 
 /**
  signInWithCustomToken

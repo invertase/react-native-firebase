@@ -350,26 +350,6 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
-  /**
-   * getCurrentUser - returns the current user, probably no need for this due to
-   * js side already listening for user auth changes
-   *
-   * @param promise
-   */
-  @ReactMethod
-  public void getCurrentUser(String appName, final Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
-    FirebaseUser user = firebaseAuth.getCurrentUser();
-    Log.d(TAG, "getCurrentUser");
-    if (user == null) {
-      promiseNoUser(promise, false);
-    } else {
-      promiseWithUser(user, promise);
-    }
-  }
-
   /* ----------------------
    *  .currentUser methods
    * ---------------------- */
