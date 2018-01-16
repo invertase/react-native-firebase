@@ -64,6 +64,14 @@ declare module "react-native-firebase" {
      */
     crash(): RNFirebase.crash.Crash;
 
+    /**
+     * Firebase Dynamic Links are links that work the way you want, on multiple
+     * platforms, and whether or not your app is already installed.
+     * See the official Firebase docs:
+     * https://firebase.google.com/docs/dynamic-links/
+     */
+    links(): RNFirebase.links.Links;
+
     static fabric: {
       crashlytics(): RNFirebase.crashlytics.Crashlytics;
     };
@@ -893,6 +901,61 @@ declare module "react-native-firebase" {
          * Set the user ID to show alongside any subsequent crash reports.
          */
         setUserIdentifier(userId: string): void;
+      }
+    }
+
+    namespace links {
+      interface Links {
+        /** Creates a standard dynamic link. */
+        createDynamicLink(parameters: LinkConfiguration): Promise<string>;
+        /** Creates a short dynamic link. */
+        createShortDynamicLink(parameters: LinkConfiguration): Promise<string>;
+        /**
+         * Returns the URL that the app has been launched from. If the app was
+         * not launched from a URL the return value will be null.
+         */
+        getInitialLink(): Promise<string | null>;
+        /**
+         * Subscribe to URL open events while the app is still running.
+         * The listener is called from URL open events whilst the app is still
+         * running, use getInitialLink for URLs which cause the app to open
+         * from a previously closed / not running state.
+         * Returns an unsubscribe function, call the returned function to
+         * unsubscribe from all future events.
+         */
+        onLink(listener: (url) => void): () => void;
+      }
+  
+      /**
+       * Configuration when creating a Dynamic Link (standard or short). For
+       * more information about each parameter, see the official Firebase docs:
+       * https://firebase.google.com/docs/reference/dynamic-links/link-shortener
+       */
+      interface LinkConfiguration {
+        link: string,
+        dynamicLinkDomain: string,
+        androidInfo?: {
+          androidLink?: string,
+          androidPackageName: string,
+          androidFallbackLink?: string,
+          androidMinPackageVersionCode?: string,
+        },
+        iosInfo?: {
+          iosBundleId: string,
+          iosAppStoreId?: string,
+          iosFallbackLink?: string,
+          iosCustomScheme?: string,
+          iosIpadBundleId?: string,
+          iosIpadFallbackLink?: string,
+        },
+        socialMetaTagInfo?: {
+          socialTitle: string,
+          socialImageLink: string,
+          socialDescription: string,
+        },
+        suffix?: {
+          option: 'SHORT' | 'UNGUESSABLE',
+        },
       }
     }
   }
