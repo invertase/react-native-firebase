@@ -650,6 +650,11 @@ declare module "react-native-firebase" {
         currentUser: User | null
 
         /**
+         * Gets/Sets the language for the app instance
+         */
+        languageCode: string | null;
+
+        /**
          * Listen for changes in the users auth state (logging in and out).
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
