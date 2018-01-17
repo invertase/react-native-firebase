@@ -356,6 +356,18 @@ function authTests({ tryCatch, describe, it, firebase }) {
         return firebase.native.auth().signOut().then(successCb).catch(failureCb);
       });
     });
+
+    it('it should change the language code', () => {
+      firebase.native.auth().languageCode = 'en';
+      if (firebase.native.auth().languageCode !== 'en') {
+        throw new Error('Expected language code to be "en".');
+      }
+      firebase.native.auth().languageCode = 'fr';
+      if (firebase.native.auth().languageCode !== 'fr') {
+        throw new Error('Expected language code to be "fr".');
+      }
+      firebase.native.auth().languageCode = 'en';
+    });
   });
 }
 
