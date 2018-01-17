@@ -130,7 +130,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
         NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
         [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];        
     } else if(initialLink) {
-         [self handleInitialLinkFromCustomSchemeURL:initialLink resolver:resolve rejecter:reject];
+        [self handleInitialLinkFromCustomSchemeURL:initialLink resolver:resolve rejecter:reject];
     } else {
         NSDictionary *userActivityDictionary =
         self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
