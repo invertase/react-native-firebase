@@ -942,7 +942,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void link(String appName, String provider, String authToken, String authSecret, final Promise promise) {
+  public void linkWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -1010,7 +1010,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
-   * reauthenticate
+   * reauthenticateWithCredential
    *
    * @param provider
    * @param authToken
@@ -1018,7 +1018,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void reauthenticate(String appName, String provider, String authToken, String authSecret, final Promise promise) {
+  public void reauthenticateWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
