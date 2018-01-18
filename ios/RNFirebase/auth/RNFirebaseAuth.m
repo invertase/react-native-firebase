@@ -727,7 +727,7 @@ RCT_EXPORT_METHOD(_confirmVerificationCode:(NSString *) appDisplayName
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(link:
+RCT_EXPORT_METHOD(linkWithCredential:
     (NSString *) appDisplayName
             provider:
             (NSString *) provider
@@ -797,7 +797,7 @@ RCT_EXPORT_METHOD(unlink:
 }
 
 /**
- reauthenticate
+ reauthenticateWithCredential
 
  @param NSString provider
  @param NSString authToken
@@ -806,7 +806,7 @@ RCT_EXPORT_METHOD(unlink:
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(reauthenticate:
+RCT_EXPORT_METHOD(reauthenticateWithCredential:
     (NSString *) appDisplayName
             provider:
             (NSString *) provider
