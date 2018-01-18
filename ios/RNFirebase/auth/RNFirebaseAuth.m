@@ -902,6 +902,34 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     return credential;
 }
 
+/**
+ setLanguageCode
+
+ @param NSString code
+ @return
+ */
+RCT_EXPORT_METHOD(setLanguageCode:
+    (NSString *) appDisplayName
+            code:
+            (NSString *) code) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+
+    [FIRAuth authWithApp:firApp].languageCode = code;
+}
+
+/**
+ useDeviceLanguage
+
+ @param NSString code
+ @return
+ */
+RCT_EXPORT_METHOD(useDeviceLanguage:
+    (NSString *) appDisplayName) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+
+     [[FIRAuth authWithApp:firApp] useAppLanguage];
+}
+
 // This is here to protect against bugs in the iOS SDK which don't
 // correctly refresh the user object when performing certain operations
 - (void)reloadAndReturnUser:(FIRUser *)user
@@ -1126,6 +1154,25 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
     }
 
     return output;
+}
+
+/**
+ * React native constant exports - exports native firebase apps mainly
+ * @return NSDictionary
+ */
+- (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    NSDictionary *firApps = [FIRApp allApps];
+    NSMutableDictionary *appLanguage = [NSMutableDictionary new];
+
+    for (id key in firApps) {
+        FIRApp *firApp = firApps[key];
+
+        appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
+    }
+
+    constants[@"APP_LANGUAGE"] = appLanguage;
+    return constants;
 }
 
 /**

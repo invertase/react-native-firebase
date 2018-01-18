@@ -6,6 +6,7 @@ import android.util.Log;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -1123,6 +1124,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * fetchProvidersForEmail
    *
+   * @param appName
    * @param promise
    */
   @ReactMethod
@@ -1155,6 +1157,31 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           }
         }
       });
+  }
+
+  /**
+   * Set the language code for the auth module
+   * @param appName
+   * @param code
+   */
+  @ReactMethod
+  public void setLanguageCode(String appName, String code) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.setLanguageCode(code);
+  }
+
+  /**
+   * Use the device language
+   * @param appName
+   */
+  @ReactMethod
+  public void useDeviceLanguage(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.useAppLanguage();
   }
 
   /* ------------------
@@ -1430,5 +1457,30 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     eventMap.putString("type", type);
     eventMap.putMap("state", state);
     Utils.sendEvent(mReactContext, "phone_auth_state_changed", eventMap);
+  }
+
+  /**
+   * Constants bootstrapped on react native app boot
+   *
+   * @return
+   */
+  @Override
+  public Map<String, Object> getConstants() {
+    Map<String, Object> constants = new HashMap<>();
+
+    List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
+    final Map<String, Object> appLanguage = new HashMap<>();
+
+    for (FirebaseApp app : firebaseAppList) {
+      String appName = app.getName();
+
+      FirebaseApp instance = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
+
+      appLanguage.put(appName, firebaseAuth.getLanguageCode());
+    }
+
+    constants.put("APP_LANGUAGE", appLanguage);
+    return constants;
   }
 }
