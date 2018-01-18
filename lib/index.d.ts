@@ -7,7 +7,7 @@ declare module "react-native-firebase" {
 
   type AuthProvider = {
     PROVIDER_ID: string,
-    credential: (token: string, secret?: string) => object,
+    credential: (token: string, secret?: string) => AuthCredential,
   };
 
   export default class FireBase {
@@ -533,6 +533,20 @@ declare module "react-native-firebase" {
       [key: string]: any;
     }
 
+    type UserInfo = {
+           displayName?: string,
+           email?: string,
+           phoneNumber?: string,
+           photoURL?: string,
+           providerId: string,
+           uid: string,
+    }
+
+    type UpdateProfile = {
+      displayName?: string,
+      photoURL?: string,
+    }
+
     interface User {
       /**
        * The user's display name (if available).
@@ -550,6 +564,8 @@ declare module "react-native-firebase" {
        *
        */
       isAnonymous: boolean
+
+      phoneNumber: string | null
       /**
        * - The URL of the user's profile picture (if available).
        */
@@ -557,12 +573,12 @@ declare module "react-native-firebase" {
       /**
        * - Additional provider-specific information about the user.
        */
-      providerData: any | null
+      providerData: Array<UserInfo>
       /**
        *  - The authentication provider ID for the current user.
        *  For example, 'facebook.com', or 'google.com'.
        */
-      providerId: string | null
+      providerId: string
       /**
        *  - The user's unique ID.
        */
@@ -575,18 +591,20 @@ declare module "react-native-firebase" {
 
       /**
        * Returns the users authentication token.
+       *
+       * @param forceRefresh: boolean - default to false
        */
-      getToken(): Promise<string>
-
-      /**
-       * Reauthenticate the current user with credentials:
-       */
-      reauthenticate(credential: Credential): Promise<void>
+      getIdToken(forceRefresh: boolean?): Promise<string>
 
       /**
        * Link the user with a 3rd party credential provider.
        */
-      linkWithCredential(credential: Credential): Promise<User>
+      linkWithCredential(credential: AuthCredential): Promise<User>
+
+      /**
+       * Re-authenticate a user with a third-party authentication provider
+       */
+      reauthenticateWithCredential(credential: AuthCredential): Promise<void>
 
       /**
        * Refreshes the current user.
@@ -597,7 +615,11 @@ declare module "react-native-firebase" {
        * Sends a verification email to a user.
        * This will Promise reject is the user is anonymous.
        */
-      sendEmailVerification(): Promise<void>
+      sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void>
+
+      toJSON(): object
+
+      unlink(providerId: string): Promise<User>
 
       /**
        * Updates the user's email address.
@@ -617,16 +639,28 @@ declare module "react-native-firebase" {
        * Updates a user's profile data.
        * Profile data should be an object of fields to update:
        */
-      updateProfile(profile: Object): Promise<void>
+      updateProfile(updates: UpdateProfile): Promise<void>
     }
 
     /** 3rd party provider Credentials */
-    interface Credential {
-      provider: string,
+    type AuthCredential {
+      providerId: string,
       token: string,
       secret: string
     }
 
+    type ActionCodeSettings = {
+      android: {
+         installApp?: boolean,
+         minimumVersion?: string,
+         packageName: string,
+       },
+       handleCodeInApp?: boolean,
+       iOS: {
+         bundleId?: string,
+       },
+       url: string,
+    }
 
     interface ActionCodeInfo {
       email: string,
@@ -637,17 +671,55 @@ declare module "react-native-firebase" {
       passwordReset: string
     }
 
+    interface ConfirmationResult {
+
+      confirm(verificationCode: string): Promise<User | null>;
+
+      verificationId: string | null;
+    }
+
+    type PhoneAuthSnapshot = {
+      state: 'sent' | 'timeout' | 'verified' | 'error',
+      verificationId: string,
+      code: string | null,
+      error: Error | null,
+    };
+
+    type PhoneAuthError = {
+      code: string | null,
+      verificationId: string,
+      message: string | null,
+      stack: string | null,
+    };
+
+    interface PhoneAuthListener {
+
+      on(event: string,
+         observer: () => PhoneAuthSnapshot,
+         errorCb?: () => PhoneAuthError,
+         successCb?: () => PhoneAuthSnapshot): PhoneAuthListener;
+
+      then(fn: () => PhoneAuthSnapshot): Promise<any>
+
+      catch(fn: () => Error): Promise<any>
+    }
+
     namespace auth {
+
+      type AuthResult = {
+        authenticated: boolean,
+        user: object | null
+      } | null;
 
       interface Auth {
         /**
          * Returns the current Firebase authentication state.
          */
-        authenticated: boolean;
+        authResult: AuthResult | null;
         /**
          * Returns the currently signed-in user (or null). See the User class documentation for further usage.
          */
-        currentUser: User | null
+        user: User | null
 
         /**
          * Gets/Sets the language for the app instance
@@ -659,8 +731,30 @@ declare module "react-native-firebase" {
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onAuthStateChanged(nextOrObserver: Object, error?: (a: RnError) => any,
-                           completed?: () => any): () => any;
+        onAuthStateChanged(listener: Function): () => void;
+
+        /**
+         * Listen for changes in id token.
+         * This method returns a unsubscribe function to stop listening to events.
+         * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
+         */
+        onIdTokenChanged(listener: Function): () => void;
+
+        /**
+         * Listen for changes in the user.
+         * This method returns a unsubscribe function to stop listening to events.
+         * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
+         */
+        onUserChanged(listener: Function): () => void;
+
+        signOut(): Promise<void>
+
+        /**
+         * Sign an anonymous user.
+         * If the user has already signed in, that user will be returned
+         */
+        signInAnonymously(): Promise<User>
+
 
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
@@ -675,18 +769,6 @@ declare module "react-native-firebase" {
         signInWithEmailAndPassword(email: string, password: string): Promise<User>
 
         /**
-         * Sign an anonymous user.
-         * If the user has already signed in, that user will be returned
-         */
-        signInAnonymously(): Promise<User>
-
-        /**
-         * Sign in the user with a 3rd party credential provider.
-         * credential requires the following properties:
-         */
-        signInWithCredential(credential: Credential): Promise<User>
-
-        /**
          * Sign a user in with a self-signed JWT token.
          * To sign a user using a self-signed custom token,
          * use the signInWithCustomToken() function.
@@ -695,21 +777,39 @@ declare module "react-native-firebase" {
         signInWithCustomToken(token: string): Promise<User>
 
         /**
+         * Sign in the user with a 3rd party credential provider.
+         * credential requires the following properties:
+         */
+        signInWithCredential(credential: AuthCredential): Promise<User>
+
+        /**
+         * Asynchronously signs in using a phone number.
+         */
+        signInWithPhoneNumber(phoneNumber: string): Promise<ConfirmationResult>
+
+        /**
+         * Returns a PhoneAuthListener to listen to phone verification events,
+         * on the final completion event a PhoneAuthCredential can be generated for
+         * authentication purposes.
+         */
+        verifyPhoneNumber(phoneNumber: string, autoVerifyTimeout?: number): PhoneAuthListener
+
+        /**
          * Sends a password reset email to the given email address.
          * Unlike the web SDK,
          * the email will contain a password reset link rather than a code.
          */
-        sendPasswordResetEmail(email: string): Promise<void>
+        sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>
 
         /**
          * Completes the password reset process, given a confirmation code and new password.
          */
-        confirmPasswordReset(code: string, newPassword: string): Promise<any>
+        confirmPasswordReset(code: string, newPassword: string): Promise<void>
 
         /**
          * Applies a verification code sent to the user by email or other out-of-band mechanism.
          */
-        applyActionCode(code: string): Promise<any>
+        applyActionCode(code: string): Promise<void>
 
         /**
          * Checks a verification code sent to the user by email or other out-of-band mechanism.
@@ -717,10 +817,14 @@ declare module "react-native-firebase" {
         checkActionCode(code: string): Promise<ActionCodeInfo>
 
         /**
-         * Completes the password reset process,
-         * given a confirmation code and new password.
+         * Get the currently signed in user
          */
-        signOut(): Promise<void>
+        getCurrentUser(): Promise<User | null>
+
+        /**
+         * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
+         */
+        fetchProvidersForEmail(email: string): Promise<Array<string>>
 
         [key: string]: any;
       }
