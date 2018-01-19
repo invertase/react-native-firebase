@@ -1181,14 +1181,23 @@ RCT_EXPORT_METHOD(useDeviceLanguage:
  @param user FIRUser
  @return NSDictionary
  */
-- (NSMutableDictionary *)firebaseUserToDict:(FIRUser *)user {
-    NSMutableDictionary *userDict = [@{@"uid": user.uid, @"email": user.email ? user.email : [NSNull null], @"emailVerified": @(user.emailVerified), @"isAnonymous": @(user.anonymous), @"displayName": user.displayName ? user.displayName : [NSNull null], @"refreshToken": user.refreshToken, @"providerId": [user.providerID lowercaseString], @"phoneNumber": user.phoneNumber ? user.phoneNumber : [NSNull null], @"providerData": [self convertProviderData:user.providerData]} mutableCopy];
-
-    if ([user valueForKey:@"photoURL"] != nil) {
-        [userDict setValue:[user.photoURL absoluteString] forKey:@"photoURL"];
-    }
-
-    return userDict;
+- (NSDictionary *)firebaseUserToDict:(FIRUser *)user {
+    return @{
+             @"displayName": user.displayName ? user.displayName : [NSNull null],
+             @"email": user.email ? user.email : [NSNull null],
+             @"emailVerified": @(user.emailVerified),
+             @"isAnonymous": @(user.anonymous),
+             @"metadata": @{
+                     @"creationTime": user.metadata.creationDate ? @(round([user.metadata.creationDate timeIntervalSince1970] * 1000.0)): [NSNull null],
+                     @"lastSignInTime": user.metadata.lastSignInDate ? @(round([user.metadata.lastSignInDate timeIntervalSince1970] * 1000.0)) : [NSNull null],
+             },
+             @"phoneNumber": user.phoneNumber ? user.phoneNumber : [NSNull null],
+             @"photoURL": user.photoURL ? [user.photoURL absoluteString] : [NSNull null],
+             @"providerData": [self convertProviderData:user.providerData],
+             @"providerId": [user.providerID lowercaseString],
+             @"refreshToken": user.refreshToken,
+             @"uid": user.uid
+            };
 }
 
 - (FIRActionCodeSettings *)buildActionCodeSettings:(NSDictionary *)actionCodeSettings {

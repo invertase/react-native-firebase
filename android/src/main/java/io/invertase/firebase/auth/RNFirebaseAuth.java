@@ -36,6 +36,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
+import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -1416,6 +1417,14 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
 
     userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));
+
+    WritableMap metadataMap = Arguments.createMap();
+    FirebaseUserMetadata metadata = user.getMetadata();
+    if (metadata != null) {
+      metadataMap.putDouble("creationTime", metadata.getCreationTimestamp());
+      metadataMap.putDouble("lastSignInTime", metadata.getLastSignInTimestamp());
+    }
+    userMap.putMap("metadata", metadataMap);
 
     return userMap;
   }
