@@ -72,6 +72,15 @@ declare module "react-native-firebase" {
      */
     links(): RNFirebase.links.Links;
 
+    /**
+     * Cloud Firestore is Firebase's new flagship database solution for mobile
+     * development, however as at the time of this writing (22 Jan 2018) it is
+     * still a beta product, and may not be as stable as Firebase Realtime
+     * Database. Comparison of the two products hers:
+     * https://firebase.google.com/docs/database/rtdb-vs-firestore
+     */
+    firestore(): RNFirebase.firestore.FirestoreModule;
+
     static fabric: {
       crashlytics(): RNFirebase.crashlytics.Crashlytics;
     };
@@ -1065,6 +1074,277 @@ declare module "react-native-firebase" {
         suffix?: {
           option: 'SHORT' | 'UNGUESSABLE',
         },
+      }
+    }
+
+    namespace firestore {
+      type FirestoreModule = Firestore & FirestoreStatics;
+
+      interface Firestore {
+        batch(): WriteBatch;
+        collection(collectionPath: string): CollectionReference;
+        doc(documentPath: string): DocumentReference;
+
+        /** NOT SUPPORTED YET */
+        enablePersistence(): Promise<void>;
+        /** NOT SUPPORTED YET */
+        runTransaction(): Promise<any>;
+        /** NOT SUPPORTED YET */
+        settings(): void;
+      }
+
+      interface FirestoreStatics {
+        FieldPath: typeof FieldPath;
+        FieldValue: typeof FieldValue;
+        GeoPoint: typeof GeoPoint;
+        enableLogging(enabled: boolean): void;
+      };
+
+      class CollectionReference {
+        constructor(firestore: Firestore, collectionPath: Path);
+        get firestore(): Firestore;
+        get id(): string;
+        get parent(): DocumentReference;
+        add(data: object): Promise<DocumentReference>;
+        doc(documentPath?: string): DocumentReference;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+
+      class DocumentChange {
+        constructor(firestore: Firestore, nativeData: Types.NativeDocumentChange);
+        get doc(): DocumentSnapshot;
+        get newIndex(): number;
+        get oldIndex(): number;
+        get type(): string;
+      }
+
+      class DocumentReference {
+        constructor(firestore: Firestore, documentPath: Path);
+        get firestore(): Firestore;
+        get id(): string | null;
+        get parent(): CollectionReference;
+        get path(): string;
+        collection(collectionPath: string): CollectionReference;
+        delete(): Promise<void>;
+        get(): Promise<DocumentSnapshot>;
+        onSnapshot(onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(observer: DocumentReference.Observer): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, observer: DocumentReference.Observer): () => void;
+        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        update(obj: object): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): Promise<void>;
+      }
+      namespace DocumentReference {
+        // JS code expects this value to be true.
+        interface DocumentListenOptions {
+          includeMetadataChanges: true;
+        }
+
+        type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      class DocumentSnapshot {
+        constructor(firestore: Firestore, nativeData: Types.NativeDocumentSnapshot)
+        get exists(): boolean;
+        get id(): string | null;
+        get metadata(): Types.SnapshotMetadata;
+        get ref(): DocumentReference;
+        data(): object | void;
+        get(fieldPath: string | FieldPath): any | undefined;
+      }
+
+      class FieldPath {
+        static documentId(): FieldPath;
+        constructor(...segments: string[]);
+      }
+
+      class FieldValue {
+        static delete(): FieldValue;
+        static serverTimestamp(): FieldValue;
+      }
+
+      class GeoPoint {
+        constructor(latitude: number, longitude: number);
+        get latitude(): number;
+        get longitude(): number;
+      }
+
+      class Path {
+        static fromName(name: string): Path;
+        constructor(pathComponents: string[]);
+        get id(): string | null;
+        get isDocument(): boolean;
+        get isCollection(): boolean;
+        get relativeName(): string;
+        child(relativePath: string): Path;
+        parent(): Path | null;
+      }
+
+      class Query {
+        constructor(
+          firestore: Firestore,
+          path: Path,
+          fieldFilters?: Query.FieldFilter[],
+          fieldOrders?: Query.FieldOrder[],
+          queryOptions?: Query.QueryOptions,
+        );
+        get firestore(): Firestore;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+      namespace Query {
+        interface NativeFieldPath {
+          elements?: string[];
+          string?: string;
+          type: 'fieldpath' | 'string';
+        }
+
+        interface FieldFilter {
+          fieldPath: NativeFieldPath;
+          operator: string;
+          value: any;
+        }
+
+        interface FieldOrder {
+          direction: string;
+          fieldPath: NativeFieldPath;
+        }
+
+        interface QueryOptions {
+          endAt?: any[];
+          endBefore?: any[];
+          limit?: number;
+          offset?: number;
+          selectFields?: string[];
+          startAfter?: any[];
+          startAt?: any[];
+        }
+
+        // The JS code expects at least one of 'includeDocumentMetadataChanges'
+        // or 'includeQueryMetadataChanges' to be true. This logic is
+        // encapsulated in QueryListenOptions.
+        interface _IncludeDocumentMetadataChanges {
+          includeDocumentMetadataChanges: true;
+        }
+        interface _IncludeQueryMetadataChanges {
+          includeQueryMetadataChanges: true
+        }
+        type QueryListenOptions = _IncludeDocumentMetadataChanges | _IncludeQueryMetadataChanges | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
+
+        type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      class QuerySnapshot {
+        constructor(firestore: Firestore, query: Query, nativeData: QuerySnapshot.NativeData);
+        get docChanges(): DocumentChange[];
+        get docs(): DocumentSnapshot[];
+        get empty(): boolean;
+        get metadata(): Types.SnapshotMetadata;
+        get query(): Query;
+        get size(): number;
+        forEach(callback: (snapshot: DocumentSnapshot) => any);
+      }
+      namespace QuerySnapshot {
+        interface NativeData {
+          changes: Types.NativeDocumentChange[];
+          documents: Types.NativeDocumentSnapshot[];
+          metadata: Types.SnapshotMetadata;
+        }
+      }
+
+      class WriteBatch {
+        constructor(firestore: Firestore);
+        commit(): Promise<void>;
+        delete(docRef: DocumentReference): WriteBatch;
+        set(docRef: DocumentReference, data: object, options?: Types.WriteOptions): WriteBatch;
+        // multiple overrides for update() to allow strong-typed var_args
+        update(docRef: DocumentReference, obj: object): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): WriteBatch;
+      }
+
+      namespace Types {
+        interface NativeDocumentChange {
+          document: NativeDocumentSnapshot;
+          newIndex: number;
+          oldIndex: number;
+          type: string;
+        }
+
+        interface NativeDocumentSnapshot {
+          data: {
+            [key: string]: TypeMap;
+          };
+          metadata: SnapshotMetadata;
+          path: string;
+        }
+
+        interface SnapshotMetadata {
+          fromCache: boolean;
+          hasPendingWrites: boolean;
+        }
+
+        type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
+        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=';
+
+        interface TypeMap {
+          type: 'array' | 'boolean' | 'date' | 'documentid' | 'fieldvalue' | 'geopoint' | 'null' | 'number' | 'object' | 'reference' | 'string';
+          value: any;
+        }
+
+        /** The key in update() function for DocumentReference and WriteBatch. */
+        type UpdateKey = string | FieldPath
+
+        interface WriteOptions {
+          merge?: boolean;
+        }
       }
     }
   }
