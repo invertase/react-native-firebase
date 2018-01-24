@@ -1029,6 +1029,8 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken verificationCode:authTokenSecret];
+    } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIROAuthProvider credentialWithProviderID:@"oauth" IDToken:authToken accessToken:authTokenSecret];
     } else {
         NSLog(@"Provider not yet handled: %@", provider);
     }
