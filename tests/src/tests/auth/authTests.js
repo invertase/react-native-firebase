@@ -1,3 +1,5 @@
+import sinon from 'sinon';
+import 'should-sinon';
 import should from 'should';
 
 function randomString(length, chars) {
@@ -12,6 +14,264 @@ function randomString(length, chars) {
 }
 
 function authTests({ tryCatch, describe, it, firebase }) {
+  describe('onAuthStateChanged', () => {
+    it('calls callback with the current user and when auth state changes', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onAuthStateChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      callback.should.be.calledTwice();
+
+      // Tear down
+
+      unsubscribe();
+    });
+
+    it('stops listening when unsubscribed', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onAuthStateChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      callback.should.be.calledTwice();
+
+      // Unsubscribe
+
+      unsubscribe();
+
+      // Sign back in
+
+      await firebase.native.auth().signInAnonymously();
+
+      // Assertions
+
+      callback.should.be.calledTwice();
+
+      // Tear down
+
+      await firebase.native.auth().signOut();
+    });
+  });
+
+  describe('onIdTokenChanged', () => {
+    it('calls callback with the current user and when auth state changes', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onIdTokenChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      callback.should.be.calledTwice();
+
+      // Tear down
+
+      unsubscribe();
+    });
+
+    it('stops listening when unsubscribed', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onIdTokenChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      callback.should.be.calledTwice();
+
+      // Unsubscribe
+
+      unsubscribe();
+
+      // Sign back in
+
+      await firebase.native.auth().signInAnonymously();
+
+      // Assertions
+
+      callback.should.be.calledTwice();
+
+      // Tear down
+
+      await firebase.native.auth().signOut();
+    });
+  });
+
+  describe('onUserChanged', () => {
+    it('calls callback with the current user and when auth state changes', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onUserChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      // Because of the way onUserChanged works, it will be called double
+      // - once for onAuthStateChanged
+      // - once for onIdTokenChanged
+      callback.should.have.callCount(4);
+
+      // Tear down
+
+      unsubscribe();
+    });
+
+    it('stops listening when unsubscribed', async () => {
+      await firebase.native.auth().signInAnonymously();
+
+      // Test
+      const callback = sinon.spy();
+
+      let unsubscribe;
+      await new Promise((resolve) => {
+        unsubscribe = firebase.native.auth().onUserChanged((user) => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledWith(firebase.native.auth().currentUser);
+      callback.should.be.calledOnce();
+
+      // Sign out
+
+      await firebase.native.auth().signOut();
+
+      await new Promise((resolve) => {
+        setTimeout(() => resolve(), 5);
+      });
+
+      // Assertions
+
+      callback.should.be.calledWith(null);
+      // Because of the way onUserChanged works, it will be called double
+      // - once for onAuthStateChanged
+      // - once for onIdTokenChanged
+      callback.should.have.callCount(4);
+
+      // Unsubscribe
+
+      unsubscribe();
+
+      // Sign back in
+
+      await firebase.native.auth().signInAnonymously();
+
+      // Assertions
+
+      callback.should.have.callCount(4);
+
+      // Tear down
+
+      await firebase.native.auth().signOut();
+    });
+  });
+
   describe('signInAnonymously', () => {
     it('it should sign in anonymously', () => {
       const successCb = (currentUser) => {
