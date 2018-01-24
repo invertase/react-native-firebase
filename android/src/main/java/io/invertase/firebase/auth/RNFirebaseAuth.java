@@ -1198,6 +1198,28 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     firebaseAuth.useAppLanguage();
   }
 
+  @ReactMethod
+  public void verifyPasswordResetCode(String appName, String code, final Promise promise) {
+    Log.d(TAG, "verifyPasswordResetCode");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.verifyPasswordResetCode(code).addOnCompleteListener(new OnCompleteListener<String>() {
+      @Override
+      public void onComplete(@NonNull Task<String> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "verifyPasswordResetCode:onComplete:success");
+          promise.resolve(task.getResult());
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "verifyPasswordResetCode:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      }
+    });
+  }
+
   /* ------------------
    * INTERNAL HELPERS
    * ---------------- */
