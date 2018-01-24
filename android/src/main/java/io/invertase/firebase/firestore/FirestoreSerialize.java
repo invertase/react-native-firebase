@@ -197,7 +197,7 @@ public class FirestoreSerialize {
       } else if (Map.class.isAssignableFrom(value.getClass())) {
         typeMap.putString("type", "object");
         typeMap.putMap("value", objectMapToWritable((Map<String, Object>) value));
-      }  else if (List.class.isAssignableFrom(value.getClass())) {
+      } else if (List.class.isAssignableFrom(value.getClass())) {
         typeMap.putString("type", "array");
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
@@ -215,7 +215,6 @@ public class FirestoreSerialize {
         typeMap.putString("type", "date");
         typeMap.putDouble("value", ((Date) value).getTime());
       } else {
-        // TODO: Changed to log an error rather than crash - is this correct?
         Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
         typeMap.putString("type", "null");
         typeMap.putNull("value");
