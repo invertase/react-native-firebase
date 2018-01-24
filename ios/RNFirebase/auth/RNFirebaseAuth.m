@@ -1057,11 +1057,24 @@ RCT_EXPORT_METHOD(setLanguageCode:
  @param NSString code
  @return
  */
-RCT_EXPORT_METHOD(useDeviceLanguage:
-    (NSString *) appDisplayName) {
+RCT_EXPORT_METHOD(useDeviceLanguage:(NSString *) appDisplayName) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-     [[FIRAuth authWithApp:firApp] useAppLanguage];
+    [[FIRAuth authWithApp:firApp] useAppLanguage];
+}
+
+RCT_EXPORT_METHOD(verifyPasswordResetCode:(NSString *) appDisplayName
+                  code:(NSString *)code
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    [[FIRAuth authWithApp:firApp] verifyPasswordResetCode:code completion:^(NSString * _Nullable email, NSError * _Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            resolve(email);
+        }
+    }];
 }
 
 // This is here to protect against bugs in the iOS SDK which don't
