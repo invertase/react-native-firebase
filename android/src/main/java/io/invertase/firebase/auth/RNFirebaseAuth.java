@@ -38,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.ProviderQueryResult;
@@ -1104,6 +1105,8 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         return TwitterAuthProvider.getCredential(authToken, authSecret);
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
+      case "oauth":
+        return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
         // If the phone number is auto-verified quickly, then the verificationId can be null
         // We cached the credential as part of the verifyPhoneNumber request to be re-used here
