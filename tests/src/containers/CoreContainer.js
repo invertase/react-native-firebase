@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, Text, AppState, NetInfo, StatusBar, Platform } from 'react-native';
+import { AppState, NetInfo, StatusBar, Platform } from 'react-native';
 import { connect } from 'react-redux';
 
 import Navigator from '../navigator';
@@ -11,7 +11,6 @@ type Props = {
 };
 
 class CoreContainer extends React.Component {
-
   constructor() {
     super();
     this._isConnected = false;
@@ -28,10 +27,13 @@ class CoreContainer extends React.Component {
       StatusBar.setBarStyle('light-content');
     }
     AppState.addEventListener('change', this.handleAppStateChange);
-    NetInfo.isConnected.fetch().then((isConnected) => {
+    NetInfo.isConnected.fetch().then(isConnected => {
       this.handleAppStateChange('active'); // Force connect (react debugger issue)
       this.props.dispatch(setNetworkState(isConnected));
-      NetInfo.isConnected.addEventListener('connectionChange', this.handleNetworkChange);
+      NetInfo.isConnected.addEventListener(
+        'connectionChange',
+        this.handleNetworkChange
+      );
     });
   }
 
@@ -40,7 +42,10 @@ class CoreContainer extends React.Component {
    */
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    NetInfo.isConnected.removeEventListener('connectionChange', this.handleNetworkChange);
+    NetInfo.isConnected.removeEventListener(
+      'connectionChange',
+      this.handleNetworkChange
+    );
   }
 
   props: Props;
@@ -51,7 +56,7 @@ class CoreContainer extends React.Component {
    * https://facebook.github.io/react-native/docs/appstate.html
    * @param state
    */
-  handleAppStateChange = (state) => {
+  handleAppStateChange = state => {
     this.props.dispatch(setAppState(state));
     if (state === 'active' && this._isConnected) {
       // firestack.database().goOnline();
@@ -65,7 +70,7 @@ class CoreContainer extends React.Component {
    * https://facebook.github.io/react-native/docs/netinfo.html
    * @param isConnected
    */
-  handleNetworkChange = (isConnected) => {
+  handleNetworkChange = isConnected => {
     this._isConnected = isConnected;
     this.props.dispatch(setNetworkState(isConnected));
     if (isConnected) {

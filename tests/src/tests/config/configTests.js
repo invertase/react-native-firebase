@@ -15,20 +15,21 @@ function configTests({ before, describe, it, firebase }) {
   });
 
   describe('Config', () => {
-    it('it should fetch and activate config', () => {
-      return firebase.native.config().fetch(0)
-        .then(() => {
-          return firebase.native.config().activateFetched();
-        })
-        .then((activated) => {
+    it('it should fetch and activate config', () =>
+      firebase.native
+        .config()
+        .fetch(0)
+        .then(() => firebase.native.config().activateFetched())
+        .then(activated => {
           activated.should.be.a.Boolean();
           return Promise.resolve();
-        });
-    });
+        }));
 
-    it('it should get a single value by key', () => {
-      return firebase.native.config().getValue('foo')
-        .then((snapshot) => {
+    it('it should get a single value by key', () =>
+      firebase.native
+        .config()
+        .getValue('foo')
+        .then(snapshot => {
           snapshot.should.be.a.Object();
           snapshot.source.should.be.a.String();
           snapshot.val.should.be.a.Function();
@@ -36,12 +37,13 @@ function configTests({ before, describe, it, firebase }) {
           const value = snapshot.val();
           value.should.be.equalOneOf('bar', true);
           return Promise.resolve();
-        });
-    });
+        }));
 
-    it('it should get multiple values by an array of keys', () => {
-      return firebase.native.config().getValues(['foo', 'bar', 'foobar', 'numvalue'])
-        .then((result) => {
+    it('it should get multiple values by an array of keys', () =>
+      firebase.native
+        .config()
+        .getValues(['foo', 'bar', 'foobar', 'numvalue'])
+        .then(result => {
           result.should.be.a.Object();
           result.should.have.keys('foo', 'bar', 'foobar');
           const fooValue = result.foo.val();
@@ -55,16 +57,16 @@ function configTests({ before, describe, it, firebase }) {
           numvalueValue.should.be.equal(0);
 
           return Promise.resolve();
-        });
-    });
+        }));
 
-    it('it get all keys as an array', () => {
-      return firebase.native.config().getKeysByPrefix()
-        .then((result) => {
+    it('it get all keys as an array', () =>
+      firebase.native
+        .config()
+        .getKeysByPrefix()
+        .then(result => {
           result.should.be.Array();
           return Promise.resolve();
-        });
-    });
+        }));
   });
 }
 

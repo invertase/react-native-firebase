@@ -10,40 +10,27 @@ import RunStatus from '../../lib/RunStatus';
 import TestControlButton from '../components/TestControlButton';
 
 class Test extends React.Component {
-
-  static navigationOptions = ({ navigation: { state: { params: { title, testId } } } }) => {
-    return {
-      title,
-      headerTintColor: '#ffffff',
-      headerStyle: { backgroundColor: '#1976D2' },
-      headerRight: (
-        <View style={{ marginRight: 8 }}>
-          <TestControlButton testId={testId} />
-        </View>
-      ),
-    };
-  };
+  static navigationOptions = ({
+    navigation: { state: { params: { title, testId } } },
+  }) => ({
+    title,
+    headerTintColor: '#ffffff',
+    headerStyle: { backgroundColor: '#1976D2' },
+    headerRight: (
+      <View style={{ marginRight: 8 }}>
+        <TestControlButton testId={testId} />
+      </View>
+    ),
+  });
 
   static renderBanner({ status, time }) {
     switch (status) {
       case RunStatus.RUNNING:
-        return (
-          <Banner type={'warning'}>
-            Test is currently running.
-          </Banner>
-        );
+        return <Banner type="warning">Test is currently running.</Banner>;
       case RunStatus.OK:
-        return (
-          <Banner type={'success'}>
-            Test passed. ({time}ms)
-          </Banner>
-        );
+        return <Banner type="success">Test passed. ({time}ms)</Banner>;
       case RunStatus.ERR:
-        return (
-          <Banner type={'error'}>
-            Test failed. ({time}ms)
-          </Banner>
-        );
+        return <Banner type="error">Test failed. ({time}ms)</Banner>;
       default:
         return null;
     }
@@ -56,30 +43,33 @@ class Test extends React.Component {
   }
 
   render() {
-    const { test: { stackTrace, message, description, func, status, time }, testContextName } = this.props;
+    const {
+      test: { stackTrace, message, description, func, status, time },
+      testContextName,
+    } = this.props;
 
     return (
       <View style={styles.container}>
         {Test.renderBanner({ status, time })}
-        <ScrollView >
+        <ScrollView>
           <View style={styles.sectionContainer}>
             <Text style={styles.heading}>{testContextName}</Text>
             <Text style={styles.description}>{description}</Text>
           </View>
-          {message ? <View style={styles.sectionContainer}>
-            <Text style={styles.headingWarn}>Test Error Message</Text>
-            <Text style={styles.message}>{message || 'None.'}</Text>
-          </View> : null }
-          {stackTrace ? <View style={styles.sectionContainer}>
-            <Text style={styles.headingWarn}>Test Error Stack</Text>
-            <Text style={styles.description}>
-              {stackTrace || 'None.'}
-            </Text>
-          </View> : null }
+          {message ? (
+            <View style={styles.sectionContainer}>
+              <Text style={styles.headingWarn}>Test Error Message</Text>
+              <Text style={styles.message}>{message || 'None.'}</Text>
+            </View>
+          ) : null}
+          {stackTrace ? (
+            <View style={styles.sectionContainer}>
+              <Text style={styles.headingWarn}>Test Error Stack</Text>
+              <Text style={styles.description}>{stackTrace || 'None.'}</Text>
+            </View>
+          ) : null}
           <View style={styles.sectionContainer}>
-            <Text style={styles.heading}>
-              Test Code Preview
-            </Text>
+            <Text style={styles.heading}>Test Code Preview</Text>
             <Text style={styles.description}>
               {beautify(removeLastLine(removeFirstLine(func.toString())), {
                 indent_size: 4,
@@ -103,6 +93,7 @@ Test.propTypes = {
     description: PropTypes.string,
   }).isRequired,
 
+  // eslint-disable-next-line react/require-default-props
   testContextName: PropTypes.string,
 
   navigation: PropTypes.shape({
@@ -159,11 +150,17 @@ const styles = StyleSheet.create({
 
  */
 
-function select({ tests, testContexts }, { navigation: { state: { params: { testId } } } }) {
+function select(
+  { tests, testContexts },
+  { navigation: { state: { params: { testId } } } }
+) {
   const test = tests[testId];
   let testContext = testContexts[test.testContextId];
 
-  while (testContext.parentContextId && testContexts[testContext.parentContextId].parentContextId) {
+  while (
+    testContext.parentContextId &&
+    testContexts[testContext.parentContextId].parentContextId
+  ) {
     testContext = testContexts[testContext.parentContextId];
   }
   return {

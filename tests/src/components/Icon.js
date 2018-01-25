@@ -4,6 +4,7 @@ import VectorIcon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
   name: string,
+  /* eslint-disable react/require-default-props */
   size?: number,
   color?: string,
   allowFontScaling?: boolean,
@@ -11,11 +12,11 @@ type Props = {
   rotate?: number,
   onPress?: () => void,
   underlayColor?: string,
+  /* eslint-enable react/require-default-props */
 };
 
 // TODO Spin?
 class Icon extends React.Component {
-
   constructor() {
     super();
     this.measured = false;
@@ -36,15 +37,24 @@ class Icon extends React.Component {
   props: Props;
 
   render() {
-    const { name, size = 24, color = '#757575', allowFontScaling = true, style, rotate, onPress, underlayColor } = this.props;
+    const {
+      name,
+      size = 24,
+      color = '#757575',
+      allowFontScaling = true,
+      style,
+      rotate,
+      onPress,
+      underlayColor,
+    } = this.props;
 
     const icon = (
       <View
-        onLayout={(e) => this.setDimensions(e)}
+        onLayout={e => this.setDimensions(e)}
         style={[
-        style,
-        rotate ? { transform: [{ rotate: `${rotate}deg` }] } : null,
-      ]}
+          style,
+          rotate ? { transform: [{ rotate: `${rotate}deg` }] } : null,
+        ]}
       >
         <VectorIcon
           name={name.toLowerCase().replace(/\s+/g, '-')}
@@ -69,7 +79,6 @@ class Icon extends React.Component {
       </TouchableHighlight>
     );
   }
-
 }
 
 export default Icon;

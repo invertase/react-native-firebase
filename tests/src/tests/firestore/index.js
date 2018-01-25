@@ -38,9 +38,15 @@ const testGroups = [
 
 function firestoreTestSuite(testSuite) {
   testSuite.beforeEach(async () => {
-    this.collectionTestsCollection = testSuite.firebase.native.firestore().collection('collection-tests');
-    this.documentTestsCollection = testSuite.firebase.native.firestore().collection('document-tests');
-    this.firestoreTestsCollection = testSuite.firebase.native.firestore().collection('firestore-tests');
+    this.collectionTestsCollection = testSuite.firebase.native
+      .firestore()
+      .collection('collection-tests');
+    this.documentTestsCollection = testSuite.firebase.native
+      .firestore()
+      .collection('document-tests');
+    this.firestoreTestsCollection = testSuite.firebase.native
+      .firestore()
+      .collection('firestore-tests');
     // Make sure the collections are cleaned and initialised correctly
     await cleanCollection(this.collectionTestsCollection);
     await cleanCollection(this.documentTestsCollection);
@@ -59,7 +65,7 @@ function firestoreTestSuite(testSuite) {
     // Adding a clean here slows down the test suite dramatically
   });
 
-  testGroups.forEach((testGroup) => {
+  testGroups.forEach(testGroup => {
     testGroup(testSuite);
   });
 }

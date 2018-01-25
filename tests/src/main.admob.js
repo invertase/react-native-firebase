@@ -24,8 +24,7 @@ const unitId = {
 const firebase = fb.native;
 
 // Components
-const Banner = firebase.admob.Banner;
-const NativeExpress = firebase.admob.NativeExpress;
+const { Banner, NativeExpress } = firebase.admob;
 
 // API
 const interstitial = firebase.admob().interstitial(unitId.interstitial);
@@ -34,24 +33,19 @@ interstitial.loadAd();
 const rewarded = firebase.admob().rewarded(unitId.rewarded);
 rewarded.loadAd();
 
-
 function bootstrap() {
   // Remove logging on production
   if (!__DEV__) {
-    console.log = () => {
-    };
-    console.warn = () => {
-    };
-    console.error = () => {
-    };
+    console.log = () => {};
+    console.warn = () => {};
+    console.error = () => {};
     console.disableYellowBox = true;
   }
 
   class Root extends Component {
-
     showInterstitial() {
       interstitial.show();
-    };
+    }
 
     showRewarded() {
       rewarded.show();
@@ -60,22 +54,13 @@ function bootstrap() {
     render() {
       return (
         <View>
-          <Banner
-            unitId={unitId.banner}
-            size={'SMART_BANNER'}
-          />
+          <Banner unitId={unitId.banner} size="SMART_BANNER" />
           <NativeExpress
-            unitId={'ca-app-pub-3940256099942544/2793859312'}
-            size={'300x200'}
+            unitId="ca-app-pub-3940256099942544/2793859312"
+            size="300x200"
           />
-          <Button
-            title={'Show Interstitial'}
-            onPress={this.showInterstitial}
-          />
-          <Button
-            title={'Show Rewarded Video'}
-            onPress={this.showRewarded}
-          />
+          <Button title="Show Interstitial" onPress={this.showInterstitial} />
+          <Button title="Show Rewarded Video" onPress={this.showRewarded} />
         </View>
       );
     }
