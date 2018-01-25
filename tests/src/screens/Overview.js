@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Text, ListView, TouchableHighlight } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ListView,
+  TouchableHighlight,
+} from 'react-native';
 import { connect } from 'react-redux';
 import some from 'lodash.some';
 
@@ -31,10 +37,7 @@ class Overview extends React.Component {
    */
   static renderSeparator(sectionID, rowID) {
     return (
-      <View
-        key={`separator_${sectionID}_${rowID}`}
-        style={styles.separator}
-      />
+      <View key={`separator_${sectionID}_${rowID}`} style={styles.separator} />
     );
   }
 
@@ -51,9 +54,10 @@ class Overview extends React.Component {
       return Object.keys(testSuites).reduce((memo, testSuiteId) => {
         const testSuite = testSuites[testSuiteId];
 
-        const testSuiteHasFocusedTests = some(testSuite.testIds, (testId) => {
-          return focusedTestIds[testId];
-        });
+        const testSuiteHasFocusedTests = some(
+          testSuite.testIds,
+          testId => focusedTestIds[testId]
+        );
 
         if (testSuiteHasFocusedTests) {
           // eslint-disable-next-line no-param-reassign
@@ -85,7 +89,6 @@ class Overview extends React.Component {
     };
   }
 
-
   /**
    * Copies latest test suite status into state so they may be rendered as a ListView
    * @param {Object} nextProps - next props used to render component
@@ -94,7 +97,9 @@ class Overview extends React.Component {
    */
   componentWillReceiveProps({ testSuites, focusedTestIds }) {
     this.setState({
-      dataBlob: this.dataSource.cloneWithRows(Overview.testSuitesToShow({ testSuites, focusedTestIds })),
+      dataBlob: this.dataSource.cloneWithRows(
+        Overview.testSuitesToShow({ testSuites, focusedTestIds })
+      ),
     });
   }
 
@@ -122,19 +127,18 @@ class Overview extends React.Component {
     return (
       <TouchableHighlight
         key={`row_${rowId}`}
-        underlayColor={'rgba(0, 0, 0, 0.054)'}
+        underlayColor="rgba(0, 0, 0, 0.054)"
         onPress={() => {
           this.goToTestSuite(testSuite);
           highlight();
         }}
       >
-        <View style={[styles.row, status === RunStatus.ERR ? styles.error : null]}>
+        <View
+          style={[styles.row, status === RunStatus.ERR ? styles.error : null]}
+        >
           <View>
             <Text style={styles.title}>{name}</Text>
-            <Text
-              style={styles.description}
-              numberOfLines={1}
-            >
+            <Text style={styles.description} numberOfLines={1}>
               {description}
             </Text>
           </View>
@@ -157,9 +161,7 @@ class Overview extends React.Component {
 
     if (pendingTestsCount > 0) {
       return (
-        <Banner type="warning">
-          {pendingTestsCount} pending test(s).
-        </Banner>
+        <Banner type="warning">{pendingTestsCount} pending test(s).</Banner>
       );
     }
 
@@ -189,23 +191,20 @@ class Overview extends React.Component {
 
     if (isRunning) {
       return (
-        <Banner type={isErrors ? 'error' : 'warning'}>Running ({(totalTime / 1000).toFixed(0)}s) {totalProgress.toFixed(2)}%</Banner>
+        <Banner type={isErrors ? 'error' : 'warning'}>
+          Running ({(totalTime / 1000).toFixed(0)}s) {totalProgress.toFixed(2)}%
+        </Banner>
       );
     } else if (totalProgress > 0) {
       if (isErrors) {
-        return (
-          <Banner type={'error'}>Tests Complete with errors</Banner>
-        );
+        return <Banner type="error">Tests Complete with errors</Banner>;
       }
 
-      return (
-        <Banner type={'success'}>Tests Complete</Banner>
-      );
+      return <Banner type="success">Tests Complete</Banner>;
     }
 
     return null;
   }
-
 
   /**
    * Renders ListView of test suites that should be visible, taking into consideration
@@ -215,8 +214,8 @@ class Overview extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        { this.renderPendingTestsBanner() }
-        { this.renderStatusBanner() }
+        {this.renderPendingTestsBanner()}
+        {this.renderStatusBanner()}
         <ListView
           enableEmptySections
           dataSource={this.state.dataBlob}
@@ -229,21 +228,27 @@ class Overview extends React.Component {
 }
 
 Overview.propTypes = {
-  testSuites: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    status: PropTypes.oneOf(Object.values(RunStatus)),
-  })).isRequired,
+  testSuites: PropTypes.objectOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      description: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      status: PropTypes.oneOf(Object.values(RunStatus)),
+    })
+  ).isRequired,
 
-  tests: PropTypes.objectOf(PropTypes.shape({
-    testSuiteId: PropTypes.number.isRequired,
-  })).isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
+  tests: PropTypes.objectOf(
+    PropTypes.shape({
+      testSuiteId: PropTypes.number.isRequired,
+    })
+  ).isRequired,
 
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
 
+  // eslint-disable-next-line react/no-unused-prop-types
   running: PropTypes.bool.isRequired,
 
   pendingTestIds: PropTypes.objectOf(PropTypes.bool).isRequired,
@@ -283,13 +288,21 @@ const styles = StyleSheet.create({
   },
 });
 
-function mapStateToProps({ testSuites, tests, pendingTestIds, focusedTestIds }) {
+function mapStateToProps({
+  testSuites,
+  tests,
+  pendingTestIds,
+  focusedTestIds,
+}) {
   return {
     testSuites,
     tests,
     pendingTestIds,
     focusedTestIds,
-    running: Object.values(testSuites).filter(suite => suite.status === RunStatus.RUNNING).length > 0,
+    running:
+      Object.values(testSuites).filter(
+        suite => suite.status === RunStatus.RUNNING
+      ).length > 0,
   };
 }
 

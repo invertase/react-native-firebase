@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { StyleSheet, View, Text, ListView, TouchableHighlight } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ListView,
+  TouchableHighlight,
+} from 'react-native';
 import { connect } from 'react-redux';
 
 import RunStatus from '../../lib/RunStatus';
@@ -12,23 +18,25 @@ import StatusIndicator from '../components/StatusIndicator';
 import TestSuiteControlButton from '../components/TestSuiteControlButton';
 
 class Suite extends React.Component {
-
-  static navigationOptions = ({ navigation: { state: { params: { title, testSuiteId, onlyShowFailingTests } }, setParams } }) => {
-    return {
-      title,
-      headerTintColor: '#ffffff',
-      headerStyle: { backgroundColor: '#1976D2' },
-      headerRight: (
-        <View style={{ flexDirection: 'row', marginRight: 8 }}>
-          <TestSuiteControlButton
-            testSuiteId={testSuiteId}
-            onlyShowFailingTests={onlyShowFailingTests}
-            onFilterChange={setParams}
-          />
-        </View>
-      ),
-    };
-  };
+  static navigationOptions = ({
+    navigation: {
+      state: { params: { title, testSuiteId, onlyShowFailingTests } },
+      setParams,
+    },
+  }) => ({
+    title,
+    headerTintColor: '#ffffff',
+    headerStyle: { backgroundColor: '#1976D2' },
+    headerRight: (
+      <View style={{ flexDirection: 'row', marginRight: 8 }}>
+        <TestSuiteControlButton
+          testSuiteId={testSuiteId}
+          onlyShowFailingTests={onlyShowFailingTests}
+          onFilterChange={setParams}
+        />
+      </View>
+    ),
+  });
 
   /**
    * Render test group header
@@ -38,13 +46,8 @@ class Suite extends React.Component {
    */
   static renderHeader(data, title) {
     return (
-      <View
-        key={`header_${title}`}
-        style={styles.header}
-      >
-        <Text style={styles.headerText}>
-          {title.toUpperCase()}
-        </Text>
+      <View key={`header_${title}`} style={styles.header}>
+        <Text style={styles.headerText}>{title.toUpperCase()}</Text>
       </View>
     );
   }
@@ -58,7 +61,9 @@ class Suite extends React.Component {
     });
 
     this.state = {
-      dataBlob: this.dataSource.cloneWithRowsAndSections(buildRowsWithSections(props)),
+      dataBlob: this.dataSource.cloneWithRowsAndSections(
+        buildRowsWithSections(props)
+      ),
     };
   }
 
@@ -78,7 +83,7 @@ class Suite extends React.Component {
         return Object.values(testContexts).reduce((sections, context) => {
           const { name } = context;
 
-          context.testIds.forEach((testId) => {
+          context.testIds.forEach(testId => {
             const test = tests[testId];
 
             if (test && test.status === RunStatus.ERR) {
@@ -125,16 +130,16 @@ class Suite extends React.Component {
     return (
       <TouchableHighlight
         key={`row_${rowId}`}
-        underlayColor={'rgba(0, 0, 0, 0.054)'}
+        underlayColor="rgba(0, 0, 0, 0.054)"
         onPress={() => {
           this.goToTest(test);
           highlight();
         }}
       >
-        <View style={[styles.row, status === RunStatus.ERR ? styles.error : null]}>
-          <View
-            style={[{ flex: 9 }, styles.rowContent]}
-          >
+        <View
+          style={[styles.row, status === RunStatus.ERR ? styles.error : null]}
+        >
+          <View style={[{ flex: 9 }, styles.rowContent]}>
             <Text
               numberOfLines={2}
               style={pendingTestIds[id] ? styles.disabledRow : {}}
@@ -142,7 +147,9 @@ class Suite extends React.Component {
               {description}
             </Text>
           </View>
-          <View style={[{ flex: 1 }, styles.rowContent, [{ alignItems: 'center' }]]}>
+          <View
+            style={[{ flex: 1 }, styles.rowContent, [{ alignItems: 'center' }]]}
+          >
             <StatusIndicator status={status} />
           </View>
         </View>
@@ -158,10 +165,7 @@ class Suite extends React.Component {
    */
   renderSeparator(sectionID, rowID) {
     return (
-      <View
-        key={`separator_${sectionID}_${rowID}`}
-        style={styles.separator}
-      />
+      <View key={`separator_${sectionID}_${rowID}`} style={styles.separator} />
     );
   }
 
@@ -170,7 +174,7 @@ class Suite extends React.Component {
 
     let pendingTestsCount = 0;
 
-    testIds.forEach((testId) => {
+    testIds.forEach(testId => {
       if (pendingTestIds[testId]) {
         pendingTestsCount += 1;
       }
@@ -178,9 +182,7 @@ class Suite extends React.Component {
 
     if (pendingTestsCount) {
       return (
-        <Banner type="warning">
-          {pendingTestsCount} pending test(s).
-        </Banner>
+        <Banner type="warning">{pendingTestsCount} pending test(s).</Banner>
       );
     }
 
@@ -192,25 +194,18 @@ class Suite extends React.Component {
 
     switch (status) {
       case RunStatus.RUNNING:
-
         return (
-          <Banner type={'warning'}>
-            Tests are currently running ({ progress.toFixed(2) }%).
+          <Banner type="warning">
+            Tests are currently running ({progress.toFixed(2)}%).
           </Banner>
         );
 
       case RunStatus.OK:
-
-        return (
-          <Banner type={'success'}>
-            Tests passed. ({ time }ms)
-          </Banner>
-        );
+        return <Banner type="success">Tests passed. ({time}ms)</Banner>;
 
       case RunStatus.ERR:
-
         return (
-          <Banner type={'error'}>
+          <Banner type="error">
             {message} ({time}ms)
           </Banner>
         );
@@ -229,9 +224,8 @@ class Suite extends React.Component {
 
     return (
       <View style={styles.container}>
-
-        { this.renderPendingTestsBanner() }
-        { this.renderStatusBanner() }
+        {this.renderPendingTestsBanner()}
+        {this.renderStatusBanner()}
 
         <ListView
           dataSource={dataBlob}
@@ -242,7 +236,6 @@ class Suite extends React.Component {
       </View>
     );
   }
-
 }
 
 Suite.propTypes = {
@@ -262,18 +255,23 @@ Suite.propTypes = {
     message: PropTypes.string,
   }).isRequired,
 
-  testContexts: PropTypes.objectOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    testIds: PropTypes.arrayOf(PropTypes.number).isRequired,
-  })).isRequired,
+  testContexts: PropTypes.objectOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      testIds: PropTypes.arrayOf(PropTypes.number).isRequired,
+    })
+  ).isRequired,
 
-  tests: PropTypes.objectOf(PropTypes.shape({
-    id: PropTypes.number,
-    description: PropTypes.string,
-    status: PropTypes.oneOf(Object.values(RunStatus)),
-  })).isRequired,
+  tests: PropTypes.objectOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      description: PropTypes.string,
+      status: PropTypes.oneOf(Object.values(RunStatus)),
+    })
+  ).isRequired,
 
   pendingTestIds: PropTypes.objectOf(PropTypes.bool).isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
   focusedTestIds: PropTypes.objectOf(PropTypes.bool).isRequired,
 };
 
@@ -346,11 +344,16 @@ function buildRowsWithSections({ testContexts, tests, focusedTestIds }) {
     }, []);
 
     if (contextTestsToShow.length > 0) {
-      const effectiveContext = highestNonRootAncestor(testContext, testContexts);
+      const effectiveContext = highestNonRootAncestor(
+        testContext,
+        testContexts
+      );
       // eslint-disable-next-line no-param-reassign
       sections[effectiveContext.name] = sections[effectiveContext.name] || [];
       // eslint-disable-next-line no-param-reassign
-      sections[effectiveContext.name] = sections[effectiveContext.name].concat(contextTestsToShow);
+      sections[effectiveContext.name] = sections[effectiveContext.name].concat(
+        contextTestsToShow
+      );
     }
 
     return sections;
@@ -358,11 +361,12 @@ function buildRowsWithSections({ testContexts, tests, focusedTestIds }) {
 }
 
 function highestNonRootAncestor(testContext, testContexts) {
-  const parentContextId = testContext.parentContextId;
+  const { parentContextId } = testContext;
 
   if (parentContextId) {
     const parentContext = testContexts[parentContextId];
-    const parentContextIsNotRoot = parentContext && parentContext.parentContextId;
+    const parentContextIsNotRoot =
+      parentContext && parentContext.parentContextId;
 
     if (parentContextIsNotRoot) {
       return highestNonRootAncestor(parentContext, testContexts);
@@ -372,16 +376,28 @@ function highestNonRootAncestor(testContext, testContexts) {
   return testContext;
 }
 
-function mapStateToProps(state, { navigation: { state: { params: { testSuiteId } } } }) {
-  const { tests, testContexts, testSuites, pendingTestIds, focusedTestIds } = state;
+function mapStateToProps(
+  state,
+  { navigation: { state: { params: { testSuiteId } } } }
+) {
+  const {
+    tests,
+    testContexts,
+    testSuites,
+    pendingTestIds,
+    focusedTestIds,
+  } = state;
   const testSuite = testSuites[testSuiteId];
 
-  const testSuiteContexts = testSuite.testContextIds.reduce((suiteContexts, contextId) => {
-    // eslint-disable-next-line no-param-reassign
-    suiteContexts[contextId] = testContexts[contextId];
+  const testSuiteContexts = testSuite.testContextIds.reduce(
+    (suiteContexts, contextId) => {
+      // eslint-disable-next-line no-param-reassign
+      suiteContexts[contextId] = testContexts[contextId];
 
-    return suiteContexts;
-  }, {});
+      return suiteContexts;
+    },
+    {}
+  );
 
   const testSuiteTests = testSuite.testIds.reduce((suiteTests, testId) => {
     // eslint-disable-next-line no-param-reassign
