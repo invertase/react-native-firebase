@@ -13,6 +13,7 @@
     "flow": "flow",
     "format": "eslint --fix ./lib ./tests/src ./tests/lib",
     "lint": "eslint ./lib ./tests/src ./tests/lib",
+    "precommit": "lint-staged",
     "prepublish": "npm run clean && npm run build",
     "postinstall": "postinstall-build dist && opencollective postinstall || exit 0",
     "test-cli": "node ./bin/test.js",
@@ -122,5 +123,19 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase",
     "logo": "https://opencollective.com/opencollective/logo.txt"
+  },
+  "lint-staged": {
+    "lib/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "tests/src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "tests/lib/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
