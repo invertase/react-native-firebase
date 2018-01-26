@@ -8,7 +8,7 @@
   "scripts": {
     "build": "genversion lib/version.js && npm run build-lib && npm run build-flow",
     "build-flow": "flow-copy-source -i */__tests__* lib dist",
-    "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
+    "build-lib": "npm run validate-ts-declarations && BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
     "clean": "rimraf dist/",
     "flow": "flow",
     "format": "eslint --fix ./lib ./tests/src ./tests/lib",
@@ -21,7 +21,8 @@
     "tests-npm-install": "cd tests && npm install",
     "tests-pod-install": "cd tests && npm run ios:pod:install",
     "tests-watch-start": "npm run test-cli watch init start",
-    "tests-watch-stop": "npm run test-cli watch stop"
+    "tests-watch-stop": "npm run test-cli watch stop",
+    "validate-ts-declarations": "tsc --project ./"
   },
   "repository": {
     "type": "git",
@@ -101,6 +102,7 @@
     "react-native": "^0.52.0",
     "rimraf": "^2.6.2",
     "shelljs": "^0.7.8",
+    "typescript": "^2.6.2",
     "wml": "0.0.82"
   },
   "dependencies": {
