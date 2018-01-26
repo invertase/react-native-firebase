@@ -5,6 +5,13 @@
 
 declare module "react-native-firebase" {
 
+  /** 3rd party provider Credentials */
+  type AuthCredential = {
+    providerId: string,
+    token: string,
+    secret: string
+  }
+
   type AuthProvider = {
     PROVIDER_ID: string,
     credential: (token: string, secret?: string) => AuthCredential,
@@ -594,7 +601,7 @@ declare module "react-native-firebase" {
        *
        * @param forceRefresh: boolean - default to false
        */
-      getIdToken(forceRefresh: boolean?): Promise<string>
+      getIdToken(forceRefresh?: boolean): Promise<string>
 
       /**
        * Link the user with a 3rd party credential provider.
@@ -640,13 +647,6 @@ declare module "react-native-firebase" {
        * Profile data should be an object of fields to update:
        */
       updateProfile(updates: UpdateProfile): Promise<void>
-    }
-
-    /** 3rd party provider Credentials */
-    type AuthCredential = {
-      providerId: string,
-      token: string,
-      secret: string
     }
 
     type ActionCodeSettings = {
@@ -1032,7 +1032,7 @@ declare module "react-native-firebase" {
          * Returns an unsubscribe function, call the returned function to
          * unsubscribe from all future events.
          */
-        onLink(listener: (url) => void): () => void;
+        onLink(listener: (url: string) => void): () => void;
       }
 
       /**
