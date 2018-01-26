@@ -643,7 +643,7 @@ declare module "react-native-firebase" {
     }
 
     /** 3rd party provider Credentials */
-    type AuthCredential {
+    type AuthCredential = {
       providerId: string,
       token: string,
       secret: string
@@ -1034,7 +1034,7 @@ declare module "react-native-firebase" {
          */
         onLink(listener: (url) => void): () => void;
       }
-  
+
       /**
        * Configuration when creating a Dynamic Link (standard or short). For
        * more information about each parameter, see the official Firebase docs:
