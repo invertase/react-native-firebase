@@ -315,6 +315,34 @@ function issueTests({ describe, it, context, firebase }) {
       });
     });
   });
+
+  describe('issue_679', () => {
+    context('path from snapshot reference', () => {
+      it('should match web SDK', async () => {
+        // Setup
+        const nativeRef = firebase.native.database().ref('tests/issues/679');
+        const webRef = firebase.web.database().ref('tests/issues/679');
+        const nativeRef2 = firebase.native.database().ref('tests/issues/679/');
+        const webRef2 = firebase.web.database().ref('tests/issues/679/');
+
+        // Test
+
+        webRef.toString().should.equal(nativeRef.toString());
+        webRef2.toString().should.equal(nativeRef2.toString());
+      });
+
+      it('should be correct when returned from native', async () => {
+        // Setup
+        const nativeRef = firebase.native.database().ref('tests/issues/679/');
+        const webRef = firebase.web.database().ref('tests/issues/679/');
+
+        const nativeSnapshot = await nativeRef.once('value');
+        const webSnapshot = await webRef.once('value');
+
+        webSnapshot.ref.toString().should.equal(nativeSnapshot.ref.toString());
+      });
+    });
+  });
 }
 
 export default issueTests;
