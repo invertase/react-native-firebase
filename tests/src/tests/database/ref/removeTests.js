@@ -9,7 +9,9 @@ function removeTests({ describe, it, firebase }) {
 
       // Test
 
-      const returnValue = ref.remove({ number: DatabaseContents.DEFAULT.number });
+      const returnValue = ref.remove({
+        number: DatabaseContents.DEFAULT.number,
+      });
 
       // Assertion
 
@@ -17,26 +19,29 @@ function removeTests({ describe, it, firebase }) {
     });
 
     it('sets value to null', async () => {
-      await Promise.map(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
-        // Setup
+      await Promise.map(
+        Object.keys(DatabaseContents.DEFAULT),
+        async dataRef => {
+          // Setup
 
-        const previousValue = DatabaseContents.DEFAULT[dataRef];
-        const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
+          const previousValue = DatabaseContents.DEFAULT[dataRef];
+          const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
 
-        await ref.once('value').then((snapshot) => {
-          snapshot.val().should.eql(previousValue);
-        });
+          await ref.once('value').then(snapshot => {
+            snapshot.val().should.eql(previousValue);
+          });
 
-        // Test
+          // Test
 
-        await ref.remove();
+          await ref.remove();
 
-        // Assertion
+          // Assertion
 
-        await ref.once('value').then((snapshot) => {
-          (snapshot.val() === null).should.be.true();
-        });
-      });
+          await ref.once('value').then(snapshot => {
+            (snapshot.val() === null).should.be.true();
+          });
+        }
+      );
     });
   });
 }

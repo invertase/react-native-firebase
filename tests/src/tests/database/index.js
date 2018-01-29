@@ -18,4 +18,3 @@ suite.addTests(refTestGroups);
 suite.addTests(snapshotTests);
 
 export default suite;
-

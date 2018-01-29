@@ -3,7 +3,11 @@ import TestSuite from '../../../lib/TestSuite';
 
 import performanceTests from './performanceTests';
 
-const suite = new TestSuite('Performance Monitoring', 'firebase.perf()', firebase);
+const suite = new TestSuite(
+  'Performance Monitoring',
+  'firebase.perf()',
+  firebase
+);
 
 suite.addTests(performanceTests);
 

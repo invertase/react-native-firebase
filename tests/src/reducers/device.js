@@ -1,4 +1,3 @@
-import * as fcmTypes from '../actions/FCMActions';
 import * as appTypes from '../actions/AppActions';
 
 type State = {
@@ -14,7 +13,6 @@ const initialState = {
 };
 
 function device(state: State = initialState, action: Object): State {
-
   if (action.type === appTypes.APP_SET_NETWORK_STATE) {
     return {
       ...state,

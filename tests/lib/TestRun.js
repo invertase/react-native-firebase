@@ -25,7 +25,6 @@ function cleanStack(stack, maxLines = 5) {
   return out.join('\r\n');
 }
 
-
 /**
  * Class that encapsulates synchronously running a suite's tests.
  */
@@ -50,9 +49,13 @@ class TestRun {
     this.rootContextId = testDefinitions.rootTestContextId;
 
     this.testContexts = tests.reduce((memo, test) => {
-      const testContextId = test.testContextId;
+      const { testContextId } = test;
 
-      this._recursivelyAddContextsTo(memo, testContextId, testDefinitions.testContexts);
+      this._recursivelyAddContextsTo(
+        memo,
+        testContextId,
+        testDefinitions.testContexts
+      );
 
       memo[testContextId].tests.unshift(test);
 
@@ -101,7 +104,7 @@ class TestRun {
       target[id].childContextIds[childContextId] = true;
     }
 
-    const parentContextId = testContext.parentContextId;
+    const { parentContextId } = testContext;
 
     if (parentContextId) {
       this._recursivelyAddContextsTo(target, parentContextId, source, id);
@@ -123,7 +126,11 @@ class TestRun {
     const store = this.testSuite.reduxStore;
 
     if (!store) {
-      testRuntimeError(`Failed to run ${this.testSuite.name} tests as no Redux store has been provided`);
+      testRuntimeError(
+        `Failed to run ${
+          this.testSuite.name
+        } tests as no Redux store has been provided`
+      );
     }
 
     this._updateStatus(EVENTS.TEST_SUITE_STATUS, {
@@ -152,17 +159,19 @@ class TestRun {
           progress: 100,
 
           time: Date.now() - this.runStartTime,
-          message: `${errors.length} test${errors.length > 1 ? 's' : ''} has error(s).`,
+          message: `${errors.length} test${
+            errors.length > 1 ? 's' : ''
+          } has error(s).`,
         });
       } else {
-        this._updateStatus(EVENTS.TEST_SUITE_STATUS, ({
+        this._updateStatus(EVENTS.TEST_SUITE_STATUS, {
           suiteId: this.testSuite.id,
           status: RunStatus.OK,
           progress: 100,
 
           time: Date.now() - this.runStartTime,
           message: '',
-        }));
+        });
       }
     }
   }
@@ -179,19 +188,35 @@ class TestRun {
    * @returns {Promise.<void>} Resolves once all tests and their hooks have run
    * @private
    */
-  async _runTestsInContext(testContext, beforeEachHooks = [], afterEachHooks = []) {
+  async _runTestsInContext(
+    testContext,
+    beforeEachHooks = [],
+    afterEachHooks = []
+  ) {
     const beforeHookRan = await this._runContextHooks(testContext, 'before');
 
     if (beforeHookRan) {
       beforeEachHooks.push(testContext.beforeEachHooks || []);
       afterEachHooks.unshift(testContext.afterEachHooks || []);
 
-      await this._runTests(testContext, testContext.tests, flatten(beforeEachHooks), flatten(afterEachHooks));
+      await this._runTests(
+        testContext,
+        testContext.tests,
+        flatten(beforeEachHooks),
+        flatten(afterEachHooks)
+      );
 
-      await Promise.each(Object.keys(testContext.childContextIds), (childContextId) => {
-        const childContext = this.testContexts[childContextId];
-        return this._runTestsInContext(childContext, beforeEachHooks, afterEachHooks);
-      });
+      await Promise.each(
+        Object.keys(testContext.childContextIds),
+        childContextId => {
+          const childContext = this.testContexts[childContextId];
+          return this._runTestsInContext(
+            childContext,
+            beforeEachHooks,
+            afterEachHooks
+          );
+        }
+      );
 
       beforeEachHooks.pop();
       afterEachHooks.shift();
@@ -215,21 +240,39 @@ class TestRun {
   }
 
   _runHookChain(test, testStart, testContext, hookName, hooks) {
-    return Promise.each(hooks, async (hook) => {
-      const error = await this._safelyRunFunction(hook.callback, hook.timeout, `${hookName} hook`);
+    return Promise.each(hooks, async hook => {
+      const error = await this._safelyRunFunction(
+        hook.callback,
+        hook.timeout,
+        `${hookName} hook`
+      );
 
       if (error) {
-        const errorPrefix = `Error occurred in "${testContext.name}" ${hookName} Hook: `;
+        const errorPrefix = `Error occurred in "${
+          testContext.name
+        }" ${hookName} Hook: `;
 
         if (test) {
-          this._reportTestError(test, error, Date.now() - testStart, errorPrefix);
+          this._reportTestError(
+            test,
+            error,
+            Date.now() - testStart,
+            errorPrefix
+          );
         } else {
-          this._reportAllTestsAsFailed(testContext, error, testStart, errorPrefix);
+          this._reportAllTestsAsFailed(
+            testContext,
+            error,
+            testStart,
+            errorPrefix
+          );
         }
 
         throw new Error();
       }
-    }).then(() => true).catch(() => false);
+    })
+      .then(() => true)
+      .catch(() => false);
   }
 
   /**
@@ -241,12 +284,17 @@ class TestRun {
    * @private
    */
   _reportAllTestsAsFailed(testContext, error, testStart, errorPrefix) {
-    testContext.tests.forEach((test) => {
+    testContext.tests.forEach(test => {
       this._reportTestError(test, error, Date.now() - testStart, errorPrefix);
     });
 
-    testContext.childContextIds.forEach((contextId) => {
-      this._reportAllTestsAsFailed(this.testContext[contextId], error, testStart, errorPrefix);
+    testContext.childContextIds.forEach(contextId => {
+      this._reportAllTestsAsFailed(
+        this.testContext[contextId],
+        error,
+        testStart,
+        errorPrefix
+      );
     });
   }
 
@@ -262,7 +310,7 @@ class TestRun {
    * @private
    */
   async _runTests(testContext, tests, beforeEachHooks, afterEachHooks) {
-    return Promise.each(tests, async (test) => {
+    return Promise.each(tests, async test => {
       this._updateStatus(EVENTS.TEST_STATUS, {
         testId: test.id,
         status: RunStatus.RUNNING,
@@ -272,16 +320,29 @@ class TestRun {
 
       const testStart = Date.now();
 
-      const beforeEachRan = await this._runHookChain(test, testStart, testContext, 'beforeEach', beforeEachHooks);
+      const beforeEachRan = await this._runHookChain(
+        test,
+        testStart,
+        testContext,
+        'beforeEach',
+        beforeEachHooks
+      );
 
       if (beforeEachRan) {
-        const error = await this._safelyRunFunction(test.func.bind(null, [test, this.testSuite.reduxStore.getState()]), test.timeout, 'Test');
+        const error = await this._safelyRunFunction(
+          test.func.bind(null, [test, this.testSuite.reduxStore.getState()]),
+          test.timeout,
+          'Test'
+        );
 
         // Update test status
 
         if (error) {
           this._reportTestError(test, error, Date.now() - testStart);
-          console.groupCollapsed(`%c ❌ Test Failed: ${test.description} (${this.testSuite.name})`, 'color: #f44336;');
+          console.groupCollapsed(
+            `%c ❌ Test Failed: ${test.description} (${this.testSuite.name})`,
+            'color: #f44336;'
+          );
           console.log(`Test Description: ${test.description}`);
           console.log(`Test Time Taken: ${Date.now() - testStart}`);
           console.log(`Suite Name: ${this.testSuite.name}`);
@@ -299,7 +360,10 @@ class TestRun {
             message: '',
           });
 
-          console.groupCollapsed(`%c ✅ Test Passed: ${test.description} (${this.testSuite.name})`, 'color: #4CAF50;');
+          console.groupCollapsed(
+            `%c ✅ Test Passed: ${test.description} (${this.testSuite.name})`,
+            'color: #4CAF50;'
+          );
           console.log(`Test Description: ${test.description}`);
           console.log(`Test Time Taken: ${Date.now() - testStart}`);
           console.log(`Suite Name: ${this.testSuite.name}`);
@@ -314,14 +378,20 @@ class TestRun {
         this._updateStatus(EVENTS.TEST_SUITE_STATUS, {
           suiteId: this.testSuite.id,
           status: RunStatus.RUNNING,
-          progress: (this.completedTests / this.tests.length) * 100,
+          progress: this.completedTests / this.tests.length * 100,
           time: Date.now() - this.runStartTime,
           message: '',
         });
 
-        await this._runHookChain(test, testStart, testContext, 'afterEach', afterEachHooks);
+        await this._runHookChain(
+          test,
+          testStart,
+          testContext,
+          'afterEach',
+          afterEachHooks
+        );
       }
-    }).catch((error) => {
+    }).catch(error => {
       this._updateStatus(EVENTS.TEST_SUITE_STATUS, {
         suiteId: this.testSuite.id,
         status: RunStatus.ERR,
@@ -346,7 +416,9 @@ class TestRun {
       testId: test.id,
       status: RunStatus.ERR,
       time,
-      message: `${errorPrefix}${error.message ? `${error.name}: ${error.message}` : error}`,
+      message: `${errorPrefix}${
+        error.message ? `${error.name}: ${error.message}` : error
+      }`,
       stackTrace: cleanStack(error.stack),
     });
   }
@@ -368,9 +440,12 @@ class TestRun {
     }
 
     // Asynchronous Error
-    return capturePromiseErrors(syncResultOrPromise.result, timeOutDuration, description);
+    return capturePromiseErrors(
+      syncResultOrPromise.result,
+      timeOutDuration,
+      description
+    );
   }
-
 }
 
 /**
@@ -410,15 +485,10 @@ function capturePromiseErrors(target, timeoutDuration, description) {
 
   try {
     returnValue = Promise.resolve(target)
-      .then(() => {
-        return null;
-      }, (error) => {
-        return Promise.resolve(error);
-      })
-      .catch((error) => {
-        return Promise.resolve(error);
-      })
-      .timeout(timeoutDuration,
+      .then(() => null, error => Promise.resolve(error))
+      .catch(error => Promise.resolve(error))
+      .timeout(
+        timeoutDuration,
         `${description} took longer than ${timeoutDuration}ms. This can be extended with the timeout option.`
       );
   } catch (error) {
@@ -434,9 +504,7 @@ function capturePromiseErrors(target, timeoutDuration, description) {
  * @returns {*[]} One-dimensional array
  */
 function flatten(list) {
-  return list.reduce((memo, contextHooks) => {
-    return memo.concat(contextHooks);
-  }, []);
+  return list.reduce((memo, contextHooks) => memo.concat(contextHooks), []);
 }
 
 /**

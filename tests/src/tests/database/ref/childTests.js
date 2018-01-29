@@ -32,7 +32,7 @@ function childTests({ describe, it, context, firebase }) {
       });
     });
 
-    context('when passed a path that doesn\'t exist', () => {
+    context("when passed a path that doesn't exist", () => {
       it('creates a reference, anyway', () => {
         // Setup
 

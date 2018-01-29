@@ -14,7 +14,13 @@ export function setSuiteStatus({ suiteId, status, time, message, progress }) {
   };
 }
 
-export function setTestStatus({ testId, status, stackTrace, time = 0, message = null }) {
+export function setTestStatus({
+  testId,
+  status,
+  stackTrace,
+  time = 0,
+  message = null,
+}) {
   return {
     type: TEST_SET_STATUS,
     testId,
