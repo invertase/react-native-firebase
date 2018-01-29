@@ -5,88 +5,68 @@
 
 declare module "react-native-firebase" {
 
-  type AuthProvider = {
-    PROVIDER_ID: string,
-    credential: (token: string, secret?: string) => AuthCredential,
+  type FirebaseModuleAndStatics<M, S = {}> = {
+    (): M;
+    nativeModuleExists: boolean;
+  } & S
+
+  // Modules commented-out do not currently have type definitions
+  export class Firebase {
+    private constructor();
+    // admob: FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
+    analytics: FirebaseModuleAndStatics<RNFirebase.Analytics>;
+    auth: FirebaseModuleAndStatics<RNFirebase.auth.Auth, RNFirebase.auth.AuthStatics>;
+    // config: FirebaseModule<RNFirebase.config.Config>;
+    crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
+    database: FirebaseModuleAndStatics<RNFirebase.database.Database, RNFirebase.database.DatabaseStatics>;
+    fabric: {
+      crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
   };
+    // firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore>;
+    links: FirebaseModuleAndStatics<RNFirebase.links.Links>;
+    messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging>;
+    // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
+    storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
+    // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
+    initializeApp(options: Firebase.Options, name: string): App;
+    app(name?: string): App;
+    apps(): App[];
+    SDK_VERSION(): string;
+  }
+  namespace Firebase {
+    interface Options {
+      apiKey: string;
+      appId: string;
+      databaseURL: string;
+      messagingSenderId: string;
+      projectId: string;
+      storageBucket: string;
+    }
+  }
+  const firebase: Firebase;
+  export default firebase;
 
-  export default class FireBase {
-    constructor(config?: RNFirebase.configurationOptions)
-
-    log: any;
-
+  // Modules commented-out do not currently have type definitions
+  export class App {
+    private constructor();
+    // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
-
-    on(type: string, handler: (msg: any) => void): any;
-
-    database: {
-      (): RNFirebase.database.Database
-      ServerValue: {
-        TIMESTAMP: number
-      }
-    };
-
-    auth: {
-      (): RNFirebase.auth.Auth
-      EmailAuthProvider: AuthProvider,
-      PhoneAuthProvider: AuthProvider,
-      GoogleAuthProvider: AuthProvider,
-      GithubAuthProvider: AuthProvider,
-      TwitterAuthProvider: AuthProvider,
-      FacebookAuthProvider: AuthProvider,
-      PhoneAuthState: {
-        CODE_SENT: string,
-        AUTO_VERIFY_TIMEOUT: string,
-        AUTO_VERIFIED: string,
-        ERROR: string,
-      },
-    };
-
-    /**RNFirebase mimics the Web Firebase SDK Storage,
-     * whilst providing some iOS and Android specific functionality.
-     */
-    storage(): RNFirebase.storage.Storage;
-
-    /**
-     * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
-     * Assuming the installation instructions have been followed, FCM is ready to go.
-     * As the Firebase Web SDK has limited messaging functionality,
-     * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
-     */
-    messaging(): RNFirebase.messaging.Messaging;
-
-    /**
-     * RNFirebase provides crash reporting for your app out of the box.
-     * Please note crashes do not appear in real-time on the console,
-     * they tend to take a number of hours to appear
-     * If you want to manually report a crash,
-     * such as a pre-caught exception this is possible by using the report method.
-     */
+    auth(): RNFirebase.auth.Auth;
+    // config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
-
-    /**
-     * Firebase Dynamic Links are links that work the way you want, on multiple
-     * platforms, and whether or not your app is already installed.
-     * See the official Firebase docs:
-     * https://firebase.google.com/docs/dynamic-links/
-     */
-    links(): RNFirebase.links.Links;
-
-    static fabric: {
-      crashlytics(): RNFirebase.crashlytics.Crashlytics;
+    database(): RNFirebase.database.Database;
+    fabric: {
+      crashlytics(): RNFirebase.crashlytics.Crashlytics,
     };
-
-    apps: Array<string>;
-    googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
-
-    static initializeApp(options?: any | RNFirebase.configurationOptions, name?: string): FireBase;
-
-    static app(name?: string): FireBase;
-
-    [key: string]: any;
+    // firestore(): RNFirebase.firestore.Firestore;
+    links(): RNFirebase.links.Links;
+    messaging(): RNFirebase.messaging.Messaging;
+    // perf(): RNFirebase.perf.Performance;
+    storage(): RNFirebase.storage.Storage;
+    // utils(): RNFirebase.utils.Utils;
   }
 
-  namespace RNFirebase {
+  export namespace RNFirebase {
     interface RnError extends Error {
       code?: string;
     }
@@ -484,6 +464,15 @@ declare module "react-native-firebase" {
 
         update(values: Object, onComplete?: (a: RnError | null) => any): Promise<any>;
       }
+
+      interface DatabaseStatics {
+        /** @see https://www.firebase.com/docs/java-api/javadoc/com/firebase/client/ServerValue.html#TIMESTAMP */
+        ServerValue: {
+          TIMESTAMP: {
+            [key: string]: string
+          }
+        }
+    }
     }
 
     /**
@@ -643,7 +632,7 @@ declare module "react-native-firebase" {
     }
 
     /** 3rd party provider Credentials */
-    type AuthCredential {
+    type AuthCredential = {
       providerId: string,
       token: string,
       secret: string
@@ -710,6 +699,11 @@ declare module "react-native-firebase" {
         authenticated: boolean,
         user: object | null
       } | null;
+
+      type AuthProvider = {
+        PROVIDER_ID: string,
+        credential: (token: string, secret?: string) => AuthCredential,
+      };
 
       interface Auth {
         /**
@@ -827,6 +821,21 @@ declare module "react-native-firebase" {
         fetchProvidersForEmail(email: string): Promise<Array<string>>
 
         [key: string]: any;
+      }
+
+      interface AuthStatics {
+        EmailAuthProvider: AuthProvider;
+        PhoneAuthProvider: AuthProvider;
+        GoogleAuthProvider: AuthProvider;
+        GithubAuthProvider: AuthProvider;
+        TwitterAuthProvider: AuthProvider;
+        FacebookAuthProvider: AuthProvider;
+        PhoneAuthState: {
+          CODE_SENT: string;
+          AUTO_VERIFY_TIMEOUT: string;
+          AUTO_VERIFIED: string;
+          ERROR: string;
+        };
       }
     }
 
