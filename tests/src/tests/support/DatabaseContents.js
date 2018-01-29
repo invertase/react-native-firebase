@@ -1,8 +1,6 @@
 export default {
   DEFAULT: {
-    array: [
-      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    ],
+    array: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     boolean: true,
     string: 'foobar',
     number: 123567890,
@@ -12,9 +10,7 @@ export default {
   },
 
   NEW: {
-    array: [
-      9, 8, 7, 6, 5, 4,
-    ],
+    array: [9, 8, 7, 6, 5, 4],
     boolean: false,
     string: 'baz',
     number: 84564564,
@@ -23,13 +19,17 @@ export default {
     },
   },
 
-  QUERY: [{
-    search: 'foo',
-  }, {
-    search: 'bar',
-  }, {
-    search: 'blah',
-  }],
+  QUERY: [
+    {
+      search: 'foo',
+    },
+    {
+      search: 'bar',
+    },
+    {
+      search: 'blah',
+    },
+  ],
 
   ISSUES: {
     // https://github.com/invertase/react-native-firebase/issues/100
@@ -55,7 +55,7 @@ export default {
         latitude: 34.1013717,
       },
       notTheFoobar: {
-        name: 'Not the pizza you\'re looking for',
+        name: "Not the pizza you're looking for",
         latitude: 34.456787,
       },
       notAFloat: {

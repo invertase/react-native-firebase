@@ -8,10 +8,11 @@ export function setNetworkState(isConnected: boolean): Object {
   };
 }
 
-export function setAppState(appState: 'active' | 'background' | 'inactive'): Object {
+export function setAppState(
+  appState: 'active' | 'background' | 'inactive'
+): Object {
   return {
     type: APP_SET_APP_STATE,
     appState,
   };
 }
-

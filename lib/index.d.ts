@@ -21,8 +21,8 @@ declare module "react-native-firebase" {
     database: FirebaseModuleAndStatics<RNFirebase.database.Database, RNFirebase.database.DatabaseStatics>;
     fabric: {
       crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
-  };
-    // firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore>;
+    };
+    firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore, RNFirebase.firestore.FirestoreStatics>;
     links: FirebaseModuleAndStatics<RNFirebase.links.Links>;
     messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging>;
     // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
@@ -58,7 +58,7 @@ declare module "react-native-firebase" {
     fabric: {
       crashlytics(): RNFirebase.crashlytics.Crashlytics,
     };
-    // firestore(): RNFirebase.firestore.Firestore;
+    firestore(): RNFirebase.firestore.Firestore;
     links(): RNFirebase.links.Links;
     messaging(): RNFirebase.messaging.Messaging;
     // perf(): RNFirebase.perf.Performance;
@@ -1043,7 +1043,7 @@ declare module "react-native-firebase" {
          */
         onLink(listener: (url) => void): () => void;
       }
-  
+
       /**
        * Configuration when creating a Dynamic Link (standard or short). For
        * more information about each parameter, see the official Firebase docs:
@@ -1074,6 +1074,260 @@ declare module "react-native-firebase" {
         suffix?: {
           option: 'SHORT' | 'UNGUESSABLE',
         },
+      }
+    }
+
+    namespace firestore {
+      interface Firestore {
+        batch(): WriteBatch;
+        collection(collectionPath: string): CollectionReference;
+        doc(documentPath: string): DocumentReference;
+
+        /** NOT SUPPORTED YET */
+        // enablePersistence(): Promise<void>;
+        /** NOT SUPPORTED YET */
+        // runTransaction(): Promise<any>;
+        /** NOT SUPPORTED YET */
+        // settings(): void;
+      }
+
+      interface FirestoreStatics {
+        FieldPath: typeof FieldPath;
+        FieldValue: typeof FieldValue;
+        GeoPoint: typeof GeoPoint;
+        enableLogging(enabled: boolean): void;
+      }
+
+      interface CollectionReference {
+        readonly firestore: Firestore;
+        readonly id: string;
+        readonly parent: DocumentReference;
+        add(data: object): Promise<DocumentReference>;
+        doc(documentPath?: string): DocumentReference;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Query.Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+
+      interface DocumentChange {
+        readonly doc: DocumentSnapshot;
+        readonly newIndex: number;
+        readonly oldIndex: number;
+        readonly type: string;
+      }
+
+      interface DocumentReference {
+        readonly firestore: Firestore;
+        readonly id: string | null;
+        readonly parent: CollectionReference;
+        readonly path: string;
+        collection(collectionPath: string): CollectionReference;
+        delete(): Promise<void>;
+        get(): Promise<DocumentSnapshot>;
+        onSnapshot(onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(observer: DocumentReference.Observer): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, observer: DocumentReference.Observer): () => void;
+        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        update(obj: object): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): Promise<void>;
+      }
+      namespace DocumentReference {
+        interface DocumentListenOptions {
+          includeMetadataChanges: boolean;
+        }
+
+        type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      interface DocumentSnapshot {
+        readonly exists: boolean;
+        readonly id: string | null;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly ref: DocumentReference;
+        data(): object | void;
+        get(fieldPath: string | FieldPath): any | undefined;
+      }
+
+      class FieldPath {
+        static documentId(): FieldPath;
+        constructor(...segments: string[]);
+      }
+
+      class FieldValue {
+        static delete(): FieldValue;
+        static serverTimestamp(): FieldValue;
+      }
+
+      class GeoPoint {
+        constructor(latitude: number, longitude: number);
+        readonly latitude: number;
+        readonly longitude: number;
+      }
+
+      class Path {
+        static fromName(name: string): Path;
+        constructor(pathComponents: string[]);
+        readonly id: string | null;
+        readonly isDocument: boolean;
+        readonly isCollection: boolean;
+        readonly relativeName: string;
+        child(relativePath: string): Path;
+        parent(): Path | null;
+      }
+
+      interface Query {
+        readonly firestore: Firestore;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Query.Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+      namespace Query {
+        interface NativeFieldPath {
+          elements?: string[];
+          string?: string;
+          type: 'fieldpath' | 'string';
+        }
+
+        interface FieldFilter {
+          fieldPath: NativeFieldPath;
+          operator: string;
+          value: any;
+        }
+
+        interface FieldOrder {
+          direction: string;
+          fieldPath: NativeFieldPath;
+        }
+
+        interface QueryOptions {
+          endAt?: any[];
+          endBefore?: any[];
+          limit?: number;
+          offset?: number;
+          selectFields?: string[];
+          startAfter?: any[];
+          startAt?: any[];
+        }
+
+        // The JS code expects at least one of 'includeDocumentMetadataChanges'
+        // or 'includeQueryMetadataChanges' to be defined.
+        interface _IncludeDocumentMetadataChanges {
+          includeDocumentMetadataChanges: boolean;
+        }
+        interface _IncludeQueryMetadataChanges {
+          includeQueryMetadataChanges: boolean;
+        }
+        type QueryListenOptions = _IncludeDocumentMetadataChanges | _IncludeQueryMetadataChanges | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
+
+        type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      interface QuerySnapshot {
+        readonly docChanges: DocumentChange[];
+        readonly docs: DocumentSnapshot[];
+        readonly empty: boolean;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly query: Query;
+        readonly size: number;
+        forEach(callback: (snapshot: DocumentSnapshot) => any);
+      }
+      namespace QuerySnapshot {
+        interface NativeData {
+          changes: Types.NativeDocumentChange[];
+          documents: Types.NativeDocumentSnapshot[];
+          metadata: Types.SnapshotMetadata;
+        }
+      }
+
+      interface WriteBatch {
+        commit(): Promise<void>;
+        delete(docRef: DocumentReference): WriteBatch;
+        set(docRef: DocumentReference, data: object, options?: Types.WriteOptions): WriteBatch;
+        // multiple overrides for update() to allow strong-typed var_args
+        update(docRef: DocumentReference, obj: object): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): WriteBatch;
+      }
+
+      namespace Types {
+        interface NativeDocumentChange {
+          document: NativeDocumentSnapshot;
+          newIndex: number;
+          oldIndex: number;
+          type: string;
+        }
+
+        interface NativeDocumentSnapshot {
+          data: {
+            [key: string]: TypeMap;
+          };
+          metadata: SnapshotMetadata;
+          path: string;
+        }
+
+        interface SnapshotMetadata {
+          fromCache: boolean;
+          hasPendingWrites: boolean;
+        }
+
+        type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
+        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=';
+
+        interface TypeMap {
+          type: 'array' | 'boolean' | 'date' | 'documentid' | 'fieldvalue' | 'geopoint' | 'null' | 'number' | 'object' | 'reference' | 'string';
+          value: any;
+        }
+
+        /** The key in update() function for DocumentReference and WriteBatch. */
+        type UpdateKey = string | FieldPath
+
+        interface WriteOptions {
+          merge?: boolean;
+        }
       }
     }
   }

@@ -22,9 +22,24 @@ import priorityTests from './priorityTests';
 import DatabaseContents from '../../support/DatabaseContents';
 
 const testGroups = [
-  issueSpecificTests, factoryTests, keyTests, parentTests, childTests, rootTests,
-  pushTests, onTests, onValueTests, onChildAddedTests, onceTests, updateTests,
-  removeTests, setTests, transactionTests, queryTests, refTests, isEqualTests,
+  issueSpecificTests,
+  factoryTests,
+  keyTests,
+  parentTests,
+  childTests,
+  rootTests,
+  pushTests,
+  onTests,
+  onValueTests,
+  onChildAddedTests,
+  onceTests,
+  updateTests,
+  removeTests,
+  setTests,
+  transactionTests,
+  queryTests,
+  refTests,
+  isEqualTests,
   priorityTests,
   offTests,
 ];
@@ -42,10 +57,9 @@ function registerTestSuite(testSuite) {
     await this._databaseRef.parent.child('issues').set(DatabaseContents.ISSUES);
   });
 
-  testGroups.forEach((testGroup) => {
+  testGroups.forEach(testGroup => {
     testGroup(testSuite);
   });
 }
-
 
 module.exports = registerTestSuite;

@@ -5,7 +5,8 @@ import RNFirebase from './../../../firebase';
 
 const androidTestConfig = {
   // firebase android sdk completely ignores client id
-  clientId: '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
+  clientId:
+    '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
   appId: '1:305229645282:android:efe37851d57e1d05',
   apiKey: 'AIzaSyCzbBYFyX8d6VdSu7T4s10IWYbPc-dguwM',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
@@ -15,7 +16,8 @@ const androidTestConfig = {
 };
 
 const iosTestConfig = {
-  clientId: '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
+  clientId:
+    '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
   androidClientId: androidTestConfig.clientId,
   appId: '1:305229645282:ios:7b45748cb1117d2d',
   apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
@@ -27,7 +29,7 @@ const iosTestConfig = {
 
 function rand(from = 1, to = 9999) {
   const r = Math.random();
-  return Math.floor(r * ((to - from) + from));
+  return Math.floor(r * (to - from + from));
 }
 
 function coreTests({ describe, it }) {
@@ -38,18 +40,32 @@ function coreTests({ describe, it }) {
     });
 
     it('natively initialized apps should have options available in js', () => {
-      should.equal(RNFirebase.app().options.apiKey, Platform.OS === 'ios' ? iosTestConfig.apiKey : androidTestConfig.apiKey);
-      should.equal(RNFirebase.app().options.appId, Platform.OS === 'ios' ? iosTestConfig.appId : androidTestConfig.appId);
-      should.equal(RNFirebase.app().options.databaseURL, iosTestConfig.databaseURL);
-      should.equal(RNFirebase.app().options.messagingSenderId, iosTestConfig.messagingSenderId);
+      should.equal(
+        RNFirebase.app().options.apiKey,
+        Platform.OS === 'ios' ? iosTestConfig.apiKey : androidTestConfig.apiKey
+      );
+      should.equal(
+        RNFirebase.app().options.appId,
+        Platform.OS === 'ios' ? iosTestConfig.appId : androidTestConfig.appId
+      );
+      should.equal(
+        RNFirebase.app().options.databaseURL,
+        iosTestConfig.databaseURL
+      );
+      should.equal(
+        RNFirebase.app().options.messagingSenderId,
+        iosTestConfig.messagingSenderId
+      );
       should.equal(RNFirebase.app().options.projectId, iosTestConfig.projectId);
-      should.equal(RNFirebase.app().options.storageBucket, iosTestConfig.storageBucket);
+      should.equal(
+        RNFirebase.app().options.storageBucket,
+        iosTestConfig.storageBucket
+      );
       return Promise.resolve();
     });
 
-    it('it should resolve onReady for natively initialized apps', () => {
-      return RNFirebase.app().onReady();
-    });
+    it('it should resolve onReady for natively initialized apps', () =>
+      RNFirebase.app().onReady());
 
     it('it should provide an array of apps', () => {
       should.equal(!!RNFirebase.apps.length, true);
@@ -59,12 +75,16 @@ function coreTests({ describe, it }) {
 
     it('it should initialize dynamic apps', () => {
       const name = `testscoreapp${rand()}`;
-      return RNFirebase
-        .initializeApp(Platform.OS === 'ios' ? iosTestConfig : androidTestConfig, name)
+      return RNFirebase.initializeApp(
+        Platform.OS === 'ios' ? iosTestConfig : androidTestConfig,
+        name
+      )
         .onReady()
-        .then((newApp) => {
+        .then(newApp => {
           newApp.name.should.equal(name.toUpperCase());
-          newApp.options.apiKey.should.equal((Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey);
+          newApp.options.apiKey.should.equal(
+            (Platform.OS === 'ios' ? iosTestConfig : androidTestConfig).apiKey
+          );
           // TODO add back in when android sdk support for deleting apps becomes available
           // return newApp.delete();
           return Promise.resolve();
