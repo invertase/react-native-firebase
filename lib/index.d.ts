@@ -1270,7 +1270,7 @@ declare module "react-native-firebase" {
         readonly metadata: Types.SnapshotMetadata;
         readonly query: Query;
         readonly size: number;
-        forEach(callback: (snapshot: DocumentSnapshot) => any);
+        forEach(callback: (snapshot: DocumentSnapshot) => any): void;
       }
       namespace QuerySnapshot {
         interface NativeData {
