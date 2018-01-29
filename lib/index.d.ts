@@ -79,7 +79,9 @@ declare module "react-native-firebase" {
      * Database. Comparison of the two products hers:
      * https://firebase.google.com/docs/database/rtdb-vs-firestore
      */
-    firestore(): RNFirebase.firestore.FirestoreModule;
+    static firestore: {
+      (): RNFirebase.firestore.Firestore;
+    } & RNFirebase.firestore.FirestoreStatics;
 
     static fabric: {
       crashlytics(): RNFirebase.crashlytics.Crashlytics;
@@ -1078,19 +1080,17 @@ declare module "react-native-firebase" {
     }
 
     namespace firestore {
-      type FirestoreModule = Firestore & FirestoreStatics;
-
       interface Firestore {
         batch(): WriteBatch;
         collection(collectionPath: string): CollectionReference;
         doc(documentPath: string): DocumentReference;
 
         /** NOT SUPPORTED YET */
-        enablePersistence(): Promise<void>;
+        // enablePersistence(): Promise<void>;
         /** NOT SUPPORTED YET */
-        runTransaction(): Promise<any>;
+        // runTransaction(): Promise<any>;
         /** NOT SUPPORTED YET */
-        settings(): void;
+        // settings(): void;
       }
 
       interface FirestoreStatics {
@@ -1100,11 +1100,10 @@ declare module "react-native-firebase" {
         enableLogging(enabled: boolean): void;
       };
 
-      class CollectionReference {
-        constructor(firestore: Firestore, collectionPath: Path);
-        get firestore(): Firestore;
-        get id(): string;
-        get parent(): DocumentReference;
+      interface CollectionReference {
+        readonly firestore: Firestore;
+        readonly id: string;
+        readonly parent: DocumentReference;
         add(data: object): Promise<DocumentReference>;
         doc(documentPath?: string): DocumentReference;
         endAt(snapshot: DocumentSnapshot): Query;
@@ -1125,20 +1124,18 @@ declare module "react-native-firebase" {
         where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
       }
 
-      class DocumentChange {
-        constructor(firestore: Firestore, nativeData: Types.NativeDocumentChange);
-        get doc(): DocumentSnapshot;
-        get newIndex(): number;
-        get oldIndex(): number;
-        get type(): string;
+      interface DocumentChange {
+        readonly doc: DocumentSnapshot;
+        readonly newIndex: number;
+        readonly oldIndex: number;
+        readonly type: string;
       }
 
-      class DocumentReference {
-        constructor(firestore: Firestore, documentPath: Path);
-        get firestore(): Firestore;
-        get id(): string | null;
-        get parent(): CollectionReference;
-        get path(): string;
+      interface DocumentReference {
+        readonly firestore: Firestore;
+        readonly id: string | null;
+        readonly parent: CollectionReference;
+        readonly path: string;
         collection(collectionPath: string): CollectionReference;
         delete(): Promise<void>;
         get(): Promise<DocumentSnapshot>;
@@ -1155,9 +1152,8 @@ declare module "react-native-firebase" {
         update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): Promise<void>;
       }
       namespace DocumentReference {
-        // JS code expects this value to be true.
         interface DocumentListenOptions {
-          includeMetadataChanges: true;
+          includeMetadataChanges: boolean;
         }
 
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
@@ -1168,12 +1164,11 @@ declare module "react-native-firebase" {
         }
       }
 
-      class DocumentSnapshot {
-        constructor(firestore: Firestore, nativeData: Types.NativeDocumentSnapshot)
-        get exists(): boolean;
-        get id(): string | null;
-        get metadata(): Types.SnapshotMetadata;
-        get ref(): DocumentReference;
+      interface DocumentSnapshot {
+        readonly exists: boolean;
+        readonly id: string | null;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly ref: DocumentReference;
         data(): object | void;
         get(fieldPath: string | FieldPath): any | undefined;
       }
@@ -1205,15 +1200,8 @@ declare module "react-native-firebase" {
         parent(): Path | null;
       }
 
-      class Query {
-        constructor(
-          firestore: Firestore,
-          path: Path,
-          fieldFilters?: Query.FieldFilter[],
-          fieldOrders?: Query.FieldOrder[],
-          queryOptions?: Query.QueryOptions,
-        );
-        get firestore(): Firestore;
+      interface Query {
+        readonly firestore: Firestore;
         endAt(snapshot: DocumentSnapshot): Query;
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
@@ -1221,7 +1209,7 @@ declare module "react-native-firebase" {
         get(): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
-        onSnapshot(observer: Observer): () => void;
+        onSnapshot(observer: Query.Observer): () => void;
         onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
         onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
         orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
@@ -1260,13 +1248,12 @@ declare module "react-native-firebase" {
         }
 
         // The JS code expects at least one of 'includeDocumentMetadataChanges'
-        // or 'includeQueryMetadataChanges' to be true. This logic is
-        // encapsulated in QueryListenOptions.
+        // or 'includeQueryMetadataChanges' to be defined.
         interface _IncludeDocumentMetadataChanges {
-          includeDocumentMetadataChanges: true;
+          includeDocumentMetadataChanges: boolean;
         }
         interface _IncludeQueryMetadataChanges {
-          includeQueryMetadataChanges: true
+          includeQueryMetadataChanges: boolean;
         }
         type QueryListenOptions = _IncludeDocumentMetadataChanges | _IncludeQueryMetadataChanges | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
 
@@ -1278,14 +1265,13 @@ declare module "react-native-firebase" {
         }
       }
 
-      class QuerySnapshot {
-        constructor(firestore: Firestore, query: Query, nativeData: QuerySnapshot.NativeData);
-        get docChanges(): DocumentChange[];
-        get docs(): DocumentSnapshot[];
-        get empty(): boolean;
-        get metadata(): Types.SnapshotMetadata;
-        get query(): Query;
-        get size(): number;
+      interface QuerySnapshot {
+        readonly docChanges: DocumentChange[];
+        readonly docs: DocumentSnapshot[];
+        readonly empty: boolean;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly query: Query;
+        readonly size: number;
         forEach(callback: (snapshot: DocumentSnapshot) => any);
       }
       namespace QuerySnapshot {
@@ -1296,8 +1282,7 @@ declare module "react-native-firebase" {
         }
       }
 
-      class WriteBatch {
-        constructor(firestore: Firestore);
+      interface WriteBatch {
         commit(): Promise<void>;
         delete(docRef: DocumentReference): WriteBatch;
         set(docRef: DocumentReference, data: object, options?: Types.WriteOptions): WriteBatch;
