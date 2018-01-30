@@ -12,88 +12,68 @@ declare module "react-native-firebase" {
     secret: string
   }
 
-  type AuthProvider = {
-    PROVIDER_ID: string,
-    credential: (token: string, secret?: string) => AuthCredential,
-  };
+  type FirebaseModuleAndStatics<M, S = {}> = {
+    (): M;
+    nativeModuleExists: boolean;
+  } & S
 
-  export default class FireBase {
-    constructor(config?: RNFirebase.configurationOptions)
+  // Modules commented-out do not currently have type definitions
+  export class Firebase {
+    private constructor();
+    // admob: FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
+    analytics: FirebaseModuleAndStatics<RNFirebase.Analytics>;
+    auth: FirebaseModuleAndStatics<RNFirebase.auth.Auth, RNFirebase.auth.AuthStatics>;
+    // config: FirebaseModule<RNFirebase.config.Config>;
+    crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
+    database: FirebaseModuleAndStatics<RNFirebase.database.Database, RNFirebase.database.DatabaseStatics>;
+    fabric: {
+      crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
+    };
+    firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore, RNFirebase.firestore.FirestoreStatics>;
+    links: FirebaseModuleAndStatics<RNFirebase.links.Links>;
+    messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging>;
+    // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
+    storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
+    // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
+    initializeApp(options: Firebase.Options, name: string): App;
+    app(name?: string): App;
+    apps(): App[];
+    SDK_VERSION(): string;
+  }
+  namespace Firebase {
+    interface Options {
+      apiKey: string;
+      appId: string;
+      databaseURL: string;
+      messagingSenderId: string;
+      projectId: string;
+      storageBucket: string;
+    }
+  }
+  const firebase: Firebase;
+  export default firebase;
 
-    log: any;
-
+  // Modules commented-out do not currently have type definitions
+  export class App {
+    private constructor();
+    // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
-
-    on(type: string, handler: (msg: any) => void): any;
-
-    database: {
-      (): RNFirebase.database.Database
-      ServerValue: {
-        TIMESTAMP: number
-      }
-    };
-
-    auth: {
-      (): RNFirebase.auth.Auth
-      EmailAuthProvider: AuthProvider,
-      PhoneAuthProvider: AuthProvider,
-      GoogleAuthProvider: AuthProvider,
-      GithubAuthProvider: AuthProvider,
-      TwitterAuthProvider: AuthProvider,
-      FacebookAuthProvider: AuthProvider,
-      PhoneAuthState: {
-        CODE_SENT: string,
-        AUTO_VERIFY_TIMEOUT: string,
-        AUTO_VERIFIED: string,
-        ERROR: string,
-      },
-    };
-
-    /**RNFirebase mimics the Web Firebase SDK Storage,
-     * whilst providing some iOS and Android specific functionality.
-     */
-    storage(): RNFirebase.storage.Storage;
-
-    /**
-     * Firebase Cloud Messaging (FCM) allows you to send push messages at no cost to both Android & iOS platforms.
-     * Assuming the installation instructions have been followed, FCM is ready to go.
-     * As the Firebase Web SDK has limited messaging functionality,
-     * the following methods within react-native-firebase have been created to handle FCM in the React Native environment.
-     */
-    messaging(): RNFirebase.messaging.Messaging;
-
-    /**
-     * RNFirebase provides crash reporting for your app out of the box.
-     * Please note crashes do not appear in real-time on the console,
-     * they tend to take a number of hours to appear
-     * If you want to manually report a crash,
-     * such as a pre-caught exception this is possible by using the report method.
-     */
+    auth(): RNFirebase.auth.Auth;
+    // config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
-
-    /**
-     * Firebase Dynamic Links are links that work the way you want, on multiple
-     * platforms, and whether or not your app is already installed.
-     * See the official Firebase docs:
-     * https://firebase.google.com/docs/dynamic-links/
-     */
-    links(): RNFirebase.links.Links;
-
-    static fabric: {
-      crashlytics(): RNFirebase.crashlytics.Crashlytics;
+    database(): RNFirebase.database.Database;
+    fabric: {
+      crashlytics(): RNFirebase.crashlytics.Crashlytics,
     };
-
-    apps: Array<string>;
-    googleApiAvailability: RNFirebase.GoogleApiAvailabilityType;
-
-    static initializeApp(options?: any | RNFirebase.configurationOptions, name?: string): FireBase;
-
-    static app(name?: string): FireBase;
-
-    [key: string]: any;
+    firestore(): RNFirebase.firestore.Firestore;
+    links(): RNFirebase.links.Links;
+    messaging(): RNFirebase.messaging.Messaging;
+    // perf(): RNFirebase.perf.Performance;
+    storage(): RNFirebase.storage.Storage;
+    // utils(): RNFirebase.utils.Utils;
   }
 
-  namespace RNFirebase {
+  export namespace RNFirebase {
     interface RnError extends Error {
       code?: string;
     }
@@ -491,6 +471,15 @@ declare module "react-native-firebase" {
 
         update(values: Object, onComplete?: (a: RnError | null) => any): Promise<any>;
       }
+
+      interface DatabaseStatics {
+        /** @see https://www.firebase.com/docs/java-api/javadoc/com/firebase/client/ServerValue.html#TIMESTAMP */
+        ServerValue: {
+          TIMESTAMP: {
+            [key: string]: string
+          }
+        }
+    }
     }
 
     /**
@@ -711,6 +700,11 @@ declare module "react-native-firebase" {
         user: object | null
       } | null;
 
+      type AuthProvider = {
+        PROVIDER_ID: string,
+        credential: (token: string, secret?: string) => AuthCredential,
+      };
+
       interface Auth {
         /**
          * Returns the current Firebase authentication state.
@@ -827,6 +821,21 @@ declare module "react-native-firebase" {
         fetchProvidersForEmail(email: string): Promise<Array<string>>
 
         [key: string]: any;
+      }
+
+      interface AuthStatics {
+        EmailAuthProvider: AuthProvider;
+        PhoneAuthProvider: AuthProvider;
+        GoogleAuthProvider: AuthProvider;
+        GithubAuthProvider: AuthProvider;
+        TwitterAuthProvider: AuthProvider;
+        FacebookAuthProvider: AuthProvider;
+        PhoneAuthState: {
+          CODE_SENT: string;
+          AUTO_VERIFY_TIMEOUT: string;
+          AUTO_VERIFIED: string;
+          ERROR: string;
+        };
       }
     }
 
@@ -1065,6 +1074,260 @@ declare module "react-native-firebase" {
         suffix?: {
           option: 'SHORT' | 'UNGUESSABLE',
         },
+      }
+    }
+
+    namespace firestore {
+      interface Firestore {
+        batch(): WriteBatch;
+        collection(collectionPath: string): CollectionReference;
+        doc(documentPath: string): DocumentReference;
+
+        /** NOT SUPPORTED YET */
+        // enablePersistence(): Promise<void>;
+        /** NOT SUPPORTED YET */
+        // runTransaction(): Promise<any>;
+        /** NOT SUPPORTED YET */
+        // settings(): void;
+      }
+
+      interface FirestoreStatics {
+        FieldPath: typeof FieldPath;
+        FieldValue: typeof FieldValue;
+        GeoPoint: typeof GeoPoint;
+        enableLogging(enabled: boolean): void;
+      }
+
+      interface CollectionReference {
+        readonly firestore: Firestore;
+        readonly id: string;
+        readonly parent: DocumentReference;
+        add(data: object): Promise<DocumentReference>;
+        doc(documentPath?: string): DocumentReference;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Query.Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+
+      interface DocumentChange {
+        readonly doc: DocumentSnapshot;
+        readonly newIndex: number;
+        readonly oldIndex: number;
+        readonly type: string;
+      }
+
+      interface DocumentReference {
+        readonly firestore: Firestore;
+        readonly id: string | null;
+        readonly parent: CollectionReference;
+        readonly path: string;
+        collection(collectionPath: string): CollectionReference;
+        delete(): Promise<void>;
+        get(): Promise<DocumentSnapshot>;
+        onSnapshot(onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(observer: DocumentReference.Observer): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, onNext: DocumentReference.ObserverOnNext, onError?: DocumentReference.ObserverOnError): () => void;
+        onSnapshot(documentListenOptions: DocumentReference.DocumentListenOptions, observer: DocumentReference.Observer): () => void;
+        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        update(obj: object): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): Promise<void>;
+        update(key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): Promise<void>;
+      }
+      namespace DocumentReference {
+        interface DocumentListenOptions {
+          includeMetadataChanges: boolean;
+        }
+
+        type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      interface DocumentSnapshot {
+        readonly exists: boolean;
+        readonly id: string | null;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly ref: DocumentReference;
+        data(): object | void;
+        get(fieldPath: string | FieldPath): any | undefined;
+      }
+
+      class FieldPath {
+        static documentId(): FieldPath;
+        constructor(...segments: string[]);
+      }
+
+      class FieldValue {
+        static delete(): FieldValue;
+        static serverTimestamp(): FieldValue;
+      }
+
+      class GeoPoint {
+        constructor(latitude: number, longitude: number);
+        readonly latitude: number;
+        readonly longitude: number;
+      }
+
+      class Path {
+        static fromName(name: string): Path;
+        constructor(pathComponents: string[]);
+        readonly id: string | null;
+        readonly isDocument: boolean;
+        readonly isCollection: boolean;
+        readonly relativeName: string;
+        child(relativePath: string): Path;
+        parent(): Path | null;
+      }
+
+      interface Query {
+        readonly firestore: Firestore;
+        endAt(snapshot: DocumentSnapshot): Query;
+        endAt(...varargs: any[]): Query;
+        endBefore(snapshot: DocumentSnapshot): Query;
+        endBefore(...varargs: any[]): Query;
+        get(): Promise<QuerySnapshot>;
+        limit(limit: number): Query;
+        onSnapshot(onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(observer: Query.Observer): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, onNext: Query.ObserverOnNext, onError?: Query.ObserverOnError): () => void;
+        onSnapshot(queryListenOptions: Query.QueryListenOptions, observer: Query.Observer): () => void;
+        orderBy(fieldPath: string | FieldPath, directionStr?: Types.QueryDirection): Query;
+        startAfter(snapshot: DocumentSnapshot): Query;
+        startAfter(...varargs: any[]): Query;
+        startAt(snapshot: DocumentSnapshot): Query;
+        startAt(...varargs: any[]): Query;
+        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+      }
+      namespace Query {
+        interface NativeFieldPath {
+          elements?: string[];
+          string?: string;
+          type: 'fieldpath' | 'string';
+        }
+
+        interface FieldFilter {
+          fieldPath: NativeFieldPath;
+          operator: string;
+          value: any;
+        }
+
+        interface FieldOrder {
+          direction: string;
+          fieldPath: NativeFieldPath;
+        }
+
+        interface QueryOptions {
+          endAt?: any[];
+          endBefore?: any[];
+          limit?: number;
+          offset?: number;
+          selectFields?: string[];
+          startAfter?: any[];
+          startAt?: any[];
+        }
+
+        // The JS code expects at least one of 'includeDocumentMetadataChanges'
+        // or 'includeQueryMetadataChanges' to be defined.
+        interface _IncludeDocumentMetadataChanges {
+          includeDocumentMetadataChanges: boolean;
+        }
+        interface _IncludeQueryMetadataChanges {
+          includeQueryMetadataChanges: boolean;
+        }
+        type QueryListenOptions = _IncludeDocumentMetadataChanges | _IncludeQueryMetadataChanges | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
+
+        type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
+        type ObserverOnError = (err: object) => void;
+        interface Observer {
+          next: ObserverOnNext;
+          error?: ObserverOnError;
+        }
+      }
+
+      interface QuerySnapshot {
+        readonly docChanges: DocumentChange[];
+        readonly docs: DocumentSnapshot[];
+        readonly empty: boolean;
+        readonly metadata: Types.SnapshotMetadata;
+        readonly query: Query;
+        readonly size: number;
+        forEach(callback: (snapshot: DocumentSnapshot) => any): void;
+      }
+      namespace QuerySnapshot {
+        interface NativeData {
+          changes: Types.NativeDocumentChange[];
+          documents: Types.NativeDocumentSnapshot[];
+          metadata: Types.SnapshotMetadata;
+        }
+      }
+
+      interface WriteBatch {
+        commit(): Promise<void>;
+        delete(docRef: DocumentReference): WriteBatch;
+        set(docRef: DocumentReference, data: object, options?: Types.WriteOptions): WriteBatch;
+        // multiple overrides for update() to allow strong-typed var_args
+        update(docRef: DocumentReference, obj: object): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): WriteBatch;
+      }
+
+      namespace Types {
+        interface NativeDocumentChange {
+          document: NativeDocumentSnapshot;
+          newIndex: number;
+          oldIndex: number;
+          type: string;
+        }
+
+        interface NativeDocumentSnapshot {
+          data: {
+            [key: string]: TypeMap;
+          };
+          metadata: SnapshotMetadata;
+          path: string;
+        }
+
+        interface SnapshotMetadata {
+          fromCache: boolean;
+          hasPendingWrites: boolean;
+        }
+
+        type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
+        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=';
+
+        interface TypeMap {
+          type: 'array' | 'boolean' | 'date' | 'documentid' | 'fieldvalue' | 'geopoint' | 'null' | 'number' | 'object' | 'reference' | 'string';
+          value: any;
+        }
+
+        /** The key in update() function for DocumentReference and WriteBatch. */
+        type UpdateKey = string | FieldPath
+
+        interface WriteOptions {
+          merge?: boolean;
+        }
       }
     }
   }
