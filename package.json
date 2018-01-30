@@ -6,9 +6,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "genversion lib/version.js && npm run build-lib && npm run build-flow",
+    "build": "genversion lib/version.js && npm run validate-ts-declarations && npm run build-lib && npm run build-flow",
     "build-flow": "flow-copy-source -i */__tests__* lib dist",
-    "build-lib": "npm run validate-ts-declarations && BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
+    "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
     "clean": "rimraf dist/",
     "flow": "flow",
     "format": "eslint --fix ./lib ./tests/src ./tests/lib",
