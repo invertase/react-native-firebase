@@ -5,6 +5,13 @@
 
 declare module "react-native-firebase" {
 
+  /** 3rd party provider Credentials */
+  type AuthCredential = {
+    providerId: string,
+    token: string,
+    secret: string
+  }
+
   type FirebaseModuleAndStatics<M, S = {}> = {
     (): M;
     nativeModuleExists: boolean;
@@ -629,13 +636,6 @@ declare module "react-native-firebase" {
        * Profile data should be an object of fields to update:
        */
       updateProfile(updates: UpdateProfile): Promise<void>
-    }
-
-    /** 3rd party provider Credentials */
-    type AuthCredential = {
-      providerId: string,
-      token: string,
-      secret: string
     }
 
     type ActionCodeSettings = {
