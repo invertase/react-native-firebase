@@ -32,7 +32,10 @@ static NSString *const STORAGE_DOWNLOAD_SUCCESS = @"download_success";
 static NSString *const STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 
 // Messaging
+static NSString *const MESSAGING_MESSAGE_RECEIVED = @"messaging_message_received";
 static NSString *const MESSAGING_TOKEN_REFRESHED = @"messaging_token_refreshed";
+
+// TODO: Remove
 static NSString *const MESSAGING_NOTIFICATION_RECEIVED = @"messaging_notification_received";
 
 // AdMob
