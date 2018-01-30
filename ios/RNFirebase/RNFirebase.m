@@ -45,7 +45,11 @@ RCT_EXPORT_METHOD(initializeApp:
             firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
 
             NSString *appName = [RNFirebaseUtil getAppName:appDisplayName];
-            [FIRApp configureWithName:appName options:firOptions];
+            if([appName isEqualToString: @"__FIRAPP_DEFAULT"]){
+                [FIRApp configureWithOptions:firOptions];
+            }else {
+                [FIRApp configureWithName:appName options:firOptions];
+            }
         }
 
         callback(@[[NSNull null], @{@"result": @"success"}]);
