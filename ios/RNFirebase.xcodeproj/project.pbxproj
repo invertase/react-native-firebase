@@ -17,6 +17,7 @@
 		8376F7141F7C149100D45A85 /* RNFirebaseFirestoreDocumentReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F70E1F7C149000D45A85 /* RNFirebaseFirestoreDocumentReference.m */; };
 		8376F7151F7C149100D45A85 /* RNFirebaseFirestore.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F7101F7C149000D45A85 /* RNFirebaseFirestore.m */; };
 		8376F7161F7C149100D45A85 /* RNFirebaseFirestoreCollectionReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 8376F7111F7C149000D45A85 /* RNFirebaseFirestoreCollectionReference.m */; };
+		838E36FE201B9169004DCD3A /* NewRNFirebaseMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 838E36FD201B9169004DCD3A /* NewRNFirebaseMessaging.m */; };
 		839D916C1EF3E20B0077C7C8 /* RNFirebaseAdMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D914F1EF3E20A0077C7C8 /* RNFirebaseAdMob.m */; };
 		839D916D1EF3E20B0077C7C8 /* RNFirebaseAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91511EF3E20A0077C7C8 /* RNFirebaseAdMobInterstitial.m */; };
 		839D916E1EF3E20B0077C7C8 /* RNFirebaseAdMobRewardedVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91531EF3E20A0077C7C8 /* RNFirebaseAdMobRewardedVideo.m */; };
@@ -66,6 +67,8 @@
 		8376F7111F7C149000D45A85 /* RNFirebaseFirestoreCollectionReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseFirestoreCollectionReference.m; sourceTree = "<group>"; };
 		8376F7121F7C149000D45A85 /* RNFirebaseFirestoreDocumentReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseFirestoreDocumentReference.h; sourceTree = "<group>"; };
 		8376F7131F7C149000D45A85 /* RNFirebaseFirestoreCollectionReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseFirestoreCollectionReference.h; sourceTree = "<group>"; };
+		838E36FC201B9169004DCD3A /* NewRNFirebaseMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewRNFirebaseMessaging.h; sourceTree = "<group>"; };
+		838E36FD201B9169004DCD3A /* NewRNFirebaseMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewRNFirebaseMessaging.m; sourceTree = "<group>"; };
 		839D914E1EF3E20A0077C7C8 /* RNFirebaseAdMob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseAdMob.h; sourceTree = "<group>"; };
 		839D914F1EF3E20A0077C7C8 /* RNFirebaseAdMob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseAdMob.m; sourceTree = "<group>"; };
 		839D91501EF3E20A0077C7C8 /* RNFirebaseAdMobInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseAdMobInterstitial.h; sourceTree = "<group>"; };
@@ -256,6 +259,8 @@
 		839D91631EF3E20A0077C7C8 /* messaging */ = {
 			isa = PBXGroup;
 			children = (
+				838E36FC201B9169004DCD3A /* NewRNFirebaseMessaging.h */,
+				838E36FD201B9169004DCD3A /* NewRNFirebaseMessaging.m */,
 				839D91641EF3E20A0077C7C8 /* RNFirebaseMessaging.h */,
 				839D91651EF3E20A0077C7C8 /* RNFirebaseMessaging.m */,
 			);
@@ -343,6 +348,7 @@
 				839D916C1EF3E20B0077C7C8 /* RNFirebaseAdMob.m in Sources */,
 				17AF4F6B1F59CDBF00C02336 /* RNFirebaseLinks.m in Sources */,
 				8376F7161F7C149100D45A85 /* RNFirebaseFirestoreCollectionReference.m in Sources */,
+				838E36FE201B9169004DCD3A /* NewRNFirebaseMessaging.m in Sources */,
 				8376F7151F7C149100D45A85 /* RNFirebaseFirestore.m in Sources */,
 				839D91701EF3E20B0077C7C8 /* RNFirebaseAuth.m in Sources */,
 				8323CF091F6FBD870071420B /* RNFirebaseAdMobNativeExpressManager.m in Sources */,

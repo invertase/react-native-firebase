@@ -7,6 +7,20 @@ import DatabaseContents from './tests/support/DatabaseContents';
 RNfirebase.database.enableLogging(true);
 RNfirebase.firestore.enableLogging(true);
 
+RNfirebase.newmessaging()
+  .requestPermission()
+  .then(response => {
+    console.log('requestPermission:', response);
+    RNfirebase.newmessaging()
+      .getToken()
+      .then(token => {
+        console.log('token: ', token);
+      });
+  })
+  .catch(error => {
+    console.error('requestPermission:', error);
+  });
+
 const config = {
   apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
   authDomain: 'rnfirebase-b9ad4.firebaseapp.com',
