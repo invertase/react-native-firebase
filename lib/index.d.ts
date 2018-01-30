@@ -583,7 +583,7 @@ declare module "react-native-firebase" {
        *
        * @param forceRefresh: boolean - default to false
        */
-      getIdToken(forceRefresh: boolean?): Promise<string>
+      getIdToken(forceRefresh?: boolean): Promise<string>
 
       /**
        * Link the user with a 3rd party credential provider.
@@ -1041,7 +1041,7 @@ declare module "react-native-firebase" {
          * Returns an unsubscribe function, call the returned function to
          * unsubscribe from all future events.
          */
-        onLink(listener: (url) => void): () => void;
+        onLink(listener: (url: string) => void): () => void;
       }
 
       /**
