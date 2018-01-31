@@ -1,11 +1,10 @@
-import Database from './';
 import Reference from './reference';
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
  * @class Disconnect
  */
 export default class Disconnect {
-    _database: Database;
+    private _database;
     ref: Reference;
     path: string;
     /**

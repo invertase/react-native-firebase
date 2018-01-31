@@ -41,12 +41,11 @@ export declare type Observer = {
  * @class Query
  */
 export default class Query {
-    _fieldFilters: FieldFilter[];
-    _fieldOrders: FieldOrder[];
-    _firestore: Firestore;
-    _iid: number;
-    _queryOptions: QueryOptions;
-    _referencePath: Path;
+    private _fieldFilters;
+    private _fieldOrders;
+    private _firestore;
+    private _queryOptions;
+    private _referencePath;
     constructor(firestore: Firestore, path: Path, fieldFilters?: FieldFilter[], fieldOrders?: FieldOrder[], queryOptions?: QueryOptions);
     readonly firestore: Firestore;
     endAt(...snapshotOrVarArgs: any[]): Query;
@@ -61,13 +60,10 @@ export default class Query {
     /**
      * INTERNALS
      */
-    _buildOrderByOption(snapshotOrVarArgs: any[]): {
-        type: "string" | "number" | "boolean" | "object" | "null" | "array" | "date" | "documentid" | "fieldvalue" | "geopoint" | "reference";
-        value: any;
-    }[];
+    private _buildOrderByOption(snapshotOrVarArgs);
     /**
      * Remove query snapshot listener
      * @param listener
      */
-    _offCollectionSnapshot(listenerId: string, listener: Function): void;
+    private _offCollectionSnapshot(listenerId, listener);
 }

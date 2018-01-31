@@ -9,6 +9,7 @@ import Storage from './';
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
  */
 export default class StorageReference extends ReferenceBase {
+    /** @private */
     _storage: Storage;
     constructor(storage: Storage, path: string);
     readonly fullPath: string;

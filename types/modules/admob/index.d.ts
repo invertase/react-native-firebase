@@ -14,12 +14,12 @@ export declare type NativeEvent = {
 };
 export declare const MODULE_NAME = "RNFirebaseAdmob";
 export default class AdMob extends ModuleBase {
-    _appId?: string;
-    _initialized: boolean;
+    private _appId?;
+    private _initialized;
     static NAMESPACE: string;
     constructor(app: App);
-    _onInterstitialEvent(event: NativeEvent): void;
-    _onRewardedVideoEvent(event: NativeEvent): void;
+    private _onInterstitialEvent(event);
+    private _onRewardedVideoEvent(event);
     initialize(appId: string): void;
     openDebugMenu(): void;
     interstitial(adUnit: string): Interstitial;

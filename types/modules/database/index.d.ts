@@ -11,8 +11,10 @@ export interface OptionsObj {
  */
 export default class Database extends ModuleBase {
     static NAMESPACE: string;
-    _offsetRef: Reference;
+    private _offsetRef;
+    /** @private */
     _serverTimeOffset: number;
+    /** @private */
     _transactionHandler: TransactionHandler;
     constructor(app: App, options?: OptionsObj);
     /**

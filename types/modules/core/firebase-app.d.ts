@@ -13,13 +13,11 @@ import Storage from '../storage';
 import Utils from '../utils';
 import { FirebaseOptions } from '../../types';
 export default class App {
-    _extendedProps: {
-        [key: string]: boolean;
-    };
-    _initialized: boolean;
+    private _extendedProps;
+    private _initialized;
+    /** @private */
     _name: string;
-    _nativeInitialized: boolean;
-    _options: FirebaseOptions;
+    private _options;
     admob: () => AdMob;
     analytics: () => Analytics;
     auth: () => Auth;

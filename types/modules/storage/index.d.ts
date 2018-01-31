@@ -49,10 +49,11 @@ export default class Storage extends ModuleBase {
     /**
      * INTERNALS
      */
-    _getSubEventName(path: string, eventName: string): string;
-    _handleStorageEvent(event: EventResponse): void;
-    _handleStorageError(err: EventResponse): void;
+    private _getSubEventName(path, eventName);
+    private _handleStorageEvent(event);
+    /** @private */
     _addListener(path: string, eventName: string, cb: (evt: Object) => Object): void;
+    /** @private */
     _removeListener(path: string, eventName: string, origCB: (evt: Object) => Object): void;
 }
 export declare const statics: {

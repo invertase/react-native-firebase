@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-import { NativeEventEmitter } from 'react-native';
 import DatabaseReference from '../modules/database/reference';
 export declare type Listener = (DatabaseSnapshot) => any;
 export declare type Registration = {
@@ -19,24 +15,16 @@ export declare type Registration = {
  * subscriptions and keep the listeners in sync in js vs native.
  */
 export declare class SyncTree {
-    _nativeEmitter: NativeEventEmitter;
-    _reverseLookup: {
-        [key: string]: Registration;
-    };
-    _tree: {
-        [key: string]: {
-            [key: string]: {
-                [key: string]: Listener;
-            };
-        };
-    };
+    private _nativeEmitter;
+    private _reverseLookup;
+    private _tree;
     constructor();
     /**
      *
      * @param event
      * @private
      */
-    _handleSyncEvent(event: any): void;
+    private _handleSyncEvent(event);
     /**
      * Routes native database 'on' events to their js equivalent counterpart.
      * If there is no longer any listeners remaining for this event we internally
@@ -45,14 +33,14 @@ export declare class SyncTree {
      * @param event
      * @private
      */
-    _handleValueEvent(event: any): any;
+    private _handleValueEvent(event);
     /**
      * Routes native database query listener cancellation events to their js counterparts.
      *
      * @param event
      * @private
      */
-    _handleErrorEvent(event: any): void;
+    private _handleErrorEvent(event);
     /**
      * Returns registration information such as appName, ref, path and registration keys.
      *
@@ -123,7 +111,7 @@ export declare class SyncTree {
      * @return {function(...[*])}
      * @private
      */
-    _onOnceRemoveRegistration(registration: any, listener: any): (...args: any[]) => void;
+    private _onOnceRemoveRegistration(registration, listener);
 }
 declare const _default: SyncTree;
 export default _default;

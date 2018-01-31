@@ -13,7 +13,7 @@ export declare const MODULE_NAME = "RNFirebaseRemoteConfig";
  */
 export default class RemoteConfig extends ModuleBase {
     static NAMESPACE: string;
-    _developerModeEnabled: boolean;
+    private _developerModeEnabled;
     constructor(app: App);
     /**
      * Converts a native map to single JS value
@@ -21,10 +21,7 @@ export default class RemoteConfig extends ModuleBase {
      * @returns {*}
      * @private
      */
-    _nativeValueToJS(nativeValue: NativeValue): {
-        source: "remoteConfigSourceRemote" | "remoteConfigSourceDefault" | " remoteConfigSourceStatic";
-        val(): any;
-    };
+    private _nativeValueToJS(nativeValue);
     /**
      * Enable Remote Config developer mode to allow for frequent refreshes of the cache
      */

@@ -13,18 +13,18 @@ import Storage from '../storage';
 import Utils from '../utils';
 import { FirebaseOptions } from '../../types/index';
 export declare class Firebase {
-    admob: AdMob;
-    analytics: Analytics;
-    auth: Auth;
-    config: Config;
-    crash: Crash;
-    database: Database;
-    firestore: Firestore;
-    links: Links;
-    messaging: Messaging;
-    perf: Perf;
-    storage: Storage;
-    utils: Utils;
+    admob: () => AdMob;
+    analytics: () => Analytics;
+    auth: () => Auth;
+    config: () => Config;
+    crash: () => Crash;
+    database: () => Database;
+    firestore: () => Firestore;
+    links: () => Links;
+    messaging: () => Messaging;
+    perf: () => Perf;
+    storage: () => Storage;
+    utils: () => Utils;
     constructor();
     /**
      * Web SDK initializeApp

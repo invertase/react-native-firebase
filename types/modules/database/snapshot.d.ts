@@ -13,9 +13,9 @@ export interface SnapshotObj {
 export default class Snapshot {
     ref: Reference;
     key: string;
-    _value: any;
-    _priority: any;
-    _childKeys: Array<string>;
+    private _value;
+    private _priority;
+    private _childKeys;
     constructor(ref: Reference, snapshot: SnapshotObj);
     /**
      * Extracts a JavaScript value from a DataSnapshot.

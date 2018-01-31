@@ -4,7 +4,6 @@ import DocumentReference from './DocumentReference';
 import FieldPath from './FieldPath';
 import FieldValue from './FieldValue';
 import GeoPoint from './GeoPoint';
-import Path from './Path';
 import WriteBatch from './WriteBatch';
 import DocumentSnapshot from './DocumentSnapshot';
 import App from '../core/firebase-app';
@@ -29,7 +28,7 @@ export declare const MODULE_NAME = "RNFirebaseFirestore";
  */
 export default class Firestore extends ModuleBase {
     static NAMESPACE: string;
-    _referencePath: Path;
+    private _referencePath;
     constructor(app: App);
     batch(): WriteBatch;
     /**
@@ -53,13 +52,13 @@ export default class Firestore extends ModuleBase {
      * @param event
      * @private
      */
-    _onCollectionSyncEvent(event: CollectionSyncEvent): void;
+    private _onCollectionSyncEvent(event);
     /**
      * Internal document sync listener
      * @param event
      * @private
      */
-    _onDocumentSyncEvent(event: DocumentSyncEvent): void;
+    private _onDocumentSyncEvent(event);
 }
 export declare const statics: {
     FieldPath: typeof FieldPath;

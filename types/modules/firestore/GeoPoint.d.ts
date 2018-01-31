@@ -6,8 +6,8 @@
  * @class GeoPoint
  */
 export default class GeoPoint {
-    _latitude: number;
-    _longitude: number;
+    private _latitude;
+    private _longitude;
     constructor(latitude: number, longitude: number);
     readonly latitude: number;
     readonly longitude: number;

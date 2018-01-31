@@ -15,8 +15,8 @@ export declare type UpdateProfile = {
     [key: string]: any;
 };
 export default class User {
-    _auth: Auth;
-    _user: NativeUser;
+    private _auth;
+    private _user;
     /**
      *
      * @param auth Instance of Authentication class

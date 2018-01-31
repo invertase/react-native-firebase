@@ -1,8 +1,3 @@
-/**
- * @flow
- * Database Reference representation wrapper
- */
-import Query from './query';
 import Snapshot from './snapshot';
 import Disconnect from './disconnect';
 import ReferenceBase from '../../utils/ReferenceBase';
@@ -40,12 +35,10 @@ export declare type DatabaseListener = {
  * @extends ReferenceBase
  */
 export default class Reference extends ReferenceBase {
+    /** @private */
     _database: Database;
-    _promise?: Promise<any>;
-    _query: Query;
-    _refListeners: {
-        [listenerId: number]: DatabaseListener;
-    };
+    private _promise?;
+    private _query;
     path: string;
     constructor(database: Database, path: string, existingModifiers?: Array<DatabaseModifier>);
     /**
@@ -284,7 +277,7 @@ export default class Reference extends ReferenceBase {
      *
      * @return {string}
      */
-    _getRegistrationKey(eventType: string): string;
+    private _getRegistrationKey(eventType);
     /**
      * Generate a string that uniquely identifies this
      * combination of path and query modifiers
@@ -292,30 +285,27 @@ export default class Reference extends ReferenceBase {
      * @return {string}
      * @private
      */
-    _getRefKey(): string;
+    private _getRefKey();
     /**
      * Set the promise this 'thenable' reference relates to
      * @param promise
      * @private
      */
-    _setThenable(promise: Promise<any>): void;
+    private _setThenable(promise);
     /**
      *
      * @param obj
      * @returns {Object}
      * @private
      */
-    _serializeObject(obj: object): any;
+    private _serializeObject(obj);
     /**
      *
      * @param value
      * @returns {*}
      * @private
      */
-    _serializeAnyType(value: any): {
-        type: string;
-        value: any;
-    };
+    private _serializeAnyType(value);
     /**
      * Register a listener for data changes at the current ref's location.
      * The primary method of reading data from a Database.

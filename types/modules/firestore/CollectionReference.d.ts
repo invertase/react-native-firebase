@@ -14,9 +14,9 @@ import QuerySnapshot from './QuerySnapshot';
  * @class CollectionReference
  */
 export default class CollectionReference {
-    _collectionPath: Path;
-    _firestore: Firestore;
-    _query: Query;
+    private _collectionPath;
+    private _firestore;
+    private _query;
     constructor(firestore: Firestore, collectionPath: Path);
     readonly firestore: Firestore;
     readonly id: string | null;

@@ -9,7 +9,7 @@ export default class Interstitial {
      * @param event
      * @private
      */
-    _onInterstitialEvent: (event: any) => void;
+    private _onInterstitialEvent;
     /**
      * Load an ad with an instance of AdRequest
      * @param request

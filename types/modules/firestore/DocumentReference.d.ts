@@ -20,8 +20,8 @@ export declare type Observer = {
  * @class DocumentReference
  */
 export default class DocumentReference {
-    _documentPath: Path;
-    _firestore: Firestore;
+    private _documentPath;
+    private _firestore;
     constructor(firestore: Firestore, documentPath: Path);
     readonly firestore: Firestore;
     readonly id: string | null;
@@ -40,5 +40,5 @@ export default class DocumentReference {
      * Remove document snapshot listener
      * @param listener
      */
-    _offDocumentSnapshot(listenerId: string, listener: Function): void;
+    private _offDocumentSnapshot(listenerId, listener);
 }

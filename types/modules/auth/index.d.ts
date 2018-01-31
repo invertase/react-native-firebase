@@ -36,11 +36,13 @@ export declare type UserListenerFn = (user?: User) => void;
 export declare const MODULE_NAME = "RNFirebaseAuth";
 export default class Auth extends ModuleBase {
     static NAMESPACE: string;
-    _authResult: boolean;
-    _languageCode: string;
-    _user?: User;
+    private _authResult;
+    private _languageCode;
+    private _user?;
     constructor(app: App);
+    /** @private */
     _setUser(user?: NativeUser): User | null;
+    /** @private */
     _setUserCredential(userCredential: NativeUserCredential): UserCredential;
     /**
      * Listen for auth changes.

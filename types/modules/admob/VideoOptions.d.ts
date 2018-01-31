@@ -1,7 +1,5 @@
 export default class VideoOptions {
-    _props: {
-        startMuted: boolean;
-    };
+    private _props;
     constructor();
     build(): {
         startMuted: boolean;

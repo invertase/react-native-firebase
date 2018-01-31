@@ -14,11 +14,9 @@ export interface TEvent {
  * @class TransactionHandler
  */
 export default class TransactionHandler {
-    _database: Database;
-    _transactionListener: Function;
-    _transactions: {
-        [key: number]: any;
-    };
+    private _database;
+    protected _transactionListener: any;
+    private _transactions;
     constructor(database: Database);
     /**
      * Add a new transaction and start it natively.
@@ -37,23 +35,23 @@ export default class TransactionHandler {
      * @returns {*}
      * @private
      */
-    _handleTransactionEvent(event?: TEvent): void;
+    private _handleTransactionEvent;
     /**
      *
      * @param event
      * @private
      */
-    _handleUpdate(event?: TEvent): void;
+    private _handleUpdate;
     /**
      *
      * @param event
      * @private
      */
-    _handleError(event?: TEvent): void;
+    private _handleError;
     /**
      *
      * @param event
      * @private
      */
-    _handleComplete(event?: TEvent): void;
+    private _handleComplete;
 }

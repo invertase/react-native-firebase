@@ -16,8 +16,8 @@ export declare type DocumentWrite = {
  * @class WriteBatch
  */
 export default class WriteBatch {
-    _firestore: Firestore;
-    _writes: DocumentWrite[];
+    private _firestore;
+    private _writes;
     constructor(firestore: Firestore);
     commit(): Promise<void>;
     delete(docRef: DocumentReference): WriteBatch;

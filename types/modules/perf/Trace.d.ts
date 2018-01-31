@@ -1,7 +1,7 @@
 import PerformanceMonitoring from './';
 export default class Trace {
     identifier: string;
-    _perf: PerformanceMonitoring;
+    private _perf;
     constructor(perf: PerformanceMonitoring, identifier: string);
     start(): void;
     stop(): void;

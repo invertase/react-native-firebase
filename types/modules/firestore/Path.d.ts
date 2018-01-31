@@ -6,7 +6,7 @@
  * @class Path
  */
 export default class Path {
-    _parts: string[];
+    private _parts;
     constructor(pathComponents: string[]);
     readonly id: string | null;
     readonly isDocument: boolean;

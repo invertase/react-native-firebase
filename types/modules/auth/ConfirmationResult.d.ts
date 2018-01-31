@@ -1,8 +1,8 @@
 import Auth from './';
 import User from './User';
 export default class ConfirmationResult {
-    _auth: Auth;
-    _verificationId: string;
+    private _auth;
+    private _verificationId;
     /**
      *
      * @param auth

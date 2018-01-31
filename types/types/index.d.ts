@@ -46,9 +46,7 @@ export declare type FirestoreNativeDocumentChange = {
     type: string;
 };
 export declare type FirestoreNativeDocumentSnapshot = {
-    data: {
-        [key: string]: FirestoreTypeMap;
-    };
+    data: Dict<FirestoreTypeMap>;
     metadata: FirestoreSnapshotMetadata;
     path: string;
 };
@@ -65,3 +63,6 @@ export declare type FirestoreTypeMap = {
 export declare type FirestoreWriteOptions = {
     merge?: boolean;
 };
+export interface Dict<T = any> {
+    [key: string]: T;
+}

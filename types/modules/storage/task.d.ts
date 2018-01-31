@@ -38,14 +38,14 @@ export default class StorageTask {
      * @returns {Promise.<T>}
      * @private
      */
-    _interceptSnapshotEvent(f?: (snapshot) => any): (snapshot: any) => any;
+    private _interceptSnapshotEvent(f?);
     /**
      * Intercepts a error object form native and converts to a JS Error
      * @param f
      * @returns {*}
      * @private
      */
-    _interceptErrorEvent(f?: (error) => any): (error: any) => any;
+    private _interceptErrorEvent(f?);
     /**
      *
      * @param nextOrObserver
@@ -54,7 +54,7 @@ export default class StorageTask {
      * @returns {function()}
      * @private
      */
-    _subscribe(nextOrObserver: NextOrObserverType, error: FuncErrorType, complete: FuncSnapshotType): Function;
+    private _subscribe(nextOrObserver, error, complete);
     /**
      *
      * @param event

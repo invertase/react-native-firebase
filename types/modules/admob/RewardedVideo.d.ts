@@ -9,7 +9,7 @@ export default class RewardedVideo {
      * @param event
      * @private
      */
-    _onRewardedVideoEvent: (event: any) => void;
+    private _onRewardedVideoEvent;
     /**
      * Load an ad with an instance of AdRequest
      * @param request
