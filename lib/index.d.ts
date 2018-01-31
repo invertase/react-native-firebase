@@ -37,8 +37,8 @@ declare module "react-native-firebase" {
     // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
     initializeApp(options: Firebase.Options, name: string): App;
     app(name?: string): App;
-    apps(): App[];
-    SDK_VERSION(): string;
+    readonly apps: App[];
+    readonly SDK_VERSION: string;
   }
   namespace Firebase {
     interface Options {
@@ -71,6 +71,8 @@ declare module "react-native-firebase" {
     // perf(): RNFirebase.perf.Performance;
     storage(): RNFirebase.storage.Storage;
     // utils(): RNFirebase.utils.Utils;
+    readonly name: string;
+    readonly options: Firebase.Options;
   }
 
   export namespace RNFirebase {
@@ -529,18 +531,35 @@ declare module "react-native-firebase" {
       [key: string]: any;
     }
 
+    type AdditionalUserInfo = {
+      isNewUser: boolean,
+      profile?: Object,
+      providerId: string,
+      username?: string,
+    }
+
+    type UserCredential = {
+      additionalUserInfo?: AdditionalUserInfo,
+      user: User,
+    }
+
     type UserInfo = {
-           displayName?: string,
-           email?: string,
-           phoneNumber?: string,
-           photoURL?: string,
-           providerId: string,
-           uid: string,
+      displayName?: string,
+      email?: string,
+      phoneNumber?: string,
+      photoURL?: string,
+      providerId: string,
+      uid: string,
     }
 
     type UpdateProfile = {
       displayName?: string,
       photoURL?: string,
+    }
+
+    type UserMetadata = {
+      creationTime?: string,
+      lastSignInTime?: string,
     }
 
     interface User {
@@ -560,6 +579,8 @@ declare module "react-native-firebase" {
        *
        */
       isAnonymous: boolean
+
+      metadata: UserMetadata
 
       phoneNumber: string | null
       /**
@@ -592,10 +613,16 @@ declare module "react-native-firebase" {
        */
       getIdToken(forceRefresh?: boolean): Promise<string>
 
+      getToken(forceRefresh?: boolean): Promise<string>
+
+      linkAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential>
+
       /**
        * Link the user with a 3rd party credential provider.
        */
       linkWithCredential(credential: AuthCredential): Promise<User>
+
+      reauthenticateAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential>
 
       /**
        * Re-authenticate a user with a third-party authentication provider
@@ -652,12 +679,11 @@ declare module "react-native-firebase" {
     }
 
     interface ActionCodeInfo {
-      email: string,
-      error: string,
-      fromEmail: string,
-      verifyEmail: string,
-      recoverEmail: string,
-      passwordReset: string
+      data: {
+        email?: string,
+        fromEmail?: string
+      },
+      operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL'
     }
 
     interface ConfirmationResult {
@@ -694,7 +720,6 @@ declare module "react-native-firebase" {
     }
 
     namespace auth {
-
       type AuthResult = {
         authenticated: boolean,
         user: object | null
@@ -706,6 +731,7 @@ declare module "react-native-firebase" {
       };
 
       interface Auth {
+        readonly app: App;
         /**
          * Returns the current Firebase authentication state.
          */
@@ -713,7 +739,7 @@ declare module "react-native-firebase" {
         /**
          * Returns the currently signed-in user (or null). See the User class documentation for further usage.
          */
-        user: User | null
+        currentUser: User | null
 
         /**
          * Gets/Sets the language for the app instance
@@ -743,12 +769,15 @@ declare module "react-native-firebase" {
 
         signOut(): Promise<void>
 
+        signInAnonymouslyAndRetrieveData(): Promise<UserCredential>
+
         /**
          * Sign an anonymous user.
          * If the user has already signed in, that user will be returned
          */
         signInAnonymously(): Promise<User>
 
+        createUserAndRetrieveDataWithEmailAndPassword(email: string, password: string): Promise<UserCredential>
 
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
@@ -756,11 +785,15 @@ declare module "react-native-firebase" {
          */
         createUserWithEmailAndPassword(email: string, password: string): Promise<User>
 
+        signInAndRetrieveDataWithEmailAndPassword(email: string, password: string): Promise<UserCredential>
+
         /**
          * To sign a user in with their email and password, use the signInWithEmailAndPassword() function.
          * It accepts two parameters, the user's email and password:
          */
         signInWithEmailAndPassword(email: string, password: string): Promise<User>
+
+        signInAndRetrieveDataWithCustomToken(token: string): Promise<UserCredential>
 
         /**
          * Sign a user in with a self-signed JWT token.
@@ -769,6 +802,8 @@ declare module "react-native-firebase" {
          * It accepts one parameter, the custom token:
          */
         signInWithCustomToken(token: string): Promise<User>
+
+        signInAndRetrieveDataWithCredential(credential: AuthCredential): Promise<UserCredential>
 
         /**
          * Sign in the user with a 3rd party credential provider.
@@ -811,14 +846,11 @@ declare module "react-native-firebase" {
         checkActionCode(code: string): Promise<ActionCodeInfo>
 
         /**
-         * Get the currently signed in user
-         */
-        getCurrentUser(): Promise<User | null>
-
-        /**
          * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
          */
         fetchProvidersForEmail(email: string): Promise<Array<string>>
+
+        verifyPasswordResetCode(code: string): Promise<string>
 
         [key: string]: any;
       }
@@ -828,6 +860,7 @@ declare module "react-native-firebase" {
         PhoneAuthProvider: AuthProvider;
         GoogleAuthProvider: AuthProvider;
         GithubAuthProvider: AuthProvider;
+        OAuthProvider: AuthProvider;
         TwitterAuthProvider: AuthProvider;
         FacebookAuthProvider: AuthProvider;
         PhoneAuthState: {
@@ -1079,6 +1112,7 @@ declare module "react-native-firebase" {
 
     namespace firestore {
       interface Firestore {
+        readonly app: App;
         batch(): WriteBatch;
         collection(collectionPath: string): CollectionReference;
         doc(documentPath: string): DocumentReference;
