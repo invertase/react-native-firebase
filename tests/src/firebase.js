@@ -40,7 +40,7 @@ const ios = {
 
 const instances = {
   web: firebase.initializeApp(config),
-  native: RNfirebase.app(),
+  native: RNfirebase,
   another: RNfirebase.initializeApp(Platform.OS === 'ios' ? ios : android, 'anotherApp'),
 };
 
