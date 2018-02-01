@@ -7,14 +7,14 @@
 static NSMutableDictionary *_listeners;
 
 - (id)initWithPath:(RCTEventEmitter *)emitter
-               app:(NSString *) app
+    appDisplayName:(NSString *) appDisplayName
               path:(NSString *) path {
     self = [super init];
     if (self) {
         _emitter = emitter;
-        _app = app;
+        _appDisplayName = appDisplayName;
         _path = path;
-        _ref = [[RNFirebaseFirestore getFirestoreForApp:_app] documentWithPath:_path];
+        _ref = [[RNFirebaseFirestore getFirestoreForApp:_appDisplayName] documentWithPath:_path];
     }
     // Initialise the static listeners object if required
     if (!_listeners) {
@@ -78,7 +78,7 @@ static NSMutableDictionary *_listeners;
     options:(NSDictionary *) options
    resolver:(RCTPromiseResolveBlock) resolve
    rejecter:(RCTPromiseRejectBlock) reject {
-    NSDictionary *dictionary = [RNFirebaseFirestoreDocumentReference parseJSMap:[RNFirebaseFirestore getFirestoreForApp:_app] jsMap:data];
+    NSDictionary *dictionary = [RNFirebaseFirestoreDocumentReference parseJSMap:[RNFirebaseFirestore getFirestoreForApp:_appDisplayName] jsMap:data];
     if (options && options[@"merge"]) {
         [_ref setData:dictionary options:[FIRSetOptions merge] completion:^(NSError * _Nullable error) {
             [RNFirebaseFirestoreDocumentReference handleWriteResponse:error resolver:resolve rejecter:reject];
@@ -93,7 +93,7 @@ static NSMutableDictionary *_listeners;
 - (void)update:(NSDictionary *) data
       resolver:(RCTPromiseResolveBlock) resolve
       rejecter:(RCTPromiseRejectBlock) reject {
-    NSDictionary *dictionary = [RNFirebaseFirestoreDocumentReference parseJSMap:[RNFirebaseFirestore getFirestoreForApp:_app] jsMap:data];
+    NSDictionary *dictionary = [RNFirebaseFirestoreDocumentReference parseJSMap:[RNFirebaseFirestore getFirestoreForApp:_appDisplayName] jsMap:data];
     [_ref updateData:dictionary completion:^(NSError * _Nullable error) {
         [RNFirebaseFirestoreDocumentReference handleWriteResponse:error resolver:resolve rejecter:reject];
     }];
@@ -131,7 +131,7 @@ static NSMutableDictionary *_listeners;
 - (void)handleDocumentSnapshotError:(NSString *)listenerId
                               error:(NSError *)error {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-    [event setValue:_app forKey:@"appName"];
+    [event setValue:_appDisplayName forKey:@"appName"];
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestore getJSError:error] forKey:@"error"];
@@ -142,7 +142,7 @@ static NSMutableDictionary *_listeners;
 - (void)handleDocumentSnapshotEvent:(NSString *)listenerId
                    documentSnapshot:(FIRDocumentSnapshot *)documentSnapshot {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
-    [event setValue:_app forKey:@"appName"];
+    [event setValue:_appDisplayName forKey:@"appName"];
     [event setValue:_path forKey:@"path"];
     [event setValue:listenerId forKey:@"listenerId"];
     [event setValue:[RNFirebaseFirestoreDocumentReference snapshotToDictionary:documentSnapshot] forKey:@"documentSnapshot"];
