@@ -11,7 +11,7 @@
     "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
     "clean": "rimraf dist/",
     "flow": "flow",
-    "format": "eslint --fix ./lib ./tests/src ./tests/lib",
+    "format": "npm run lint -- --fix",
     "lint": "eslint ./lib ./tests/src ./tests/lib",
     "precommit": "lint-staged",
     "prepublish": "npm run clean && npm run build",
@@ -131,11 +131,7 @@
       "eslint --fix",
       "git add"
     ],
-    "tests/src/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "tests/lib/**/*.js": [
+    "tests/{src|lib}/**/*.js": [
       "eslint --fix",
       "git add"
     ]
