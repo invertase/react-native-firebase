@@ -9,8 +9,11 @@
 
 @interface RNFirebaseMessaging : RCTEventEmitter<RCTBridgeModule, FIRMessagingDelegate>
 
-#if !TARGET_OS_TV
++ (_Nonnull instancetype)instance;
 
+#if !TARGET_OS_TV
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
 #endif
 
 @end
