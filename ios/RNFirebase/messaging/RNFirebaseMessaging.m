@@ -11,11 +11,22 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-@interface RNFirebaseMessaging ()
+// For iOS 10 we need to implement UNUserNotificationCenterDelegate to receive display
+// notifications via APNS
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+@import UserNotifications;
 
+@interface RNFirebaseMessaging () <UNUserNotificationCenterDelegate>
 @end
+#endif
 
 @implementation RNFirebaseMessaging
+
+static RNFirebaseMessaging *theRNFirebaseMessaging = nil;
+
++ (nonnull instancetype)instance {
+    return theRNFirebaseMessaging;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -23,18 +34,130 @@ RCT_EXPORT_MODULE()
     self = [super init];
     if (self != nil) {
         NSLog(@"Setting up RNFirebaseMessaging instance");
-        [self initialiseMessaging];
+        [self configure];
     }
     return self;
 }
 
-- (void)initialiseMessaging {
+- (void)configure {
+    // Set as delegate for FIRMessaging
+    [FIRMessaging messaging].delegate = self;
+    
     // Establish Firebase managed data channel
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+    
+    // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+#endif
+    
+    // Set static instance for use from AppDelegate
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        theRNFirebaseMessaging = self;
+    });
 }
 
 - (void)dealloc {
 
+}
+
+// ** AppDelegate methods **
+
+// Listen for background messages
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
+    BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
+    
+    // TODO: Format data before send
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:userInfo];
+}
+
+// Listen for background messages
+- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
+              fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
+    
+    // TODO: Format data before send
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:userInfo];
+}
+
+// ** UNUserNotificationCenterDelegate methods **
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+// Handle incoming notification messages while app is in the foreground.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    NSDictionary *userInfo = notification.request.content.userInfo;
+    
+    // TODO: Format data before send
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:userInfo];
+    
+    // TODO: Change this to your preferred presentation option
+    completionHandler(UNNotificationPresentationOptionNone);
+}
+
+// Handle notification messages after display notification is tapped by the user.
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+#if defined(__IPHONE_11_0)
+         withCompletionHandler:(void(^)(void))completionHandler {
+#else
+         withCompletionHandler:(void(^)())completionHandler {
+#endif
+    NSDictionary *userInfo = response.notification.request.content.userInfo;
+             
+    // TODO: Format data before send
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:userInfo];
+             
+    completionHandler();
+}
+
+#endif
+
+// ** FIRMessagingDelegate methods **
+
+// Listen for FCM tokens
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+    NSLog(@"Received new FCM token: %@", fcmToken);
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:fcmToken];
+}
+
+// Listen for data messages in the foreground
+- (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+    NSDictionary *appData = remoteMessage.appData;
+    
+    NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    for (id k1 in appData) {
+        if ([k1 isEqualToString:@"collapse_key"]) {
+            message[@"collapseKey"] = appData[@"collapse_key"];
+        } else if ([k1 isEqualToString:@"from"]) {
+            message[@"from"] = appData[@"from"];
+        } else if ([k1 isEqualToString:@"notification"]) {
+            NSDictionary *n = appData[@"notification"];
+            NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
+            for (id k2 in appData[@"notification"]) {
+                if ([k2 isEqualToString:@"badge"]) {
+                    notification[@"badge"] = n[@"badge"];
+                } else if ([k2 isEqualToString:@"body"]) {
+                    notification[@"body"] = n[@"body"];
+                } else if ([k2 isEqualToString:@"sound"]) {
+                    notification[@"sound"] = n[@"sound"];
+                } else if ([k2 isEqualToString:@"title"]) {
+                    notification[@"title"] = n[@"title"];
+                } else {
+                    NSLog(@"Unknown notification key: %@", k2);
+                }
+            }
+            message[@"notification"] = notification;
+        } else {
+            data[k1] = appData[k1];
+        }
+    }
+    message[@"data"] = data;
+    message[@"openedFromTray"] = @(false);
+    
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
 // ** Start React Module methods **
@@ -56,7 +179,6 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
         // TODO: Is there something we can listen for?
         resolve(@{@"status":@"unknown"});
     } else {
-        // iOS 10 or later
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             // For iOS 10 display notification (sent via APNS)
             UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
@@ -81,12 +203,12 @@ RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
     resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
 }
 
-RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    UILocalNotification *localUserInfo = [self bridge].launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localUserInfo) {
-        resolve([[localUserInfo userInfo] copy]);
+RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    NSDictionary *notification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (notification) {
+        resolve([notification copy]);
     } else {
-        resolve([[self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy]);
+        resolve(nil);
     }
 }
 

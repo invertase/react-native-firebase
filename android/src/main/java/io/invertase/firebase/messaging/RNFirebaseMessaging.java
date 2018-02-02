@@ -304,7 +304,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
     public void onReceive(Context context, Intent intent) {
       if (getReactApplicationContext().hasActiveCatalystInstance()) {
         String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Received new token: " + token);
+        Log.d(TAG, "Received new FCM token: " + token);
 
         Utils.sendEvent(getReactApplicationContext(), "messaging_token_refreshed", token);
       }
