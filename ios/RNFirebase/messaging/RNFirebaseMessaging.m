@@ -400,3 +400,4 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
 @implementation RNFirebaseMessaging
 @end
 #endif
+

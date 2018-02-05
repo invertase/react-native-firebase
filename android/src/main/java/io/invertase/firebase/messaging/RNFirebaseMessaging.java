@@ -93,6 +93,11 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
   }
 
   @ReactMethod
+  public void hasPermission(Promise promise) {
+    promise.resolve(true);
+  }
+
+  @ReactMethod
   public void sendMessage(ReadableMap messageMap, Promise promise) {
     if (!messageMap.hasKey("to")) {
       promise.reject("messaging/invalid-message", "The supplied message is missing a 'to' field");
