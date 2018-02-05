@@ -55,7 +55,10 @@ RCT_EXPORT_MODULE()
     theRNFirebaseMessaging = self;
 }
 
-// ** AppDelegate methods **
+// *******************************************************
+// ** Start AppDelegate methods
+// ** iOS 8/9 Only
+// *******************************************************
 
 // Listen for background messages
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
@@ -76,7 +79,29 @@ RCT_EXPORT_MODULE()
     // TODO: FetchCompletionHandler?
 }
 
-// ** UNUserNotificationCenterDelegate methods **
+// Listen for permission response
+- (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    if (notificationSettings.types == UIUserNotificationTypeNone) {
+        if (_permissionRejecter) {
+            _permissionRejecter(@"messaging/permission_error", @"Failed to grant permission", nil);
+        }
+    } else if (_permissionResolver) {
+        _permissionResolver(nil);
+    }
+    _permissionRejecter = nil;
+    _permissionResolver = nil;
+}
+
+// *******************************************************
+// ** Finish AppDelegate methods
+// *******************************************************
+
+
+// *******************************************************
+// ** Start UNUserNotificationCenterDelegate methods
+// ** iOS 10+
+// *******************************************************
+
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Handle incoming notification messages while app is in the foreground.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
@@ -107,8 +132,16 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 }
 
 #endif
+    
+// *******************************************************
+// ** Finish UNUserNotificationCenterDelegate methods
+// *******************************************************
 
-// ** FIRMessagingDelegate methods **
+
+// *******************************************************
+// ** Start FIRMessagingDelegate methods
+// ** iOS 8+
+// *******************************************************
 
 // Listen for FCM tokens
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
@@ -122,6 +155,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
+    
+// *******************************************************
+// ** Finish FIRMessagingDelegate methods
+// *******************************************************
 
 // ** Start React Module methods **
 RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
@@ -130,26 +167,26 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
 
 RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (RCTRunningInAppExtension()) {
-        reject(@"request_permission_unavailable", @"requestPermission is not supported in App Extensions", nil);
+        reject(@"messaging/request-permission-unavailable", @"requestPermission is not supported in App Extensions", nil);
         return;
     }
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationType types = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
         [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
-        // Unfortunately on iOS 9 or below, there's no way to tell whether the user accepted or
-        // rejected the permissions popup
-        // TODO: Is there something we can listen for?
-        resolve(@{@"status":@"unknown"});
+        // We set the promise for usage by the AppDelegate callback which listens
+        // for the result of the permission request
+        _permissionRejecter = reject;
+        _permissionResolver = resolve;
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             // For iOS 10 display notification (sent via APNS)
             UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
             [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
                 if (granted) {
-                    resolve(@{@"status": @"granted"});
+                    resolve(nil);
                 } else {
-                    reject(@"permission_error", @"Failed to grant permission", error);
+                    reject(@"messaging/permission_error", @"Failed to grant permission", error);
                 }
             }];
         #endif
@@ -175,7 +212,7 @@ RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RC
         resolve(nil);
     }
 }
-
+    
 RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
                       resolve:(RCTPromiseResolveBlock) resolve
                        reject:(RCTPromiseRejectBlock) reject) {
@@ -350,4 +387,3 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
 @implementation RNFirebaseMessaging
 @end
 #endif
-
