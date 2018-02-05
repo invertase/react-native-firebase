@@ -11,9 +11,13 @@
 
 + (_Nonnull instancetype)instance;
 
+@property _Nullable RCTPromiseRejectBlock permissionRejecter;
+@property _Nullable RCTPromiseResolveBlock permissionResolver;
+
 #if !TARGET_OS_TV
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
+- (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 #endif
 
 @end
@@ -24,3 +28,4 @@
 #endif
 
 #endif
+
