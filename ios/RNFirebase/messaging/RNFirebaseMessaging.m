@@ -212,6 +212,19 @@ RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RC
         resolve(nil);
     }
 }
+
+RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        resolve(@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone));
+    } else {
+        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+                resolve(@(settings.alertSetting == UNNotificationSettingEnabled));
+            }];
+        #endif
+    }
+}
+    
     
 RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
                       resolve:(RCTPromiseResolveBlock) resolve
