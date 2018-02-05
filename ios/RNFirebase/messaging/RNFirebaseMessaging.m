@@ -55,10 +55,6 @@ RCT_EXPORT_MODULE()
     theRNFirebaseMessaging = self;
 }
 
-- (void)dealloc {
-
-}
-
 // ** AppDelegate methods **
 
 // Listen for background messages
@@ -178,6 +174,20 @@ RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RC
     } else {
         resolve(nil);
     }
+}
+
+RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
+                      resolve:(RCTPromiseResolveBlock) resolve
+                       reject:(RCTPromiseRejectBlock) reject) {
+    if (!message[@"to"]) {
+        reject(@"messaging/invalid-message", @"The supplied message is missing a 'to' field", nil);
+    }
+    NSString *to = message[@"to"];
+    NSString *messageId = message[@"messageId"];
+    NSNumber *ttl = message[@"ttl"];
+    NSDictionary *data = message[@"data"];
+    
+    [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
 }
 
 RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
