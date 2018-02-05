@@ -173,11 +173,13 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationType types = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
-        // We set the promise for usage by the AppDelegate callback which listens
-        // for the result of the permission request
-        _permissionRejecter = reject;
-        _permissionResolver = resolve;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
+            // We set the promise for usage by the AppDelegate callback which listens
+            // for the result of the permission request
+            _permissionRejecter = reject;
+            _permissionResolver = resolve;
+        });
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             // For iOS 10 display notification (sent via APNS)
@@ -200,7 +202,9 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
 // Non Web SDK methods
 
 RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
+    dispatch_async(dispatch_get_main_queue(), ^{
+        resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
+    });
 }
 
 RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -215,7 +219,9 @@ RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RC
 
 RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        resolve(@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone));
+        dispatch_async(dispatch_get_main_queue(), ^{
+            resolve(@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone));
+        });
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
             [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
@@ -400,4 +406,3 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
 @implementation RNFirebaseMessaging
 @end
 #endif
-
