@@ -77,7 +77,7 @@ To check out our latest docs, visit [rnfirebase.io](https://rnfirebase.io)
 
 ## Questions
 
-For questions and support please use our [Discord chat](https://discord.gg/t6bdqMs) or [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase). The issue list of this repo is **exclusively** for bug reports.
+For questions and support please use our [Discord chat](https://discord.gg/C9aK28N) or [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase). The issue list of this repo is **exclusively** for bug reports.
 
 ## Issues
 
