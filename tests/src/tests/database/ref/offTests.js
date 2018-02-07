@@ -5,7 +5,7 @@ import DatabaseContents from '../../support/DatabaseContents';
 
 function offTests({ describe, it, xcontext, context, firebase }) {
   describe('ref().off()', () => {
-    it('doesn\'t unbind children callbacks', async () => {
+    it("doesn't unbind children callbacks", async () => {
       // Setup
 
       const parentCallback = sinon.spy();
@@ -14,14 +14,14 @@ function offTests({ describe, it, xcontext, context, firebase }) {
       const parentRef = firebase.native.database().ref('tests/types');
       const childRef = firebase.native.database().ref('tests/types/string');
 
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         parentRef.on('value', () => {
           parentCallback();
           resolve();
         });
       });
 
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         childRef.on('value', () => {
           childCallback();
           resolve();
@@ -70,14 +70,14 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         const ref = firebase.native.database().ref('tests/types/array');
         const arrayLength = DatabaseContents.DEFAULT.array.length;
 
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           ref.on('child_added', () => {
             childAddedCallback();
             resolve();
           });
         });
 
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           ref.on('value', () => {
             valueCallback();
             resolve();
@@ -91,7 +91,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         await ref.push(DatabaseContents.DEFAULT.number);
 
         // stinky test fix - it's all async now so it's not returned within same event loop
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           setTimeout(() => resolve(), 15);
         });
 
@@ -125,7 +125,9 @@ function offTests({ describe, it, xcontext, context, firebase }) {
       context('that is invalid', () => {
         it('throws an exception', () => {
           const ref = firebase.native.database().ref('tests/types/array');
-          (() => ref.off('invalid')).should.throw('Query.off failed: First argument must be a valid string event type: "value, child_added, child_removed, child_changed, child_moved"');
+          (() => ref.off('invalid')).should.throw(
+            'Query.off failed: First argument must be a valid string event type: "value, child_added, child_removed, child_changed, child_moved"'
+          );
         });
       });
 
@@ -137,14 +139,14 @@ function offTests({ describe, it, xcontext, context, firebase }) {
 
         const ref = firebase.native.database().ref('tests/types/string');
 
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           ref.on('value', () => {
             callbackA();
             resolve();
           });
         });
 
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           ref.on('value', () => {
             callbackB();
             resolve();
@@ -187,7 +189,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         const ref = firebase.native.database().ref('tests/types/string');
 
         // Attach the callback the first time
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           callbackA = () => {
             spyA();
             resolve();
@@ -196,7 +198,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         });
 
         // Attach the callback the second time
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           callbackB = () => {
             spyB();
             resolve();
@@ -215,7 +217,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
         await ref.set(DatabaseContents.NEW.string);
 
         // Add a delay to ensure that the .set() has had time to be registered
-        await new Promise((resolve) => {
+        await new Promise(resolve => {
           setTimeout(() => {
             resolve();
           }, 1000);
@@ -239,7 +241,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           const ref = firebase.native.database().ref('tests/types/string');
 
           // Attach the callback the first time
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             callbackA = () => {
               spyA();
               resolve();
@@ -251,7 +253,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           ref.on('value', callbackA);
 
           // Add a delay to ensure that the .on() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -267,7 +269,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.set(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -285,7 +287,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.set(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -311,7 +313,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           const ref = firebase.native.database().ref('tests/types/array');
           const arrayLength = DatabaseContents.DEFAULT.array.length;
           // Attach callbackA
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             callbackA = () => {
               spyA();
               resolve();
@@ -320,7 +322,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           });
 
           // Attach callbackB
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             callbackB = () => {
               spyB();
               resolve();
@@ -329,7 +331,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           });
 
           // Add a delay to ensure that the .on() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -346,7 +348,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.push(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -365,7 +367,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.push(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -391,7 +393,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           const ref = firebase.native.database().ref('tests/types/array');
           const arrayLength = DatabaseContents.DEFAULT.array.length;
           // Attach callbackA
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             callbackA = () => {
               spyA();
               resolve();
@@ -400,7 +402,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           });
 
           // Attach callbackB
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             callbackB = () => {
               spyB();
               resolve();
@@ -409,7 +411,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           });
 
           // Add a delay to ensure that the .on() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -426,7 +428,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.push(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -445,7 +447,7 @@ function offTests({ describe, it, xcontext, context, firebase }) {
           await ref.push(DatabaseContents.DEFAULT.number);
 
           // Add a delay to ensure that the .set() has had time to be registered
-          await new Promise((resolve) => {
+          await new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 15);
@@ -468,7 +470,6 @@ function offTests({ describe, it, xcontext, context, firebase }) {
        *
        * Needs to be tested against web implementation, if possible.
        */
-
     });
   });
 }
