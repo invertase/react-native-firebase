@@ -20,7 +20,7 @@ function onceTests({ describe, firebase, it, tryCatch }) {
     });
 
     it('resolves with the correct value', async () => {
-      await Promise.map(Object.keys(DatabaseContents.DEFAULT), (dataRef) => {
+      await Promise.map(Object.keys(DatabaseContents.DEFAULT), dataRef => {
         // Setup
 
         const dataTypeValue = DatabaseContents.DEFAULT[dataRef];
@@ -28,7 +28,7 @@ function onceTests({ describe, firebase, it, tryCatch }) {
 
         // Test
 
-        return ref.once('value').then((snapshot) => {
+        return ref.once('value').then(snapshot => {
           // Assertion
 
           snapshot.val().should.eql(dataTypeValue);
@@ -52,15 +52,15 @@ function onceTests({ describe, firebase, it, tryCatch }) {
       callback.should.be.calledOnce();
     });
 
-    it('errors if permission denied', () => {
-      return new Promise((resolve, reject) => {
+    it('errors if permission denied', () =>
+      new Promise((resolve, reject) => {
         const successCb = tryCatch(() => {
           // Assertion
 
           reject(new Error('No permission denied error'));
         }, reject);
 
-        const failureCb = tryCatch((error) => {
+        const failureCb = tryCatch(error => {
           // Assertion
           error.code.includes('database/permission-denied').should.be.true();
           resolve();
@@ -72,8 +72,7 @@ function onceTests({ describe, firebase, it, tryCatch }) {
 
         // Test
         reference.once('value', successCb, failureCb);
-      });
-    });
+      }));
   });
 }
 

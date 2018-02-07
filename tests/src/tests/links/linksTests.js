@@ -49,7 +49,8 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
       const result = await links.createDynamicLink(data);
 
-      const expectedParameters = { sd: socialDescription,
+      const expectedParameters = {
+        sd: socialDescription,
         si: socialImageLink,
         st: socialTitle,
         afl: androidFallbackLink,
@@ -69,7 +70,7 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       url.hostname.should.eql(dynamicLinkDomain);
       const params = queryString.parse(url.query);
 
-      Object.keys(expectedParameters).forEach((key) => {
+      Object.keys(expectedParameters).forEach(key => {
         const val = expectedParameters[key];
         params[key].should.eql(val);
       });
@@ -90,37 +91,37 @@ function linksTests({ describe, it, firebase, tryCatch }) {
       params.link.should.eql(link);
     });
 
-    it('fail to create long dynamic link with empty data object', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link with empty data object', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('No dynamicLinkDomain was specified.');
           resolve();
         }, reject);
 
-        const data = { };
+        const data = {};
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link without link object', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link without link object', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('No link was specified.');
           resolve();
@@ -130,20 +131,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link without iosBundleId', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link without iosBundleId', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('No iosBundleId was specified.');
           resolve();
@@ -174,20 +175,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link without androidPackageName', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link without androidPackageName', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('No androidPackageName was specified.');
           resolve();
@@ -218,20 +219,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link with unsupported parameter', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link with unsupported parameter', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('Invalid Parameters.');
           resolve();
@@ -245,20 +246,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link with unsupported ios parameters', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link with unsupported ios parameters', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('Invalid Parameters.');
           resolve();
@@ -279,20 +280,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link with unsupported android parameters', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link with unsupported android parameters', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('Invalid Parameters.');
           resolve();
@@ -313,20 +314,20 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
-    it('fail to create long dynamic link with unsupported social parameters', () => {
-      return new Promise((resolve, reject) => {
+    it('fail to create long dynamic link with unsupported social parameters', () =>
+      new Promise((resolve, reject) => {
         const success = tryCatch(() => {
           // Assertion
           reject(new Error('createDynamicLink did not fail.'));
         }, reject);
 
-        const failure = tryCatch((error) => {
+        const failure = tryCatch(error => {
           // Assertion
           error.message.should.equal('Invalid Parameters.');
           resolve();
@@ -349,11 +350,11 @@ function linksTests({ describe, it, firebase, tryCatch }) {
 
         // Test
 
-        links.createDynamicLink(data)
-        .then(success)
-        .catch(failure);
-      });
-    });
+        links
+          .createDynamicLink(data)
+          .then(success)
+          .catch(failure);
+      }));
 
     it('create short (unguessable) dynamic link with all supported parameters', async () => {
       const url = 'https://www.google.co.il/search?q=react+native+firebase';
