@@ -69,7 +69,6 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
 
   @ReactMethod
   public void requestPermission(Promise promise) {
-    // TODO: Object structure?
     promise.resolve(null);
   }
 
@@ -190,6 +189,10 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
         messageMap.putString("messageId", extras.getString("google.message_id"));
       } else if (key.equals("google.sent_time")) {
         messageMap.putDouble("sentTime", extras.getLong("google.sent_time"));
+      } else if (key.equals("google.ttl")) {
+        messageMap.putDouble("ttl", extras.getDouble("google.ttl"));
+      } else if (key.equals("_fbSourceApplicationHasBeenSet")) {
+        // ignore known unneeded fields
       } else {
         dataMap.putString(key, extras.getString(key));
       }
