@@ -43,18 +43,18 @@ RCT_EXPORT_MODULE()
 - (void)configure {
     // Set as delegate for FIRMessaging
     [FIRMessaging messaging].delegate = self;
-    
+
     // Establish Firebase managed data channel
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-    
+
     // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
 #endif
-    
+
     // Set static instance for use from AppDelegate
     theRNFirebaseMessaging = self;
-    
+
     // Initialise callback handlers dictionary
     _callbackHandlers = [NSMutableDictionary dictionary];
 }
@@ -68,7 +68,7 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
     BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
     NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotification" clickAction:nil openedFromTray:isFromBackground];
-    
+
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
@@ -77,9 +77,9 @@ RCT_EXPORT_MODULE()
               fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
     NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotificationHandler" clickAction:nil openedFromTray:isFromBackground];
-    
+
     [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-    
+
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
@@ -112,9 +112,9 @@ RCT_EXPORT_MODULE()
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
     NSDictionary *message = [self parseUNNotification:notification messageType:@"PresentNotification" openedFromTray:false];
-    
+
     [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-    
+
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
@@ -127,14 +127,14 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)())completionHandler {
 #endif
      NSDictionary *message = [self parseUNNotification:response.notification messageType:@"NotificationResponse" openedFromTray:true];
-             
+
     [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-             
+
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
 #endif
-    
+
 // *******************************************************
 // ** Finish UNUserNotificationCenterDelegate methods
 // *******************************************************
@@ -154,10 +154,10 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // Listen for data messages in the foreground
 - (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage openedFromTray:false];
-    
+
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
-    
+
 // *******************************************************
 // ** Finish FIRMessagingDelegate methods
 // *******************************************************
@@ -172,7 +172,7 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
         reject(@"messaging/request-permission-unavailable", @"requestPermission is not supported in App Extensions", nil);
         return;
     }
-    
+
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationType types = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -195,7 +195,7 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
             }];
         #endif
     }
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
         [RCTSharedApplication() registerForRemoteNotifications];
     });
@@ -232,8 +232,8 @@ RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPr
         #endif
     }
 }
-    
-    
+
+
 RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
                       resolve:(RCTPromiseResolveBlock) resolve
                        reject:(RCTPromiseRejectBlock) reject) {
@@ -244,7 +244,7 @@ RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
     NSString *messageId = message[@"messageId"];
     NSNumber *ttl = message[@"ttl"];
     NSDictionary *data = message[@"data"];
-    
+
     [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
 }
 
@@ -264,7 +264,7 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
 
 // Response handler methods
 
-RCT_EXPORT_METHOD(finishNotificationResponse: (NSString*) messageId) {
+RCT_EXPORT_METHOD(completeNotificationResponse: (NSString*) messageId) {
     void(^callbackHandler)() = [_callbackHandlers objectForKey:messageId];
     if (!callbackHandler) {
         NSLog(@"There is no callback handler for messageId: %@", messageId);
@@ -273,9 +273,9 @@ RCT_EXPORT_METHOD(finishNotificationResponse: (NSString*) messageId) {
     callbackHandler();
     [_callbackHandlers removeObjectForKey:messageId];
 }
-    
-RCT_EXPORT_METHOD(finishPresentNotification: (NSString*) messageId
-                                     result: (NSString*) result) {
+
+RCT_EXPORT_METHOD(completePresentNotification: (NSString*) messageId
+                                       result: (NSString*) result) {
     void(^callbackHandler)(UNNotificationPresentationOptions) = [_callbackHandlers objectForKey:messageId];
     if (!callbackHandler) {
         NSLog(@"There is no callback handler for messageId: %@", messageId);
@@ -293,9 +293,9 @@ RCT_EXPORT_METHOD(finishPresentNotification: (NSString*) messageId
     callbackHandler(options);
     [_callbackHandlers removeObjectForKey:messageId];
 }
-    
-RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
-                                    result: (NSString*) result) {
+
+RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
+                                      result: (NSString*) result) {
     void(^callbackHandler)(UIBackgroundFetchResult) = [_callbackHandlers objectForKey:messageId];
     if (!callbackHandler) {
         NSLog(@"There is no callback handler for messageId: %@", messageId);
@@ -321,7 +321,7 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
 - (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage
                                  openedFromTray:(bool)openedFromTray {
     NSDictionary *appData = remoteMessage.appData;
-     
+
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     for (id k1 in appData) {
@@ -366,19 +366,19 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
     message[@"messageType"] = @"RemoteMessage";
     message[@"data"] = data;
     message[@"openedFromTray"] = @(false);
-                                     
+
     return message;
 }
-    
+
 - (NSDictionary*)parseUNNotification:(UNNotification *)notification
                          messageType:(NSString *)messageType
                       openedFromTray:(bool)openedFromTray {
     NSDictionary *userInfo = notification.request.content.userInfo;
     NSString *clickAction = notification.request.content.categoryIdentifier;
-    
+
     return [self parseUserInfo:userInfo messageType:messageType clickAction:clickAction openedFromTray:openedFromTray];
 }
-    
+
 - (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo
                    messageType:(NSString *) messageType
                    clickAction:(NSString *) clickAction
@@ -386,7 +386,7 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *notif = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-    
+
     for (id k1 in userInfo) {
         if ([k1 isEqualToString:@"aps"]) {
             NSDictionary *aps = userInfo[k1];
@@ -438,22 +438,22 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
             data[k1] = userInfo[k1];
         }
     }
-    
+
     if (!notif[@"clickAction"] && clickAction) {
         notif[@"clickAction"] = clickAction;
     }
-                    
+
     // Generate a message ID if one was not present in the notification
     // This is used for resolving click handlers
     if (!message[@"messageId"]) {
         message[@"messageId"] = [[NSUUID UUID] UUIDString];
     }
     message[@"messageType"] = messageType;
-    
+
     message[@"data"] = data;
     message[@"notification"] = notif;
     message[@"openedFromTray"] = @(openedFromTray);
-    
+
     return message;
 }
 
