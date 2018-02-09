@@ -116,9 +116,6 @@ RCT_EXPORT_MODULE()
     [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
     
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
-    
-    // TODO: Change this to your preferred presentation option
-    completionHandler(UNNotificationPresentationOptionNone);
 }
 
 // Handle notification messages after display notification is tapped by the user.
@@ -451,6 +448,7 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
     if (!message[@"messageId"]) {
         message[@"messageId"] = [[NSUUID UUID] UUIDString];
     }
+    message[@"messageType"] = messageType;
     
     message[@"data"] = data;
     message[@"notification"] = notif;
@@ -474,4 +472,3 @@ RCT_EXPORT_METHOD(finishRemoteNotification: (NSString*) messageId
 @implementation RNFirebaseMessaging
 @end
 #endif
-
