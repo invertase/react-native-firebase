@@ -110,31 +110,41 @@ class TestSuite {
    * testSuite.run([1, 2]);
    */
   async run(testIds = undefined) {
-    const testsToRun = (() => {
-      return (testIds || Object.keys(this.testDefinitions.tests)).reduce((memo, id) => {
-        const test = this.testDefinitions.tests[id];
+    const testsToRun = (() =>
+      (testIds || Object.keys(this.testDefinitions.tests)).reduce(
+        (memo, id) => {
+          const test = this.testDefinitions.tests[id];
 
-        if (!test) {
-          throw new RangeError(`ReactNativeFirebaseTests.TestRunError: Test with id ${id} not found in test suite ${this.name}`);
-        }
+          if (!test) {
+            throw new RangeError(
+              `ReactNativeFirebaseTests.TestRunError: Test with id ${id} not found in test suite ${
+                this.name
+              }`
+            );
+          }
 
-        if (!this.testDefinitions.pendingTestIds[id]) {
-          memo.push(test);
-        }
+          if (!this.testDefinitions.pendingTestIds[id]) {
+            memo.push(test);
+          }
 
-        return memo;
-      }, []);
-    })();
+          return memo;
+        },
+        []
+      ))();
 
-    const testRun = new TestRun(this, testsToRun.reverse(), this.testDefinitions);
+    const testRun = new TestRun(
+      this,
+      testsToRun.reverse(),
+      this.testDefinitions
+    );
 
-    testRun.onChange('TEST_SUITE_STATUS', (values) => {
+    testRun.onChange('TEST_SUITE_STATUS', values => {
       if (this.suiteChangHandler) {
         this.suiteChangHandler(values);
       }
     });
 
-    testRun.onChange('TEST_STATUS', (values) => {
+    testRun.onChange('TEST_STATUS', values => {
       if (this.testChangHandler) {
         this.testChangHandler(values);
       }
@@ -142,7 +152,6 @@ class TestSuite {
 
     await testRun.execute();
   }
-
 }
 
 export default TestSuite;

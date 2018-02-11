@@ -11,7 +11,7 @@
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg" alt="Backers on Open Collective"></a>
   <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg" alt="Sponsors on Open Collective"></a>
-  <a href="https://discord.gg/t6bdqMs"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square" alt="Chat"></a>
+  <a href="https://discord.gg/C9aK28N"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?style=flat-square" alt="Chat"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
@@ -30,43 +30,44 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 ---
 
 ## Supported Firebase Features
-> The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
+> The Web SDK column indicates what modules/functionality from the Web SDK are usable within React Native.
 
 > '**?**' indicates partial support
 
-| Firebase Features      | v1.x.x  | v2.x.x  | v3.x.x | v3.1.x | v3.2.x | Web SDK |
-| ---------------------- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **AdMob**                  | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Analytics**              | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **App Indexing**           | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Authentication**         | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| _-- Phone Auth_            | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
-| **Core**                   | ❌ |**?**| ✅ | ✅ | ✅ | ✅ |
-|  _-- Multiple Apps_        | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **Cloud Firestore**        | ❌ | ❌ | ✅ | ✅ | ✅ |**?**|
-| **Cloud Messaging (FCM)**  | ✅ | ✅ | ✅ | ✅ | ✅ |**?**|
-| **Crashlytics**            | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| **Crash Reporting**        | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Dynamic Links**          | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ |
-| **Invites**                | ❌ | ❌ | ❌ |**?**|**?**| ❌ |
-| **Performance Monitoring** | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Realtime Database**      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| _-- Offline Persistence_   | ✅ | ✅ | ✅ | ✅ | ✅ |**?**|
-| _-- Transactions_          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Remote Config**          | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Storage**                | ✅ | ✅ | ✅ | ✅ | ✅ |**?**|
+| Firebase Features          | v1.x.x | v2.x.x | v3.x.x | v3.1.x | v3.2.x | Web SDK |
+| -------------------------- | :----: | :----: | :----: | :----: | :----: | :-----: |
+| **AdMob**                  |   ❌   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **Analytics**              |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **App Indexing**           |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌    |
+| **Authentication**         |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅    |
+| _-- Phone Auth_            |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **Core**                   |   ❌   | **?**  |   ✅   |   ✅   |   ✅   |   ✅    |
+| _-- Multiple Apps_         |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |   ✅    |
+| **Cloud Firestore**        |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |  **?**  |
+| **Cloud Messaging (FCM)**  |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |  **?**  |
+| **Crashlytics**            |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |   ❌    |
+| **Crash Reporting**        |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **Dynamic Links**          |   ❌   |   ❌   |   ❌   |   ✅   |   ✅   |   ❌    |
+| **Invites**                |   ❌   |   ❌   |   ❌   | **?**  | **?**  |   ❌    |
+| **Performance Monitoring** |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **Realtime Database**      |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅    |
+| _-- Offline Persistence_   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |  **?**  |
+| _-- Transactions_          |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅    |
+| **Remote Config**          |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌    |
+| **Storage**                |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |  **?**  |
 
 ---
+
 ### Supported versions - React Native / Firebase
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`
 
-|                        | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X   | 3.0.X    |  3.1.X      |  3.2.X   |
-|------------------------|-------------|-------------|-----------------|----------|-------------|----------|
-| React Native           | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +          | 0.48 +   | 0.48 - 0.49 | 0.50 +   |
-| Firebase Android SDK   | 10.2.0 +    | 11.0.0 +    | 11.0.0 +        | 11.4.2 + | 11.6.0 +    | 11.6.2 + |
-| Firebase iOS SDK       | 3.15.0 +    | 4.0.0 +     | 4.0.0 +         | 4.3.0 +  | 4.5.0 +     | 4.7.0 +  |
+|                      | 1.X.X       | 2.0.X       | 2.1.X / 2.2.X | 3.0.X    | 3.1.X       | 3.2.X    |
+| -------------------- | ----------- | ----------- | ------------- | -------- | ----------- | -------- |
+| React Native         | 0.36 - 0.39 | 0.40 - 0.46 | 0.47 +        | 0.48 +   | 0.48 - 0.49 | 0.50 +   |
+| Firebase Android SDK | 10.2.0 +    | 11.0.0 +    | 11.0.0 +      | 11.4.2 + | 11.6.0 +    | 11.6.2 + |
+| Firebase iOS SDK     | 3.15.0 +    | 4.0.0 +     | 4.0.0 +       | 4.3.0 +  | 4.5.0 +     | 4.7.0 +  |
 
 ---
 
@@ -76,7 +77,7 @@ To check out our latest docs, visit [rnfirebase.io](https://rnfirebase.io)
 
 ## Questions
 
-For questions and support please use our [Discord chat](https://discord.gg/t6bdqMs) or [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase). The issue list of this repo is **exclusively** for bug reports.
+For questions and support please use our [Discord chat](https://discord.gg/C9aK28N) or [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase). The issue list of this repo is **exclusively** for bug reports.
 
 ## Issues
 
@@ -96,7 +97,7 @@ Detailed changes for each release are documented in the [releases notes](https:/
 
 RNFirebase is an Apache-2.0 licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [sponsors](#sponsors) and [backers](#backers). If you'd like to join them, please consider:
 
-- [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
+* [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
 
 ### Sponsors
 
@@ -131,4 +132,4 @@ Thank you to all the people who have already contributed to RNFirebase!
 
 ## License
 
-- See [LICENSE](/LICENSE)
+* See [LICENSE](/LICENSE)

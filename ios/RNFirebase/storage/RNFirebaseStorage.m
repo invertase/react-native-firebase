@@ -162,7 +162,7 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appDisplayName
  @param NSNumber milliseconds
  */
 RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSString *) appDisplayName
-                             milliseconds:(NSNumber *) milliseconds) {
+                             milliseconds:(nonnull NSNumber *) milliseconds) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
     [[FIRStorage storageForApp:firApp] setMaxDownloadRetryTime:[milliseconds doubleValue]];
 }
@@ -174,7 +174,7 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSString *) appDisplayName
  @param NSNumber milliseconds
  */
 RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSString *) appDisplayName
-                              milliseconds:(NSNumber *) milliseconds) {
+                              milliseconds:(nonnull NSNumber *) milliseconds) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
     [[FIRStorage storageForApp:firApp] setMaxOperationRetryTime:[milliseconds doubleValue]];
 }
@@ -185,7 +185,7 @@ RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSString *) appDisplayName
  @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
  */
 RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSString *) appDisplayName
-                           milliseconds:(NSNumber *) milliseconds) {
+                           milliseconds:(nonnull NSNumber *) milliseconds) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
     [[FIRStorage storageForApp:firApp] setMaxUploadRetryTime:[milliseconds doubleValue]];
 }
