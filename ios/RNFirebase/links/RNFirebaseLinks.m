@@ -6,10 +6,12 @@
 
 
 static void sendDynamicLink(NSURL *url, id sender) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
-                                                        object:sender
-                                                      userInfo:@{@"url": url.absoluteString}];
-    NSLog(@"sendDynamicLink Success: %@", url.absoluteString);
+    if (url) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
+                                                            object:sender
+                                                          userInfo:@{@"url": url.absoluteString}];
+        NSLog(@"sendDynamicLink Success: %@", url.absoluteString);
+    }
 }
 
 @implementation RNFirebaseLinks
@@ -161,9 +163,11 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
                 NSLog(@"create short dynamic link failure %@", [error localizedDescription]);
                 reject(@"links/failure", @"Failed to create Short Dynamic Link", error);
             }
-            NSURL *shortLink = shortURL;
-            NSLog(@"created short dynamic link: %@", shortLink.absoluteString);
-            resolve(shortLink.absoluteString);
+            else {
+                NSURL *shortLink = shortURL;
+                NSLog(@"created short dynamic link: %@", shortLink.absoluteString);
+                resolve(shortLink.absoluteString);
+            }
         }];
     }
     @catch(NSException * e) {

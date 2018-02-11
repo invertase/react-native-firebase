@@ -10,6 +10,7 @@ npm-debug.log
 *.perspectivev3
 *.xcuserstate
 project.xcworkspace/
+atlassian-ide-plugin
 xcuserdata/
 
 # Example
@@ -78,3 +79,4 @@ local.properties
 **/ios/Pods/**
 **/ios/ReactNativeFirebaseDemo.xcworkspace/
 dist
+version.js

@@ -1,6 +1,6 @@
 import DatabaseContents from '../../support/DatabaseContents';
 
-function setTests({ describe, it, xit, firebase }) {
+function setTests({ describe, it, firebase }) {
   describe('ref.set()', () => {
     it('returns a promise', async () => {
       // Setup
@@ -15,57 +15,63 @@ function setTests({ describe, it, xit, firebase }) {
 
       returnValue.should.be.Promise();
 
-      await returnValue.then((value) => {
+      await returnValue.then(value => {
         (value === null).should.be.true();
       });
     });
 
     it('changes value', async () => {
-      await Promise.map(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
-        // Setup
+      await Promise.map(
+        Object.keys(DatabaseContents.DEFAULT),
+        async dataRef => {
+          // Setup
 
-        const previousValue = DatabaseContents.DEFAULT[dataRef];
-        const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
+          const previousValue = DatabaseContents.DEFAULT[dataRef];
+          const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
 
-        await ref.once('value').then((snapshot) => {
-          snapshot.val().should.eql(previousValue);
-        });
+          await ref.once('value').then(snapshot => {
+            snapshot.val().should.eql(previousValue);
+          });
 
-        const newValue = DatabaseContents.NEW[dataRef];
+          const newValue = DatabaseContents.NEW[dataRef];
 
-        // Test
+          // Test
 
-        await ref.set(newValue);
+          await ref.set(newValue);
 
-        await ref.once('value').then((snapshot) => {
-          // Assertion
+          await ref.once('value').then(snapshot => {
+            // Assertion
 
-          snapshot.val().should.eql(newValue);
-        });
-      });
+            snapshot.val().should.eql(newValue);
+          });
+        }
+      );
     });
 
     it('can unset values', async () => {
-      await Promise.map(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
-        // Setup
+      await Promise.map(
+        Object.keys(DatabaseContents.DEFAULT),
+        async dataRef => {
+          // Setup
 
-        const previousValue = DatabaseContents.DEFAULT[dataRef];
-        const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
+          const previousValue = DatabaseContents.DEFAULT[dataRef];
+          const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
 
-        await ref.once('value').then((snapshot) => {
-          snapshot.val().should.eql(previousValue);
-        });
+          await ref.once('value').then(snapshot => {
+            snapshot.val().should.eql(previousValue);
+          });
 
-        // Test
+          // Test
 
-        await ref.set(null);
+          await ref.set(null);
 
-        await ref.once('value').then((snapshot) => {
-          // Assertion
+          await ref.once('value').then(snapshot => {
+            // Assertion
 
-          (snapshot.val() === null).should.be.true();
-        });
-      });
+            (snapshot.val() === null).should.be.true();
+          });
+        }
+      );
     });
   });
 }

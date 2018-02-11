@@ -21,7 +21,7 @@ class TestControlButton extends Component {
   }
 
   handleOnPress() {
-    const { test: { id, description } } = this.props;
+    const { test: { id } } = this.props;
 
     runTest(id);
     // Toast.show(`Running ${description}.`);
@@ -33,7 +33,7 @@ class TestControlButton extends Component {
     if (status !== RunStatus.STARTED && !this.testIsPending()) {
       return (
         <Icon
-          color={'#ffffff'}
+          color="#ffffff"
           size={28}
           name="play circle filled"
           onPress={this.handleOnPress}
@@ -43,7 +43,6 @@ class TestControlButton extends Component {
 
     return null;
   }
-
 }
 
 TestControlButton.propTypes = {
@@ -56,9 +55,7 @@ TestControlButton.propTypes = {
   pendingTestIds: PropTypes.objectOf(PropTypes.bool).isRequired,
 };
 
-TestControlButton.defaultProps = {
-
-};
+TestControlButton.defaultProps = {};
 
 function mapStateToProps({ tests, pendingTestIds }, { testId }) {
   const test = tests[testId];

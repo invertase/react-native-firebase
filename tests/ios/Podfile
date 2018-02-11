@@ -40,6 +40,12 @@ target 'ReactNativeFirebaseDemo' do
       if target.name == "React"
         target.remove_from_project
       end
+      if target.name == 'yoga'
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+          config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = 'NO'
+        end
+      end
     end
   end
 end

@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -196,7 +197,7 @@ public class FirestoreSerialize {
       } else if (Map.class.isAssignableFrom(value.getClass())) {
         typeMap.putString("type", "object");
         typeMap.putMap("value", objectMapToWritable((Map<String, Object>) value));
-      }  else if (List.class.isAssignableFrom(value.getClass())) {
+      } else if (List.class.isAssignableFrom(value.getClass())) {
         typeMap.putString("type", "array");
         List<Object> list = (List<Object>) value;
         Object[] array = list.toArray(new Object[list.size()]);
@@ -214,7 +215,6 @@ public class FirestoreSerialize {
         typeMap.putString("type", "date");
         typeMap.putDouble("value", ((Date) value).getTime());
       } else {
-        // TODO: Changed to log an error rather than crash - is this correct?
         Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
         typeMap.putString("type", "null");
         typeMap.putNull("value");
@@ -269,6 +269,8 @@ public class FirestoreSerialize {
     } else if ("date".equals(type)) {
       Double time = typeMap.getDouble("value");
       return new Date(time.longValue());
+    } else if ("documentid".equals(type)) {
+      return FieldPath.documentId();
     } else if ("fieldvalue".equals(type)) {
       String value = typeMap.getString("value");
       if ("delete".equals(value)) {

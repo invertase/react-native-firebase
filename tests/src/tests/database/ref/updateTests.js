@@ -10,21 +10,23 @@ function updateTests({ describe, it, firebase }) {
 
       // Test
 
-      const returnValue = ref.update({ number: DatabaseContents.DEFAULT.number });
+      const returnValue = ref.update({
+        number: DatabaseContents.DEFAULT.number,
+      });
 
       // Assertion
 
       returnValue.should.be.Promise();
     });
 
-    it('changes value', () => {
-      return Promise.each(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
+    it('changes value', () =>
+      Promise.each(Object.keys(DatabaseContents.DEFAULT), async dataRef => {
         // Setup
 
         const previousValue = DatabaseContents.DEFAULT[dataRef];
         const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
 
-        await ref.once('value').then((snapshot) => {
+        await ref.once('value').then(snapshot => {
           snapshot.val().should.eql(previousValue);
         });
 
@@ -37,20 +39,19 @@ function updateTests({ describe, it, firebase }) {
 
         // Assertion
 
-        await ref.once('value').then((snapshot) => {
+        await ref.once('value').then(snapshot => {
           snapshot.val().should.eql(newValue);
         });
-      });
-    });
+      }));
 
-    it('can unset values', () => {
-      return Promise.each(Object.keys(DatabaseContents.DEFAULT), async (dataRef) => {
+    it('can unset values', () =>
+      Promise.each(Object.keys(DatabaseContents.DEFAULT), async dataRef => {
         // Setup
 
         const previousValue = DatabaseContents.DEFAULT[dataRef];
         const ref = firebase.native.database().ref(`tests/types/${dataRef}`);
 
-        await ref.once('value').then((snapshot) => {
+        await ref.once('value').then(snapshot => {
           snapshot.val().should.eql(previousValue);
         });
 
@@ -62,11 +63,10 @@ function updateTests({ describe, it, firebase }) {
 
         // Assertion
 
-        await ref.once('value').then((snapshot) => {
+        await ref.once('value').then(snapshot => {
           (snapshot.val() === null).should.be.true();
         });
-      });
-    });
+      }));
 
     it('updates multiple values at once', async () => {
       // Setup
@@ -77,11 +77,11 @@ function updateTests({ describe, it, firebase }) {
       const numberRef = firebase.native.database().ref('tests/types/number');
       const stringRef = firebase.native.database().ref('tests/types/string');
 
-      await numberRef.once('value').then((snapshot) => {
+      await numberRef.once('value').then(snapshot => {
         snapshot.val().should.eql(numberPreviousValue);
       });
 
-      await stringRef.once('value').then((snapshot) => {
+      await stringRef.once('value').then(snapshot => {
         snapshot.val().should.eql(stringPreviousValue);
       });
 
@@ -98,11 +98,11 @@ function updateTests({ describe, it, firebase }) {
 
       // Assertion
 
-      await numberRef.once('value').then((snapshot) => {
+      await numberRef.once('value').then(snapshot => {
         snapshot.val().should.eql(numberNewValue);
       });
 
-      await stringRef.once('value').then((snapshot) => {
+      await stringRef.once('value').then(snapshot => {
         snapshot.val().should.eql(stringNewValue);
       });
     });
