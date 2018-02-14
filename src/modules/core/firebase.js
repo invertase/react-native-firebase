@@ -240,4 +240,18 @@ class Firebase {
   }
 }
 
-export default new Firebase();
+const firebaseApp = new Firebase();
+export default firebaseApp;
+export const admob = firebaseApp.admob;
+export const analytics = firebaseApp.analytics;
+export const auth = firebaseApp.auth;
+export const config = firebaseApp.config;
+export const crash = firebaseApp.crash;
+export const database = firebaseApp.database;
+export const fabric = firebaseApp.fabric;
+export const firestore = firebaseApp.firestore;
+export const links = firebaseApp.links;
+export const messaging = firebaseApp.messaging;
+export const perf = firebaseApp.perf;
+export const storage = firebaseApp.storage;
+export const utils = firebaseApp.utils;
