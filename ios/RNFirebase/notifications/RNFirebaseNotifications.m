@@ -27,6 +27,7 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary *notificationInfo = notification.userInfo;
+            // TODO: NotificationId?
             if ([notificationId isEqualToString:[notificationInfo valueForKey:@"notificationId"]]) {
                 [RCTSharedApplication() cancelLocalNotification:notification];
             }
@@ -194,7 +195,7 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
         content.sound = notification[@"sound"];
     }
     if (notification[@"subtitle"]) {
-        content.title = notification[@"subtitle"];
+        content.subtitle = notification[@"subtitle"];
     }
     if (notification[@"title"]) {
         content.title = notification[@"title"];
@@ -240,14 +241,90 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
 - (NSDictionary*) parseUILocalNotification:(UILocalNotification *) localNotification {
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
     
+    if (localNotification.alertBody) {
+        notification[@"body"] = localNotification.alertBody;
+    }
+    if (localNotification.userInfo) {
+        notification[@"data"] = localNotification.userInfo;
+    }
+    if (localNotification.soundName) {
+        notification[@"sound"] = localNotification.soundName;
+    }
+    if (localNotification.alertTitle) {
+         notification[@"title"] = localNotification.alertTitle;
+    }
     
+    NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
+    if (localNotification.alertAction) {
+        ios[@"alertAction"] = localNotification.alertAction;
+    }
+    if (localNotification.applicationIconBadgeNumber) {
+        ios[@"badge"] = @(localNotification.applicationIconBadgeNumber);
+    }
+    if (localNotification.category) {
+        ios[@"category"] = localNotification.category;
+    }
+    if (localNotification.hasAction) {
+        ios[@"hasAction"] = @(localNotification.hasAction);
+    }
+    if (localNotification.alertLaunchImage) {
+        ios[@"launchImage"] = localNotification.alertLaunchImage;
+    }
+    notification[@"ios"] = ios;
     
     return notification;
-    // TODO
 }
 
 - (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) localNotification {
-    // TODO
+    NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
+
+    notification[@"identifier"] = localNotification.identifier;
+    
+    if (localNotification.content.body) {
+        notification[@"body"] = localNotification.content.body;
+    }
+    if (localNotification.content.userInfo) {
+        notification[@"data"] = localNotification.content.userInfo;
+    }
+    if (localNotification.content.sound) {
+        notification[@"sound"] = localNotification.content.sound;
+    }
+    if (localNotification.content.subtitle) {
+        notification[@"subtitle"] = localNotification.content.subtitle;
+    }
+    if (localNotification.content.title) {
+        notification[@"title"] = localNotification.content.title;
+    }
+    
+    NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
+    
+    if (localNotification.content.attachments) {
+        NSMutableArray *attachments = [[NSMutableArray alloc] init];
+        for (UNNotificationAttachment *a in localNotification.content.attachments) {
+            NSMutableDictionary *attachment = [[NSMutableDictionary alloc] init];
+            attachment[@"identifier"] = a.identifier;
+            attachment[@"type"] = a.type;
+            attachment[@"url"] = [a.URL absoluteString];
+            [attachments addObject:attachment];
+        }
+        ios[@"attachments"] = attachments;
+    }
+        
+    if (localNotification.content.badge) {
+        ios[@"badge"] = localNotification.content.badge;
+    }
+    if (localNotification.content.categoryIdentifier) {
+        ios[@"category"] = localNotification.content.categoryIdentifier;
+    }
+    if (localNotification.content.launchImageName) {
+        ios[@"launchImage"] = localNotification.content.launchImageName;
+    }
+    if (localNotification.content.threadIdentifier) {
+        ios[@"threadIdentifier"] = localNotification.content.threadIdentifier;
+    }
+    notification[@"ios"] = ios;
+    
+    return notification;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
