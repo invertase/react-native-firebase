@@ -155,6 +155,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
     FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
   }
 
+  //////////////////////////////////////////////////////////////////////
+  // Start ActivityEventListener methods
+  //////////////////////////////////////////////////////////////////////
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     // FCM functionality does not need this function
@@ -168,6 +171,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
       Utils.sendEvent(getReactApplicationContext(), "messaging_message_received", messageMap);
     }
   }
+  //////////////////////////////////////////////////////////////////////
+  // End ActivityEventListener methods
+  //////////////////////////////////////////////////////////////////////
 
   private WritableMap parseIntentForMessage(Intent intent) {
     // Check if FCM data exists
