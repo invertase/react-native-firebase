@@ -42,23 +42,8 @@ public class RNFirebaseLocalMessagingHelper {
     sharedPreferences = mContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
   }
 
-  public void sendNotification(Bundle bundle) {
-
-  }
-
   public void setApplicationForeground(boolean foreground){
     mIsForeground = foreground;
   }
 
-  private Class getMainActivityClass() {
-    String packageName = mContext.getPackageName();
-    Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
-    String className = launchIntent.getComponent().getClassName();
-    try {
-      return Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
 }

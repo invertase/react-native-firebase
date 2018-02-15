@@ -27,7 +27,6 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary *notificationInfo = notification.userInfo;
-            // TODO: NotificationId?
             if ([notificationId isEqualToString:[notificationInfo valueForKey:@"notificationId"]]) {
                 [RCTSharedApplication() cancelLocalNotification:notification];
             }
@@ -46,12 +45,12 @@ RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
                              resolver:(RCTPromiseResolveBlock)resolve
                              rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        UILocalNotification* notif = [self buildUILocalNotification:notification];
+        UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:false];
         [RCTSharedApplication() presentLocalNotificationNow:notif];
         resolve(nil);
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-            UNNotificationRequest* request = [self buildUNNotificationRequest:notification];
+            UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
                     resolve(nil);
@@ -123,18 +122,15 @@ RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId) {
 }
 
 RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
-                              schedule:(NSDictionary*) schedule
                               resolver:(RCTPromiseResolveBlock)resolve
                               rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        UILocalNotification* notif = [self buildUILocalNotification:notification];
-        // TODO: Schedule
+        UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:true];
         [RCTSharedApplication() scheduleLocalNotification:notif];
         resolve(nil);
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-            UNNotificationRequest* request = [self buildUNNotificationRequest:notification];
-            // TODO: Schedule
+            UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
                     resolve(nil);
@@ -146,7 +142,8 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
     }
 }
 
-- (UILocalNotification*) buildUILocalNotification:(NSDictionary *) notification {
+- (UILocalNotification*) buildUILocalNotification:(NSDictionary *) notification
+                                     withSchedule:(BOOL) withSchedule {
     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
     if (notification[@"body"]) {
         localNotification.alertBody = notification[@"body"];
@@ -179,11 +176,32 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
             localNotification.alertLaunchImage = ios[@"launchImage"];
         }
     }
-
+    if (withSchedule) {
+        NSDictionary *schedule = notification[@"schedule"];
+        NSNumber *fireDateNumber = schedule[@"fireDate"];
+        NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:([fireDateNumber doubleValue] / 1000.0)];
+        localNotification.fireDate = fireDate;
+        
+        NSString *interval = schedule[@"repeatInterval"];
+        if (interval) {
+            if ([interval isEqualToString:@"minute"]) {
+                localNotification.repeatInterval = NSCalendarUnitMinute;
+            } else if ([interval isEqualToString:@"hour"]) {
+                localNotification.repeatInterval = NSCalendarUnitHour;
+            } else if ([interval isEqualToString:@"day"]) {
+                localNotification.repeatInterval = NSCalendarUnitDay;
+            } else if ([interval isEqualToString:@"week"]) {
+                localNotification.repeatInterval = NSCalendarUnitWeekday;
+            }
+        }
+        
+    }
+    
     return localNotification;
 }
 
-- (UNNotificationRequest*) buildUNNotificationRequest:(NSDictionary *) notification {
+- (UNNotificationRequest*) buildUNNotificationRequest:(NSDictionary *) notification
+                                         withSchedule:(BOOL) withSchedule {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     if (notification[@"body"]) {
         content.body = notification[@"body"];
@@ -234,8 +252,34 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
         }
     }
     
-    // TODO: Scheduling
-    return [UNNotificationRequest requestWithIdentifier:notification[@"ios"][@"identifier"] content:content trigger:nil];
+    if (withSchedule) {
+        NSDictionary *schedule = notification[@"schedule"];
+        NSNumber *fireDateNumber = schedule[@"fireDate"];
+        NSString *interval = schedule[@"repeatInterval"];
+        NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:([fireDateNumber doubleValue] / 1000.0)];
+        
+        NSCalendarUnit calendarUnit;
+        if (interval) {
+            if ([interval isEqualToString:@"minute"]) {
+                calendarUnit = NSCalendarUnitSecond;
+            } else if ([interval isEqualToString:@"hour"]) {
+                calendarUnit = NSCalendarUnitMinute | NSCalendarUnitSecond;
+            } else if ([interval isEqualToString:@"day"]) {
+                calendarUnit = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+            } else if ([interval isEqualToString:@"week"]) {
+                calendarUnit = NSCalendarUnitWeekday | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+            }
+        } else {
+            // Needs to match exactly to the secpmd
+            calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+        }
+        
+        NSDateComponents *components = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fireDate];
+        UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:interval];
+        return [UNNotificationRequest requestWithIdentifier:notification[@"notificationId"] content:content trigger:trigger];
+    } else {
+        return [UNNotificationRequest requestWithIdentifier:notification[@"notificationId"] content:content trigger:nil];
+    }
 }
 
 - (NSDictionary*) parseUILocalNotification:(UILocalNotification *) localNotification {
@@ -278,7 +322,7 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
 - (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) localNotification {
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
 
-    notification[@"identifier"] = localNotification.identifier;
+    notification[@"notificationId"] = localNotification.identifier;
     
     if (localNotification.content.body) {
         notification[@"body"] = localNotification.content.body;

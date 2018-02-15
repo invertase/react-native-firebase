@@ -1,24 +1,41 @@
 package io.invertase.firebase.notifications;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
 
-public class RNFirebaseNotifications extends ReactContextBaseJavaModule {
+import io.invertase.firebase.Utils;
+
+public class RNFirebaseNotifications extends ReactContextBaseJavaModule implements LifecycleEventListener {
+  private static final String TAG = "RNFirebaseNotifications";
+
   private RNFirebaseNotificationManager notificationManager;
   public RNFirebaseNotifications(ReactApplicationContext context) {
     super(context);
     notificationManager = new RNFirebaseNotificationManager(context.getApplicationContext());
+    context.addLifecycleEventListener(this);
+
+    LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+
+    // Subscribe to scheduled notification events
+    localBroadcastManager.registerReceiver(new ScheduledNotificationReceiver(),
+      new IntentFilter(RNFirebaseNotificationManager.SCHEDULED_NOTIFICATION_EVENT));
   }
 
   @Override
@@ -67,7 +84,46 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleNotification(ReadableMap notification, ReadableMap schedule, Promise promise) {
-    notificationManager.scheduleNotification(notification, schedule, promise);
+  public void scheduleNotification(ReadableMap notification, Promise promise) {
+    notificationManager.scheduleNotification(notification, promise);
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // Start LifecycleEventListener methods
+  //////////////////////////////////////////////////////////////////////
+  @Override
+  public void onHostResume() {
+    notificationManager.setIsForeground(true);
+  }
+
+  @Override
+  public void onHostPause() {
+    notificationManager.setIsForeground(false);
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // Do nothing
+  }
+  //////////////////////////////////////////////////////////////////////
+  // End LifecycleEventListener methods
+  //////////////////////////////////////////////////////////////////////
+
+  private WritableMap parseNotificationBundle(Bundle notification) {
+    return Arguments.makeNativeMap(notification);
+  }
+
+  private class ScheduledNotificationReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (getReactApplicationContext().hasActiveCatalystInstance()) {
+        Log.d(TAG, "Received new scheduled notification");
+
+        Bundle notification = intent.getBundleExtra("notification");
+        WritableMap messageMap = parseNotificationBundle(notification);
+
+        Utils.sendEvent(getReactApplicationContext(), "notifications_notification_received", messageMap);
+      }
+    }
   }
 }

@@ -10,6 +10,6 @@ import android.content.Intent;
 public class RNFirebaseNotificationReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
-    new RNFirebaseNotificationManager(context).displayNotification(intent.getExtras());
+    new RNFirebaseNotificationManager(context).displayScheduledNotification(intent.getExtras());
   }
 }

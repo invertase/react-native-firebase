@@ -29,10 +29,10 @@ allprojects {
 
 subprojects {
     ext {
-        compileSdk = 25
-        buildTools = "25.0.2"
+        compileSdk = 26
+        buildTools = "26.0.2"
         minSdk = 16
-        targetSdk = 25
+        targetSdk = 26
     }
 
     afterEvaluate { project ->
