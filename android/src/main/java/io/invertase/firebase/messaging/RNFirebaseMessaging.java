@@ -34,7 +34,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule implements A
   private static final String BADGE_FILE = "BadgeCountFile";
   private static final String BADGE_KEY = "BadgeCount";
 
-  private static final String TAG = RNFirebaseMessaging.class.getCanonicalName();
+  private static final String TAG = "RNFirebaseMessaging";
 
   private SharedPreferences sharedPreferences = null;
 
