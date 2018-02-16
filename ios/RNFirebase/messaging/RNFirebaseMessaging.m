@@ -113,11 +113,34 @@ RCT_EXPORT_MODULE()
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    
+    NSString *event;
+    UNNotificationPresentationOptions options;
     NSDictionary *message = [self parseUNNotification:notification messageType:@"PresentNotification" openedFromTray:false];
-
-    [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+    
+    if (isFCM || isScheduled) {
+        // If background
+        if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
+            // display notification
+            options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+            // notification_displayed
+            event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
+        } else {
+            // don't show notification
+            options = UNNotificationPresentationOptionNone;
+            // notification_received
+            event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        }
+    } else {
+        // display notification
+        options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        // no event
+    }
+    
+    if (event) {
+        [RNFirebaseUtil sendJSEvent:self name:event body:message];
+    }
+    completionHandler(options);
 }
 
 // Handle notification messages after display notification is tapped by the user.
@@ -129,10 +152,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)())completionHandler {
 #endif
      NSDictionary *message = [self parseUNNotification:response.notification messageType:@"NotificationResponse" openedFromTray:true];
-
-    [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+     
+     [RNFirebaseUtil sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_CLICKED body:message];
+     completionHandler();
 }
 
 #endif
