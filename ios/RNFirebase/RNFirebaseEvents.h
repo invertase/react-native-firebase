@@ -38,6 +38,11 @@ static NSString *const MESSAGING_TOKEN_REFRESHED = @"messaging_token_refreshed";
 // TODO: Remove
 static NSString *const MESSAGING_NOTIFICATION_RECEIVED = @"messaging_notification_received";
 
+// Notifications
+static NSString *const NOTIFICATIONS_NOTIFICATION_CLICKED = @"notifications_notification_clicked";
+static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"notifications_notification_displayed";
+static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"notifications_notification_received";
+
 // AdMob
 static NSString *const ADMOB_INTERSTITIAL_EVENT = @"interstitial_event";
 static NSString *const ADMOB_REWARDED_VIDEO_EVENT = @"rewarded_video_event";
