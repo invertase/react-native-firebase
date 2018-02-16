@@ -1,6 +1,7 @@
 #import "RNFirebaseNotifications.h"
 
 #if __has_include(<FirebaseMessaging/FIRMessaging.h>)
+#import "RNFirebaseEvents.h"
 #import <React/RCTUtils.h>
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -372,7 +373,7 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[];
+    return @[NOTIFICATIONS_NOTIFICATION_RECEIVED];
 }
 
 + (BOOL)requiresMainQueueSetup
