@@ -62,6 +62,8 @@ ios/RnFirebase.xcodeproj/xcuserdata
 .Trashes
 ehthumbs.db
 Thumbs.dbandroid/gradle
+
+# Project folders
 android/gradlew
 android/build
 android/gradlew.bat
@@ -71,7 +73,7 @@ docs
 coverage
 yarn.lock
 tests
-lib/.watchmanconfig
+lib
 buddybuild_postclone.sh
 bin/test.js
 .github
