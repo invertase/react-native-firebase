@@ -119,9 +119,9 @@ RCT_EXPORT_MODULE()
     NSDictionary *message = [self parseUNNotification:notification messageType:@"PresentNotification" openedFromTray:false];
     
     if (isFCM || isScheduled) {
-        // If background
+        // If app is in the background
         if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-            // display notification
+            // display the notification
             options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
             // notification_displayed
             event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
@@ -132,7 +132,8 @@ RCT_EXPORT_MODULE()
             event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
         }
     } else {
-        // display notification
+        // Triggered by `notifications().displayNotification(notification)`
+        // Display the notification
         options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
         // no event
     }
@@ -482,7 +483,7 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[MESSAGING_MESSAGE_RECEIVED, MESSAGING_TOKEN_REFRESHED];
+    return @[MESSAGING_MESSAGE_RECEIVED, MESSAGING_TOKEN_REFRESHED, NOTIFICATIONS_NOTIFICATION_CLICKED, NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
 }
 
 + (BOOL)requiresMainQueueSetup
