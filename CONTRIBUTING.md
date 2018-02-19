@@ -7,7 +7,7 @@ First, thank you for considering contributing to react-native-firebase! It's peo
 We welcome any type of contribution, not only code. You can help with
 
 * **QA**: file bug reports, the more details you can give the better (e.g. screenshots with the console open)
-* **Docs**: improve reference coverage, add more examples, fix any typos or anything else you can spot. At the top of every page on our docs site click the `Edit` pencil to go to that pages markdown file, or view the [Docs Repo](https://github.com/invertase/react-native-firebase-docs) directly
+* **Docs**: improve reference coverage, add more examples, fix any typos or anything else you can spot. At the top of every page on our docs site you can click the `Edit` pencil to go to that pages markdown file, or view the [Docs Repo](https://github.com/invertase/react-native-firebase-docs) directly
 * **Marketing**: writing blog posts, howto's, printing stickers, ...
 * **Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
 * **Code**: take a look at the [open issues](issues). Even if you can't write code, commenting on them, showing that you care about a given issue matters. It helps us triage them.
