@@ -2435,21 +2435,43 @@ declare module "react-native-firebase/database" {
 }
 
 declare module "react-native-firebase/auth" {
-  export { auth } from "react-native-firebase";
+  import { RNFirebase } from "react-native-firebase";
+  export type AuthResult = RNFirebase.auth.AuthResult;
+  export type AuthProvider = RNFirebase.auth.AuthProvider;
+  export type Auth = RNFirebase.auth.Auth;
+  export type AuthStatics = RNFirebase.auth.AuthStatics;
 }
 
 declare module "react-native-firebase/messaging" {
-  export { messaging } from "react-native-firebase";
+  import { RNFirebase } from "react-native-firebase";
+  export type Messaging = RNFirebase.messaging.Messaging;
+  export type RemoteMessage = RNFirebase.messaging.RemoteMessage;
+}
+
+
+declare module "react-native-firebase/crashlytics" {
+  import { RNFirebase } from "react-native-firebase";
+  export type Crashlytics = RNFirebase.crashlytics.Crashlytics;
 }
 
 declare module "react-native-firebase/links" {
-  export { links } from "react-native-firebase";
+  import { RNFirebase } from "react-native-firebase";
+  export type Links = RNFirebase.links.Links;
 }
 
 declare module "react-native-firebase/firestore" {
-  export { firestore } from "react-native-firebase";
-}
-
-declare module "react-native-firebase/int" {
-  export { DataSnapshot } from "react-native-firebase/database";
+  import { RNFirebase } from "react-native-firebase";
+  export type FireStore = RNFirebase.firestore.Firestore;
+  export type FirestoreStatics = RNFirebase.firestore.FirestoreStatics;
+  export type CollectionReference = RNFirebase.firestore.CollectionReference;
+  export type DocumentChange = RNFirebase.firestore.DocumentChange;
+  export type DocumentReference = RNFirebase.firestore.DocumentReference;
+  export type DocumentSnapshot = RNFirebase.firestore.DocumentSnapshot;
+  export type FieldPath = RNFirebase.firestore.FieldPath;
+  export type FieldValue = RNFirebase.firestore.FieldValue;
+  export type GeoPoint = RNFirebase.firestore.GeoPoint;
+  export type Path = RNFirebase.firestore.Path;
+  export type Query = RNFirebase.firestore.Query;
+  export type QuerySnapshot = RNFirebase.firestore.QuerySnapshot;
+  export type WriteBatch = RNFirebase.firestore.WriteBatch;
 }
