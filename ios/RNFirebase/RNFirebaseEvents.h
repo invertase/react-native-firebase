@@ -39,8 +39,8 @@ static NSString *const MESSAGING_TOKEN_REFRESHED = @"messaging_token_refreshed";
 static NSString *const MESSAGING_NOTIFICATION_RECEIVED = @"messaging_notification_received";
 
 // Notifications
-static NSString *const NOTIFICATIONS_NOTIFICATION_CLICKED = @"notifications_notification_clicked";
 static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"notifications_notification_displayed";
+static NSString *const NOTIFICATIONS_NOTIFICATION_PRESSED = @"notifications_notification_pressed";
 static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"notifications_notification_received";
 
 // AdMob
