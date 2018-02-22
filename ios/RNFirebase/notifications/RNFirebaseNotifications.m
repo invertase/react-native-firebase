@@ -38,7 +38,7 @@ RCT_EXPORT_MODULE();
 - (void)configure {
     // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-    // [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
 #endif
     
     // Set static instance for use from AppDelegate
@@ -51,20 +51,22 @@ RCT_EXPORT_MODULE();
 // *******************************************************
 
 - (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification {
-    NSString *event;
-    if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
-        // notification_displayed
-        event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
-    } else if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-        // notification_displayed
-        event = NOTIFICATIONS_NOTIFICATION_PRESSED;
-    } else {
-        // notification_received
-        event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
-    }
+    #if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
+        NSString *event;
+        if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
+            // notification_displayed
+            event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
+        } else if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
+            // notification_displayed
+            event = NOTIFICATIONS_NOTIFICATION_PRESSED;
+        } else {
+            // notification_received
+            event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        }
 
-    NSDictionary *message = [self parseUILocalNotification:notification];
-    [RNFirebaseUtil sendJSEvent:self name:event body:message];
+        NSDictionary *message = [self parseUILocalNotification:notification];
+        [RNFirebaseUtil sendJSEvent:self name:event body:message];
+    #endif
 }
 
 // Listen for background messages
@@ -75,7 +77,7 @@ RCT_EXPORT_MODULE();
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
         return;
     }
-    
+
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
         // notification_displayed
@@ -85,12 +87,17 @@ RCT_EXPORT_MODULE();
         event = NOTIFICATIONS_NOTIFICATION_PRESSED;
     } else {
         // notification_received
-        event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        // On IOS 10, foreground notifications also go through willPresentNotification
+        // This prevents duplicate messages from hitting the JS app
+        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            return;
+        #else
+            event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        #endif
     }
-    
-    // TODO: Proper notification structure
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotification" clickAction:nil];
-    
+
+    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotification" category:nil];
+
     [RNFirebaseUtil sendJSEvent:self name:event body:message];
 }
 
@@ -104,6 +111,7 @@ RCT_EXPORT_MODULE();
         return;
     }
     
+    
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
         // notification_displayed
@@ -113,16 +121,19 @@ RCT_EXPORT_MODULE();
         event = NOTIFICATIONS_NOTIFICATION_PRESSED;
     } else {
         // notification_received
-        event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        // On IOS 10, foreground notifications also go through willPresentNotification
+        // This prevents duplicate messages from hitting the JS app
+        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+            return;
+        #else
+            event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
+        #endif
     }
-    
-    // TODO: Proper notification structure
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotificationHandler" clickAction:nil];
-    
-    // TODO: Callback handler
-    // [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-    
+
+    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotificationHandler" category:nil];
+
     [RNFirebaseUtil sendJSEvent:self name:event body:message];
+    completionHandler(UIBackgroundFetchResultNoData);
 }
 
 // *******************************************************
@@ -181,7 +192,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #else
          withCompletionHandler:(void(^)())completionHandler {
 #endif
-     NSDictionary *message = [self parseUNNotification:response.notification messageType:@"NotificationResponse"];
+     NSDictionary *message = [self parseUNNotificationResponse:response messageType:@"NotificationResponse"];
      
      [RNFirebaseUtil sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_PRESSED body:message];
      completionHandler();
@@ -253,7 +264,7 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecte
     } else {
         NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
         if (remoteNotification) {
-            NSDictionary *message = [self parseUserInfo:remoteNotification messageType:@"InitialMessage" clickAction:nil];
+            NSDictionary *message = [self parseUserInfo:remoteNotification messageType:@"InitialMessage" category:nil];
             resolve(message);
         } else {
             resolve(nil);
@@ -560,17 +571,27 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
     return notification;
 }
     
+- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response
+                                 messageType:(NSString *)messageType {
+     NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
+     NSDictionary *notification = [self parseUNNotification:response.notification messageType:messageType];
+     notificationResponse[@"notification"] = notification;
+     notificationResponse[@"action"] = response.actionIdentifier;
+     
+     return notificationResponse;
+}
+    
 - (NSDictionary*)parseUNNotification:(UNNotification *)notification
                          messageType:(NSString *)messageType {
     NSDictionary *userInfo = notification.request.content.userInfo;
-    NSString *clickAction = notification.request.content.categoryIdentifier;
+    NSString *category = notification.request.content.categoryIdentifier;
 
-    return [self parseUserInfo:userInfo messageType:messageType clickAction:clickAction];
+    return [self parseUserInfo:userInfo messageType:messageType category:category];
 }
 
 - (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo
                    messageType:(NSString *) messageType
-                   clickAction:(NSString *) clickAction {
+                      category:(NSString *) category {
                     
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
@@ -585,22 +606,15 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
                     for (id k3 in alert) {
                         if ([k3 isEqualToString:@"body"]) {
                             notification[@"body"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"loc-args"]) {
-                            // TODO: What to do with this?
-                            // notif[@"bodyLocalizationArgs"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"loc-key"]) {
-                            // TODO: What to do with this?
-                            // notif[@"bodyLocalizationKey"] = alert[k3];
                         } else if ([k3 isEqualToString:@"subtitle"]) {
                             notification[@"subtitle"] = alert[k3];
                         } else if ([k3 isEqualToString:@"title"]) {
                             notification[@"title"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title-loc-args"]) {
-                            // TODO: What to do with this?
-                            // notif[@"titleLocalizationArgs"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title-loc-key"]) {
-                            // TODO: What to do with this?
-                            // notif[@"titleLocalizationKey"] = alert[k3];
+                        } else if ([k3 isEqualToString:@"loc-args"]
+                                   || [k3 isEqualToString:@"loc-key"]
+                                   || [k3 isEqualToString:@"title-loc-args"]
+                                   || [k3 isEqualToString:@"title-loc-key"]) {
+                            // Ignore known keys
                         } else {
                             NSLog(@"Unknown alert key: %@", k2);
                         }
@@ -617,20 +631,22 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
             }
         } else if ([k1 isEqualToString:@"gcm.message_id"]) {
             notification[@"notificationId"] = userInfo[k1];
-        } else if ([k1 isEqualToString:@"google.c.a.ts"]) {
-            // TODO: What to do with this?
-            // message[@"sentTime"] = userInfo[k1];
         } else if ([k1 isEqualToString:@"gcm.n.e"]
                    || [k1 isEqualToString:@"gcm.notification.sound2"]
                    || [k1 isEqualToString:@"google.c.a.c_id"]
                    || [k1 isEqualToString:@"google.c.a.c_l"]
                    || [k1 isEqualToString:@"google.c.a.e"]
-                   || [k1 isEqualToString:@"google.c.a.udt"]) {
+                   || [k1 isEqualToString:@"google.c.a.udt"]
+                   || [k1 isEqualToString:@"google.c.a.ts"]) {
             // Ignore known keys
         } else {
             // Assume custom data
             data[k1] = userInfo[k1];
         }
+    }
+                          
+    if (!ios[@"category"]) {
+        ios[@"category"] = category;
     }
 
     // TODO: What to do with this?
