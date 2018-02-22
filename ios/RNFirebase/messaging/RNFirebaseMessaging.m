@@ -70,6 +70,12 @@ RCT_EXPORT_MODULE()
     _permissionResolver = nil;
 }
 
+// Listen for FCM data messages that arrive as a remote notification
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
+    NSDictionary *message = [self parseUserInfo:userInfo];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+}
+
 // *******************************************************
 // ** Finish AppDelegate methods
 // *******************************************************
@@ -88,8 +94,15 @@ RCT_EXPORT_MODULE()
 
 // Listen for data messages in the foreground
 - (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage openedFromTray:false];
+    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+}
 
+// Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
+// To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
+- (void)messaging:(nonnull FIRMessaging *)messaging
+didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
@@ -250,8 +263,7 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
 
 // ** Start internals **
 
-- (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage
-                                 openedFromTray:(bool)openedFromTray {
+- (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *appData = remoteMessage.appData;
 
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
@@ -262,43 +274,43 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
         } else if ([k1 isEqualToString:@"from"]) {
             message[@"from"] = appData[k1];
         } else if ([k1 isEqualToString:@"notification"]) {
-            NSDictionary *notification = appData[k1];
-            NSMutableDictionary *notif = [[NSMutableDictionary alloc] init];
-            for (id k2 in notification) {
-                if ([k2 isEqualToString:@"badge"]) {
-                    notif[@"badge"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body"]) {
-                    notif[@"body"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body_loc_args"]) {
-                    notif[@"bodyLocalizationArgs"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body_loc_key"]) {
-                    notif[@"bodyLocalizationKey"] = notification[k2];
-                } else if ([k2 isEqualToString:@"click_action"]) {
-                    notif[@"clickAction"] = notification[k2];
-                } else if ([k2 isEqualToString:@"sound"]) {
-                    notif[@"sound"] = notification[k2];
-                } else if ([k2 isEqualToString:@"subtitle"]) {
-                    notif[@"subtitle"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title"]) {
-                    notif[@"title"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title_loc_args"]) {
-                    notif[@"titleLocalizationArgs"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title_loc_key"]) {
-                    notif[@"titleLocalizationKey"] = notification[k2];
-                } else {
-                    NSLog(@"Unknown notification key: %@", k2);
-                }
-            }
-            message[@"notification"] = notif;
+            // Ignore for messages
         } else {
             // Assume custom data key
             data[k1] = appData[k1];
         }
     }
-    message[@"messageType"] = @"RemoteMessage";
     message[@"data"] = data;
-    message[@"openedFromTray"] = @(false);
 
+    return message;
+}
+
+- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
+    NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    
+    for (id k1 in userInfo) {
+        if ([k1 isEqualToString:@"aps"]) {
+            // Ignore notification section
+        } else if ([k1 isEqualToString:@"gcm.message_id"]) {
+            message[@"messageId"] = userInfo[k1];
+        } else if ([k1 isEqualToString:@"google.c.a.ts"]) {
+            message[@"sentTime"] = userInfo[k1];
+        } else if ([k1 isEqualToString:@"gcm.n.e"]
+                   || [k1 isEqualToString:@"gcm.notification.sound2"]
+                   || [k1 isEqualToString:@"google.c.a.c_id"]
+                   || [k1 isEqualToString:@"google.c.a.c_l"]
+                   || [k1 isEqualToString:@"google.c.a.e"]
+                   || [k1 isEqualToString:@"google.c.a.udt"]) {
+            // Ignore known keys
+        } else {
+            // Assume custom data
+            data[k1] = userInfo[k1];
+        }
+    }
+    
+    message[@"data"] = data;
+    
     return message;
 }
 
@@ -317,4 +329,3 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
 @implementation RNFirebaseMessaging
 @end
 #endif
-
