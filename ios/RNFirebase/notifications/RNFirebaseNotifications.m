@@ -19,9 +19,18 @@
 @implementation RNFirebaseNotifications
 
 static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
+// PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
+// static NSMutableArray *pendingEvents = nil;
+static NSDictionary *initialNotification = nil;
 
 + (nonnull instancetype)instance {
     return theRNFirebaseNotifications;
+}
+
++ (void)configure {
+    // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
+    // pendingEvents = [[NSMutableArray alloc] init];
+    theRNFirebaseNotifications = [[RNFirebaseNotifications alloc] init];
 }
 
 RCT_EXPORT_MODULE();
@@ -30,28 +39,40 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self != nil) {
         NSLog(@"Setting up RNFirebaseNotifications instance");
-        [self configure];
+        [self initialise];
     }
     return self;
 }
 
-- (void)configure {
+- (void)initialise {
     // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-#endif
+    #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+    #endif
     
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
 }
 
+// PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
+// The bridge is initialised after the module is created
+// When the bridge is set, check if we have any pending events to send, and send them
+/* - (void)setValue:(nullable id)value forKey:(NSString *)key {
+    [super setValue:value forKey:key];
+    if ([key isEqualToString:@"bridge"] && value) {
+        for (NSDictionary* event in pendingEvents) {
+            [RNFirebaseUtil sendJSEvent:self name:event[@"name"] body:event[@"body"]];
+        }
+        [pendingEvents removeAllObjects];
+    }
+} */
+
 // *******************************************************
 // ** Start AppDelegate methods
 // ** iOS 8/9 Only
 // *******************************************************
-
-- (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification {
-    #if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_10_0
+- (void)didReceiveLocalNotification:(nonnull UILocalNotification *)localNotification {
+    if ([self isIOS89]) {
         NSString *event;
         if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
             // notification_displayed
@@ -64,41 +85,15 @@ RCT_EXPORT_MODULE();
             event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
         }
 
-        NSDictionary *message = [self parseUILocalNotification:notification];
-        [RNFirebaseUtil sendJSEvent:self name:event body:message];
-    #endif
-}
-
-// Listen for background messages
-- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
-    // FCM Data messages come through here if they specify content-available=true
-    // Pass them over to the RNFirebaseMessaging handler instead
-    if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
-        [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
-        return;
+        NSDictionary *notification = [self parseUILocalNotification:localNotification];
+        if (event == NOTIFICATIONS_NOTIFICATION_PRESSED) {
+            notification = @{
+                             @"action": UNNotificationDefaultActionIdentifier,
+                             @"notification": notification
+                             };
+        }
+        [self sendJSEvent:self name:event body:notification];
     }
-
-    NSString *event;
-    if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
-        // notification_displayed
-        event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
-    } else if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-        // notification_displayed
-        event = NOTIFICATIONS_NOTIFICATION_PRESSED;
-    } else {
-        // notification_received
-        // On IOS 10, foreground notifications also go through willPresentNotification
-        // This prevents duplicate messages from hitting the JS app
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-            return;
-        #else
-            event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
-        #endif
-    }
-
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotification" category:nil];
-
-    [RNFirebaseUtil sendJSEvent:self name:event body:message];
 }
 
 // Listen for background messages
@@ -111,28 +106,36 @@ RCT_EXPORT_MODULE();
         return;
     }
     
-    
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
         // notification_displayed
         event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
-    } else if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-        // notification_displayed
-        event = NOTIFICATIONS_NOTIFICATION_PRESSED;
-    } else {
-        // notification_received
-        // On IOS 10, foreground notifications also go through willPresentNotification
-        // This prevents duplicate messages from hitting the JS app
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-            return;
-        #else
+    } else if ([self isIOS89]) {
+        if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
+            // notification_displayed
+            event = NOTIFICATIONS_NOTIFICATION_PRESSED;
+        } else {
+            // notification_received
             event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
-        #endif
+        }
+    } else {
+        // On IOS 10:
+        // - foreground notifications also go through willPresentNotification
+        // - background notification presses also go through didReceiveNotificationResponse
+        // This prevents duplicate messages from hitting the JS app
+        return;
     }
 
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotificationHandler" category:nil];
+    NSDictionary *notification = [self parseUserInfo:userInfo];
+    // For onPressed events, we set the default action name as iOS 8/9 has no concept of actions
+    if (event == NOTIFICATIONS_NOTIFICATION_PRESSED) {
+        notification = @{
+                         @"action": UNNotificationDefaultActionIdentifier,
+                         @"notification": notification
+                         };
+    }
 
-    [RNFirebaseUtil sendJSEvent:self name:event body:message];
+    [self sendJSEvent:self name:event body:notification];
     completionHandler(UIBackgroundFetchResultNoData);
 }
 
@@ -157,11 +160,12 @@ RCT_EXPORT_MODULE();
     
     NSString *event;
     UNNotificationPresentationOptions options;
-    NSDictionary *message = [self parseUNNotification:notification messageType:@"PresentNotification"];
+    NSDictionary *message = [self parseUNNotification:notification];
     
     if (isFcm || isScheduled) {
         // If app is in the background
-        if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
+        if (RCTSharedApplication().applicationState == UIApplicationStateBackground
+            || RCTSharedApplication().applicationState == UIApplicationStateInactive) {
             // display the notification
             options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
             // notification_displayed
@@ -180,7 +184,7 @@ RCT_EXPORT_MODULE();
         event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
     }
     
-    [RNFirebaseUtil sendJSEvent:self name:event body:message];
+    [self sendJSEvent:self name:event body:message];
     completionHandler(options);
 }
 
@@ -192,9 +196,9 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #else
          withCompletionHandler:(void(^)())completionHandler {
 #endif
-     NSDictionary *message = [self parseUNNotificationResponse:response messageType:@"NotificationResponse"];
+     NSDictionary *message = [self parseUNNotificationResponse:response];
      
-     [RNFirebaseUtil sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_PRESSED body:message];
+     [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_PRESSED body:message];
      completionHandler();
 }
 
@@ -205,7 +209,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // *******************************************************
 
 RCT_EXPORT_METHOD(cancelAllNotifications) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         [RCTSharedApplication() cancelAllLocalNotifications];
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -218,7 +222,7 @@ RCT_EXPORT_METHOD(cancelAllNotifications) {
 }
 
 RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary *notificationInfo = notification.userInfo;
             if ([notificationId isEqualToString:[notificationInfo valueForKey:@"notificationId"]]) {
@@ -238,7 +242,7 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
 RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
                              resolver:(RCTPromiseResolveBlock)resolve
                              rejecter:(RCTPromiseRejectBlock)reject) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:false];
         [RCTSharedApplication() presentLocalNotificationNow:notif];
         resolve(nil);
@@ -248,33 +252,48 @@ RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
                     resolve(nil);
-                }else{
+                } else{
                     reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
                 }
             }];
         #endif
     }
 }
+    
+RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
+    });
+}
 
-RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    UILocalNotification *localNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localNotification) {
-        NSDictionary *notification = [self parseUILocalNotification:localNotification];
-        resolve(notification);
-    } else {
-        NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-        if (remoteNotification) {
-            NSDictionary *message = [self parseUserInfo:remoteNotification messageType:@"InitialMessage" category:nil];
-            resolve(message);
+RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if ([self isIOS89]) {
+        // With iOS 8/9 we rely on the launch options
+        UILocalNotification *localNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+        NSDictionary *notification;
+        if (localNotification) {
+            notification = [self parseUILocalNotification:localNotification];
+        } else {
+            NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+            if (remoteNotification) {
+                notification = [self parseUserInfo:remoteNotification];
+            }
+        }
+        if (notification) {
+            resolve(@{@"action": UNNotificationDefaultActionIdentifier, @"notification": notification});
         } else {
             resolve(nil);
         }
+    } else {
+        // With iOS 10+ we are able to intercept the didReceiveNotificationResponse message
+        // to get both the notification and the action
+        resolve(initialNotification);
     }
 }
 
 RCT_EXPORT_METHOD(getScheduledNotifications:(RCTPromiseResolveBlock)resolve
                                    rejecter:(RCTPromiseRejectBlock)reject) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         NSMutableArray* notifications = [[NSMutableArray alloc] init];
         for (UILocalNotification *notif in [RCTSharedApplication() scheduledLocalNotifications]){
             NSDictionary *notification = [self parseUILocalNotification:notif];
@@ -296,7 +315,7 @@ RCT_EXPORT_METHOD(getScheduledNotifications:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         // No such functionality on iOS 8/9
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -309,7 +328,7 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
 }
 
 RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         // No such functionality on iOS 8/9
     } else {
         #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -324,7 +343,7 @@ RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId) {
 RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
                               resolver:(RCTPromiseResolveBlock)resolve
                               rejecter:(RCTPromiseRejectBlock)reject) {
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    if ([self isIOS89]) {
         UILocalNotification* notif = [self buildUILocalNotification:notification withSchedule:true];
         [RCTSharedApplication() scheduleLocalNotification:notif];
         resolve(nil);
@@ -334,12 +353,37 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
                     resolve(nil);
-                }else{
+                } else{
                     reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
                 }
             }];
         #endif
     }
+}
+    
+RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+    });
+}
+    
+// Because of the time delay between the app starting and the bridge being initialised
+// we create a temporary instance of RNFirebaseNotifications.
+// With this temporary instance, we cache any events to be sent as soon as the bridge is set on the module
+- (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(id)body {
+    if (emitter.bridge) {
+        [RNFirebaseUtil sendJSEvent:emitter name:name body:body];
+    } else {
+        if ([name isEqualToString:NOTIFICATIONS_NOTIFICATION_PRESSED] && !initialNotification) {
+            initialNotification = body;
+        }
+        // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
+        [pendingEvents addObject:@{@"name":name, @"body":body}];
+    }
+}
+    
+- (BOOL)isIOS89 {
+    return floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max;
 }
 
 - (UILocalNotification*) buildUILocalNotification:(NSDictionary *) notification
@@ -518,33 +562,55 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
     
     return notification;
 }
-
-- (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) localNotification {
-    NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
-
-    notification[@"notificationId"] = localNotification.identifier;
     
-    if (localNotification.content.body) {
-        notification[@"body"] = localNotification.content.body;
+- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response {
+     NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
+     NSDictionary *notification = [self parseUNNotification:response.notification];
+     notificationResponse[@"notification"] = notification;
+     notificationResponse[@"action"] = response.actionIdentifier;
+    
+     return notificationResponse;
+}
+    
+- (NSDictionary*)parseUNNotification:(UNNotification *)notification {
+    return [self parseUNNotificationRequest:notification.request];
+}
+    
+- (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) notificationRequest {
+    NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
+    
+    notification[@"notificationId"] = notificationRequest.identifier;
+    
+    if (notificationRequest.content.body) {
+        notification[@"body"] = notificationRequest.content.body;
     }
-    if (localNotification.content.userInfo) {
-        notification[@"data"] = localNotification.content.userInfo;
+    if (notificationRequest.content.userInfo) {
+        NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+        for (id k in notificationRequest.content.userInfo) {
+            if ([k isEqualToString:@"aps"]
+                || [k isEqualToString:@"gcm.message_id"]) {
+                // ignore as these are handled by the OS
+            } else {
+                data[k] = notificationRequest.content.userInfo[k];
+            }
+        }
+        notification[@"data"] = data;
     }
-    if (localNotification.content.sound) {
-        notification[@"sound"] = localNotification.content.sound;
+    if (notificationRequest.content.sound) {
+        notification[@"sound"] = notificationRequest.content.sound;
     }
-    if (localNotification.content.subtitle) {
-        notification[@"subtitle"] = localNotification.content.subtitle;
+    if (notificationRequest.content.subtitle) {
+        notification[@"subtitle"] = notificationRequest.content.subtitle;
     }
-    if (localNotification.content.title) {
-        notification[@"title"] = localNotification.content.title;
+    if (notificationRequest.content.title) {
+        notification[@"title"] = notificationRequest.content.title;
     }
     
     NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
     
-    if (localNotification.content.attachments) {
+    if (notificationRequest.content.attachments) {
         NSMutableArray *attachments = [[NSMutableArray alloc] init];
-        for (UNNotificationAttachment *a in localNotification.content.attachments) {
+        for (UNNotificationAttachment *a in notificationRequest.content.attachments) {
             NSMutableDictionary *attachment = [[NSMutableDictionary alloc] init];
             attachment[@"identifier"] = a.identifier;
             attachment[@"type"] = a.type;
@@ -554,45 +620,25 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
         ios[@"attachments"] = attachments;
     }
     
-    if (localNotification.content.badge) {
-        ios[@"badge"] = localNotification.content.badge;
+    if (notificationRequest.content.badge) {
+        ios[@"badge"] = notificationRequest.content.badge;
     }
-    if (localNotification.content.categoryIdentifier) {
-        ios[@"category"] = localNotification.content.categoryIdentifier;
+    if (notificationRequest.content.categoryIdentifier) {
+        ios[@"category"] = notificationRequest.content.categoryIdentifier;
     }
-    if (localNotification.content.launchImageName) {
-        ios[@"launchImage"] = localNotification.content.launchImageName;
+    if (notificationRequest.content.launchImageName) {
+        ios[@"launchImage"] = notificationRequest.content.launchImageName;
     }
-    if (localNotification.content.threadIdentifier) {
-        ios[@"threadIdentifier"] = localNotification.content.threadIdentifier;
+    if (notificationRequest.content.threadIdentifier) {
+        ios[@"threadIdentifier"] = notificationRequest.content.threadIdentifier;
     }
     notification[@"ios"] = ios;
     
     return notification;
 }
-    
-- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response
-                                 messageType:(NSString *)messageType {
-     NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
-     NSDictionary *notification = [self parseUNNotification:response.notification messageType:messageType];
-     notificationResponse[@"notification"] = notification;
-     notificationResponse[@"action"] = response.actionIdentifier;
-     
-     return notificationResponse;
-}
-    
-- (NSDictionary*)parseUNNotification:(UNNotification *)notification
-                         messageType:(NSString *)messageType {
-    NSDictionary *userInfo = notification.request.content.userInfo;
-    NSString *category = notification.request.content.categoryIdentifier;
 
-    return [self parseUserInfo:userInfo messageType:messageType category:category];
-}
-
-- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo
-                   messageType:(NSString *) messageType
-                      category:(NSString *) category {
-                    
+- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
+    
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
@@ -644,13 +690,6 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
             data[k1] = userInfo[k1];
         }
     }
-                          
-    if (!ios[@"category"]) {
-        ios[@"category"] = category;
-    }
-
-    // TODO: What to do with this?
-    // message[@"messageType"] = messageType;
 
     notification[@"data"] = data;
     notification[@"ios"] = ios;
@@ -673,3 +712,4 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
 @implementation RNFirebaseNotifications
 @end
 #endif
+

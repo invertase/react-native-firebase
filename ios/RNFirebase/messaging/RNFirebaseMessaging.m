@@ -150,19 +150,6 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
 }
 
 // Non Web SDK methods
-
-// TODO: Move to notifications
-RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
-    });
-}
-
-// TODO: Remove
-RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    resolve(nil);
-}
-
 RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -190,13 +177,6 @@ RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
     NSDictionary *data = message[@"data"];
 
     [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-}
-
-// TODO: Move to notifications
-RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RCTSharedApplication() setApplicationIconBadgeNumber:number];
-    });
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
@@ -329,3 +309,4 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
 @implementation RNFirebaseMessaging
 @end
 #endif
+
