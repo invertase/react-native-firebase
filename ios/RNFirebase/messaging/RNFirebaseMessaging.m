@@ -14,10 +14,6 @@
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
 #endif
-@interface RNFirebaseMessaging ()
-@property (nonatomic, strong) NSMutableDictionary *callbackHandlers;
-@end
-
 
 @implementation RNFirebaseMessaging
 
@@ -47,9 +43,6 @@ RCT_EXPORT_MODULE()
     
     // Set static instance for use from AppDelegate
     theRNFirebaseMessaging = self;
-
-    // Initialise callback handlers dictionary
-    _callbackHandlers = [NSMutableDictionary dictionary];
 }
 
 // *******************************************************
@@ -185,60 +178,6 @@ RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
 
 RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-}
-
-// Response handler methods
-
-RCT_EXPORT_METHOD(completeNotificationResponse: (NSString*) messageId) {
-    void(^callbackHandler)() = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    callbackHandler();
-    [_callbackHandlers removeObjectForKey:messageId];
-}
-
-RCT_EXPORT_METHOD(completePresentNotification: (NSString*) messageId
-                                       result: (NSString*) result) {
-    void(^callbackHandler)(UNNotificationPresentationOptions) = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    UNNotificationPresentationOptions options;
-    if ([result isEqualToString:@"UNNotificationPresentationOptionAll"]) {
-        options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
-    } else if ([result isEqualToString:@"UNNotificationPresentationOptionNone"]) {
-        options = UNNotificationPresentationOptionNone;
-    } else {
-        NSLog(@"Invalid result for PresentNotification: %@", result);
-        return;
-    }
-    callbackHandler(options);
-    [_callbackHandlers removeObjectForKey:messageId];
-}
-
-RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
-                                      result: (NSString*) result) {
-    void(^callbackHandler)(UIBackgroundFetchResult) = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    UIBackgroundFetchResult fetchResult;
-    if ([result isEqualToString:@"UIBackgroundFetchResultNewData"]) {
-        fetchResult = UIBackgroundFetchResultNewData;
-    } else if ([result isEqualToString:@"UIBackgroundFetchResultNoData"]) {
-        fetchResult = UIBackgroundFetchResultNoData;
-    } else if ([result isEqualToString:@"UIBackgroundFetchResultFailed"]) {
-        fetchResult = UIBackgroundFetchResultFailed;
-    } else {
-        NSLog(@"Invalid result for PresentNotification: %@", result);
-        return;
-    }
-    callbackHandler(fetchResult);
-    [_callbackHandlers removeObjectForKey:messageId];
 }
 
 // ** Start internals **
