@@ -170,6 +170,9 @@ RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
     NSDictionary *data = message[@"data"];
 
     [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
+    
+    // TODO: Listen for send success / errors
+    resolve(nil);
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
