@@ -1,7 +1,9 @@
 package io.invertase.firebase.firestore;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -12,8 +14,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,11 +31,12 @@ import java.util.List;
 import java.util.Map;
 
 import io.invertase.firebase.ErrorUtils;
+import io.invertase.firebase.Utils;
 
 
 public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseFirestore";
-  // private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
+  private SparseArray<RNFirebaseFirestoreTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseFirestore(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -92,7 +98,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
           break;
         case "SET":
           Map<String, Object> options = (Map) write.get("options");
-          if (options != null && options.containsKey("merge") && (boolean)options.get("merge")) {
+          if (options != null && options.containsKey("merge") && (boolean) options.get("merge")) {
             batch = batch.set(ref, data, SetOptions.merge());
           } else {
             batch = batch.set(ref, data);
@@ -113,7 +119,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
           promise.resolve(null);
         } else {
           Log.e(TAG, "documentBatch:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException)task.getException());
+          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException) task.getException());
         }
       }
     });
@@ -160,6 +166,199 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     ref.update(data, promise);
   }
 
+
+  /**
+   * Try clean up previous transactions on reload
+   *
+   */
+  @Override
+  public void onCatalystInstanceDestroy() {
+    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
+      RNFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(i);
+      if (transactionHandler != null) {
+        transactionHandler.abort();
+      }
+    }
+
+    transactionHandlers.clear();
+  }
+
+
+  /*
+   * Transaction Methods
+   */
+
+
+  /**
+   * Calls the internal Firestore Transaction classes instance .get(ref) method and resolves with
+   * the DocumentSnapshot.
+   *
+   * @param appName
+   * @param transactionId
+   * @param path
+   * @param promise
+   */
+  @ReactMethod
+  public void transactionGetDocument(String appName, int transactionId, String path, final Promise promise) {
+    RNFirebaseFirestoreTransactionHandler handler = transactionHandlers.get(transactionId);
+
+    if (handler == null) {
+      promise.reject(
+        "internal-error",
+        "An internal error occurred whilst attempting to find a native transaction by id."
+      );
+    } else {
+      DocumentReference ref = getDocumentForAppPath(appName, path).getRef();
+      handler.getDocument(ref, promise);
+    }
+  }
+
+  /**
+   * Aborts any pending signals and deletes the transaction handler.
+   *
+   * @param appName
+   * @param transactionId
+   */
+  @ReactMethod
+  public void transactionDispose(String appName, int transactionId) {
+    RNFirebaseFirestoreTransactionHandler handler = transactionHandlers.get(transactionId);
+
+    if (handler != null) {
+      handler.abort();
+      transactionHandlers.delete(transactionId);
+    }
+  }
+
+  /**
+   * Signals to transactionHandler that the command buffer is ready.
+   *
+   * @param appName
+   * @param transactionId
+   * @param commandBuffer
+   */
+  @ReactMethod
+  public void transactionApplyBuffer(String appName, int transactionId, ReadableArray commandBuffer) {
+    RNFirebaseFirestoreTransactionHandler handler = transactionHandlers.get(transactionId);
+
+    if (handler != null) {
+      handler.signalBufferReceived(commandBuffer);
+    }
+  }
+
+  /**
+   * Begin a new transaction via AsyncTask 's
+   *
+   * @param appName
+   * @param transactionId
+   */
+  @ReactMethod
+  public void transactionBegin(final String appName, int transactionId) {
+    final RNFirebaseFirestoreTransactionHandler transactionHandler = new RNFirebaseFirestoreTransactionHandler(appName, transactionId);
+    transactionHandlers.put(transactionId, transactionHandler);
+
+    AsyncTask.execute(new Runnable() {
+      @Override
+      public void run() {
+        getFirestoreForApp(appName)
+          .runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+              transactionHandler.setFirestoreTransaction(transaction);
+
+              // emit the update cycle to JS land using an async task
+              // otherwise it gets blocked by the pending lock await
+              AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                  WritableMap eventMap = transactionHandler.createEventMap(null, "update");
+                  Utils.sendEvent(getReactApplicationContext(), "firestore_transaction_event", eventMap);
+                }
+              });
+
+              // wait for a signal to be received from JS land code
+              transactionHandler.await();
+
+              // exit early if aborted - has to throw an exception otherwise will just keep trying ...
+              if (transactionHandler.aborted) {
+                throw new FirebaseFirestoreException("abort", FirebaseFirestoreException.Code.ABORTED);
+              }
+
+              // exit early if timeout from bridge - has to throw an exception otherwise will just keep trying ...
+              if (transactionHandler.timeout) {
+                throw new FirebaseFirestoreException("timeout", FirebaseFirestoreException.Code.DEADLINE_EXCEEDED);
+              }
+
+              // process any buffered commands from JS land
+              ReadableArray buffer = transactionHandler.getCommandBuffer();
+
+              // exit early if no commands
+              if (buffer == null) {
+                return null;
+              }
+
+              for (int i = 0, size = buffer.size(); i < size; i++) {
+                ReadableMap data;
+                ReadableMap command = buffer.getMap(i);
+                String path = command.getString("path");
+                String type = command.getString("type");
+                RNFirebaseFirestoreDocumentReference documentReference = getDocumentForAppPath(appName, path);
+
+
+                switch (type) {
+                  case "set":
+                    data = command.getMap("data");
+
+                    ReadableMap options = command.getMap("options");
+                    Map<String, Object> setData = FirestoreSerialize.parseReadableMap(RNFirebaseFirestore.getFirestoreForApp(appName), data);
+
+                    if (options != null && options.hasKey("merge") && options.getBoolean("merge")) {
+                      transaction.set(documentReference.getRef(), setData, SetOptions.merge());
+                    } else {
+                      transaction.set(documentReference.getRef(), setData);
+                    }
+                    break;
+                  case "update":
+                    data = command.getMap("data");
+
+                    Map<String, Object> updateData = FirestoreSerialize.parseReadableMap(RNFirebaseFirestore.getFirestoreForApp(appName), data);
+                    transaction.update(documentReference.getRef(), updateData);
+                    break;
+                  case "delete":
+                    transaction.delete(documentReference.getRef());
+                    break;
+                  default:
+                    throw new IllegalArgumentException("Unknown command type at index " + i + ".");
+                }
+              }
+
+              return null;
+            }
+          })
+          .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+              if (!transactionHandler.aborted) {
+                Log.d(TAG, "Transaction onSuccess!");
+                WritableMap eventMap = transactionHandler.createEventMap(null, "complete");
+                Utils.sendEvent(getReactApplicationContext(), "firestore_transaction_event", eventMap);
+              }
+            }
+          })
+          .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+              if (!transactionHandler.aborted) {
+                Log.w(TAG, "Transaction onFailure.", e);
+                WritableMap eventMap = transactionHandler.createEventMap((FirebaseFirestoreException) e, "error");
+                Utils.sendEvent(getReactApplicationContext(), "firestore_transaction_event", eventMap);
+              }
+            }
+          });
+      }
+    });
+  }
+
+
   /*
    * INTERNALS/UTILS
    */
@@ -197,7 +396,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
    * @param filters
    * @param orders
    * @param options
-   * @param path  @return
+   * @param path    @return
    */
   private RNFirebaseFirestoreCollectionReference getCollectionForAppPath(String appName, String path,
                                                                          ReadableArray filters,
