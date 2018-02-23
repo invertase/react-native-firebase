@@ -378,7 +378,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
             initialNotification = body;
         }
         // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
-        [pendingEvents addObject:@{@"name":name, @"body":body}];
+        // [pendingEvents addObject:@{@"name":name, @"body":body}];
     }
 }
     
