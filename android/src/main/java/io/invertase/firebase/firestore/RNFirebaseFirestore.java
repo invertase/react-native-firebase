@@ -263,7 +263,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
           .runTransaction(new Transaction.Function<Void>() {
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-              transactionHandler.setFirestoreTransaction(transaction);
+              transactionHandler.resetState(transaction);
 
               // emit the update cycle to JS land using an async task
               // otherwise it gets blocked by the pending lock await
