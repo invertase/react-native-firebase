@@ -51,11 +51,12 @@ class RNFirebaseFirestoreTransactionHandler {
   }
 
   /**
-   * Keep a ref to the Transaction instance.
+   * Reset handler state - clears command buffer + updates to new Transaction instance
    *
    * @param firestoreTransaction
    */
-  void setFirestoreTransaction(Transaction firestoreTransaction) {
+  void resetState(Transaction firestoreTransaction) {
+    this.commandBuffer = null;
     this.firestoreTransaction = firestoreTransaction;
   }
 
