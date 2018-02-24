@@ -49,7 +49,7 @@ RCT_EXPORT_MODULE();
     #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
         [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     #endif
-    
+
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
 }
@@ -75,18 +75,15 @@ RCT_EXPORT_MODULE();
     if ([self isIOS89]) {
         NSString *event;
         if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
-            // notification_displayed
             event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
         } else if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-            // notification_displayed
-            event = NOTIFICATIONS_NOTIFICATION_PRESSED;
+            event = NOTIFICATIONS_NOTIFICATION_OPENED;
         } else {
-            // notification_received
             event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
         }
 
         NSDictionary *notification = [self parseUILocalNotification:localNotification];
-        if (event == NOTIFICATIONS_NOTIFICATION_PRESSED) {
+        if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
             notification = @{
                              @"action": UNNotificationDefaultActionIdentifier,
                              @"notification": notification
@@ -105,17 +102,14 @@ RCT_EXPORT_MODULE();
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
         return;
     }
-    
+
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
-        // notification_displayed
         event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
     } else if ([self isIOS89]) {
         if (RCTSharedApplication().applicationState == UIApplicationStateInactive) {
-            // notification_displayed
-            event = NOTIFICATIONS_NOTIFICATION_PRESSED;
+            event = NOTIFICATIONS_NOTIFICATION_OPENED;
         } else {
-            // notification_received
             event = NOTIFICATIONS_NOTIFICATION_RECEIVED;
         }
     } else {
@@ -127,8 +121,8 @@ RCT_EXPORT_MODULE();
     }
 
     NSDictionary *notification = [self parseUserInfo:userInfo];
-    // For onPressed events, we set the default action name as iOS 8/9 has no concept of actions
-    if (event == NOTIFICATIONS_NOTIFICATION_PRESSED) {
+    // For onOpened events, we set the default action name as iOS 8/9 has no concept of actions
+    if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
         notification = @{
                          @"action": UNNotificationDefaultActionIdentifier,
                          @"notification": notification
@@ -153,15 +147,15 @@ RCT_EXPORT_MODULE();
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
-    
+
     UNNotificationTrigger *trigger = notification.request.trigger;
     BOOL isFcm = trigger && [notification.request.trigger class] == [UNPushNotificationTrigger class];
     BOOL isScheduled = trigger && [notification.request.trigger class] == [UNCalendarNotificationTrigger class];
-    
+
     NSString *event;
     UNNotificationPresentationOptions options;
     NSDictionary *message = [self parseUNNotification:notification];
-    
+
     if (isFcm || isScheduled) {
         // If app is in the background
         if (RCTSharedApplication().applicationState == UIApplicationStateBackground
@@ -183,7 +177,7 @@ RCT_EXPORT_MODULE();
         // notification_displayed
         event = NOTIFICATIONS_NOTIFICATION_DISPLAYED;
     }
-    
+
     [self sendJSEvent:self name:event body:message];
     completionHandler(options);
 }
@@ -197,8 +191,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)())completionHandler {
 #endif
      NSDictionary *message = [self parseUNNotificationResponse:response];
-     
-     [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_PRESSED body:message];
+
+     [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
      completionHandler();
 }
 
@@ -259,7 +253,7 @@ RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
         #endif
     }
 }
-    
+
 RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
@@ -360,13 +354,13 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
         #endif
     }
 }
-    
+
 RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [RCTSharedApplication() setApplicationIconBadgeNumber:number];
     });
 }
-    
+
 // Because of the time delay between the app starting and the bridge being initialised
 // we create a temporary instance of RNFirebaseNotifications.
 // With this temporary instance, we cache any events to be sent as soon as the bridge is set on the module
@@ -374,14 +368,14 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
     if (emitter.bridge) {
         [RNFirebaseUtil sendJSEvent:emitter name:name body:body];
     } else {
-        if ([name isEqualToString:NOTIFICATIONS_NOTIFICATION_PRESSED] && !initialNotification) {
+        if ([name isEqualToString:NOTIFICATIONS_NOTIFICATION_OPENED] && !initialNotification) {
             initialNotification = body;
         }
         // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
         // [pendingEvents addObject:@{@"name":name, @"body":body}];
     }
 }
-    
+
 - (BOOL)isIOS89 {
     return floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max;
 }
@@ -425,7 +419,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
         NSNumber *fireDateNumber = schedule[@"fireDate"];
         NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:([fireDateNumber doubleValue] / 1000.0)];
         localNotification.fireDate = fireDate;
-        
+
         NSString *interval = schedule[@"repeatInterval"];
         if (interval) {
             if ([interval isEqualToString:@"minute"]) {
@@ -438,9 +432,9 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
                 localNotification.repeatInterval = NSCalendarUnitWeekday;
             }
         }
-        
+
     }
-    
+
     return localNotification;
 }
 
@@ -470,7 +464,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
                 NSString *identifier = a[@"identifier"];
                 NSURL *url = [NSURL URLWithString:a[@"url"]];
                 NSDictionary *options = a[@"options"];
-                
+
                 NSError *error;
                 UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:identifier URL:url options:options error:&error];
                 if (attachment) {
@@ -495,13 +489,13 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
             content.threadIdentifier = ios[@"threadIdentifier"];
         }
     }
-    
+
     if (withSchedule) {
         NSDictionary *schedule = notification[@"schedule"];
         NSNumber *fireDateNumber = schedule[@"fireDate"];
         NSString *interval = schedule[@"repeatInterval"];
         NSDate *fireDate = [NSDate dateWithTimeIntervalSince1970:([fireDateNumber doubleValue] / 1000.0)];
-        
+
         NSCalendarUnit calendarUnit;
         if (interval) {
             if ([interval isEqualToString:@"minute"]) {
@@ -517,7 +511,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
             // Needs to match exactly to the secpmd
             calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
         }
-        
+
         NSDateComponents *components = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fireDate];
         UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:interval];
         return [UNNotificationRequest requestWithIdentifier:notification[@"notificationId"] content:content trigger:trigger];
@@ -528,7 +522,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
 
 - (NSDictionary*) parseUILocalNotification:(UILocalNotification *) localNotification {
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
-    
+
     if (localNotification.alertBody) {
         notification[@"body"] = localNotification.alertBody;
     }
@@ -541,7 +535,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
     if (localNotification.alertTitle) {
          notification[@"title"] = localNotification.alertTitle;
     }
-    
+
     NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
     if (localNotification.alertAction) {
         ios[@"alertAction"] = localNotification.alertAction;
@@ -559,28 +553,28 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
         ios[@"launchImage"] = localNotification.alertLaunchImage;
     }
     notification[@"ios"] = ios;
-    
+
     return notification;
 }
-    
+
 - (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response {
      NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
      NSDictionary *notification = [self parseUNNotification:response.notification];
      notificationResponse[@"notification"] = notification;
      notificationResponse[@"action"] = response.actionIdentifier;
-    
+
      return notificationResponse;
 }
-    
+
 - (NSDictionary*)parseUNNotification:(UNNotification *)notification {
     return [self parseUNNotificationRequest:notification.request];
 }
-    
+
 - (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) notificationRequest {
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
-    
+
     notification[@"notificationId"] = notificationRequest.identifier;
-    
+
     if (notificationRequest.content.body) {
         notification[@"body"] = notificationRequest.content.body;
     }
@@ -605,9 +599,9 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
     if (notificationRequest.content.title) {
         notification[@"title"] = notificationRequest.content.title;
     }
-    
+
     NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
-    
+
     if (notificationRequest.content.attachments) {
         NSMutableArray *attachments = [[NSMutableArray alloc] init];
         for (UNNotificationAttachment *a in notificationRequest.content.attachments) {
@@ -619,7 +613,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
         }
         ios[@"attachments"] = attachments;
     }
-    
+
     if (notificationRequest.content.badge) {
         ios[@"badge"] = notificationRequest.content.badge;
     }
@@ -633,12 +627,12 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
         ios[@"threadIdentifier"] = notificationRequest.content.threadIdentifier;
     }
     notification[@"ios"] = ios;
-    
+
     return notification;
 }
 
 - (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
-    
+
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *ios = [[NSMutableDictionary alloc] init];
@@ -698,7 +692,7 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_PRESSED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
+    return @[NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_OPENED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -712,4 +706,3 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
 @implementation RNFirebaseNotifications
 @end
 #endif
-

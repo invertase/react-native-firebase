@@ -40,7 +40,7 @@ static NSString *const MESSAGING_NOTIFICATION_RECEIVED = @"messaging_notificatio
 
 // Notifications
 static NSString *const NOTIFICATIONS_NOTIFICATION_DISPLAYED = @"notifications_notification_displayed";
-static NSString *const NOTIFICATIONS_NOTIFICATION_PRESSED = @"notifications_notification_pressed";
+static NSString *const NOTIFICATIONS_NOTIFICATION_OPENED = @"notifications_notification_opened";
 static NSString *const NOTIFICATIONS_NOTIFICATION_RECEIVED = @"notifications_notification_received";
 
 // AdMob
