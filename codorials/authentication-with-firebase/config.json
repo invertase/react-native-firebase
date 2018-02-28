@@ -1,0 +1,21 @@
+{
+  "title": "Authentication with Firebase",
+  "steps": [
+    {
+      "title": "Getting Started",
+      "file": "getting-started"
+    },
+    {
+      "title": "Project Structure",
+      "file": "project-structure"
+    },
+    {
+      "title": "Understanding Firebase Auth",
+      "file": "understanding-firebase-auth"
+    },
+    {
+      "title": "Integrating Redux",
+      "file": "integrating-redux"
+    }
+  ]
+}
