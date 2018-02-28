@@ -1,5 +1,7 @@
 {
   "title": "Authentication with Firebase",
+  "description": "Create a React Native app from scratch, implementing authentication with react-native-firebase. This Codorial covers navigation, firebase, redux and more!",
+  "tags": ["react-native", "redux", "react-redux", "firebase", "firebase-auth", "react-native-firebase", "react-navigation"],
   "steps": [
     {
       "title": "Getting Started",

@@ -5,7 +5,7 @@ an opinionated guide to how this might look, which will work across both Android
 
 ## Entry file
 
-Every fresh React Native project contains to key files, an `index.android.js` & a `index.ios.js` files which currently individually render a simple React component
+Every fresh React Native project contains two key files, an `index.android.js` & a `index.ios.js` files which currently individually render a simple React component
 with basic styling. Rather than having two separate files, we're going to create a single file so both Android & iOS use it.
 
 We'll achieve this by creating a `src` directory where our own code for the app will live. Create the directory with an `index.js` file, so your

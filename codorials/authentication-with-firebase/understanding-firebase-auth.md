@@ -85,7 +85,7 @@ firebase.auth().signInWithEmailAndPassword('jim.bob@gmail.com', 'supersecret!')
     console.log('Existing User', user);
   })
   .catch((error) => {
-    console.error('Woops, something went wrong!, error);
+    console.error('Woops, something went wrong!', error);
   });
 ```
 
