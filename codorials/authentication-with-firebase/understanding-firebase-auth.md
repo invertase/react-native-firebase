@@ -1,9 +1,9 @@
 # Understanding Firebase Authentication
 
-Before we dive into the logic of implementing authentication, it's first important to understand how the Firebase API, and how it handles authentication
+Before we dive into the logic of implementing authentication, it's first important to understand the Firebase API, and how it handles authentication
 with the various options we have.
 
-As we're also working in React, it's important to understand how Firebase's asynchronous API fits in with Reacts many lifecycle methods.
+As we're also working in React, we'll cover how Firebase's asynchronous API fits in with Reacts lifecycle methods.
 Luckily [react-native-firebase](https://rnfirebase.io) follows the Firebase web SDK API making this a breeze!
 
 ## Enabling authentication
