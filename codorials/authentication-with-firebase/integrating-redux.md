@@ -14,7 +14,7 @@ more important to manage your data.
 
 Lets go ahead by installing the core Redux library and the React bindings:
 
-```
+```bash
 npm install --save redux react-redux
 ```
 
