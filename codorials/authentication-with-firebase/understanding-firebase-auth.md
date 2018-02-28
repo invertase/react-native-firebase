@@ -11,14 +11,12 @@ Luckily [react-native-firebase](https://rnfirebase.io) follows the Firebase web 
 Before we make a start, we need to tell Firebase that we plan on using authentication. We need to also enable a couple of the many login providers
 which Firebase supports. Head over to the [Firebase console](https://console.firebase.google.com/u/0/) and select the project you're using.
 
-Find the Authentication section and you'll be prompted with a number of options. To get started, we want to select the "SIGN-IN METHOD" tab:
-
-TODO image
+Find the Authentication section and you'll be prompted with a number of options. To get started, we want to select the "SIGN-IN METHOD" tab.
 
 You'll see we have a number of options here, however for purposes of this Codorial we'll be using "Email/Password" and "Facebook" as our providers.
 Go ahead and enable these:
 
-TODO image
+![Enabled Providers](https://raw.githubusercontent.com/invertase/react-native-firebase/codorials/codorials/authentication-with-firebase/assets/auth-providers.jpg)
 
 > If you don't have a Facebook app, simply enter dummy values. We'll cover this later on.
 
