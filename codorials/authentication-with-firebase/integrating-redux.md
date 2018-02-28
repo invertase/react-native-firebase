@@ -40,13 +40,13 @@ export default createStore(reducer);
 A reducer is a simple JavaScript function which takes two arguments: `state` & `action`. The idea of a reducer is to take "some data" from an `action`
 and return new state.
 
-- `state` is any sort of data which cannot be altered (immutable). A reducer must return a new value each time.
+- `state` is any sort of data, which cannot be altered (immutable). A reducer must return a new value each time. More on this later.
 - `action` is an object containing a `type`, and any unreduced data. More on this later.
 
 ## Integrating Redux into the app
 
 Our Redux store is now ready to be used. `react-redux` provides us with a `Provider` component which "provides" any children
-with access to the store via [context](https://reactjs.org/docs/context.html). Luckily we don't need to worry about this too much as the lirbary
+with access to the store via [context](https://reactjs.org/docs/context.html). Luckily we don't need to worry about this too much as the library
 takes care of the hard work!
 
 Back within our original bootstrap file, we'll wrap the `App` component in the `Provider` component, so our business logic has access to Redux.
