@@ -21,7 +21,7 @@ npm install --save redux react-redux
 Now within our projects `src` directory, create a `store.js` file. This file will contain all of our Redux logic, however you may want to break
 this out into multiple directories as your projects grows in complexity.
 
-```
+```js
 // src/store.js
 import { createStore } from 'redux';
 
