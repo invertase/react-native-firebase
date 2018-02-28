@@ -70,7 +70,7 @@ consumes our entire application.
 
 Go ahead and boot up your app onto your emulator. You should simply be presented with a plain screen with the words "Bootstrapped!".
 
-TODO image
+![Bootstrapped!](https://raw.githubusercontent.com/invertase/react-native-firebase/codorials/codorials/authentication-with-firebase/assets/app-bootstrapped.jpg)
 
 Although a good starting point, we want to separate we'll our business logic out of the bootstrap file, keeping it purely for app
 initialization purposes. This can simply be done by creating a basic React component called `App.js`, which will also live in the `src` directory;
