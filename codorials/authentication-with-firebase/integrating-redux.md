@@ -79,4 +79,4 @@ function bootstrap() {
 export default bootstrap;
 ```
 
-Our app now has access to the power of Redux!
+Although noting will visually change, our app now has access to the power of Redux!
