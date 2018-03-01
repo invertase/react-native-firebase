@@ -69,7 +69,7 @@ export default Login;
 If you reload your app, you will see two plain `TextInput` boxes which can accept input. As these are updated, the `onChangeText` prop is triggered
 which then updates state for that specific value. The inputs then individually update whenever their `value` from state changes:
 
-![TextInput Changes](assets/textinput-update =300x*)
+![TextInput Changes](assets/textinput-update.gif =300x*)
 
 > If you want to hide your users password, use the `secureTextEntry` prop.
 
@@ -150,3 +150,15 @@ reverse motion of showing the `UnauthenticatedStack` to the user - simple!
 to a user when an action is happening. This can be accomplished through state/redux using many of the React Native components available such as
 [`ActivityIndicator`](https://facebook.github.io/react-native/docs/activityindicator.html). You'll also want to handle any errors back from
 Firebase to show to your user!
+
+## Register / Forgot Password
+
+The logic for registering or submitting a forgot password request is exactly the same as our sign in logic. Simply follow the same pattern
+as we've done above using `TextInput` components and state. Once you've got the desired information, call Firebase with the methods you need, such as
+[`createUserAndRetrieveDataWithEmailAndPassword`](https://rnfirebase.io/docs/v3.2.x/auth/reference/auth#createUserAndRetrieveDataWithEmailAndPassword)
+or [`sendPasswordResetEmail`](https://rnfirebase.io/docs/v3.2.x/auth/reference/auth#sendPasswordResetEmail)!
+
+Remember to allow the user to navigate between these screens using the `navigate` method provided by `react-navigation`.
+
+> You could also try implementing [`TabNavigation`](https://reactnavigation.org/docs/tab-based-navigation.html) to allow horizontal navigation between
+screens which is another common navigation pattern.
