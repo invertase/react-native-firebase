@@ -49,7 +49,6 @@ RCT_EXPORT_METHOD(fetch:
             (RCTPromiseRejectBlock) reject) {
     [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
         if (error) {
-            RCTLogError(@"\nError: %@", RCTJSErrorFromNSError(error));
             reject(convertFIRRemoteConfigFetchStatusToNSString(status), error.localizedDescription, error);
         } else {
             resolve(convertFIRRemoteConfigFetchStatusToNSString(status));
@@ -64,7 +63,6 @@ RCT_EXPORT_METHOD(fetchWithExpirationDuration:
         rejecter:(RCTPromiseRejectBlock)reject) {
     [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
         if (error) {
-            RCTLogError(@"\nError: %@", RCTJSErrorFromNSError(error));
             reject(convertFIRRemoteConfigFetchStatusToNSString(status), error.localizedDescription, error);
         } else {
             resolve(convertFIRRemoteConfigFetchStatusToNSString(status));
