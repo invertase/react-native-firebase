@@ -11,6 +11,14 @@ function firestoreTests({ describe, it, context, firebase }) {
           should.equal(collectionRef.id, 'collection2');
           resolve();
         }));
+
+      it('should error if invalid collection path supplied', () => {
+        (() => {
+          firebase.native.firestore().collection('collection1/doc1');
+        }).should.throw(
+          'Argument "collectionPath" must point to a collection.'
+        );
+      });
     });
 
     context('doc()', () => {
@@ -22,6 +30,12 @@ function firestoreTests({ describe, it, context, firebase }) {
           should.equal(docRef.path, 'collection1/doc1/collection2/doc2');
           resolve();
         }));
+
+      it('should error if invalid document path supplied', () => {
+        (() => {
+          firebase.native.firestore().doc('collection1');
+        }).should.throw('Argument "documentPath" must point to a document.');
+      });
     });
 
     context('batch()', () => {
@@ -89,6 +103,54 @@ function firestoreTests({ describe, it, context, firebase }) {
             sfDoc.data().nested.firstname.should.equal('First Name');
             sfDoc.data().nested.lastname.should.equal('Last Name');
           });
+      });
+
+      it('errors when invalid parameters supplied', async () => {
+        const ref = firebase.native.firestore().doc('collection/doc');
+        const batch = firebase.native.firestore().batch();
+        (() => {
+          batch.update(ref, 'error');
+        }).should.throw(
+          'WriteBatch.update failed: If using two arguments, the second must be an object.'
+        );
+        (() => {
+          batch.update(ref, 'error1', 'error2', 'error3');
+        }).should.throw(
+          'WriteBatch.update failed: Must have a document reference, followed by either a single object argument, or equal numbers of key/value pairs.'
+        );
+        (() => {
+          batch.update(ref, 0, 'error');
+        }).should.throw(
+          'WriteBatch.update failed: Argument at index 0 must be a string or FieldPath'
+        );
+      });
+    });
+
+    context('enablePersistence()', () => {
+      it('should throw an unsupported error', () => {
+        (() => {
+          firebase.native.firestore().enablePersistence();
+        }).should.throw(
+          'Persistence is enabled by default on the Firestore SDKs'
+        );
+      });
+    });
+
+    context('setLogLevel()', () => {
+      it('should throw an unsupported error', () => {
+        (() => {
+          firebase.native.firestore().setLogLevel();
+        }).should.throw(
+          'firebase.firestore().setLogLevel() is unsupported by the native Firebase SDKs.'
+        );
+      });
+    });
+
+    context('settings()', () => {
+      it('should throw an unsupported error', () => {
+        (() => {
+          firebase.native.firestore().settings();
+        }).should.throw('firebase.firestore().settings() coming soon');
       });
     });
   });
