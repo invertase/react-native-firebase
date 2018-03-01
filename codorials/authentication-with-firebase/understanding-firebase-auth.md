@@ -18,6 +18,12 @@ Go ahead and enable these:
 
 ![Enabled Providers](https://raw.githubusercontent.com/invertase/react-native-firebase/codorials/codorials/authentication-with-firebase/assets/auth-providers.jpg)
 
+![Enabled Providers](/assets/auth-providers.jpg)
+
+![Enabled Providers](assets/auth-providers.jpg)
+
+![](assets/auth-providers.jpg)
+
 > If you don't have a Facebook app, simply enter dummy values. We'll cover this later on.
 
 ## Listening to the users authentication state
