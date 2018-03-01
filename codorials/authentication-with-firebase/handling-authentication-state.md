@@ -122,7 +122,7 @@ Now every time `onAuthStateChanged` is triggered by Firebase, our Redux action w
 
 ### Reducing state
 
-Back on step `Integrating Redux' we setup a very basic Redux store. In order for us to latch onto the dispatched action we need to listen out
+Back on step 'Integrating Redux' we setup a very basic Redux store. In order for us to latch onto the dispatched action we need to listen out
 for the events being sent to the reducer. To do this we import the action type which we exported within `actions.js` and conditionally
 return new state when that action is dispatched:
 

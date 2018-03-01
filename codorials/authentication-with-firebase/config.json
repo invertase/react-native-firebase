@@ -30,6 +30,10 @@
     {
       "title": "Creating a sign-in form",
       "file": "creating-a-signin-form"
+    },
+    {
+      "title": "Facebook Login",
+      "file": "facebook-login"
     }
   ]
 }
