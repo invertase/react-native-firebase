@@ -52,14 +52,14 @@ choose to, or the app is uninstalled.
 
 ## Creating a new account
 
-Creating a new account on Firebase is very easy. Another method called `createUserWithEmailAndPassword` is available which does exactly what it
+Creating a new account on Firebase is very easy. Another method called `createUserAndRetrieveDataWithEmailAndPassword` is available which does exactly what it
 says on the tin! This is an asynchronous promise which will throw an exception if something is wrong (such as email taken, or password too short).
 Creating a user will also sign them in at the same time.
 
 ```js
 import firebase from 'react-native-firebase';
 
-firebase.auth().createUserWithEmailAndPassword('jim.bob@gmail.com', 'supersecret!')
+firebase.auth().createUserAndRetrieveDataWithEmailAndPassword('jim.bob@gmail.com', 'supersecret!')
   .then((user) => {
     console.log('New User', user);
   })
@@ -73,12 +73,12 @@ users details - how awesome is that.
 
 ## Signing into an existing account
 
-Unsurprisingly, Firebase offers a method called `signInWithEmailAndPassword`, which follows the exact same flow as `createUserWithEmailAndPassword`:
+Unsurprisingly, Firebase offers a method called `signInAndRetrieveDataWithEmailAndPassword`, which follows the exact same flow as `createUserAndRetrieveDataWithEmailAndPassword`:
 
 ```js
 import firebase from 'react-native-firebase';
 
-firebase.auth().signInWithEmailAndPassword('jim.bob@gmail.com', 'supersecret!')
+firebase.auth().signInAndRetrieveDataWithEmailAndPassword('jim.bob@gmail.com', 'supersecret!')
   .then((user) => {
     console.log('Existing User', user);
   })

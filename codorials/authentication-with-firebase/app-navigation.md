@@ -107,6 +107,7 @@ Lets go ahead and style the screen, using a class static `navigationOptions` obj
 
 ```jsx
 // src/screens/unauthenticated/Login.js
+
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
