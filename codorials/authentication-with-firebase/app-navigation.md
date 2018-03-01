@@ -139,7 +139,7 @@ export default Login;
 With this basic config you'll end up with an Android looking app with minimal configuration. Whats better is that `react-navigation` will also
 take care of any back buttons and screen animations when navigating through the stack, pretty nifty.
 
-![Styled Navigation](assets/1-unauthenticated-nav.jpg =300x*)
+![Styled Navigation](assets/2-unauthenticated-nav.jpg =300x*)
 
 ## Pushing to a new stack
 
