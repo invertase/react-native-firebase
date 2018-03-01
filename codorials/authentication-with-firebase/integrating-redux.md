@@ -25,13 +25,15 @@ this out into multiple directories as your projects grows in complexity.
 // src/store.js
 import { createStore } from 'redux';
 
-// Create a reducer (see below for explanation)
-function reducer(state, action) {
+// Create a reducer with empty state (see below for explanation)
+function reducer(state = {}, action) {
   return state;
 }
 
 export default createStore(reducer);
 ```
+
+As default state is `null`, we set the default to be an empty `object` so we can access it later on.
 
 > You may want to consider installing the [redux-logger](https://github.com/evgenyrodionov/redux-logger) library.
 
