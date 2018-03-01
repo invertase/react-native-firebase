@@ -17,6 +17,28 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         }));
     });
 
+    context('id', () => {
+      it('should return document id', () => {
+        const document = firebase.native.firestore().doc('documents/doc1');
+        document.id.should.equal('doc1');
+      });
+    });
+
+    context('parent', () => {
+      it('should return parent collection', () => {
+        const document = firebase.native.firestore().doc('documents/doc1');
+        document.parent.id.should.equal('documents');
+      });
+    });
+
+    context('collection()', () => {
+      it('should return a child collection', () => {
+        const document = firebase.native.firestore().doc('documents/doc1');
+        const collection = document.collection('pages');
+        collection.id.should.equal('pages');
+      });
+    });
+
     context('delete()', () => {
       it('should delete Document', () =>
         firebase.native
@@ -30,6 +52,17 @@ function documentReferenceTests({ describe, it, context, firebase }) {
               .get();
             should.equal(doc.exists, false);
           }));
+    });
+
+    context('get()', () => {
+      it('DocumentSnapshot should have correct properties', async () => {
+        const snapshot = await firebase.native
+          .firestore()
+          .doc('document-tests/doc1')
+          .get();
+        snapshot.id.should.equal('doc1');
+        snapshot.metadata.should.be.an.Object();
+      });
     });
 
     context('onSnapshot()', () => {
@@ -321,6 +354,7 @@ function documentReferenceTests({ describe, it, context, firebase }) {
               callback(snapshot.data());
               resolve2();
             },
+            error: () => {},
           };
           unsubscribe = docRef.onSnapshot(
             { includeMetadataChanges: true },
@@ -345,6 +379,88 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         // Tear down
 
         unsubscribe();
+      });
+
+      it('errors when invalid parameters supplied', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/doc1');
+        (() => {
+          docRef.onSnapshot(() => {}, 'error');
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Second argument must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot({
+            next: () => {},
+            error: 'error',
+          });
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot({
+            next: 'error',
+          });
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Observer.next must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot(
+            {
+              includeMetadataChanges: true,
+            },
+            () => {},
+            'error'
+          );
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Third argument must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot(
+            {
+              includeMetadataChanges: true,
+            },
+            {
+              next: () => {},
+              error: 'error',
+            }
+          );
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Observer.error must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot(
+            {
+              includeMetadataChanges: true,
+            },
+            {
+              next: 'error',
+            }
+          );
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Observer.next must be a valid function.'
+        );
+        (() => {
+          docRef.onSnapshot(
+            {
+              includeMetadataChanges: true,
+            },
+            'error'
+          );
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Second argument must be a function or observer.'
+        );
+        (() => {
+          docRef.onSnapshot({
+            error: 'error',
+          });
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: First argument must be a function, observer or options.'
+        );
+        (() => {
+          docRef.onSnapshot();
+        }).should.throw(
+          'DocumentReference.onSnapshot failed: Called with invalid arguments.'
+        );
       });
     });
 
@@ -464,6 +580,25 @@ function documentReferenceTests({ describe, it, context, firebase }) {
             doc.data().nested.firstname.should.equal('First Name');
             doc.data().nested.lastname.should.equal('Last Name');
           }));
+
+      it('errors when invalid parameters supplied', async () => {
+        const docRef = firebase.native.firestore().doc('document-tests/doc1');
+        (() => {
+          docRef.update('error');
+        }).should.throw(
+          'DocumentReference.update failed: If using a single argument, it must be an object.'
+        );
+        (() => {
+          docRef.update('error1', 'error2', 'error3');
+        }).should.throw(
+          'DocumentReference.update failed: Must have either a single object argument, or equal numbers of key/value pairs.'
+        );
+        (() => {
+          docRef.update(0, 'error');
+        }).should.throw(
+          'DocumentReference.update failed: Argument at index 0 must be a string or FieldPath'
+        );
+      });
     });
 
     context('types', () => {
