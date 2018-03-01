@@ -37,10 +37,10 @@ The callback for the `onAuthStateChanged` method returns a single parameter, com
 
 The concept here is simple;
 
+- the method is first called once Firebase responds, then any time user state changes thereafter.
 - if a user is "signed in", our parameter will be a `class`, containing all sorts of information we know about the user,
 from their e-mail address to any social provider IDs they may have signed in through.
 - if the user signed out, the parameter will be `null` value.
-- the method is immediately triggered when called.
 
 > The `user` class provides a `.toJSON()` method to serialize the users details if required.
 
@@ -96,7 +96,7 @@ Firebase on it's own is super simple, however when using in a React environment 
 For any React component to update, a state or prop change needs to occur. As our Firebase auth methods are asynchronous we cannot rely on
 the data being available on component mount. To solve this issue, we can make use of state:
 
-```js
+```jsx
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import firebase from 'react-native-firebase';
@@ -160,7 +160,7 @@ If this happens and you're updating state, you'll get a yellow box warning.
 To get around this, Firebase returns an unsubscribe function to every subscriber method, which when calls removes the subscription.
 This can be easily implemented using React lifecycle methods and class properties:
 
-```js
+```jsx
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import firebase from 'react-native-firebase';
@@ -171,7 +171,7 @@ class App extends React.Component {
     super();
     this.unsubscribe = null; // Set a empty class method
     this.state = {
-      loading: false,
+      loading: true,
       user: null,
     };
   }
@@ -189,7 +189,6 @@ class App extends React.Component {
       this.unsubscribe();
     }
   }
-}
 ```
 
 ## Further reading

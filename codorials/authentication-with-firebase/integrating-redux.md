@@ -51,7 +51,7 @@ takes care of the hard work!
 
 Back within our original bootstrap file, we'll wrap the `App` component in the `Provider` component, so our business logic has access to Redux.
 
-```js
+```jsx
 // src/index.js
 
 import React, { Component } from 'react';
