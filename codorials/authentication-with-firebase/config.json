@@ -18,6 +18,10 @@
     {
       "title": "Integrating Redux",
       "file": "integrating-redux"
+    },
+    {
+      "title": "App Navigation",
+      "file": "app-navigation"
     }
   ]
 }
