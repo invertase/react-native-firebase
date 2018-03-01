@@ -463,10 +463,27 @@ RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
             for (NSDictionary *a in ios[@"attachments"]) {
                 NSString *identifier = a[@"identifier"];
                 NSURL *url = [NSURL URLWithString:a[@"url"]];
-                NSDictionary *options = a[@"options"];
+                NSMutableDictionary *attachmentOptions = nil;
+                
+                if (a[@"options"]) {
+                    NSDictionary *options = a[@"options"];
+                    attachmentOptions = [[NSMutableDictionary alloc] init];
+                    
+                    for (id key in options) {
+                        if ([key isEqualToString:@"typeHint"]) {
+                            attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey] = options[key];
+                        } else if ([key isEqualToString:@"thumbnailHidden"]) {
+                            attachmentOptions[UNNotificationAttachmentOptionsThumbnailHiddenKey] = options[key];
+                        } else if ([key isEqualToString:@"thumbnailClippingRect"]) {
+                            attachmentOptions[UNNotificationAttachmentOptionsThumbnailClippingRectKey] = options[key];
+                        } else if ([key isEqualToString:@"thumbnailTime"]) {
+                            attachmentOptions[UNNotificationAttachmentOptionsThumbnailTimeKey] = options[key];
+                        }
+                    }
+                }
 
                 NSError *error;
-                UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:identifier URL:url options:options error:&error];
+                UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:identifier URL:url options:attachmentOptions error:&error];
                 if (attachment) {
                     [attachments addObject:attachment];
                 } else {
