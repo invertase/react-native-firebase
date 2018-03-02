@@ -940,18 +940,12 @@ RCT_EXPORT_METHOD(unlink:
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(reauthenticateWithCredential:
-    (NSString *) appDisplayName
-            provider:
-            (NSString *) provider
-            authToken:
-            (NSString *) authToken
-            authSecret:
-            (NSString *) authSecret
-            resolver:
-            (RCTPromiseResolveBlock) resolve
-            rejecter:
-            (RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(reauthenticateWithCredential:(NSString *) appDisplayName
+                                      provider:(NSString *) provider
+                                     authToken:(NSString *) authToken
+                                    authSecret:(NSString *) authSecret
+                                      resolver:(RCTPromiseResolveBlock) resolve
+                                      rejecter:(RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
     FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
@@ -969,6 +963,45 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
             } else {
                 FIRUser *userAfterAuth = [FIRAuth authWithApp:firApp].currentUser;
                 [self promiseWithUser:resolve rejecter:reject user:userAfterAuth];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+/**
+ reauthenticateAndRetrieveDataWithCredential
+ 
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(reauthenticateAndRetrieveDataWithCredential:(NSString *) appDisplayName
+                                                     provider:(NSString *) provider
+                                                    authToken:(NSString *) authToken
+                                                   authSecret:(NSString *) authSecret
+                                                     resolver:(RCTPromiseResolveBlock) resolve
+                                                     rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    
+    if (credential == nil) {
+        return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+    }
+    
+    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+    
+    if (user) {
+        [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
             }
         }];
     } else {
