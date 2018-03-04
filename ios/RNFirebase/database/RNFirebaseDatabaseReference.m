@@ -5,10 +5,10 @@
 #if __has_include(<FirebaseDatabase/FIRDatabase.h>)
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
-                appDisplayName:(NSString *) appDisplayName
-                           key:(NSString *) key
-                       refPath:(NSString *) refPath
-                     modifiers:(NSArray *) modifiers {
+                appDisplayName:(NSString *)appDisplayName
+                           key:(NSString *)key
+                       refPath:(NSString *)refPath
+                     modifiers:(NSArray *)modifiers {
     self = [super init];
     if (self) {
         _emitter = emitter;
@@ -22,14 +22,14 @@
 }
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey {
-    FIRDatabaseHandle handle = (FIRDatabaseHandle) [_listeners[eventRegistrationKey] integerValue];
+    FIRDatabaseHandle handle = (FIRDatabaseHandle)[_listeners[eventRegistrationKey] integerValue];
     if (handle) {
         [_query removeObserverWithHandle:handle];
         [_listeners removeObjectForKey:eventRegistrationKey];
     }
 }
 
-- (void)on:(NSString *) eventType registration:(NSDictionary *) registration {
+- (void)on:(NSString *)eventType registration:(NSDictionary *)registration {
     NSString *eventRegistrationKey = registration[@"eventRegistrationKey"];
     if (![self hasEventListener:eventRegistrationKey]) {
         id andPreviousSiblingKeyWithBlock = ^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
@@ -46,9 +46,9 @@
     }
 }
 
-- (void)once:(NSString *) eventType
-    resolver:(RCTPromiseResolveBlock) resolve
-    rejecter:(RCTPromiseRejectBlock) reject {
+- (void)once:(NSString *)eventType
+    resolver:(RCTPromiseResolveBlock)resolve
+    rejecter:(RCTPromiseRejectBlock)reject {
     FIRDataEventType firDataEventType = (FIRDataEventType)[self eventTypeFromName:eventType];
     [_query observeSingleEventOfType:firDataEventType andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *_Nonnull snapshot, NSString *_Nullable previousChildName) {
         NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:snapshot previousChildName:previousChildName];
@@ -59,33 +59,33 @@
     }];
 }
 
-- (void)handleDatabaseEvent:(NSString *) eventType
-               registration:(NSDictionary *) registration
-               dataSnapshot:(FIRDataSnapshot *) dataSnapshot
-          previousChildName:(NSString *) previousChildName {
+- (void)handleDatabaseEvent:(NSString *)eventType
+               registration:(NSDictionary *)registration
+               dataSnapshot:(FIRDataSnapshot *)dataSnapshot
+          previousChildName:(NSString *)previousChildName {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:dataSnapshot previousChildName:previousChildName];
-    
+
     [event setValue:data forKey:@"data"];
     [event setValue:_key forKey:@"key"];
     [event setValue:eventType forKey:@"eventType"];
     [event setValue:registration forKey:@"registration"];
-    
+
     [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
-- (void)handleDatabaseError:(NSDictionary *) registration
+- (void)handleDatabaseError:(NSDictionary *)registration
                       error:(NSError *)error {
     NSMutableDictionary *event = [[NSMutableDictionary alloc] init];
     [event setValue:_key forKey:@"key"];
     [event setValue:[RNFirebaseDatabase getJSError:error] forKey:@"error"];
     [event setValue:registration forKey:@"registration"];
-    
+
     [RNFirebaseUtil sendJSEvent:self.emitter name:DATABASE_SYNC_EVENT body:event];
 }
 
-+ (NSDictionary *)snapshotToDictionary:(FIRDataSnapshot *) dataSnapshot
-                     previousChildName:(NSString *) previousChildName {
++ (NSDictionary *)snapshotToDictionary:(FIRDataSnapshot *)dataSnapshot
+                     previousChildName:(NSString *)previousChildName {
     NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
     NSDictionary *snapshot = [RNFirebaseDatabaseReference snapshotToDict:dataSnapshot];
 
@@ -97,7 +97,7 @@
 
 + (NSDictionary *)snapshotToDict:(FIRDataSnapshot *)dataSnapshot {
     NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
-    
+
     [snapshot setValue:dataSnapshot.key forKey:@"key"];
     [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
     [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
@@ -105,11 +105,11 @@
     [snapshot setValue:[RNFirebaseDatabaseReference getChildKeys:dataSnapshot] forKey:@"childKeys"];
     [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
     [snapshot setValue:dataSnapshot.value forKey:@"value"];
-    
+
     return snapshot;
 }
 
-+ (NSMutableArray *) getChildKeys:(FIRDataSnapshot *) snapshot {
++ (NSMutableArray *)getChildKeys:(FIRDataSnapshot *)snapshot {
     NSMutableArray *childKeys = [NSMutableArray array];
     if (snapshot.childrenCount > 0) {
         NSEnumerator *children = [snapshot children];
@@ -121,7 +121,7 @@
     return childKeys;
 }
 
-- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *) path
+- (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *)path
                                           modifiers:(NSArray *)modifiers {
     FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_appDisplayName];
     FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
@@ -186,7 +186,7 @@
     }
 }
 
-- (BOOL)hasEventListener:(NSString *) eventRegistrationKey {
+- (BOOL)hasEventListener:(NSString *)eventRegistrationKey {
     return _listeners[eventRegistrationKey] != nil;
 }
 
@@ -214,3 +214,4 @@
 #endif
 
 @end
+
