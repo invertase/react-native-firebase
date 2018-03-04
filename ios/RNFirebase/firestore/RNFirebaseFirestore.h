@@ -10,6 +10,8 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RNFirebaseFirestore : RCTEventEmitter <RCTBridgeModule> {}
+@property NSMutableDictionary *transactions;
+@property dispatch_queue_t transactionQueue;
 
 + (void)promiseRejectException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 
