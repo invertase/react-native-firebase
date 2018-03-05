@@ -8,12 +8,12 @@ Luckily [react-native-firebase](https://rnfirebase.io) follows the Firebase web 
 
 ## Enabling authentication
 
-Before we make a start, we need to tell Firebase that we plan on using authentication. We need to also enable a couple of the many login providers
+We need to tell Firebase that we plan on using authentication and also enable a couple of the many login providers
 which Firebase supports. Head over to the [Firebase console](https://console.firebase.google.com/u/0/) and select the project you're using.
 
 Find the Authentication section and you'll be prompted with a number of options. To get started, we want to select the "SIGN-IN METHOD" tab.
 
-You'll see we have a number of options here, however for purposes of this Codorial we'll be using "Email/Password" and "Facebook" as our providers.
+You'll see we have a number of options here, however for the purposes of this Codorial we'll be using "Email/Password" and "Facebook" as our providers.
 Go ahead and enable these:
 
 ![Enabled Providers](assets/auth-providers.jpg)
@@ -38,7 +38,7 @@ The callback for the `onAuthStateChanged` method returns a single parameter, com
 The concept here is simple;
 
 - the method is first called once Firebase responds, then any time user state changes thereafter.
-- if a user is "signed in", our parameter will be a `class`, containing all sorts of information we know about the user,
+- if a user is "signed in", our parameter will be a [`User`](https://firebase.google.com/docs/reference/js/firebase.User) `class`, containing all sorts of information we know about the user,
 from their e-mail address to any social provider IDs they may have signed in through.
 - if the user signed out, the parameter will be `null` value.
 
@@ -68,7 +68,7 @@ firebase.auth().createUserAndRetrieveDataWithEmailAndPassword('jim.bob@gmail.com
   });
 ```
 
-What's great about this is we don't need to know about the user within the `then`, as any `onAuthStateChanged` listener would get triggered with our new
+What's great about this is we don't need to know about the user within the `.then`, as any `onAuthStateChanged` listener would get triggered with our new
 users details - how awesome is that.
 
 ## Signing into an existing account
@@ -157,7 +157,7 @@ When subscribing to a new listener, such as `onAuthStateChanged`, a new referenc
 React environment. If a component within your app mounts and subscribes, the method will still trigger even if your component unmounted.
 If this happens and you're updating state, you'll get a yellow box warning.
 
-To get around this, Firebase returns an unsubscribe function to every subscriber method, which when calls removes the subscription.
+To get around this, Firebase returns an unsubscribe function to every subscriber method, which when calls removes the subscription from memory.
 This can be easily implemented using React lifecycle methods and class properties:
 
 ```jsx

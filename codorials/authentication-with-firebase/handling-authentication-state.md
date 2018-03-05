@@ -52,7 +52,7 @@ export default App;
 
 ## Updating Redux with the user state
 
-Rather than passing our `user` into component `state`, we're going to add into into Redux instead. Firebase does provide direct access to the user
+Rather than passing our `user` into component `state`, we're going to add it into into Redux instead. Firebase does provide direct access to the user
 via `firebase.auth().currentUser`, however as our app complexity grows we may want to integrate parts of the users data (for example the `uid`) into
 other parts of our Redux store. By storing the user in Redux, it is guaranteed that the user details will keep in-sync throughout our Redux store.
 
@@ -77,8 +77,8 @@ export function userStateChanged(user) {
 }
 ```
 
-To dispatch this action we need to again make use of `react-redux`. As our `App.js` has been provided the Redux store within `index.js` we can
-use a [higher order component (HOC)](https://reactjs.org/docs/higher-order-components.html) called `connect` to provide the component with access to Redux:
+To dispatch this action we need to again make use of `react-redux`. As our `App.js` has been provided the Redux store via the `Provider`
+ component within `index.js`, we can use a [higher order component (HOC)](https://reactjs.org/docs/higher-order-components.html) called `connect` to provide the component with access to Redux:
 
 ```jsx
 // src/App.js
@@ -90,7 +90,7 @@ import { connect } from 'react-redux';
 export default connect()(App);
 ```
 
-The `connect` HOC clones the given component with a function prop called `dispatch`. The function then takes an action, which when called 'dispatches'
+The `connect` HOC clones the given component with a function prop called `dispatch`. The `dispatch` function then takes an action, which when called 'dispatches'
 it to Redux. Lets jump back into our `App.js` and dispatch our action when `onAuthStateChanged` is triggered:
 
 ```jsx
@@ -102,7 +102,6 @@ import { userStateChanged } from './actions';
 ...
 
     componentDidMount() {
-      // Listen for user auth state changes
       firebase.auth().onAuthStateChanged((user) => {
 
         // dispatch the imported action using the dispatch prop:
@@ -158,7 +157,7 @@ previous state with a new one.
 
 ### Subscribing to Redux state
 
-Now our user data is updating the store whenever it changes, we can subscribe to specific parts of the data which we need in out React
+Now our action is updating the store whenever it's dispatched, we can subscribe to specific parts of the data which we need in our React
 components. The power of using `react-redux` is that it allows us to subscribe to data within our store and update the component whenever that
 data changes - we do this via a function known as `mapStateToProps`. This function is passed as the first argument of our `connect` HOC and gets
 given the current Redux state. It returns an object, which is cloned as props into our component. Here's how it works:
@@ -174,7 +173,7 @@ export default connect(mapStateToProps)(App);
 ```
 
 With this code, our `App` component will receive a prop called `isUserAuthenticated`, which in our case will be a `true` or `false` value based on
-whether the `state.user` object exists or not. Every time Redux state changes, this logic is run. What's cool is that if the result of any
+whether the `state.user` object exists or not. Every time Redux state changes, this logic is run. What's handy is that if the result of any
 prop has changed, the component will be updated with the new data. If none of the props-to-be have changed, the component doesn't update.
 
 > Keep in mind that if you return a complex `Array` or `object`, `react-redux` will only shallow compare them. Even if your state does not change
@@ -182,7 +181,7 @@ the component will still be re-rendered with the same data which can cause perfo
 to break components out to only subscribe to specific parts of primitive state (such as `strings`, `booleans` etc).
 
 As our `App` component contains our routes, any change in the `isUserAuthenticated` value will cause the entire app to re-render - which in this case
-is fine as we're conditionally changing navigation stacks. Lets implement that:
+is fine as we're conditionally changing navigation stacks. Lets implement that logic:
 
 ```jsx
 // src/App.js
@@ -192,6 +191,7 @@ import firebase from 'react-native-firebase';
 import { connect } from 'react-redux';
 
 import UnauthenticatedStack from './screens/unauthenticated';
+import AuthenticatedStack from './screens/authenticated';
 import { userStateChanged } from './actions';
 
 class App extends Component {
@@ -204,7 +204,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        // Listen for user auth state changes
         firebase.auth().onAuthStateChanged((user) => {
 
             this.props.dispatch(userStateChanged(user));

@@ -1,18 +1,18 @@
 # Getting Started
 
-Welcome to the 'Authentication with Firebase' Codorial using the [react-native-firebase](https://rnfirebase.io) library.
-The various steps of the Codorial will cover how to setup your application to require both email/password login and social login using Facebook,
- to handling the users authenticated state using the popular [redux](https://redux.js.org/introduction) library whilst also considering integrate routing
+Welcome to the 'Authentication with Firebase' Codorial, using [React Native](http://facebook.github.io/react-native/) and [react-native-firebase](https://rnfirebase.io).
+Over the Codorial we'll cover how to setup your application to require both email/password login and social login using Facebook,
+ to handling the users authenticated state using the popular [redux](https://redux.js.org/introduction) library whilst also integrating routing
  using [react-navigation](https://reactnavigation.org/).
 
 ## Prerequisites
 
 This Codorial assumes you know the basics of the following topics:
 
+- React JS.
 - ES6 JavaScript.
-- Starting your app using an emulator on Android/iOS.
+- Starting an app using an emulator on Android/iOS.
 - Understand how to setup a new Firebase project.
-- Debugging with React Native.
 - Managing your project using Android Stuido and/or XCode.
 - Installation of the [react-native-firebase](https://rnfirebase.io) library (see "Creating a base project" below).
 

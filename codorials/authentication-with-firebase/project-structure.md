@@ -1,12 +1,13 @@
 # Project Structure
 
-Although it may seem trivial, having a good initial project structure ensures you code will be clean and reusable. The following step gives
-an opinionated guide to how this might look, which will work across both Android & iOS.
+Although it may seem trivial, having a good initial project structure ensures your code will be clean and reusable.
+ The following step gives an opinionated guide to how this might look, which will work across both Android & iOS.
 
 ## Entry file
 
-Every fresh React Native project contains two key files, an `index.android.js` & a `index.ios.js` files which currently individually render a simple React component
-with basic styling. Rather than having two separate files, we're going to create a single file so both Android & iOS use it.
+Every fresh React Native project a key file, an `index.js`, which currently renders a simple React component
+with basic styling. Rather than keeping our business logic within this file, we're going to keep it contained in it's own
+directory.
 
 We'll achieve this by creating a `src` directory where our own code for the app will live. Create the directory with an `index.js` file, so your
 project structure resembles the following:
