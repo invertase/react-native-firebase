@@ -4,8 +4,12 @@ import firebase from 'firebase';
 import RNfirebase from './../firebase';
 import DatabaseContents from './tests/support/DatabaseContents';
 
-RNfirebase.database.enableLogging(true);
-RNfirebase.firestore.enableLogging(true);
+// RNfirebase.database.enableLogging(true);
+// RNfirebase.firestore.enableLogging(true);
+
+// RNfirebase.utils().logLevel = 'debug';
+// RNfirebase.utils().logLevel = 'info';
+RNfirebase.utils().logLevel = 'warn'; // default
 
 const config = {
   apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',

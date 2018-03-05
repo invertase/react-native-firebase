@@ -72,7 +72,6 @@
     "wml": "0.0.82"
   },
   "dependencies": {
-    "bows": "^1.6.0",
     "opencollective": "^1.0.3",
     "postinstall-build": "^5.0.1",
     "prop-types": "^15.6.1"
