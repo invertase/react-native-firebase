@@ -9,13 +9,13 @@ The Firebase API allows us to call `signInAndRetrieveDataWithCredential` with a 
 
 ## Installing `react-native-fbsdk`
 
-Luckily as Facebook own React Native, they provide a handy wrapper around the own SDK to integrate with React Native, called [`react-native-fbsdk`](https://github.com/facebook/react-native-fbsdk).
+Luckily as Facebook own React Native, they provide a handy wrapper around their own SDK to integrate with React Native, called [`react-native-fbsdk`](https://github.com/facebook/react-native-fbsdk).
 
 ```bash
 npm install --save react-native-fbsdk
 ```
 
-To save explaining how to install this library, refer to their [documentation[(https://developers.facebook.com/docs/react-native) on how to
+To save explaining how to install this library, refer to their [documentation](https://developers.facebook.com/docs/react-native) on how to
 install the library into your React Native project on both Android & iOS.
 
 ## Creating a credential

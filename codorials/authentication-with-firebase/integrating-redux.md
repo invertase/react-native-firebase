@@ -4,10 +4,10 @@ Redux has become somewhat of a buzz word in the React community, and is generall
 won't go into details on what it is as their own [documentation](https://redux.js.org/introduction/motivation) does a wonderful job at explaining
 what it's for and why to use it.
 
-*TLDR* Redux provides your app with a single "state" (data), which can be accessed by any component. You can subscribe to this data to cause
+*TLDR;* Redux provides your app with a single "state" (data), which can be accessed by any component. You can subscribe to this data to cause
 a component update whenever something changes, even if it's deeply nested.
 
-Although the end product of this Codorial certain doesn't require Redux to function, as your app grows in complexity Redux becomes more and
+Although the end product of this Codorial certainly doesn't require Redux to function, as your app grows in complexity Redux becomes more and
 more important to manage your data.
 
 ## Installing Redux
@@ -33,9 +33,11 @@ function reducer(state = {}, action) {
 export default createStore(reducer);
 ```
 
-As default state is `null`, we set the default to be an empty `object` so we can access it later on.
+By default state is `null`, however we're setting it to an empty `object` (`state = {}`) so we can attempt to access
+shallow nested properties even if they don't exist.
 
-> You may want to consider installing the [redux-logger](https://github.com/evgenyrodionov/redux-logger) library.
+> You may want to consider installing the [redux-logger](https://github.com/evgenyrodionov/redux-logger) library to improve
+your Redux experience.
 
 ### Reducer
 

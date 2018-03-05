@@ -4,7 +4,7 @@ React Navigation has gone through many cycles of navigation implementations and 
 A current "go to" navigation library is called [react-navigation](https://reactnavigation.org/). It's pure JavaScript implementation
 which performs well and provides a solid foundation for navigation on both Android and iOS.
 
-Authentication typically requires 3 screens; Login, Register & Forgot Password.
+In this step we'll be focusing on adding a Login & Register screen to our app.
 
 ## Installation
 
@@ -103,7 +103,7 @@ library provides a simple, React like API to style and control your app.
 For this example we're going to add a title to our screen and liven up the colors - there's loads more you can do with `react-navigation` though,
 just check out their in-depth [documentation](https://reactnavigation.org/docs/getting-started.html).
 
-Lets go ahead and style the screen, using a class static `navigationOptions` object which lets `react-navigation` access our screen component:
+Lets go ahead and style the screen, using a class static `navigationOptions` object which lets `react-navigation` access our screen component styling:
 
 ```jsx
 // src/screens/unauthenticated/Login.js
