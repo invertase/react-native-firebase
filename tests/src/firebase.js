@@ -55,8 +55,10 @@ console.log('RNApps -->', RNfirebase.apps);
 instances.native
   .auth()
   .signInAnonymouslyAndRetrieveData()
-  .then(userCredential => {
-    console.log('defaultApp user ->', userCredential.user.toJSON());
+  .then(credential => {
+    if (credential) {
+      console.log('anotherApp credential ->', credential.user.toJSON());
+    }
   });
 
 // dynamically initialized apps need a ready check
@@ -64,8 +66,10 @@ instances.another.onReady().then(app => {
   app
     .auth()
     .signInAnonymouslyAndRetrieveData()
-    .then(userCredential => {
-      console.log('anotherApp user ->', userCredential.user.toJSON());
+    .then(credential => {
+      if (credential) {
+        console.log('anotherApp credential ->', credential.user.toJSON());
+      }
     });
 });
 
