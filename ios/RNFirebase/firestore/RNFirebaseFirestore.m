@@ -13,49 +13,217 @@ RCT_EXPORT_MODULE();
 - (id)init {
     self = [super init];
     if (self != nil) {
-
+        _transactions = [[NSMutableDictionary alloc] init];
+        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
 
-RCT_EXPORT_METHOD(enableLogging:(BOOL) enabled) {
+/**
+ *  TRANSACTIONS
+ */
+
+RCT_EXPORT_METHOD(transactionGetDocument:(NSString *)appDisplayName
+                  transactionId:(nonnull NSNumber *)transactionId
+                  path:(NSString *)path
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    __block NSMutableDictionary *transactionState;
+
+    dispatch_sync(_transactionQueue, ^{
+        transactionState = _transactions[[transactionId stringValue]];
+    });
+
+    if (!transactionState) {
+        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        return;
+    }
+
+    NSError *error = nil;
+    FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
+    FIRDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path].ref;
+    FIRDocumentSnapshot *snapshot = [transaction getDocument:ref error:&error];
+
+    if (error != nil) {
+        [RNFirebaseFirestore promiseRejectException:reject error:error];
+    } else {
+        NSDictionary *snapshotDict = [RNFirebaseFirestoreDocumentReference snapshotToDictionary:snapshot];
+        NSString *path = snapshotDict[@"path"];
+        if (path == nil) {
+            [snapshotDict setValue:ref.path forKey:@"path"];
+        }
+        resolve(snapshotDict);
+    }
+}
+
+RCT_EXPORT_METHOD(transactionDispose:(NSString *)appDisplayName
+                  transactionId:(nonnull NSNumber *)transactionId) {
+    __block NSMutableDictionary *transactionState;
+
+    dispatch_sync(_transactionQueue, ^{
+        transactionState = _transactions[[transactionId stringValue]];
+    });
+
+    if (!transactionState) {
+        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        return;
+    }
+
+    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
+    [transactionState setValue:@true forKey:@"abort"];
+    dispatch_semaphore_signal(semaphore);
+}
+
+RCT_EXPORT_METHOD(transactionApplyBuffer:(NSString *)appDisplayName
+                  transactionId:(nonnull NSNumber *)transactionId
+                  commandBuffer:(NSArray *)commandBuffer) {
+    __block NSMutableDictionary *transactionState;
+
+    dispatch_sync(_transactionQueue, ^{
+        transactionState = _transactions[[transactionId stringValue]];
+    });
+
+    if (!transactionState) {
+        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        return;
+    }
+
+    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
+    [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
+    dispatch_semaphore_signal(semaphore);
+}
+
+RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
+                  transactionId:(nonnull NSNumber *)transactionId) {
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
+    __block BOOL aborted = false;
+
+    dispatch_async(_transactionQueue, ^{
+        NSMutableDictionary *transactionState = [NSMutableDictionary new];
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+        transactionState[@"semaphore"] = semaphore;
+
+        [firestore runTransactionWithBlock:^id (FIRTransaction *transaction, NSError * *errorPointer) {
+            transactionState[@"transaction"] = transaction;
+
+            // Build and send transaction update event
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions setValue:transactionState forKey:[transactionId stringValue]];
+                NSMutableDictionary *eventMap = [NSMutableDictionary new];
+                eventMap[@"type"] = @"update";
+                eventMap[@"id"] = transactionId;
+                eventMap[@"appName"] = appDisplayName;
+                [RNFirebaseUtil sendJSEvent:self name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
+            });
+
+            // wait for the js event handler to call transactionApplyBuffer
+            // this wait occurs on the RNFirestore Worker Queue so if transactionApplyBuffer fails to
+            // signal the semaphore then no further blocks will be executed by RNFirestore until the timeout expires
+            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 3000 * NSEC_PER_SEC);
+
+            BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
+            aborted = [transactionState valueForKey:@"abort"];
+
+            // dispose of transaction dictionary
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions removeObjectForKey:[transactionId stringValue]];
+            });
+
+            if (aborted) {
+                *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeAborted userInfo:@{}];
+                return nil;
+            }
+
+            if (timedOut) {
+                *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeDeadlineExceeded userInfo:@{}];
+                return nil;
+            }
+
+            NSArray *commandBuffer = [transactionState valueForKey:@"commandBuffer"];
+            for (NSDictionary *command in commandBuffer) {
+                NSString *type = command[@"type"];
+                NSString *path = command[@"path"];
+                NSDictionary *data = [RNFirebaseFirestoreDocumentReference parseJSMap:firestore jsMap:command[@"data"]];
+
+                FIRDocumentReference *ref = [firestore documentWithPath:path];
+
+                if ([type isEqualToString:@"delete"]) {
+                    [transaction deleteDocument:ref];
+                } else if ([type isEqualToString:@"set"]) {
+                    NSDictionary *options = command[@"options"];
+                    if (options && options[@"merge"]) {
+                        [transaction setData:data forDocument:ref options:[FIRSetOptions merge]];
+                    } else {
+                        [transaction setData:data forDocument:ref];
+                    }
+                } else if ([type isEqualToString:@"update"]) {
+                    [transaction updateData:data forDocument:ref];
+                }
+            }
+
+            return nil;
+        } completion:^(id result, NSError *error) {
+            if (aborted == NO) {
+                NSMutableDictionary *eventMap = [NSMutableDictionary new];
+                eventMap[@"id"] = transactionId;
+                eventMap[@"appName"] = appDisplayName;
+
+                if (error != nil) {
+                    eventMap[@"type"] = @"error";
+                    eventMap[@"error"] = [RNFirebaseFirestore getJSError:error];
+                } else {
+                    eventMap[@"type"] = @"complete";
+                }
+
+                [RNFirebaseUtil sendJSEvent:self name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
+            }
+        }];
+    });
+}
+
+/**
+ *  TRANSACTIONS END
+ */
+
+
+RCT_EXPORT_METHOD(enableLogging:(BOOL)enabled) {
     [FIRFirestore enableLogging:enabled];
 }
 
-RCT_EXPORT_METHOD(collectionGet:(NSString *) appDisplayName
-                           path:(NSString *) path
-                        filters:(NSArray *) filters
-                         orders:(NSArray *) orders
-                        options:(NSDictionary *) options
-                       resolver:(RCTPromiseResolveBlock) resolve
-                       rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(collectionGet:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  filters:(NSArray *)filters
+                  orders:(NSArray *)orders
+                  options:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options] get:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *) appDisplayName
-                                   path:(NSString *) path
-                                filters:(NSArray *) filters
-                                 orders:(NSArray *) orders
-                                options:(NSDictionary *) options
-                             listenerId:(nonnull NSString *) listenerId) {
+RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  filters:(NSArray *)filters
+                  orders:(NSArray *)orders
+                  options:(NSDictionary *)options
+                  listenerId:(nonnull NSString *)listenerId) {
     [RNFirebaseFirestoreCollectionReference offSnapshot:listenerId];
 }
 
-RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *) appDisplayName
-                                  path:(NSString *) path
-                               filters:(NSArray *) filters
-                                orders:(NSArray *) orders
-                               options:(NSDictionary *) options
-                            listenerId:(nonnull NSString *) listenerId
-                    queryListenOptions:(NSDictionary *) queryListenOptions) {
+RCT_EXPORT_METHOD(collectionOnSnapshot:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  filters:(NSArray *)filters
+                  orders:(NSArray *)orders
+                  options:(NSDictionary *)options
+                  listenerId:(nonnull NSString *)listenerId
+                  queryListenOptions:(NSDictionary *)queryListenOptions) {
     RNFirebaseFirestoreCollectionReference *ref = [self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options];
     [ref onSnapshot:listenerId queryListenOptions:queryListenOptions];
 }
 
-RCT_EXPORT_METHOD(documentBatch:(NSString *) appDisplayName
-                         writes:(NSArray *) writes
-                       resolver:(RCTPromiseResolveBlock) resolve
-                       rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentBatch:(NSString *)appDisplayName
+                  writes:(NSArray *)writes
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
     FIRWriteBatch *batch = [firestore batch];
 
@@ -80,7 +248,7 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appDisplayName
         }
     }
 
-    [batch commitWithCompletion:^(NSError * _Nullable error) {
+    [batch commitWithCompletion:^(NSError *_Nullable error) {
         if (error) {
             [RNFirebaseFirestore promiseRejectException:reject error:error];
         } else {
@@ -89,55 +257,55 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *) appDisplayName
     }];
 }
 
-RCT_EXPORT_METHOD(documentDelete:(NSString *) appDisplayName
-                            path:(NSString *) path
-                        resolver:(RCTPromiseResolveBlock) resolve
-                        rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentDelete:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getDocumentForAppPath:appDisplayName path:path] delete:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentGet:(NSString *) appDisplayName
-                         path:(NSString *) path
-                     resolver:(RCTPromiseResolveBlock) resolve
-                     rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentGet:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getDocumentForAppPath:appDisplayName path:path] get:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentGetAll:(NSString *) appDisplayName
-                       documents:(NSString *) documents
-                        resolver:(RCTPromiseResolveBlock) resolve
-                        rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentGetAll:(NSString *)appDisplayName
+                  documents:(NSString *)documents
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     // Not supported on iOS out of the box
 }
 
-RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *) appDisplayName
-                                 path:(NSString *) path
-                           listenerId:(nonnull NSString *) listenerId) {
+RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  listenerId:(nonnull NSString *)listenerId) {
     [RNFirebaseFirestoreDocumentReference offSnapshot:listenerId];
 }
 
-RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *) appDisplayName
-                                path:(NSString *) path
-                          listenerId:(nonnull NSString *) listenerId
-                    docListenOptions:(NSDictionary *) docListenOptions) {
+RCT_EXPORT_METHOD(documentOnSnapshot:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  listenerId:(nonnull NSString *)listenerId
+                  docListenOptions:(NSDictionary *)docListenOptions) {
     RNFirebaseFirestoreDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path];
     [ref onSnapshot:listenerId docListenOptions:docListenOptions];
 }
 
-RCT_EXPORT_METHOD(documentSet:(NSString *) appDisplayName
-                         path:(NSString *) path
-                         data:(NSDictionary *) data
-                      options:(NSDictionary *) options
-                     resolver:(RCTPromiseResolveBlock) resolve
-                     rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentSet:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  data:(NSDictionary *)data
+                  options:(NSDictionary *)options
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getDocumentForAppPath:appDisplayName path:path] set:data options:options resolver:resolve rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(documentUpdate:(NSString *) appDisplayName
-                            path:(NSString *) path
-                            data:(NSDictionary *) data
-                        resolver:(RCTPromiseResolveBlock) resolve
-                        rejecter:(RCTPromiseRejectBlock) reject) {
+RCT_EXPORT_METHOD(documentUpdate:(NSString *)appDisplayName
+                  path:(NSString *)path
+                  data:(NSDictionary *)data
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getDocumentForAppPath:appDisplayName path:path] update:data resolver:resolve rejecter:reject];
 }
 
@@ -262,11 +430,10 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appDisplayName
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT];
+    return @[FIRESTORE_COLLECTION_SYNC_EVENT, FIRESTORE_DOCUMENT_SYNC_EVENT, FIRESTORE_TRANSACTION_EVENT];
 }
 
-+ (BOOL)requiresMainQueueSetup
-{
++ (BOOL)requiresMainQueueSetup {
     return YES;
 }
 
@@ -276,3 +443,4 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *) appDisplayName
 @implementation RNFirebaseFirestore
 @end
 #endif
+

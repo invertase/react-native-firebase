@@ -141,32 +141,32 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.5.0)
-  - React (0.52.0):
-    - React/Core (= 0.52.0)
-  - React/BatchedBridge (0.52.0):
+  - React (0.52.3):
+    - React/Core (= 0.52.3)
+  - React/BatchedBridge (0.52.3):
     - React/Core
     - React/cxxreact_legacy
-  - React/Core (0.52.0):
-    - yoga (= 0.52.0.React)
-  - React/cxxreact_legacy (0.52.0):
+  - React/Core (0.52.3):
+    - yoga (= 0.52.3.React)
+  - React/cxxreact_legacy (0.52.3):
     - React/jschelpers_legacy
     - React/jsinspector_legacy
-  - React/fishhook (0.52.0)
-  - React/jschelpers_legacy (0.52.0)
-  - React/jsinspector_legacy (0.52.0)
-  - React/RCTBlob (0.52.0):
+  - React/fishhook (0.52.3)
+  - React/jschelpers_legacy (0.52.3)
+  - React/jsinspector_legacy (0.52.3)
+  - React/RCTBlob (0.52.3):
     - React/Core
-  - React/RCTNetwork (0.52.0):
+  - React/RCTNetwork (0.52.3):
     - React/Core
-  - React/RCTText (0.52.0):
+  - React/RCTText (0.52.3):
     - React/Core
-  - React/RCTWebSocket (0.52.0):
+  - React/RCTWebSocket (0.52.3):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFirebase (3.2.7):
     - React
-  - yoga (0.52.0.React)
+  - yoga (0.52.3.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.9.3)
@@ -192,11 +192,11 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   React:
-    :path: "../node_modules/react-native"
+    :path: ../node_modules/react-native
   RNFirebase:
-    :path: "../../ios/RNFirebase.podspec"
+    :path: ../../ios/RNFirebase.podspec
   yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga"
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   BoringSSL: f3d6b8ce199b9c450a8cfc14895d07a2627fc232
@@ -224,13 +224,13 @@ SPEC CHECKSUMS:
   gRPC-ProtoRPC: f29e8b7445e0d3c0311678ab121e6c164da4ca5e
   gRPC-RxLibrary: 8e0067bfe8a054022c7a81470baace4f2f633b48
   GTMSessionFetcher: 5bb1eae636127de695590f50e7d248483eb891e6
-  leveldb-library: '08cba283675b7ed2d99629a4bc5fd052cd2bb6a5'
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
-  React: 61a6bdf17a9ff16875c230e6ff278d9de274e16c
+  React: c0dfd2dfc970019d1ae7d48bf24cef530992e079
   RNFirebase: 3a141a97041ea0757e2036c2bb18acbe9f0e105d
-  yoga: 646606bf554d54a16711f35596178522fbc00480
+  yoga: f45a46b966e1eb0c7a532cfd4beec5b97332ba48
 
 PODFILE CHECKSUM: 67c98bcb203cb992da590bcab6f690f727653ca5
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
