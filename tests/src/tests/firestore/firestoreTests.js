@@ -126,6 +126,26 @@ function firestoreTests({ describe, it, context, fcontext, firebase }) {
       });
     });
 
+    context('disableNetwork()', () => {
+      it('should throw an unsupported error', () => {
+        (() => {
+          firebase.native.firestore().disableNetwork();
+        }).should.throw(
+          'firebase.firestore().disableNetwork() is unsupported by the native Firebase SDKs.'
+        );
+      });
+    });
+
+    context('enableNetwork()', () => {
+      it('should throw an unsupported error', () => {
+        (() => {
+          firebase.native.firestore().enableNetwork();
+        }).should.throw(
+          'firebase.firestore().enableNetwork() is unsupported by the native Firebase SDKs.'
+        );
+      });
+    });
+
     context('enablePersistence()', () => {
       it('should throw an unsupported error', () => {
         (() => {

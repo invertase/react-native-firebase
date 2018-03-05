@@ -509,6 +509,13 @@ function collectionReferenceTests({
           'Query.onSnapshot failed: Observer.error must be a valid function.'
         );
         (() => {
+          colRef.onSnapshot({
+            next: 'error',
+          });
+        }).should.throw(
+          'Query.onSnapshot failed: Observer.next must be a valid function.'
+        );
+        (() => {
           colRef.onSnapshot(
             {
               includeQueryMetadataChanges: true,
@@ -1126,6 +1133,56 @@ function collectionReferenceTests({
                 567,
               ]);
             });
+        });
+      });
+
+      context('orderBy()', () => {
+        it('errors if called after startAt', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .startAt({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after startAfter', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .startAfter({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after endBefore', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .endBefore({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after endAt', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .endAt({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
         });
       });
 

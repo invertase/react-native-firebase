@@ -19,7 +19,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
   describe('auth()', () => {
     context('onAuthStateChanged', () => {
       it('calls callback with the current user and when auth state changes', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -54,7 +54,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
       });
 
       it('stops listening when unsubscribed', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -89,7 +89,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
 
         // Sign back in
 
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Assertions
 
@@ -103,7 +103,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
 
     context('onIdTokenChanged', () => {
       it('calls callback with the current user and when auth state changes', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -138,7 +138,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
       });
 
       it('stops listening when unsubscribed', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -173,7 +173,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
 
         // Sign back in
 
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Assertions
 
@@ -187,7 +187,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
 
     context('onUserChanged', () => {
       it('calls callback with the current user and when auth state changes', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -225,7 +225,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
       });
 
       it('stops listening when unsubscribed', async () => {
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Test
         const callback = sinon.spy();
@@ -263,7 +263,7 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
 
         // Sign back in
 
-        await firebase.native.auth().signInAnonymously();
+        await firebase.native.auth().signInAnonymouslyAndRetrieveData();
 
         // Assertions
 
@@ -709,6 +709,10 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
           newUser.isAnonymous.should.equal(false);
           newUser.providerId.should.equal('firebase');
           newUser.should.equal(firebase.native.auth().currentUser);
+          newUser.metadata.should.be.an.Object();
+          should.equal(newUser.phoneNumber, null);
+
+          return newUser.delete();
         };
 
         return firebase.native
@@ -796,6 +800,8 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
           const { additionalUserInfo } = newUserCredential;
           additionalUserInfo.should.be.an.Object();
           additionalUserInfo.isNewUser.should.equal(true);
+
+          return newUser.delete();
         };
 
         return firebase.native
@@ -925,6 +931,37 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
         }));
     });
 
+    context('signOut()', () => {
+      it('it should reject signOut if no currentUser', () =>
+        new Promise((resolve, reject) => {
+          if (firebase.native.auth().currentUser) {
+            return reject(
+              new Error(
+                `A user is currently signed in. ${
+                  firebase.native.auth().currentUser.uid
+                }`
+              )
+            );
+          }
+
+          const successCb = tryCatch(() => {
+            reject(new Error('No signOut error returned'));
+          }, reject);
+
+          const failureCb = tryCatch(error => {
+            error.code.should.equal('auth/no-current-user');
+            error.message.should.equal('No user currently signed in.');
+            resolve();
+          }, reject);
+
+          return firebase.native
+            .auth()
+            .signOut()
+            .then(successCb)
+            .catch(failureCb);
+        }));
+    });
+
     context('delete()', () => {
       it('should delete a user', () => {
         const random = randomString(12, '#aA');
@@ -991,6 +1028,29 @@ export default (authTests = ({ tryCatch, context, describe, it, firebase }) => {
         }).should.throw(
           'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.'
         );
+      });
+    });
+
+    context('sendPasswordResetEmail()', () => {
+      it('should not error', async () => {
+        const random = randomString(12, '#aA');
+        const email = `${random}@${random}.com`;
+        const pass = random;
+
+        await firebase.native
+          .auth()
+          .createUserAndRetrieveDataWithEmailAndPassword(email, pass);
+
+        try {
+          await firebase.native.auth().sendPasswordResetEmail(email);
+          await firebase.native.auth().currentUser.delete();
+        } catch (error) {
+          // Reject
+          await firebase.native.auth().currentUser.delete();
+          Promise.reject(
+            new Error('sendPasswordResetEmail() caused an error', error)
+          );
+        }
       });
     });
 
