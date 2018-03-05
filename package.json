@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^7.0.0",
+    "babel-eslint": "^8.2.2",
     "babel-jest": "^14.1.0",
     "babel-preset-react-native": "^1.9.0",
     "babel-preset-react-native-syntax": "^1.0.0",
