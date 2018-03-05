@@ -16,6 +16,24 @@ export default function addTests({ describe, it, firebase }) {
         resolve();
       }));
 
+    it('logEvent should error if name is not a string', () => {
+      (() => {
+        firebase.native.analytics().logEvent(123456);
+      }).should.throw(
+        `analytics.logEvent(): First argument 'name' is required and must be a string value.`
+      );
+    });
+
+    it('logEvent should error if params is not an object', () => {
+      (() => {
+        firebase.native
+          .analytics()
+          .logEvent('test_event', 'this should be an object');
+      }).should.throw(
+        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
+      );
+    });
+
     it('setAnalyticsCollectionEnabled: it should run without error', () =>
       new Promise(resolve => {
         firebase.native.analytics().setAnalyticsCollectionEnabled(true);
