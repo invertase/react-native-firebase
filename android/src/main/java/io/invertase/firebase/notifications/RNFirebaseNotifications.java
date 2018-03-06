@@ -90,8 +90,8 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     if (getCurrentActivity() == null) {
       promise.resolve(null);
     } else {
-      WritableMap notificationOpenedMap = parseIntentForRemoteNotification(getCurrentActivity().getIntent());
-      promise.resolve(notificationOpenedMap);
+      WritableMap notificationOpenMap = parseIntentForRemoteNotification(getCurrentActivity().getIntent());
+      promise.resolve(notificationOpenMap);
     }
   }
 
@@ -173,10 +173,10 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   @Override
   public void onNewIntent(Intent intent) {
-    WritableMap notificationOpenedMap = parseIntentForRemoteNotification(intent);
-    if (notificationOpenedMap != null) {
+    WritableMap notificationOpenMap = parseIntentForRemoteNotification(intent);
+    if (notificationOpenMap != null) {
       Log.d(TAG, "onNewIntent called with new remote notification");
-      Utils.sendEvent(getReactApplicationContext(), "notifications_notification_opened", notificationOpenedMap);
+      Utils.sendEvent(getReactApplicationContext(), "notifications_notification_opened", notificationOpenMap);
     }
   }
   //////////////////////////////////////////////////////////////////////
@@ -231,11 +231,11 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     }
     notificationMap.putMap("data", dataMap);
 
-    WritableMap notificationOpenedMap = Arguments.createMap();
-    notificationOpenedMap.putString("action", intent.getAction());
-    notificationOpenedMap.putMap("notification", notificationMap);
+    WritableMap notificationOpenMap = Arguments.createMap();
+    notificationOpenMap.putString("action", intent.getAction());
+    notificationOpenMap.putMap("notification", notificationMap);
 
-    return notificationOpenedMap;
+    return notificationOpenMap;
   }
 
   private WritableMap parseNotificationBundle(Bundle notification) {
