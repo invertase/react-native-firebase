@@ -8,8 +8,12 @@
 
 @interface RNFirebaseNotifications : RCTEventEmitter<RCTBridgeModule>
 
-#if !TARGET_OS_TV
++ (void)configure;
++ (_Nonnull instancetype)instance;
 
+#if !TARGET_OS_TV
+- (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification;
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
 #endif
 
 @end
@@ -20,3 +24,4 @@
 #endif
 
 #endif
+
