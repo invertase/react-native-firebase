@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.BundleJSONConverter;
 
 public class RNFirebaseNotificationManager {
@@ -44,9 +46,14 @@ public class RNFirebaseNotificationManager {
   private static final String TAG = "RNFNotificationManager";
   private AlarmManager alarmManager;
   private Context context;
-  private boolean isForeground = false;
+  private ReactApplicationContext reactContext;
   private NotificationManager notificationManager;
   private SharedPreferences preferences;
+
+  public RNFirebaseNotificationManager(ReactApplicationContext reactContext) {
+    this(reactContext.getApplicationContext());
+    this.reactContext = reactContext;
+  }
 
   public RNFirebaseNotificationManager(Context context) {
     this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -117,11 +124,6 @@ public class RNFirebaseNotificationManager {
   }
 
   public void displayScheduledNotification(Bundle notification) {
-    // Broadcast the notification to the RN Application
-    Intent scheduledNotificationEvent = new Intent(SCHEDULED_NOTIFICATION_EVENT);
-    scheduledNotificationEvent.putExtra("notification", notification);
-    LocalBroadcastManager.getInstance(context).sendBroadcast(scheduledNotificationEvent);
-
     // If this isn't a repeated notification, clear it from the scheduled notifications list
     if (!notification.getBundle("schedule").containsKey("repeated")
       || !notification.getBundle("schedule").getBoolean("repeated")) {
@@ -129,9 +131,14 @@ public class RNFirebaseNotificationManager {
       preferences.edit().remove(notificationId).apply();;
     }
 
-    // If the app isn't in the foreground, then we display it
-    // Otherwise, it is up to the JS to decide whether to send the notification
-    if (!isForeground) {
+    if (Utils.isAppInForeground(context)) {
+      // If the app is in the foregound, broadcast the notification to the RN Application
+      // It is up to the JS to decide whether to display the notification
+      Intent scheduledNotificationEvent = new Intent(SCHEDULED_NOTIFICATION_EVENT);
+      scheduledNotificationEvent.putExtra("notification", notification);
+      LocalBroadcastManager.getInstance(context).sendBroadcast(scheduledNotificationEvent);
+    } else {
+      // If the app is in the background, then we display it automatically
       displayNotification(notification, null);
     }
   }
@@ -175,10 +182,6 @@ public class RNFirebaseNotificationManager {
     scheduleNotification(notificationBundle, promise);
   }
 
-  public void setIsForeground(boolean isForeground) {
-    this.isForeground = isForeground;
-  }
-
   private void cancelAlarm(String notificationId) {
     Intent notificationIntent = new Intent(context, RNFirebaseNotificationManager.class);
     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -201,7 +204,6 @@ public class RNFirebaseNotificationManager {
       String notificationId = notification.getString("notificationId");
 
       NotificationCompat.Builder nb;
-      // TODO: Change 27 to 'Build.VERSION_CODES.O_MR1' when using appsupport v27
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
          nb = new NotificationCompat.Builder(context, channelId);
       } else {
@@ -343,20 +345,27 @@ public class RNFirebaseNotificationManager {
         nb = nb.setTicker(android.getString("ticker"));
       }
       if (android.containsKey("timeoutAfter")) {
-        nb = nb.setTimeoutAfter(android.getLong("timeoutAfter"));
+        Double timeoutAfter = android.getDouble("timeoutAfter");
+        nb = nb.setTimeoutAfter(timeoutAfter.longValue());
       }
       if (android.containsKey("usesChronometer")) {
         nb = nb.setUsesChronometer(android.getBoolean("usesChronometer"));
       }
       if (android.containsKey("vibrate")) {
-        nb = nb.setVibrate(android.getLongArray("vibrate"));
+        double[] vibrate = android.getDoubleArray("vibrate");
+        long[] vibrateArray = new long[vibrate.length];
+        for (int i = 0; i < vibrate.length; i++) {
+          vibrateArray[i] = ((Double)vibrate[i]).longValue();
+        }
+        nb = nb.setVibrate(vibrateArray);
       }
       if (android.containsKey("visibility")) {
         Double visibility = android.getDouble("visibility");
         nb = nb.setVisibility(visibility.intValue());
       }
       if (android.containsKey("when")) {
-        nb = nb.setWhen(android.getLong("when"));
+        Double when = android.getDouble("when");
+        nb = nb.setWhen(when.longValue());
       }
 
       // TODO: Big text / Big picture
@@ -393,6 +402,10 @@ public class RNFirebaseNotificationManager {
       // Build the notification and send it
       Notification builtNotification = nb.build();
       notificationManager.notify(notificationId.hashCode(), builtNotification);
+
+      if (reactContext != null) {
+        Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));
+      }
     } catch (Exception e) {
       if (promise == null) {
         Log.e(TAG, "Failed to send notification", e);
@@ -525,7 +538,7 @@ public class RNFirebaseNotificationManager {
     String notificationId = notification.getString("notificationId");
     Bundle schedule = notification.getBundle("schedule");
 
-    long fireDate = schedule.getLong("fireDate");
+    Double fireDate = schedule.getDouble("fireDate");
 
     // Scheduled alarms are cleared on restart
     // We store them so that they can be re-scheduled when the phone restarts in RNFirebaseNotificationsRebootReceiver
@@ -567,14 +580,14 @@ public class RNFirebaseNotificationManager {
         return;
       }
 
-      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate, interval, pendingIntent);
+      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate.longValue(), interval, pendingIntent);
     } else {
       if (schedule.containsKey("exact")
         && schedule.getBoolean("exact")
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
       } else {
-        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
       }
     }
 
