@@ -12,7 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase.h>
-#import <RNFirebaseMessaging.h>
+#import <RNFirebaseNotifications.h>
 
 @implementation AppDelegate
 
@@ -38,13 +38,9 @@
   return YES;
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-  [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
-}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-  [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 @end

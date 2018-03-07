@@ -3,6 +3,8 @@ package io.invertase.firebase.notifications;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONException;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.invertase.firebase.messaging.BundleJSONConverter;
@@ -69,6 +73,42 @@ public class RNFirebaseNotificationManager {
   public void cancelNotification(String notificationId) {
     cancelAlarm(notificationId);
     preferences.edit().remove(notificationId).apply();
+  }
+
+  public void createChannel(ReadableMap channelMap) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel channel = parseChannelMap(channelMap);
+      notificationManager.createNotificationChannel(channel);
+    }
+  }
+
+  public void createChannelGroup(ReadableMap channelGroupMap) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannelGroup channelGroup = parseChannelGroupMap(channelGroupMap);
+      notificationManager.createNotificationChannelGroup(channelGroup);
+    }
+  }
+
+  public void createChannelGroups(ReadableArray channelGroupsArray) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      List<NotificationChannelGroup> channelGroups = new ArrayList<>();
+      for (int i = 0; i < channelGroupsArray.size(); i++) {
+        NotificationChannelGroup channelGroup = parseChannelGroupMap(channelGroupsArray.getMap(i));
+        channelGroups.add(channelGroup);
+      }
+      notificationManager.createNotificationChannelGroups(channelGroups);
+    }
+  }
+
+  public void createChannels(ReadableArray channelsArray) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      List<NotificationChannel> channels = new ArrayList<>();
+      for (int i = 0; i < channelsArray.size(); i++) {
+        NotificationChannel channel = parseChannelMap(channelsArray.getMap(i));
+        channels.add(channel);
+      }
+      notificationManager.createNotificationChannels(channels);
+    }
   }
 
   public void displayNotification(ReadableMap notification, Promise promise) {
@@ -155,12 +195,14 @@ public class RNFirebaseNotificationManager {
         return;
       }
 
-      String channelId = notification.getString("channelId");
+      Bundle android = notification.getBundle("android");
+
+      String channelId = android.getString("channelId");
       String notificationId = notification.getString("notificationId");
 
       NotificationCompat.Builder nb;
       // TODO: Change 27 to 'Build.VERSION_CODES.O_MR1' when using appsupport v27
-      if (Build.VERSION.SDK_INT >= 27) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
          nb = new NotificationCompat.Builder(context, channelId);
       } else {
          nb = new NotificationCompat.Builder(context);
@@ -173,16 +215,8 @@ public class RNFirebaseNotificationManager {
         nb = nb.setExtras(notification.getBundle("data"));
       }
       if (notification.containsKey("sound")) {
-        String sound = notification.getString("sound");
-        if (sound.equalsIgnoreCase("default")) {
-          nb = nb.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-        } else {
-          int soundResourceId = getResourceId("raw", sound);
-          if (soundResourceId == 0) {
-            soundResourceId = getResourceId("raw", sound.substring(0, sound.lastIndexOf('.')));
-          }
-          nb = nb.setSound(Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId));
-        }
+        Uri sound = getSound(notification.getString("sound"));
+        nb = nb.setSound(sound);
       }
       if (notification.containsKey("subtitle")) {
         nb = nb.setSubText(notification.getString("subtitle"));
@@ -191,125 +225,138 @@ public class RNFirebaseNotificationManager {
         nb = nb.setContentTitle(notification.getString("title"));
       }
 
-      if (notification.containsKey("autoCancel")) {
-        nb = nb.setAutoCancel(notification.getBoolean("autoCancel"));
+      if (android.containsKey("autoCancel")) {
+        nb = nb.setAutoCancel(android.getBoolean("autoCancel"));
       }
-      if (notification.containsKey("badgeIconType")) {
-        nb = nb.setBadgeIconType(notification.getInt("badgeIconType"));
+      if (android.containsKey("badgeIconType")) {
+        Double badgeIconType = android.getDouble("badgeIconType");
+        nb = nb.setBadgeIconType(badgeIconType.intValue());
       }
-      if (notification.containsKey("category")) {
-        nb = nb.setCategory(notification.getString("category"));
+      if (android.containsKey("category")) {
+        nb = nb.setCategory(android.getString("category"));
       }
-      if (notification.containsKey("color")) {
-        String color = notification.getString("color");
+      if (android.containsKey("color")) {
+        String color = android.getString("color");
         nb = nb.setColor(Color.parseColor(color));
       }
-      if (notification.containsKey("colorized")) {
-        nb = nb.setColorized(notification.getBoolean("colorized"));
+      if (android.containsKey("colorized")) {
+        nb = nb.setColorized(android.getBoolean("colorized"));
       }
-      if (notification.containsKey("contentInfo")) {
-        nb = nb.setContentInfo(notification.getString("contentInfo"));
+      if (android.containsKey("contentInfo")) {
+        nb = nb.setContentInfo(android.getString("contentInfo"));
       }
       if (notification.containsKey("defaults")) {
-        int[] defaultsArray = notification.getIntArray("defaults");
+        double[] defaultsArray = android.getDoubleArray("defaults");
         int defaults = 0;
-        for (int d : defaultsArray) {
-          defaults |= d;
+        for (Double d : defaultsArray) {
+          defaults |= d.intValue();
         }
         nb = nb.setDefaults(defaults);
       }
-      if (notification.containsKey("group")) {
-        nb = nb.setGroup(notification.getString("group"));
+      if (android.containsKey("group")) {
+        nb = nb.setGroup(android.getString("group"));
       }
-      if (notification.containsKey("groupAlertBehaviour")) {
-        nb = nb.setGroupAlertBehavior(notification.getInt("groupAlertBehaviour"));
+      if (android.containsKey("groupAlertBehaviour")) {
+        Double groupAlertBehaviour = android.getDouble("groupAlertBehaviour");
+        nb = nb.setGroupAlertBehavior(groupAlertBehaviour.intValue());
       }
-      if (notification.containsKey("groupSummary")) {
-        nb = nb.setGroupSummary(notification.getBoolean("groupSummary"));
+      if (android.containsKey("groupSummary")) {
+        nb = nb.setGroupSummary(android.getBoolean("groupSummary"));
       }
-      if (notification.containsKey("largeIcon")) {
-        Bitmap largeIcon = getBitmap(notification.getString("largeIcon"));
+      if (android.containsKey("largeIcon")) {
+        Bitmap largeIcon = getBitmap(android.getString("largeIcon"));
         if (largeIcon != null) {
           nb = nb.setLargeIcon(largeIcon);
         }
       }
-      if (notification.containsKey("lights")) {
-        Bundle lights = notification.getBundle("lights");
-        nb = nb.setLights(lights.getInt("argb"), lights.getInt("onMs"), lights.getInt("offMs"));
+      if (android.containsKey("lights")) {
+        Bundle lights = android.getBundle("lights");
+        Double argb = lights.getDouble("argb");
+        Double onMs = lights.getDouble("onMs");
+        Double offMs = lights.getDouble("offMs");
+        nb = nb.setLights(argb.intValue(), onMs.intValue(), offMs.intValue());
       }
-      if (notification.containsKey("localOnly")) {
-        nb = nb.setLocalOnly(notification.getBoolean("localOnly"));
+      if (android.containsKey("localOnly")) {
+        nb = nb.setLocalOnly(android.getBoolean("localOnly"));
       }
 
-      if (notification.containsKey("number")) {
-        nb = nb.setNumber(notification.getInt("number"));
+      if (android.containsKey("number")) {
+        Double number = android.getDouble("number");
+        nb = nb.setNumber(number.intValue());
       }
-      if (notification.containsKey("ongoing")) {
-        nb = nb.setOngoing(notification.getBoolean("ongoing"));
+      if (android.containsKey("ongoing")) {
+        nb = nb.setOngoing(android.getBoolean("ongoing"));
       }
-      if (notification.containsKey("onlyAlertOnce")) {
-        nb = nb.setOngoing(notification.getBoolean("onlyAlertOnce"));
+      if (android.containsKey("onlyAlertOnce")) {
+        nb = nb.setOngoing(android.getBoolean("onlyAlertOnce"));
       }
-      if (notification.containsKey("people")) {
-        String[] people = notification.getStringArray("people");
-        for (String person : people) {
-          nb = nb.addPerson(person);
+      if (android.containsKey("people")) {
+        String[] people = android.getStringArray("people");
+        if (people != null) {
+          for (String person : people) {
+            nb = nb.addPerson(person);
+          }
         }
       }
-      if (notification.containsKey("priority")) {
-        nb = nb.setPriority(notification.getInt("priority"));
+      if (android.containsKey("priority")) {
+        Double priority = android.getDouble("priority");
+        nb = nb.setPriority(priority.intValue());
       }
-      if (notification.containsKey("progress")) {
-        Bundle progress = notification.getBundle("lights");
-        nb = nb.setProgress(progress.getInt("max"), progress.getInt("progress"), progress.getBoolean("indeterminate"));
+      if (android.containsKey("progress")) {
+        Bundle progress = android.getBundle("lights");
+        Double max = progress.getDouble("max");
+        Double progressI = progress.getDouble("progress");
+        nb = nb.setProgress(max.intValue(), progressI.intValue(), progress.getBoolean("indeterminate"));
       }
       // TODO: Public version of notification
-      /* if (notification.containsKey("publicVersion")) {
+      /* if (android.containsKey("publicVersion")) {
         nb = nb.setPublicVersion();
       } */
-      if (notification.containsKey("remoteInputHistory")) {
-        nb = nb.setRemoteInputHistory(notification.getStringArray("remoteInputHistory"));
+      if (android.containsKey("remoteInputHistory")) {
+        nb = nb.setRemoteInputHistory(android.getStringArray("remoteInputHistory"));
       }
-      if (notification.containsKey("shortcutId")) {
-        nb = nb.setShortcutId(notification.getString("shortcutId"));
+      if (android.containsKey("shortcutId")) {
+        nb = nb.setShortcutId(android.getString("shortcutId"));
       }
-      if (notification.containsKey("showWhen")) {
-        nb = nb.setShowWhen(notification.getBoolean("showWhen"));
+      if (android.containsKey("showWhen")) {
+        nb = nb.setShowWhen(android.getBoolean("showWhen"));
       }
-      if (notification.containsKey("smallIcon")) {
-        Bundle smallIcon = notification.getBundle("smallIcon");
+      if (android.containsKey("smallIcon")) {
+        Bundle smallIcon = android.getBundle("smallIcon");
         int smallIconResourceId = getResourceId("mipmap", smallIcon.getString("icon"));
         if (smallIconResourceId == 0) {
           smallIconResourceId = getResourceId("drawable", smallIcon.getString("icon"));
         }
         if (smallIconResourceId != 0) {
           if (smallIcon.containsKey("level")) {
-            nb = nb.setSmallIcon(smallIconResourceId, smallIcon.getInt("level"));
+            Double level = smallIcon.getDouble("level");
+            nb = nb.setSmallIcon(smallIconResourceId, level.intValue());
           } else {
             nb = nb.setSmallIcon(smallIconResourceId);
           }
         }
       }
-      if (notification.containsKey("sortKey")) {
-        nb = nb.setSortKey(notification.getString("sortKey"));
+      if (android.containsKey("sortKey")) {
+        nb = nb.setSortKey(android.getString("sortKey"));
       }
-      if (notification.containsKey("ticker")) {
-        nb = nb.setTicker(notification.getString("ticker"));
+      if (android.containsKey("ticker")) {
+        nb = nb.setTicker(android.getString("ticker"));
       }
-      if (notification.containsKey("timeoutAfter")) {
-        nb = nb.setTimeoutAfter(notification.getLong("timeoutAfter"));
+      if (android.containsKey("timeoutAfter")) {
+        nb = nb.setTimeoutAfter(android.getLong("timeoutAfter"));
       }
-      if (notification.containsKey("usesChronometer")) {
-        nb = nb.setUsesChronometer(notification.getBoolean("usesChronometer"));
+      if (android.containsKey("usesChronometer")) {
+        nb = nb.setUsesChronometer(android.getBoolean("usesChronometer"));
       }
-      if (notification.containsKey("vibrate")) {
-        nb = nb.setVibrate(notification.getLongArray("vibrate"));
+      if (android.containsKey("vibrate")) {
+        nb = nb.setVibrate(android.getLongArray("vibrate"));
       }
-      if (notification.containsKey("visibility")) {
-        nb = nb.setVisibility(notification.getInt("visibility"));
+      if (android.containsKey("visibility")) {
+        Double visibility = android.getDouble("visibility");
+        nb = nb.setVisibility(visibility.intValue());
       }
-      if (notification.containsKey("when")) {
-        nb = nb.setWhen(notification.getLong("when"));
+      if (android.containsKey("when")) {
+        nb = nb.setWhen(android.getLong("when"));
       }
 
       // TODO: Big text / Big picture
@@ -335,8 +382,8 @@ public class RNFirebaseNotificationManager {
       Intent intent = new Intent(context, intentClass);
       intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
       intent.putExtras(notification);
-      if (notification.containsKey("clickAction")) {
-        intent.setAction(notification.getString("clickAction"));
+      if (android.containsKey("clickAction")) {
+        intent.setAction(android.getString("clickAction"));
       }
 
       PendingIntent contentIntent = PendingIntent.getActivity(context, notificationId.hashCode(), intent,
@@ -389,6 +436,71 @@ public class RNFirebaseNotificationManager {
 
   private int getResourceId(String type, String image) {
     return context.getResources().getIdentifier(image, type, context.getPackageName());
+  }
+
+  private Uri getSound(String sound) {
+    if (sound.equalsIgnoreCase("default")) {
+      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    } else {
+      int soundResourceId = getResourceId("raw", sound);
+      if (soundResourceId == 0) {
+        soundResourceId = getResourceId("raw", sound.substring(0, sound.lastIndexOf('.')));
+      }
+      return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId);
+    }
+  }
+
+  private NotificationChannelGroup parseChannelGroupMap(ReadableMap channelGroupMap) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      String groupId = channelGroupMap.getString("groupId");
+      String name = channelGroupMap.getString("name");
+
+      return new NotificationChannelGroup(groupId, name);
+    }
+    return null;
+  }
+
+  private NotificationChannel parseChannelMap(ReadableMap channelMap) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      String channelId = channelMap.getString("channelId");
+      String name = channelMap.getString("name");
+      int importance = channelMap.getInt("importance");
+
+      NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+      if (channelMap.hasKey("bypassDnd")) {
+        channel.setBypassDnd(channelMap.getBoolean("bypassDnd"));
+      }
+      if (channelMap.hasKey("description")) {
+        channel.setDescription(channelMap.getString("description"));
+      }
+      if (channelMap.hasKey("group")) {
+        channel.setGroup(channelMap.getString("group"));
+      }
+      if (channelMap.hasKey("lightColor")) {
+        String lightColor = channelMap.getString("lightColor");
+        channel.setLightColor(Color.parseColor(lightColor));
+      }
+      if (channelMap.hasKey("lockScreenVisibility")) {
+        channel.setLockscreenVisibility(channelMap.getInt("lockScreenVisibility"));
+      }
+      if (channelMap.hasKey("showBadge")) {
+        channel.setShowBadge(channelMap.getBoolean("showBadge"));
+      }
+      if (channelMap.hasKey("sound")) {
+        Uri sound = getSound(channelMap.getString("sound"));
+        channel.setSound(sound, null);
+      }
+      if (channelMap.hasKey("vibrationPattern")) {
+        ReadableArray vibrationArray = channelMap.getArray("vibrationPattern");
+        long[] vibration = new long[]{};
+        for (int i = 0; i < vibrationArray.size(); i++) {
+          vibration[i] = (long) vibrationArray.getDouble(i);
+        }
+        channel.setVibrationPattern(vibration);
+      }
+      return channel;
+    }
+    return null;
   }
 
   private void scheduleNotification(Bundle notification, Promise promise) {

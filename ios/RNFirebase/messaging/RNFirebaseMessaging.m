@@ -11,17 +11,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-// For iOS 10 we need to implement UNUserNotificationCenterDelegate to receive display
-// notifications via APNS
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 @import UserNotifications;
-@interface RNFirebaseMessaging () <UNUserNotificationCenterDelegate>
-#else
-@interface RNFirebaseMessaging ()
 #endif
-@property (nonatomic, strong) NSMutableDictionary *callbackHandlers;
-@end
-
 
 @implementation RNFirebaseMessaging
 
@@ -48,42 +40,15 @@ RCT_EXPORT_MODULE()
 
     // Establish Firebase managed data channel
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-
-    // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-#endif
-
+    
     // Set static instance for use from AppDelegate
     theRNFirebaseMessaging = self;
-
-    // Initialise callback handlers dictionary
-    _callbackHandlers = [NSMutableDictionary dictionary];
 }
 
 // *******************************************************
 // ** Start AppDelegate methods
 // ** iOS 8/9 Only
 // *******************************************************
-
-// Listen for background messages
-- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
-    BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotification" clickAction:nil openedFromTray:isFromBackground];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
-}
-
-// Listen for background messages
-- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
-              fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    BOOL isFromBackground = (RCTSharedApplication().applicationState == UIApplicationStateInactive);
-    NSDictionary *message = [self parseUserInfo:userInfo messageType:@"RemoteNotificationHandler" clickAction:nil openedFromTray:isFromBackground];
-
-    [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
-}
 
 // Listen for permission response
 - (void) didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
@@ -98,47 +63,14 @@ RCT_EXPORT_MODULE()
     _permissionResolver = nil;
 }
 
+// Listen for FCM data messages that arrive as a remote notification
+- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
+    NSDictionary *message = [self parseUserInfo:userInfo];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+}
+
 // *******************************************************
 // ** Finish AppDelegate methods
-// *******************************************************
-
-
-// *******************************************************
-// ** Start UNUserNotificationCenterDelegate methods
-// ** iOS 10+
-// *******************************************************
-
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-// Handle incoming notification messages while app is in the foreground.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
-    NSDictionary *message = [self parseUNNotification:notification messageType:@"PresentNotification" openedFromTray:false];
-
-    [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
-}
-
-// Handle notification messages after display notification is tapped by the user.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-#if defined(__IPHONE_11_0)
-         withCompletionHandler:(void(^)(void))completionHandler {
-#else
-         withCompletionHandler:(void(^)())completionHandler {
-#endif
-     NSDictionary *message = [self parseUNNotification:response.notification messageType:@"NotificationResponse" openedFromTray:true];
-
-    [_callbackHandlers setObject:[completionHandler copy] forKey:message[@"messageId"]];
-
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
-}
-
-#endif
-
-// *******************************************************
-// ** Finish UNUserNotificationCenterDelegate methods
 // *******************************************************
 
 
@@ -155,8 +87,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 
 // Listen for data messages in the foreground
 - (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage openedFromTray:false];
+    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
+    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+}
 
+// Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
+// To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
+- (void)messaging:(nonnull FIRMessaging *)messaging
+didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+    NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
     [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
@@ -204,23 +143,6 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
 }
 
 // Non Web SDK methods
-
-RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        resolve(@([RCTSharedApplication() applicationIconBadgeNumber]));
-    });
-}
-
-RCT_EXPORT_METHOD(getInitialMessage:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    NSDictionary *notification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (notification) {
-        NSDictionary *message = [self parseUserInfo:notification messageType:@"InitialMessage" clickAction:nil openedFromTray:true];
-        resolve(message);
-    } else {
-        resolve(nil);
-    }
-}
-
 RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -248,12 +170,9 @@ RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
     NSDictionary *data = message[@"data"];
 
     [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-}
-
-RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [RCTSharedApplication() setApplicationIconBadgeNumber:number];
-    });
+    
+    // TODO: Listen for send success / errors
+    resolve(nil);
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
@@ -264,64 +183,9 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
 }
 
-// Response handler methods
-
-RCT_EXPORT_METHOD(completeNotificationResponse: (NSString*) messageId) {
-    void(^callbackHandler)() = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    callbackHandler();
-    [_callbackHandlers removeObjectForKey:messageId];
-}
-
-RCT_EXPORT_METHOD(completePresentNotification: (NSString*) messageId
-                                       result: (NSString*) result) {
-    void(^callbackHandler)(UNNotificationPresentationOptions) = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    UNNotificationPresentationOptions options;
-    if ([result isEqualToString:@"UNNotificationPresentationOptionAll"]) {
-        options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
-    } else if ([result isEqualToString:@"UNNotificationPresentationOptionNone"]) {
-        options = UNNotificationPresentationOptionNone;
-    } else {
-        NSLog(@"Invalid result for PresentNotification: %@", result);
-        return;
-    }
-    callbackHandler(options);
-    [_callbackHandlers removeObjectForKey:messageId];
-}
-
-RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
-                                      result: (NSString*) result) {
-    void(^callbackHandler)(UIBackgroundFetchResult) = [_callbackHandlers objectForKey:messageId];
-    if (!callbackHandler) {
-        NSLog(@"There is no callback handler for messageId: %@", messageId);
-        return;
-    }
-    UIBackgroundFetchResult fetchResult;
-    if ([result isEqualToString:@"UIBackgroundFetchResultNewData"]) {
-        fetchResult = UIBackgroundFetchResultNewData;
-    } else if ([result isEqualToString:@"UIBackgroundFetchResultNoData"]) {
-        fetchResult = UIBackgroundFetchResultNoData;
-    } else if ([result isEqualToString:@"UIBackgroundFetchResultFailed"]) {
-        fetchResult = UIBackgroundFetchResultFailed;
-    } else {
-        NSLog(@"Invalid result for PresentNotification: %@", result);
-        return;
-    }
-    callbackHandler(fetchResult);
-    [_callbackHandlers removeObjectForKey:messageId];
-}
-
 // ** Start internals **
 
-- (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage
-                                 openedFromTray:(bool)openedFromTray {
+- (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *appData = remoteMessage.appData;
 
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
@@ -332,98 +196,24 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
         } else if ([k1 isEqualToString:@"from"]) {
             message[@"from"] = appData[k1];
         } else if ([k1 isEqualToString:@"notification"]) {
-            NSDictionary *notification = appData[k1];
-            NSMutableDictionary *notif = [[NSMutableDictionary alloc] init];
-            for (id k2 in notification) {
-                if ([k2 isEqualToString:@"badge"]) {
-                    notif[@"badge"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body"]) {
-                    notif[@"body"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body_loc_args"]) {
-                    notif[@"bodyLocalizationArgs"] = notification[k2];
-                } else if ([k2 isEqualToString:@"body_loc_key"]) {
-                    notif[@"bodyLocalizationKey"] = notification[k2];
-                } else if ([k2 isEqualToString:@"click_action"]) {
-                    notif[@"clickAction"] = notification[k2];
-                } else if ([k2 isEqualToString:@"sound"]) {
-                    notif[@"sound"] = notification[k2];
-                } else if ([k2 isEqualToString:@"subtitle"]) {
-                    notif[@"subtitle"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title"]) {
-                    notif[@"title"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title_loc_args"]) {
-                    notif[@"titleLocalizationArgs"] = notification[k2];
-                } else if ([k2 isEqualToString:@"title_loc_key"]) {
-                    notif[@"titleLocalizationKey"] = notification[k2];
-                } else {
-                    NSLog(@"Unknown notification key: %@", k2);
-                }
-            }
-            message[@"notification"] = notif;
+            // Ignore for messages
         } else {
             // Assume custom data key
             data[k1] = appData[k1];
         }
     }
-    message[@"messageType"] = @"RemoteMessage";
     message[@"data"] = data;
-    message[@"openedFromTray"] = @(false);
 
     return message;
 }
 
-- (NSDictionary*)parseUNNotification:(UNNotification *)notification
-                         messageType:(NSString *)messageType
-                      openedFromTray:(bool)openedFromTray {
-    NSDictionary *userInfo = notification.request.content.userInfo;
-    NSString *clickAction = notification.request.content.categoryIdentifier;
-
-    return [self parseUserInfo:userInfo messageType:messageType clickAction:clickAction openedFromTray:openedFromTray];
-}
-
-- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo
-                   messageType:(NSString *) messageType
-                   clickAction:(NSString *) clickAction
-                openedFromTray:(bool)openedFromTray {
+- (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary *notif = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-
+    
     for (id k1 in userInfo) {
         if ([k1 isEqualToString:@"aps"]) {
-            NSDictionary *aps = userInfo[k1];
-            for (id k2 in aps) {
-                if ([k2 isEqualToString:@"alert"]) {
-                    NSDictionary *alert = aps[k2];
-                    for (id k3 in alert) {
-                        if ([k3 isEqualToString:@"body"]) {
-                            notif[@"body"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"loc-args"]) {
-                            notif[@"bodyLocalizationArgs"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"loc-key"]) {
-                            notif[@"bodyLocalizationKey"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"subtitle"]) {
-                            notif[@"subtitle"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title"]) {
-                            notif[@"title"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title-loc-args"]) {
-                            notif[@"titleLocalizationArgs"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title-loc-key"]) {
-                            notif[@"titleLocalizationKey"] = alert[k3];
-                        } else {
-                            NSLog(@"Unknown alert key: %@", k2);
-                        }
-                    }
-                } else if ([k2 isEqualToString:@"badge"]) {
-                    notif[@"badge"] = aps[k2];
-                } else if ([k2 isEqualToString:@"category"]) {
-                    notif[@"clickAction"] = aps[k2];
-                } else if ([k2 isEqualToString:@"sound"]) {
-                    notif[@"sound"] = aps[k2];
-                } else {
-                    NSLog(@"Unknown aps key: %@", k2);
-                }
-            }
+            // Ignore notification section
         } else if ([k1 isEqualToString:@"gcm.message_id"]) {
             message[@"messageId"] = userInfo[k1];
         } else if ([k1 isEqualToString:@"google.c.a.ts"]) {
@@ -440,22 +230,9 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
             data[k1] = userInfo[k1];
         }
     }
-
-    if (!notif[@"clickAction"] && clickAction) {
-        notif[@"clickAction"] = clickAction;
-    }
-
-    // Generate a message ID if one was not present in the notification
-    // This is used for resolving click handlers
-    if (!message[@"messageId"]) {
-        message[@"messageId"] = [[NSUUID UUID] UUIDString];
-    }
-    message[@"messageType"] = messageType;
-
+    
     message[@"data"] = data;
-    message[@"notification"] = notif;
-    message[@"openedFromTray"] = @(openedFromTray);
-
+    
     return message;
 }
 
@@ -474,3 +251,4 @@ RCT_EXPORT_METHOD(completeRemoteNotification: (NSString*) messageId
 @implementation RNFirebaseMessaging
 @end
 #endif
+
