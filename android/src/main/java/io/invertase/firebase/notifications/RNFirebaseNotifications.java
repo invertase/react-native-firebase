@@ -30,7 +30,7 @@ import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.RNFirebaseMessagingService;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
-public class RNFirebaseNotifications extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
+public class RNFirebaseNotifications extends ReactContextBaseJavaModule implements ActivityEventListener {
   private static final String BADGE_FILE = "BadgeCountFile";
   private static final String BADGE_KEY = "BadgeCount";
   private static final String TAG = "RNFirebaseNotifications";
@@ -41,9 +41,8 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   public RNFirebaseNotifications(ReactApplicationContext context) {
     super(context);
     context.addActivityEventListener(this);
-    context.addLifecycleEventListener(this);
 
-    notificationManager = new RNFirebaseNotificationManager(context.getApplicationContext());
+    notificationManager = new RNFirebaseNotificationManager(context);
     sharedPreferences = context.getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
 
     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
@@ -86,13 +85,11 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   @ReactMethod
   public void getInitialNotification(Promise promise) {
-    // TODO
-    if (getCurrentActivity() == null) {
-      promise.resolve(null);
-    } else {
-      WritableMap notificationOpenMap = parseIntentForRemoteNotification(getCurrentActivity().getIntent());
-      promise.resolve(notificationOpenMap);
+    WritableMap notificationOpenMap = null;
+    if (getCurrentActivity() != null) {
+      notificationOpenMap = parseIntentForNotification(getCurrentActivity().getIntent());
     }
+    promise.resolve(notificationOpenMap);
   }
 
   @ReactMethod
@@ -173,37 +170,36 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   @Override
   public void onNewIntent(Intent intent) {
-    WritableMap notificationOpenMap = parseIntentForRemoteNotification(intent);
+    WritableMap notificationOpenMap = parseIntentForNotification(intent);
     if (notificationOpenMap != null) {
-      Log.d(TAG, "onNewIntent called with new remote notification");
       Utils.sendEvent(getReactApplicationContext(), "notifications_notification_opened", notificationOpenMap);
     }
   }
+
   //////////////////////////////////////////////////////////////////////
   // End ActivityEventListener methods
   //////////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////////////
-  // Start LifecycleEventListener methods
-  //////////////////////////////////////////////////////////////////////
-  @Override
-  public void onHostResume() {
-    notificationManager.setIsForeground(true);
+  private WritableMap parseIntentForNotification(Intent intent) {
+    WritableMap notificationOpenMap = parseIntentForRemoteNotification(intent);
+    if (notificationOpenMap == null) {
+      notificationOpenMap = parseIntentForLocalNotification(intent);
+    }
+    return notificationOpenMap;
   }
 
-  @Override
-  public void onHostPause() {
-    notificationManager.setIsForeground(false);
-  }
+  private WritableMap parseIntentForLocalNotification(Intent intent) {
+    if (intent.getExtras() == null || !intent.hasExtra("notificationId")) {
+      return null;
+    }
 
-  @Override
-  public void onHostDestroy() {
-    // Do nothing
-  }
-  //////////////////////////////////////////////////////////////////////
-  // End LifecycleEventListener methods
-  //////////////////////////////////////////////////////////////////////
+    WritableMap notificationMap = Arguments.makeNativeMap(intent.getExtras());
+    WritableMap notificationOpenMap = Arguments.createMap();
+    notificationOpenMap.putString("action", intent.getAction());
+    notificationOpenMap.putMap("notification", notificationMap);
 
+    return notificationOpenMap;
+  }
 
   private WritableMap parseIntentForRemoteNotification(Intent intent) {
     // Check if FCM data exists

@@ -45,16 +45,19 @@ const init = async () => {
     notification
       .setTitle('Test title')
       .setBody('Test body')
+      .setNotificationId('displayed')
       .android.setChannelId('test')
+      .android.setClickAction('action')
       .android.setPriority(RNfirebase.notifications.Android.Priority.Max);
     const date = new Date();
     date.setMinutes(date.getMinutes() + 1);
     setTimeout(() => {
       RNfirebase.notifications().displayNotification(notification);
+      notification.setNotificationId('scheduled');
+      RNfirebase.notifications().scheduleNotification(notification, {
+        fireDate: date.getTime(),
+      });
     }, 5);
-    RNfirebase.notifications().scheduleNotification(notification, {
-      fireDate: date.getTime(),
-    });
   } catch (error) {
     console.error('messaging init error:', error);
   }
