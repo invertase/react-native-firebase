@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.facebook.react.HeadlessJsTaskService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessagingService extends FirebaseMessagingService {
   private static final String TAG = "RNFMessagingService";
@@ -16,19 +19,28 @@ public class RNFirebaseMessagingService extends FirebaseMessagingService {
   public void onMessageReceived(RemoteMessage message) {
     Log.d(TAG, "onMessageReceived event received");
 
-    Intent event;
-
     if (message.getNotification() != null) {
-      // It's a notification, pass to the notification module
-      event = new Intent(REMOTE_NOTIFICATION_EVENT);
-      event.putExtra("notification", message);
-    } else {
-      // It's a data message, pass to the messaging module
-      event = new Intent(MESSAGE_EVENT);
-      event.putExtra("message", message);
-    }
+      // It's a notification, pass to the Notifications module
+      Intent notificationEvent = new Intent(REMOTE_NOTIFICATION_EVENT);
+      notificationEvent.putExtra("notification", message);
 
-    // Broadcast it so it is only available to the RN Application
-    LocalBroadcastManager.getInstance(this).sendBroadcast(event);
+      // Broadcast it to the (foreground) RN Application
+      LocalBroadcastManager.getInstance(this).sendBroadcast(notificationEvent);
+    } else {
+      // It's a data message
+      // If the app is in the foreground we send it to the Messaging module
+      if (Utils.isAppInForeground(this.getApplicationContext())) {
+        Intent messagingEvent = new Intent(MESSAGE_EVENT);
+        messagingEvent.putExtra("message", message);
+        // Broadcast it so it is only available to the RN Application
+        LocalBroadcastManager.getInstance(this).sendBroadcast(messagingEvent);
+      } else {
+        // If the app is in the background we send it to the Headless JS Service
+        Intent headlessIntent = new Intent(this.getApplicationContext(), RNFirebaseBackgroundMessagingService.class);
+        headlessIntent.putExtra("message", message);
+        this.getApplicationContext().startService(headlessIntent);
+        HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
+      }
+    }
   }
 }

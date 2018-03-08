@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -20,8 +19,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
 import io.invertase.firebase.Utils;
-
-import java.util.Map;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
@@ -115,43 +112,10 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
         Log.d(TAG, "Received new message");
 
         RemoteMessage message = intent.getParcelableExtra("message");
-        WritableMap messageMap = buildMessageMap(message);
+        WritableMap messageMap = MessagingSerializer.parseRemoteMessage(message);
 
         Utils.sendEvent(getReactApplicationContext(), "messaging_message_received", messageMap);
       }
-    }
-
-    private WritableMap buildMessageMap(RemoteMessage message) {
-      WritableMap messageMap = Arguments.createMap();
-      WritableMap dataMap = Arguments.createMap();
-
-      if (message.getCollapseKey() != null) {
-        messageMap.putString("collapseKey", message.getCollapseKey());
-      }
-
-      if (message.getData() != null) {
-        for (Map.Entry<String, String> e : message.getData().entrySet()) {
-          dataMap.putString(e.getKey(), e.getValue());
-        }
-      }
-      messageMap.putMap("data", dataMap);
-
-      if (message.getFrom() != null) {
-        messageMap.putString("from", message.getFrom());
-      }
-      if (message.getMessageId() != null) {
-        messageMap.putString("messageId", message.getMessageId());
-      }
-      if (message.getMessageType() != null) {
-        messageMap.putString("messageType", message.getMessageType());
-      }
-      messageMap.putDouble("sentTime", message.getSentTime());
-      if (message.getTo() != null) {
-        messageMap.putString("to", message.getTo());
-      }
-      messageMap.putDouble("ttl", message.getTtl());
-
-      return messageMap;
     }
   }
 
