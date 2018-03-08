@@ -30,8 +30,8 @@ target 'ReactNativeFirebaseDemo' do
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage'
   pod 'Firebase/Performance'
-  pod 'Fabric', '~> 1.7.2'
-  pod 'Crashlytics', '~> 3.9.3'
+  pod 'Fabric', '~> 1.7.5'
+  pod 'Crashlytics', '~> 3.10.1'
 
   pod 'RNFirebase', :path => '../../ios/RNFirebase.podspec'
 
