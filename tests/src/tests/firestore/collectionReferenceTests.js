@@ -26,6 +26,15 @@ function collectionReferenceTests({
         }));
     });
 
+    context('parent', () => {
+      it('should return parent document', () => {
+        const collection = firebase.native
+          .firestore()
+          .collection('collection/document/subcollection');
+        collection.parent.path.should.equal('collection/document');
+      });
+    });
+
     context('add()', () => {
       it('should create Document', () =>
         firebase.native
@@ -51,6 +60,15 @@ function collectionReferenceTests({
           should.equal(docRef.path, 'collection-tests/doc');
           resolve();
         }));
+
+      it('should error when supplied an incorrect path', () => {
+        (() => {
+          firebase.native
+            .firestore()
+            .collection('collection')
+            .doc('invalid/doc');
+        }).should.throw('Argument "documentPath" must point to a document.');
+      });
     });
 
     context('get()', () => {
@@ -68,6 +86,47 @@ function collectionReferenceTests({
     });
 
     context('onSnapshot()', () => {
+      it('QuerySnapshot has correct properties', async () => {
+        const snapshot = await firebase.native
+          .firestore()
+          .collection('collection-tests')
+          .get();
+
+        snapshot.docChanges.should.be.an.Array();
+        snapshot.empty.should.equal(false);
+        snapshot.metadata.should.be.an.Object();
+        snapshot.query.should.be.an.Object();
+      });
+
+      it('DocumentChange has correct properties', async () => {
+        const collectionRef = firebase.native
+          .firestore()
+          .collection('collection-tests');
+
+        // Test
+
+        let unsubscribe;
+        let changes;
+        await new Promise(resolve2 => {
+          unsubscribe = collectionRef.onSnapshot(snapshot => {
+            changes = snapshot.docChanges;
+            resolve2();
+          });
+        });
+
+        // Assertions
+
+        changes.should.be.a.Array();
+        changes[0].doc.should.be.an.Object();
+        changes[0].newIndex.should.be.a.Number();
+        changes[0].oldIndex.should.be.a.Number();
+        changes[0].type.should.be.a.String();
+
+        // Tear down
+
+        unsubscribe();
+      });
+
       it('calls callback with the initial data and then when document changes', async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -104,9 +163,7 @@ function collectionReferenceTests({
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('calls callback with the initial data and then when document is added', async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -144,9 +201,7 @@ function collectionReferenceTests({
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it("doesn't call callback when the ref is updated with the same value", async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -181,9 +236,7 @@ function collectionReferenceTests({
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('allows binding multiple callbacks to the same ref', async () => {
         // Setup
         const collectionRef = firebase.native
@@ -234,9 +287,7 @@ function collectionReferenceTests({
         unsubscribeA();
         unsubscribeB();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('listener stops listening when unsubscribed', async () => {
         // Setup
         const collectionRef = firebase.native
@@ -310,9 +361,7 @@ function collectionReferenceTests({
         callbackA.should.be.calledTwice();
         callbackB.should.be.calledThrice();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports options and callback', async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -354,9 +403,7 @@ function collectionReferenceTests({
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports observer', async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -396,9 +443,7 @@ function collectionReferenceTests({
 
         unsubscribe();
       });
-    });
 
-    context('onSnapshot()', () => {
       it('supports options and observer', async () => {
         const collectionRef = firebase.native
           .firestore()
@@ -416,6 +461,7 @@ function collectionReferenceTests({
               snapshot.forEach(doc => callback(doc.data()));
               resolve2();
             },
+            error: () => {},
           };
           unsubscribe = collectionRef.onSnapshot(
             {
@@ -442,6 +488,91 @@ function collectionReferenceTests({
         // Tear down
 
         unsubscribe();
+      });
+
+      it('errors when invalid parameters supplied', async () => {
+        const colRef = firebase.native
+          .firestore()
+          .collection('collection-tests');
+
+        (() => {
+          colRef.onSnapshot(() => {}, 'error');
+        }).should.throw(
+          'Query.onSnapshot failed: Second argument must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot({
+            next: () => {},
+            error: 'error',
+          });
+        }).should.throw(
+          'Query.onSnapshot failed: Observer.error must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot({
+            next: 'error',
+          });
+        }).should.throw(
+          'Query.onSnapshot failed: Observer.next must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot(
+            {
+              includeQueryMetadataChanges: true,
+            },
+            () => {},
+            'error'
+          );
+        }).should.throw(
+          'Query.onSnapshot failed: Third argument must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot(
+            {
+              includeQueryMetadataChanges: true,
+            },
+            {
+              next: () => {},
+              error: 'error',
+            }
+          );
+        }).should.throw(
+          'Query.onSnapshot failed: Observer.error must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot(
+            {
+              includeQueryMetadataChanges: true,
+            },
+            {
+              next: 'error',
+            }
+          );
+        }).should.throw(
+          'Query.onSnapshot failed: Observer.next must be a valid function.'
+        );
+        (() => {
+          colRef.onSnapshot(
+            {
+              includeQueryMetadataChanges: true,
+            },
+            'error'
+          );
+        }).should.throw(
+          'Query.onSnapshot failed: Second argument must be a function or observer.'
+        );
+        (() => {
+          colRef.onSnapshot({
+            error: 'error',
+          });
+        }).should.throw(
+          'Query.onSnapshot failed: First argument must be a function, observer or options.'
+        );
+        (() => {
+          colRef.onSnapshot();
+        }).should.throw(
+          'Query.onSnapshot failed: Called with invalid arguments.'
+        );
       });
     });
 
@@ -1002,6 +1133,56 @@ function collectionReferenceTests({
                 567,
               ]);
             });
+        });
+      });
+
+      context('orderBy()', () => {
+        it('errors if called after startAt', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .startAt({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after startAfter', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .startAfter({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after endBefore', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .endBefore({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
+        });
+
+        it('errors if called after endAt', () => {
+          (() => {
+            firebase.native
+              .firestore()
+              .collection('collections')
+              .endAt({})
+              .orderBy('test');
+          }).should.throw(
+            'Cannot specify an orderBy() constraint after calling startAt(), startAfter(), endBefore() or endAt().'
+          );
         });
       });
 

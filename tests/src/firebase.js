@@ -4,8 +4,12 @@ import firebase from 'firebase';
 import RNfirebase from './../firebase';
 import DatabaseContents from './tests/support/DatabaseContents';
 
-RNfirebase.database.enableLogging(true);
-RNfirebase.firestore.enableLogging(true);
+// RNfirebase.database.enableLogging(true);
+// RNfirebase.firestore.enableLogging(true);
+
+// RNfirebase.utils().logLevel = 'debug';
+// RNfirebase.utils().logLevel = 'info';
+RNfirebase.utils().logLevel = 'warn'; // default
 
 const init = async () => {
   try {
@@ -112,18 +116,22 @@ console.log('RNApps -->', RNfirebase.apps);
 // no need for ready checks
 instances.native
   .auth()
-  .signInAnonymously()
-  .then(user => {
-    console.log('defaultApp user ->', user.toJSON());
+  .signInAnonymouslyAndRetrieveData()
+  .then(credential => {
+    if (credential) {
+      console.log('anotherApp credential ->', credential.user.toJSON());
+    }
   });
 
 // dynamically initialized apps need a ready check
 instances.another.onReady().then(app => {
   app
     .auth()
-    .signInAnonymously()
-    .then(user => {
-      console.log('anotherApp user ->', user.toJSON());
+    .signInAnonymouslyAndRetrieveData()
+    .then(credential => {
+      if (credential) {
+        console.log('anotherApp credential ->', credential.user.toJSON());
+      }
     });
 });
 
