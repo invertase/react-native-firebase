@@ -5,8 +5,8 @@ PODS:
   - BoringSSL/Implementation (10.0):
     - BoringSSL/Interface (= 10.0)
   - BoringSSL/Interface (10.0)
-  - Crashlytics (3.9.3):
-    - Fabric (~> 1.7.2)
+  - Crashlytics (3.10.1):
+    - Fabric (~> 1.7.5)
   - Fabric (1.7.5)
   - Firebase/AdMob (4.10.0):
     - Firebase/Core
@@ -169,8 +169,8 @@ PODS:
   - yoga (0.52.3.React)
 
 DEPENDENCIES:
-  - Crashlytics (~> 3.9.3)
-  - Fabric (~> 1.7.2)
+  - Crashlytics (~> 3.10.1)
+  - Fabric (~> 1.7.5)
   - Firebase/AdMob
   - Firebase/Auth
   - Firebase/Core
@@ -200,7 +200,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BoringSSL: 32764dbaf5f5888cf51fbaa172a010126b41bcd4
-  Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
+  Crashlytics: aee1a064cbbf99b32efa3f056a5f458d846bc8ff
   Fabric: ae7146a5f505ea370a1e44820b4b1dc8890e2890
   Firebase: c98c8b1fbcbdccd82539a36c2b17a9b1bb0ee798
   FirebaseABTesting: d07d0ee833b842d5153549e4c7e2e2cb1c23a3f9
@@ -231,6 +231,6 @@ SPEC CHECKSUMS:
   RNFirebase: 056b672391f3e7b572d8ef221c84603970e0c114
   yoga: f45a46b966e1eb0c7a532cfd4beec5b97332ba48
 
-PODFILE CHECKSUM: 67c98bcb203cb992da590bcab6f690f727653ca5
+PODFILE CHECKSUM: d20e53c395f89ffcfe49e809a8fd7f54beca0700
 
 COCOAPODS: 1.2.1

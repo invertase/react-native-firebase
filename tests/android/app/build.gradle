@@ -160,7 +160,7 @@ dependencies {
     compile "com.google.firebase:firebase-storage:$firebaseVersion"
     compile "com.google.firebase:firebase-firestore:$firebaseVersion"
     compile "com.google.firebase:firebase-invites:$firebaseVersion"
-    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
     compile "com.android.support:appcompat-v7:26.0.2"
