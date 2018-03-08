@@ -18,6 +18,7 @@ static NSString *const DATABASE_CHILD_REMOVED_EVENT = @"child_removed";
 static NSString *const DATABASE_CHILD_MOVED_EVENT = @"child_moved";
 
 // Firestore
+static NSString *const FIRESTORE_TRANSACTION_EVENT = @"firestore_transaction_event";
 static NSString *const FIRESTORE_COLLECTION_SYNC_EVENT = @"firestore_collection_sync_event";
 static NSString *const FIRESTORE_DOCUMENT_SYNC_EVENT = @"firestore_document_sync_event";
 
