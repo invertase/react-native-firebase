@@ -110,23 +110,28 @@ public class BundleJSONConverter {
     SETTERS.put(JSONArray.class, new Setter() {
       public void setOnBundle(Bundle bundle, String key, Object value) throws JSONException {
         JSONArray jsonArray = (JSONArray) value;
-        ArrayList<String> stringArrayList = new ArrayList<String>();
         // Empty list, can't even figure out the type, assume an ArrayList<String>
         if (jsonArray.length() == 0) {
-          bundle.putStringArrayList(key, stringArrayList);
+          bundle.putStringArrayList(key, new ArrayList<String>());
           return;
         }
 
         // Only strings are supported for now
-        for (int i = 0; i < jsonArray.length(); i++) {
-          Object current = jsonArray.get(i);
-          if (current instanceof String) {
-            stringArrayList.add((String) current);
-          } else {
-            throw new IllegalArgumentException("Unexpected type in an array: " + current.getClass());
+        if (jsonArray.get(0) instanceof String) {
+          ArrayList<String> stringArrayList = new ArrayList<String>();
+          for (int i = 0; i < jsonArray.length(); i++) {
+            stringArrayList.add((String) jsonArray.get(i));
           }
+          bundle.putStringArrayList(key, stringArrayList);
+        } else if (jsonArray.get(0) instanceof JSONObject) {
+          ArrayList<Bundle> bundleArrayList = new ArrayList<>();
+          for (int i =0; i < jsonArray.length(); i++) {
+            bundleArrayList.add(convertToBundle((JSONObject) jsonArray.get(i)));
+          }
+          bundle.putSerializable(key, bundleArrayList);
+        } else {
+          throw new IllegalArgumentException("Unexpected type in an array: " + jsonArray.get(0).getClass());
         }
-        bundle.putStringArrayList(key, stringArrayList);
       }
 
       @Override
@@ -152,13 +157,18 @@ public class BundleJSONConverter {
         continue;
       }
 
-      // Special case List<String> as getClass would not work, since List is an interface
+      // Special case List<?> as getClass would not work, since List is an interface
       if (value instanceof List<?>) {
         JSONArray jsonArray = new JSONArray();
-        @SuppressWarnings("unchecked")
-        List<String> listValue = (List<String>) value;
-        for (String stringValue : listValue) {
-          jsonArray.put(stringValue);
+        List<Object> listValue = (List<Object>) value;
+        for (Object objValue : listValue) {
+          if (objValue instanceof String) {
+            jsonArray.put(objValue);
+          } else if (objValue instanceof Bundle) {
+            jsonArray.put(convertToJSON((Bundle) objValue));
+          } else {
+            throw new IllegalArgumentException("Unsupported type: " + objValue.getClass());
+          }
         }
         json.put(key, jsonArray);
         continue;

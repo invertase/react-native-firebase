@@ -7,12 +7,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -197,6 +197,12 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     WritableMap notificationOpenMap = Arguments.createMap();
     notificationOpenMap.putString("action", intent.getAction());
     notificationOpenMap.putMap("notification", notificationMap);
+
+    // Check for remote input results
+    Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+    if (remoteInput != null) {
+      notificationOpenMap.putMap("results", Arguments.makeNativeMap(remoteInput));
+    }
 
     return notificationOpenMap;
   }
