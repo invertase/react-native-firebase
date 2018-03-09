@@ -44,6 +44,7 @@ const init = async () => {
     );
     channel.setDescription('test channel');
     RNfirebase.notifications().android.createChannel(channel);
+    RNfirebase.notifications().cancelAllNotifications();
 
     const remoteInput = new RNfirebase.notifications.Android.RemoteInput(
       'inputText'
@@ -71,9 +72,15 @@ const init = async () => {
     setTimeout(() => {
       RNfirebase.notifications().displayNotification(notification);
       notification.setNotificationId('scheduled');
-      RNfirebase.notifications().scheduleNotification(notification, {
-        fireDate: date.getTime(),
-      });
+      RNfirebase.notifications()
+        .scheduleNotification(notification, {
+          fireDate: date.getTime(),
+        })
+        .then(() => {
+          RNfirebase.notifications()
+            .getScheduledNotifications()
+            .then(notifications => console.log('scheduled: ', notifications));
+        });
     }, 5);
   } catch (error) {
     console.error('messaging init error:', error);
