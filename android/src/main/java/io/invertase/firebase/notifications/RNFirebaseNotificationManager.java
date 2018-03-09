@@ -17,7 +17,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -325,10 +327,8 @@ public class RNFirebaseNotificationManager {
       }
       if (android.containsKey("smallIcon")) {
         Bundle smallIcon = android.getBundle("smallIcon");
-        int smallIconResourceId = getResourceId("mipmap", smallIcon.getString("icon"));
-        if (smallIconResourceId == 0) {
-          smallIconResourceId = getResourceId("drawable", smallIcon.getString("icon"));
-        }
+        int smallIconResourceId = getIcon(smallIcon.getString("icon"));
+
         if (smallIconResourceId != 0) {
           if (smallIcon.containsKey("level")) {
             Double level = smallIcon.getDouble("level");
@@ -386,17 +386,17 @@ public class RNFirebaseNotificationManager {
 
         notification.setStyle(bigPicture);
       } */
-
-      // Create the notification intent
-      Intent intent = new Intent(context, intentClass);
-      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      intent.putExtras(notification);
-      if (android.containsKey("clickAction")) {
-        intent.setAction(android.getString("clickAction"));
+      // Build any actions
+      if (android.containsKey("actions")) {
+        List<Bundle> actions = (List) android.getSerializable("actions");
+        for (Bundle a : actions) {
+          NotificationCompat.Action action = createAction(a, intentClass, notification);
+          nb = nb.addAction(action);
+        }
       }
 
-      PendingIntent contentIntent = PendingIntent.getActivity(context, notificationId.hashCode(), intent,
-        PendingIntent.FLAG_UPDATE_CURRENT);
+      // Create the notification intent
+      PendingIntent contentIntent = createIntent(intentClass, notification, android.getString("clickAction"));
       nb = nb.setContentIntent(contentIntent);
 
       // Build the notification and send it
@@ -413,6 +413,75 @@ public class RNFirebaseNotificationManager {
         promise.reject("notification/display_notification_error", "Could not send notification", e);
       }
     }
+  }
+
+  private NotificationCompat.Action createAction(Bundle action, Class intentClass, Bundle notification) {
+    String actionKey = action.getString("action");
+    PendingIntent actionIntent = createIntent(intentClass, notification, actionKey);
+
+    int icon = getIcon(action.getString("icon"));
+    String title = action.getString("title");
+
+    NotificationCompat.Action.Builder ab = new NotificationCompat.Action.Builder(icon, title, actionIntent);
+
+    if (action.containsKey("allowGeneratedReplies")) {
+      ab = ab.setAllowGeneratedReplies(action.getBoolean("allowGeneratedReplies"));
+    }
+    if (action.containsKey("remoteInputs")) {
+      List<Bundle> remoteInputs = (List) action.getSerializable("remoteInputs");
+      for (Bundle ri : remoteInputs) {
+        RemoteInput remoteInput = createRemoteInput(ri);
+        ab = ab.addRemoteInput(remoteInput);
+      }
+    }
+    // TODO: SemanticAction and ShowsUserInterface only available on v28?
+    // if (action.containsKey("semanticAction")) {
+    //   Double semanticAction = action.getDouble("semanticAction");
+    //   ab = ab.setSemanticAction(semanticAction.intValue());
+    // }
+    // if (action.containsKey("showsUserInterface")) {
+    //   ab = ab.setShowsUserInterface(action.getBoolean("showsUserInterface"));
+    // }
+
+    return ab.build();
+  }
+
+  private PendingIntent createIntent(Class intentClass, Bundle notification, String action) {
+    Intent intent = new Intent(context, intentClass);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.putExtras(notification);
+
+    if (action != null) {
+      intent.setAction(action);
+    }
+
+    String notificationId = notification.getString("notificationId");
+
+    return PendingIntent.getActivity(context, notificationId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+  }
+
+  private RemoteInput createRemoteInput(Bundle remoteInput) {
+    String resultKey = remoteInput.getString("resultKey");
+
+    RemoteInput.Builder rb = new RemoteInput.Builder(resultKey);
+
+    if (remoteInput.containsKey("allowedDataTypes")) {
+      List<Bundle> allowedDataTypes = (List) remoteInput.getSerializable("allowedDataTypes");
+      for (Bundle adt : allowedDataTypes) {
+        rb.setAllowDataType(adt.getString("mimeType"), adt.getBoolean("allow"));
+      }
+    }
+    if (remoteInput.containsKey("allowFreeFormInput")) {
+      rb.setAllowFreeFormInput(remoteInput.getBoolean("allowFreeFormInput"));
+    }
+    if (remoteInput.containsKey("choices")) {
+      rb.setChoices(remoteInput.getStringArray("choices"));
+    }
+    if (remoteInput.containsKey("label")) {
+      rb.setLabel(remoteInput.getString("label"));
+    }
+
+    return rb.build();
   }
 
   private Bitmap getBitmap(String image) {
@@ -434,6 +503,14 @@ public class RNFirebaseNotificationManager {
       Log.e(TAG, "Failed to get bitmap for url: " + imageUrl, e);
       return null;
     }
+  }
+
+  private int getIcon(String icon) {
+    int smallIconResourceId = getResourceId("mipmap", icon);
+    if (smallIconResourceId == 0) {
+      smallIconResourceId = getResourceId("drawable", icon);
+    }
+    return smallIconResourceId;
   }
 
   private Class getMainActivityClass() {
@@ -555,9 +632,9 @@ public class RNFirebaseNotificationManager {
     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(),
       notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-    if (schedule.containsKey("interval")) {
+    if (schedule.containsKey("repeatInterval")) {
       Long interval = null;
-      switch (schedule.getString("interval")) {
+      switch (schedule.getString("repeatInterval")) {
         case "minute":
           interval = 60000L;
           break;

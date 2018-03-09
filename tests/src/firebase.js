@@ -37,22 +37,35 @@ const init = async () => {
       console.log('onNotificationDisplayed: ', notification);
     });
     // RNfirebase.instanceid().delete();
-    const channel = new RNfirebase.notifications.Android.Channel();
-    channel
-      .setChannelId('test')
-      .setName('test')
-      .setImportance(RNfirebase.notifications.Android.Importance.Max)
-      .setDescription('test channel');
+    const channel = new RNfirebase.notifications.Android.Channel(
+      'test',
+      'test',
+      RNfirebase.notifications.Android.Importance.Max
+    );
+    channel.setDescription('test channel');
     RNfirebase.notifications().android.createChannel(channel);
+
+    const remoteInput = new RNfirebase.notifications.Android.RemoteInput(
+      'inputText'
+    );
+    remoteInput.setLabel('Message');
+    const action = new RNfirebase.notifications.Android.Action(
+      'test_action',
+      'ic_launcher',
+      'My Test Action'
+    );
+    action.addRemoteInput(remoteInput);
 
     const notification = new RNfirebase.notifications.Notification();
     notification
       .setTitle('Test title')
       .setBody('Test body')
       .setNotificationId('displayed')
+      .android.addAction(action)
       .android.setChannelId('test')
       .android.setClickAction('action')
       .android.setPriority(RNfirebase.notifications.Android.Priority.Max);
+
     const date = new Date();
     date.setMinutes(date.getMinutes() + 1);
     setTimeout(() => {
