@@ -111,12 +111,12 @@ function firestoreTests({ describe, it, context, fcontext, firebase }) {
         (() => {
           batch.update(ref, 'error');
         }).should.throw(
-          'WriteBatch.update failed: If using two arguments, the second must be an object.'
+          'WriteBatch.update failed: If using a single update argument, it must be an object.'
         );
         (() => {
           batch.update(ref, 'error1', 'error2', 'error3');
         }).should.throw(
-          'WriteBatch.update failed: Must have a document reference, followed by either a single object argument, or equal numbers of key/value pairs.'
+          'WriteBatch.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
         );
         (() => {
           batch.update(ref, 0, 'error');

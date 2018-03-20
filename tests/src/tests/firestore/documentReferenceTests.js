@@ -37,6 +37,17 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         const collection = document.collection('pages');
         collection.id.should.equal('pages');
       });
+
+      it('should error if invalid collection path supplied', () => {
+        (() => {
+          firebase.native
+            .firestore()
+            .doc('documents/doc1')
+            .collection('pages/page1');
+        }).should.throw(
+          'Argument "collectionPath" must point to a collection.'
+        );
+      });
     });
 
     context('delete()', () => {
@@ -586,12 +597,12 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         (() => {
           docRef.update('error');
         }).should.throw(
-          'DocumentReference.update failed: If using a single argument, it must be an object.'
+          'DocumentReference.update failed: If using a single update argument, it must be an object.'
         );
         (() => {
           docRef.update('error1', 'error2', 'error3');
         }).should.throw(
-          'DocumentReference.update failed: Must have either a single object argument, or equal numbers of key/value pairs.'
+          'DocumentReference.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
         );
         (() => {
           docRef.update(0, 'error');
