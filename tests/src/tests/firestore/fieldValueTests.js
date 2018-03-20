@@ -1,7 +1,20 @@
 import should from 'should';
+import { cleanCollection, DOC_2 } from './data';
 
-function fieldValueTests({ describe, it, context, firebase }) {
+function fieldValueTests({ beforeEach, describe, it, context, firebase }) {
   describe('FieldValue', () => {
+    let documentTestsCollection;
+    beforeEach(async () => {
+      documentTestsCollection = firebase.native
+        .firestore()
+        .collection('document-tests');
+
+      // We clean as part of initialisation in case a test errors
+      // We don't clean after the test as it slows tests significantly
+      await cleanCollection(documentTestsCollection);
+      await documentTestsCollection.doc('doc2').set(DOC_2);
+    });
+
     context('delete()', () => {
       it('should delete field', () =>
         firebase.native
