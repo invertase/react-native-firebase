@@ -1,6 +1,7 @@
 import should from 'should';
+import { cleanCollection } from './data';
 
-function firestoreTests({ describe, it, context, fcontext, firebase }) {
+function firestoreTests({ before, describe, it, context, firebase }) {
   describe('firestore()', () => {
     context('collection()', () => {
       it('should create CollectionReference with the right id', () =>
@@ -39,23 +40,22 @@ function firestoreTests({ describe, it, context, fcontext, firebase }) {
     });
 
     context('batch()', () => {
+      let firestoreTestsCollection;
+      before(async () => {
+        firestoreTestsCollection = firebase.native
+          .firestore()
+          .collection('firestore-tests');
+
+        // We clean as part of initialisation in case a test errors
+        // We don't clean after the test as it slows tests significantly
+        await cleanCollection(firestoreTestsCollection);
+      });
+
       it('should create / update / delete as expected', () => {
-        const ayRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('AY');
-        const lRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('LON');
-        const nycRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('NYC');
-        const sfRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('SF');
+        const ayRef = firestoreTestsCollection.doc('AY');
+        const lRef = firestoreTestsCollection.doc('LON');
+        const nycRef = firestoreTestsCollection.doc('NYC');
+        const sfRef = firestoreTestsCollection.doc('SF');
 
         return firebase.native
           .firestore()

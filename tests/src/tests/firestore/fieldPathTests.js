@@ -1,6 +1,7 @@
 import should from 'should';
+import { cleanCollection, COL_DOC_1 } from './data';
 
-function fieldPathTests({ describe, it, context, firebase }) {
+function fieldPathTests({ before, describe, it, context, firebase }) {
   describe('FieldPath', () => {
     context('documentId', () => {
       it('should be a FieldPath', () => {
@@ -10,6 +11,18 @@ function fieldPathTests({ describe, it, context, firebase }) {
     });
 
     context('DocumentSnapshot.get()', () => {
+      let collectionTestsCollection;
+      before(async () => {
+        collectionTestsCollection = firebase.native
+          .firestore()
+          .collection('collection-tests');
+
+        // We clean as part of initialisation in case a test errors
+        // We don't clean after the test as it slows tests significantly
+        await cleanCollection(collectionTestsCollection);
+        await collectionTestsCollection.doc('col1').set(COL_DOC_1);
+      });
+
       it('should get the correct values', () =>
         firebase.native
           .firestore()

@@ -1,9 +1,28 @@
 import sinon from 'sinon';
 import 'should-sinon';
 import should from 'should';
+import { cleanCollection, DOC_1 } from './data';
 
-function documentReferenceTests({ describe, it, context, firebase }) {
+function documentReferenceTests({
+  beforeEach,
+  describe,
+  it,
+  context,
+  firebase,
+}) {
   describe('DocumentReference', () => {
+    let documentTestsCollection;
+    beforeEach(async () => {
+      documentTestsCollection = firebase.native
+        .firestore()
+        .collection('document-tests');
+
+      // We clean as part of initialisation in case a test errors
+      // We don't clean after the test as it slows tests significantly
+      await cleanCollection(documentTestsCollection);
+      await documentTestsCollection.doc('doc1').set(DOC_1);
+    });
+
     context('class', () => {
       it('should return instance methods', () =>
         new Promise(resolve => {
