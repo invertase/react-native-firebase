@@ -4,8 +4,11 @@ import firebase from 'firebase';
 import RNfirebase from './../firebase';
 import DatabaseContents from './tests/support/DatabaseContents';
 
-// RNfirebase.database.enableLogging(true);
-// RNfirebase.firestore.enableLogging(true);
+// Verify logging works
+RNfirebase.database.enableLogging(true);
+RNfirebase.database.enableLogging(false);
+RNfirebase.firestore.enableLogging(true);
+RNfirebase.firestore.enableLogging(false);
 
 // RNfirebase.utils().logLevel = 'debug';
 // RNfirebase.utils().logLevel = 'info';
