@@ -348,14 +348,7 @@ class RNFirebaseDatabaseReference {
    * @return
    */
   private void buildDatabaseQueryAtPathAndModifiers(String path, ReadableArray modifiers) {
-    FirebaseDatabase firebaseDatabase;
-    if(dbURL != null && dbURL.length() > 0) {
-      firebaseDatabase = FirebaseDatabase.getInstance(dbURL);
-    } else {
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      firebaseDatabase= FirebaseDatabase.getInstance(firebaseApp);
-    }
-
+    FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName, dbURL);
     query = firebaseDatabase.getReference(path);
     List<Object> modifiersList = Utils.recursivelyDeconstructReadableArray(modifiers);
 
