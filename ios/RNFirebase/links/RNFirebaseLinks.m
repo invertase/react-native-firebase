@@ -36,16 +36,6 @@ RCT_EXPORT_MODULE();
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    return [self application:app
-                     openURL:url
-           sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
-                  annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
-}
-
-- (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
     FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     if (dynamicLink && dynamicLink.url) {
         NSURL* url = dynamicLink.url;
