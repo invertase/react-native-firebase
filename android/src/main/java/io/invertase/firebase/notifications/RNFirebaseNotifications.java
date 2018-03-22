@@ -284,6 +284,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     if (notification.getTag() != null) {
       androidMap.putString("group", notification.getTag());
     }
+    notificationMap.putMap("android", androidMap);
 
     return notificationMap;
   }
