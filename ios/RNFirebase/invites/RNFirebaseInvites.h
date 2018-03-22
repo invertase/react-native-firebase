@@ -14,10 +14,11 @@
 @property _Nullable RCTPromiseRejectBlock invitationsRejecter;
 @property _Nullable RCTPromiseResolveBlock invitationsResolver;
 
-#if !TARGET_OS_TV
-- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
-#endif
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler;
 
 @end
 
@@ -27,3 +28,4 @@
 #endif
 
 #endif
+
