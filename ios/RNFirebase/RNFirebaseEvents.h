@@ -49,6 +49,6 @@ static NSString *const ADMOB_INTERSTITIAL_EVENT = @"interstitial_event";
 static NSString *const ADMOB_REWARDED_VIDEO_EVENT = @"rewarded_video_event";
 
 // Links
-static NSString *const LINKS_DYNAMIC_LINK_RECEIVED = @"dynamic_link_received";
+static NSString *const LINKS_DYNAMIC_LINK_RECEIVED = @"links_link_received";
 
 #endif

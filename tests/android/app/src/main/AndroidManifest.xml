@@ -42,6 +42,15 @@
           </intent-filter>
         </receiver>
 
+        <!-- App Links -->
+        <intent-filter android:autoVerify="true">
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:host="je786.app.goo.gl" android:scheme="http"/>
+          <data android:host="je786.app.goo.gl" android:scheme="https"/>
+        </intent-filter>
+
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

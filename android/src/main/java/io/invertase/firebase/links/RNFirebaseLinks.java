@@ -16,6 +16,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
+import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
@@ -33,14 +35,6 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   private String mInitialLink = null;
   private boolean mInitialLinkInitialized = false;
 
-  private interface ResolveHandler {
-    void onResolved(String url);
-  }
-
-  private interface ErrorHandler {
-    void onError(Exception e);
-  }
-
   public RNFirebaseLinks(ReactApplicationContext reactContext) {
     super(reactContext);
     getReactApplicationContext().addActivityEventListener(this);
@@ -50,101 +44,6 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
   @Override
   public String getName() {
     return "RNFirebaseLinks";
-  }
-
-
-  private void resolveLink(Intent intent, final ResolveHandler resolveHandler, final ErrorHandler errorHandler) {
-    FirebaseDynamicLinks.getInstance()
-      .getDynamicLink(intent)
-      .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
-        @Override
-        public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-          if (pendingDynamicLinkData != null) {
-            Uri deepLinkUri = pendingDynamicLinkData.getLink();
-            String url = deepLinkUri.toString();
-            resolveHandler.onResolved(url);
-          } else {
-            resolveHandler.onResolved(null);
-          }
-        }
-      })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception e) {
-          errorHandler.onError(e);
-        }
-      });
-  }
-
-  @ReactMethod
-  public void getInitialLink(final Promise promise) {
-    if (mInitialLinkInitialized) {
-      promise.resolve(mInitialLink);
-    } else {
-      Activity activity = getCurrentActivity();
-      if (activity != null) {
-        resolveLink(activity.getIntent(), new ResolveHandler() {
-          @Override
-          public void onResolved(String url) {
-            if (url != null) {
-              mInitialLink = url;
-              Log.d(TAG, "getInitialLink received a new dynamic link from pendingDynamicLinkData");
-            }
-            Log.d(TAG, "initial link is: " + mInitialLink);
-            promise.resolve(mInitialLink);
-            mInitialLinkInitialized = true;
-          }
-        }, new ErrorHandler() {
-          @Override
-          public void onError(Exception e) {
-            Log.e(TAG, "getInitialLink: failed to resolve link", e);
-            promise.reject("links/getDynamicLink", e.getMessage(), e);
-          }
-        });
-      } else {
-        Log.d(TAG, "getInitialLink: activity is null");
-        promise.resolve(null);
-      }
-    }
-  }
-
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    // Not required for this module
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    resolveLink(intent, new ResolveHandler() {
-      @Override
-      public void onResolved(String url) {
-        if (url != null) {
-          Log.d(TAG, "handleLink: sending link: " + url);
-          Utils.sendEvent(getReactApplicationContext(), "dynamic_link_received", url);
-        }
-      }
-    }, new ErrorHandler() {
-      @Override
-      public void onError(Exception e) {
-        Log.e(TAG, "handleLink: failed to resolve link", e);
-      }
-    });
-  }
-
-  @Override
-  public void onHostResume() {
-    // Not required for this module
-  }
-
-  @Override
-  public void onHostPause() {
-    // Not required for this module
-  }
-
-  @Override
-  public void onHostDestroy() {
-    mInitialLink = null;
-    mInitialLinkInitialized = false;
   }
 
   @ReactMethod
@@ -188,6 +87,95 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       Log.e(TAG, "create short dynamic link failure " + ex.getMessage());
       promise.reject("links/failure", ex.getMessage(), ex);
     }
+  }
+
+  @ReactMethod
+  public void getInitialLink(final Promise promise) {
+    if (mInitialLinkInitialized) {
+      promise.resolve(mInitialLink);
+    } else {
+      if (getCurrentActivity() != null) {
+        FirebaseDynamicLinks.getInstance()
+          .getDynamicLink(getCurrentActivity().getIntent())
+          .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+            @Override
+            public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+              if (pendingDynamicLinkData != null
+                && !isInvitation(pendingDynamicLinkData)) {
+
+                mInitialLink = pendingDynamicLinkData.getLink().toString();
+              }
+              Log.d(TAG, "getInitialLink: link is: " + mInitialLink);
+              mInitialLinkInitialized = true;
+              promise.resolve(mInitialLink);
+            }
+          })
+          .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+              Log.e(TAG, "getInitialLink: failed to resolve link", e);
+              promise.reject("link/initial-link-error", e.getMessage(), e);
+            }
+          });
+      } else {
+        Log.d(TAG, "getInitialLink: activity is null");
+        promise.resolve(null);
+      }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // Start ActivityEventListener methods
+  //////////////////////////////////////////////////////////////////////
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // Not required for this module
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    FirebaseDynamicLinks.getInstance()
+      .getDynamicLink(intent)
+      .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
+        @Override
+        public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+          if (pendingDynamicLinkData != null
+            && !isInvitation(pendingDynamicLinkData)) {
+            String link = pendingDynamicLinkData.getLink().toString();
+            Utils.sendEvent(getReactApplicationContext(), "links_link_received", link);
+          }
+        }
+      });
+  }
+  //////////////////////////////////////////////////////////////////////
+  // End ActivityEventListener methods
+  //////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////////////////////////////////
+  // Start LifecycleEventListener methods
+  //////////////////////////////////////////////////////////////////////
+  @Override
+  public void onHostResume() {
+    // Not required for this module
+  }
+
+  @Override
+  public void onHostPause() {
+    // Not required for this module
+  }
+
+  @Override
+  public void onHostDestroy() {
+    mInitialLink = null;
+    mInitialLinkInitialized = false;
+  }
+  //////////////////////////////////////////////////////////////////////
+  // End LifecycleEventListener methods
+  //////////////////////////////////////////////////////////////////////
+
+  // Looks at the internals of the link data to detect whether it's an invitation or not
+  private boolean isInvitation(PendingDynamicLinkData pendingDynamicLinkData) {
+    return pendingDynamicLinkData.zzcbj().getString("com.google.firebase.appinvite.fdl.extension.InvitationId") != null;
   }
 
   private DynamicLink.Builder getDynamicLinkBuilderFromMap(final Map<String, Object> metaData) {

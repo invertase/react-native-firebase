@@ -14,7 +14,8 @@ RNfirebase.firestore.enableLogging(false);
 // RNfirebase.utils().logLevel = 'info';
 RNfirebase.utils().logLevel = 'warn'; // default
 
-const init = async () => {
+// Messaging and Notifications testing
+const notifications = async () => {
   try {
     await RNfirebase.messaging().requestPermission();
     const instanceid = await RNfirebase.instanceid().get();
@@ -82,7 +83,9 @@ const init = async () => {
         .then(() => {
           RNfirebase.notifications()
             .getScheduledNotifications()
-            .then(notifications => console.log('scheduled: ', notifications));
+            .then(scheduledNotifications =>
+              console.log('scheduled: ', scheduledNotifications)
+            );
         });
     }, 5);
   } catch (error) {
@@ -90,7 +93,32 @@ const init = async () => {
   }
 };
 
-init();
+// notifications();
+
+// Invitations testing
+const invitations = async () => {
+  try {
+    const initialLink = await RNfirebase.links().getInitialLink();
+    console.log('initialLink: ', initialLink);
+    const initialInvite = await RNfirebase.invites().getInitialInvitation();
+    console.log('initialInvite: ', initialInvite);
+
+    RNfirebase.links().onLink(link => {
+      console.log('onLink: ', link);
+    });
+    RNfirebase.invites().onInvitation(invite => {
+      console.log('onInvitation: ', invite);
+    });
+    const invitation = new RNfirebase.invites.Invitation('Title', 'Message');
+    invitation.setDeepLink('https://je786.app.goo.gl/testing');
+    const invitationIds = await RNfirebase.invites().sendInvitation(invitation);
+    console.log('InvitationIds: ', invitationIds);
+  } catch (error) {
+    console.error('invitations init error:', error);
+  }
+};
+
+invitations();
 
 const config = {
   apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
