@@ -92,14 +92,13 @@ RCT_EXPORT_METHOD(getInitialInvitation:(RCTPromiseResolveBlock)resolve rejecter:
     if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
         url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
     } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
-        NSDictionary *dictionary =
-        self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+        NSDictionary *dictionary = self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
         if ([dictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
             NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
             url = userActivity.webpageURL;
         }
     }
-    
+
     if (url) {
         [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
             if (error) {
@@ -132,7 +131,7 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     [inviteDialog setInviteDelegate: self];
     [inviteDialog setMessage:invitation[@"message"]];
     [inviteDialog setTitle:invitation[@"title"]];
-    
+
     if (invitation[@"androidClientId"]) {
         FIRInvitesTargetApplication *targetApplication = [[FIRInvitesTargetApplication alloc] init];
         targetApplication.androidClientID = invitation[@"androidClientId"];
@@ -150,11 +149,11 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     if (invitation[@"deepLink"]) {
         [inviteDialog setDeepLink:invitation[@"deepLink"]];
     }
-    
+
     // Save the promise details for later
     _invitationsRejecter = reject;
     _invitationsResolver = resolve;
-    
+
     // Open the invitation dialog
     dispatch_async(dispatch_get_main_queue(), ^{
         [inviteDialog open];
