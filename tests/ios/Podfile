@@ -26,6 +26,7 @@ target 'ReactNativeFirebaseDemo' do
   pod 'Firebase/Database'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Invites'
   pod 'Firebase/Messaging'
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage'

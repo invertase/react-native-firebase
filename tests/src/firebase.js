@@ -142,10 +142,10 @@ const android = {
 
 const ios = {
   clientId:
-    '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
+    '305229645282-t29pn6o2t7se1f7rvrfsll4r0pvd6fb6.apps.googleusercontent.com',
   androidClientId: android.clientId,
-  appId: '1:305229645282:ios:7b45748cb1117d2d',
-  apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
+  appId: '1:305229645282:ios:d9ef660bd02cc2f1',
+  apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
   storageBucket: 'rnfirebase-b9ad4.appspot.com',
   messagingSenderId: '305229645282',
