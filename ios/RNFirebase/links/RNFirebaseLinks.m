@@ -7,7 +7,7 @@
 
 static void sendDynamicLink(NSURL *url, id sender) {
     if (url) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_DYNAMIC_LINK_RECEIVED
+        [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_LINK_RECEIVED
                                                             object:sender
                                                           userInfo:@{@"url": url.absoluteString}];
         NSLog(@"sendDynamicLink Success: %@", url.absoluteString);
@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE();
     // Set up internal listener to send notification over bridge
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(sendDynamicLinkEvent:)
-                                                 name:LINKS_DYNAMIC_LINK_RECEIVED
+                                                 name:LINKS_LINK_RECEIVED
                                                object:nil];
 }
 
@@ -83,11 +83,11 @@ continueUserActivity:(NSUserActivity *)userActivity
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[LINKS_DYNAMIC_LINK_RECEIVED];
+    return @[LINKS_LINK_RECEIVED];
 }
 
 - (void)sendDynamicLinkEvent:(NSNotification *)notification {
-    [self sendEventWithName:LINKS_DYNAMIC_LINK_RECEIVED body:notification.userInfo[@"url"]];
+    [self sendEventWithName:LINKS_LINK_RECEIVED body:notification.userInfo[@"url"]];
 }
 
 -(void)handleInitialLinkFromCustomSchemeURL:(NSURL*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
@@ -126,7 +126,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
     if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
         NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
         [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];
-        
+
     } else {
         NSDictionary *userActivityDictionary =
         self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-        
+
         if (components == nil) {
             reject(@"links/failure", @"Failed to create Dynamic Link", nil);
         } else {
@@ -181,11 +181,11 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
         NSURL *link = [NSURL URLWithString:metadata[@"link"]];
         FIRDynamicLinkComponents *components =
         [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
-        
+
         [self setAndroidParameters:metadata components:components];
         [self setIosParameters:metadata components:components];
         [self setSocialMetaTagParameters:metadata components:components];
-        
+
         return components;
     }
     @catch(NSException * e) {
@@ -200,7 +200,7 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     if (androidParametersDict) {
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
-        
+
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
         }
@@ -283,5 +283,3 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
 @implementation RNFirebaseLinks
 @end
 #endif
-
-
