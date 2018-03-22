@@ -971,7 +971,7 @@ declare module "react-native-firebase" {
          * @param senderId
          * @param payload
          */
-        send(senderId: string, payload: RemoteMessage): any
+        sendMessage(senderId: string, payload: RemoteMessage): any
 
         NOTIFICATION_TYPE: Object
         REMOTE_NOTIFICATION_RESULT: Object

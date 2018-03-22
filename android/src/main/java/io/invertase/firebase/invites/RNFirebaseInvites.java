@@ -168,9 +168,9 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
         String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
         mPromise.resolve(Arguments.fromList(Arrays.asList(ids)));
       } else if (resultCode == Activity.RESULT_CANCELED) {
-        mPromise.reject("invites/invitation-cancelled", " The invitation was cancelled");
+        mPromise.reject("invites/invitation-cancelled", "Invitation cancelled");
       } else {
-        mPromise.reject("invites/invitation-error", " The invitation failed to send");
+        mPromise.reject("invites/invitation-error", "Invitation failed to send");
       }
       // Clear the promise
       mPromise = null;
