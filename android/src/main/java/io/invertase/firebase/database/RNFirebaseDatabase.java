@@ -35,9 +35,9 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private boolean enableLogging = false;
+  private static boolean enableLogging = false;
   private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
-  private HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
+  private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -54,7 +54,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void goOnline(String appName, String dbURL) {
-    getDatabaseForAppAndSetLogging(appName, dbURL).goOnline();
+    getDatabaseForApp(appName, dbURL).goOnline();
   }
 
   /**
@@ -62,7 +62,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void goOffline(String appName, String dbURL) {
-    getDatabaseForAppAndSetLogging(appName, dbURL).goOffline();
+    getDatabaseForApp(appName, dbURL).goOffline();
   }
 
   /**
@@ -71,7 +71,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void setPersistence(String appName, String dbURL, Boolean state) {
-    getDatabaseForAppAndSetLogging(appName, dbURL).setPersistenceEnabled(state);
+    getDatabaseForApp(appName, dbURL).setPersistenceEnabled(state);
   }
 
   /**
@@ -80,7 +80,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void setPersistenceCacheSizeBytes(String appName, String dbURL, int size) {
-    getDatabaseForAppAndSetLogging(appName, dbURL).setPersistenceCacheSizeBytes((long) size);
+    getDatabaseForApp(appName, dbURL).setPersistenceCacheSizeBytes((long) size);
   }
 
 
@@ -506,18 +506,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
       firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
     }
 
-    return firebaseDatabase;
-  }
-
-  /**
-   * Get a database instance for a specific firebase app instance and enable/disable logging
-   *
-   * @param appName
-   * @param dbURL
-   * @return
-   */
-  private FirebaseDatabase getDatabaseForAppAndSetLogging(String appName, String dbURL) {
-    FirebaseDatabase firebaseDatabase = RNFirebaseDatabase.getDatabaseForApp(appName, dbURL);
     Boolean logLevel = loggingLevelSet.get(firebaseDatabase.getApp().getName());
 
     if (enableLogging && (logLevel == null || !logLevel)) {
@@ -555,7 +543,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @return
    */
   private DatabaseReference getReferenceForAppPath(String appName, String dbURL, String path) {
-    return getDatabaseForAppAndSetLogging(appName, dbURL).getReference(path);
+    return getDatabaseForApp(appName, dbURL).getReference(path);
   }
 
   /**
