@@ -3,18 +3,15 @@
 #if __has_include(<FirebaseDynamicLinks/FirebaseDynamicLinks.h>)
 #import <Firebase.h>
 #import "RNFirebaseEvents.h"
-
-
-static void sendDynamicLink(NSURL *url, id sender) {
-    if (url) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:LINKS_LINK_RECEIVED
-                                                            object:sender
-                                                          userInfo:@{@"url": url.absoluteString}];
-        NSLog(@"sendDynamicLink Success: %@", url.absoluteString);
-    }
-}
+#import "RNFirebaseUtil.h"
 
 @implementation RNFirebaseLinks
+
+static RNFirebaseLinks *theRNFirebaseLinks = nil;
+
++ (nonnull instancetype)instance {
+    return theRNFirebaseLinks;
+}
 
 RCT_EXPORT_MODULE();
 
@@ -22,122 +19,62 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self != nil) {
         NSLog(@"Setting up RNFirebaseLinks instance");
-        [self initialiseLinks];
+        // Set static instance for use from AppDelegate
+        theRNFirebaseLinks = self;
     }
     return self;
-}
-
-- (void)initialiseLinks {
-    // Set up internal listener to send notification over bridge
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sendDynamicLinkEvent:)
-                                                 name:LINKS_LINK_RECEIVED
-                                               object:nil];
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (BOOL)application:(UIApplication *)app
+// *******************************************************
+// ** Start AppDelegate methods
+// *******************************************************
+
+- (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    return [self handleLinkFromCustomSchemeURL:url];
-}
-
-+ (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
-    return [self handleLinkFromCustomSchemeURL:url];
-}
-
-+ (BOOL)handleLinkFromCustomSchemeURL:(NSURL *)url {
-    FIRDynamicLink *dynamicLink =
-    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     if (dynamicLink && dynamicLink.url) {
-        NSURL* dynamicLinkUrl = dynamicLink.url;
-        sendDynamicLink(dynamicLinkUrl, self);
+        NSURL* url = dynamicLink.url;
+        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
         return YES;
     }
     return NO;
 }
 
-+ (BOOL)application:(UIApplication *)application
+- (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray *))restorationHandler {
-    BOOL handled = [[FIRDynamicLinks dynamicLinks]
-                    handleUniversalLink:userActivity.webpageURL
-                    completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
-                        if (error != nil){
-                            NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
-                        }
-                        else {
-                            if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-                                NSURL* url = dynamicLink ? dynamicLink.url : userActivity.webpageURL;
-                                sendDynamicLink(url, self);
-                            }
-                        }
-                    }];
-    return handled;
-}
-
-- (NSArray<NSString *> *)supportedEvents {
-    return @[LINKS_LINK_RECEIVED];
-}
-
-- (void)sendDynamicLinkEvent:(NSNotification *)notification {
-    [self sendEventWithName:LINKS_LINK_RECEIVED body:notification.userInfo[@"url"]];
-}
-
--(void)handleInitialLinkFromCustomSchemeURL:(NSURL*)url resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-    FIRDynamicLink *dynamicLink =
-    [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-    NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : (id)kCFNull;
-    NSLog(@"initial link is: %@", urlString);
-    resolve(urlString);
-}
-
--(void)handleInitialLinkFromUniversalLinkURL:(NSDictionary *)userActivityDictionary resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-    NSUserActivity* userActivity = (NSUserActivity*) userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
-    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb])
-    {
-        [[FIRDynamicLinks dynamicLinks]
-         handleUniversalLink:userActivity.webpageURL
-         completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
-             if (error != nil){
-                 NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
-                 reject(@"links/failure", @"Failed to handle universal link", error);
-             }
-             else {
-                 NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
-                 NSLog(@"initial link is: %@", urlString);
-                 resolve(urlString);
-             }
-         }];
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        return [[FIRDynamicLinks dynamicLinks]
+                handleUniversalLink:userActivity.webpageURL
+                completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+                    if (error != nil){
+                        NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                    } else {
+                        NSURL* url = dynamicLink ? dynamicLink.url : userActivity.webpageURL;
+                        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
+                    }
+                }];
     }
-    else {
-        NSLog(@"no initial link");
-        resolve((id)kCFNull);
-    }
+    return NO;
+}
+// *******************************************************
+// ** Finish AppDelegate methods
+// *******************************************************
+
+- (void)sendLink:(NSString *)link {
+    [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:link];
 }
 
-RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
-        NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-        [self handleInitialLinkFromCustomSchemeURL:url resolver:resolve rejecter:reject];
-
-    } else {
-        NSDictionary *userActivityDictionary =
-        self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-        [self handleInitialLinkFromUniversalLinkURL:userActivityDictionary resolver:resolve rejecter:reject];
-    }
-}
-
+// ** Start React Module methods **
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-
+        
         if (components == nil) {
             reject(@"links/failure", @"Failed to create Dynamic Link", nil);
         } else {
@@ -176,16 +113,42 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }
 }
 
+RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    if (self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+        NSURL* url = (NSURL*)self.bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+        FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+        resolve(dynamicLink ? dynamicLink.url.absoluteString : nil);
+    } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]
+               && [self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSDictionary *dictionary = self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+        NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
+        [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                                 completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+                                                     if (error != nil){
+                                                         NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                                                         reject(@"links/failure", @"Failed to handle universal link", error);
+                                                     } else {
+                                                         NSString* urlString = dynamicLink ? dynamicLink.url.absoluteString : userActivity.webpageURL.absoluteString;
+                                                         NSLog(@"initial link is: %@", urlString);
+                                                         resolve(urlString);
+                                                     }
+                                                 }];
+    } else {
+        resolve(nil);
+    }
+}
+
+// ** Start internals **
 - (FIRDynamicLinkComponents *)getDynamicLinkComponentsFromMetadata:(NSDictionary *)metadata {
     @try {
         NSURL *link = [NSURL URLWithString:metadata[@"link"]];
         FIRDynamicLinkComponents *components =
         [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
-
+        
         [self setAndroidParameters:metadata components:components];
         [self setIosParameters:metadata components:components];
         [self setSocialMetaTagParameters:metadata components:components];
-
+        
         return components;
     }
     @catch(NSException * e) {
@@ -200,7 +163,7 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     if (androidParametersDict) {
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
-
+        
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
         }
@@ -272,8 +235,11 @@ RCT_EXPORT_METHOD(createShortDynamicLink: (NSDictionary *) metadata resolver:(RC
     }
 }
 
-+ (BOOL)requiresMainQueueSetup
-{
+- (NSArray<NSString *> *)supportedEvents {
+    return @[LINKS_LINK_RECEIVED];
+}
+
++ (BOOL)requiresMainQueueSetup {
     return YES;
 }
 
