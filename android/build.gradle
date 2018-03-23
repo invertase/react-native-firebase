@@ -7,8 +7,8 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.3'
-    classpath 'io.fabric.tools:gradle:1.24.4'
+    classpath 'com.android.tools.build:gradle:3.0.1'
+    classpath 'io.fabric.tools:gradle:1.25.1'
   }
 }
 
