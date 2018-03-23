@@ -35,9 +35,9 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
-  private boolean enableLogging = false;
+  private static boolean enableLogging = false;
   private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
-  private HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
+  private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
   private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
@@ -53,16 +53,16 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param appName
    */
   @ReactMethod
-  public void goOnline(String appName) {
-    getDatabaseForApp(appName).goOnline();
+  public void goOnline(String appName, String dbURL) {
+    getDatabaseForApp(appName, dbURL).goOnline();
   }
 
   /**
    * @param appName
    */
   @ReactMethod
-  public void goOffline(String appName) {
-    getDatabaseForApp(appName).goOffline();
+  public void goOffline(String appName, String dbURL) {
+    getDatabaseForApp(appName, dbURL).goOffline();
   }
 
   /**
@@ -70,8 +70,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param state
    */
   @ReactMethod
-  public void setPersistence(String appName, Boolean state) {
-    getDatabaseForApp(appName).setPersistenceEnabled(state);
+  public void setPersistence(String appName, String dbURL, Boolean state) {
+    getDatabaseForApp(appName, dbURL).setPersistenceEnabled(state);
   }
 
   /**
@@ -79,8 +79,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param size
    */
   @ReactMethod
-  public void setPersistenceCacheSizeBytes(String appName, int size) {
-    getDatabaseForApp(appName).setPersistenceCacheSizeBytes((long) size);
+  public void setPersistenceCacheSizeBytes(String appName, String dbURL, int size) {
+    getDatabaseForApp(appName, dbURL).setPersistenceCacheSizeBytes((long) size);
   }
 
 
@@ -116,8 +116,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param state
    */
   @ReactMethod
-  public void keepSynced(String appName, String key, String path, ReadableArray modifiers, Boolean state) {
-    getInternalReferenceForApp(appName, key, path, modifiers).getQuery().keepSynced(state);
+  public void keepSynced(String appName, String dbURL, String key, String path, ReadableArray modifiers, Boolean state) {
+    getInternalReferenceForApp(appName, dbURL, key, path, modifiers).getQuery().keepSynced(state);
   }
 
 
@@ -130,7 +130,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param updates
    */
   @ReactMethod
-  public void transactionTryCommit(String appName, int transactionId, ReadableMap updates) {
+  public void transactionTryCommit(String appName, String dbURL, int transactionId, ReadableMap updates) {
     RNFirebaseTransactionHandler handler = transactionHandlers.get(transactionId);
 
     if (handler != null) {
@@ -147,16 +147,16 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param applyLocally
    */
   @ReactMethod
-  public void transactionStart(final String appName, final String path, final int transactionId, final Boolean applyLocally) {
+  public void transactionStart(final String appName, final String dbURL, final String path, final int transactionId, final Boolean applyLocally) {
     AsyncTask.execute(new Runnable() {
       @Override
       public void run() {
-        DatabaseReference reference = getReferenceForAppPath(appName, path);
+        DatabaseReference reference = getReferenceForAppPath(appName, dbURL, path);
 
         reference.runTransaction(new Transaction.Handler() {
           @Override
           public Transaction.Result doTransaction(MutableData mutableData) {
-            final RNFirebaseTransactionHandler transactionHandler = new RNFirebaseTransactionHandler(transactionId, appName);
+            final RNFirebaseTransactionHandler transactionHandler = new RNFirebaseTransactionHandler(transactionId, appName, dbURL);
             transactionHandlers.put(transactionId, transactionHandler);
             final WritableMap updatesMap = transactionHandler.createUpdateMap(mutableData);
 
@@ -212,9 +212,9 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void onDisconnectSet(String appName, String path, ReadableMap props, final Promise promise) {
+  public void onDisconnectSet(String appName, String dbURL, String path, ReadableMap props, final Promise promise) {
     String type = props.getString("type");
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
 
     OnDisconnect onDisconnect = ref.onDisconnect();
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
@@ -257,8 +257,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void onDisconnectUpdate(String appName, String path, ReadableMap props, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void onDisconnectUpdate(String appName, String dbURL, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     OnDisconnect ondDisconnect = ref.onDisconnect();
 
     Map<String, Object> map = Utils.recursivelyDeconstructReadableMap(props);
@@ -279,8 +279,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void onDisconnectRemove(String appName, String path, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void onDisconnectRemove(String appName, String dbURL, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     OnDisconnect onDisconnect = ref.onDisconnect();
 
     onDisconnect.removeValue(new DatabaseReference.CompletionListener() {
@@ -299,8 +299,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void onDisconnectCancel(String appName, String path, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void onDisconnectCancel(String appName, String dbURL, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     OnDisconnect onDisconnect = ref.onDisconnect();
 
     onDisconnect.cancel(new DatabaseReference.CompletionListener() {
@@ -318,8 +318,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void set(String appName, String path, ReadableMap props, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void set(String appName, String dbURL, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     Object value = Utils.recursivelyDeconstructReadableMap(props).get("value");
 
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
@@ -339,8 +339,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void setPriority(String appName, String path, ReadableMap priority, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void setPriority(String appName, String dbURL, String path, ReadableMap priority, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     Object priorityValue = Utils.recursivelyDeconstructReadableMap(priority).get("value");
 
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
@@ -361,8 +361,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void setWithPriority(String appName, String path, ReadableMap data, ReadableMap priority, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void setWithPriority(String appName, String dbURL, String path, ReadableMap data, ReadableMap priority, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     Object dataValue = Utils.recursivelyDeconstructReadableMap(data).get("value");
     Object priorityValue = Utils.recursivelyDeconstructReadableMap(priority).get("value");
 
@@ -383,8 +383,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void update(String appName, String path, ReadableMap props, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void update(String appName, String dbURL, String path, ReadableMap props, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
     Map<String, Object> updates = Utils.recursivelyDeconstructReadableMap(props);
 
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
@@ -403,8 +403,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void remove(String appName, String path, final Promise promise) {
-    DatabaseReference ref = getReferenceForAppPath(appName, path);
+  public void remove(String appName, String dbURL, String path, final Promise promise) {
+    DatabaseReference ref = getReferenceForAppPath(appName, dbURL, path);
 
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
@@ -428,8 +428,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void once(String appName, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
-    getInternalReferenceForApp(appName, key, path, modifiers).once(eventType, promise);
+  public void once(String appName, String dbURL, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
+    getInternalReferenceForApp(appName, dbURL, key, path, modifiers).once(eventType, promise);
   }
 
   /**
@@ -439,8 +439,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param props   ReadableMap
    */
   @ReactMethod
-  public void on(String appName, ReadableMap props) {
-    getCachedInternalReferenceForApp(appName, props)
+  public void on(String appName, String dbURL, ReadableMap props) {
+    getCachedInternalReferenceForApp(appName, dbURL, props)
       .on(
         props.getString("eventType"),
         props.getMap("registration")
@@ -494,11 +494,18 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * Get a database instance for a specific firebase app instance
    *
    * @param appName
+   * @param dbURL
    * @return
    */
-  private FirebaseDatabase getDatabaseForApp(String appName) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
+  public static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
+    FirebaseDatabase firebaseDatabase;
+    if(dbURL != null && dbURL.length() > 0) {
+      firebaseDatabase = FirebaseDatabase.getInstance(dbURL);
+    } else {
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
+    }
+
     Boolean logLevel = loggingLevelSet.get(firebaseDatabase.getApp().getName());
 
     if (enableLogging && (logLevel == null || !logLevel)) {
@@ -535,8 +542,8 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param path
    * @return
    */
-  private DatabaseReference getReferenceForAppPath(String appName, String path) {
-    return getDatabaseForApp(appName).getReference(path);
+  private DatabaseReference getReferenceForAppPath(String appName, String dbURL, String path) {
+    return getDatabaseForApp(appName, dbURL).getReference(path);
   }
 
   /**
@@ -548,10 +555,11 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param modifiers
    * @return
    */
-  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, String key, String path, ReadableArray modifiers) {
+  private RNFirebaseDatabaseReference getInternalReferenceForApp(String appName, String dbURL, String key, String path, ReadableArray modifiers) {
     return new RNFirebaseDatabaseReference(
       getReactApplicationContext(),
       appName,
+      dbURL,
       key,
       path,
       modifiers
@@ -565,7 +573,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param props
    * @return
    */
-  private RNFirebaseDatabaseReference getCachedInternalReferenceForApp(String appName, ReadableMap props) {
+  private RNFirebaseDatabaseReference getCachedInternalReferenceForApp(String appName, String dbURL, ReadableMap props) {
     String key = props.getString("key");
     String path = props.getString("path");
     ReadableArray modifiers = props.getArray("modifiers");
@@ -573,7 +581,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     RNFirebaseDatabaseReference existingRef = references.get(key);
 
     if (existingRef == null) {
-      existingRef = getInternalReferenceForApp(appName, key, path, modifiers);
+      existingRef = getInternalReferenceForApp(appName, dbURL, key, path, modifiers);
       references.put(key, existingRef);
     }
 
