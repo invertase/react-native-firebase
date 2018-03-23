@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(getInitialInvitation:(RCTPromiseResolveBlock)resolve rejecter:
             if (error) {
                 NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
                 reject(@"invites/initial-invitation-error", @"Failed to handle invitation", error);
-            } else if (receivedInvite) {
+            } else if (receivedInvite && receivedInvite.inviteId) {
                 resolve(@{
                           @"deepLink": receivedInvite.deepLink,
                           @"invitationId": receivedInvite.inviteId,
@@ -183,3 +183,4 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
 @implementation RNFirebaseInvites
 @end
 #endif
+
