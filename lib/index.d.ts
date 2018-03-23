@@ -30,8 +30,11 @@ declare module "react-native-firebase" {
       crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     };
     firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore, RNFirebase.firestore.FirestoreStatics>;
+    iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>
+    // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
     links: FirebaseModuleAndStatics<RNFirebase.links.Links>;
     messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging>;
+    notifications: FirebaseModuleAndStatics<RNFirebase.notifications.Notifications>;
     // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
     storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
     // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
@@ -66,8 +69,11 @@ declare module "react-native-firebase" {
       crashlytics(): RNFirebase.crashlytics.Crashlytics,
     };
     firestore(): RNFirebase.firestore.Firestore;
+    iid(): RNFirebase.iid.InstanceId;
+    // invites(): RNFirebase.invites.Invites;
     links(): RNFirebase.links.Links;
     messaging(): RNFirebase.messaging.Messaging;
+    notifications(): RNFirebase.notifications.Notifications;
     // perf(): RNFirebase.perf.Performance;
     storage(): RNFirebase.storage.Storage;
     // utils(): RNFirebase.utils.Utils;
@@ -876,32 +882,16 @@ declare module "react-native-firebase" {
 
       interface Messaging {
         /**
-         * Subscribes the device to a topic.
-         */
-        subscribeToTopic(topic: string): void
-
-        /**
-         * Unsubscribes the device from a topic.
-         */
-        unsubscribeFromTopic(topic: string): void
-
-        /**
-         * When the application has been opened from a notification
-         * getInitialNotification is called and the notification payload is returned.
-         * Use onMessage for notifications when the app is running.
-         */
-        getInitialNotification(): Promise<any>
-
-        /**
          * Returns the devices FCM token.
-         * This token can be used in the Firebase console to send messages to directly.
          */
-        getToken(forceRefresh?: Boolean): Promise<string>
+        getToken(): Promise<string>
 
         /**
-         * Reset Instance ID and revokes all tokens.
+         * On a new message,
+         * the payload object is passed to the listener callback.
+         * This method is only triggered when the app is running.
          */
-        deleteInstanceId(): Promise<any>
+        onMessage(listener: (message: any) => any): () => any
 
         /**
          * On the event a devices FCM token is refreshed by Google,
@@ -910,84 +900,111 @@ declare module "react-native-firebase" {
         onTokenRefresh(listener: (token: string) => any): () => any
 
         /**
-         * On a new message,
-         * the payload object is passed to the listener callback.
-         * This method is only triggered when the app is running.
-         * Use getInitialNotification for notifications which cause the app to open.
-         */
-        onMessage(listener: (message: any) => any): () => any
-
-        /**
-         * Create a local notification from the device itself.
-         */
-        createLocalNotification(notification: any): any
-
-        /**
-         * Schedule a local notification to be shown on the device.
-         */
-        scheduleLocalNotification(notification: any): any
-
-        /**
-         * Returns an array of all currently scheduled notifications.
-         * ```
-         * firebase.messaging().getScheduledLocalNotifications()
-         *   .then((notifications) => {
-         *       console.log('Current scheduled notifications: ', notifications);
-         *   });
-         * ```
-         */
-        getScheduledLocalNotifications(): Promise<any[]>
-
-        /**
-         * Cancels a location notification by ID,
-         * or all notifications by *.
-         */
-        cancelLocalNotification(id: string): void
-
-        /**
-         * Removes all delivered notifications from device by ID,
-         * or all notifications by *.
-         */
-        removeDeliveredNotification(id: string): void
-
-        /**
-         * IOS
          * Requests app notification permissions in an Alert dialog.
          */
-        requestPermissions(): Promise<{ granted: boolean }>;
+        requestPermission(): Promise<boolean>;
 
         /**
-         * Sets the badge number on the iOS app icon.
+         * Checks if the app has notification permissions.
          */
-        setBadgeNumber(value: number): void
+        hasPermission(): Promise<boolean>;
+
+        /**
+         * Send an upstream message
+         */
+        sendMessage(remoteMessage: RemoteMessage): Promise<void>
+
+        /**
+         * Subscribes the device to a topic.
+         */
+        subscribeToTopic(topic: string): void
+
+        /**
+         * Unsubscribes the device from a topic.
+         */
+        unsubscribeFromTopic(topic: string): void
+      }
+
+      interface RemoteMessage {
+        collapseKey?: string
+        data: Object
+        from?: string
+        messageId?: string
+        messageType: string
+        sentTime?: number
+        to?: string
+        ttl?: number
+
+        setCollapseKey(collapseKey: string): RemoteMessage
+        setData(data: Object): RemoteMessage
+        setMessageId(messageId: string): RemoteMessage
+        setMessageType(messageType: string): RemoteMessage
+        setTo(to: string): RemoteMessage
+        setTtl(ttl: number): RemoteMessage
+      }
+    }
+
+    namespace iid {
+      interface InstanceId {
+        delete(): Promise<void>
+        get(): Promise<string>
+      }
+    }
+
+    namespace notifications {
+      interface AndroidNotifications {
+        createChannel(channel: any): Promise<void>
+        createChannelGroup(channelGroup: any): Promise<void>
+        createChannelGroups(channelGroups: any[]): Promise<void>
+        createChannels(channels: any[]): Promise<void>
+      }
+
+      interface Notifications {
+        android: AndroidNotifications
+
+        /**
+         * Cancels all notifications
+         */
+        cancelAllNotifications(): void
+
+        /**
+         * Cancels a notification by ID
+         */
+        cancelNotification(notificationId: string): void
+
+        displayNotification(notification: any): Promise<void>
 
         /**
          * Returns the current badge number on the app icon.
          */
-        getBadgeNumber(): Promise<number>
+        getBadge(): Promise<number>
+
+        getInitialNotification(): Promise<any>
+
+        getScheduledNotifications(): Promise<any[]>
+
+        onNotification(listener: (notification: any) => any): () => any
+
+        onNotificationDisplayed(listener: (notification: any) => any): () => any
+
+        onNotificationOpened(listener: (notificationOpen: any) => any): () => any
+
+        removeAllDeliveredNotifications(): void
+
+        removeDeliveredNotification(notificationId: string): void
 
         /**
-         * Send an upstream message
-         * @param senderId
-         * @param payload
+         * Schedule a local notification to be shown on the device.
          */
-        sendMessage(senderId: string, payload: RemoteMessage): any
+        scheduleNotification(notification: any, schedule: any): any
 
-        NOTIFICATION_TYPE: Object
-        REMOTE_NOTIFICATION_RESULT: Object
-        WILL_PRESENT_RESULT: Object
-        EVENT_TYPE: Object
-      }
-
-      interface RemoteMessage {
-        id: string,
-        type: string,
-        ttl?: number,
-        sender: string,
-        collapseKey?: string,
-        data: Object,
+        /**
+         * Sets the badge number on the iOS app icon.
+         */
+        setBadge(badge: number): void
       }
     }
+
     namespace crash {
 
       interface Crash {
@@ -1058,9 +1075,9 @@ declare module "react-native-firebase" {
     namespace links {
       interface Links {
         /** Creates a standard dynamic link. */
-        createDynamicLink(parameters: LinkConfiguration): Promise<string>;
+        createDynamicLink(dynamicLink: DynamicLink): Promise<string>;
         /** Creates a short dynamic link. */
-        createShortDynamicLink(parameters: LinkConfiguration): Promise<string>;
+        createShortDynamicLink(type: 'SHORT' | 'UNGUESSABLE'): Promise<string>;
         /**
          * Returns the URL that the app has been launched from. If the app was
          * not launched from a URL the return value will be null.
@@ -1077,36 +1094,53 @@ declare module "react-native-firebase" {
         onLink(listener: (url: string) => void): () => void;
       }
 
-      /**
-       * Configuration when creating a Dynamic Link (standard or short). For
-       * more information about each parameter, see the official Firebase docs:
-       * https://firebase.google.com/docs/reference/dynamic-links/link-shortener
-       */
-      interface LinkConfiguration {
-        link: string,
-        dynamicLinkDomain: string,
-        androidInfo?: {
-          androidLink?: string,
-          androidPackageName: string,
-          androidFallbackLink?: string,
-          androidMinPackageVersionCode?: string,
-        },
-        iosInfo?: {
-          iosBundleId: string,
-          iosAppStoreId?: string,
-          iosFallbackLink?: string,
-          iosCustomScheme?: string,
-          iosIpadBundleId?: string,
-          iosIpadFallbackLink?: string,
-        },
-        socialMetaTagInfo?: {
-          socialTitle: string,
-          socialImageLink: string,
-          socialDescription: string,
-        },
-        suffix?: {
-          option: 'SHORT' | 'UNGUESSABLE',
-        },
+      interface DynamicLink {
+        analytics: AnalyticsParameters
+        android: AndroidParameters
+        ios: IOSParameters
+        itunes: ITunesParameters
+        navigation: NavigationParameters
+        social: SocialParameters
+      }
+
+      interface AnalyticsParameters {
+        setCampaign(campaign: string): DynamicLink
+        setContent(content: string): DynamicLink
+        setMedium(medium: string): DynamicLink
+        setSource(source: string): DynamicLink
+        setTerm(term: string): DynamicLink
+      }
+
+      interface AndroidParameters {
+        setFallbackUrl(fallbackUrl: string): DynamicLink
+        setMinimumVersion(minimumVersion: number): DynamicLink
+        setPackageName(packageName: string): DynamicLink
+      }
+
+      interface IOSParameters {
+        setAppStoreId(appStoreId: string): DynamicLink
+        setBundleId(bundleId: string): DynamicLink
+        setCustomScheme(customScheme: string): DynamicLink
+        setFallbackUrl(fallbackUrl: string): DynamicLink
+        setIPadBundleId(iPadBundleId: string): DynamicLink
+        setIPadFallbackUrl(iPadFallbackUrl: string): DynamicLink
+        setMinimumVersion(minimumVersion: string): DynamicLink
+      }
+
+      interface ITunesParameters {
+        setAffiliateToken(affiliateToken: string): DynamicLink
+        setCampaignToken(campaignToken: string): DynamicLink
+        setProviderToken(providerToken: string): DynamicLink
+      }
+
+      interface NavigationParameters {
+        setForcedRedirectEnabled(forcedRedirectEnabled: boolean): DynamicLink
+      }
+
+      interface SocialParameters {
+        setDescriptionText(descriptionText: string): DynamicLink
+        setImageUrl(imageUrl: string): DynamicLink
+        setTitle(title: string): DynamicLink
       }
     }
 

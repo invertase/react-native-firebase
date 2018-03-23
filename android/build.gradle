@@ -1,5 +1,5 @@
 buildscript {
-  ext.firebaseVersion = '11.8.0'
+  ext.firebaseVersion = '12.0.0'
   repositories {
     jcenter()
     mavenLocal()

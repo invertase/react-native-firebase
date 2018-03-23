@@ -27,8 +27,8 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.1'
 
     defaultConfig {
         applicationId "com.reactnativefirebasedemo"
@@ -70,7 +70,7 @@ android {
     }
 }
 
-project.ext.firebaseVersion = '11.8.0'
+project.ext.firebaseVersion = '12.0.0'
 
 dependencies {
     compile project(':react-native-vector-icons')
@@ -93,7 +93,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
-    compile "com.android.support:appcompat-v7:26.0.2"
+    compile "com.android.support:appcompat-v7:27.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
 }
 

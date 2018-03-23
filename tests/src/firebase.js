@@ -118,7 +118,7 @@ const invitations = async () => {
   }
 };
 
-invitations();
+// invitations();
 
 const config = {
   apiKey: 'AIzaSyDnVqNhxU0Biit9nCo4RorAh5ulQQwko3E',
