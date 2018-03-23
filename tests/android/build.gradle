@@ -29,8 +29,8 @@ allprojects {
 
 subprojects {
     ext {
-        compileSdk = 26
-        buildTools = "26.0.2"
+        compileSdk = 27
+        buildTools = "27.0.1"
         minSdk = 16
         targetSdk = 26
     }
