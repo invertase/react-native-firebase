@@ -46,7 +46,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 |  _-- Multiple Apps_        |   ❌   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |
 | **Cloud Firestore**        |   ❌   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   | **?**  |
 |  _-- Transactions          |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |
-| **Cloud Messaging (FCM)**  |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   | **?**  |
+| **Cloud Messaging (FCM)**  |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌   |
 | **Crashlytics**            |   ❌   |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |   ❌   |
 | **Crash Reporting**        |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌   |
 | **Dynamic Links**          |   ❌   |   ❌   |   ✅   |   ✅   |   ✅   |   ✅   |   ❌   |
