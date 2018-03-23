@@ -21,7 +21,6 @@
 
 * Build the demo project
 
-
 ```sh
 detox build --configuration ios.sim.release
 ```
@@ -29,7 +28,6 @@ detox build --configuration ios.sim.release
 ### Step 3: Test
 
 * Run tests on the demo project
-
 
 ```sh
 detox test --configuration ios.sim.release
@@ -43,7 +41,6 @@ This action will open a new simulator and run the tests on it.
 
 * Build the demo project
 
-
 ```sh
 detox build --configuration ios.sim.debug
 ```
@@ -52,13 +49,11 @@ detox build --configuration ios.sim.debug
 
 * start react-native packager
 
-
 ```sh
 npm run start
 ```
 
 * Run tests on the demo project
-
 
 ```sh
 detox test --configuration ios.sim.debug
