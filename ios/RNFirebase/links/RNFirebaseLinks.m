@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE();
     FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     if (dynamicLink && dynamicLink.url) {
         NSURL* url = dynamicLink.url;
-        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url];
+        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
         return YES;
     }
     return NO;
@@ -56,7 +56,7 @@ continueUserActivity:(NSUserActivity *)userActivity
                         NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
                     } else {
                         NSURL* url = dynamicLink ? dynamicLink.url : userActivity.webpageURL;
-                        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url];
+                        [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
                     }
                 }];
     }
@@ -66,11 +66,15 @@ continueUserActivity:(NSUserActivity *)userActivity
 // ** Finish AppDelegate methods
 // *******************************************************
 
+- (void)sendLink:(NSString *)link {
+    [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:link];
+}
+
 // ** Start React Module methods **
 RCT_EXPORT_METHOD(createDynamicLink: (NSDictionary *) metadata resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     @try {
         FIRDynamicLinkComponents *components = [self getDynamicLinkComponentsFromMetadata:metadata];
-
+        
         if (components == nil) {
             reject(@"links/failure", @"Failed to create Dynamic Link", nil);
         } else {
@@ -140,11 +144,11 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
         NSURL *link = [NSURL URLWithString:metadata[@"link"]];
         FIRDynamicLinkComponents *components =
         [FIRDynamicLinkComponents componentsWithLink:link domain:metadata[@"dynamicLinkDomain"]];
-
+        
         [self setAndroidParameters:metadata components:components];
         [self setIosParameters:metadata components:components];
         [self setSocialMetaTagParameters:metadata components:components];
-
+        
         return components;
     }
     @catch(NSException * e) {
@@ -159,7 +163,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
     if (androidParametersDict) {
         FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters
                                                           parametersWithPackageName: androidParametersDict[@"androidPackageName"]];
-
+        
         if (androidParametersDict[@"androidFallbackLink"]) {
             androidParams.fallbackURL = [NSURL URLWithString:androidParametersDict[@"androidFallbackLink"]];
         }

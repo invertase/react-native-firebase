@@ -13,6 +13,7 @@
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler;
+- (void)sendLink:(NSString *)link;
 
 @end
 
@@ -22,3 +23,4 @@
 #endif
 
 #endif
+

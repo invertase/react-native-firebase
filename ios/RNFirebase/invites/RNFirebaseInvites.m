@@ -2,6 +2,7 @@
 
 #if __has_include(<FirebaseInvites/FirebaseInvites.h>)
 #import "RNFirebaseEvents.h"
+#import "RNFirebaseLinks.h"
 #import "RNFirebaseUtil.h"
 #import <FirebaseInvites/FirebaseInvites.h>
 
@@ -88,7 +89,7 @@ RCT_EXPORT_METHOD(getInitialInvitation:(RCTPromiseResolveBlock)resolve rejecter:
             url = userActivity.webpageURL;
         }
     }
-
+    
     if (url) {
         [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
             if (error) {
@@ -121,7 +122,7 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     [inviteDialog setInviteDelegate: self];
     [inviteDialog setMessage:invitation[@"message"]];
     [inviteDialog setTitle:invitation[@"title"]];
-
+    
     if (invitation[@"androidClientId"]) {
         FIRInvitesTargetApplication *targetApplication = [[FIRInvitesTargetApplication alloc] init];
         targetApplication.androidClientID = invitation[@"androidClientId"];
@@ -139,11 +140,11 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     if (invitation[@"deepLink"]) {
         [inviteDialog setDeepLink:invitation[@"deepLink"]];
     }
-
+    
     // Save the promise details for later
     _invitationsRejecter = reject;
     _invitationsResolver = resolve;
-
+    
     // Open the invitation dialog
     dispatch_async(dispatch_get_main_queue(), ^{
         [inviteDialog open];
@@ -155,11 +156,13 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     return [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
         if (error) {
             NSLog(@"Failed to handle invitation: %@", [error localizedDescription]);
-        } else if (receivedInvite) {
-            [RNFirebaseUtil sendJSEvent:self name:LINKS_LINK_RECEIVED body:@{
-                                                                             @"deepLink": receivedInvite.deepLink,
-                                                                             @"invitationId": receivedInvite.inviteId,
-                                                                             }];
+        } else if (receivedInvite && receivedInvite.inviteId) {
+            [RNFirebaseUtil sendJSEvent:self name:INVITES_INVITATION_RECEIVED body:@{
+                                                                                     @"deepLink": receivedInvite.deepLink,
+                                                                                     @"invitationId": receivedInvite.inviteId,
+                                                                                     }];
+        } else {
+            [[RNFirebaseLinks instance] sendLink:receivedInvite.deepLink];
         }
     }];
 }
