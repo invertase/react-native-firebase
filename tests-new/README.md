@@ -1,18 +1,17 @@
-> detox
-
-# React Native Demo Project
+# React Native Firebase - Testing Project
 
 ## Requirements
 
 * Make sure you have Xcode installed (tested with Xcode 8.1-8.2).
-* make sure you have node installed (`brew install node`, node 7.6.0 and up is required for native async-await support, otherwise you'll have to babel the tests).
+* make sure you have node installed (`brew install node`, node 7.6.0 and up is required.
 * Make sure you have react-native dependencies installed:
   * react-native-cli is installed (`npm install -g react-native-cli`)
   * watchman is installed (`brew install watchman`)
+  * [appleSimUtils](https://github.com/wix/AppleSimulatorUtils)
+  * detox-cli `npm install -g detox-cli`
 
 ### Step 1: Npm install
 
-* Make sure you're in folder `examples/demo-react-native`.
 * Run `npm install`.
 
 ## To test Release build of your app

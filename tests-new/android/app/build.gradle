@@ -1,8 +1,17 @@
 apply plugin: "com.android.application"
+apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
+project.ext.react = [
+    entryFile: "index.js"
+]
+
 apply from: "../../node_modules/react-native/react.gradle"
+
+def enableSeparateBuildPerCPUArchitecture = false
+def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 27
@@ -21,11 +30,12 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         missingDimensionStrategy "minReactNative", "minReactNative46"
+        multiDexEnabled true
     }
     splits {
         abi {
             reset()
-            enable false
+            enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
             include "armeabi-v7a", "x86"
         }
@@ -68,9 +78,13 @@ android {
     }
 }
 
+project.ext.firebaseVersion = '11.8.0'
+
 dependencies {
     implementation "com.android.support:appcompat-v7:27.0.2"
     implementation "com.facebook.react:react-native:+"  // From node_modules
+
+    compile project(':react-native-firebase')
 
     androidTestImplementation(project(path: ":detox"))
     androidTestImplementation 'junit:junit:4.12'
@@ -84,3 +98,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+apply plugin: 'com.google.gms.google-services'

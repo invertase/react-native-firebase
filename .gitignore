@@ -74,6 +74,10 @@ tests/build
 tests/android/app/build
 tests/ios/Pods
 tests/firebase
+tests-new/build
+tests-new/android/app/build
+tests-new/ios/Pods
+tests-new/firebase
 .gradle
 local.properties
 *.iml
