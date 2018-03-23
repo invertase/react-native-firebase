@@ -21,6 +21,7 @@ import io.invertase.firebase.Utils;
 public class RNFirebaseTransactionHandler {
   private int transactionId;
   private String appName;
+  private String dbURL;
   private final ReentrantLock lock;
   private final Condition condition;
   private Map<String, Object> data;
@@ -31,8 +32,9 @@ public class RNFirebaseTransactionHandler {
   boolean abort = false;
   boolean timeout = false;
 
-  RNFirebaseTransactionHandler(int id, String app) {
+  RNFirebaseTransactionHandler(int id, String app, String url) {
     appName = app;
+    dbURL = url;
     transactionId = id;
     lock = new ReentrantLock();
     condition = lock.newCondition();
@@ -107,6 +109,7 @@ public class RNFirebaseTransactionHandler {
 
     // all events get distributed js side based on app name
     updatesMap.putString("appName", appName);
+    updatesMap.putString("dbURL", dbURL);
 
     if (!updatesData.hasChildren()) {
       Utils.mapPutValue("value", updatesData.getValue(), updatesMap);
@@ -129,6 +132,7 @@ public class RNFirebaseTransactionHandler {
 
     resultMap.putInt("id", transactionId);
     resultMap.putString("appName", appName);
+    resultMap.putString("dbURL", dbURL);
 
     resultMap.putBoolean("timeout", timeout);
     resultMap.putBoolean("committed", committed);

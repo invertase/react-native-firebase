@@ -6,6 +6,7 @@
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter
                 appDisplayName:(NSString *)appDisplayName
+                         dbURL:(NSString *)dbURL
                            key:(NSString *)key
                        refPath:(NSString *)refPath
                      modifiers:(NSArray *)modifiers {
@@ -13,6 +14,7 @@
     if (self) {
         _emitter = emitter;
         _appDisplayName = appDisplayName;
+        _dbURL = dbURL;
         _key = key;
         _path = refPath;
         _listeners = [[NSMutableDictionary alloc] init];
@@ -123,7 +125,7 @@
 
 - (FIRDatabaseQuery *)buildQueryAtPathWithModifiers:(NSString *)path
                                           modifiers:(NSArray *)modifiers {
-    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_appDisplayName];
+    FIRDatabase *firebaseDatabase = [RNFirebaseDatabase getDatabaseForApp:_appDisplayName URL:_dbURL];
     FIRDatabaseQuery *query = [[firebaseDatabase reference] child:path];
 
     for (NSDictionary *modifier in modifiers) {
