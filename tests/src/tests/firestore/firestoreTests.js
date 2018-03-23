@@ -1,6 +1,7 @@
 import should from 'should';
+import { cleanCollection } from './data';
 
-function firestoreTests({ describe, it, context, fcontext, firebase }) {
+function firestoreTests({ before, describe, it, context, firebase }) {
   describe('firestore()', () => {
     context('collection()', () => {
       it('should create CollectionReference with the right id', () =>
@@ -39,23 +40,22 @@ function firestoreTests({ describe, it, context, fcontext, firebase }) {
     });
 
     context('batch()', () => {
+      let firestoreTestsCollection;
+      before(async () => {
+        firestoreTestsCollection = firebase.native
+          .firestore()
+          .collection('firestore-tests');
+
+        // We clean as part of initialisation in case a test errors
+        // We don't clean after the test as it slows tests significantly
+        await cleanCollection(firestoreTestsCollection);
+      });
+
       it('should create / update / delete as expected', () => {
-        const ayRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('AY');
-        const lRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('LON');
-        const nycRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('NYC');
-        const sfRef = firebase.native
-          .firestore()
-          .collection('firestore-tests')
-          .doc('SF');
+        const ayRef = firestoreTestsCollection.doc('AY');
+        const lRef = firestoreTestsCollection.doc('LON');
+        const nycRef = firestoreTestsCollection.doc('NYC');
+        const sfRef = firestoreTestsCollection.doc('SF');
 
         return firebase.native
           .firestore()
@@ -111,12 +111,12 @@ function firestoreTests({ describe, it, context, fcontext, firebase }) {
         (() => {
           batch.update(ref, 'error');
         }).should.throw(
-          'WriteBatch.update failed: If using two arguments, the second must be an object.'
+          'WriteBatch.update failed: If using a single update argument, it must be an object.'
         );
         (() => {
           batch.update(ref, 'error1', 'error2', 'error3');
         }).should.throw(
-          'WriteBatch.update failed: Must have a document reference, followed by either a single object argument, or equal numbers of key/value pairs.'
+          'WriteBatch.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
         );
         (() => {
           batch.update(ref, 0, 'error');

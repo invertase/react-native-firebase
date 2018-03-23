@@ -1,9 +1,28 @@
 import sinon from 'sinon';
 import 'should-sinon';
 import should from 'should';
+import { cleanCollection, DOC_1 } from './data';
 
-function documentReferenceTests({ describe, it, context, firebase }) {
+function documentReferenceTests({
+  beforeEach,
+  describe,
+  it,
+  context,
+  firebase,
+}) {
   describe('DocumentReference', () => {
+    let documentTestsCollection;
+    beforeEach(async () => {
+      documentTestsCollection = firebase.native
+        .firestore()
+        .collection('document-tests');
+
+      // We clean as part of initialisation in case a test errors
+      // We don't clean after the test as it slows tests significantly
+      await cleanCollection(documentTestsCollection);
+      await documentTestsCollection.doc('doc1').set(DOC_1);
+    });
+
     context('class', () => {
       it('should return instance methods', () =>
         new Promise(resolve => {
@@ -36,6 +55,17 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         const document = firebase.native.firestore().doc('documents/doc1');
         const collection = document.collection('pages');
         collection.id.should.equal('pages');
+      });
+
+      it('should error if invalid collection path supplied', () => {
+        (() => {
+          firebase.native
+            .firestore()
+            .doc('documents/doc1')
+            .collection('pages/page1');
+        }).should.throw(
+          'Argument "collectionPath" must point to a collection.'
+        );
       });
     });
 
@@ -586,12 +616,12 @@ function documentReferenceTests({ describe, it, context, firebase }) {
         (() => {
           docRef.update('error');
         }).should.throw(
-          'DocumentReference.update failed: If using a single argument, it must be an object.'
+          'DocumentReference.update failed: If using a single update argument, it must be an object.'
         );
         (() => {
           docRef.update('error1', 'error2', 'error3');
         }).should.throw(
-          'DocumentReference.update failed: Must have either a single object argument, or equal numbers of key/value pairs.'
+          'DocumentReference.update failed: The update arguments must be either a single object argument, or equal numbers of key/value pairs.'
         );
         (() => {
           docRef.update(0, 'error');

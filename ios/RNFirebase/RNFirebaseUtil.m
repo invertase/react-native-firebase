@@ -24,7 +24,7 @@ static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
     return appName;
 }
 
-+ (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(NSDictionary *)body {
++ (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(id)body {
     @try {
         // TODO: Temporary fix for https://github.com/invertase/react-native-firebase/issues/233
         // until a better solution comes around
@@ -36,7 +36,7 @@ static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
     }
 }
 
-+ (void)sendJSEventWithAppName:(RCTEventEmitter *)emitter app:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body {
++ (void)sendJSEventWithAppName:(RCTEventEmitter *)emitter app:(FIRApp *)app name:(NSString *)name body:(id)body {
     // Add the appName to the body
     NSMutableDictionary *newBody = [body mutableCopy];
     newBody[@"appName"] = [RNFirebaseUtil getAppDisplayName:app.name];

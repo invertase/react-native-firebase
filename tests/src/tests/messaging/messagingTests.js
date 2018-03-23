@@ -50,7 +50,7 @@ function messagingTests({ describe, it, firebase }) {
         number: 123456,
       });
 
-      firebase.native.messaging().send(remoteMessage);
+      firebase.native.messaging().sendMessage(remoteMessage);
       return Promise.resolve();
     });
 
@@ -116,7 +116,7 @@ function messagingTests({ describe, it, firebase }) {
         number: 123456,
       });
 
-      firebase.native.messaging().send(remoteMessage);
+      firebase.native.messaging().sendMessage(remoteMessage);
       return Promise.resolve();
     });
 
