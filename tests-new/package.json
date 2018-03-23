@@ -1,17 +1,34 @@
 {
-  "name": "example",
+  "name": "rnfirebase-tests",
   "version": "7.2.0",
   "private": true,
   "scripts": {
-    "start": "react-native start"
+    "start": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "android:dev": "react-native run-android",
+    "android:prod": "react-native run-android --configuration=release",
+    "ios:dev": "react-native run-ios",
+    "ios:prod": "react-native run-ios --configuration=release",
+    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
-    "react": "16.0.0-beta.5",
-    "react-native": "0.49.3"
-  },
-  "devDependencies": {
+    "react": "^16.2.0",
+    "react-native": "^0.52.3",
     "detox": "^7.2.0",
     "mocha": "^4.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "19.0.0",
+    "babel-plugin-flow-react-proptypes": "^0.21.0",
+    "babel-plugin-istanbul": "^4.1.5",
+    "babel-preset-react-native": "1.9.1",
+    "eslint": "^3.16.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-flowtype": "^2.46.1",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0"
   },
   "detox": {
     "test-runner": "mocha",
