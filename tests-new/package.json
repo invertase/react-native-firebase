@@ -3,7 +3,8 @@
   "version": "7.2.0",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "start": "REACT_DEBUGGER='todo' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
+    "start-ci": "REACT_DEBUGGER='todo' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow --nonPersistent",
     "android:dev": "react-native run-android",
     "android:prod": "react-native run-android --configuration=release",
     "ios:dev": "react-native run-ios",
@@ -51,13 +52,13 @@
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
         "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
         "type": "android.emulator",
-        "name": "Nexus_5X_API_24_-_GPlay"
+        "name": "TestingAVD"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
         "build": "pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
         "type": "android.emulator",
-        "name": "Nexus_5X_API_24_-_GPlay"
+        "name": "TestingAVD"
       }
     }
   }

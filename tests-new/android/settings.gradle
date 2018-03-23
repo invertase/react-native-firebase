@@ -1,4 +1,4 @@
-rootProject.name = 'DetoxRNExample'
+rootProject.name = 'RNFTests'
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')
 

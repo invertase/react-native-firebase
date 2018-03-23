@@ -1,4 +1,4 @@
-package com.example;
+package com.testing;
 
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
