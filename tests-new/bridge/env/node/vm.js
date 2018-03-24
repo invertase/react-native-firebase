@@ -3,8 +3,10 @@ const http = require('http');
 const invariant = require('assert');
 const { createContext, Script } = require('vm');
 const ws = require('./ws');
+const { merge } = require('deeps');
 
-global.context = null;
+global.bridge.context = null;
+global.__coverage__ = {};
 let scriptCached = null;
 
 // this is a dummy file path - without a file name the source map is not used in the vm
@@ -135,33 +137,36 @@ process.on('ws-message', request => {
   // console.log(request.method);
   switch (request.method) {
     case 'prepareJSRuntime':
-      if (global.context) {
+      if (global.bridge.context) {
+        // todo __coverage__ not working - mostly empty statements in output
+        merge(global.__coverage__, global.bridge.context.__coverage__ || {});
+
         try {
-          for (const name in global.context.__fbBatchedBridge) {
-            global.context.__fbBatchedBridge[name] = undefined;
-            delete global.context.__fbBatchedBridge[name];
+          for (const name in global.bridge.context.__fbBatchedBridge) {
+            global.bridge.context.__fbBatchedBridge[name] = undefined;
+            delete global.bridge.context.__fbBatchedBridge[name];
           }
 
-          for (const name in global.context.__fbGenNativeModule) {
-            global.context.__fbGenNativeModule[name] = undefined;
-            delete global.context.__fbGenNativeModule[name];
+          for (const name in global.bridge.context.__fbGenNativeModule) {
+            global.bridge.context.__fbGenNativeModule[name] = undefined;
+            delete global.bridge.context.__fbGenNativeModule[name];
           }
 
-          for (const name in global.context.__fbBatchedBridgeConfig) {
-            global.context.__fbBatchedBridgeConfig[name] = undefined;
-            delete global.context.__fbBatchedBridgeConfig[name];
+          for (const name in global.bridge.context.__fbBatchedBridgeConfig) {
+            global.bridge.context.__fbBatchedBridgeConfig[name] = undefined;
+            delete global.bridge.context.__fbBatchedBridgeConfig[name];
           }
 
-          for (const name in global.context) {
-            global.context[name] = undefined;
-            delete global.context[name];
+          for (const name in global.bridge.context) {
+            global.bridge.context[name] = undefined;
+            delete global.bridge.context[name];
           }
         } catch (e) {
           console.error(e);
         }
       }
-      global.context = undefined;
-      global.context = createContext({
+      global.bridge.context = undefined;
+      global.bridge.context = createContext({
         console: consoleShim(),
         __bridgeNode: {
           ready() {
@@ -184,12 +189,6 @@ process.on('ws-message', request => {
             global.bridge.root = rootComponent;
           },
         },
-        get __coverage__() {
-          return global.__coverage__;
-        },
-        set __coverage__(val) {
-          return (global.__coverage__ = val);
-        },
       });
       sendResult(request.id);
       return;
@@ -210,19 +209,19 @@ process.on('ws-message', request => {
           return;
         }
 
-        if (global.context == null) {
+        if (global.bridge.context == null) {
           sendError('JS runtime not prepared');
           return;
         }
 
         if (request.inject) {
           for (const name in request.inject) {
-            global.context[name] = JSON.parse(request.inject[name]);
+            global.bridge.context[name] = JSON.parse(request.inject[name]);
           }
         }
 
         try {
-          script.runInContext(global.context, TEMP_BUNDLE_PATH);
+          script.runInContext(global.bridge.context, TEMP_BUNDLE_PATH);
         } catch (e) {
           sendError(e);
         }
@@ -235,13 +234,12 @@ process.on('ws-message', request => {
       let returnValue = [[], [], [], 0];
       try {
         if (
-          global.context != null &&
-          typeof global.context.__fbBatchedBridge === 'object'
+          global.bridge.context != null &&
+          typeof global.bridge.context.__fbBatchedBridge === 'object'
         ) {
-          returnValue = global.context.__fbBatchedBridge[request.method].apply(
-            null,
-            request.arguments
-          );
+          returnValue = global.bridge.context.__fbBatchedBridge[
+            request.method
+          ].apply(null, request.arguments);
         }
       } catch (e) {
         if (request.method !== '$disconnected') {
