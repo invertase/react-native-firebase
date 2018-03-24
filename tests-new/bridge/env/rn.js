@@ -14,8 +14,8 @@ if (bridgeNode) {
 
   // keep alive
   setInterval(() => {
-    // I don't do anything lol
-    // BUT i am needed - otherwise RN's batch bridge starts to hang in detox... ???
+    // I don't do anything...
+    // BUT i am needed - otherwise RN's batched bridge starts to hang in detox... ???
   }, 60);
 }
 
