@@ -8,7 +8,6 @@ describe('.auth()', () => {
   describe('.signInAnonymously()', () => {
     it('it should sign in anonymously', () => {
       const successCb = currentUser => {
-        debugger;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
