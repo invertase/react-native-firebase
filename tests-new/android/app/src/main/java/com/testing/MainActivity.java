@@ -31,7 +31,7 @@ public class MainActivity extends ReactActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-//    checkWindowPerms();
+    checkWindowPerms();
   }
 
   public void checkWindowPerms() {
