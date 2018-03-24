@@ -6,7 +6,7 @@ const ws = new WebSocket(
 );
 
 ws.onmessage = message => process.emit('ws-message', JSON.parse(message.data));
-ws.onopen = () => console.log('WS open');
+// ws.onopen = () => console.log('WS open');
 ws.onclose = event => (!event.wasClean ? console.log('WS close', event) : '');
 
 module.exports = ws;

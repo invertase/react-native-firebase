@@ -23,7 +23,7 @@ class Root extends Component {
   render() {
     return (
       <View>
-        <Text>React Native Firebase Test App</Text>
+        <Text testID="tap">React Native Firebase Test App</Text>
       </View>
     );
   }

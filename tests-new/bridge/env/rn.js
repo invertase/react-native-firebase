@@ -1,6 +1,10 @@
 import reactNative, { Platform, NativeModules } from 'react-native';
 import RNRestart from 'react-native-restart'; // Import package from node modules
 
+require('sinon');
+require('should-sinon');
+require('should');
+
 const bridgeNode = global.__bridgeNode;
 
 // https://github.com/ptmt/react-native-macos/blob/master/React/Modules/RCTDevSettings.mm
@@ -26,3 +30,9 @@ export default {
     }
   },
 };
+
+// keep alive
+setInterval(() => {
+  // I don't do anything lol
+  // BUT i am needed - otherwise RN's batch bridge starts to hang in detox... ???
+}, 50);
