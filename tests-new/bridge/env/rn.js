@@ -11,6 +11,12 @@ if (Platform.OS === 'ios' && !bridgeNode) {
 if (bridgeNode) {
   bridgeNode.provideReload(RNRestart.Restart);
   bridgeNode.provideReactNativeModule(reactNative);
+
+  // keep alive
+  setInterval(() => {
+    // I don't do anything lol
+    // BUT i am needed - otherwise RN's batch bridge starts to hang in detox... ???
+  }, 60);
 }
 
 export default {
@@ -35,9 +41,3 @@ export default {
     }
   },
 };
-
-// keep alive
-setInterval(() => {
-  // I don't do anything lol
-  // BUT i am needed - otherwise RN's batch bridge starts to hang in detox... ???
-}, 60);
