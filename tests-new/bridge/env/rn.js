@@ -14,12 +14,21 @@ if (bridgeNode) {
 }
 
 export default {
+  /**
+   * Makes the main module to be tested accessible to nodejs
+   * @param moduleExports
+   */
   provideModule(moduleExports) {
     if (bridgeNode) {
       bridgeNode.provideModule(moduleExports);
       bridgeNode.ready();
     }
   },
+
+  /**
+   * Makes the root component accessible to nodejs - e.g. bridge.root.setState({ ... });
+   * @param rootComponent
+   */
   provideRoot(rootComponent) {
     if (bridgeNode) {
       bridgeNode.provideRoot(rootComponent);
