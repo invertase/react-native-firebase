@@ -25,11 +25,12 @@ function sendResult(replyID, result) {
 }
 
 /**
- *
+ * TODO
  * @param message
  */
-function sendError(message) {
-  console.error(message);
+function sendError(error) {
+  console.log('error');
+  throw error;
 }
 
 /**
@@ -67,13 +68,80 @@ function getScript(src, callback) {
     });
 }
 
+function consoleShim() {
+  return {
+    ...console,
+    log(...args) {
+      if (
+        args[0] &&
+        typeof args[0] === 'string' &&
+        args[0].startsWith('Running application "')
+      ) {
+        return;
+      }
+
+      if (
+        args[0] &&
+        typeof args[0] === 'string' &&
+        args[0].startsWith('Deprecated')
+      ) {
+        return;
+      }
+      console.log(...args);
+    },
+    warn(...args) {
+      if (
+        args[0] &&
+        typeof args[0] === 'string' &&
+        args[0].startsWith('Running application "')
+      ) {
+        return;
+      }
+
+      if (
+        args[0] &&
+        typeof args[0] === 'string' &&
+        args[0].startsWith('Deprecated')
+      ) {
+        return;
+      }
+      console.log(...args);
+    },
+  };
+}
+
 process.on('ws-message', request => {
   // console.log(request.method);
   switch (request.method) {
     case 'prepareJSRuntime':
+      if (currentContext) {
+        try {
+          for (const name in currentContext.__fbBatchedBridge) {
+            currentContext.__fbBatchedBridge[name] = undefined;
+            delete currentContext.__fbBatchedBridge[name];
+          }
+
+          for (const name in currentContext.__fbGenNativeModule) {
+            currentContext.__fbGenNativeModule[name] = undefined;
+            delete currentContext.__fbGenNativeModule[name];
+          }
+
+          for (const name in currentContext.__fbBatchedBridgeConfig) {
+            currentContext.__fbBatchedBridgeConfig[name] = undefined;
+            delete currentContext.__fbBatchedBridgeConfig[name];
+          }
+
+          for (const name in currentContext) {
+            currentContext[name] = undefined;
+            delete currentContext[name];
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
       currentContext = undefined;
       currentContext = createContext({
-        console,
+        console: consoleShim(),
         __bridgeNode: {
           ready() {
             process.emit('rn-ready');
@@ -128,7 +196,7 @@ process.on('ws-message', request => {
         try {
           script.runInContext(currentContext, TEMP_BUNDLE_PATH);
         } catch (e) {
-          sendError(`Failed to exec script: ${e.message}`);
+          sendError(e);
         }
         sendResult(request.id);
       });
@@ -148,9 +216,11 @@ process.on('ws-message', request => {
           );
         }
       } catch (e) {
-        sendError(
-          `Failed while making a call ${request.method}:::${e.message}`
-        );
+        if (request.method !== '$disconnected') {
+          sendError(
+            `Failed while making a call ${request.method}:::${e.message}`
+          );
+        }
       } finally {
         sendResult(request.id, JSON.stringify(returnValue));
       }

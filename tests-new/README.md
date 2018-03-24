@@ -81,3 +81,15 @@ CPU/ABI: null (null)
 Path: /Users/mike/.android/avd/Actually_THIS_one.avd
 
 Error: Failed to parse properties from /Users/mike/.android/avd/Actually_THIS_one.avd/config.ini
+
+#### Running specific tests
+
+Add a `--grep` to e2e/mocha.opts file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
+
+#### Running Node debugger
+
+Add `--inspect` to e2e/mocha.opts file
+
+To open node debugger tools on chrome navigate to chrome://inspect/#devices and click the `Open dedicated DevTools for Node` link.
+
+Add the default connection of `localhost:9229` if you haven't already - then the debugger will automatically connect everytime you start tests with inspect flag.

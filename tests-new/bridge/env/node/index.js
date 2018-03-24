@@ -2,13 +2,13 @@ const detox = require('detox');
 const vm = require('./vm');
 const ws = require('./ws');
 
+// TODO each reload/relaunch should capture __coverage__
+
 const detoxOriginalInit = detox.init.bind(detox);
 const detoxOriginalCleanup = detox.cleanup.bind(detox);
-let detoxOriginalReloadReactNative = null;
 
 let bridgeReady = false;
 process.on('rn-ready', () => {
-  // console.log('READY', true);
   bridgeReady = true;
 });
 
@@ -19,37 +19,38 @@ function onceBridgeReady() {
   });
 }
 
+function shimDevice() {
+  // reloadReactNative
+  const detoxOriginalReloadReactNative = device.reloadReactNative.bind(device);
+  device.reloadReactNative = async () => {
+    bridgeReady = false;
+    global.bridge.reload();
+    return onceBridgeReady();
+  };
+
+  // launchApp
+  const detoxOriginalLaunchApp = device.launchApp.bind(device);
+  device.launchApp = async (...args) => {
+    bridgeReady = false;
+    await detoxOriginalLaunchApp(...args);
+    return onceBridgeReady();
+  };
+
+  // todo other device methods
+}
+
 detox.init = async (...args) => {
   bridgeReady = false;
-  console.log('detox.init.start');
-
   return detoxOriginalInit(...args).then(() => {
-    console.log('detox.init.complete');
-
-    detoxOriginalReloadReactNative = device.reloadReactNative.bind(device);
-    device.reloadReactNative = async () => {
-      console.log('reloadReactNative.start');
-      bridgeReady = false;
-      // return device.launchApp({ newInstance: true }).then(() => {
-      global.bridge.reload();
-
-      return onceBridgeReady();
-    };
-
+    shimDevice();
     return onceBridgeReady();
   });
 };
 
-detox.cleanup = async (...args) => {
-  console.log('detox.cleanup');
-
-  return detoxOriginalCleanup(...args).then(() => {
-    console.log('detox.cleanup.end');
-
+detox.cleanup = async (...args) =>
+  detoxOriginalCleanup(...args).then(() => {
     ws.close();
-    process.exit();
   });
-};
 
 global.bridge = {
   _ws: null,
