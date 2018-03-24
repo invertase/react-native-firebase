@@ -9,8 +9,8 @@ if (Platform.OS === 'ios' && !bridgeNode) {
 }
 
 if (bridgeNode) {
-  bridgeNode.provideReactNativeModule(reactNative);
   bridgeNode.provideReload(RNRestart.Restart);
+  bridgeNode.provideReactNativeModule(reactNative);
 }
 
 export default {
