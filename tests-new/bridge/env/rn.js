@@ -3,7 +3,7 @@ import RNRestart from 'react-native-restart'; // Import package from node module
 
 const bridgeNode = global.__bridgeNode;
 
-// https://github.com/ptmt/react-native-macos/blob/master/React/Modules/RCTDevSettings.mm
+// https://github.com/facebook/react-native/blob/master/React/Modules/RCTDevSettings.mm
 if (Platform.OS === 'ios' && !bridgeNode) {
   NativeModules.RCTDevSettings.setIsDebuggingRemotely(true);
 }
