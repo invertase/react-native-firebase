@@ -3,7 +3,8 @@
   "version": "7.2.0",
   "private": true,
   "scripts": {
-    "start": "REACT_DEBUGGER='todo' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
+    "start-local-debug": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
+    "start": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
     "start-ci": "REACT_DEBUGGER='todo' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow --nonPersistent",
     "android:dev": "react-native run-android",
     "android:prod": "react-native run-android --configuration=release",
@@ -12,10 +13,12 @@
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
+    "detox": "^7.2.0",
+    "mocha": "^4.0.1",
     "react": "^16.2.0",
     "react-native": "^0.52.3",
-    "detox": "^7.2.0",
-    "mocha": "^4.0.1"
+    "react-native-restart": "0.0.6",
+    "ws": "^5.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",

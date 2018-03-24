@@ -23,7 +23,7 @@ describe('should work inside node', () => {
     await device.reloadReactNative();
   });
 
-  it('should require', () => {
+  it('should provide bridge global', () => {
     const firebase = bridge.module;
 
 

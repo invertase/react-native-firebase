@@ -87,9 +87,13 @@ dependencies {
     transitive = false
   }
 
+  implementation(project(':react-native-restart')) {
+    transitive = false
+  }
+
   compile fileTree(dir: "libs", include: ["*.jar"])
   compile "com.google.android.gms:play-services-base:$firebaseVersion"
-//  compile "com.google.firebase:firebase-ads:$firebaseVersion"
+  compile "com.google.firebase:firebase-ads:$firebaseVersion"
   compile "com.google.firebase:firebase-auth:$firebaseVersion"
   compile "com.google.firebase:firebase-config:$firebaseVersion"
   compile "com.google.firebase:firebase-core:$firebaseVersion"

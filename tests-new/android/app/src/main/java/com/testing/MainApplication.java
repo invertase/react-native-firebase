@@ -9,7 +9,8 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import io.invertase.firebase.RNFirebasePackage;
-//import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
+import com.avishayil.rnrestart.ReactNativeRestartPackage;
+import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage;
@@ -25,6 +26,7 @@ import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import io.invertase.firebase.perf.RNFirebasePerformancePackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,8 +41,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
+        new ReactNativeRestartPackage(),
         new RNFirebasePackage(),
-//        new RNFirebaseAdMobPackage(),
+        new RNFirebaseAdMobPackage(),
         new RNFirebaseAnalyticsPackage(),
         new RNFirebaseAuthPackage(),
         new RNFirebaseRemoteConfigPackage(),
@@ -67,6 +70,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    getReactNativeHost().getReactInstanceManager().getDevSupportManager().getDevSettings().setRemoteJSDebugEnabled(true);
     SoLoader.init(this, /* native exopackage */ false);
   }
 

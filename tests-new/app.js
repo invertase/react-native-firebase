@@ -4,26 +4,20 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import rnModule, { AppRegistry, Text, View } from 'react-native';
+// must import before all else
+import Bridge from './bridge/env/rn';
 
-import testModule from './firebase';
+import React, { Component } from 'react';
+import { AppRegistry, Text, View } from 'react-native';
+
+import firebase from './firebase';
 
 class Root extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-  }
-
-  componentDidMount() {
-    if (global.__initializeEnvironment) {
-      console.log('Initializing environment...');
-      global.__initializeEnvironment({
-        root: this,
-        rnModule,
-        testModule,
-      });
-    }
+    Bridge.provideRoot(this);
+    Bridge.provideModule(firebase);
   }
 
   render() {
