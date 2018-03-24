@@ -60,7 +60,7 @@ detox test --configuration ios.sim.debug
 
 This action will open a new simulator and run the tests on it.
 
-### TODO
+### TODO - Troubleshooting
 
 Gradle issues... https://stackoverflow.com/questions/46917365/error-could-not-initialize-class-com-android-sdklib-repository-androidsdkhandle?rq=1
 
