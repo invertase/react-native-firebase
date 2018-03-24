@@ -4,11 +4,22 @@ const invariant = require('assert');
 const { createContext, Script } = require('vm');
 const ws = require('./ws');
 
-let currentContext = null;
+global.context = null;
 let scriptCached = null;
 
 // this is a dummy file path - without a file name the source map is not used in the vm
 const TEMP_BUNDLE_PATH = '/tmp/bridge/react-native.js';
+
+// TODO
+// TODO
+// TODO
+// TODO
+// TODO This is just dirty code created just as a proof of concept
+// TODO  - need to cleanup
+// TODO
+// TODO
+// TODO
+// TODO
 
 /**
  *
@@ -114,33 +125,33 @@ process.on('ws-message', request => {
   // console.log(request.method);
   switch (request.method) {
     case 'prepareJSRuntime':
-      if (currentContext) {
+      if (global.context) {
         try {
-          for (const name in currentContext.__fbBatchedBridge) {
-            currentContext.__fbBatchedBridge[name] = undefined;
-            delete currentContext.__fbBatchedBridge[name];
+          for (const name in global.context.__fbBatchedBridge) {
+            global.context.__fbBatchedBridge[name] = undefined;
+            delete global.context.__fbBatchedBridge[name];
           }
 
-          for (const name in currentContext.__fbGenNativeModule) {
-            currentContext.__fbGenNativeModule[name] = undefined;
-            delete currentContext.__fbGenNativeModule[name];
+          for (const name in global.context.__fbGenNativeModule) {
+            global.context.__fbGenNativeModule[name] = undefined;
+            delete global.context.__fbGenNativeModule[name];
           }
 
-          for (const name in currentContext.__fbBatchedBridgeConfig) {
-            currentContext.__fbBatchedBridgeConfig[name] = undefined;
-            delete currentContext.__fbBatchedBridgeConfig[name];
+          for (const name in global.context.__fbBatchedBridgeConfig) {
+            global.context.__fbBatchedBridgeConfig[name] = undefined;
+            delete global.context.__fbBatchedBridgeConfig[name];
           }
 
-          for (const name in currentContext) {
-            currentContext[name] = undefined;
-            delete currentContext[name];
+          for (const name in global.context) {
+            global.context[name] = undefined;
+            delete global.context[name];
           }
         } catch (e) {
           console.error(e);
         }
       }
-      currentContext = undefined;
-      currentContext = createContext({
+      global.context = undefined;
+      global.context = createContext({
         console: consoleShim(),
         __bridgeNode: {
           ready() {
@@ -182,19 +193,19 @@ process.on('ws-message', request => {
           return;
         }
 
-        if (currentContext == null) {
+        if (global.context == null) {
           sendError('JS runtime not prepared');
           return;
         }
 
         if (request.inject) {
           for (const name in request.inject) {
-            currentContext[name] = JSON.parse(request.inject[name]);
+            global.context[name] = JSON.parse(request.inject[name]);
           }
         }
 
         try {
-          script.runInContext(currentContext, TEMP_BUNDLE_PATH);
+          script.runInContext(global.context, TEMP_BUNDLE_PATH);
         } catch (e) {
           sendError(e);
         }
@@ -207,10 +218,10 @@ process.on('ws-message', request => {
       let returnValue = [[], [], [], 0];
       try {
         if (
-          currentContext != null &&
-          typeof currentContext.__fbBatchedBridge === 'object'
+          global.context != null &&
+          typeof global.context.__fbBatchedBridge === 'object'
         ) {
-          returnValue = currentContext.__fbBatchedBridge[request.method].apply(
+          returnValue = global.context.__fbBatchedBridge[request.method].apply(
             null,
             request.arguments
           );

@@ -1,23 +1,8 @@
-const sinon = require('sinon');
-require('should-sinon');
-const should = require('should');
-
-const randomString = (length, chars) => {
-  let mask = '';
-  if (chars.indexOf('a') > -1) mask += 'abcdefghijklmnopqrstuvwxyz';
-  if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if (chars.indexOf('#') > -1) mask += '0123456789';
-  if (chars.indexOf('!') > -1) mask += '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\';
-  let result = '';
-  for (let i = length; i > 0; --i) {
-    result += mask[Math.round(Math.random() * (mask.length - 1))];
-  }
-  return result;
-};
-
 describe('.auth()', () => {
-  beforeEach(async () => {
+  beforeEach(async function beforeEach() {
     await device.reloadReactNative();
+    // just an example of setting the root components state from inside a test :)
+    bridge.root.setState({ message: this.currentTest.title });
   });
 
   describe('.signInAnonymously()', () => {
