@@ -1,5 +1,8 @@
 const detox = require('detox');
 const config = require('../package.json').detox;
+global.sinon = require('sinon');
+require('should-sinon');
+global.should = require('should');
 
 before(async () => {
   await detox.init(config);

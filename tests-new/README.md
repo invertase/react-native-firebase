@@ -93,3 +93,7 @@ Add `--inspect` to e2e/mocha.opts file
 To open node debugger tools on chrome navigate to chrome://inspect/#devices and click the `Open dedicated DevTools for Node` link.
 
 Add the default connection of `localhost:9229` if you haven't already - then the debugger will automatically connect everytime you start tests with inspect flag.
+
+#### Mocha options
+
+See https://mochajs.org/#usage

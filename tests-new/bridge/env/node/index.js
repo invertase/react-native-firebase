@@ -1,8 +1,9 @@
-const detox = require('detox');
-const vm = require('./vm');
-const ws = require('./ws');
+global.bridge = {};
 
-// TODO each reload/relaunch should capture __coverage__
+const detox = require('detox');
+
+require('./vm');
+const ws = require('./ws');
 
 const detoxOriginalInit = detox.init.bind(detox);
 const detoxOriginalCleanup = detox.cleanup.bind(detox);
@@ -21,7 +22,8 @@ function onceBridgeReady() {
 
 function shimDevice() {
   // reloadReactNative
-  const detoxOriginalReloadReactNative = device.reloadReactNative.bind(device);
+  // todo detoxOriginalReloadReactNative currently broken
+  // const detoxOriginalReloadReactNative = device.reloadReactNative.bind(device);
   device.reloadReactNative = async () => {
     bridgeReady = false;
     global.bridge.reload();
@@ -36,7 +38,7 @@ function shimDevice() {
     return onceBridgeReady();
   };
 
-  // todo other device methods
+  // todo other device reloading related methods
 }
 
 detox.init = async (...args) => {
@@ -51,12 +53,3 @@ detox.cleanup = async (...args) =>
   detoxOriginalCleanup(...args).then(() => {
     ws.close();
   });
-
-global.bridge = {
-  _ws: null,
-
-  rootSetState(state) {
-    // todo
-    return Promise.resolve();
-  },
-};

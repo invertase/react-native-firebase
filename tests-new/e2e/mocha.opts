@@ -1,5 +1,6 @@
 --recursive
 --timeout 120000
---slow 1200
+--slow 1400
 --bail
+--exit
 --require ./bridge/env/node
