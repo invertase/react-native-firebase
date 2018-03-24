@@ -10,16 +10,26 @@ let scriptCached = null;
 // this is a dummy file path - without a file name the source map is not used in the vm
 const TEMP_BUNDLE_PATH = '/tmp/bridge/react-native.js';
 
+// TODO  -----------------------------------------------------------------------
+// TODO  -----------------------------------------------------------------------
+// TODO  -----------------------------------------------------------------------
+// TODO
+// TODO
 // TODO
 // TODO
 // TODO
 // TODO
 // TODO This is just dirty code created just as a proof of concept
-// TODO  - need to cleanup
+// TODO  - need to clean it all up / refactor
 // TODO
 // TODO
 // TODO
 // TODO
+// TODO
+// TODO
+// TODO  -----------------------------------------------------------------------
+// TODO  -----------------------------------------------------------------------
+// TODO  -----------------------------------------------------------------------
 
 /**
  *
@@ -174,12 +184,19 @@ process.on('ws-message', request => {
             global.bridge.root = rootComponent;
           },
         },
+        get __coverage__() {
+          return global.__coverage__;
+        },
+        set __coverage__(val) {
+          return (global.__coverage__ = val);
+        },
       });
       sendResult(request.id);
       return;
 
     case 'executeApplicationScript':
       // Modify the URL to make sure we get the inline source map.
+      // TODO we shouldn't be reparsing if scriptCached is set
       const parsedUrl = url.parse(request.url, /* parseQueryString */ true);
       invariant(parsedUrl.query);
       parsedUrl.query.inlineSourceMap = true;
