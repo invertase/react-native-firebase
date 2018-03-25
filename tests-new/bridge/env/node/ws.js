@@ -5,7 +5,7 @@ const ws = new WebSocket(
   'ws://localhost:8081/debugger-proxy?role=debugger&name=Chrome'
 );
 
-vm.reply = obj => ws.send(JSON.stringify(obj));
+vm.send = obj => ws.send(JSON.stringify(obj));
 
 ws.onmessage = message => vm.message(JSON.parse(message.data));
 

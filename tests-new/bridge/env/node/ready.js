@@ -1,8 +1,6 @@
+/* eslint-disable no-return-assign */
 let ready = false;
-
-process.on('bridge-attached', () => {
-  ready = true;
-});
+process.on('bridge-attached', () => (ready = true));
 
 module.exports = {
   wait() {

@@ -14,5 +14,5 @@ after(async () => {
 });
 
 bridge.beforeContextReset = () => {
-  console.log('reset');
+  // console.dir(bridge.context.__coverage__);
 };
