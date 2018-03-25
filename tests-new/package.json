@@ -3,13 +3,20 @@
   "version": "7.2.0",
   "private": true,
   "scripts": {
-    "start-local-debug": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
-    "start": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow",
-    "start-ci": "REACT_DEBUGGER='todo' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --skipflow --nonPersistent",
-    "android:dev": "react-native run-android",
-    "android:prod": "react-native run-android --configuration=release",
-    "ios:dev": "react-native run-ios",
-    "ios:prod": "react-native run-ios --configuration=release",
+    "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+
+    "build-android": "detox build --configuration android.emu.debug",
+
+    "test": "npm run test-android && test-ios",
+
+    "test-android": "detox test --configuration android.emu.debug",
+    "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
+    "test-android-cover": "nyc detox test --configuration android.emu.debug",
+    "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
+
+    "test-ios": "detox test --configuration ios.sim.debug",
+    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
@@ -18,6 +25,7 @@
     "chalk": "^2.3.2",
     "deeps": "^1.4.4",
     "detox": "^7.2.0",
+    "istanbul-lib-coverage": "^1.2.0",
     "mocha": "^4.0.1",
     "react": "^16.2.0",
     "react-native": "^0.52.3",
@@ -39,7 +47,19 @@
     "eslint-plugin-flowtype": "^2.46.1",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.10.0"
+    "eslint-plugin-react": "^6.10.0",
+    "nyc": "^11.6.0"
+  },
+  "nyc": {
+    "check-coverage": false,
+    "lines": 95,
+    "statements": 95,
+    "functions": 95,
+    "branches": 95,
+    "include": ["firebase"],
+    "sourceMap": false,
+    "instrument": false,
+    "reporter": ["lcov", "text-summary"]
   },
   "detox": {
     "test-runner": "mocha",

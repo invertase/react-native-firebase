@@ -16,28 +16,25 @@ module.exports = {
       if (global.bridge.beforeContextReset) {
         await global.bridge.beforeContextReset();
       }
-      try {
-        for (const name in global.bridge.context.__fbBatchedBridge) {
-          global.bridge.context.__fbBatchedBridge[name] = undefined;
-          delete global.bridge.context.__fbBatchedBridge[name];
-        }
 
-        for (const name in global.bridge.context.__fbGenNativeModule) {
-          global.bridge.context.__fbGenNativeModule[name] = undefined;
-          delete global.bridge.context.__fbGenNativeModule[name];
-        }
+      for (const name in global.bridge.context.__fbBatchedBridge) {
+        global.bridge.context.__fbBatchedBridge[name] = undefined;
+        delete global.bridge.context.__fbBatchedBridge[name];
+      }
 
-        for (const name in global.bridge.context.__fbBatchedBridgeConfig) {
-          global.bridge.context.__fbBatchedBridgeConfig[name] = undefined;
-          delete global.bridge.context.__fbBatchedBridgeConfig[name];
-        }
+      for (const name in global.bridge.context.__fbGenNativeModule) {
+        global.bridge.context.__fbGenNativeModule[name] = undefined;
+        delete global.bridge.context.__fbGenNativeModule[name];
+      }
 
-        for (const name in global.bridge.context) {
-          global.bridge.context[name] = undefined;
-          delete global.bridge.context[name];
-        }
-      } catch (e) {
-        // do nothing;
+      for (const name in global.bridge.context.__fbBatchedBridgeConfig) {
+        global.bridge.context.__fbBatchedBridgeConfig[name] = undefined;
+        delete global.bridge.context.__fbBatchedBridgeConfig[name];
+      }
+
+      for (const name in global.bridge.context) {
+        global.bridge.context[name] = undefined;
+        delete global.bridge.context[name];
       }
 
       global.bridge.context = undefined;
