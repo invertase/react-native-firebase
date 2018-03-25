@@ -6,7 +6,6 @@ describe('firestore.runTransaction', () => {
   });
 
   it('should set, update and delete transactionally and allow a return value', async () => {
-    const firebase = bridge.module;
     let deleteMe = false;
     const firestore = firebase.firestore();
 

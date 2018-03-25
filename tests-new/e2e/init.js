@@ -13,19 +13,8 @@ after(async () => {
   await detox.cleanup();
 });
 
-// bridge.beforeContextReset = () => {
-//   console.log('hello');
-// };
-
 Object.defineProperty(global, 'firebase', {
   get() {
     return bridge.module;
   },
-  set() {
-    // do nothing
-  },
 });
-
-// Object.defineProperty(global, 'firebase', { value: undefined });
-
-// delete global.firebase;
