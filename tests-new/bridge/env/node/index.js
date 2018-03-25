@@ -1,55 +1,59 @@
+/* eslint-disable no-param-reassign */
 global.bridge = {};
 
 const detox = require('detox');
-
-require('./vm');
 const ws = require('./ws');
+const ready = require('./ready');
 
-const detoxOriginalInit = detox.init.bind(detox);
-const detoxOriginalCleanup = detox.cleanup.bind(detox);
+/* ---------------------
+ *   DEVICE OVERRIDES
+ * --------------------- */
 
-let bridgeReady = false;
-process.on('rn-ready', () => {
-  bridgeReady = true;
+let device;
+Object.defineProperty(global, 'device', {
+  get() {
+    return device;
+  },
+  set(originalDevice) {
+    // device.reloadReactNative({ ... })
+    // todo detoxOriginalReloadReactNative currently broken it seems
+    // const detoxOriginalReloadReactNative = originalDevice.reloadReactNative.bind(originalDevice);
+    originalDevice.reloadReactNative = async () => {
+      ready.reset();
+      global.bridge.reload();
+      return ready.wait();
+    };
+
+    // device.launchApp({ ... })
+    const detoxOriginalLaunchApp = originalDevice.launchApp.bind(
+      originalDevice
+    );
+    originalDevice.launchApp = async (...args) => {
+      ready.reset();
+      await detoxOriginalLaunchApp(...args);
+      return ready.wait();
+    };
+
+    device = originalDevice;
+    return originalDevice;
+  },
 });
 
-function onceBridgeReady() {
-  if (bridgeReady) return Promise.resolve();
-  return new Promise(resolve => {
-    process.once('rn-ready', resolve);
-  });
-}
+/* -------------------
+ *   DETOX OVERRIDES
+ * ------------------- */
 
-function shimDevice() {
-  // reloadReactNative
-  // todo detoxOriginalReloadReactNative currently broken
-  // const detoxOriginalReloadReactNative = device.reloadReactNative.bind(device);
-  device.reloadReactNative = async () => {
-    bridgeReady = false;
-    global.bridge.reload();
-    return onceBridgeReady();
-  };
-
-  // launchApp
-  const detoxOriginalLaunchApp = device.launchApp.bind(device);
-  device.launchApp = async (...args) => {
-    bridgeReady = false;
-    await detoxOriginalLaunchApp(...args);
-    return onceBridgeReady();
-  };
-
-  // todo other device reloading related methods
-}
-
+// detox.init()
+const detoxOriginalInit = detox.init.bind(detox);
 detox.init = async (...args) => {
-  bridgeReady = false;
-  return detoxOriginalInit(...args).then(() => {
-    shimDevice();
-    return onceBridgeReady();
-  });
+  ready.reset();
+  await detoxOriginalInit(...args);
+  return ready.wait();
 };
 
-detox.cleanup = async (...args) =>
-  detoxOriginalCleanup(...args).then(() => {
-    ws.close();
-  });
+// detox.cleanup()
+const detoxOriginalCleanup = detox.cleanup.bind(detox);
+detox.cleanup = async (...args) => {
+  ws.close();
+  await detoxOriginalCleanup(...args);
+};

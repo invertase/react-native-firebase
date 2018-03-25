@@ -1,43 +1,59 @@
-import reactNative, { Platform, NativeModules } from 'react-native';
+import ReactNative from 'react-native';
 import RNRestart from 'react-native-restart'; // Import package from node modules
 
+const { Platform, NativeModules } = ReactNative;
+
 const bridgeNode = global.__bridgeNode;
+const INTERNAL_KEYS = ['context', 'rn', 'reload'];
 
 // https://github.com/facebook/react-native/blob/master/React/Modules/RCTDevSettings.mm
 if (Platform.OS === 'ios' && !bridgeNode) {
   NativeModules.RCTDevSettings.setIsDebuggingRemotely(true);
+} else {
+  if (Platform.OS === 'android' && !bridgeNode) {
+    // TODO warn to add:
+    // getReactNativeHost().getReactInstanceManager().getDevSupportManager().getDevSettings().setRemoteJSDebugEnabled(true);
+    // to MainApplication onCreate
+  }
+
+  if (bridgeNode) {
+    if (Platform.OS === 'ios') {
+      bridgeNode.setBridgeProperty(
+        'reload',
+        NativeModules.RCTDevSettings.reload
+      );
+    } else {
+      bridgeNode.setBridgeProperty('reload', RNRestart.Restart);
+    }
+
+    bridgeNode.setBridgeProperty('rn', ReactNative);
+
+    // keep alive
+    setInterval(() => {
+      // I don't do anything...
+      // BUT i am needed - otherwise RN's batched bridge starts to hang in detox... ???
+    }, 60);
+  }
 }
 
-if (bridgeNode) {
-  bridgeNode.provideReload(RNRestart.Restart);
-  bridgeNode.provideReactNativeModule(reactNative);
-
-  // keep alive
-  setInterval(() => {
-    // I don't do anything...
-    // BUT i am needed - otherwise RN's batched bridge starts to hang in detox... ???
-  }, 60);
-}
+let hasInitialized = false;
 
 export default {
   /**
-   * Makes the main module to be tested accessible to nodejs
-   * @param moduleExports
+   * Expose a property in node on the global.bridge object
+   * @param key
+   * @param value
    */
-  provideModule(moduleExports) {
+  setBridgeProperty(key, value) {
+    if (INTERNAL_KEYS.includes(key)) return;
     if (bridgeNode) {
-      bridgeNode.provideModule(moduleExports);
-      bridgeNode.ready();
-    }
-  },
+      bridgeNode.setBridgeProperty(key, value);
 
-  /**
-   * Makes the root component accessible to nodejs - e.g. bridge.root.setState({ ... });
-   * @param rootComponent
-   */
-  provideRoot(rootComponent) {
-    if (bridgeNode) {
-      bridgeNode.provideRoot(rootComponent);
+      // notify ready on first setBridgeProp
+      if (!hasInitialized) {
+        bridgeNode._ready();
+        hasInitialized = true;
+      }
     }
   },
 };
