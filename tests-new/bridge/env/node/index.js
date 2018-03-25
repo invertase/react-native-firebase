@@ -4,6 +4,7 @@ global.bridge = {};
 const detox = require('detox');
 const ws = require('./ws');
 const ready = require('./ready');
+const coverage = require('./coverage');
 
 /* ---------------------
  *   DEVICE OVERRIDES
@@ -54,6 +55,17 @@ detox.init = async (...args) => {
 // detox.cleanup()
 const detoxOriginalCleanup = detox.cleanup.bind(detox);
 detox.cleanup = async (...args) => {
-  ws.close();
+  try {
+    ws.close();
+  } catch (e) {
+    // do nothing
+  }
   await detoxOriginalCleanup(...args);
 };
+
+// setup after hook to ensure final context coverage is captured
+process.nextTick(() => {
+  after(() => {
+    coverage.collect();
+  });
+});

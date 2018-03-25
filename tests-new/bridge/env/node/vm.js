@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const invariant = require('assert');
 const { Script } = require('vm');
 const context = require('./context');
+const coverage = require('./coverage');
 
 let send;
 let bundle;
@@ -72,6 +73,7 @@ module.exports = {
     // console.log(request.method);
     switch (method) {
       case PREPARE:
+        coverage.collect();
         await context.cleanup();
         context.create();
         reply(request.id);

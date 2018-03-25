@@ -1,8 +1,7 @@
 describe('.auth()', () => {
-  beforeEach(async function beforeEach() {
+  beforeEach(async () => {
     await device.reloadReactNative();
-    // just an example of setting the root components state from inside a test :)
-    bridge.root.setState({ message: this.currentTest.title });
+    // bridge.root.setState({ message: this.currentTest.title });
   });
 
   describe('.signInAnonymously()', () => {
@@ -15,12 +14,12 @@ describe('.auth()', () => {
         currentUser.isAnonymous.should.equal(true);
         currentUser.providerId.should.equal('firebase');
 
-        currentUser.should.equal(bridge.module.auth().currentUser);
+        currentUser.should.equal(firebase.auth().currentUser);
 
-        return bridge.module.auth().signOut();
+        return firebase.auth().signOut();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInAnonymously()
         .then(successCb);
@@ -37,15 +36,15 @@ describe('.auth()', () => {
         should.equal(currentUser.toJSON().email, null);
         currentUser.isAnonymous.should.equal(true);
         currentUser.providerId.should.equal('firebase');
-        currentUser.should.equal(bridge.module.auth().currentUser);
+        currentUser.should.equal(firebase.auth().currentUser);
 
         const { additionalUserInfo } = currentUserCredential;
         additionalUserInfo.should.be.an.Object();
 
-        return bridge.module.auth().signOut();
+        return firebase.auth().signOut();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInAnonymouslyAndRetrieveData()
         .then(successCb);
@@ -64,12 +63,12 @@ describe('.auth()', () => {
         currentUser.toJSON().email.should.eql('test@test.com');
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
-        currentUser.should.equal(bridge.module.auth().currentUser);
+        currentUser.should.equal(firebase.auth().currentUser);
 
-        return bridge.module.auth().signOut();
+        return firebase.auth().signOut();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInWithEmailAndPassword(email, pass)
         .then(successCb);
@@ -89,7 +88,7 @@ describe('.auth()', () => {
         return Promise.resolve();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInWithEmailAndPassword(email, pass)
         .then(successCb)
@@ -110,7 +109,7 @@ describe('.auth()', () => {
         return Promise.resolve();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInWithEmailAndPassword(email, pass)
         .then(successCb)
@@ -131,7 +130,7 @@ describe('.auth()', () => {
         return Promise.resolve();
       };
 
-      return bridge.module
+      return firebase
         .auth()
         .signInWithEmailAndPassword(email, pass)
         .then(successCb)
@@ -141,25 +140,25 @@ describe('.auth()', () => {
 
   describe('.onAuthStateChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
-      await bridge.module.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymouslyAndRetrieveData();
 
       // Test
       const callback = sinon.spy();
 
       let unsubscribe;
       await new Promise(resolve => {
-        unsubscribe = bridge.module.auth().onAuthStateChanged(user => {
+        unsubscribe = firebase.auth().onAuthStateChanged(user => {
           callback(user);
           resolve();
         });
       });
 
-      callback.should.be.calledWith(bridge.module.auth().currentUser);
+      callback.should.be.calledWith(firebase.auth().currentUser);
       callback.should.be.calledOnce();
 
       // Sign out
 
-      await bridge.module.auth().signOut();
+      await firebase.auth().signOut();
 
       await new Promise(resolve => {
         setTimeout(() => resolve(), 100);
@@ -176,25 +175,25 @@ describe('.auth()', () => {
     });
 
     it('stops listening when unsubscribe called', async () => {
-      await bridge.module.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymouslyAndRetrieveData();
 
       // Test
       const callback = sinon.spy();
 
       let unsubscribe;
       await new Promise(resolve => {
-        unsubscribe = bridge.module.auth().onAuthStateChanged(user => {
+        unsubscribe = firebase.auth().onAuthStateChanged(user => {
           callback(user);
           resolve();
         });
       });
 
-      callback.should.be.calledWith(bridge.module.auth().currentUser);
+      callback.should.be.calledWith(firebase.auth().currentUser);
       callback.should.be.calledOnce();
 
       // Sign out
 
-      await bridge.module.auth().signOut();
+      await firebase.auth().signOut();
 
       await new Promise(resolve => {
         setTimeout(() => resolve(), 100);
@@ -211,7 +210,7 @@ describe('.auth()', () => {
 
       // Sign back in
 
-      await bridge.module.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymouslyAndRetrieveData();
 
       // Assertions
 
@@ -219,7 +218,7 @@ describe('.auth()', () => {
 
       // Tear down
 
-      await bridge.module.auth().signOut();
+      await firebase.auth().signOut();
     });
   });
 });
