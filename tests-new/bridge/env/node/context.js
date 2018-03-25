@@ -61,7 +61,7 @@ module.exports = {
       console: consoleContext(),
       __bridgeNode: {
         _ready() {
-          setTimeout(() => process.emit('bridge-attached'), 5);
+          setTimeout(() => process.emit('bridge-attached'), 1);
         },
 
         setBridgeProperty(key, value) {

@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 module.exports = function consoleContext() {
   return {
     ...console,
@@ -16,6 +18,15 @@ module.exports = function consoleContext() {
       }
 
       console.log(...args);
+    },
+
+    warn(...args) {
+      console.log(
+        ...[
+          '⚠️ ',
+          ...args.map(a => (typeof a === 'string' ? chalk.yellowBright(a) : a)),
+        ]
+      );
     },
   };
 };
