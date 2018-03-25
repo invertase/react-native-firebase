@@ -4,32 +4,33 @@
  * @flow
  */
 
-require('sinon');
-require('should-sinon');
-require('should');
-
 // must import before all else
-import Bridge from './bridge/env/rn';
 
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
+import bridge from './bridge/env/rn';
 import firebase from './firebase';
+
+require('sinon');
+require('should-sinon');
+require('should');
 
 class Root extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: 'React Native Firebase Test App',
+      message: '',
     };
-    Bridge.provideRoot(this);
-    Bridge.provideModule(firebase);
+
+    bridge.setBridgeProperty('root', this);
+    bridge.setBridgeProperty('module', firebase);
   }
 
   render() {
     return (
       <View>
-        <Text testID="tap">{this.state.message}</Text>
+        <Text testID="messageText">{this.state.message}</Text>
       </View>
     );
   }

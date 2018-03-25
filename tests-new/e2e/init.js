@@ -12,3 +12,7 @@ before(async () => {
 after(async () => {
   await detox.cleanup();
 });
+
+bridge.beforeContextReset = () => {
+  console.log('reset');
+};
