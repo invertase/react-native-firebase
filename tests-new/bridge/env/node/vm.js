@@ -6,13 +6,14 @@ const invariant = require('assert');
 const { Script } = require('vm');
 const context = require('./context');
 const coverage = require('./coverage');
+const { buildSourceMap } = require('./source-map');
 
 let send;
 let bundle;
 
 const PREPARE = 'prepareJSRuntime';
+const BUNDLE_FILE_NAME = 'app.bundle.js';
 const EXECUTE = 'executeApplicationScript';
-const TEMP_BUNDLE_PATH = '/tmp/bridge/react-native.js';
 
 function reply(id, result) {
   send({
@@ -25,22 +26,34 @@ function handleError(message) {
   throw new Error(message);
 }
 
-async function downloadBundle(bundleUrl) {
+async function downloadUrl(url) {
   const res = await new Promise((resolve, reject) =>
-    http.get(bundleUrl, resolve).on('error', reject)
+    http.get(url, resolve).on('error', reject)
   );
 
   let buffer = '';
-
   res.setEncoding('utf8');
   res.on('data', chunk => (buffer += chunk));
   await new Promise(resolve => res.on('end', resolve));
+  return buffer;
+}
 
-  bundle = new Script(buffer, {
+async function downloadBundle(bundleUrl) {
+  const bundleStr = await downloadUrl(bundleUrl);
+
+  bundle = new Script(bundleStr, {
     timeout: 120000,
     displayErrors: true,
-    filename: TEMP_BUNDLE_PATH,
+    filename: BUNDLE_FILE_NAME,
   });
+
+  const sourceMapUrl = bundleStr
+    .slice(bundleStr.lastIndexOf('\n'))
+    .replace('//# sourceMappingURL=', '');
+
+  const sourceMapSource = await downloadUrl(sourceMapUrl);
+
+  await buildSourceMap(sourceMapSource, BUNDLE_FILE_NAME);
 
   return bundle;
 }
@@ -58,6 +71,7 @@ async function getBundle(request) {
   parsedUrl.query.inlineSourceMap = true;
   delete parsedUrl.search;
 
+  console.log(url.format(parsedUrl));
   return downloadBundle(url.format(parsedUrl));
 }
 
@@ -87,9 +101,8 @@ module.exports = {
             global.bridge.context[name] = JSON.parse(request.inject[name]);
           }
         }
-        script.runInContext(global.bridge.context, {
-          filename: TEMP_BUNDLE_PATH,
-        });
+
+        script.runInContext(global.bridge.context, BUNDLE_FILE_NAME);
         reply(request.id);
         break;
       }

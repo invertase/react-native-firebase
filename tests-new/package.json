@@ -4,17 +4,13 @@
   "private": true,
   "scripts": {
     "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-
+    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --reset-cache",
     "build-android": "detox build --configuration android.emu.debug",
-
     "test": "npm run test-android && test-ios",
-
     "test-android": "detox test --configuration android.emu.debug",
     "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
     "test-android-cover": "nyc detox test --configuration android.emu.debug",
     "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
-
     "test-ios": "detox test --configuration ios.sim.debug",
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
@@ -33,6 +29,8 @@
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^4.4.8",
+    "source-map": "^0.7.2",
+    "stacktrace-parser": "^0.1.4",
     "ws": "^5.1.0"
   },
   "devDependencies": {

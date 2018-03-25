@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 global.bridge = {};
+require('./source-map');
 
 const detox = require('detox');
 const ws = require('./ws');
