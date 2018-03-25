@@ -53,7 +53,7 @@ module.exports = {
   },
 
   /**
-   * Create a new context for a RN app to attach to, we addtionaly provide __bridgeNode for
+   * Create a new context for a RN app to attach to, we additionally provide __bridgeNode for
    * the counterpart RN bridge code to attach to and communicate back
    */
   create() {
