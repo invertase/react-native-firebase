@@ -71,7 +71,6 @@ async function getBundle(request) {
   parsedUrl.query.inlineSourceMap = true;
   delete parsedUrl.search;
 
-  console.log(url.format(parsedUrl));
   return downloadBundle(url.format(parsedUrl));
 }
 
@@ -82,7 +81,6 @@ module.exports = {
 
   async message(request) {
     const { method } = request;
-    // console.log(request.method);
     switch (method) {
       case PREPARE:
         coverage.collect();

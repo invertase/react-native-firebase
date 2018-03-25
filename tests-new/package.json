@@ -21,6 +21,7 @@
     "chalk": "^2.3.2",
     "deeps": "^1.4.4",
     "detox": "^7.2.0",
+    "error-stack-parser": "^2.0.1",
     "istanbul-lib-coverage": "^1.2.0",
     "mocha": "^4.0.1",
     "react": "^16.2.0",
@@ -30,7 +31,6 @@
     "should-sinon": "0.0.6",
     "sinon": "^4.4.8",
     "source-map": "^0.7.2",
-    "stacktrace-parser": "^0.1.4",
     "ws": "^5.1.0"
   },
   "devDependencies": {
