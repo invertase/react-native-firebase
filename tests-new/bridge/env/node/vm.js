@@ -1,6 +1,7 @@
 /* eslint-disable guard-for-in,no-restricted-syntax,no-return-assign */
 const url = require('url');
 const http = require('http');
+const chalk = require('chalk');
 const invariant = require('assert');
 const { Script } = require('vm');
 const context = require('./context');
@@ -45,7 +46,13 @@ async function downloadBundle(bundleUrl) {
 
 async function getBundle(request) {
   if (bundle) return bundle;
-  console.log('Downloading app bundle...');
+  console.log('');
+  console.log(
+    `${chalk.blue(
+      '[bridge]'
+    )} debugger has connected! Downloading app JS bundle...`
+  );
+  console.log('');
 
   const parsedUrl = url.parse(request.url, true);
   invariant(parsedUrl.query);
