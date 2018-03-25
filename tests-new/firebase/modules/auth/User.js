@@ -32,6 +32,7 @@ export default class User {
   constructor(auth: Auth, user: NativeUser) {
     this._auth = auth;
     this._user = user;
+    throw new Error('Woops')
   }
 
   /**

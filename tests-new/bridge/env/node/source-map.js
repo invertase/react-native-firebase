@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const Mocha = require('mocha');
-const { parse } = require('stacktrace-parser');
+const ErrorStack = require('error-stack-parser');
 const { SourceMapConsumer } = require('source-map');
 
 let bundleFileName = null;
@@ -18,21 +18,21 @@ function frameToStr(parsed) {
     line: parsed.lineNumber,
     column: parsed.column,
   });
-  return `    at ${name || parsed.methodName} (${source ||
-    parsed.file}:${line || parsed.lineNumber}:${column || parsed.column})`;
+  return `    at ${name || parsed.functionName || '<anonymous>'} (${source ||
+    parsed.fileName}:${line || parsed.lineNumber}:${column ||
+    parsed.columnNumber})`;
 }
 
 // override mocha fail so we can replace stack traces
 Runner.prototype.fail = function fail(test, error) {
-  console.dir(error);
   const original = error.stack.split('\n');
-  const parsed = parse(error.stack);
+  const parsed = ErrorStack.parse(error);
 
   const newStack = [original[0]];
 
   for (let i = 0; i < parsed.length; i++) {
-    const { file } = parsed[i];
-    if (file === bundleFileName) newStack.push(frameToStr(parsed[i]));
+    const { fileName } = parsed[i];
+    if (fileName === bundleFileName) newStack.push(frameToStr(parsed[i]));
     else newStack.push(original[i + 1]);
   }
 
