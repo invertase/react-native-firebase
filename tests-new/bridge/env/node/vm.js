@@ -47,13 +47,11 @@ async function downloadBundle(bundleUrl) {
 
 async function getBundle(request) {
   if (bundle) return bundle;
-  console.log('');
   console.log(
     `${chalk.blue(
       '[bridge]'
     )} debugger has connected! Downloading app JS bundle...`
   );
-  console.log('');
 
   const parsedUrl = url.parse(request.url, true);
   invariant(parsedUrl.query);

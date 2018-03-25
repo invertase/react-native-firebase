@@ -36,6 +36,10 @@ if (Platform.OS === 'ios' && !bridgeNode) {
   }
 }
 
+global.__driftCheck = delay => {
+  setTimeout(bridgeNode._callbackDriftCheck, delay);
+};
+
 let hasInitialized = false;
 
 export default {

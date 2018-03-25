@@ -3,8 +3,10 @@ global.bridge.context = null;
 
 const consoleContext = require('./console');
 const { createContext } = require('vm');
+const chalk = require('chalk');
 
 let customBridgeProps = [];
+let driftCheckStart = null;
 
 module.exports = {
   /**
@@ -58,6 +60,34 @@ module.exports = {
       console: consoleContext(),
       __bridgeNode: {
         _ready() {
+          if (!driftCheckStart) {
+            driftCheckStart = Date.now();
+            global.bridge.context.__driftCheck(1);
+          } else {
+            setTimeout(() => process.emit('bridge-attached'), 1);
+          }
+        },
+
+        _callbackDriftCheck() {
+          const timeTaken = Date.now() - driftCheckStart;
+          if (timeTaken > 5000) {
+            console.log(
+              `${chalk.blue(
+                '[bridge] ⚠️ '
+              )} It looks like there's an issue with device timer performance...`
+            );
+            console.log(
+              `${chalk.blue(
+                '[bridge] ⚠️ '
+              )} You may experience slow testing times as a result - ensure your device date/time correctly matches your debugger machine.`
+            );
+            // todo android only
+            // fake the RN warning for this
+            global.bridge.context.console.warn(
+              `Debugger and device times have drifted. ` +
+                `Please correct this by running adb shell "date \`date +%m%d%H%M%Y.%S\`" on your debugger machine.`
+            );
+          }
           setTimeout(() => process.emit('bridge-attached'), 1);
         },
 
