@@ -1,7 +1,6 @@
 --recursive
 --timeout 120000
---slow 1
+--slow 2000
 --bail
 --exit
---grep auth
 --require ./bridge/env/node
