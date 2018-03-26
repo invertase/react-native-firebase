@@ -91,7 +91,7 @@ module.exports = {
 
       case EXECUTE: {
         const script = await getBundle(request);
-        if (global.bridge.context == null) {
+        if (global.bridge.context === null) {
           throw new Error('VM context was not prepared.');
         }
         if (request.inject) {
@@ -109,7 +109,7 @@ module.exports = {
         let returnValue = [[], [], [], 0];
         try {
           if (
-            global.bridge.context != null &&
+            global.bridge.context !== null &&
             typeof global.bridge.context.__fbBatchedBridge === 'object'
           ) {
             returnValue = global.bridge.context.__fbBatchedBridge[method].apply(
