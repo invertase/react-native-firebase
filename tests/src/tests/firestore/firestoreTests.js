@@ -126,23 +126,10 @@ function firestoreTests({ before, describe, it, context, firebase }) {
       });
     });
 
-    context('disableNetwork()', () => {
-      it('should throw an unsupported error', () => {
-        (() => {
-          firebase.native.firestore().disableNetwork();
-        }).should.throw(
-          'firebase.firestore().disableNetwork() is unsupported by the native Firebase SDKs.'
-        );
-      });
-    });
-
-    context('enableNetwork()', () => {
-      it('should throw an unsupported error', () => {
-        (() => {
-          firebase.native.firestore().enableNetwork();
-        }).should.throw(
-          'firebase.firestore().enableNetwork() is unsupported by the native Firebase SDKs.'
-        );
+    context('disable/enableNetwork()', () => {
+      it('should work without error', async () => {
+        await firebase.native.firestore().disableNetwork();
+        await firebase.native.firestore().enableNetwork();
       });
     });
 
