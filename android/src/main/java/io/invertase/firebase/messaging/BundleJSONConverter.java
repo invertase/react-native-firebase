@@ -166,6 +166,8 @@ public class BundleJSONConverter {
             jsonArray.put(objValue);
           } else if (objValue instanceof Bundle) {
             jsonArray.put(convertToJSON((Bundle) objValue));
+          } else if (objValue instanceof Integer) {
+            jsonArray.put(objValue);
           } else {
             throw new IllegalArgumentException("Unsupported type: " + objValue.getClass());
           }
