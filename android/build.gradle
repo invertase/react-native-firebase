@@ -2,6 +2,7 @@ buildscript {
   ext.firebaseVersion = '12.0.0'
   repositories {
     jcenter()
+    google()
     maven {
       url 'https://maven.fabric.io/public'
     }
