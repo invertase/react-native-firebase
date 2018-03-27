@@ -3,8 +3,8 @@ rootProject.name = 'RNFTests'
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')
 
-include ':react-native-restart'
-project(':react-native-restart').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-restart/android')
+include ':bridge'
+project(':bridge').projectDir = new File(rootProject.projectDir, '../node_modules/bridge/android')
 
 include ':app'
 

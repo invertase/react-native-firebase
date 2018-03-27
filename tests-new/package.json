@@ -26,7 +26,6 @@
     "mocha": "^4.0.1",
     "react": "^16.2.0",
     "react-native": "^0.52.3",
-    "react-native-restart": "0.0.6",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^4.4.8",

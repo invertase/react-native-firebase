@@ -26,9 +26,9 @@ function handleError(message) {
   throw new Error(message);
 }
 
-async function downloadUrl(url) {
+async function downloadUrl(fileUrl) {
   const res = await new Promise((resolve, reject) =>
-    http.get(url, resolve).on('error', reject)
+    http.get(fileUrl, resolve).on('error', reject)
   );
 
   let buffer = '';
@@ -60,11 +60,7 @@ async function downloadBundle(bundleUrl) {
 
 async function getBundle(request) {
   if (bundle) return bundle;
-  console.log(
-    `${chalk.blue(
-      '[bridge]'
-    )} debugger has connected! Downloading app JS bundle...`
-  );
+  console.log(`${chalk.blue('[bridge]')} debugger connected`);
 
   const parsedUrl = url.parse(request.url, true);
   invariant(parsedUrl.query);

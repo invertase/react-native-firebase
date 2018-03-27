@@ -8,8 +8,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import io.invertase.bridge.RNBridgePackage;
 import io.invertase.firebase.RNFirebasePackage;
-import com.avishayil.rnrestart.ReactNativeRestartPackage;
 import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
@@ -41,7 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new ReactNativeRestartPackage(),
+        new RNBridgePackage(),
         new RNFirebasePackage(),
         new RNFirebaseAdMobPackage(),
         new RNFirebaseAnalyticsPackage(),
@@ -70,7 +70,6 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    getReactNativeHost().getReactInstanceManager().getDevSupportManager().getDevSettings().setRemoteJSDebugEnabled(true);
     SoLoader.init(this, /* native exopackage */ false);
   }
 
