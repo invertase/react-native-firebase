@@ -444,9 +444,8 @@ public class RNFirebaseNotificationManager {
         Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));
       }
     } catch (Exception e) {
-      if (promise == null) {
-        Log.e(TAG, "Failed to send notification", e);
-      } else {
+      Log.e(TAG, "Failed to send notification", e);
+      if (promise != null) {
         promise.reject("notification/display_notification_error", "Could not send notification", e);
       }
     }
