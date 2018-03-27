@@ -356,7 +356,7 @@ public class RNFirebaseNotificationManager {
         if(vibrate != null) {
           long[] vibrateArray = new long[vibrate.size()];
           for (int i = 0; i < vibrate.size(); i++) {
-            vibrateArray[i] = (vibrate.get(i).longValue();
+            vibrateArray[i] = vibrate.get(i).longValue();
           }
           nb = nb.setVibrate(vibrateArray);
         }
