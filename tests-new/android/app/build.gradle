@@ -87,9 +87,7 @@ dependencies {
     transitive = false
   }
 
-  implementation(project(':react-native-restart')) {
-    transitive = false
-  }
+  implementation project(':bridge')
 
   compile fileTree(dir: "libs", include: ["*.jar"])
   compile "com.google.android.gms:play-services-base:$firebaseVersion"

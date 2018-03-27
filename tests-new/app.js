@@ -9,7 +9,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
-import bridge from './bridge/env/rn';
+import bridge from 'bridge/platform/react-native';
 import firebase from './firebase';
 
 require('sinon');

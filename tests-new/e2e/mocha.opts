@@ -3,4 +3,4 @@
 --slow 2200
 --bail
 --exit
---require ./bridge/env/node
+--require bridge/platform/node
