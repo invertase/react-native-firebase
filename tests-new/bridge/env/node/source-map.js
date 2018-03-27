@@ -1,12 +1,16 @@
-/* eslint-disable no-param-reassign */
-const Mocha = require('mocha');
-const ErrorStack = require('error-stack-parser');
-const { SourceMapConsumer } = require('source-map');
+/* eslint-disable no-param-reassign,global-require */
+let Mocha;
+try {
+  Mocha = require('mocha');
+} catch (e) {
+  // ignore
+}
 
 let bundleFileName = null;
-const Runner = Mocha.Runner;
 let sourceMapConsumer = null;
-const originalFail = Runner.prototype.fail;
+
+const ErrorStack = require('error-stack-parser');
+const { SourceMapConsumer } = require('source-map');
 
 /**
  * Convert an error frame into a source mapped string
@@ -23,8 +27,13 @@ function frameToStr(parsed) {
     parsed.columnNumber})`;
 }
 
-// override mocha fail so we can replace stack traces
-Runner.prototype.fail = function fail(test, error) {
+/**
+ * Convert an errors stack frames to their original source mapped positions
+ *
+ * @param error
+ * @return {*}
+ */
+function sourceMappedError(error) {
   const original = error.stack.split('\n');
   const parsed = ErrorStack.parse(error);
 
@@ -37,10 +46,20 @@ Runner.prototype.fail = function fail(test, error) {
   }
 
   error.stack = newStack.join('\n');
-  return originalFail.call(this, test, error);
-};
+  return error;
+}
+
+if (Mocha) {
+  // override mocha fail so we can replace stack traces
+  const Runner = Mocha.Runner;
+  const originalFail = Runner.prototype.fail;
+  Runner.prototype.fail = function fail(test, error) {
+    return originalFail.call(this, test, sourceMappedError(error));
+  };
+}
 
 module.exports = {
+  sourceMappedError,
   /**
    * Build a source map consumer from source map bundle contents
    * @param str
