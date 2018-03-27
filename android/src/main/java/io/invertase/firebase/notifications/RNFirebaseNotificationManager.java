@@ -236,6 +236,41 @@ public class RNFirebaseNotificationManager {
         Double badgeIconType = android.getDouble("badgeIconType");
         nb = nb.setBadgeIconType(badgeIconType.intValue());
       }
+      if (android.containsKey("bigPicture")) {
+        Bundle bigPicture = android.getBundle("bigPicture");
+
+        NotificationCompat.BigPictureStyle bp = new NotificationCompat.BigPictureStyle();
+        Bitmap picture = getBitmap(bigPicture.getString("picture"));
+        if (picture != null) {
+          bp = bp.bigPicture(picture);
+        }
+        if (bigPicture.containsKey("largeIcon")) {
+          Bitmap largeIcon = getBitmap(bigPicture.getString("largeIcon"));
+          if (largeIcon != null) {
+            bp = bp.bigLargeIcon(largeIcon);
+          }
+        }
+        if (bigPicture.containsKey("contentTitle")) {
+          bp = bp.setBigContentTitle(bigPicture.getString("contentTitle"));
+        }
+        if (bigPicture.containsKey("summaryText")) {
+          bp = bp.setSummaryText(bigPicture.getString("summaryText"));
+        }
+        nb = nb.setStyle(bp);
+      }
+      if (android.containsKey("bigText")) {
+        Bundle bigText = android.getBundle("bigText");
+
+        NotificationCompat.BigTextStyle bt = new NotificationCompat.BigTextStyle();
+        bt.bigText(bigText.getString("text"));
+        if (bigText.containsKey("contentTitle")) {
+          bt = bt.setBigContentTitle(bigText.getString("contentTitle"));
+        }
+        if (bigText.containsKey("summaryText")) {
+          bt = bt.setSummaryText(bigText.getString("summaryText"));
+        }
+        nb = nb.setStyle(bt);
+      }
       if (android.containsKey("category")) {
         nb = nb.setCategory(android.getString("category"));
       }
