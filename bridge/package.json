@@ -1,0 +1,96 @@
+{
+  "name": "rnfirebase-tests",
+  "version": "7.2.0",
+  "private": true,
+  "scripts": {
+    "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "packager-bridge-reset-cache": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --reset-cache",
+    "build-android": "detox build --configuration android.emu.debug",
+    "build-ios": "detox build --configuration ios.sim.debug",
+    "test": "npm run test-android && test-ios",
+    "test-android": "detox test --configuration android.emu.debug",
+    "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
+    "test-android-cover": "nyc detox test --configuration android.emu.debug",
+    "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
+    "test-ios": "detox test --configuration ios.sim.debug",
+    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
+    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse",
+    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
+  },
+  "dependencies": {
+    "babel-preset-es2015-mod": "^6.6.0",
+    "babel-preset-es3": "^1.0.1",
+    "bridge": "^1.0.0-alpha2",
+    "chalk": "^2.3.2",
+    "deeps": "^1.4.4",
+    "detox": "^7.2.0",
+    "error-stack-parser": "^2.0.1",
+    "istanbul-lib-coverage": "^1.2.0",
+    "mocha": "^4.0.1",
+    "react": "^16.2.0",
+    "react-native": "^0.52.3",
+    "should": "^13.2.1",
+    "should-sinon": "0.0.6",
+    "sinon": "^4.4.8",
+    "source-map": "^0.7.2",
+    "ws": "^5.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "19.0.0",
+    "babel-plugin-flow-react-proptypes": "^0.21.0",
+    "babel-plugin-istanbul": "^4.1.5",
+    "babel-preset-react-native": "1.9.1",
+    "eslint": "^3.16.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-flowtype": "^2.46.1",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0",
+    "nyc": "^11.6.0"
+  },
+  "nyc": {
+    "check-coverage": false,
+    "lines": 95,
+    "statements": 95,
+    "functions": 95,
+    "branches": 95,
+    "include": ["firebase"],
+    "sourceMap": false,
+    "instrument": false,
+    "reporter": ["lcov", "text-summary"]
+  },
+  "detox": {
+    "test-runner": "mocha",
+    "specs": "e2e",
+    "runner-config": "e2e/mocha.opts",
+    "configurations": {
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 7 Plus"
+      },
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
+        "type": "ios.simulator",
+        "name": "iPhone 7 Plus"
+      },
+      "android.emu.debug": {
+        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
+        "type": "android.emulator",
+        "name": "TestingAVD"
+      },
+      "android.emu.release": {
+        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+        "build": "pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
+        "type": "android.emulator",
+        "name": "TestingAVD"
+      }
+    }
+  }
+}
