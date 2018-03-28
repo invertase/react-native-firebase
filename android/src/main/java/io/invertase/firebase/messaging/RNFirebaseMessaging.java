@@ -96,13 +96,15 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void subscribeToTopic(String topic) {
+  public void subscribeToTopic(String topic, Promise promise) {
     FirebaseMessaging.getInstance().subscribeToTopic(topic);
+    promise.resolve(null);
   }
 
   @ReactMethod
-  public void unsubscribeFromTopic(String topic) {
+  public void unsubscribeFromTopic(String topic, Promise promise) {
     FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+    promise.resolve(null);
   }
 
   private class MessageReceiver extends BroadcastReceiver {

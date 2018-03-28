@@ -18,7 +18,7 @@ RNfirebase.utils().logLevel = 'warn'; // default
 const notifications = async () => {
   try {
     await RNfirebase.messaging().requestPermission();
-    const instanceid = await RNfirebase.instanceid().get();
+    const instanceid = await RNfirebase.iid().get();
     console.log('instanceid: ', instanceid);
     const token = await RNfirebase.messaging().getToken();
     console.log('token: ', token);
@@ -40,7 +40,7 @@ const notifications = async () => {
     RNfirebase.notifications().onNotificationDisplayed(notification => {
       console.log('onNotificationDisplayed: ', notification);
     });
-    // RNfirebase.instanceid().delete();
+    // RNfirebase.iid().delete();
     const channel = new RNfirebase.notifications.Android.Channel(
       'test',
       'test',

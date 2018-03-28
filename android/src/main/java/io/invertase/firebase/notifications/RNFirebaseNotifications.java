@@ -62,13 +62,13 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   }
 
   @ReactMethod
-  public void cancelAllNotifications() {
-    notificationManager.cancelAllNotifications();
+  public void cancelAllNotifications(Promise promise) {
+    notificationManager.cancelAllNotifications(promise);
   }
 
   @ReactMethod
-  public void cancelNotification(String notificationId) {
-    notificationManager.cancelNotification(notificationId);
+  public void cancelNotification(String notificationId, Promise promise) {
+    notificationManager.cancelNotification(notificationId, promise);
   }
 
   @ReactMethod
@@ -103,17 +103,17 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   }
 
   @ReactMethod
-  public void removeAllDeliveredNotifications() {
-    notificationManager.removeAllDeliveredNotifications();
+  public void removeAllDeliveredNotifications(Promise promise) {
+    notificationManager.removeAllDeliveredNotifications(promise);
   }
 
   @ReactMethod
-  public void removeDeliveredNotification(String notificationId) {
-    notificationManager.removeDeliveredNotification(notificationId);
+  public void removeDeliveredNotification(String notificationId, Promise promise) {
+    notificationManager.removeDeliveredNotification(notificationId, promise);
   }
 
   @ReactMethod
-  public void setBadge(int badge) {
+  public void setBadge(int badge, Promise promise) {
     // Store the badge count for later retrieval
     sharedPreferences.edit().putInt(BADGE_KEY, badge).apply();
     if (badge == 0) {
@@ -123,6 +123,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       Log.d(TAG, "Apply badge count: " + badge);
       ShortcutBadger.applyCount(this.getReactApplicationContext(), badge);
     }
+    promise.resolve(null);
   }
 
   @ReactMethod
