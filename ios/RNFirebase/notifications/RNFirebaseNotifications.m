@@ -202,20 +202,24 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 // ** Finish UNUserNotificationCenterDelegate methods
 // *******************************************************
 
-RCT_EXPORT_METHOD(cancelAllNotifications) {
+RCT_EXPORT_METHOD(cancelAllNotifications:(RCTPromiseResolveBlock)resolve
+                                rejecter:(RCTPromiseRejectBlock)reject) {
     if ([self isIOS89]) {
         [RCTSharedApplication() cancelAllLocalNotifications];
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             if (notificationCenter != nil) {
                 [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
             }
-        #endif
+        }
     }
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
+RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId
+                            resolver:(RCTPromiseResolveBlock)resolve
+                            rejecter:(RCTPromiseRejectBlock)reject) {
     if ([self isIOS89]) {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary *notificationInfo = notification.userInfo;
@@ -224,13 +228,14 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId) {
             }
         }
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             if (notificationCenter != nil) {
                 [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[notificationId]];
             }
-        #endif
+        }
     }
+    resolve(nil);
 }
 
 RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
@@ -241,7 +246,7 @@ RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
         [RCTSharedApplication() presentLocalNotificationNow:notif];
         resolve(nil);
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:false];
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
@@ -250,7 +255,7 @@ RCT_EXPORT_METHOD(displayNotification:(NSDictionary*) notification
                     reject(@"notifications/display_notification_error", @"Failed to display notificaton", error);
                 }
             }];
-        #endif
+        }
     }
 }
 
@@ -295,7 +300,7 @@ RCT_EXPORT_METHOD(getScheduledNotifications:(RCTPromiseResolveBlock)resolve
         }
         resolve(notifications);
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
                 NSMutableArray* notifications = [[NSMutableArray alloc] init];
                 for (UNNotificationRequest *notif in requests){
@@ -304,34 +309,39 @@ RCT_EXPORT_METHOD(getScheduledNotifications:(RCTPromiseResolveBlock)resolve
                 }
                 resolve(notifications);
             }];
-        #endif
+        }
     }
 }
 
-RCT_EXPORT_METHOD(removeAllDeliveredNotifications) {
+RCT_EXPORT_METHOD(removeAllDeliveredNotifications:(RCTPromiseResolveBlock)resolve
+                                         rejecter:(RCTPromiseRejectBlock)reject) {
     if ([self isIOS89]) {
         // No such functionality on iOS 8/9
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             if (notificationCenter != nil) {
                 [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
             }
-        #endif
+        }
     }
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId) {
+RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId
+                                     resolver:(RCTPromiseResolveBlock)resolve
+                                     rejecter:(RCTPromiseRejectBlock)reject) {
     if ([self isIOS89]) {
         // No such functionality on iOS 8/9
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
             if (notificationCenter != nil) {
                 [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notificationId]];
             }
-        #endif
+        }
     }
+    resolve(nil);
 }
 
 RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
@@ -342,7 +352,7 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
         [RCTSharedApplication() scheduleLocalNotification:notif];
         resolve(nil);
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             UNNotificationRequest* request = [self buildUNNotificationRequest:notification withSchedule:true];
             [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
                 if (!error) {
@@ -351,13 +361,16 @@ RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
                     reject(@"notification/schedule_notification_error", @"Failed to schedule notificaton", error);
                 }
             }];
-        #endif
+        }
     }
 }
 
-RCT_EXPORT_METHOD(setBadge: (NSInteger) number) {
+RCT_EXPORT_METHOD(setBadge:(NSInteger) number
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [RCTSharedApplication() setApplicationIconBadgeNumber:number];
+        resolve(nil);
     });
 }
 
