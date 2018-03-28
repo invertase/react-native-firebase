@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0-rc.3",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Messaging (FCM), Remote Config, Storage and Performance.",
   "main": "dist/index.js",
@@ -32,10 +32,46 @@
   "jest": {
     "preset": "jest-react-native",
     "setupFiles": [],
-    "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modues/react-native-mock", "./node_modules/react-addons-test-utils"]
+    "unmockedModulePathPatterns": [
+      "./node_modules/react",
+      "./node_modules/react-native",
+      "./node_modues/react-native-mock",
+      "./node_modules/react-addons-test-utils"
+    ]
   },
   "license": "APACHE-2.0",
-  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
+  "keywords": [
+    "react",
+    "admob",
+    "auth",
+    "config",
+    "digits",
+    "fabric",
+    "phone-auth",
+    "sms",
+    "firestore",
+    "cloud-firestore",
+    "datastore",
+    "remote-config",
+    "transactions",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "fcm",
+    "apn",
+    "gcm",
+    "analytics",
+    "messaging",
+    "database",
+    "android",
+    "ios",
+    "crash",
+    "firestack",
+    "performance",
+    "firestore",
+    "dynamic-links",
+    "crashlytics"
+  ],
   "peerDependencies": {
     "react": "*",
     "react-native": ">= 0.48.0",
@@ -91,8 +127,17 @@
     "url": "https://opencollective.com/react-native-firebase"
   },
   "lint-staged": {
-    "lib/**/*.js": ["eslint --fix", "git add"],
-    "tests/{src|lib}/**/*.js": ["eslint --fix", "git add"],
-    "*.{json,md,scss}": ["prettier --write", "git add"]
+    "lib/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "tests/{src|lib}/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
