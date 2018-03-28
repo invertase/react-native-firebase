@@ -32,46 +32,10 @@
   "jest": {
     "preset": "jest-react-native",
     "setupFiles": [],
-    "unmockedModulePathPatterns": [
-      "./node_modules/react",
-      "./node_modules/react-native",
-      "./node_modues/react-native-mock",
-      "./node_modules/react-addons-test-utils"
-    ]
+    "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modues/react-native-mock", "./node_modules/react-addons-test-utils"]
   },
   "license": "APACHE-2.0",
-  "keywords": [
-    "react",
-    "admob",
-    "auth",
-    "config",
-    "digits",
-    "fabric",
-    "phone-auth",
-    "sms",
-    "firestore",
-    "cloud-firestore",
-    "datastore",
-    "remote-config",
-    "transactions",
-    "react-native",
-    "react-native-firebase",
-    "firebase",
-    "fcm",
-    "apn",
-    "gcm",
-    "analytics",
-    "messaging",
-    "database",
-    "android",
-    "ios",
-    "crash",
-    "firestack",
-    "performance",
-    "firestore",
-    "dynamic-links",
-    "crashlytics"
-  ],
+  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
   "peerDependencies": {
     "react": "*",
     "react-native": ">= 0.48.0",
@@ -127,17 +91,8 @@
     "url": "https://opencollective.com/react-native-firebase"
   },
   "lint-staged": {
-    "lib/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "tests/{src|lib}/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{json,md,scss}": [
-      "prettier --write",
-      "git add"
-    ]
+    "lib/**/*.js": ["eslint --fix", "git add"],
+    "tests/{src|lib}/**/*.js": ["eslint --fix", "git add"],
+    "*.{json,md,scss}": ["prettier --write", "git add"]
   }
 }

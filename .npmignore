@@ -74,6 +74,7 @@ docs
 coverage
 yarn.lock
 tests
+bridge/
 lib/.watchmanconfig
 buddybuild_postclone.sh
 bin/test.js

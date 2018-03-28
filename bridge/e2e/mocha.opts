@@ -1,0 +1,6 @@
+--recursive
+--timeout 120000
+--slow 2200
+--bail
+--exit
+--require bridge/platform/node
