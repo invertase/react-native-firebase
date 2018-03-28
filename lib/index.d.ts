@@ -1152,7 +1152,7 @@ declare module "react-native-firebase" {
         disableNetwork(): Promise<void>
         doc(documentPath: string): DocumentReference;
         enableNetwork(): Promise<void>
-
+        runTransaction(updateFunction: (transaction: Transaction) => Promise<any>): Promise<any>;
         /** NOT SUPPORTED YET */
         // enablePersistence(): Promise<void>;
         /** NOT SUPPORTED YET */
@@ -1348,6 +1348,19 @@ declare module "react-native-firebase" {
           documents: Types.NativeDocumentSnapshot[];
           metadata: Types.SnapshotMetadata;
         }
+      }
+
+      interface Transaction {
+        delete(docRef: DocumentReference): WriteBatch;
+        get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
+        set(documentRef: DocumentReference, data: Object, options?: Types.WriteOptions): Transaction
+        // multiple overrides for update() to allow strong-typed var_args
+        update(docRef: DocumentReference, obj: object): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any): WriteBatch;
+        update(docRef: DocumentReference, key1: Types.UpdateKey, val1: any, key2: Types.UpdateKey, val2: any, key3: Types.UpdateKey, val3: any, key4: Types.UpdateKey, val4: any, key5: Types.UpdateKey, val5: any): WriteBatch;
       }
 
       interface WriteBatch {
