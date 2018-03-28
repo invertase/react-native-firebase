@@ -84,7 +84,7 @@ dependencies {
     implementation "com.google.firebase:firebase-config:$firebaseVersion"
     implementation "com.google.firebase:firebase-core:$firebaseVersion"
     implementation "com.google.firebase:firebase-crash:$firebaseVersion"
-    // implementation "com.google.firebase:firebase-database:$firebaseVersion"
+    implementation "com.google.firebase:firebase-database:$firebaseVersion"
     implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
     implementation "com.google.firebase:firebase-perf:$firebaseVersion"
     implementation "com.google.firebase:firebase-storage:$firebaseVersion"
