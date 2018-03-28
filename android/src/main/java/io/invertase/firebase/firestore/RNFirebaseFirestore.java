@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -47,14 +48,42 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
    * REACT NATIVE METHODS
    */
 
-  /**
-   * @param enabled
-   */
+  @ReactMethod
+  public void disableNetwork(String appName, final Promise promise) {
+    getFirestoreForApp(appName).disableNetwork().addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "disableNetwork:onComplete:success");
+          promise.resolve(null);
+        } else {
+          Log.e(TAG, "disableNetwork:onComplete:failure", task.getException());
+          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException)task.getException());
+        }
+      }
+    });
+  }
+
   @ReactMethod
   public void enableLogging(Boolean enabled) {
     FirebaseFirestore.setLoggingEnabled(enabled);
   }
 
+  @ReactMethod
+  public void enableNetwork(String appName, final Promise promise) {
+    getFirestoreForApp(appName).enableNetwork().addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "enableNetwork:onComplete:success");
+          promise.resolve(null);
+        } else {
+          Log.e(TAG, "enableNetwork:onComplete:failure", task.getException());
+          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException)task.getException());
+        }
+      }
+    });
+  }
 
   @ReactMethod
   public void collectionGet(String appName, String path, ReadableArray filters,

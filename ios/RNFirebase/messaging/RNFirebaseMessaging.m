@@ -143,7 +143,7 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
 }
 
 // Non Web SDK methods
-RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(hasPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         dispatch_async(dispatch_get_main_queue(), ^{
             resolve(@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone));
@@ -158,7 +158,7 @@ RCT_EXPORT_METHOD(hasPermission: (RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 }
 
 
-RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
+RCT_EXPORT_METHOD(sendMessage:(NSDictionary *) message
                       resolve:(RCTPromiseResolveBlock) resolve
                        reject:(RCTPromiseRejectBlock) reject) {
     if (!message[@"to"]) {
@@ -175,12 +175,18 @@ RCT_EXPORT_METHOD(sendMessage: (NSDictionary *) message
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(subscribeToTopic: (NSString*) topic) {
+RCT_EXPORT_METHOD(subscribeToTopic:(NSString*) topic
+                           resolve:(RCTPromiseResolveBlock) resolve
+                            reject:(RCTPromiseRejectBlock) reject) {
     [[FIRMessaging messaging] subscribeToTopic:topic];
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic) {
+RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic
+                               resolve:(RCTPromiseResolveBlock) resolve
+                                reject:(RCTPromiseRejectBlock) reject) {
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
+    resolve(nil);
 }
 
 // ** Start internals **

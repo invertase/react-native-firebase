@@ -596,8 +596,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
       if (props.hasKey("photoURL")) {
         String photoURLStr = props.getString("photoURL");
-        Uri uri = Uri.parse(photoURLStr);
-        profileBuilder.setPhotoUri(uri);
+        profileBuilder.setPhotoUri(photoURLStr == null ? null : Uri.parse(photoURLStr));
       }
 
       UserProfileChangeRequest profileUpdates = profileBuilder.build();
@@ -1067,7 +1066,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   public void reauthenticateAndRetrieveDataWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise) {
     reauthenticate(appName, provider, authToken, authSecret, promise, true);
   }
-  
+
   public void reauthenticate(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);

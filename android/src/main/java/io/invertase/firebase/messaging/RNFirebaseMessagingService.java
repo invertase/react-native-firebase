@@ -35,11 +35,15 @@ public class RNFirebaseMessagingService extends FirebaseMessagingService {
         // Broadcast it so it is only available to the RN Application
         LocalBroadcastManager.getInstance(this).sendBroadcast(messagingEvent);
       } else {
-        // If the app is in the background we send it to the Headless JS Service
-        Intent headlessIntent = new Intent(this.getApplicationContext(), RNFirebaseBackgroundMessagingService.class);
-        headlessIntent.putExtra("message", message);
-        this.getApplicationContext().startService(headlessIntent);
-        HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
+        try {
+          // If the app is in the background we send it to the Headless JS Service
+          Intent headlessIntent = new Intent(this.getApplicationContext(), RNFirebaseBackgroundMessagingService.class);
+          headlessIntent.putExtra("message", message);
+          this.getApplicationContext().startService(headlessIntent);
+          HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
+        } catch (IllegalStateException ex) {
+          Log.e(TAG, "Background messages will only work if the message priority is set to 'high'", ex);
+        }
       }
     }
   }

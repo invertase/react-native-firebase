@@ -185,9 +185,34 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
  *  TRANSACTIONS END
  */
 
+RCT_EXPORT_METHOD(disableNetwork:(NSString *)appDisplayName
+                  resolver:(RCTPromiseResolveBlock) resolve
+                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
+    [firestore disableNetworkWithCompletion:^(NSError * _Nullable error) {
+        if (error) {
+            [RNFirebaseFirestore promiseRejectException:reject error:error];
+        } else {
+            resolve(nil);
+        }
+    }];
+}
 
 RCT_EXPORT_METHOD(enableLogging:(BOOL)enabled) {
     [FIRFirestore enableLogging:enabled];
+}
+
+RCT_EXPORT_METHOD(enableNetwork:(NSString *)appDisplayName
+                  resolver:(RCTPromiseResolveBlock) resolve
+                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
+    [firestore enableNetworkWithCompletion:^(NSError * _Nullable error) {
+        if (error) {
+            [RNFirebaseFirestore promiseRejectException:reject error:error];
+        } else {
+            resolve(nil);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(collectionGet:(NSString *)appDisplayName
