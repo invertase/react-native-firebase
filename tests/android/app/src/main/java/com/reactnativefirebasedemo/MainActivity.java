@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 
 import com.facebook.react.ReactActivity;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 
 public class MainActivity extends ReactActivity {
 
@@ -35,6 +36,7 @@ public class MainActivity extends ReactActivity {
   }
 
   public void checkWindowPerms() {
+    FirebaseAppInvite.getInvitation()
     // Checking if device version > 22 and we need to use new permission model
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
       // Checking if we can draw window overlay
