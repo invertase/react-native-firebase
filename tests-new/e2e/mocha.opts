@@ -4,4 +4,3 @@
 --bail
 --exit
 --require bridge/platform/node
---inspect
