@@ -8,7 +8,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.0.1'
+    classpath 'com.android.tools.build:gradle:3.1.0'
     classpath 'io.fabric.tools:gradle:1.25.1'
   }
 }
@@ -17,7 +17,7 @@ apply plugin: 'com.android.library'
 
 android {
   compileSdkVersion 27
-  buildToolsVersion "27.0.2"
+  buildToolsVersion "27.0.3"
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion 26
@@ -81,23 +81,23 @@ rootProject.gradle.buildFinished { buildResult ->
 
 
 dependencies {
-  compile fileTree(include: ['*.jar'], dir: 'libs')
-  compile "com.facebook.react:react-native:+"  // From node_modules
-  compile "com.android.support:support-v4:27.0.2"
-  compile 'me.leolin:ShortcutBadger:1.1.21@aar'
-  compile "com.google.android.gms:play-services-base:$firebaseVersion"
-  compile "com.google.firebase:firebase-core:$firebaseVersion"
-  compile "com.google.firebase:firebase-config:$firebaseVersion"
-  compile "com.google.firebase:firebase-auth:$firebaseVersion"
-  compile "com.google.firebase:firebase-database:$firebaseVersion"
-  compile "com.google.firebase:firebase-storage:$firebaseVersion"
-  compile "com.google.firebase:firebase-messaging:$firebaseVersion"
-  compile "com.google.firebase:firebase-crash:$firebaseVersion"
-  compile "com.google.firebase:firebase-perf:$firebaseVersion"
-  compile "com.google.firebase:firebase-ads:$firebaseVersion"
-  compile "com.google.firebase:firebase-firestore:$firebaseVersion"
-  compile "com.google.firebase:firebase-invites:$firebaseVersion"
-  compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+  // compile fileTree(include: ['*.jar'], dir: 'libs')
+  api "com.facebook.react:react-native:+"  // From node_modules
+  api "com.android.support:support-v4:27.0.2"
+  compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
+  compileOnly "com.google.android.gms:play-services-base:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-core:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-config:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-auth:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-database:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-storage:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-messaging:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-crash:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-perf:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-ads:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-firestore:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-invites:$firebaseVersion"
+  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
     transitive = true
   }
 }
