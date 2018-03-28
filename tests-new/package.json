@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --reset-cache",
+    "packager-bridge": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
+    "packager-bridge-reset-cache": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --platforms ios,android --reset-cache",
     "build-android": "detox build --configuration android.emu.debug",
     "build-ios": "detox build --configuration ios.sim.debug",
     "test": "npm run test-android && test-ios",
@@ -20,6 +21,7 @@
   "dependencies": {
     "babel-preset-es2015-mod": "^6.6.0",
     "babel-preset-es3": "^1.0.1",
+    "bridge": "^1.0.0-alpha2",
     "chalk": "^2.3.2",
     "deeps": "^1.4.4",
     "detox": "^7.2.0",
