@@ -64,7 +64,7 @@ public class RNFirebaseNotificationManager {
     this.preferences = context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
   }
 
-  public void cancelAllNotifications() {
+  public void cancelAllNotifications(Promise promise) {
     try {
       Map<String, ?> notifications = preferences.getAll();
 
@@ -72,16 +72,25 @@ public class RNFirebaseNotificationManager {
         cancelAlarm(notificationId);
       }
       preferences.edit().clear().apply();
+      promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
       // In some devices/situations cancelAllLocalNotifications can throw a SecurityException.
       Log.e(TAG, e.getMessage());
+      promise.reject("notification/cancel_notifications_error", "Could not cancel notifications", e);
     }
   }
 
-  public void cancelNotification(String notificationId) {
-    cancelAlarm(notificationId);
-    preferences.edit().remove(notificationId).apply();
+  public void cancelNotification(String notificationId, Promise promise) {
+    try {
+      cancelAlarm(notificationId);
+      preferences.edit().remove(notificationId).apply();
+    } catch (SecurityException e) {
+      // TODO: Identify what these situations are
+      // In some devices/situations cancelAllLocalNotifications can throw a SecurityException.
+      Log.e(TAG, e.getMessage());
+      promise.reject("notification/cancel_notification_error", "Could not cancel notifications", e);
+    }
   }
 
   public void createChannel(ReadableMap channelMap) {
@@ -162,12 +171,14 @@ public class RNFirebaseNotificationManager {
     return array;
   }
 
-  public void removeAllDeliveredNotifications() {
+  public void removeAllDeliveredNotifications(Promise promise) {
     notificationManager.cancelAll();
+    promise.resolve(null);
   }
 
-  public void removeDeliveredNotification(String notificationId) {
+  public void removeDeliveredNotification(String notificationId, Promise promise) {
     notificationManager.cancel(notificationId.hashCode());
+    promise.resolve(null);
   }
 
 
