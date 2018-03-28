@@ -81,6 +81,7 @@ android {
 project.ext.firebaseVersion = '12.0.0'
 
 dependencies {
+    compile project(':bridge')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation(project(':react-native-firebase')) {
