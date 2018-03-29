@@ -206,7 +206,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (4.0.0-rc.2):
+  - RNFirebase (4.0.0-rc.3):
     - React
   - yoga (0.52.3.React)
 
@@ -275,7 +275,7 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
   React: c0dfd2dfc970019d1ae7d48bf24cef530992e079
-  RNFirebase: e62d0d0fff7bca31110f040569da916000bfbe5f
+  RNFirebase: 97a7dab3affcf0b6562bf317f9c47264c2ae8c23
   yoga: f45a46b966e1eb0c7a532cfd4beec5b97332ba48
 
 PODFILE CHECKSUM: ef0a6d57e421403d349fe645afe7593f62efb9e0

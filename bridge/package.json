@@ -19,24 +19,18 @@
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
-    "babel-preset-es2015-mod": "^6.6.0",
-    "babel-preset-es3": "^1.0.1",
-    "bridge": "^1.0.0-alpha2",
-    "chalk": "^2.3.2",
-    "deeps": "^1.4.4",
+    "bridge": "^0.2.1",
     "detox": "^7.2.0",
-    "error-stack-parser": "^2.0.1",
-    "istanbul-lib-coverage": "^1.2.0",
     "mocha": "^4.0.1",
     "react": "^16.2.0",
     "react-native": "^0.52.3",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^4.4.8",
-    "source-map": "^0.7.2",
-    "ws": "^5.1.0"
+    "sinon": "^4.4.8"
   },
   "devDependencies": {
+    "babel-preset-es2015-mod": "^6.6.0",
+    "babel-preset-es3": "^1.0.1",
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.1.1",
     "babel-jest": "19.0.0",
