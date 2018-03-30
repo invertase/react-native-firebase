@@ -14,14 +14,17 @@
     "test-android-cover": "nyc detox test --configuration android.emu.debug",
     "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
     "test-ios": "detox test --configuration ios.sim.debug",
-    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
-    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse",
+    "test-ios-cover": "nyc detox test --configuration ios.sim.debug --loglevel warn",
+    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
     "bridge": "^0.2.1",
     "detox": "^7.2.0",
+    "escape-string-regexp": "^1.0.5",
+    "fbjs": "^0.8.16",
     "mocha": "^4.0.1",
+    "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-native": "^0.52.3",
     "should": "^13.2.1",
@@ -29,13 +32,14 @@
     "sinon": "^4.4.8"
   },
   "devDependencies": {
-    "babel-preset-es2015-mod": "^6.6.0",
-    "babel-preset-es3": "^1.0.1",
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.1.1",
     "babel-jest": "19.0.0",
     "babel-plugin-flow-react-proptypes": "^0.21.0",
     "babel-plugin-istanbul": "^4.1.5",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "babel-preset-es2015-mod": "^6.6.0",
+    "babel-preset-es3": "^1.0.1",
     "babel-preset-react-native": "1.9.1",
     "eslint": "^3.16.1",
     "eslint-config-airbnb": "^14.1.0",
@@ -51,7 +55,8 @@
     "statements": 95,
     "functions": 95,
     "branches": 95,
-    "include": ["firebase"],
+    "include": ["lib/*"],
+    "exclude": ["node_modules"],
     "sourceMap": false,
     "instrument": false,
     "reporter": ["lcov", "text-summary"]
@@ -71,7 +76,8 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus"
+        "name": "iPhone 7 Plus",
+        "logLevel": "error"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",

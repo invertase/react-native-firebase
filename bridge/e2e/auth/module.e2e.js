@@ -1,9 +1,4 @@
 describe('.auth()', () => {
-  beforeEach(async () => {
-    await device.reloadReactNative();
-    // bridge.root.setState({ message: this.currentTest.title });
-  });
-
   describe('.signInAnonymously()', () => {
     it('it should sign in anonymously', () => {
       const successCb = currentUser => {
@@ -13,9 +8,7 @@ describe('.auth()', () => {
         should.equal(currentUser.toJSON().email, null);
         currentUser.isAnonymous.should.equal(true);
         currentUser.providerId.should.equal('firebase');
-
         currentUser.should.equal(firebase.auth().currentUser);
-
         return firebase.auth().signOut();
       };
 
