@@ -13,8 +13,16 @@
 @implementation RNFirebaseInvites
 
 static RNFirebaseInvites *theRNFirebaseInvites = nil;
+static NSString *initialInvite = nil;
+static bool jsReady = FALSE;
 
 + (nonnull instancetype)instance {
+    // If an event comes in before the bridge has initialised the native module
+    // then we create a temporary instance which handles events until the bridge
+    // and JS side are ready
+    if (theRNFirebaseInvites == nil) {
+        theRNFirebaseInvites = [[RNFirebaseInvites alloc] init];
+    }
     return theRNFirebaseInvites;
 }
 
@@ -101,11 +109,11 @@ RCT_EXPORT_METHOD(getInitialInvitation:(RCTPromiseResolveBlock)resolve rejecter:
                           @"invitationId": receivedInvite.inviteId,
                           });
             } else {
-                resolve(nil);
+                resolve(initialInvite);
             }
         }];
     } else {
-        resolve(nil);
+        resolve(initialInvite);
     }
 }
 
@@ -151,22 +159,38 @@ RCT_EXPORT_METHOD(sendInvitation:(NSDictionary *) invitation
     });
 }
 
+RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    jsReady = TRUE;
+    resolve(nil);
+}
+
 // ** Start internals **
 - (BOOL)handleUrl:(NSURL *)url {
     return [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
         if (error) {
             NSLog(@"Failed to handle invitation: %@", [error localizedDescription]);
         } else if (receivedInvite && receivedInvite.inviteId) {
-            [RNFirebaseUtil sendJSEvent:self name:INVITES_INVITATION_RECEIVED body:@{
-                                                                                     @"deepLink": receivedInvite.deepLink,
-                                                                                     @"invitationId": receivedInvite.inviteId,
-                                                                                     }];
+            [self sendJSEvent:self name:INVITES_INVITATION_RECEIVED body:@{
+                                                                           @"deepLink": receivedInvite.deepLink,
+                                                                           @"invitationId": receivedInvite.inviteId,
+                                                                          }];
         } else {
             [[RNFirebaseLinks instance] sendLink:receivedInvite.deepLink];
         }
     }];
 }
 
+// Because of the time delay between the app starting and the bridge being initialised
+// we catch any events that are received before the JS is ready to receive them
+- (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(id)body {
+    if (emitter.bridge && jsReady) {
+        [RNFirebaseUtil sendJSEvent:emitter name:name body:body];
+    } else if (!initialInvite) {
+        initialInvite = body;
+    } else {
+        NSLog(@"Multiple invite events received before the JS invites module has been initialised");
+    }
+}
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[INVITES_INVITATION_RECEIVED];
