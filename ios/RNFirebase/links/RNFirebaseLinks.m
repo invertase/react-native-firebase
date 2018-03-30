@@ -171,7 +171,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
     } else if (!initialLink) {
         initialLink = body;
     } else {
-        NSLog(@"Multiple link events received before the JS links modules has been initialised");
+        NSLog(@"Multiple link events received before the JS links module has been initialised");
     }
 }
 
