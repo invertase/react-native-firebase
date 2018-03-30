@@ -22,6 +22,7 @@ static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
+static bool jsReady = FALSE;
 
 + (nonnull instancetype)instance {
     return theRNFirebaseNotifications;
@@ -266,27 +267,23 @@ RCT_EXPORT_METHOD(getBadge: (RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
 }
 
 RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    if ([self isIOS89]) {
-        // With iOS 8/9 we rely on the launch options
-        UILocalNotification *localNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
-        NSDictionary *notification;
-        if (localNotification) {
-            notification = [self parseUILocalNotification:localNotification];
-        } else {
-            NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-            if (remoteNotification) {
-                notification = [self parseUserInfo:remoteNotification];
-            }
-        }
-        if (notification) {
-            resolve(@{@"action": UNNotificationDefaultActionIdentifier, @"notification": notification});
-        } else {
-            resolve(nil);
-        }
-    } else {
-        // With iOS 10+ we are able to intercept the didReceiveNotificationResponse message
-        // to get both the notification and the action
+    // Check if we've cached an initial notification as this will contain the accurate action
+    if (initialNotification) {
         resolve(initialNotification);
+    } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey]) {
+        UILocalNotification *localNotification = self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+        resolve(@{
+                  @"action": UNNotificationDefaultActionIdentifier,
+                  @"notification": [self parseUILocalNotification:localNotification]
+                  });
+    } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+        NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+        resolve(@{
+                  @"action": UNNotificationDefaultActionIdentifier,
+                  @"notification": [self parseUserInfo:remoteNotification]
+                  });
+    } else {
+        resolve(nil);
     }
 }
 
@@ -373,16 +370,23 @@ RCT_EXPORT_METHOD(setBadge:(NSInteger) number
         resolve(nil);
     });
 }
+    
+RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    jsReady = TRUE;
+    resolve(nil);
+}
 
 // Because of the time delay between the app starting and the bridge being initialised
 // we create a temporary instance of RNFirebaseNotifications.
 // With this temporary instance, we cache any events to be sent as soon as the bridge is set on the module
 - (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(id)body {
-    if (emitter.bridge) {
+    if (emitter.bridge && jsReady) {
         [RNFirebaseUtil sendJSEvent:emitter name:name body:body];
     } else {
         if ([name isEqualToString:NOTIFICATIONS_NOTIFICATION_OPENED] && !initialNotification) {
             initialNotification = body;
+        } else if ([name isEqualToString:NOTIFICATIONS_NOTIFICATION_OPENED]) {
+            NSLog(@"Multiple notification open events received before the JS Notifications module has been initialised");
         }
         // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
         // [pendingEvents addObject:@{@"name":name, @"body":body}];
