@@ -9,8 +9,16 @@
           "useInlineSourceMaps": true,
           "instrument": true,
           "include": [
-            "firebase"
+            "lib/*"
+          ],
+          "exclude": [
+            "node_modules"
           ]
+        }],
+        ["module-resolver", {
+          "alias": {
+            "react-native-firebase": ".."
+          }
         }]
       ]
     }

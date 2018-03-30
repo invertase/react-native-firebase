@@ -2,7 +2,7 @@ const should = require('should');
 
 describe('bridge', () => {
   beforeEach(async function beforeEach() {
-    await device.reloadReactNative();
+    // await device.reloadReactNative();
     bridge.root.setState({ message: this.currentTest.title });
   });
 

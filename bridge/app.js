@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
 import bridge from 'bridge/platform/react-native';
-import firebase from './firebase';
+import firebase from 'react-native-firebase';
 
 require('sinon');
 require('should-sinon');
