@@ -25,10 +25,8 @@ declare module "react-native-firebase" {
     auth: FirebaseModuleAndStatics<RNFirebase.auth.Auth, RNFirebase.auth.AuthStatics>;
     // config: FirebaseModule<RNFirebase.config.Config>;
     crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
+    crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<RNFirebase.database.Database, RNFirebase.database.DatabaseStatics>;
-    fabric: {
-      crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
-    };
     firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore, RNFirebase.firestore.FirestoreStatics>;
     iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>
     // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
@@ -64,10 +62,8 @@ declare module "react-native-firebase" {
     auth(): RNFirebase.auth.Auth;
     // config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
+    crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
-    fabric: {
-      crashlytics(): RNFirebase.crashlytics.Crashlytics,
-    };
     firestore(): RNFirebase.firestore.Firestore;
     iid(): RNFirebase.iid.InstanceId;
     // invites(): RNFirebase.invites.Invites;
