@@ -34,8 +34,8 @@
     "lodash.some": "^4.6.0",
     "prop-types": "^15.6.1",
     "query-string": "^5.1.0",
-    "react": "^16.2.0",
-    "react-native": "^0.52.3",
+    "react": "^16.3.0-alpha.1",
+    "react-native": "^0.54.4",
     "react-native-vector-icons": "^4.5.0",
     "react-navigation": "^1.2.1",
     "react-redux": "^5.0.7",
@@ -63,6 +63,7 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "flow-bin": "^0.65.0",
     "jest": "19.0.2",
     "redux-immutable-state-invariant": "^1.2.4"
   },
