@@ -1,1 +1,1 @@
-See http://invertase.io/react-native-firebase/#/contributing/testing
+See https://rnfirebase.io/docs/master/testing
