@@ -9,7 +9,7 @@
     "ios:dev": "react-native run-ios",
     "ios:prod": "react-native run-ios --configuration=release",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
-    "test": "echo 'Tests should be run from within the RN application.\n\rSee https://github.com/invertase/react-native-firebase-tests/blob/master/tests/README.md for more info.'",
+    "test": "echo 'Tests should be run from within the RN application.\n\rSee https://rnfirebase.io/docs/master/testing for more info.'",
     "build-lib-for-tests": "babel --presets=es2015-mod,es3,react-native ./lib/ -d ./__tests__/build/lib/ --source-maps",
     "internal-tests": "npm run build-lib-for-tests && babel --presets=es2015-mod,es3 ./__tests__/src/ -d ./__tests__/build/ --source-maps && node ./__tests__/build/index.js"
   },
