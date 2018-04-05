@@ -53,7 +53,7 @@ import { AccessToken, LoginManager } from 'react-native-fbsdk'; // import Access
       const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
 
       // login with credential
-      await firebase.auth().signInWithCredential(credential);
+      await firebase.auth().signInAndRetrieveDataWithCredential(credential);
 
     } catch (e) {
       console.error(e);
