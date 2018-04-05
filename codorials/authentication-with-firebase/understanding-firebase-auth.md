@@ -64,7 +64,7 @@ firebase.auth().createUserAndRetrieveDataWithEmailAndPassword('jim.bob@gmail.com
     console.log('New User', user);
   })
   .catch((error) => {
-    console.error('Woops, something went wrong!, error);
+    console.error('Woops, something went wrong!', error);
   });
 ```
 
