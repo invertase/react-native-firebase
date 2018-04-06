@@ -5,7 +5,6 @@
 #import <FirebaseAnalytics/FIRAnalyticsConfiguration.h>
 
 @implementation RNFirebaseAnalytics
-@synthesize methodQueue = _methodQueue;
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(logEvent:(NSString *)name props:(NSDictionary *)props) {
