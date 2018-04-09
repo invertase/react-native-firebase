@@ -59,7 +59,7 @@
     "functions": 95,
     "branches": 95,
     "include": ["**/dist/**"],
-    "exclude": ["node_modules"],
+    "exclude": ["node_modules", "**/dist/utils/emitter**"],
     "sourceMap": true,
     "instrument": true,
     "cwd": "..",
