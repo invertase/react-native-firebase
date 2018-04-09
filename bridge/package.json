@@ -59,7 +59,7 @@
     "functions": 95,
     "branches": 95,
     "include": ["**/dist/**"],
-    "exclude": ["node_modules", "**/dist/utils/emitter**"],
+    "exclude": ["node_modules", "**/dist/utils/emitter**", "**/dist/modules/admob**", "**/dist/modules/auth/phone**"],
     "sourceMap": true,
     "instrument": true,
     "cwd": "..",
