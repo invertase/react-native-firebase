@@ -14,7 +14,7 @@ const iosTestConfig = {
   clientId:
     '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
   androidClientId: androidTestConfig.clientId,
-  appId: '1:305229645282:ios:7b45748cb1117d2d',
+  appId: '1:305229645282:ios:af36d4d29a83e04c',
   apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
   storageBucket: 'rnfirebase-b9ad4.appspot.com',
