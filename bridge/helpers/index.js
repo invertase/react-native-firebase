@@ -30,3 +30,17 @@ firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(require('./service-account')),
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
 });
+
+const originalLog = console.log;
+console.log = (...args) => {
+  if (
+    args &&
+    args[0] &&
+    typeof args[0] === 'string' &&
+    args[0].includes('Deprecated ')
+  ) {
+    return undefined;
+  }
+
+  return originalLog(...args);
+};
