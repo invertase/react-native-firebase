@@ -6,14 +6,14 @@ describe('bridge', () => {
     bridge.root.setState({ message: this.currentTest.title });
   });
 
-  it('should provide -> global.bridge', () => {
+  it('should provide -> global.bridge', async () => {
     should(bridge).not.be.undefined();
     return Promise.resolve();
   });
 
   // main react-native module you're testing on
   // in our case react-native-firebase
-  it('should provide -> bridge.module', () => {
+  it('should provide -> bridge.module', async () => {
     should(bridge.module).not.be.undefined();
     return Promise.resolve();
   });
@@ -76,5 +76,49 @@ describe('bridge', () => {
     should(bridge.rn.Platform.OS).be.a.String();
     should(bridge.rn.Platform.OS).equal(device.getPlatform());
     return Promise.resolve();
+  });
+
+  // TIMERS
+  it('timing.setTimeout', cb => {
+    const start = Date.now();
+    bridge.context.setTimeout(() => {
+      const timeTaken = Date.now() - start;
+      if (timeTaken >= 50) cb();
+      else cb(new Error('setTimeout fn called too soon.'));
+    }, 50);
+  });
+
+  it('timing.setInterval', cb => {
+    let times = 0;
+    let interval;
+    const start = Date.now();
+
+    interval = bridge.context.setInterval(() => {
+      const timeTaken = Date.now() - start;
+
+      times++;
+      bridge.context.clearInterval(interval);
+      if (times >= 2) {
+        return cb(new Error('Interval did not cancel correctly.'));
+      }
+
+      if (timeTaken < 50) {
+        return cb(new Error('setInterval fn called too soon.'));
+      }
+
+      return bridge.context.setTimeout(cb, 100);
+    }, 50);
+  });
+
+  it('timing.setImmediate', cb => {
+    bridge.context.setImmediate(() => cb());
+  });
+
+  it('timing.requestIdleCallback', cb => {
+    bridge.context.requestIdleCallback(() => cb());
+  });
+
+  it('timing.requestAnimationFrame', cb => {
+    bridge.context.requestAnimationFrame(() => cb());
   });
 });
