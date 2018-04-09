@@ -1,6 +1,6 @@
 --recursive
 --timeout 120000
---slow 750
+--slow 1
 --bail
 --exit
 --require bridge/platform/node

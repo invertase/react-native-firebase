@@ -18,3 +18,8 @@ Object.defineProperty(global, 'firebase', {
     return bridge.module;
   },
 });
+
+global.sleep = duration =>
+  new Promise(resolve => {
+    setTimeout(resolve, duration);
+  });
