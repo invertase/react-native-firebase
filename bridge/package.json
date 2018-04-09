@@ -56,10 +56,11 @@
     "statements": 95,
     "functions": 95,
     "branches": 95,
-    "include": ["lib/*"],
+    "include": ["**/dist/**"],
     "exclude": ["node_modules"],
-    "sourceMap": false,
-    "instrument": false,
+    "sourceMap": true,
+    "instrument": true,
+    "cwd": "..",
     "reporter": ["lcov", "text-summary"]
   },
   "detox": {
