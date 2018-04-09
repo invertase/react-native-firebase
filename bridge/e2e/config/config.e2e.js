@@ -83,7 +83,9 @@ describe('config()', () => {
 
   describe('setDefaultsFromResource()', () => {
     it('accepts a resource id/name to read defaults from', async () => {
-      firebase.config().setDefaultsFromResource();
+      if (device.getPlatform() === 'android')
+        firebase.config().setDefaultsFromResource(6666);
+      else firebase.config().setDefaultsFromResource();
       // todo add plist/xml on ios/android to test
     });
 
