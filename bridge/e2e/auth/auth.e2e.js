@@ -3,6 +3,64 @@ describe('auth()', () => {
     if (firebase.auth().currentUser) await firebase.auth().signOut();
   });
 
+  describe('applyActionCode()', () => {
+    it('errors on invalid code', async () => {
+      try {
+        await firebase.auth().applyActionCode('fooby shooby dooby');
+      } catch (e) {
+        e.message.should.containEql('code is invalid');
+      }
+    });
+
+    xit('accepts a valid code', async () => {
+      // todo not sure how to generate a code yet - maybe via admin sdk?
+    });
+  });
+
+  describe('checkActionCode()', () => {
+    it('errors on invalid code', async () => {
+      try {
+        await firebase.auth().checkActionCode('fooby shooby dooby');
+      } catch (e) {
+        e.message.should.containEql('code is invalid');
+      }
+    });
+
+    xit('accepts a valid code', async () => {
+      // todo not sure how to generate a code yet - maybe via admin sdk?
+    });
+  });
+
+  describe('verifyPasswordResetCode()', () => {
+    it('errors on invalid code', async () => {
+      try {
+        await firebase.auth().verifyPasswordResetCode('fooby shooby dooby');
+      } catch (e) {
+        e.message.should.containEql('code is invalid');
+      }
+    });
+
+    xit('accepts a valid code', async () => {
+      // todo not sure how to generate a code yet - maybe via admin sdk?
+    });
+  });
+
+  describe('confirmPasswordReset()', () => {
+    it('errors on invalid code', async () => {
+      try {
+        await firebase
+          .auth()
+          .confirmPasswordReset('fooby shooby dooby', 'passwordthing');
+      } catch (e) {
+        e.message.should.containEql('code is invalid');
+      }
+    });
+
+    xit('accepts a valid code', async () => {
+      // todo not sure how to generate a code yet - maybe via admin sdk?
+    });
+  });
+
   describe('signInWithCustomToken()', () => {
     it('signs in with a admin sdk created custom auth token', async () => {
       const customUID = `custom${randomString(12, '#aA')}`;
