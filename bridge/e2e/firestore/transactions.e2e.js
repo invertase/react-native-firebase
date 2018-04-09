@@ -1,10 +1,6 @@
 const should = require('should');
 
 describe('firestore.runTransaction', () => {
-  beforeEach(async () => {
-    await device.reloadReactNative();
-  });
-
   it('should set, update and delete transactionally and allow a return value', async () => {
     let deleteMe = false;
     const firestore = firebase.firestore();
