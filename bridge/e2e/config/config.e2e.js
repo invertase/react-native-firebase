@@ -1,4 +1,4 @@
-describe.only('config()', () => {
+describe('config()', () => {
   before(() => {
     firebase.config().enableDeveloperMode();
     firebase.config().setDefaults({
