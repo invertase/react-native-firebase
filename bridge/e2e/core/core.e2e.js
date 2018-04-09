@@ -75,6 +75,7 @@ describe('Core', () => {
         .onReady()
         .then(newApp => {
           newApp.name.should.equal(name.toUpperCase());
+          newApp.toString().should.equal(name.toUpperCase());
           newApp.options.apiKey.should.equal(
             (device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig)
               .apiKey
