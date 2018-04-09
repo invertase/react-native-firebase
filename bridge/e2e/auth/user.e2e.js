@@ -1,4 +1,4 @@
-describe.only('auth().currentUser', () => {
+describe('auth().currentUser', () => {
   describe('getIdToken()', () => {
     it('should return a token', async () => {
       const random = randomString(12, '#aA');
