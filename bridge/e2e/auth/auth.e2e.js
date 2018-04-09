@@ -1,9 +1,5 @@
 describe('auth()', () => {
-  beforeEach(async () => {
-    // await device.reloadReactNative();
-  });
-
-  describe('onAuthStateChanged', () => {
+  describe('onAuthStateChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
 
@@ -87,7 +83,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('onIdTokenChanged', () => {
+  describe('onIdTokenChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
 
@@ -171,7 +167,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('onUserChanged', () => {
+  describe('onUserChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
 
@@ -261,7 +257,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('.signInAnonymously()', () => {
+  describe('signInAnonymously()', () => {
     it('it should sign in anonymously', () => {
       const successCb = currentUser => {
         currentUser.should.be.an.Object();
@@ -270,7 +266,9 @@ describe('auth()', () => {
         should.equal(currentUser.toJSON().email, null);
         currentUser.isAnonymous.should.equal(true);
         currentUser.providerId.should.equal('firebase');
+
         currentUser.should.equal(firebase.auth().currentUser);
+
         return firebase.auth().signOut();
       };
 
@@ -281,7 +279,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('.signInAnonymouslyAndRetrieveData()', () => {
+  describe('signInAnonymouslyAndRetrieveData()', () => {
     it('it should sign in anonymously', () => {
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
@@ -306,7 +304,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('.signInWithEmailAndPassword()', () => {
+  describe('signInWithEmailAndPassword()', () => {
     it('it should login with email and password', () => {
       const email = 'test@test.com';
       const pass = 'test1234';
@@ -393,399 +391,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('.onAuthStateChanged()', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onAuthStateChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 100);
-      });
-
-      // Assertions
-
-      callback.should.be.calledWith(null);
-      callback.should.be.calledTwice();
-
-      // Tear down
-
-      unsubscribe();
-    });
-
-    it('stops listening when unsubscribe called', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onAuthStateChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 100);
-      });
-
-      // Assertions
-
-      // callback.should.be.calledWith(null);
-      callback.should.be.calledTwice();
-
-      // Unsubscribe
-
-      unsubscribe();
-
-      // Sign back in
-
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Assertions
-
-      callback.should.be.calledTwice();
-
-      // Tear down
-
-      await firebase.auth().signOut();
-    });
-  });
-
-  describe('onIdTokenChanged', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onIdTokenChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
-
-      // Assertions
-
-      callback.should.be.calledWith(null);
-      callback.should.be.calledTwice();
-
-      // Tear down
-
-      unsubscribe();
-    });
-
-    it('stops listening when unsubscribed', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onIdTokenChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
-
-      // Assertions
-
-      callback.should.be.calledWith(null);
-      callback.should.be.calledTwice();
-
-      // Unsubscribe
-
-      unsubscribe();
-
-      // Sign back in
-
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Assertions
-
-      callback.should.be.calledTwice();
-
-      // Tear down
-
-      await firebase.auth().signOut();
-    });
-  });
-
-  describe('onUserChanged', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onUserChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
-
-      // Assertions
-
-      callback.should.be.calledWith(null);
-      // Because of the way onUserChanged works, it will be called double
-      // - once for onAuthStateChanged
-      // - once for onIdTokenChanged
-      callback.should.have.callCount(4);
-
-      // Tear down
-
-      unsubscribe();
-    });
-
-    it('stops listening when unsubscribed', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Test
-      const callback = sinon.spy();
-
-      let unsubscribe;
-      await new Promise(resolve => {
-        unsubscribe = firebase.auth().onUserChanged(user => {
-          callback(user);
-          resolve();
-        });
-      });
-
-      callback.should.be.calledWith(firebase.auth().currentUser);
-      callback.should.be.calledOnce();
-
-      // Sign out
-
-      await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
-
-      // Assertions
-
-      callback.should.be.calledWith(null);
-      // Because of the way onUserChanged works, it will be called double
-      // - once for onAuthStateChanged
-      // - once for onIdTokenChanged
-      callback.should.have.callCount(4);
-
-      // Unsubscribe
-
-      unsubscribe();
-
-      // Sign back in
-
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-
-      // Assertions
-
-      callback.should.have.callCount(4);
-
-      // Tear down
-
-      await firebase.auth().signOut();
-    });
-  });
-
-  describe('signInAnonymously', () => {
-    it('it should sign in anonymously', () => {
-      const successCb = currentUser => {
-        currentUser.should.be.an.Object();
-        currentUser.uid.should.be.a.String();
-        currentUser.toJSON().should.be.an.Object();
-        should.equal(currentUser.toJSON().email, null);
-        currentUser.isAnonymous.should.equal(true);
-        currentUser.providerId.should.equal('firebase');
-
-        currentUser.should.equal(firebase.auth().currentUser);
-
-        return firebase.auth().signOut();
-      };
-
-      return firebase
-        .auth()
-        .signInAnonymously()
-        .then(successCb);
-    });
-  });
-
-  describe('signInAnonymouslyAndRetrieveData', () => {
-    it('it should sign in anonymously', () => {
-      const successCb = currentUserCredential => {
-        const currentUser = currentUserCredential.user;
-        currentUser.should.be.an.Object();
-        currentUser.uid.should.be.a.String();
-        currentUser.toJSON().should.be.an.Object();
-        should.equal(currentUser.toJSON().email, null);
-        currentUser.isAnonymous.should.equal(true);
-        currentUser.providerId.should.equal('firebase');
-        currentUser.should.equal(firebase.auth().currentUser);
-
-        const { additionalUserInfo } = currentUserCredential;
-        additionalUserInfo.should.be.an.Object();
-
-        return firebase.auth().signOut();
-      };
-
-      return firebase
-        .auth()
-        .signInAnonymouslyAndRetrieveData()
-        .then(successCb);
-    });
-  });
-
-  describe('signInWithEmailAndPassword', () => {
-    it('it should login with email and password', () => {
-      const email = 'test@test.com';
-      const pass = 'test1234';
-
-      const successCb = currentUser => {
-        currentUser.should.be.an.Object();
-        currentUser.uid.should.be.a.String();
-        currentUser.toJSON().should.be.an.Object();
-        currentUser.toJSON().email.should.eql('test@test.com');
-        currentUser.isAnonymous.should.equal(false);
-        currentUser.providerId.should.equal('firebase');
-        currentUser.should.equal(firebase.auth().currentUser);
-
-        return firebase.auth().signOut();
-      };
-
-      return firebase
-        .auth()
-        .signInWithEmailAndPassword(email, pass)
-        .then(successCb);
-    });
-
-    it('it should error on login if user is disabled', () => {
-      const email = 'disabled@account.com';
-      const pass = 'test1234';
-
-      const successCb = () => Promise.reject(new Error('Did not error.'));
-
-      const failureCb = error => {
-        error.code.should.equal('auth/user-disabled');
-        error.message.should.equal(
-          'The user account has been disabled by an administrator.'
-        );
-        return Promise.resolve();
-      };
-
-      return firebase
-        .auth()
-        .signInWithEmailAndPassword(email, pass)
-        .then(successCb)
-        .catch(failureCb);
-    });
-
-    it('it should error on login if password incorrect', () => {
-      const email = 'test@test.com';
-      const pass = 'test1234666';
-
-      const successCb = () => Promise.reject(new Error('Did not error.'));
-
-      const failureCb = error => {
-        error.code.should.equal('auth/wrong-password');
-        error.message.should.equal(
-          'The password is invalid or the user does not have a password.'
-        );
-        return Promise.resolve();
-      };
-
-      return firebase
-        .auth()
-        .signInWithEmailAndPassword(email, pass)
-        .then(successCb)
-        .catch(failureCb);
-    });
-
-    it('it should error on login if user not found', () => {
-      const email = 'randomSomeone@fourOhFour.com';
-      const pass = 'test1234';
-
-      const successCb = () => Promise.reject(new Error('Did not error.'));
-
-      const failureCb = error => {
-        error.code.should.equal('auth/user-not-found');
-        error.message.should.equal(
-          'There is no user record corresponding to this identifier. The user may have been deleted.'
-        );
-        return Promise.resolve();
-      };
-
-      return firebase
-        .auth()
-        .signInWithEmailAndPassword(email, pass)
-        .then(successCb)
-        .catch(failureCb);
-    });
-  });
-
-  describe('signInAndRetrieveDataWithEmailAndPassword', () => {
+  describe('signInAndRetrieveDataWithEmailAndPassword()', () => {
     it('it should login with email and password', () => {
       const email = 'test@test.com';
       const pass = 'test1234';
@@ -877,7 +483,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithCredential', () => {
+  describe('signInWithCredential()', () => {
     it('it should login with email and password', () => {
       const credential = firebase.auth.EmailAuthProvider.credential(
         'test@test.com',
@@ -972,7 +578,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInAndRetrieveDataWithCredential', () => {
+  describe('signInAndRetrieveDataWithCredential()', () => {
     it('it should login with email and password', () => {
       const credential = firebase.auth.EmailAuthProvider.credential(
         'test@test.com',
@@ -1072,7 +678,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('createUserWithEmailAndPassword', () => {
+  describe('createUserWithEmailAndPassword()', () => {
     it('it should create a user with an email and password', () => {
       const random = randomString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -1159,7 +765,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('createUserAndRetrieveDataWithEmailAndPassword', () => {
+  describe('createUserAndRetrieveDataWithEmailAndPassword()', () => {
     it('it should create a user with an email and password', () => {
       const random = randomString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -1248,7 +854,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('fetchProvidersForEmail', () => {
+  describe('fetchProvidersForEmail()', () => {
     it('it should return password provider for an email address', () =>
       new Promise((resolve, reject) => {
         const successCb = providers => {
@@ -1377,7 +983,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('getRedirectResult', () => {
+  describe('getRedirectResult()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().getRedirectResult();
@@ -1387,7 +993,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('setPersistence', () => {
+  describe('setPersistence()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().setPersistence();
@@ -1430,7 +1036,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithRedirect', () => {
+  describe('signInWithRedirect()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().signInWithRedirect();
@@ -1440,7 +1046,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('useDeviceLanguage', () => {
+  describe('useDeviceLanguage()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().useDeviceLanguage();
