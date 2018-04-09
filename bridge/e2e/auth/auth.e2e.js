@@ -1,4 +1,26 @@
 describe('auth()', () => {
+  beforeEach(async () => {
+    if (firebase.auth().currentUser) await firebase.auth().signOut();
+  });
+
+  describe('signInWithCustomToken()', () => {
+    it('signs in with a admin sdk created custom auth token', async () => {
+      const customUID = `custom${randomString(12, '#aA')}`;
+      const token = await firebaseAdmin.auth().createCustomToken(customUID);
+      const user = await firebase.auth().signInWithCustomToken(token);
+      user.uid.should.equal(customUID);
+      firebase.auth().currentUser.uid.should.equal(customUID);
+
+      await firebase.auth().signOut();
+      const {
+        user: user2,
+      } = await firebase.auth().signInAndRetrieveDataWithCustomToken(token);
+
+      user2.uid.should.equal(customUID);
+      firebase.auth().currentUser.uid.should.equal(customUID);
+    });
+  });
+
   describe('onAuthStateChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
