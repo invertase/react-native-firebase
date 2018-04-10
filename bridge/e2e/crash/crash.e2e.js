@@ -1,4 +1,4 @@
-describe.only('crash()', () => {
+describe('crash()', () => {
   describe('setCrashCollectionEnabled()', () => {
     it('true', async () => {
       await firebase.crash().setCrashCollectionEnabled(true);
