@@ -23,6 +23,7 @@ static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
 static bool jsReady = FALSE;
+static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionIdentifier";
 
 + (nonnull instancetype)instance {
     return theRNFirebaseNotifications;
@@ -47,9 +48,9 @@ RCT_EXPORT_MODULE();
 
 - (void)initialise {
     // If we're on iOS 10 then we need to set this as a delegate for the UNUserNotificationCenter
-    #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    if (@available(iOS 10.0, *)) {
         [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-    #endif
+    }
 
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
@@ -86,7 +87,7 @@ RCT_EXPORT_MODULE();
         NSDictionary *notification = [self parseUILocalNotification:localNotification];
         if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
             notification = @{
-                             @"action": UNNotificationDefaultActionIdentifier,
+                             @"action": DEFAULT_ACTION,
                              @"notification": notification
                              };
         }
@@ -125,7 +126,7 @@ RCT_EXPORT_MODULE();
     // For onOpened events, we set the default action name as iOS 8/9 has no concept of actions
     if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
         notification = @{
-                         @"action": UNNotificationDefaultActionIdentifier,
+                         @"action": DEFAULT_ACTION,
                          @"notification": notification
                          };
     }
@@ -147,8 +148,7 @@ RCT_EXPORT_MODULE();
 // Handle incoming notification messages while app is in the foreground.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
-
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler NS_AVAILABLE_IOS(10_0) {
     UNNotificationTrigger *trigger = notification.request.trigger;
     BOOL isFcm = trigger && [notification.request.trigger class] == [UNPushNotificationTrigger class];
     BOOL isScheduled = trigger && [notification.request.trigger class] == [UNCalendarNotificationTrigger class];
@@ -187,9 +187,9 @@ RCT_EXPORT_MODULE();
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
 #if defined(__IPHONE_11_0)
-         withCompletionHandler:(void(^)(void))completionHandler {
+         withCompletionHandler:(void(^)(void))completionHandler NS_AVAILABLE_IOS(10_0) {
 #else
-         withCompletionHandler:(void(^)())completionHandler {
+         withCompletionHandler:(void(^)())completionHandler NS_AVAILABLE_IOS(10_0) {
 #endif
      NSDictionary *message = [self parseUNNotificationResponse:response];
 
@@ -273,13 +273,13 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecte
     } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey]) {
         UILocalNotification *localNotification = self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
         resolve(@{
-                  @"action": UNNotificationDefaultActionIdentifier,
+                  @"action": DEFAULT_ACTION,
                   @"notification": [self parseUILocalNotification:localNotification]
                   });
     } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
         NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
         resolve(@{
-                  @"action": UNNotificationDefaultActionIdentifier,
+                  @"action": DEFAULT_ACTION,
                   @"notification": [self parseUserInfo:remoteNotification]
                   });
     } else {
@@ -456,7 +456,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 }
 
 - (UNNotificationRequest*) buildUNNotificationRequest:(NSDictionary *) notification
-                                         withSchedule:(BOOL) withSchedule {
+                                         withSchedule:(BOOL) withSchedule NS_AVAILABLE_IOS(10_0) {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     if (notification[@"body"]) {
         content.body = notification[@"body"];
@@ -591,7 +591,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
     return notification;
 }
 
-- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response {
+- (NSDictionary*)parseUNNotificationResponse:(UNNotificationResponse *)response NS_AVAILABLE_IOS(10_0) {
      NSMutableDictionary *notificationResponse = [[NSMutableDictionary alloc] init];
      NSDictionary *notification = [self parseUNNotification:response.notification];
      notificationResponse[@"notification"] = notification;
@@ -600,11 +600,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
      return notificationResponse;
 }
 
-- (NSDictionary*)parseUNNotification:(UNNotification *)notification {
+- (NSDictionary*)parseUNNotification:(UNNotification *)notification NS_AVAILABLE_IOS(10_0) {
     return [self parseUNNotificationRequest:notification.request];
 }
 
-- (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) notificationRequest {
+- (NSDictionary*) parseUNNotificationRequest:(UNNotificationRequest *) notificationRequest NS_AVAILABLE_IOS(10_0) {
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
 
     notification[@"notificationId"] = notificationRequest.identifier;
