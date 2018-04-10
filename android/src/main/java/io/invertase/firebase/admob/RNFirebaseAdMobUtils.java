@@ -58,7 +58,7 @@ class RNFirebaseAdMobUtils {
     }
 
     if (request.hasKey("contentUrl")) {
-      requestBuilder.setContentUrl(request.getString("setContentUrl"));
+      requestBuilder.setContentUrl(request.getString("contentUrl"));
     }
 
     if (request.hasKey("requestAgent")) {
@@ -143,7 +143,7 @@ class RNFirebaseAdMobUtils {
       case "SMART_BANNER":
         return AdSize.SMART_BANNER;
       case "SMART_BANNER_LANDSCAPE":
-        return AdSize.SMART_BANNER;		
+        return AdSize.SMART_BANNER;
     }
   }
 }
