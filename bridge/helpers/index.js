@@ -37,7 +37,7 @@ console.log = (...args) => {
     args &&
     args[0] &&
     typeof args[0] === 'string' &&
-    args[0].includes('Deprecated ')
+    args[0].toLowerCase().includes('deprecated')
   ) {
     return undefined;
   }
