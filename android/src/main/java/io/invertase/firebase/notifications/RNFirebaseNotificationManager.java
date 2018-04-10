@@ -17,7 +17,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
@@ -341,7 +340,7 @@ public class RNFirebaseNotificationManager {
         nb = nb.setOngoing(android.getBoolean("onlyAlertOnce"));
       }
       if (android.containsKey("people")) {
-        String[] people = android.getStringArray("people");
+        List<String> people = android.getStringArrayList("people");
         if (people != null) {
           for (String person : people) {
             nb = nb.addPerson(person);
@@ -416,24 +415,6 @@ public class RNFirebaseNotificationManager {
         nb = nb.setWhen(when.longValue());
       }
 
-      // TODO: Big text / Big picture
-      /* String bigText = bundle.getString("big_text");
-      if(bigText != null){
-        notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
-      }
-      String picture = bundle.getString("picture");
-      if(picture!=null){
-        NotificationCompat.BigPictureStyle bigPicture = new NotificationCompat.BigPictureStyle();
-
-        Bitmap pictureBitmap = getBitmap(picture);
-        if (pictureBitmap != null) {
-          bigPicture.bigPicture(pictureBitmap);
-        }
-        bigPicture.setBigContentTitle(title);
-        bigPicture.setSummaryText(bundle.getString("body"));
-
-        notification.setStyle(bigPicture);
-      } */
       // Build any actions
       if (android.containsKey("actions")) {
         List<Bundle> actions = (List) android.getSerializable("actions");
@@ -522,7 +503,8 @@ public class RNFirebaseNotificationManager {
       rb.setAllowFreeFormInput(remoteInput.getBoolean("allowFreeFormInput"));
     }
     if (remoteInput.containsKey("choices")) {
-      rb.setChoices(remoteInput.getStringArray("choices"));
+      List<String> choices = remoteInput.getStringArrayList("choices");
+      rb.setChoices(choices.toArray(new String[choices.size()]));
     }
     if (remoteInput.containsKey("label")) {
       rb.setLabel(remoteInput.getString("label"));
