@@ -196,7 +196,7 @@ public class RNFirebaseNotificationManager {
   }
 
   private void cancelAlarm(String notificationId) {
-    Intent notificationIntent = new Intent(context, RNFirebaseNotificationManager.class);
+    Intent notificationIntent = new Intent(context, RNFirebaseNotificationReceiver.class);
     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     alarmManager.cancel(pendingIntent);
   }
