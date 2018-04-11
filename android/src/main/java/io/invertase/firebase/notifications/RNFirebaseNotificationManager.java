@@ -517,7 +517,7 @@ public class RNFirebaseNotificationManager {
     if (image.startsWith("http://") || image.startsWith("https://")) {
       return getBitmapFromUrl(image);
     } else if (image.startsWith("file://")) {
-      return BitmapFactory.decodeFile(image);
+      return BitmapFactory.decodeFile(image.replace("file://", ""));
     } else {
       int largeIconResId = getResourceId("mipmap", image);
       return BitmapFactory.decodeResource(context.getResources(), largeIconResId);
