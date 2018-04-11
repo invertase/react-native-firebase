@@ -676,22 +676,27 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
             NSDictionary *aps = userInfo[k1];
             for (id k2 in aps) {
                 if ([k2 isEqualToString:@"alert"]) {
-                    NSDictionary *alert = aps[k2];
-                    for (id k3 in alert) {
-                        if ([k3 isEqualToString:@"body"]) {
-                            notification[@"body"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"subtitle"]) {
-                            notification[@"subtitle"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"title"]) {
-                            notification[@"title"] = alert[k3];
-                        } else if ([k3 isEqualToString:@"loc-args"]
-                                   || [k3 isEqualToString:@"loc-key"]
-                                   || [k3 isEqualToString:@"title-loc-args"]
-                                   || [k3 isEqualToString:@"title-loc-key"]) {
-                            // Ignore known keys
-                        } else {
-                            NSLog(@"Unknown alert key: %@", k2);
+                    // alert can be a plain text string rather than a dictionary
+                    if ([aps[k2] isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary *alert = aps[k2];
+                        for (id k3 in alert) {
+                            if ([k3 isEqualToString:@"body"]) {
+                                notification[@"body"] = alert[k3];
+                            } else if ([k3 isEqualToString:@"subtitle"]) {
+                                notification[@"subtitle"] = alert[k3];
+                            } else if ([k3 isEqualToString:@"title"]) {
+                                notification[@"title"] = alert[k3];
+                            } else if ([k3 isEqualToString:@"loc-args"]
+                                       || [k3 isEqualToString:@"loc-key"]
+                                       || [k3 isEqualToString:@"title-loc-args"]
+                                       || [k3 isEqualToString:@"title-loc-key"]) {
+                                // Ignore known keys
+                            } else {
+                                NSLog(@"Unknown alert key: %@", k2);
+                            }
                         }
+                    } else {
+                        notification[@"title"] = aps[k2];
                     }
                 } else if ([k2 isEqualToString:@"badge"]) {
                     ios[@"badge"] = aps[k2];
