@@ -1,4 +1,4 @@
-describe.only('firestore()', () => {
+describe('firestore()', () => {
   describe('DocumentSnapshot', () => {
     before(async () => {
       await TestHelpers.firestore.resetTestCollectionDoc();
