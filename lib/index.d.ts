@@ -30,9 +30,9 @@ declare module "react-native-firebase" {
     firestore: FirebaseModuleAndStatics<RNFirebase.firestore.Firestore, RNFirebase.firestore.FirestoreStatics>;
     iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>
     // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
-    links: FirebaseModuleAndStatics<RNFirebase.links.Links>;
-    messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging>;
-    notifications: FirebaseModuleAndStatics<RNFirebase.notifications.Notifications>;
+    links: FirebaseModuleAndStatics<RNFirebase.links.Links, RNFirebase.links.LinksStatics>;
+    messaging: FirebaseModuleAndStatics<RNFirebase.messaging.Messaging, RNFirebase.messaging.MessagingStatics>;
+    notifications: FirebaseModuleAndStatics<RNFirebase.notifications.Notifications, RNFirebase.notifications.NotificationsStatics>;
     // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
     storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
     // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
@@ -940,6 +940,10 @@ declare module "react-native-firebase" {
         setTo(to: string): RemoteMessage
         setTtl(ttl: number): RemoteMessage
       }
+
+      interface MessagingStatics {
+        RemoteMessage: RemoteMessage;
+      }
     }
 
     namespace iid {
@@ -1087,7 +1091,7 @@ declare module "react-native-firebase" {
         setOnlyAlertOnce(onlyAlertOnce: boolean): Notification
         setPriority(priority: Android.Priority): Notification
         setProgress(max: number, progress: number, indeterminate: boolean): Notification
-        //setPublicVersion(publicVersion: Notification): Notification 
+        //setPublicVersion(publicVersion: Notification): Notification
         setRemoteInputHistory(remoteInputHistory: string[]): Notification
         setShortcutId(shortcutId: string): Notification
         setShowWhen(showWhen: boolean): Notification
@@ -1170,7 +1174,7 @@ declare module "react-native-firebase" {
 
           constructor(groupId: string, name: string)
         }
-        
+
         export enum BadgeIconType {
           Large = 2,
           None = 0,
@@ -1199,13 +1203,13 @@ declare module "react-native-firebase" {
           Sound = 1,
           Vibrate = 2
         }
-        
+
         export enum GroupAlert {
           All = 0,
           Children = 2,
           Summary = 1
         }
-        
+
         export enum Importance {
           Default = 3,
           High = 4,
@@ -1223,7 +1227,7 @@ declare module "react-native-firebase" {
           Max = 2,
           Min = -2
         }
-        
+
         export enum SemanticAction {
           Archive = 5,
           Call = 10,
@@ -1237,7 +1241,7 @@ declare module "react-native-firebase" {
           ThumbsUp = 8,
           Unmute = 7
         }
-        
+
         export enum Visibility {
           Private = 0,
           Public = 1,
@@ -1256,7 +1260,7 @@ declare module "react-native-firebase" {
           progress: number;
         }
       }
-      
+
       class IOSNotification {
         alertAction?: string
         attachments: IOSAttachment[]
@@ -1286,6 +1290,24 @@ declare module "react-native-firebase" {
         thumbnailHidden: boolean
         thumbnailClippingRect: any
         thumbnailTime: string
+      }
+
+      interface NotificationsStatics {
+        Android: {
+          Action: Android.Action,
+          BadgeIconType: Android.BadgeIconType,
+          Category: Android.Category,
+          Channel: Android.Channel,
+          ChannelGroup: Android.ChannelGroup,
+          Defaults: Android.Defaults,
+          GroupAlert: Android.GroupAlert,
+          Importance: Android.Importance,
+          Priority: Android.Priority,
+          RemoteInput: Android.RemoteInput,
+          SemanticAction: Android.SemanticAction,
+          Visibility: Android.Visibility,
+        };
+        Notification: Notification;
       }
     }
 
@@ -1425,6 +1447,10 @@ declare module "react-native-firebase" {
         setDescriptionText(descriptionText: string): DynamicLink
         setImageUrl(imageUrl: string): DynamicLink
         setTitle(title: string): DynamicLink
+      }
+
+      interface LinksStatics {
+        DynamicLink: DynamicLink;
       }
     }
 
