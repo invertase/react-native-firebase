@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 global.sinon = require('sinon');
 require('should-sinon');
 global.should = require('should');
@@ -26,6 +27,8 @@ global.randomString = (length, chars) => {
 
 global.firebaseAdmin = require('firebase-admin');
 
+global.testRunId = randomString(4, 'aA#');
+
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(require('./service-account')),
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
@@ -43,4 +46,8 @@ console.log = (...args) => {
   }
 
   return originalLog(...args);
+};
+
+global.TestHelpers = {
+  firestore: require('./firestore'),
 };
