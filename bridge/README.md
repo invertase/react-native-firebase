@@ -14,27 +14,7 @@
 
 * Run `npm install`.
 
-## To test Release build of your app
-
-### Step 2: Build
-
-* Build the demo project
-
-```sh
-detox build --configuration ios.sim.release
-```
-
-### Step 3: Test
-
-* Run tests on the demo project
-
-```sh
-detox test --configuration ios.sim.release
-```
-
-This action will open a new simulator and run the tests on it.
-
-## To test Debug build of your app
+## To test build of your app
 
 ### Step 2: Build
 
@@ -84,7 +64,9 @@ Error: Failed to parse properties from /Users/mike/.android/avd/Actually_THIS_on
 
 #### Running specific tests
 
-Add a `--grep` to e2e/mocha.opts file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
+Mocha supports the `.only` syntax, e.g. instead of `describe(...) || it(...)` you can use `describe.only(...) || it.only(...)` to only run that specific context or test.
+
+Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
 
 #### Running Node debugger
 
