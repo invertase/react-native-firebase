@@ -7,5 +7,7 @@ before(async () => {
 });
 
 after(async () => {
+  console.log('Cleaning up...');
+  await TestHelpers.firestore.cleanup();
   await detox.cleanup();
 });
