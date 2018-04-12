@@ -9,7 +9,7 @@
     "build": "genversion lib/version.js && npm run validate-ts-declarations && npm run build-lib && npm run build-flow",
     "build-flow": "flow-copy-source -i */__tests__* lib dist",
     "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
-    "build-lib-watch": "BABEL_ENV=publish genversion lib/version.js && babel lib -d dist --ignore __tests__ --copy-files --watch",
+    "build-lib-watch": "genversion lib/version.js && BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files --watch",
     "clean": "rimraf dist/",
     "flow": "flow",
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
