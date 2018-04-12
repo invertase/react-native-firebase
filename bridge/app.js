@@ -25,6 +25,7 @@ class Root extends Component {
 
     bridge.setBridgeProperty('root', this);
     bridge.setBridgeProperty('module', firebase);
+    bridge.setBridgeProperty('require', require);
   }
 
   render() {

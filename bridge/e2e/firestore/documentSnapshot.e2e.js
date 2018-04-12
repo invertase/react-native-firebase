@@ -4,6 +4,28 @@ describe('firestore()', () => {
       await TestHelpers.firestore.resetTestCollectionDoc();
     });
 
+    describe('id', () => {
+      it('returns a string document id', async () => {
+        const { testCollectionDoc, COL_DOC_1_ID } = TestHelpers.firestore;
+        const snapshot = await testCollectionDoc().get();
+        snapshot.id.should.be.a.String();
+        snapshot.id.should.equal(COL_DOC_1_ID);
+      });
+    });
+
+    describe.only('ref', () => {
+      it('returns a DocumentReference', async () => {
+        const { testCollectionDoc } = TestHelpers.firestore;
+        const snapshot = await testCollectionDoc().get();
+        // console.dir(bridge.context.require.getModules());
+        // snapshot.ref.should.be.an.instanceOf(
+        //   bridge.require(
+        //     'react-native-firebase/dist/modules/firestore/DocumentReference.js'
+        //   )
+        // );
+      });
+    });
+
     describe('get()', () => {
       it('using a dot notated path string', async () => {
         const { testCollectionDoc } = TestHelpers.firestore;
