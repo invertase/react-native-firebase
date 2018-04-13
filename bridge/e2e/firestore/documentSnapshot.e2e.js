@@ -13,7 +13,7 @@ describe('firestore()', () => {
       });
     });
 
-    describe.only('ref', () => {
+    describe('ref', () => {
       it('returns a DocumentReference', async () => {
         const { testCollectionDoc } = TestHelpers.firestore;
         const snapshot = await testCollectionDoc().get();
