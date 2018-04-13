@@ -144,11 +144,17 @@ function firestoreTests({ before, describe, it, context, firebase }) {
     });
 
     context('setLogLevel()', () => {
-      it('should throw an unsupported error', () => {
+      it('should work without error', () => {
+        firebase.native.firestore.setLogLevel('debug');
+        firebase.native.firestore.setLogLevel('error');
+        firebase.native.firestore.setLogLevel('silent');
+      });
+
+      it('should throw an invalid parameter error', () => {
         (() => {
-          firebase.native.firestore().setLogLevel();
+          firebase.native.firestore.setLogLevel('warn');
         }).should.throw(
-          'firebase.firestore().setLogLevel() is unsupported by the native Firebase SDKs.'
+          'Argument `logLevel` must be one of: `debug`, `error`, `silent`'
         );
       });
     });

@@ -198,8 +198,12 @@ RCT_EXPORT_METHOD(disableNetwork:(NSString *)appDisplayName
     }];
 }
 
-RCT_EXPORT_METHOD(enableLogging:(BOOL)enabled) {
-    [FIRFirestore enableLogging:enabled];
+RCT_EXPORT_METHOD(setLogLevel:(NSString *)logLevel) {
+    if ([@"debug" isEqualToString:logLevel] || [@"error" isEqualToString:logLevel]) {
+        [FIRFirestore enableLogging:true];
+    } else {
+        [FIRFirestore enableLogging:false];
+    }
 }
 
 RCT_EXPORT_METHOD(enableNetwork:(NSString *)appDisplayName

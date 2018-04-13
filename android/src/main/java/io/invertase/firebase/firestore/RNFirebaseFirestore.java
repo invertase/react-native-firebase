@@ -65,8 +65,12 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void enableLogging(Boolean enabled) {
-    FirebaseFirestore.setLoggingEnabled(enabled);
+  public void setLogLevel(String logLevel) {
+    if ("debug".equals(logLevel) || "error".equals(logLevel)) {
+      FirebaseFirestore.setLoggingEnabled(true);
+    } else {
+      FirebaseFirestore.setLoggingEnabled(false);
+    }
   }
 
   @ReactMethod
