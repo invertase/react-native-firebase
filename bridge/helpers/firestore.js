@@ -75,34 +75,34 @@ module.exports = {
     return Promise.resolve();
   },
 
-  testCollection() {
+  testCollection(collection) {
     shouldCleanup = true;
-    return firebase.firestore().collection(TEST_COLLECTION_NAME);
+    return firebase.firestore().collection(collection || TEST_COLLECTION_NAME);
   },
 
-  testCollectionDoc() {
+  testCollectionDoc(path) {
     shouldCleanup = true;
-    return firebase.firestore().doc(module.exports.COL_DOC_1_PATH);
+    return firebase.firestore().doc(path);
   },
 
-  testCollectionDocAdmin() {
+  testCollectionDocAdmin(path) {
     shouldCleanup = true;
-    return firebaseAdmin.firestore().doc(module.exports.COL_DOC_1_PATH);
+    return firebaseAdmin.firestore().doc(path);
   },
 
-  resetTestCollectionDoc() {
+  resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
     return firebase
       .firestore()
-      .doc(module.exports.COL_DOC_1_PATH)
-      .set(module.exports.COL_DOC_1());
+      .doc(path || module.exports.COL_DOC_1_PATH)
+      .set(doc || module.exports.COL_DOC_1());
   },
 };
 
 // call a get request without waiting to force firestore to connect
 // so the first test isn't delayed whilst connecting
 module.exports
-  .testCollectionDocAdmin()
+  .testCollectionDocAdmin(module.exports.DOC_1_PATH)
   .get()
   .then(() => {})
   .catch(() => {});
