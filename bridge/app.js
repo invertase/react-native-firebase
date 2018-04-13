@@ -16,7 +16,6 @@ class Root extends Component {
       message: '',
     };
 
-    bridge.setBridgeProperty('root', this);
     bridge.setBridgeProperty('module', firebase);
   }
 
