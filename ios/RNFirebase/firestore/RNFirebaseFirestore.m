@@ -354,7 +354,8 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
         firestoreSettings.sslEnabled = settings[@"ssl"];
     }
     if (settings[@"timestampsInSnapshots"]) {
-        firestoreSettings.timestampsInSnapshotsEnabled = settings[@"timestampsInSnapshots"];
+        // TODO: Enable when available on Android
+        // firestoreSettings.timestampsInSnapshotsEnabled = settings[@"timestampsInSnapshots"];
     }
     [firestore setSettings:firestoreSettings];
     resolve(nil);
