@@ -1,10 +1,10 @@
 const should = require('should');
 
 describe('bridge', () => {
-  beforeEach(async function beforeEach() {
-    // await device.reloadReactNative();
-    bridge.root.setState({ message: this.currentTest.title });
-  });
+  // beforeEach(async function beforeEach() {
+  // await device.reloadReactNative();
+  // bridge.root.setState({ message: this.currentTest.title });
+  // });
 
   it('should provide -> global.bridge', async () => {
     should(bridge).not.be.undefined();
@@ -37,7 +37,7 @@ describe('bridge', () => {
 
   // the apps root component
   // allows you to read and set state if required
-  it('should provide -> bridge.root', async () => {
+  xit('should provide -> bridge.root', async () => {
     should(bridge.root).not.be.undefined();
     should(bridge.root.setState).be.a.Function();
     should(bridge.root.state).be.a.Object();
