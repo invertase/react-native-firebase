@@ -4,3 +4,4 @@
 --bail
 --exit
 --require bridge/platform/node
+--require ./helpers
