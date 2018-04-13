@@ -102,6 +102,7 @@ RCT_EXPORT_MODULE();
     // Pass them over to the RNFirebaseMessaging handler instead
     if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
@@ -119,6 +120,7 @@ RCT_EXPORT_MODULE();
         // - foreground notifications also go through willPresentNotification
         // - background notification presses also go through didReceiveNotificationResponse
         // This prevents duplicate messages from hitting the JS app
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
@@ -465,7 +467,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
         content.userInfo = notification[@"data"];
     }
     if (notification[@"sound"]) {
-        content.sound = notification[@"sound"];
+        if ([@"default" isEqualToString:notification[@"sound"]]) {
+            content.sound = [UNNotificationSound defaultSound];
+        } else {
+            content.sound = [UNNotificationSound soundNamed:notification[@"sound"]];
+        }
     }
     if (notification[@"subtitle"]) {
         content.subtitle = notification[@"subtitle"];
