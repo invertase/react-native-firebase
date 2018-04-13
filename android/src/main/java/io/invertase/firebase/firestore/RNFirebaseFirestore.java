@@ -199,6 +199,27 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     ref.update(data, promise);
   }
 
+  @ReactMethod
+  public void settings(String appName, ReadableMap settings, final Promise promise) {
+    FirebaseFirestore firestore = getFirestoreForApp(appName);
+    FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
+    if (settings.hasKey("host")) {
+      firestoreSettings.setHost(settings.getString("host"));
+    }
+    if (settings.hasKey("persistence")) {
+      firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
+    }
+    if (settings.hasKey("ssl")) {
+      firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
+    }
+    if (settings.hasKey("timestampsInSnapshots")) {
+      // TODO: Not supported on Android yet
+    }
+
+    firestore.setFirestoreSettings(firestoreSettings.build());
+    promise.resolve(null);
+  }
+
 
   /**
    * Try clean up previous transactions on reload

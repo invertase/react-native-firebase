@@ -134,12 +134,8 @@ function firestoreTests({ before, describe, it, context, firebase }) {
     });
 
     context('enablePersistence()', () => {
-      it('should throw an unsupported error', () => {
-        (() => {
-          firebase.native.firestore().enablePersistence();
-        }).should.throw(
-          'Persistence is enabled by default on the Firestore SDKs'
-        );
+      it('should work without error', async () => {
+        await firebase.native.firestore().enablePersistence();
       });
     });
 
@@ -160,10 +156,57 @@ function firestoreTests({ before, describe, it, context, firebase }) {
     });
 
     context('settings()', () => {
-      it('should throw an unsupported error', () => {
-        (() => {
-          firebase.native.firestore().settings();
-        }).should.throw('firebase.firestore().settings() coming soon');
+      it('should reject invalid object', async () => {
+        try {
+          await firebase.native.firestore().settings('test');
+          Promise.reject(new Error('Did not error on invalid object'));
+        } catch (error) {
+          // test passed
+        }
+      });
+
+      it('should reject invalid host setting', async () => {
+        try {
+          await firebase.native.firestore().settings({ host: true });
+          Promise.reject(new Error('Did not error on invalid `host` setting'));
+        } catch (error) {
+          // test passed
+        }
+      });
+
+      it('should reject invalid persistence setting', async () => {
+        try {
+          await firebase.native.firestore().settings({ persistence: 'fail' });
+          Promise.reject(
+            new Error('Did not error on invalid `persistence` setting')
+          );
+        } catch (error) {
+          // test passed
+        }
+      });
+
+      it('should reject invalid ssl setting', async () => {
+        try {
+          await firebase.native.firestore().settings({ ssl: 'fail' });
+          Promise.reject(new Error('Did not error on invalid `ssl` setting'));
+        } catch (error) {
+          // test passed
+        }
+      });
+
+      it('should reject invalid timestampsInSnapshots setting', async () => {
+        try {
+          await firebase.native
+            .firestore()
+            .settings({ timestampsInSnapshots: 'fail' });
+          Promise.reject(
+            new Error(
+              'Did not error on invalid `timestampsInSnapshots` setting'
+            )
+          );
+        } catch (error) {
+          // test passed
+        }
       });
     });
 
