@@ -120,6 +120,7 @@ RCT_EXPORT_MODULE();
         // - foreground notifications also go through willPresentNotification
         // - background notification presses also go through didReceiveNotificationResponse
         // This prevents duplicate messages from hitting the JS app
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
