@@ -485,7 +485,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
             NSMutableArray *attachments = [[NSMutableArray alloc] init];
             for (NSDictionary *a in ios[@"attachments"]) {
                 NSString *identifier = a[@"identifier"];
-                NSURL *url = [NSURL URLWithString:a[@"url"]];
+                NSURL *url = [NSURL fileURLWithPath:a[@"url"]];
                 NSMutableDictionary *attachmentOptions = nil;
                 
                 if (a[@"options"]) {
