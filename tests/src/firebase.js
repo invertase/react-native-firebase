@@ -4,6 +4,13 @@ import firebase from 'firebase';
 import RNfirebase from './../firebase';
 import DatabaseContents from './tests/support/DatabaseContents';
 
+// Verify firestore settings works
+RNfirebase.firestore().settings({
+  persistence: true,
+  ssl: true,
+  timestampsInSnapshots: false,
+});
+
 // Verify logging works
 RNfirebase.database.enableLogging(true);
 RNfirebase.database.enableLogging(false);

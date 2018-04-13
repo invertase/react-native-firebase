@@ -1467,14 +1467,10 @@ declare module "react-native-firebase" {
         collection(collectionPath: string): CollectionReference;
         disableNetwork(): Promise<void>
         doc(documentPath: string): DocumentReference;
-        enableNetwork(): Promise<void>
+        enableNetwork(): Promise<void>;
+        enablePersistence(enabled: boolean): Promise<void>;
         runTransaction(updateFunction: (transaction: Transaction) => Promise<any>): Promise<any>;
-        /** NOT SUPPORTED YET */
-        // enablePersistence(): Promise<void>;
-        /** NOT SUPPORTED YET */
-        // runTransaction(): Promise<any>;
-        /** NOT SUPPORTED YET */
-        // settings(): void;
+        settings(settings: Settings): Promise<void>;
       }
 
       interface FirestoreStatics {
@@ -1665,6 +1661,13 @@ declare module "react-native-firebase" {
           documents: Types.NativeDocumentSnapshot[];
           metadata: Types.SnapshotMetadata;
         }
+      }
+
+      interface Settings {
+        host?: string;
+        persistence?: boolean;
+        ssl?: boolean;
+        timestampsInSnapshots?: boolean;
       }
 
       interface Transaction {

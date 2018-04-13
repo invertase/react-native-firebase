@@ -338,6 +338,28 @@ RCT_EXPORT_METHOD(documentUpdate:(NSString *)appDisplayName
     [[self getDocumentForAppPath:appDisplayName path:path] update:data resolver:resolve rejecter:reject];
 }
 
+RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
+                  settings:(NSDictionary *)settings
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
+    FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+    if (settings[@"host"]) {
+        firestoreSettings.host = settings[@"host"];
+    }
+    if (settings[@"persistence"]) {
+        firestoreSettings.persistenceEnabled = settings[@"persistence"];
+    }
+    if (settings[@"ssl"]) {
+        firestoreSettings.sslEnabled = settings[@"ssl"];
+    }
+    if (settings[@"timestampsInSnapshots"]) {
+        firestoreSettings.timestampsInSnapshotsEnabled = settings[@"timestampsInSnapshots"];
+    }
+    [firestore setSettings:firestoreSettings];
+    resolve(nil);
+}
+
 /*
  * INTERNALS/UTILS
  */
