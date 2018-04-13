@@ -1482,6 +1482,7 @@ declare module "react-native-firebase" {
         FieldValue: typeof FieldValue;
         GeoPoint: typeof GeoPoint;
         enableLogging(enabled: boolean): void;
+        setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
       }
 
       interface CollectionReference {
