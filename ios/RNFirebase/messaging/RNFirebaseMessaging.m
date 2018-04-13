@@ -18,6 +18,8 @@
 @implementation RNFirebaseMessaging
 
 static RNFirebaseMessaging *theRNFirebaseMessaging = nil;
+static bool jsReady = FALSE;
+static NSString* initialToken = nil;
 
 + (nonnull instancetype)instance {
     return theRNFirebaseMessaging;
@@ -66,7 +68,7 @@ RCT_EXPORT_MODULE()
 // Listen for FCM data messages that arrive as a remote notification
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
     NSDictionary *message = [self parseUserInfo:userInfo];
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+    [self sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
 // *******************************************************
@@ -82,13 +84,13 @@ RCT_EXPORT_MODULE()
 // Listen for FCM tokens
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
     NSLog(@"Received new FCM token: %@", fcmToken);
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:fcmToken];
+    [self sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:fcmToken];
 }
 
 // Listen for data messages in the foreground
 - (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+    [self sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
@@ -96,7 +98,7 @@ RCT_EXPORT_MODULE()
 - (void)messaging:(nonnull FIRMessaging *)messaging
 didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
-    [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+    [self sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
 }
 
 // *******************************************************
@@ -120,11 +122,11 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
             [RCTSharedApplication() registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:types categories:nil]];
             // We set the promise for usage by the AppDelegate callback which listens
             // for the result of the permission request
-            _permissionRejecter = reject;
-            _permissionResolver = resolve;
+            self.permissionRejecter = reject;
+            self.permissionResolver = resolve;
         });
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             // For iOS 10 display notification (sent via APNS)
             UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
             [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
@@ -134,7 +136,7 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
                     reject(@"messaging/permission_error", @"Failed to grant permission", error);
                 }
             }];
-        #endif
+        }
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -149,11 +151,11 @@ RCT_EXPORT_METHOD(hasPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
             resolve(@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone));
         });
     } else {
-        #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        if (@available(iOS 10.0, *)) {
             [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
                 resolve(@(settings.alertSetting == UNNotificationSettingEnabled));
             }];
-        #endif
+        }
     }
 }
 
@@ -189,7 +191,30 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic: (NSString*) topic
     resolve(nil);
 }
 
+RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    jsReady = TRUE;
+    resolve(nil);
+    if (initialToken) {
+        [self sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:initialToken];
+    }
+}
+
 // ** Start internals **
+
+// Because of the time delay between the app starting and the bridge being initialised
+// we catch any events that are received before the JS is ready to receive them
+- (void)sendJSEvent:(RCTEventEmitter *)emitter name:(NSString *)name body:(id)body {
+    if (emitter.bridge && jsReady) {
+        [RNFirebaseUtil sendJSEvent:emitter name:name body:body];
+    } else {
+        if ([name isEqualToString:MESSAGING_TOKEN_REFRESHED]) {
+            initialToken = body;
+        } else {
+            // TODO: Is this even possible?
+            NSLog(@"Received Remote Message before the bridge is ready");
+        }
+    }
+}
 
 - (NSDictionary*)parseFIRMessagingRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
     NSDictionary *appData = remoteMessage.appData;
