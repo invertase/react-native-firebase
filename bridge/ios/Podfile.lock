@@ -206,7 +206,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (4.0.1):
+  - RNFirebase (4.0.2):
     - React
   - yoga (0.52.3.React)
 
@@ -235,11 +235,11 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   React:
-    :path: "../node_modules/react-native"
+    :path: ../node_modules/react-native
   RNFirebase:
-    :path: "../../ios/RNFirebase.podspec"
+    :path: ../../ios/RNFirebase.podspec
   yoga:
-    :path: "../node_modules/react-native/ReactCommon/yoga"
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   BoringSSL: 32764dbaf5f5888cf51fbaa172a010126b41bcd4
@@ -271,13 +271,13 @@ SPEC CHECKSUMS:
   gRPC-RxLibrary: a41a4652d220f230ba1c0491a94ce2ee04c6180a
   GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
   GTMSessionFetcher: 390ea358e5a0d0133153806f744662dad933d06b
-  leveldb-library: '08cba283675b7ed2d99629a4bc5fd052cd2bb6a5'
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
   React: c0dfd2dfc970019d1ae7d48bf24cef530992e079
-  RNFirebase: 973ad43718b555e793fdcbbac9c09756150f7024
+  RNFirebase: 26c3a2665b893f3ef61a3f0e5fc3f7662fb5d306
   yoga: f45a46b966e1eb0c7a532cfd4beec5b97332ba48
 
 PODFILE CHECKSUM: ef0a6d57e421403d349fe645afe7593f62efb9e0
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1
