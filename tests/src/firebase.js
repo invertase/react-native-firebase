@@ -73,6 +73,7 @@ const notifications = async () => {
       .setTitle('Test title')
       .setBody('Test body')
       .setNotificationId('displayed')
+      .setSound('default')
       .android.addAction(action)
       .android.setChannelId('test')
       .android.setClickAction('action')
@@ -100,7 +101,7 @@ const notifications = async () => {
   }
 };
 
-// notifications();
+notifications();
 
 // Invitations testing
 const invitations = async () => {

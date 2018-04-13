@@ -465,7 +465,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
         content.userInfo = notification[@"data"];
     }
     if (notification[@"sound"]) {
-        content.sound = notification[@"sound"];
+        if ([@"default" isEqualToString:notification[@"sound"]]) {
+            content.sound = [UNNotificationSound defaultSound];
+        } else {
+            content.sound = [UNNotificationSound soundNamed:notification[@"sound"]];
+        }
     }
     if (notification[@"subtitle"]) {
         content.subtitle = notification[@"subtitle"];
