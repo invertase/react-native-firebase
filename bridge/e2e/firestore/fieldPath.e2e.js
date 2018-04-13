@@ -1,7 +1,14 @@
+const {
+  COL_DOC_1,
+  COL_DOC_1_PATH,
+  testCollectionDoc,
+  resetTestCollectionDoc,
+} = TestHelpers.firestore;
+
 describe('firestore()', () => {
   describe('FieldPath', () => {
     before(async () => {
-      await TestHelpers.firestore.resetTestCollectionDoc();
+      await resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1());
     });
 
     it('documentId() should return a FieldPath', () => {
@@ -10,8 +17,7 @@ describe('firestore()', () => {
     });
 
     it('should allow getting values via documentSnapshot.get(FieldPath)', async () => {
-      const { testCollectionDoc } = TestHelpers.firestore;
-      const snapshot = await testCollectionDoc().get();
+      const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
 
       should.equal(snapshot.get('foo'), 'bar');
 

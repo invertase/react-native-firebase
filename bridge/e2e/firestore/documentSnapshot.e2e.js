@@ -1,13 +1,20 @@
+const {
+  COL_DOC_1,
+  COL_DOC_1_ID,
+  COL_DOC_1_PATH,
+  testCollectionDoc,
+  resetTestCollectionDoc,
+} = TestHelpers.firestore;
+
 describe('firestore()', () => {
   describe('DocumentSnapshot', () => {
     before(async () => {
-      await TestHelpers.firestore.resetTestCollectionDoc();
+      await resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1());
     });
 
     describe('id', () => {
       it('returns a string document id', async () => {
-        const { testCollectionDoc, COL_DOC_1_ID } = TestHelpers.firestore;
-        const snapshot = await testCollectionDoc().get();
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
         snapshot.id.should.be.a.String();
         snapshot.id.should.equal(COL_DOC_1_ID);
       });
@@ -15,8 +22,7 @@ describe('firestore()', () => {
 
     describe('ref', () => {
       it('returns a DocumentReference', async () => {
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const snapshot = await testCollectionDoc().get();
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
         const DocumentReference = bridge.require(
           'react-native-firebase/dist/modules/firestore/DocumentReference'
         );
@@ -26,8 +32,7 @@ describe('firestore()', () => {
 
     describe('metadata', () => {
       it('returns an object of meta data', async () => {
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const { metadata } = await testCollectionDoc().get();
+        const { metadata } = await testCollectionDoc(COL_DOC_1_PATH).get();
         metadata.should.be.an.Object();
         metadata.should.have.property('hasPendingWrites');
         metadata.should.have.property('fromCache');
@@ -38,8 +43,7 @@ describe('firestore()', () => {
 
     describe('exists', () => {
       it('returns a boolean', async () => {
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const { exists } = await testCollectionDoc().get();
+        const { exists } = await testCollectionDoc(COL_DOC_1_PATH).get();
         exists.should.be.a.Boolean();
         exists.should.be.true();
       });
@@ -48,8 +52,7 @@ describe('firestore()', () => {
     describe('data()', () => {
       it('returns document data', async () => {
         // additionally tests context binding not lost during destructuring
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const snapshot = await testCollectionDoc().get();
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
         const { data } = snapshot;
 
         snapshot.data.should.be.a.Function();
@@ -66,8 +69,7 @@ describe('firestore()', () => {
     describe('get()', () => {
       it('using a dot notated path string', async () => {
         // additionally tests context binding not lost during destructuring
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const snapshot = await testCollectionDoc().get();
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
         const { get } = snapshot;
 
         should.equal(snapshot.get('foo'), 'bar');
@@ -81,8 +83,7 @@ describe('firestore()', () => {
       });
 
       it('using a FieldPath instance', async () => {
-        const { testCollectionDoc } = TestHelpers.firestore;
-        const snapshot = await testCollectionDoc().get();
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
 
         should.equal(snapshot.get('foo'), 'bar');
 
