@@ -102,6 +102,7 @@ RCT_EXPORT_MODULE();
     // Pass them over to the RNFirebaseMessaging handler instead
     if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
