@@ -923,7 +923,7 @@ declare module "react-native-firebase" {
         unsubscribeFromTopic(topic: string): void
       }
 
-      interface RemoteMessage {
+      class RemoteMessage {
         collapseKey?: string
         data: Object
         from?: string
@@ -932,6 +932,8 @@ declare module "react-native-firebase" {
         sentTime?: number
         to?: string
         ttl?: number
+
+        constructor();
 
         setCollapseKey(collapseKey: string): RemoteMessage
         setData(data: Object): RemoteMessage
@@ -1015,6 +1017,8 @@ declare module "react-native-firebase" {
         sound?: string
         subtitle?: string
         title: string
+
+        constructor();
 
         setBody(body: string): Notification
         setData(data: any): Notification
@@ -1400,13 +1404,15 @@ declare module "react-native-firebase" {
         onLink(listener: (url: string) => void): () => void;
       }
 
-      interface DynamicLink {
+      class DynamicLink {
         analytics: AnalyticsParameters
         android: AndroidParameters
         ios: IOSParameters
         itunes: ITunesParameters
         navigation: NavigationParameters
         social: SocialParameters
+
+        constructor(link: string, dynamicLinkDomain: string);
       }
 
       interface AnalyticsParameters {
