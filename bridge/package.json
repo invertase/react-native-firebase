@@ -14,7 +14,7 @@
     "test-android-cover": "nyc detox test --configuration android.emu.debug",
     "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
     "test-ios": "detox test --configuration ios.sim.debug",
-    "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
+    "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel verbose",
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."

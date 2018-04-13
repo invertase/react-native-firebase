@@ -1,6 +1,9 @@
 describe('auth()', () => {
   beforeEach(async () => {
-    if (firebase.auth().currentUser) await firebase.auth().signOut();
+    if (firebase.auth().currentUser) {
+      await firebase.auth().signOut();
+      await sleep(25);
+    }
   });
 
   describe('applyActionCode()', () => {
@@ -83,6 +86,8 @@ describe('auth()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
 
+      await sleep(50);
+
       // Test
       const callback = sinon.spy();
 
@@ -101,9 +106,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 
@@ -136,9 +139,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 
@@ -184,10 +185,7 @@ describe('auth()', () => {
       // Sign out
 
       await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 
@@ -219,10 +217,7 @@ describe('auth()', () => {
       // Sign out
 
       await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 
@@ -269,9 +264,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 
@@ -306,10 +299,7 @@ describe('auth()', () => {
       // Sign out
 
       await firebase.auth().signOut();
-
-      await new Promise(resolve => {
-        setTimeout(() => resolve(), 5);
-      });
+      await sleep(50);
 
       // Assertions
 

@@ -15,7 +15,7 @@ class Root extends Component {
     this.state = {
       message: '',
     };
-
+    firebase.firestore.enableLogging();
     bridge.setBridgeProperty('module', firebase);
   }
 
