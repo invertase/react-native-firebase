@@ -1,5 +1,11 @@
 describe('crashlytics()', () => {
-  describe('crash()', () => {
+  // todo test is flakey due to a detox error occurring sometimes;
+  // Error: the string "Error when sending event: websocketFailed with body:
+  // {\n    id = 0;\n    message = \"The operation couldn\\U2019t be completed.
+  // Connection refused\";\n}. Bridge is not set. This is probably because you've
+  // explicitly synthesized the bridge in RCTWebSocketModule, even though it's
+  // inherited from RCTEventEmitter.
+  xdescribe('crash()', () => {
     it('should force an app crash', async () => {
       await firebase.crashlytics().crash();
       if (device.getPlatform() === 'ios') {
