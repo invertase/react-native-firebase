@@ -1,11 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-// must import before all else
-
+/* eslint-disable import/extensions,import/no-unresolved */
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
@@ -25,7 +18,6 @@ class Root extends Component {
 
     bridge.setBridgeProperty('root', this);
     bridge.setBridgeProperty('module', firebase);
-    bridge.setBridgeProperty('require', require);
   }
 
   render() {

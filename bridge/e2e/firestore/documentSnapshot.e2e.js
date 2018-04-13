@@ -17,12 +17,10 @@ describe('firestore()', () => {
       it('returns a DocumentReference', async () => {
         const { testCollectionDoc } = TestHelpers.firestore;
         const snapshot = await testCollectionDoc().get();
-        // console.dir(bridge.context.require.getModules());
-        // snapshot.ref.should.be.an.instanceOf(
-        //   bridge.require(
-        //     'react-native-firebase/dist/modules/firestore/DocumentReference.js'
-        //   )
-        // );
+        const DocumentReference = bridge.require(
+          'react-native-firebase/dist/modules/firestore/DocumentReference'
+        );
+        snapshot.ref.should.be.an.instanceOf(DocumentReference);
       });
     });
 
