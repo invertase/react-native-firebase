@@ -47,6 +47,9 @@ describe('firestore()', () => {
       firebase.firestore.setLogLevel('debug');
       firebase.firestore.setLogLevel('error');
       firebase.firestore.setLogLevel('silent');
+      // test deprecated method
+      firebase.firestore.enableLogging(true);
+      firebase.firestore.enableLogging(false);
     });
 
     it('should throw an invalid parameter error', () => {
