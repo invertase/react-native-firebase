@@ -2,58 +2,58 @@ const { testDocRef } = TestHelpers.firestore;
 
 describe('firestore()', () => {
   describe('batch()', () => {
-    it('should create / update / delete', () => {
+    it('should create / update / delete', async () => {
       const ayRef = testDocRef('AY');
       const lRef = testDocRef('LON');
       const nycRef = testDocRef('NYC');
       const sfRef = testDocRef('SF');
+      const batch = firebase.firestore().batch();
 
-      return firebase
-        .firestore()
-        .batch()
-        .set(ayRef, { name: 'Aylesbury' })
-        .set(lRef, { name: 'London' })
-        .set(nycRef, { name: 'New York City' })
-        .set(sfRef, { name: 'San Francisco' })
-        .update(nycRef, { population: 1000000 })
-        .update(sfRef, 'name', 'San Fran')
-        .update(
-          sfRef,
-          new firebase.firestore.FieldPath('name'),
-          'San Fran FieldPath'
-        )
-        .update(
-          sfRef,
-          new firebase.firestore.FieldPath('nested', 'name'),
-          'Nested Nme'
-        )
-        .update(
-          sfRef,
-          new firebase.firestore.FieldPath('nested', 'firstname'),
-          'First Name',
-          new firebase.firestore.FieldPath('nested', 'lastname'),
-          'Last Name'
-        )
-        .set(lRef, { population: 3000000 }, { merge: true })
-        .delete(ayRef)
-        .commit()
-        .then(async () => {
-          const ayDoc = await ayRef.get();
-          should.equal(ayDoc.exists, false);
+      batch.set(ayRef, { name: 'Aylesbury' });
+      batch.set(lRef, { name: 'London' });
+      batch.set(nycRef, { name: 'New York City' });
+      batch.set(sfRef, { name: 'San Francisco' });
 
-          const lDoc = await lRef.get();
-          lDoc.data().name.should.equal('London');
-          lDoc.data().population.should.equal(3000000);
+      batch.update(nycRef, { population: 1000000 });
+      batch.update(sfRef, 'name', 'San Fran');
+      batch.update(
+        sfRef,
+        new firebase.firestore.FieldPath('name'),
+        'San Fran FieldPath'
+      );
+      batch.update(
+        sfRef,
+        new firebase.firestore.FieldPath('nested', 'name'),
+        'Nested Nme'
+      );
+      batch.update(
+        sfRef,
+        new firebase.firestore.FieldPath('nested', 'firstname'),
+        'First Name',
+        new firebase.firestore.FieldPath('nested', 'lastname'),
+        'Last Name'
+      );
 
-          const nycDoc = await nycRef.get();
-          nycDoc.data().name.should.equal('New York City');
-          nycDoc.data().population.should.equal(1000000);
+      batch.set(lRef, { population: 3000000 }, { merge: true });
+      batch.delete(ayRef);
 
-          const sfDoc = await sfRef.get();
-          sfDoc.data().name.should.equal('San Fran FieldPath');
-          sfDoc.data().nested.firstname.should.equal('First Name');
-          sfDoc.data().nested.lastname.should.equal('Last Name');
-        });
+      await batch.commit();
+
+      const ayDoc = await ayRef.get();
+      should.equal(ayDoc.exists, false);
+
+      const lDoc = await lRef.get();
+      lDoc.data().name.should.equal('London');
+      lDoc.data().population.should.equal(3000000);
+
+      const nycDoc = await nycRef.get();
+      nycDoc.data().name.should.equal('New York City');
+      nycDoc.data().population.should.equal(1000000);
+
+      const sfDoc = await sfRef.get();
+      sfDoc.data().name.should.equal('San Fran FieldPath');
+      sfDoc.data().nested.firstname.should.equal('First Name');
+      sfDoc.data().nested.lastname.should.equal('Last Name');
     });
 
     it('errors when invalid parameters supplied', async () => {

@@ -139,7 +139,7 @@ describe('firestore()', () => {
     it('handle native exceptions', async () => {
       const firestore = firebase.firestore();
       const docRef = testDocRef('tSet');
-      const blockedRef = firestore.doc('blocked-collection/foo');
+      const blockedRef = firestore.doc('denied/foo');
 
       const updateFunction = async transaction => {
         await transaction.get(docRef);
