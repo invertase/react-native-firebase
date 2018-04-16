@@ -1,4 +1,6 @@
 const TEST_COLLECTION_NAME = 'tests';
+const TEST2_COLLECTION_NAME = 'tests2';
+// const TEST3_COLLECTION_NAME = 'tests3';
 
 let shouldCleanup = false;
 const ONE_HOUR = 60 * 60 * 1000;
@@ -8,7 +10,7 @@ module.exports = {
     if (!shouldCleanup) return Promise.resolve();
     await Promise.all([
       module.exports.cleanCollection(TEST_COLLECTION_NAME),
-      module.exports.cleanCollection(`${TEST_COLLECTION_NAME}2`),
+      module.exports.cleanCollection(TEST2_COLLECTION_NAME),
     ]);
     // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}3`);
     // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}4`);
@@ -16,6 +18,8 @@ module.exports = {
   },
 
   TEST_COLLECTION_NAME,
+  TEST2_COLLECTION_NAME,
+  // TEST3_COLLECTION_NAME,
 
   DOC_1: { name: 'doc1' },
   DOC_1_PATH: `tests/doc1${testRunId}`,
@@ -40,8 +44,28 @@ module.exports = {
     };
   },
 
-  COL_DOC_1_PATH: `tests/col1${testRunId}`,
+  // needs to be a fn as firebase may not yet be available
+  COL2_DOC_1() {
+    shouldCleanup = true;
+    return {
+      baz: true,
+      daz: 123,
+      foo: 'bar',
+      gaz: 12.1234567,
+      geopoint: new firebase.firestore.GeoPoint(0, 0),
+      naz: null,
+      object: {
+        daz: 123,
+      },
+      timestamp: new Date(2017, 2, 10, 10, 0, 0),
+    };
+  },
+
   COL_DOC_1_ID: `col1${testRunId}`,
+  COL_DOC_1_PATH: `${TEST_COLLECTION_NAME}/col1${testRunId}`,
+
+  COL2_DOC_1_ID: `doc1${testRunId}`,
+  COL2_DOC_1_PATH: `${TEST2_COLLECTION_NAME}/doc1${testRunId}`,
 
   /**
    * Removes all documents on the collection for the current testId or
@@ -84,12 +108,28 @@ module.exports = {
     return firebase
       .firestore()
       .collection(TEST_COLLECTION_NAME)
-      .doc(`${testRunId}${docId}`);
+      .doc(
+        docId.startsWith(testRunId) || docId.endsWith(testRunId)
+          ? docId
+          : `${testRunId}${docId}`
+      );
+  },
+
+  test2DocRef(docId) {
+    shouldCleanup = true;
+    return firebase
+      .firestore()
+      .collection(TEST2_COLLECTION_NAME)
+      .doc(
+        docId.startsWith(testRunId) || docId.endsWith(testRunId)
+          ? docId
+          : `${testRunId}${docId}`
+      );
   },
 
   testCollection(collection) {
     shouldCleanup = true;
-    return firebase.firestore().collection(collection || TEST_COLLECTION_NAME);
+    return firebase.firestore().collection(collection);
   },
 
   testCollectionDoc(path) {
