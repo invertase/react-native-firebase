@@ -36,6 +36,10 @@
       "file": "facebook-login"
     },
     {
+      "title": "Google Login",
+      "file": "google-login"
+    },
+    {
       "title": "Conclusion",
       "file": "conclusion"
     }
