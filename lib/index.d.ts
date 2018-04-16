@@ -944,7 +944,7 @@ declare module "react-native-firebase" {
       }
 
       interface MessagingStatics {
-        RemoteMessage: RemoteMessage;
+        RemoteMessage: typeof RemoteMessage;
       }
     }
 
@@ -1298,20 +1298,20 @@ declare module "react-native-firebase" {
 
       interface NotificationsStatics {
         Android: {
-          Action: Android.Action,
-          BadgeIconType: Android.BadgeIconType,
+          Action: typeof Android.Action,
+          BadgeIconType: typeof Android.BadgeIconType,
           Category: Android.Category,
-          Channel: Android.Channel,
-          ChannelGroup: Android.ChannelGroup,
-          Defaults: Android.Defaults,
-          GroupAlert: Android.GroupAlert,
-          Importance: Android.Importance,
-          Priority: Android.Priority,
-          RemoteInput: Android.RemoteInput,
-          SemanticAction: Android.SemanticAction,
-          Visibility: Android.Visibility,
+          Channel: typeof Android.Channel,
+          ChannelGroup: typeof Android.ChannelGroup,
+          Defaults: typeof Android.Defaults,
+          GroupAlert: typeof Android.GroupAlert,
+          Importance: typeof Android.Importance,
+          Priority: typeof Android.Priority,
+          RemoteInput: typeof Android.RemoteInput,
+          SemanticAction: typeof Android.SemanticAction,
+          Visibility: typeof Android.Visibility,
         };
-        Notification: Notification;
+        Notification: typeof Notification;
       }
     }
 
@@ -1456,7 +1456,7 @@ declare module "react-native-firebase" {
       }
 
       interface LinksStatics {
-        DynamicLink: DynamicLink;
+        DynamicLink: typeof DynamicLink;
       }
     }
 
