@@ -1,4 +1,4 @@
-const TEST_COLLECTION_NAME = 'collection-tests';
+const TEST_COLLECTION_NAME = 'tests';
 
 let shouldCleanup = false;
 const ONE_HOUR = 60 * 60 * 1000;
@@ -6,18 +6,22 @@ const ONE_HOUR = 60 * 60 * 1000;
 module.exports = {
   async cleanup() {
     if (!shouldCleanup) return Promise.resolve();
-    await module.exports.cleanCollection(TEST_COLLECTION_NAME);
-    // TODO add any others?
+    await Promise.all([
+      module.exports.cleanCollection(TEST_COLLECTION_NAME),
+      module.exports.cleanCollection(`${TEST_COLLECTION_NAME}2`),
+    ]);
+    // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}3`);
+    // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}4`);
     return Promise.resolve();
   },
 
   TEST_COLLECTION_NAME,
 
   DOC_1: { name: 'doc1' },
-  DOC_1_PATH: `collection-tests/doc1${testRunId}`,
+  DOC_1_PATH: `tests/doc1${testRunId}`,
 
   DOC_2: { name: 'doc2', title: 'Document 2' },
-  DOC_2_PATH: `collection-tests/doc2${testRunId}`,
+  DOC_2_PATH: `tests/doc2${testRunId}`,
 
   // needs to be a fn as firebase may not yet be available
   COL_DOC_1() {
@@ -36,7 +40,7 @@ module.exports = {
     };
   },
 
-  COL_DOC_1_PATH: `collection-tests/col1${testRunId}`,
+  COL_DOC_1_PATH: `tests/col1${testRunId}`,
   COL_DOC_1_ID: `col1${testRunId}`,
 
   /**
