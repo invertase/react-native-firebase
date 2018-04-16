@@ -75,6 +75,14 @@ module.exports = {
     return Promise.resolve();
   },
 
+  testDocRef(docId) {
+    shouldCleanup = true;
+    return firebase
+      .firestore()
+      .collection(TEST_COLLECTION_NAME)
+      .doc(`${testRunId}${docId}`);
+  },
+
   testCollection(collection) {
     shouldCleanup = true;
     return firebase.firestore().collection(collection || TEST_COLLECTION_NAME);
