@@ -14,7 +14,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -134,7 +133,7 @@ class RNFirebaseDatabaseReference {
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
+        WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, null);
         promise.resolve(data);
       }
 
@@ -160,7 +159,7 @@ class RNFirebaseDatabaseReference {
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -169,7 +168,7 @@ class RNFirebaseDatabaseReference {
       public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -178,7 +177,7 @@ class RNFirebaseDatabaseReference {
       public void onChildRemoved(DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap(dataSnapshot, null);
+          WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, null);
           promise.resolve(data);
         }
       }
@@ -187,7 +186,7 @@ class RNFirebaseDatabaseReference {
       public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventName)) {
           query.removeEventListener(this);
-          WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+          WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
           promise.resolve(data);
         }
       }
@@ -317,7 +316,7 @@ class RNFirebaseDatabaseReference {
    */
   private void handleDatabaseEvent(String eventType, ReadableMap registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     WritableMap event = Arguments.createMap();
-    WritableMap data = Utils.snapshotToMap(dataSnapshot, previousChildName);
+    WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
 
     event.putMap("data", data);
     event.putString("key", key);

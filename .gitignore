@@ -89,3 +89,6 @@ version.js
 .nyc_output
 ios.coverage.json
 tests/ios/Fabric.framework/Fabric
+android/.project
+android/.classpath
+android/.settings/org.eclipse.buildship.core.prefs
