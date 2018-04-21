@@ -1,5 +1,4 @@
 buildscript {
-  ext.firebaseVersion = '12.0.0'
   repositories {
     jcenter()
     google()
@@ -15,12 +14,18 @@ buildscript {
 
 apply plugin: 'com.android.library'
 
+def DEFAULT_COMPILE_SDK_VERSION = 27
+def DEFAULT_BUILD_TOOLS_VERSION = "27.0.3"
+def DEFAULT_TARGET_SDK_VERSION = 26
+def DEFAULT_FIREBASE_VERSION = "12.0.0"
+def DEFAULT_SUPPORT_LIB_VERSION = "27.0.2"
+
 android {
-  compileSdkVersion 27
-  buildToolsVersion "27.0.3"
+  compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
+  buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 26
+    targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
     versionCode 1
     versionName "1.0"
     multiDexEnabled true
@@ -77,11 +82,13 @@ rootProject.gradle.buildFinished { buildResult ->
   }
 }
 
+def firebaseVersion = rootProject.hasProperty('googlePlayServicesVersion') ? rootProject.googlePlayServicesVersion : DEFAULT_FIREBASE_VERSION
+def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
 
 dependencies {
   // compile fileTree(include: ['*.jar'], dir: 'libs')
   api "com.facebook.react:react-native:+"  // From node_modules
-  api "com.android.support:support-v4:27.0.2"
+  api "com.android.support:support-v4:$supportVersion"
   compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
   compileOnly "com.google.android.gms:play-services-base:$firebaseVersion"
   compileOnly "com.google.firebase:firebase-core:$firebaseVersion"
