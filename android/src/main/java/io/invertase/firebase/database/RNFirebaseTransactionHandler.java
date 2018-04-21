@@ -114,7 +114,7 @@ public class RNFirebaseTransactionHandler {
     if (!updatesData.hasChildren()) {
       Utils.mapPutValue("value", updatesData.getValue(), updatesMap);
     } else {
-      Object value = Utils.castValue(updatesData);
+      Object value = RNFirebaseDatabaseUtils.castValue(updatesData);
 
       if (value instanceof WritableNativeArray) {
         updatesMap.putArray("value", (WritableArray) value);
@@ -149,7 +149,7 @@ public class RNFirebaseTransactionHandler {
       }
     } else {
       resultMap.putString("type", "complete");
-      resultMap.putMap("snapshot", Utils.snapshotToMap(snapshot));
+      resultMap.putMap("snapshot", RNFirebaseDatabaseUtils.snapshotToMap(snapshot));
     }
 
     return resultMap;
