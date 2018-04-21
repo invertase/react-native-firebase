@@ -86,3 +86,4 @@ local.properties
 **/ios/ReactNativeFirebaseDemo.xcworkspace/
 dist
 version.js
+.nyc_output
