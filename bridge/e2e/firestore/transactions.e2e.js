@@ -137,7 +137,7 @@ describe('firestore()', () => {
       should.equal(didReject, true);
     });
 
-    it.only('handle native exceptions', async () => {
+    it('handle native exceptions', async () => {
       const firestore = firebase.firestore();
       const docRef = testDocRef('tSet');
       const blockedRef = firestore.doc('denied/foo');
