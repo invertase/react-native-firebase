@@ -40,7 +40,7 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new Date(2017, 2, 10, 10, 0, 0),
+      timestamp: new bridge.context.window.Date(2017, 2, 10, 10, 0, 0),
     };
   },
 
@@ -57,7 +57,7 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new Date(2017, 2, 10, 10, 0, 0),
+      timestamp: new bridge.context.window.Date(2017, 2, 10, 10, 0, 0),
     };
   },
 
@@ -142,12 +142,16 @@ module.exports = {
     return firebaseAdmin.firestore().doc(path);
   },
 
-  resetTestCollectionDoc(path, doc) {
+  async resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
-    return firebase
+    const _doc = doc || module.exports.COL_DOC_1();
+
+    await firebase
       .firestore()
       .doc(path || module.exports.COL_DOC_1_PATH)
-      .set(doc || module.exports.COL_DOC_1());
+      .set(_doc);
+
+    return _doc;
   },
 };
 
