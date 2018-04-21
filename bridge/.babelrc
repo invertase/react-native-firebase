@@ -10,7 +10,9 @@
           {
             "alias": {
               "react-native-firebase": ".."
-            }
+            },
+            "extensions": [".js", ".ios.js", ".android.js"],
+            "stripExtensions": [".js"]
           }
         ],
         [

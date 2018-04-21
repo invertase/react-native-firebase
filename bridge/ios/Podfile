@@ -13,7 +13,6 @@ target 'testing' do
   # Pods for ReactNativeFirebaseDemo
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
    'Core',
-   'BatchedBridge',
    'RCTText',
    'RCTNetwork',
    'RCTWebSocket',
