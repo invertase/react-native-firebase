@@ -112,6 +112,7 @@ describe('firestore()', () => {
 
       // rejections
       let didReject = false;
+      // eslint-disable-next-line
       let updateFunction = () => Promise.reject('shoop');
       try {
         await firestore.runTransaction(updateFunction);
