@@ -136,7 +136,7 @@ describe('firestore()', () => {
       should.equal(didReject, true);
     });
 
-    it('handle native exceptions', async () => {
+    it.only('handle native exceptions', async () => {
       const firestore = firebase.firestore();
       const docRef = testDocRef('tSet');
       const blockedRef = firestore.doc('denied/foo');
@@ -152,7 +152,12 @@ describe('firestore()', () => {
       try {
         await firestore.runTransaction(updateFunction);
       } catch (e) {
-        e.message.should.containEql('firestore/failed-precondition');
+        // TODO sdks are giving different errors - standardise?
+        if (device.getPlatform() === 'ios') {
+          e.message.should.containEql('firestore/failed-precondition');
+        } else {
+          e.message.should.containEql('firestore/aborted');
+        }
         didReject = true;
       }
       should.equal(didReject, true);
