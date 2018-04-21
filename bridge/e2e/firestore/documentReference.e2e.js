@@ -7,7 +7,6 @@ const {
   resetTestCollectionDoc,
 } = TestHelpers.firestore;
 
-// TODO cleanup promises and replace with async/await
 describe('firestore()', () => {
   describe('DocumentReference', () => {
     before(async () => {
@@ -487,59 +486,52 @@ describe('firestore()', () => {
       });
     });
 
-    // TODO async/await these tests
     describe('update()', () => {
       beforeEach(async () => {
         await resetTestCollectionDoc(COL2_DOC_1_PATH, { name: 'doc1' });
       });
-      it('should update Document using object', () =>
-        test2DocRef(COL2_DOC_1_ID)
-          .update({ name: 'updated' })
-          .then(async () => {
-            const doc = await test2DocRef(COL2_DOC_1_ID).get();
-            doc.data().name.should.equal('updated');
-          }));
 
-      it('should update Document using key/value pairs', () =>
-        test2DocRef(COL2_DOC_1_ID)
-          .update('name', 'updated')
-          .then(async () => {
-            const doc = await test2DocRef(COL2_DOC_1_ID).get();
-            doc.data().name.should.equal('updated');
-          }));
+      it('should update Document using object', async () => {
+        await test2DocRef(COL2_DOC_1_ID).update({ name: 'updated' });
+        const doc = await test2DocRef(COL2_DOC_1_ID).get();
+        doc.data().name.should.equal('updated');
+      });
 
-      it('should update Document using FieldPath/value pair', () =>
-        test2DocRef(COL2_DOC_1_ID)
-          .update(new firebase.firestore.FieldPath('name'), 'Name')
-          .then(async () => {
-            const doc = await test2DocRef(COL2_DOC_1_ID).get();
-            doc.data().name.should.equal('Name');
-          }));
+      it('should update Document using key/value pairs', async () => {
+        await test2DocRef(COL2_DOC_1_ID).update('name', 'updated');
+        const doc = await test2DocRef(COL2_DOC_1_ID).get();
+        doc.data().name.should.equal('updated');
+      });
 
-      it('should update Document using nested FieldPath and value pair', () =>
-        test2DocRef(COL2_DOC_1_ID)
-          .update(
-            new firebase.firestore.FieldPath('nested', 'name'),
-            'Nested Name'
-          )
-          .then(async () => {
-            const doc = await test2DocRef(COL2_DOC_1_ID).get();
-            doc.data().nested.name.should.equal('Nested Name');
-          }));
+      it('should update Document using FieldPath/value pair', async () => {
+        await test2DocRef(COL2_DOC_1_ID).update(
+          new firebase.firestore.FieldPath('name'),
+          'Name'
+        );
+        const doc = await test2DocRef(COL2_DOC_1_ID).get();
+        doc.data().name.should.equal('Name');
+      });
 
-      it('should update Document using multiple FieldPath/value pairs', () =>
-        test2DocRef(COL2_DOC_1_ID)
-          .update(
-            new firebase.firestore.FieldPath('nested', 'firstname'),
-            'First Name',
-            new firebase.firestore.FieldPath('nested', 'lastname'),
-            'Last Name'
-          )
-          .then(async () => {
-            const doc = await test2DocRef(COL2_DOC_1_ID).get();
-            doc.data().nested.firstname.should.equal('First Name');
-            doc.data().nested.lastname.should.equal('Last Name');
-          }));
+      it('should update Document using nested FieldPath and value pair', async () => {
+        await test2DocRef(COL2_DOC_1_ID).update(
+          new firebase.firestore.FieldPath('nested', 'name'),
+          'Nested Name'
+        );
+        const doc = await test2DocRef(COL2_DOC_1_ID).get();
+        doc.data().nested.name.should.equal('Nested Name');
+      });
+
+      it('should update Document using multiple FieldPath/value pairs', async () => {
+        await test2DocRef(COL2_DOC_1_ID).update(
+          new firebase.firestore.FieldPath('nested', 'firstname'),
+          'First Name',
+          new firebase.firestore.FieldPath('nested', 'lastname'),
+          'Last Name'
+        );
+        const doc = await test2DocRef(COL2_DOC_1_ID).get();
+        doc.data().nested.firstname.should.equal('First Name');
+        doc.data().nested.lastname.should.equal('Last Name');
+      });
 
       it('errors when invalid parameters supplied', async () => {
         const docRef = test2DocRef(COL2_DOC_1_ID);
