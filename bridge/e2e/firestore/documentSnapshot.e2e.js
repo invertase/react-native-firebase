@@ -24,7 +24,7 @@ describe('firestore()', () => {
       it('returns a DocumentReference', async () => {
         const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
         const DocumentReference = bridge.require(
-          'react-native-firebase/dist/modules/firestore/DocumentReference'
+          'dist/modules/firestore/DocumentReference'
         );
         snapshot.ref.should.be.an.instanceOf(DocumentReference);
       });
