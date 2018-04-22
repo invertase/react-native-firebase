@@ -1,6 +1,7 @@
 const CONTENTS = require('./content');
 
 module.exports = {
+  CONTENTS,
   setDatabaseContents() {
     const database = firebaseAdmin.database();
     return Promise.all([
