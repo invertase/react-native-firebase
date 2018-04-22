@@ -1,8 +1,8 @@
 const { setDatabaseContents } = TestHelpers.database;
 
+// TODO use testRunId in refs to prevent multiple test instances interfering with each other
 describe('database()', () => {
   before(() => setDatabaseContents());
-  // TODO use testRunId in refs to prevent multiple test instances interfering with each other
   describe('ref.transaction()', () => {
     it('increments a value', async () => {
       let valueBefore = 1;
