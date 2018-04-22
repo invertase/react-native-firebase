@@ -9,6 +9,12 @@ Object.defineProperty(global, 'firebase', {
   },
 });
 
+global.isObject = function isObject(item) {
+  return item
+    ? typeof item === 'object' && !Array.isArray(item) && item !== null
+    : false;
+};
+
 global.sleep = duration =>
   new Promise(resolve => setTimeout(resolve, duration));
 
