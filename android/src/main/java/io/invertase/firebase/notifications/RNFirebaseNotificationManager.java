@@ -17,6 +17,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
@@ -634,7 +635,7 @@ public class RNFirebaseNotificationManager {
     return null;
   }
 
-  private void scheduleNotification(Bundle notification, Promise promise) {
+  private void scheduleNotification(Bundle notification, @Nullable Promise promise) {
     if (!notification.containsKey("notificationId")) {
       if (promise == null) {
         Log.e(TAG, "Missing notificationId");
@@ -664,7 +665,11 @@ public class RNFirebaseNotificationManager {
       JSONObject json = BundleJSONConverter.convertToJSON(notification);
       preferences.edit().putString(notificationId, json.toString()).apply();
     } catch (JSONException e) {
-      promise.reject("notification/schedule_notification_error", "Failed to store notification", e);
+      if (promise == null) {
+        Log.e(TAG, "Failed to store notification");
+      } else {
+        promise.reject("notification/schedule_notification_error", "Failed to store notification", e);
+      }
       return;
     }
 
@@ -694,7 +699,11 @@ public class RNFirebaseNotificationManager {
       }
 
       if (interval == null) {
-        promise.reject("notification/schedule_notification_error", "Invalid interval");
+        if (promise == null) {
+          Log.e(TAG, "Invalid interval");
+        } else {
+          promise.reject("notification/schedule_notification_error", "Invalid interval");
+        }
         return;
       }
 
@@ -709,6 +718,8 @@ public class RNFirebaseNotificationManager {
       }
     }
 
-    promise.resolve(null);
+    if (promise != null) {
+      promise.resolve(null);
+    }
   }
 }
