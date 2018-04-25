@@ -1502,7 +1502,7 @@ declare module "react-native-firebase" {
         startAfter(...varargs: any[]): Query;
         startAt(snapshot: DocumentSnapshot): Query;
         startAt(...varargs: any[]): Query;
-        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+        where(fieldPath: string | FieldPath, op: Types.QueryOperator, value: any): Query;
       }
 
       interface DocumentChange {
@@ -1598,7 +1598,7 @@ declare module "react-native-firebase" {
         startAfter(...varargs: any[]): Query;
         startAt(snapshot: DocumentSnapshot): Query;
         startAt(...varargs: any[]): Query;
-        where(fieldPath: string, op: Types.QueryOperator, value: any): Query;
+        where(fieldPath: string | FieldPath, op: Types.QueryOperator, value: any): Query;
       }
       namespace Query {
         interface NativeFieldPath {
