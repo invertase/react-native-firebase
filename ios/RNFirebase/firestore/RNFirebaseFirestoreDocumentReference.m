@@ -208,6 +208,10 @@ static NSMutableDictionary *_listeners;
             typeMap[@"type"] = @"number";
         }
         typeMap[@"value"] = value;
+    } else if ([value isKindOfClass:[NSData class]]) {
+        typeMap[@"type"] = @"blob";
+        NSData *blob = (NSData *)value;
+        typeMap[@"value"] = [blob base64EncodedStringWithOptions:0];
     } else {
         // TODO: Log an error
         typeMap[@"type"] = @"null";
@@ -248,6 +252,8 @@ static NSMutableDictionary *_listeners;
         return [RNFirebaseFirestoreDocumentReference parseJSMap:firestore jsMap:value];
     } else if ([type isEqualToString:@"reference"]) {
         return [firestore documentWithPath:value];
+    } else if ([type isEqualToString:@"blob"]) {
+        return [[NSData alloc] initWithBase64EncodedString:(NSString *) value options:0];
     } else if ([type isEqualToString:@"geopoint"]) {
         NSDictionary *geopoint = (NSDictionary*)value;
         NSNumber *latitude = geopoint[@"latitude"];
