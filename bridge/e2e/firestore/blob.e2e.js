@@ -91,9 +91,9 @@ describe('firestore', () => {
  *    USAGE TESTS
  * -----------------*/
 
-describe.only('firestore', () => {
+describe('firestore', () => {
   describe('Blob', () => {
-    it('reads and writes blobs', async () => {
+    it('reads and writes small blobs', async () => {
       const { Blob } = firebase.firestore;
 
       await firebase
@@ -109,6 +109,24 @@ describe.only('firestore', () => {
       const blob = snapshot.data().blobby;
       blob._binaryString.should.equal(testString);
       blob.toBase64().should.equal(testBase64);
+    });
+
+    it('reads and writes large blobs', async () => {
+      const { Blob } = firebase.firestore;
+
+      await firebase
+        .firestore()
+        .doc('blob-tests/large')
+        .set({ blobby: Blob.fromBase64String(testBase64Large) });
+
+      const snapshot = await firebase
+        .firestore()
+        .doc('blob-tests/large')
+        .get();
+
+      const blob = snapshot.data().blobby;
+      blob._binaryString.should.equal(testStringLarge);
+      blob.toBase64().should.equal(testBase64Large);
     });
   });
 });
