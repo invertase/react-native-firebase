@@ -8,13 +8,6 @@ const testStringLarge = JSON.stringify(testObjectLarge);
 const testBufferLarge = Buffer.from(testStringLarge);
 const testBase64Large = testBufferLarge.toString('base64');
 
-// function sizeInKiloBytes(base64String) {
-//   return 4 * Math.ceil(base64String.length / 3) / 1000;
-// }
-
-// console.log(sizeInKiloBytes(testBase64));
-// console.log(sizeInKiloBytes(testBase64Large));
-
 /** ----------------
  *    CLASS TESTS
  * -----------------*/
@@ -45,6 +38,14 @@ describe('firestore', () => {
       );
     });
 
+    it('.fromBase64String() -> throws if arg not typeof string and length > 0', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      myBlob.should.be.instanceOf(Blob);
+      (() => Blob.fromBase64String(1234)).should.throwError();
+      (() => Blob.fromBase64String('')).should.throwError();
+    });
+
     it('.fromUint8Array() -> returns new instance of Blob', async () => {
       const testUInt8Array = new Uint8Array(testBuffer);
       const { Blob } = firebase.firestore;
@@ -52,6 +53,14 @@ describe('firestore', () => {
       myBlob.should.be.instanceOf(Blob);
       const json = JSON.parse(myBlob._binaryString);
       json.hello.should.equal('world');
+    });
+
+    it('.fromUint8Array() -> throws if arg not instanceof Uint8Array', async () => {
+      const testUInt8Array = new Uint8Array(testBuffer);
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromUint8Array(testUInt8Array);
+      myBlob.should.be.instanceOf(Blob);
+      (() => Blob.fromUint8Array('derp')).should.throwError();
     });
   });
 
@@ -65,6 +74,22 @@ describe('firestore', () => {
         true,
         'toString() should return a string that includes the base64'
       );
+    });
+
+    it('.isEqual() -> returns true or false', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      const myBlob2 = Blob.fromBase64String(testBase64Large);
+      myBlob.isEqual(myBlob).should.equal(true);
+      myBlob2.isEqual(myBlob).should.equal(false);
+    });
+
+    it('.isEqual() -> throws if arg not instanceof Blob', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      const myBlob2 = Blob.fromBase64String(testBase64Large);
+      myBlob.isEqual(myBlob).should.equal(true);
+      (() => myBlob2.isEqual('derp')).should.throwError();
     });
 
     it('.toBase64() -> returns base64 string', async () => {
@@ -90,7 +115,6 @@ describe('firestore', () => {
 /** ----------------
  *    USAGE TESTS
  * -----------------*/
-
 describe('firestore', () => {
   describe('Blob', () => {
     it('reads and writes small blobs', async () => {
