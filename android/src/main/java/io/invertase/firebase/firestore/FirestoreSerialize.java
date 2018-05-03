@@ -1,14 +1,15 @@
 package io.invertase.firebase.firestore;
 
+import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,15 +19,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import io.invertase.firebase.Utils;
 
@@ -214,6 +211,9 @@ public class FirestoreSerialize {
       } else if (value instanceof Date) {
         typeMap.putString("type", "date");
         typeMap.putDouble("value", ((Date) value).getTime());
+      } else if (value instanceof Blob) {
+        typeMap.putString("type", "blob");
+        typeMap.putString("value", Base64.encodeToString(((Blob) value).toBytes(), Base64.NO_WRAP));
       } else {
         Log.e(TAG, "buildTypeMap: Cannot convert object of type " + value.getClass());
         typeMap.putString("type", "null");
@@ -266,6 +266,9 @@ public class FirestoreSerialize {
     } else if ("geopoint".equals(type)) {
       ReadableMap geoPoint = typeMap.getMap("value");
       return new GeoPoint(geoPoint.getDouble("latitude"), geoPoint.getDouble("longitude"));
+    } else if ("blob".equals(type)) {
+      String base64String = typeMap.getString("value");
+      return Blob.fromBytes(Base64.decode(base64String, Base64.NO_WRAP));
     } else if ("date".equals(type)) {
       Double time = typeMap.getDouble("value");
       return new Date(time.longValue());

@@ -9,6 +9,38 @@ Object.defineProperty(global, 'firebase', {
   },
 });
 
+// TODO move as part of bridge
+const { Uint8Array } = global;
+Object.defineProperty(global, 'Uint8Array', {
+  get() {
+    const { stack } = new Error();
+    if (
+      (stack.includes('Context.it') || stack.includes('Context.beforeEach')) &&
+      global.bridge &&
+      global.bridge.context
+    ) {
+      return bridge.context.window.Uint8Array;
+    }
+    return Uint8Array;
+  },
+});
+
+// TODO move as part of bridge
+const { Array } = global;
+Object.defineProperty(global, 'Array', {
+  get() {
+    const { stack } = new Error();
+    if (
+      (stack.includes('Context.it') || stack.includes('Context.beforeEach')) &&
+      global.bridge &&
+      global.bridge.context
+    ) {
+      return bridge.context.window.Array;
+    }
+    return Array;
+  },
+});
+
 global.isObject = function isObject(item) {
   return item
     ? typeof item === 'object' && !Array.isArray(item) && item !== null
@@ -30,10 +62,16 @@ global.randomString = (length, chars) => {
   }
   return result;
 };
-
-global.firebaseAdmin = require('firebase-admin');
-
 global.testRunId = randomString(4, 'aA#');
+
+/** ------------------
+ *    Init WEB SDK
+ ---------------------*/
+
+/** ------------------
+ *   Init ADMIN SDK
+ ---------------------*/
+global.firebaseAdmin = require('firebase-admin');
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(require('./service-account')),
