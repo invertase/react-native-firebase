@@ -1,0 +1,114 @@
+const testObject = { hello: 'world', testRunId };
+const testString = JSON.stringify(testObject);
+const testBuffer = Buffer.from(testString);
+const testBase64 = testBuffer.toString('base64');
+
+const testObjectLarge = new Array(5000).fill(testObject);
+const testStringLarge = JSON.stringify(testObjectLarge);
+const testBufferLarge = Buffer.from(testStringLarge);
+const testBase64Large = testBufferLarge.toString('base64');
+
+// function sizeInKiloBytes(base64String) {
+//   return 4 * Math.ceil(base64String.length / 3) / 1000;
+// }
+
+// console.log(sizeInKiloBytes(testBase64));
+// console.log(sizeInKiloBytes(testBase64Large));
+
+/** ----------------
+ *    CLASS TESTS
+ * -----------------*/
+describe('firestore', () => {
+  it('should export Blob class on statics', async () => {
+    const { Blob } = firebase.firestore;
+    should.exist(Blob);
+  });
+
+  describe('Blob', () => {
+    it('.constructor() -> returns new instance of Blob', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = new Blob(testStringLarge);
+      myBlob.should.be.instanceOf(Blob);
+      myBlob._binaryString.should.equal(testStringLarge);
+      myBlob.toBase64().should.equal(testBase64Large);
+    });
+
+    it('.fromBase64String() -> returns new instance of Blob', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      myBlob.should.be.instanceOf(Blob);
+      myBlob._binaryString.should.equal(testString);
+      should.deepEqual(
+        JSON.parse(myBlob._binaryString),
+        testObject,
+        'Expected Blob _binaryString internals to serialize to json and match test object'
+      );
+    });
+
+    it('.fromUint8Array() -> returns new instance of Blob', async () => {
+      const testUInt8Array = new Uint8Array(testBuffer);
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromUint8Array(testUInt8Array);
+      myBlob.should.be.instanceOf(Blob);
+      const json = JSON.parse(myBlob._binaryString);
+      json.hello.should.equal('world');
+    });
+  });
+
+  describe('Blob instance', () => {
+    it('.toString() -> returns string representation of blob instance', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      myBlob.should.be.instanceOf(Blob);
+      should.equal(
+        myBlob.toString().includes(testBase64),
+        true,
+        'toString() should return a string that includes the base64'
+      );
+    });
+
+    it('.toBase64() -> returns base64 string', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      myBlob.should.be.instanceOf(Blob);
+      myBlob.toBase64().should.equal(testBase64);
+    });
+
+    it('.toUint8Array() -> returns Uint8Array', async () => {
+      const { Blob } = firebase.firestore;
+      const myBlob = Blob.fromBase64String(testBase64);
+      const testUInt8Array = new Uint8Array(testBuffer);
+      const testUInt8Array2 = new Uint8Array();
+
+      myBlob.should.be.instanceOf(Blob);
+      should.deepEqual(myBlob.toUint8Array(), testUInt8Array);
+      should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
+    });
+  });
+});
+
+/** ----------------
+ *    USAGE TESTS
+ * -----------------*/
+
+describe.only('firestore', () => {
+  describe('Blob', () => {
+    it('reads and writes blobs', async () => {
+      const { Blob } = firebase.firestore;
+
+      await firebase
+        .firestore()
+        .doc('blob-tests/small')
+        .set({ blobby: Blob.fromBase64String(testBase64) });
+
+      const snapshot = await firebase
+        .firestore()
+        .doc('blob-tests/small')
+        .get();
+
+      const blob = snapshot.data().blobby;
+      blob._binaryString.should.equal(testString);
+      blob.toBase64().should.equal(testBase64);
+    });
+  });
+});
