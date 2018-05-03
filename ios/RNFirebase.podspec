@@ -16,4 +16,5 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "9.0"
   s.source_files        = 'RNFirebase/**/*.{h,m}'
   s.dependency          'React'
+  s.dependency          'Firebase/Core'
 end
