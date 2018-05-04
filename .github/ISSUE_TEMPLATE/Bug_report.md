@@ -1,5 +1,5 @@
 ---
-name: Bug/Issue report
+name: ⚠️ Bug/Issue report
 about: Please provide as much detail as possible to help us with a bug or issue. Issues
   will be closed if they do not follow the template.
 
