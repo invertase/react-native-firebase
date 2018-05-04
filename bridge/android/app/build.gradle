@@ -89,23 +89,24 @@ dependencies {
 
   implementation project(':bridge')
 
-  compile fileTree(dir: "libs", include: ["*.jar"])
-  compile "com.google.android.gms:play-services-base:$firebaseVersion"
-  compile "com.google.firebase:firebase-ads:$firebaseVersion"
-  compile "com.google.firebase:firebase-auth:$firebaseVersion"
-  compile "com.google.firebase:firebase-config:$firebaseVersion"
-  compile "com.google.firebase:firebase-core:$firebaseVersion"
-  compile "com.google.firebase:firebase-crash:$firebaseVersion"
-  compile "com.google.firebase:firebase-database:$firebaseVersion"
-  compile "com.google.firebase:firebase-messaging:$firebaseVersion"
-  compile "com.google.firebase:firebase-perf:$firebaseVersion"
-  compile "com.google.firebase:firebase-storage:$firebaseVersion"
-  compile "com.google.firebase:firebase-firestore:$firebaseVersion"
-  compile "com.google.firebase:firebase-invites:$firebaseVersion"
-  compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+  implementation fileTree(dir: "libs", include: ["*.jar"])
+  implementation "com.google.android.gms:play-services-base:$firebaseVersion"
+  implementation "com.google.firebase:firebase-ads:$firebaseVersion"
+  implementation "com.google.firebase:firebase-auth:$firebaseVersion"
+  implementation "com.google.firebase:firebase-config:$firebaseVersion"
+  implementation "com.google.firebase:firebase-core:$firebaseVersion"
+  implementation "com.google.firebase:firebase-crash:$firebaseVersion"
+  implementation "com.google.firebase:firebase-database:$firebaseVersion"
+  implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
+  implementation "com.google.firebase:firebase-perf:$firebaseVersion"
+  implementation "com.google.firebase:firebase-storage:$firebaseVersion"
+  implementation "com.google.firebase:firebase-firestore:$firebaseVersion"
+  implementation "com.google.firebase:firebase-invites:$firebaseVersion"
+  implementation "com.google.firebase:firebase-functions:$firebaseVersion"
+  implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
     transitive = true
   }
-  compile "com.android.support:appcompat-v7:27.1.0"
+  implementation "com.android.support:appcompat-v7:27.1.0"
   implementation fileTree(dir: "libs", include: ["*.jar"])
   androidTestImplementation(project(path: ":detox"))
   androidTestImplementation 'junit:junit:4.12'
