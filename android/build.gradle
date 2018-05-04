@@ -102,6 +102,7 @@ dependencies {
   compileOnly "com.google.firebase:firebase-ads:$firebaseVersion"
   compileOnly "com.google.firebase:firebase-firestore:$firebaseVersion"
   compileOnly "com.google.firebase:firebase-invites:$firebaseVersion"
+  compileOnly "com.google.firebase:firebase-functions:$firebaseVersion"
   compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
     transitive = true
   }

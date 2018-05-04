@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 
-
 @SuppressWarnings("WeakerAccess")
 public class Utils {
   private static final String TAG = "Utils";
@@ -64,6 +63,10 @@ public class Utils {
         Long longVal = (Long) value;
         map.putDouble(key, (double) longVal);
         break;
+      case "java.lang.Float":
+        float floatVal = (float) value;
+        map.putDouble(key, (double) floatVal);
+        break;
       case "java.lang.Double":
         map.putDouble(key, (Double) value);
         break;
@@ -71,14 +74,12 @@ public class Utils {
         map.putString(key, (String) value);
         break;
       default:
-        map.putString(key, null);
+        map.putNull(key);
     }
   }
 
 
-
   /**
-   *
    * @param map
    * @return
    */
