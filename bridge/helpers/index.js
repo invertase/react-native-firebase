@@ -56,6 +56,9 @@ console.log = (...args) => {
 };
 
 global.TestHelpers = {
+  functions: {
+    data: require('./../functions/test-data'),
+  },
   firestore: require('./firestore'),
   database: require('./database'),
 };
