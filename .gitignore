@@ -96,3 +96,4 @@ tests/ios/Fabric.framework/Fabric
 bridge/android/app/.classpath
 bridge/android/app/.project
 **/.vscode
+bridge/functions/firebase-debug.log
