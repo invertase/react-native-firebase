@@ -1,8 +1,11 @@
+const assert = require('assert');
 const functions = require('firebase-functions');
 
 const TEST_DATA = require('./test-data');
 
 exports.runTest = functions.https.onCall(data => {
+  console.log(Date.now(), data);
+
   if (typeof data === 'undefined') {
     return 'undefined';
   }
@@ -36,18 +39,15 @@ exports.runTest = functions.https.onCall(data => {
   }
 
   const outputData = TEST_DATA[type];
-  if (typeof outputData !== typeof inputData) {
-    throw new functions.https.HttpsError(
-      'invalid-argument',
-      'Input and Output types did not match.'
-    );
-  }
 
-  // cheap deep equality check
-  if (JSON.stringify(outputData) !== JSON.stringify(inputData)) {
+  try {
+    assert.deepEqual(outputData, inputData);
+  } catch (e) {
+    console.error(e);
     throw new functions.https.HttpsError(
       'invalid-argument',
-      'Input and Output failed deep equality check.'
+      'Input and Output types did not match.',
+      e.message
     );
   }
 
@@ -55,7 +55,7 @@ exports.runTest = functions.https.onCall(data => {
   if (asError) {
     throw new functions.https.HttpsError(
       'cancelled',
-      'Response data was request as part of a Error payload, so here we are!',
+      'Response data was requested to be sent as part of an Error payload, so here we are!',
       outputData
     );
   }
