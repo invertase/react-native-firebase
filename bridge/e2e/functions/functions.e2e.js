@@ -73,6 +73,130 @@ describe('functions()', () => {
   });
 
   describe('HttpsError', () => {
-    // todo
+    it('errors return instance of HttpsError', async () => {
+      const functionRunner = firebase.functions().httpsCallable('runTest');
+      try {
+        await functionRunner({});
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.equal(e.details, null);
+        e.code.should.equal('invalid-argument');
+        e.message.should.equal('Invalid test requested.');
+      }
+
+      return Promise.resolve();
+    });
+
+    it('HttpsError.details -> allows returning complex data', async () => {
+      let type = 'advancedObject';
+      let inputData = TEST_DATA[type];
+      const functionRunner = firebase.functions().httpsCallable('runTest');
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.deepEqual(e.details, inputData);
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+      }
+
+      type = 'advancedArray';
+      inputData = TEST_DATA[type];
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.deepEqual(e.details, inputData);
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+      }
+
+      return Promise.resolve();
+    });
+
+    it('HttpsError.details -> allows returning primitives', async () => {
+      let type = 'number';
+      let inputData = TEST_DATA[type];
+      const functionRunner = firebase.functions().httpsCallable('runTest');
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+        should.deepEqual(e.details, inputData);
+      }
+
+      type = 'string';
+      inputData = TEST_DATA[type];
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.deepEqual(e.details, inputData);
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+      }
+
+      type = 'boolean';
+      inputData = TEST_DATA[type];
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.deepEqual(e.details, inputData);
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+      }
+
+      type = 'null';
+      inputData = TEST_DATA[type];
+      try {
+        await functionRunner({
+          type,
+          inputData,
+          asError: true,
+        });
+        return Promise.reject(new Error('Function did not reject with error.'));
+      } catch (e) {
+        should.deepEqual(e.details, inputData);
+        e.code.should.equal('cancelled');
+        e.message.should.equal(
+          'Response data was requested to be sent as part of an Error payload, so here we are!'
+        );
+      }
+
+      return Promise.resolve();
+    });
   });
 });
