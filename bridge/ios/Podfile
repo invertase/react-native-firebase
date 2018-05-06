@@ -23,6 +23,7 @@ target 'testing' do
   pod 'Firebase/Core'
   pod 'Firebase/Crash'
   pod 'Firebase/Database'
+  pod 'Firebase/Functions'
   pod 'Firebase/DynamicLinks'
   pod 'Firebase/Firestore'
   pod 'Firebase/Invites'
