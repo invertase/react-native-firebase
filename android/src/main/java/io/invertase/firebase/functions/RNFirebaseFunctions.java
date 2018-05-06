@@ -42,7 +42,7 @@ public class RNFirebaseFunctions extends ReactContextBaseJavaModule {
   @ReactMethod
   public void httpsCallable(final String name, ReadableMap wrapper, final Promise promise) {
     Object input = wrapper.toHashMap().get(DATA_KEY);
-    Log.d(TAG, "function:call:input:" + name + ":" + input.toString());
+    Log.d(TAG, "function:call:input:" + name + ":" + (input != null ? input.toString() : "null"));
 
     HttpsCallableReference httpsCallableReference = FirebaseFunctions
       .getInstance()
