@@ -63,6 +63,9 @@ public class Utils {
         case "java.lang.Double":
           map.putDouble(key, (Double) value);
           break;
+        case "java.lang.Integer":
+          map.putInt(key, (int) value);
+          break;
         case "java.lang.String":
           map.putString(key, (String) value);
           break;
