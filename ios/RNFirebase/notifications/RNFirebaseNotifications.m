@@ -343,6 +343,13 @@ RCT_EXPORT_METHOD(removeDeliveredNotification:(NSString*) notificationId
     resolve(nil);
 }
 
+RCT_EXPORT_METHOD(removeDeliveredNotificationsByTag:(NSString*) tag
+                                     resolver:(RCTPromiseResolveBlock)resolve
+                                     rejecter:(RCTPromiseRejectBlock)reject) {
+    // No implementation for ios
+    resolve(nil);
+}
+
 RCT_EXPORT_METHOD(scheduleNotification:(NSDictionary*) notification
                               resolver:(RCTPromiseResolveBlock)resolve
                               rejecter:(RCTPromiseRejectBlock)reject) {
@@ -372,7 +379,7 @@ RCT_EXPORT_METHOD(setBadge:(NSInteger) number
         resolve(nil);
     });
 }
-    
+
 RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     jsReady = TRUE;
     resolve(nil);
@@ -487,11 +494,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
                 NSString *identifier = a[@"identifier"];
                 NSURL *url = [NSURL fileURLWithPath:a[@"url"]];
                 NSMutableDictionary *attachmentOptions = nil;
-                
+
                 if (a[@"options"]) {
                     NSDictionary *options = a[@"options"];
                     attachmentOptions = [[NSMutableDictionary alloc] init];
-                    
+
                     for (id key in options) {
                         if ([key isEqualToString:@"typeHint"]) {
                             attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey] = options[key];
