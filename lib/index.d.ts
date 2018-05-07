@@ -1,6 +1,6 @@
-// Type definitions for React Native Firebase  v1.0.0-alpha7
+// Type definitions for React Native Firebase v4.1.0
 // Project: https://github.com/invertase/react-native-firebase
-// Definitions by: Tal <https://github.com/taljacobson>
+// Definitions by: React Native Firebase Contributors
 // TypeScript Version: 2.1
 
 declare module 'react-native-firebase' {
@@ -35,6 +35,10 @@ declare module 'react-native-firebase' {
     firestore: FirebaseModuleAndStatics<
       RNFirebase.firestore.Firestore,
       RNFirebase.firestore.FirestoreStatics
+    >;
+    functions: FirebaseModuleAndStatics<
+      RNFirebase.functions.Functions,
+      RNFirebase.functions.FunctionsStatics
     >;
     iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
     // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
@@ -82,6 +86,7 @@ declare module 'react-native-firebase' {
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
     firestore(): RNFirebase.firestore.Firestore;
+    functions(): RNFirebase.functions.Functions;
     iid(): RNFirebase.iid.InstanceId;
     // invites(): RNFirebase.invites.Invites;
     links(): RNFirebase.links.Links;
@@ -1592,6 +1597,121 @@ declare module 'react-native-firebase' {
 
       interface LinksStatics {
         DynamicLink: typeof DynamicLink;
+      }
+    }
+
+    // Source: https://github.com/firebase/firebase-js-sdk/blob/master/packages/functions-types/index.d.ts
+    namespace functions {
+      type HttpsErrorCode = { [name: string]: FunctionsErrorCode };
+
+      /**
+       * The set of Firebase Functions status codes. The codes are the same at the
+       * ones exposed by gRPC here:
+       * https://github.com/grpc/grpc/blob/master/doc/statuscodes.md
+       *
+       * Possible values:
+       * - 'cancelled': The operation was cancelled (typically by the caller).
+       * - 'unknown': Unknown error or an error from a different error domain.
+       * - 'invalid-argument': Client specified an invalid argument. Note that this
+       *   differs from 'failed-precondition'. 'invalid-argument' indicates
+       *   arguments that are problematic regardless of the state of the system
+       *   (e.g. an invalid field name).
+       * - 'deadline-exceeded': Deadline expired before operation could complete.
+       *   For operations that change the state of the system, this error may be
+       *   returned even if the operation has completed successfully. For example,
+       *   a successful response from a server could have been delayed long enough
+       *   for the deadline to expire.
+       * - 'not-found': Some requested document was not found.
+       * - 'already-exists': Some document that we attempted to create already
+       *   exists.
+       * - 'permission-denied': The caller does not have permission to execute the
+       *   specified operation.
+       * - 'resource-exhausted': Some resource has been exhausted, perhaps a
+       *   per-user quota, or perhaps the entire file system is out of space.
+       * - 'failed-precondition': Operation was rejected because the system is not
+       *   in a state required for the operation's execution.
+       * - 'aborted': The operation was aborted, typically due to a concurrency
+       *   issue like transaction aborts, etc.
+       * - 'out-of-range': Operation was attempted past the valid range.
+       * - 'unimplemented': Operation is not implemented or not supported/enabled.
+       * - 'internal': Internal errors. Means some invariants expected by
+       *   underlying system has been broken. If you see one of these errors,
+       *   something is very broken.
+       * - 'unavailable': The service is currently unavailable. This is most likely
+       *   a transient condition and may be corrected by retrying with a backoff.
+       * - 'data-loss': Unrecoverable data loss or corruption.
+       * - 'unauthenticated': The request does not have valid authentication
+       *   credentials for the operation.
+       */
+      type FunctionsErrorCode =
+        | 'ok'
+        | 'cancelled'
+        | 'unknown'
+        | 'invalid-argument'
+        | 'deadline-exceeded'
+        | 'not-found'
+        | 'already-exists'
+        | 'permission-denied'
+        | 'resource-exhausted'
+        | 'failed-precondition'
+        | 'aborted'
+        | 'out-of-range'
+        | 'unimplemented'
+        | 'internal'
+        | 'unavailable'
+        | 'data-loss'
+        | 'unauthenticated';
+
+      /**
+       * An HttpsCallableResult wraps a single result from a function call.
+       */
+      interface HttpsCallableResult {
+        readonly data: any;
+      }
+
+      /**
+       * An HttpsCallable is a reference to a "callable" http trigger in
+       * Google Cloud Functions.
+       */
+      interface HttpsCallable {
+        (data?: any): Promise<HttpsCallableResult>;
+      }
+
+      /**
+       * `FirebaseFunctions` represents a Functions app, and is the entry point for
+       * all Functions operations.
+       */
+      interface Functions {
+        /**
+         * Gets an `HttpsCallable` instance that refers to the function with the given
+         * name.
+         *
+         * @param name The name of the https callable function.
+         * @return The `HttpsCallable` instance.
+         */
+        httpsCallable(name: string): HttpsCallable;
+      }
+
+      /**
+       * firebase.functions.X
+       */
+      interface FunctionsStatics {
+        /**
+         * Uppercased + underscored variables of @FunctionsErrorCode
+         */
+        HttpsErrorCode: HttpsErrorCode;
+      }
+
+      interface HttpsError extends Error {
+        /**
+         * A standard error code that will be returned to the client. This also
+         * determines the HTTP status code of the response, as defined in code.proto.
+         */
+        readonly code: FunctionsErrorCode;
+        /**
+         * Extra data to be converted to JSON and included in the error response.
+         */
+        readonly details?: any;
       }
     }
 
