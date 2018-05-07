@@ -2,7 +2,7 @@
   "name": "react-native-firebase",
   "version": "4.0.7",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Messaging (FCM), Remote Config, Storage and Performance.",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -36,7 +36,7 @@
     "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modules/react-native-mock", "./node_modules/react-addons-test-utils"]
   },
   "license": "APACHE-2.0",
-  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
+  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "functions", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
   "peerDependencies": {
     "react": "*",
     "react-native": ">= 0.48.0",
