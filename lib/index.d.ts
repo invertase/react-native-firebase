@@ -1757,12 +1757,12 @@ declare module 'react-native-firebase' {
         ): () => void;
         onSnapshot(observer: Query.Observer): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
         orderBy(
@@ -1801,12 +1801,12 @@ declare module 'react-native-firebase' {
         ): () => void;
         onSnapshot(observer: DocumentReference.Observer): () => void;
         onSnapshot(
-          documentListenOptions: DocumentReference.DocumentListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
         ): () => void;
         onSnapshot(
-          documentListenOptions: DocumentReference.DocumentListenOptions,
+          metadataChanges: MetadataChanges,
           observer: DocumentReference.Observer
         ): () => void;
         set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
@@ -1850,10 +1850,6 @@ declare module 'react-native-firebase' {
         ): Promise<void>;
       }
       namespace DocumentReference {
-        interface DocumentListenOptions {
-          includeMetadataChanges: boolean;
-        }
-
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
         type ObserverOnError = (err: object) => void;
         interface Observer {
@@ -1906,6 +1902,10 @@ declare module 'react-native-firebase' {
         parent(): Path | null;
       }
 
+      type MetadataChanges = {
+        includeMetadataChanges: boolean;
+      };
+
       interface Query {
         readonly firestore: Firestore;
         endAt(snapshot: DocumentSnapshot): Query;
@@ -1920,12 +1920,12 @@ declare module 'react-native-firebase' {
         ): () => void;
         onSnapshot(observer: Query.Observer): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
         orderBy(
@@ -1969,19 +1969,6 @@ declare module 'react-native-firebase' {
           startAfter?: any[];
           startAt?: any[];
         }
-
-        // The JS code expects at least one of 'includeDocumentMetadataChanges'
-        // or 'includeQueryMetadataChanges' to be defined.
-        interface _IncludeDocumentMetadataChanges {
-          includeDocumentMetadataChanges: boolean;
-        }
-        interface _IncludeQueryMetadataChanges {
-          includeQueryMetadataChanges: boolean;
-        }
-        type QueryListenOptions =
-          | _IncludeDocumentMetadataChanges
-          | _IncludeQueryMetadataChanges
-          | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
 
         type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
         type ObserverOnError = (err: object) => void;

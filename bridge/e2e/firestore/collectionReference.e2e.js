@@ -415,8 +415,7 @@ describe('firestore()', () => {
       //     await new Promise(resolve2 => {
       //       unsubscribe = collectionRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
-      //           includeDocumentMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         snapshot => {
       //           snapshot.forEach(doc => callback(doc.data()));
@@ -504,8 +503,7 @@ describe('firestore()', () => {
       //       };
       //       unsubscribe = collectionRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
-      //           includeDocumentMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         observer
       //       );
@@ -555,7 +553,7 @@ describe('firestore()', () => {
       //     (() => {
       //       colRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         () => {},
       //         'error'
@@ -566,7 +564,7 @@ describe('firestore()', () => {
       //     (() => {
       //       colRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         {
       //           next: () => {},
@@ -579,7 +577,7 @@ describe('firestore()', () => {
       //     (() => {
       //       colRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         {
       //           next: 'error',
@@ -591,7 +589,7 @@ describe('firestore()', () => {
       //     (() => {
       //       colRef.onSnapshot(
       //         {
-      //           includeQueryMetadataChanges: true,
+      //           includeMetadataChanges: true,
       //         },
       //         'error'
       //       );
