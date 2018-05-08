@@ -66,13 +66,12 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
         };
 
         FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
-        if (queryListenOptions) {
-            if (queryListenOptions[@"includeDocumentMetadataChanges"]) {
-                [options includeDocumentMetadataChanges:TRUE];
-            }
-            if (queryListenOptions[@"includeQueryMetadataChanges"]) {
-                [options includeQueryMetadataChanges:TRUE];
-            }
+        if (queryListenOptions && queryListenOptions[@"includeMetadataChanges"]) {
+            [options includeDocumentMetadataChanges:true];
+            [options includeQueryMetadataChanges:true];
+        } else {
+            [options includeDocumentMetadataChanges:false];
+            [options includeQueryMetadataChanges:false];
         }
 
         id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];

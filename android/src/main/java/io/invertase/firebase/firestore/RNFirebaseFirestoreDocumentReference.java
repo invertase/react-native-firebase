@@ -10,12 +10,12 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
@@ -94,11 +94,15 @@ public class RNFirebaseFirestoreDocumentReference {
           }
         }
       };
-      DocumentListenOptions options = new DocumentListenOptions();
-      if (docListenOptions != null && docListenOptions.hasKey("includeMetadataChanges") && docListenOptions.getBoolean("includeMetadataChanges")) {
-        options.includeMetadataChanges();
+      MetadataChanges metadataChanges;
+      if (docListenOptions != null
+        && docListenOptions.hasKey("includeMetadataChanges")
+        && docListenOptions.getBoolean("includeMetadataChanges")) {
+        metadataChanges = MetadataChanges.INCLUDE;
+      } else {
+        metadataChanges = MetadataChanges.EXCLUDE;
       }
-      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(options, listener);
+      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(metadataChanges, listener);
       documentSnapshotListeners.put(listenerId, listenerRegistration);
     }
   }

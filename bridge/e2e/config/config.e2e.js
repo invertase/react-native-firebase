@@ -70,7 +70,8 @@ describe('config()', () => {
       should.equal(keys.length, 2);
     });
 
-    it('get all keys as an array if no prefix provided', async () => {
+    xit('get all keys as an array if no prefix provided', async () => {
+      // TODO flakey on Android
       const keys = await firebase.config().getKeysByPrefix();
       keys.should.be.Array();
       should.equal(keys.length, 4);
