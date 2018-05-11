@@ -294,9 +294,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private NotificationCompat.Action createAction(Bundle action, Class intentClass, Bundle notification) {
+    boolean runInBackground = action.containsKey("runInBackground") && action.getBoolean("runInBackground");
     String actionKey = action.getString("action");
-    PendingIntent actionIntent = createIntent(intentClass, notification, actionKey);
-
+    PendingIntent actionIntent = runInBackground ?
+      createBroadcastIntent(notification, actionKey) :
+      createIntent(intentClass, notification, actionKey);
     int icon = getIcon(action.getString("icon"));
     String title = action.getString("title");
 
@@ -334,8 +336,19 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
     }
 
     String notificationId = notification.getString("notificationId");
-
     return PendingIntent.getActivity(context, notificationId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+  }
+
+  private PendingIntent createBroadcastIntent(Bundle notification, String action) {
+    Intent intent = new Intent(context, RNFirebaseBackgroundNotificationActionReceiver.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    String notificationId = notification.getString("notificationId") + action;
+
+    intent.setAction("io.invertase.firebase.notifications.BackgroundAction");
+    intent.putExtra("action", action);
+    intent.putExtra("notification", notification);
+    return PendingIntent.getBroadcast(context, notificationId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
   private RemoteInput createRemoteInput(Bundle remoteInput) {
