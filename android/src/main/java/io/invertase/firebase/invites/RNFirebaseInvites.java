@@ -140,13 +140,13 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
         ib = ib.setAdditionalReferralParameters(arpMap);
       }
       if (androidMap.hasKey("emailHtmlContent")) {
-        ib = ib.setEmailHtmlContent(invitationMap.getString("emailHtmlContent"));
+        ib = ib.setEmailHtmlContent(androidMap.getString("emailHtmlContent"));
       }
       if (androidMap.hasKey("emailSubject")) {
-        ib = ib.setEmailSubject(invitationMap.getString("emailSubject"));
+        ib = ib.setEmailSubject(androidMap.getString("emailSubject"));
       }
       if (androidMap.hasKey("googleAnalyticsTrackingId")) {
-        ib = ib.setGoogleAnalyticsTrackingId(invitationMap.getString("googleAnalyticsTrackingId"));
+        ib = ib.setGoogleAnalyticsTrackingId(androidMap.getString("googleAnalyticsTrackingId"));
       }
     }
 
