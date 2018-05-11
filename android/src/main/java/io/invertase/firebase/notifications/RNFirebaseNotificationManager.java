@@ -309,17 +309,19 @@ public class RNFirebaseNotificationManager {
     // fireDate is stored in the Bundle as Long after notifications are rescheduled.
     // This would lead to a fireDate of 0.0 when trying to extract a Double from the bundle.
     // Instead always try extract a Long
-    Long fireDate = schedule.getLong("fireDate", -1);
-    if (fireDate == -1) {
+    Long fireDate = -1L;
+    try {
       fireDate = (long) schedule.getDouble("fireDate", -1);
-      if (fireDate == -1) {
-        if (promise == null) {
-          Log.e(TAG, "Missing schedule information");
-        } else {
-          promise.reject("notification/schedule_notification_error", "Missing fireDate information");
-        }
-        return;
+    } catch (ClassCastException e) {
+      fireDate = schedule.getLong("fireDate", -1);
+    }
+    if (fireDate == -1) {
+      if (promise == null) {
+        Log.e(TAG, "Missing schedule information");
+      } else {
+        promise.reject("notification/schedule_notification_error", "Missing fireDate information");
       }
+      return;
     }
 
     // Scheduled alarms are cleared on restart
