@@ -1,4 +1,4 @@
-// Type definitions for React Native Firebase v4.1.0
+// Type definitions for React Native Firebase v4.2.0
 // Project: https://github.com/invertase/react-native-firebase
 // Definitions by: React Native Firebase Contributors
 // TypeScript Version: 2.1
@@ -827,6 +827,14 @@ declare module 'react-native-firebase' {
         credential: (token: string, secret?: string) => AuthCredential;
       };
 
+      type EmailAuthProvider = {
+        PROVIDER_ID: string;
+        EMAIL_LINK_SIGN_IN_METHOD: string;
+        EMAIL_PASSWORD_SIGN_IN_METHOD: string;
+        credential: (email: string, password: string) => AuthCredential;
+        credentialWithLink: (email: string, emailLink: string) => AuthCredential;
+      };
+
       interface Auth {
         readonly app: App;
         /**
@@ -878,6 +886,13 @@ declare module 'react-native-firebase' {
           email: string,
           password: string
         ): Promise<UserCredential>;
+
+        signInWithEmailLink(
+          email: string,
+          emailLink: string
+        ): Promise<UserCredential>;
+
+        isSignInWithEmailLink(emailLink: string): boolean;
 
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
@@ -949,6 +964,11 @@ declare module 'react-native-firebase' {
           actionCodeSettings?: ActionCodeSettings
         ): Promise<void>;
 
+        sendSignInLinkToEmail(
+          email: string,
+          actionCodeSettings?: ActionCodeSettings
+        ): Promise<void>;
+
         /**
          * Completes the password reset process, given a confirmation code and new password.
          */
@@ -975,7 +995,7 @@ declare module 'react-native-firebase' {
       }
 
       interface AuthStatics {
-        EmailAuthProvider: AuthProvider;
+        EmailAuthProvider: EmailAuthProvider;
         PhoneAuthProvider: AuthProvider;
         GoogleAuthProvider: AuthProvider;
         GithubAuthProvider: AuthProvider;
