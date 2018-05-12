@@ -1058,6 +1058,8 @@ RCT_EXPORT_METHOD(fetchSignInMethodsForEmail:
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
     } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+    } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIREmailAuthProvider credentialWithEmail:authToken link:authTokenSecret];
     } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
