@@ -991,7 +991,7 @@ describe('auth()', () => {
             new Error(
               `A user is currently signed in. ${
                 firebase.auth().currentUser.uid
-              }`
+                }`
             )
           );
         }
@@ -1099,9 +1099,7 @@ describe('auth()', () => {
       } catch (error) {
         // Reject
         await firebase.auth().currentUser.delete();
-        Promise.reject(
-          new Error('sendPasswordResetEmail() caused an error', error)
-        );
+        throw new Error('sendPasswordResetEmail() caused an error', error);
       }
     });
   });

@@ -1,4 +1,4 @@
-describe.only('auth() -> Providers', () => {
+describe('auth() -> Providers', () => {
   describe('EmailAuthProvider', () => {
     describe('constructor', () => {
       it('should throw an unsupported error', () => {
