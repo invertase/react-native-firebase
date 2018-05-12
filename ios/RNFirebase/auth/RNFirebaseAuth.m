@@ -695,6 +695,35 @@ RCT_EXPORT_METHOD(sendPasswordResetEmail:(NSString *) appDisplayName
     }
 }
 
+/**
+ sendSignInLinkToEmail
+ 
+ @param NSString email
+ @param NSDictionary actionCodeSettings
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(sendSignInLinkToEmail:(NSString *) appDisplayName
+                  email:(NSString *) email
+                  actionCodeSettings:(NSDictionary *) actionCodeSettings
+                  resolver:(RCTPromiseResolveBlock) resolve
+                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    
+    id handler = ^(NSError *_Nullable error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseNoUser:resolve rejecter:reject isError:NO];
+        }
+    };
+    
+
+    FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+    [[FIRAuth authWithApp:firApp] sendSignInLinkToEmail:email actionCodeSettings:settings completion:handler];
+}
+
 
 /**
  signInAndRetrieveDataWithCustomToken
