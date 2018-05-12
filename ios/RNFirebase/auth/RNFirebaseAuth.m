@@ -211,6 +211,31 @@ RCT_EXPORT_METHOD(signInAndRetrieveDataWithEmailAndPassword:(NSString *) appDisp
 }
 
 /**
+ signInWithEmailLink
+ 
+ @param NSString NSString email
+ @param NSString NSString emailLink
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return return
+ */
+RCT_EXPORT_METHOD(signInWithEmailLink:(NSString *) appDisplayName
+                  email:(NSString *) email
+                  emailLink:(NSString *) emailLink
+                  resolver:(RCTPromiseResolveBlock) resolve
+                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+    
+    [[FIRAuth authWithApp:firApp] signInWithEmail:email link:emailLink completion:^(FIRAuthDataResult *authResult, NSError *error) {
+        if (error) {
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+        }
+    }];
+}
+
+/**
  createUserWithEmailAndPassword
 
  @param NSString NSString email
