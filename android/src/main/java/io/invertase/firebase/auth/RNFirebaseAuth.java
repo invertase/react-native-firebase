@@ -1129,7 +1129,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         }
         return PhoneAuthProvider.getCredential(authToken, authSecret);
       case "password":
+        // authToken = email
+        // authSecret = password
         return EmailAuthProvider.getCredential(authToken, authSecret);
+      case "emailLink":
+        // authToken = email
+        // authSecret = link
+        return EmailAuthProvider.getCredentialWithLink(authToken, authSecret);
       default:
         return null;
     }
