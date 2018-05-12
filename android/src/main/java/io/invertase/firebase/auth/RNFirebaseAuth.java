@@ -387,6 +387,39 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     }
   }
 
+  /**
+   * sendSignInLinkToEmail
+   *
+   * @param email
+   * @param promise
+   */
+  @ReactMethod
+  public void sendSignInLinkToEmail(String appName, String email, ReadableMap actionCodeSettings, final Promise promise) {
+    Log.d(TAG, "sendSignInLinkToEmail");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "sendSignInLinkToEmail:onComplete:success");
+          promiseNoUser(promise, false);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "sendSignInLinkToEmail:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      }
+    };
+
+
+    ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+    firebaseAuth.sendSignInLinkToEmail(email, settings).addOnCompleteListener(listener);
+  }
+
+
+
   /* ----------------------
    *  .currentUser methods
    * ---------------------- */
