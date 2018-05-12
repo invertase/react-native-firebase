@@ -1,4 +1,4 @@
-describe('auth() -> Providers', () => {
+describe.only('auth() -> Providers', () => {
   describe('EmailAuthProvider', () => {
     describe('constructor', () => {
       it('should throw an unsupported error', () => {
@@ -19,6 +19,36 @@ describe('auth() -> Providers', () => {
         credential.providerId.should.equal('password');
         credential.token.should.equal(email);
         credential.secret.should.equal(password);
+      });
+    });
+
+    describe('credentialWithLink', () => {
+      it('should return a credential object', () => {
+        const email = 'email@email.com';
+        const link = 'link';
+        const credential = firebase.auth.EmailAuthProvider.credentialWithLink(
+          email,
+          link
+        );
+        credential.providerId.should.equal('emailLink');
+        credential.token.should.equal(email);
+        credential.secret.should.equal(link);
+      });
+    });
+
+    describe('EMAIL_PASSWORD_SIGN_IN_METHOD', () => {
+      it('should return password', () => {
+        firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD.should.equal(
+          'password'
+        );
+      });
+    });
+
+    describe('EMAIL_LINK_SIGN_IN_METHOD', () => {
+      it('should return emailLink', () => {
+        firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD.should.equal(
+          'emailLink'
+        );
       });
     });
 
