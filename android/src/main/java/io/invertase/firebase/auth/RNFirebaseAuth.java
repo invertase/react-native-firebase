@@ -315,6 +315,37 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       });
   }
 
+  /**
+   * Signs in using an email and sign-in email link.
+   *
+   * @param appName
+   * @param email
+   * @param emailLink
+   * @param promise
+   */
+  @ReactMethod
+  private void signInWithEmailLink(String appName, final String email, final String emailLink, final Promise promise) {
+    Log.d(TAG, "signInWithEmailLink");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth.signInWithEmailLink(email, emailLink)
+      .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        @Override
+        public void onSuccess(AuthResult authResult) {
+          Log.d(TAG, "signInWithEmailLink:onComplete:success");
+          promiseWithAuthResult(authResult, promise);
+        }
+      })
+      .addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+          Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      });
+  }
+
 
   @ReactMethod
   public void signInWithCustomToken(String appName, final String token, final Promise promise) {
