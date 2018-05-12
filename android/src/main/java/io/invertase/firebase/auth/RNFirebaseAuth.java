@@ -42,6 +42,7 @@ import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.ProviderQueryResult;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -55,7 +56,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 
 import io.invertase.firebase.Utils;
 
-@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "JavaDoc"})
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
   private String mVerificationId;
@@ -203,7 +204,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     signInAnonymously(appName, promise, true);
   }
 
-  public void signInAnonymously(String appName, final Promise promise, final boolean withData) {
+  private void signInAnonymously(String appName, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -246,7 +247,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     createUserWithEmailAndPassword(appName, email, password, promise, true);
   }
 
-  public void createUserWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
+  private void createUserWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
     Log.d(TAG, "createUserWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -289,7 +290,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     signInWithEmailAndPassword(appName, email, password, promise, true);
   }
 
-  public void signInWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
+  private void signInWithEmailAndPassword(String appName, final String email, final String password, final Promise promise, final boolean withData) {
     Log.d(TAG, "signInWithEmailAndPassword");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -327,7 +328,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     signInWithCustomToken(appName, token, promise, true);
   }
 
-  public void signInWithCustomToken(String appName, final String token, final Promise promise, final boolean withData) {
+  private void signInWithCustomToken(String appName, final String token, final Promise promise, final boolean withData) {
     Log.d(TAG, "signInWithCustomToken");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -395,7 +396,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   /**
    * delete
    *
-   * @param promise
+   * @param promise Promise
    */
   @ReactMethod
   public void delete(String appName, final Promise promise) {
@@ -628,7 +629,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     signInWithCredential(appName, provider, authToken, authSecret, promise, true);
   }
 
-  public void signInWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
+  private void signInWithCredential(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -700,10 +701,9 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
                   // account linked to the phone number has been disabled
                   Exception exception = task.getException();
                   Log.e(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure", exception);
-                  if (promiseResolved) {
-                    // In the scenario where an SMS code has been sent, we have no way to report
-                    // back to the front-end that as the promise has already been used
-                  } else {
+                  // In the scenario where an SMS code has been sent, we have no way to report
+                  // back to the front-end that as the promise has already been used
+                  if (!promiseResolved) {
                     promiseRejectAuthException(promise, exception);
                   }
                 }
@@ -1067,7 +1067,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     reauthenticate(appName, provider, authToken, authSecret, promise, true);
   }
 
-  public void reauthenticate(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
+  private void reauthenticate(String appName, String provider, String authToken, String authSecret, final Promise promise, final boolean withData) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
@@ -1172,13 +1172,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     Log.d(TAG, "fetchProvidersForEmail");
 
-    firebaseAuth.fetchProvidersForEmail(email)
-      .addOnCompleteListener(new OnCompleteListener<ProviderQueryResult>() {
+    firebaseAuth.fetchSignInMethodsForEmail(email)
+      .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
         @Override
-        public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+        public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
-            List<String> providers = task.getResult().getProviders();
+            List<String> providers = task.getResult().getSignInMethods();
             WritableArray array = Arguments.createArray();
 
             if (providers != null) {
@@ -1282,8 +1282,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         WritableMap additionalUserInfoMap = Arguments.createMap();
         additionalUserInfoMap.putBoolean("isNewUser", authResult.getAdditionalUserInfo().isNewUser());
         if (authResult.getAdditionalUserInfo().getProfile() != null) {
-          WritableMap profileMap = mapToWritableMap(authResult.getAdditionalUserInfo().getProfile());
-          additionalUserInfoMap.putMap("profile", profileMap);
+          Utils.mapPutValue("profile", authResult.getAdditionalUserInfo().getProfile(), additionalUserInfoMap);
         }
         if (authResult.getAdditionalUserInfo().getProviderId() != null) {
           additionalUserInfoMap.putString("providerId", authResult.getAdditionalUserInfo().getProviderId());
@@ -1299,65 +1298,6 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       promiseNoUser(promise, true);
     }
   }
-
-  private WritableMap mapToWritableMap(Map<String, Object> map) {
-    WritableMap writableMap = Arguments.createMap();
-    for (String key : map.keySet()) {
-      Object value = map.get(key);
-      if (value == null) {
-        writableMap.putNull(key);
-      } else if (value instanceof Boolean) {
-        writableMap.putBoolean(key, (Boolean) value);
-      } else if (value instanceof Integer) {
-        writableMap.putDouble(key, ((Integer) value).doubleValue());
-      } else if (value instanceof Long) {
-        writableMap.putDouble(key, ((Long) value).doubleValue());
-      } else if (value instanceof Double) {
-        writableMap.putDouble(key, (Double) value);
-      } else if (value instanceof Float) {
-        writableMap.putDouble(key, ((Float) value).doubleValue());
-      } else if (value instanceof String) {
-        writableMap.putString(key, (String) value);
-      } else if (Map.class.isAssignableFrom(value.getClass())) {
-        writableMap.putMap(key, mapToWritableMap((Map<String, Object>) value));
-      } else if (List.class.isAssignableFrom(value.getClass())) {
-        writableMap.putArray(key, listToWritableArray((List<Object>) value));
-      } else {
-        Log.e(TAG, "mapToWritableMap: Cannot convert object of type " + value.getClass());
-      }
-    }
-
-    return writableMap;
-  }
-
-  private WritableArray listToWritableArray(List<Object> list) {
-    WritableArray writableArray = Arguments.createArray();
-    for (Object item : list) {
-      if (item == null) {
-        writableArray.pushNull();
-      } else if (item instanceof Boolean) {
-        writableArray.pushBoolean((Boolean) item);
-      } else if (item instanceof Integer) {
-        writableArray.pushDouble(((Integer) item).doubleValue());
-      } else if (item instanceof Long) {
-        writableArray.pushDouble(((Long) item).doubleValue());
-      } else if (item instanceof Double) {
-        writableArray.pushDouble((Double) item);
-      } else if (item instanceof Float) {
-        writableArray.pushDouble(((Float) item).doubleValue());
-      } else if (item instanceof String) {
-        writableArray.pushString((String) item);
-      } else if (Map.class.isAssignableFrom(item.getClass())) {
-        writableArray.pushMap(mapToWritableMap((Map<String, Object>) item));
-      } else if (List.class.isAssignableFrom(item.getClass())) {
-        writableArray.pushArray(listToWritableArray((List<Object>) item));
-      } else {
-        Log.e(TAG, "listToWritableArray: Cannot convert object of type " + item.getClass());
-      }
-    }
-    return writableArray;
-  }
-
 
   /**
    * promiseRejectAuthException
@@ -1576,7 +1516,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     ReadableMap ios = actionCodeSettings.getMap("iOS");
     String url = actionCodeSettings.getString("url");
     if (android != null) {
-      boolean installApp = android.hasKey("installApp") ? android.getBoolean("installApp") : false;
+      boolean installApp = android.hasKey("installApp") && android.getBoolean("installApp");
       String minimumVersion = android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
       String packageName = android.getString("packageName");
       builder = builder.setAndroidPackageName(packageName, installApp, minimumVersion);
