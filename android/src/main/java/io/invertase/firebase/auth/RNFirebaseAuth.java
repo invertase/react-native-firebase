@@ -1379,6 +1379,10 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           case "OPERATION_NOT_ALLOWED":
             message = "This operation is not allowed. You must enable this service in the console.";
             break;
+          case "INVALID_IDENTIFIER":
+            code = "INVALID_EMAIL";
+            message = invalidEmail;
+            break;
         }
       }
     }
