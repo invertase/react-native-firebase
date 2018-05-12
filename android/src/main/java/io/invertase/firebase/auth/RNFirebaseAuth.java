@@ -1327,7 +1327,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       error.putString("nativeErrorCode", code);
       message = authException.getMessage();
     } catch (Exception e) {
-      Matcher matcher = Pattern.compile("\\[(.*):.*\\]").matcher(message);
+      Matcher matcher = Pattern.compile("([A-Z]*_[A-Z]*)").matcher(message);
       if (matcher.find()) {
         code = matcher.group(1).trim();
         switch (code) {
