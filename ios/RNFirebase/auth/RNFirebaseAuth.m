@@ -1010,14 +1010,14 @@ RCT_EXPORT_METHOD(reauthenticateAndRetrieveDataWithCredential:(NSString *) appDi
 }
 
 /**
- fetchProvidersForEmail
+ fetchSignInMethodsForEmail
 
  @param NSString email
  @param RCTPromiseResolveBlock resolve
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(fetchProvidersForEmail:
+RCT_EXPORT_METHOD(fetchSignInMethodsForEmail:
     (NSString *) appDisplayName
             email:
             (NSString *) email
@@ -1027,7 +1027,7 @@ RCT_EXPORT_METHOD(fetchProvidersForEmail:
             (RCTPromiseRejectBlock) reject) {
     FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-    [[FIRAuth authWithApp:firApp] fetchProvidersForEmail:email completion:^(NSArray<NSString *> *_Nullable providers, NSError *_Nullable error) {
+    [[FIRAuth authWithApp:firApp] fetchSignInMethodsForEmail:email completion:^(NSArray<NSString *> *_Nullable providers, NSError *_Nullable error) {
         if (error) {
             [self promiseRejectAuthException:reject error:error];
         } else if (!providers) {

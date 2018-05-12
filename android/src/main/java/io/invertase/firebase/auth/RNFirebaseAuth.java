@@ -360,8 +360,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param promise
    */
   @ReactMethod
-  public void sendPasswordResetEmail(String appName, final String email,
-                                     ReadableMap actionCodeSettings, final Promise promise) {
+  public void sendPasswordResetEmail(String appName, final String email, ReadableMap actionCodeSettings, final Promise promise) {
     Log.d(TAG, "sendPasswordResetEmail");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1165,7 +1164,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void fetchProvidersForEmail(String appName, String email, final Promise promise) {
+  public void fetchSignInMethodsForEmail(String appName, String email, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
