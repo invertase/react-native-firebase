@@ -20,6 +20,23 @@ describe('auth() -> emailLink Provider', () => {
     });
   });
 
+  describe('isSignInWithEmailLink', () => {
+    it('should return true/false', async () => {
+      const emailLink1 =
+        'https://www.example.com/action?mode=signIn&oobCode=oobCode';
+      const emailLink2 =
+        'https://www.example.com/action?mode=verifyEmail&oobCode=oobCode';
+      const emailLink3 = 'https://www.example.com/action?mode=signIn';
+      const emailLink4 =
+        'https://x59dg.app.goo.gl/?link=https://rnfirebase-b9ad4.firebaseapp.com/__/auth/action?apiKey%3Dfoo%26mode%3DsignIn%26oobCode%3Dbar';
+
+      should.equal(true, firebase.auth().isSignInWithEmailLink(emailLink1));
+      should.equal(false, firebase.auth().isSignInWithEmailLink(emailLink2));
+      should.equal(false, firebase.auth().isSignInWithEmailLink(emailLink3));
+      should.equal(true, firebase.auth().isSignInWithEmailLink(emailLink4));
+    });
+  });
+
   // FOR MANUAL TESTING ONLY
   xdescribe('signInWithEmailLink', () => {
     it('should signIn', async () => {
