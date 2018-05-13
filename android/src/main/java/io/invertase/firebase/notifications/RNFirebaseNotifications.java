@@ -157,6 +157,18 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     notificationManager.createChannels(channelsArray);
     promise.resolve(null);
   }
+
+  @ReactMethod
+  public void deleteChannelGroup(String channelId, Promise promise) {
+    notificationManager.deleteChannelGroup(channelId);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void deleteChannel(String channelId, Promise promise) {
+    notificationManager.deleteChannel(channelId);
+    promise.resolve(null);
+  }
   //////////////////////////////////////////////////////////////////////
   // End Android specific methods
   //////////////////////////////////////////////////////////////////////
