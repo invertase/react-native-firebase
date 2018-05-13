@@ -49,7 +49,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | **Crashlytics**            |   ❌   |   ✅   |   ✅   |   ❌   |
 | **Crash Reporting**        |   ✅   |   ✅   |   ✅   |   ❌   |
 | **Dynamic Links**          |   ❌   |   ✅   |   ✅   |   ❌   |
-| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**              |   ❌   |   ❌   |  [v4.1+](https://github.com/invertase/react-native-firebase/milestone/6)   |   ✅   |
+| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**              |   ❌   |   ❌   |   ✅   |   ✅   |
 | **Invites**                |   ❌   |   ❌   |   ✅   |   ❌   |
 | **Instance ID**            |   ❌   |   ❌   | **?**  |   ❌   |
 | **Performance Monitoring** |   ✅   |   ✅   |   ✅   |   ❌   |
