@@ -80,9 +80,8 @@ android {
 
 dependencies {
   //noinspection GradleDynamicVersion
-  implementation(project(':react-native-firebase')) {
-    transitive = false
-  }
+  implementation project(':react-native-firebase')
+
   implementation(project(':bridge')) {
     transitive = false
   }
