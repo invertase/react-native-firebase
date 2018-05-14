@@ -1097,6 +1097,8 @@ declare module 'react-native-firebase' {
           channelGroups: Android.ChannelGroup[]
         ): Promise<void>;
         createChannels(channels: Android.Channel[]): Promise<void>;
+        deleteChannelGroup(groupId: string): Promise<void>;
+        deleteChannel(channelId: string): Promise<void>;
       }
 
       interface Notifications {
