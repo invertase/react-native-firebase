@@ -85,6 +85,7 @@ public class RNFirebaseNotificationManager {
     try {
       cancelAlarm(notificationId);
       preferences.edit().remove(notificationId).apply();
+      promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
       // In some devices/situations cancelAllLocalNotifications can throw a SecurityException.
