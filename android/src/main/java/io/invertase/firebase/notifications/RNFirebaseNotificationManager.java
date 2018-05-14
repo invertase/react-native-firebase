@@ -129,6 +129,18 @@ public class RNFirebaseNotificationManager {
     }
   }
 
+  public void deleteChannelGroup(String groupId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannelGroup(groupId);
+    }
+  }
+
+  public void deleteChannel(String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannel(channelId);
+    }
+  }
+
   public void displayNotification(ReadableMap notification, Promise promise) {
     Bundle notificationBundle = Arguments.toBundle(notification);
     displayNotification(notificationBundle, promise);
