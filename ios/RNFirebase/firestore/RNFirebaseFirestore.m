@@ -362,6 +362,9 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
         // TODO: Enable when available on Android
         // firestoreSettings.timestampsInSnapshotsEnabled = settings[@"timestampsInSnapshots"];
     }
+    if (settings[@"dispatchQueueName"]) {
+        firestoreSettings.dispatchQueue = dispatch_queue_create([settings[@"dispatchQueueName"] UTF8String], NULL);
+    }
     [firestore setSettings:firestoreSettings];
     resolve(nil);
 }
