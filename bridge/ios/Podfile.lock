@@ -139,27 +139,27 @@ PODS:
     - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
     - GTMOAuth2 (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/Core (2.1.3):
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-  - GoogleToolboxForMac/DebugUtils (2.1.3):
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-  - GoogleToolboxForMac/Defines (2.1.3)
-  - GoogleToolboxForMac/Logger (2.1.3):
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-  - GoogleToolboxForMac/NSData+zlib (2.1.3):
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.3):
-    - GoogleToolboxForMac/DebugUtils (= 2.1.3)
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)
-  - GoogleToolboxForMac/NSString+URLArguments (2.1.3)
-  - GoogleToolboxForMac/StringEncoding (2.1.3):
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-  - GoogleToolboxForMac/URLBuilder (2.1.3):
-    - GoogleToolboxForMac/Core (= 2.1.3)
-    - GoogleToolboxForMac/Defines (= 2.1.3)
-    - GoogleToolboxForMac/NSDictionary+URLArguments (= 2.1.3)
-    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)
+  - GoogleToolboxForMac/Core (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/DebugUtils (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/Defines (2.1.4)
+  - GoogleToolboxForMac/Logger (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/NSData+zlib (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.4)
+  - GoogleToolboxForMac/StringEncoding (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/URLBuilder (2.1.4):
+    - GoogleToolboxForMac/Core (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - GoogleToolboxForMac/NSDictionary+URLArguments (= 2.1.4)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)
   - gRPC (1.11.0):
     - gRPC-RxLibrary (= 1.11.0)
     - gRPC/Main (= 1.11.0)
@@ -218,7 +218,7 @@ DEPENDENCIES:
   - Fabric (~> 1.7.5)
   - Firebase/AdMob
   - Firebase/Auth
-  - Firebase/Core
+  - Firebase/Core (~> 4.13.0)
   - Firebase/Crash
   - Firebase/Database
   - Firebase/DynamicLinks
@@ -268,7 +268,7 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 7404f68120ae8682afeb5af001fbf4aad731c78e
   GoogleAPIClientForREST: f7951c455df271bc6259b3ddb4073d0026475ccf
   GoogleSignIn: d9ef55b10f0aa401a5de2747f59b725e4b9732ac
-  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
+  GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   gRPC: 70703dc9ba31c72341fc7f37745cc1c379edee96
   gRPC-Core: 164639cd8ae18ca8b65477fafb2efbaecf4f181a
   gRPC-ProtoRPC: bb5fddf3424aa4fad74d76736578a79fe40e244e
@@ -278,10 +278,10 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
-  React: 573d89cf10312b17920df6328eaf9ab8059283bf
-  RNFirebase: 387fb46208f07da221cb3e815aaf680bb8f9e26e
-  yoga: 9403c2451c1b47d8cee3e4f1b6fd0ececc63839c
+  React: aa2040dbb6f317b95314968021bd2888816e03d5
+  RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
+  yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 582ceaad051470812ad9203e13b5ea8ad20c78ac
+PODFILE CHECKSUM: 529baa60fa4c9087d932f99050e201c5e917469b
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.4.0
