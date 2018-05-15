@@ -14,7 +14,7 @@ RCT_EXPORT_MODULE(RNFirebaseStorage);
 
 // Run on a different thread
 - (dispatch_queue_t)methodQueue {
-    return dispatch_queue_create("com.invertase.firebase.storage", DISPATCH_QUEUE_SERIAL);
+    return dispatch_queue_create("io.invertase.react-native-firebase.storage", DISPATCH_QUEUE_SERIAL);
 }
 
 /**
