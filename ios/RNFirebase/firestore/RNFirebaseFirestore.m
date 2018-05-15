@@ -10,11 +10,16 @@
 @implementation RNFirebaseFirestore
 RCT_EXPORT_MODULE();
 
+// Run on a different thread
+- (dispatch_queue_t)methodQueue {
+    return dispatch_queue_create("io.invertase.react-native-firebase.firestore", DISPATCH_QUEUE_SERIAL);
+}
+
 - (id)init {
     self = [super init];
     if (self != nil) {
         _transactions = [[NSMutableDictionary alloc] init];
-        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore", DISPATCH_QUEUE_CONCURRENT);
+        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore.transactions", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }

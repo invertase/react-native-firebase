@@ -10,14 +10,17 @@
 @implementation RNFirebaseDatabase
 RCT_EXPORT_MODULE();
 
-// TODO document methods
+// Run on a different thread
+- (dispatch_queue_t)methodQueue {
+    return dispatch_queue_create("io.invertase.react-native-firebase.database", DISPATCH_QUEUE_SERIAL);
+}
 
 - (id)init {
     self = [super init];
     if (self != nil) {
         _dbReferences = [[NSMutableDictionary alloc] init];
         _transactions = [[NSMutableDictionary alloc] init];
-        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase", DISPATCH_QUEUE_CONCURRENT);
+        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.database.transactions", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
@@ -446,7 +449,3 @@ RCT_EXPORT_METHOD(off:(NSString *)key
 @implementation RNFirebaseDatabase
 @end
 #endif
-
-
-
-
