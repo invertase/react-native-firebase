@@ -1,4 +1,4 @@
-describe.only('storage()', () => {
+describe('storage()', () => {
   describe('ref()', () => {
     describe('toString()', () => {
       it('returns the correct bucket path to the file', () => {

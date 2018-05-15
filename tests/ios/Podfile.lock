@@ -222,7 +222,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (4.0.7):
+  - RNFirebase (4.1.0):
     - Firebase/Core
     - React
   - yoga (0.54.4.React)
@@ -232,7 +232,7 @@ DEPENDENCIES:
   - Fabric (~> 1.7.5)
   - Firebase/AdMob
   - Firebase/Auth
-  - Firebase/Core
+  - Firebase/Core (~> 4.13.0)
   - Firebase/Crash
   - Firebase/Database
   - Firebase/DynamicLinks
@@ -299,6 +299,6 @@ SPEC CHECKSUMS:
   RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
   yoga: 55da126afc384965b96bff46652464373b330add
 
-PODFILE CHECKSUM: b776d6f4d08bbd51cda6d929b57bfaa8031e7ead
+PODFILE CHECKSUM: a735e7f8f0a5379462d2f204447550e182793a34
 
 COCOAPODS: 1.4.0
