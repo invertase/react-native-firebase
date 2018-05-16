@@ -112,10 +112,6 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     notificationManager.removeDeliveredNotification(notificationId, promise);
   }
 
-  protected void removeDeliveredNotification(String notificationId) {
-    notificationManager.removeAllDeliveredNotifications(notificationId);
-  }
-
   @ReactMethod
   public void setBadge(int badge, Promise promise) {
     // Store the badge count for later retrieval

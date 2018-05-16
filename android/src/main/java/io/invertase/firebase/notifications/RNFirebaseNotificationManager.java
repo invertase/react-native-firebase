@@ -194,6 +194,9 @@ public class RNFirebaseNotificationManager {
     promise.resolve(null);
   }
 
+  public void removeDeliveredNotification(String notificationId) {
+    notificationManager.cancel(notificationId.hashCode());
+  }
 
   public void rescheduleNotifications() {
     ArrayList<Bundle> bundles = getScheduledNotifications();
