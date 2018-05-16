@@ -10,14 +10,21 @@
 @implementation RNFirebaseFirestore
 RCT_EXPORT_MODULE();
 
+static dispatch_queue_t firestoreQueue;
+static NSMutableDictionary* initialisedApps;
+
 // Run on a different thread
 - (dispatch_queue_t)methodQueue {
-    return dispatch_queue_create("io.invertase.react-native-firebase.firestore", DISPATCH_QUEUE_SERIAL);
+    if (!firestoreQueue) {
+        firestoreQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore", DISPATCH_QUEUE_SERIAL);
+    }
+    return firestoreQueue;
 }
 
 - (id)init {
     self = [super init];
     if (self != nil) {
+        initialisedApps = [[NSMutableDictionary alloc] init];
         _transactions = [[NSMutableDictionary alloc] init];
         _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore.transactions", DISPATCH_QUEUE_CONCURRENT);
     }
@@ -349,19 +356,31 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
                   rejecter:(RCTPromiseRejectBlock)reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
     FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+    
+    // Make sure the dispatch queue is set correctly
+    firestoreSettings.dispatchQueue = firestoreQueue;
+    
+    // Apply the settings passed by the user, or ensure that the current settings are preserved
     if (settings[@"host"]) {
         firestoreSettings.host = settings[@"host"];
+    } else {
+        firestoreSettings.host = firestore.settings.host;
     }
     if (settings[@"persistence"]) {
         firestoreSettings.persistenceEnabled = settings[@"persistence"];
+    } else {
+        firestoreSettings.persistenceEnabled = firestore.settings.persistenceEnabled;
     }
     if (settings[@"ssl"]) {
         firestoreSettings.sslEnabled = settings[@"ssl"];
+    } else {
+        firestoreSettings.sslEnabled = firestore.settings.sslEnabled;
     }
     if (settings[@"timestampsInSnapshots"]) {
         // TODO: Enable when available on Android
         // firestoreSettings.timestampsInSnapshotsEnabled = settings[@"timestampsInSnapshots"];
     }
+
     [firestore setSettings:firestoreSettings];
     resolve(nil);
 }
@@ -376,7 +395,17 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
 
 + (FIRFirestore *)getFirestoreForApp:(NSString *)appDisplayName {
     FIRApp *app = [RNFirebaseUtil getApp:appDisplayName];
-    return [FIRFirestore firestoreForApp:app];
+    FIRFirestore *firestore = [FIRFirestore firestoreForApp:app];
+    
+    // This is the first time we've tried to do something on this Firestore instance
+    // So we need to make sure the dispatch queue is set correctly
+    if (!initialisedApps[appDisplayName]) {
+        initialisedApps[appDisplayName] = @(true);
+        FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+        firestoreSettings.dispatchQueue = firestoreQueue;
+        [firestore setSettings:firestoreSettings];
+    }
+    return firestore;
 }
 
 - (RNFirebaseFirestoreCollectionReference *)getCollectionForAppPath:(NSString *)appDisplayName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options {
