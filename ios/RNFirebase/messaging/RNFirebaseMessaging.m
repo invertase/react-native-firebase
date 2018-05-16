@@ -20,6 +20,7 @@
 static RNFirebaseMessaging *theRNFirebaseMessaging = nil;
 static bool jsReady = FALSE;
 static NSString* initialToken = nil;
+static NSMutableArray* pendingMessages = nil;
 
 + (nonnull instancetype)instance {
     return theRNFirebaseMessaging;
@@ -197,6 +198,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
     if (initialToken) {
         [self sendJSEvent:self name:MESSAGING_TOKEN_REFRESHED body:initialToken];
     }
+    if (pendingMessages) {
+        for (id message in pendingMessages) {
+            [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+        }
+    }
 }
 
 // ** Start internals **
@@ -209,9 +215,13 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
     } else {
         if ([name isEqualToString:MESSAGING_TOKEN_REFRESHED]) {
             initialToken = body;
+        } else if ([name isEqualToString:MESSAGING_MESSAGE_RECEIVED]) {
+            if (!pendingMessages) {
+                pendingMessages = [[NSMutableArray alloc] init];
+            }
+            [pendingMessages addObject:body];
         } else {
-            // TODO: Is this even possible?
-            NSLog(@"Received Remote Message before the bridge is ready");
+            NSLog(@"Received unexpected message type");
         }
     }
 }
