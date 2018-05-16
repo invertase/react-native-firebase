@@ -20,7 +20,7 @@ target 'testing' do
 
   pod 'Firebase/AdMob'
   pod 'Firebase/Auth'
-  pod 'Firebase/Core', '~> 4.13.0'
+  pod 'Firebase/Core'
   pod 'Firebase/Crash'
   pod 'Firebase/Database'
   pod 'Firebase/Functions'
