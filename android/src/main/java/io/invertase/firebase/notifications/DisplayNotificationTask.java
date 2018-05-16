@@ -1,5 +1,6 @@
 package io.invertase.firebase.notifications;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import io.invertase.firebase.Utils;
@@ -239,7 +241,22 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       }
       if (android.containsKey("timeoutAfter")) {
         Double timeoutAfter = android.getDouble("timeoutAfter");
-        nb = nb.setTimeoutAfter(timeoutAfter.longValue());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          nb = nb.setTimeoutAfter(timeoutAfter.longValue());
+        } else {
+          // Handle timeout with Alarm Manager and Pending Intent for pre Oreo devices
+          AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+          Intent removeNotificationIntent = new Intent(context, RNFirebaseNotificationTimeoutReceiver.class);
+          removeNotificationIntent.putExtra("notificationId", notificationId);
+          PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(),
+            removeNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+          long triggerTimeInMillis = System.currentTimeMillis() + timeoutAfter.longValue();
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
+          } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
+          }
+        }
       }
       if (android.containsKey("usesChronometer")) {
         nb = nb.setUsesChronometer(android.getBoolean("usesChronometer"));
