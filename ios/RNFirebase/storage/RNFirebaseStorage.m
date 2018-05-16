@@ -118,7 +118,11 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appDisplayName
                       rejecter:(RCTPromiseRejectBlock) reject) {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     NSURL *localFile = [NSURL fileURLWithPath:localPath];
-    FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
+    
+    __block FIRStorageDownloadTask *downloadTask;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        downloadTask = [fileRef writeToFile:localFile];
+    });
 
     // listen for state changes, errors, and completion of the download.
     [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
@@ -293,13 +297,19 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
 
 - (void)uploadFile:(NSString *)appDisplayName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
-    FIRStorageUploadTask *uploadTask = [fileRef putFile:url metadata:firmetadata];
+    __block FIRStorageUploadTask *uploadTask;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        uploadTask = [fileRef putFile:url metadata:firmetadata];
+    });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
 - (void)uploadData:(NSString *)appDisplayName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
-    FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:firmetadata];
+    __block FIRStorageUploadTask *uploadTask;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        uploadTask = [fileRef putData:data metadata:firmetadata];
+    });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
 }
 
@@ -307,27 +317,31 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
     // listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload resumed, also fires when the upload starts
-        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self getUploadTaskAsDictionary:snapshot handler:^(NSDictionary *event) {
+            [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        }];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload paused
-        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self getUploadTaskAsDictionary:snapshot handler:^(NSDictionary *event) {
+            [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        }];
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload reported progress
-        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        [self getUploadTaskAsDictionary:snapshot handler:^(NSDictionary *event) {
+            [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+        }];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // upload completed successfully
-        NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
-        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:resp];
-        [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
-        resolve(resp);
+        [self getUploadTaskAsDictionary:snapshot handler:^(NSDictionary *event) {
+            [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+            [self sendJSEvent:appDisplayName type:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:event];
+            resolve(event);
+        }];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
@@ -352,10 +366,14 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
     return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
 }
 
-- (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
-    NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
-    NSDictionary *metadata = [task.metadata dictionaryRepresentation];
-    return @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadURL": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
+- (void)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task
+                          handler:(void(^)(NSDictionary *))handler {
+    [[task reference] downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
+        NSString *downloadUrl = [URL absoluteString];
+        NSDictionary *metadata = [task.metadata dictionaryRepresentation];
+        NSDictionary *dictionary = @{@"bytesTransferred": @(task.progress.completedUnitCount), @"downloadURL": downloadUrl != nil ? downloadUrl : [NSNull null], @"metadata": metadata != nil ? metadata : [NSNull null], @"ref": task.reference.fullPath, @"state": [self getTaskStatus:task.status], @"totalBytes": @(task.progress.totalUnitCount)};
+        handler(dictionary);
+    }];
 }
 
 - (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {

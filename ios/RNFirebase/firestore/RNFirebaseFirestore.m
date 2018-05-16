@@ -164,7 +164,7 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
                 } else if ([type isEqualToString:@"set"]) {
                     NSDictionary *options = command[@"options"];
                     if (options && options[@"merge"]) {
-                        [transaction setData:data forDocument:ref options:[FIRSetOptions merge]];
+                        [transaction setData:data forDocument:ref merge:true];
                     } else {
                         [transaction setData:data forDocument:ref];
                     }
@@ -280,7 +280,7 @@ RCT_EXPORT_METHOD(documentBatch:(NSString *)appDisplayName
         } else if ([type isEqualToString:@"SET"]) {
             NSDictionary *options = write[@"options"];
             if (options && options[@"merge"]) {
-                batch = [batch setData:data forDocument:ref options:[FIRSetOptions merge]];
+                batch = [batch setData:data forDocument:ref merge:true];
             } else {
                 batch = [batch setData:data forDocument:ref];
             }

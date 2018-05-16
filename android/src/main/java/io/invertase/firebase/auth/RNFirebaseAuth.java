@@ -1024,7 +1024,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
               actionType = "PASSWORD_RESET";
               break;
             case ActionCodeResult.SIGN_IN_WITH_EMAIL_LINK:
-              actionType = "EMAIL_SIGNING";
+              actionType = "EMAIL_SIGNIN";
               break;
           }
 

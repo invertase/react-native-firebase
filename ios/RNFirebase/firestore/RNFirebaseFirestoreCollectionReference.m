@@ -65,16 +65,14 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
             }
         };
 
-        FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
+        bool includeMetadataChanges;
         if (queryListenOptions && queryListenOptions[@"includeMetadataChanges"]) {
-            [options includeDocumentMetadataChanges:true];
-            [options includeQueryMetadataChanges:true];
+            includeMetadataChanges = true;
         } else {
-            [options includeDocumentMetadataChanges:false];
-            [options includeQueryMetadataChanges:false];
+            includeMetadataChanges = false;
         }
 
-        id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];
+        id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges listener:listenerBlock];
         _listeners[listenerId] = listener;
     }
 }
