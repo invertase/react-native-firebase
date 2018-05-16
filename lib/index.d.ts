@@ -1277,6 +1277,7 @@ declare module 'react-native-firebase' {
           semanticAction?: SemanticAction;
           showUserInterface?: boolean;
           title: string;
+          runInBackground?: boolean;
 
           constructor(action: string, icon: string, title: string);
 
@@ -1284,6 +1285,7 @@ declare module 'react-native-firebase' {
           setAllowGenerateReplies(allowGeneratedReplies: boolean): Action;
           setSemanticAction(semanticAction: SemanticAction): Action;
           setShowUserInterface(showUserInterface: boolean): Action;
+          setRunInBackground(runInBackground: boolean): Action;
         }
 
         class RemoteInput {
