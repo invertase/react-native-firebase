@@ -35,7 +35,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > '**?**' indicates partial support
 
-| Firebase Features          | v2.2.x | v3.3.x | v4.0.x | Web SDK |
+| Firebase Features          | v2.2.x | v3.3.x | v4.1.x | Web SDK |
 | -------------------------- | :----: | :----: | :----: | :-----: |
 | **AdMob**                  |   ✅   |   ✅   |   ✅   |   ❌   |
 | **Analytics**              |   ✅   |   ✅   |   ✅   |   ❌   |
