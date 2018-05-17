@@ -202,6 +202,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
         for (id message in pendingMessages) {
             [RNFirebaseUtil sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
         }
+        pendingMessages = nil;
     }
 }
 
