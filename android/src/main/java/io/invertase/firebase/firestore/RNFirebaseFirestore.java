@@ -205,12 +205,18 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
     if (settings.hasKey("host")) {
       firestoreSettings.setHost(settings.getString("host"));
+    } else {
+      firestoreSettings.setHost(firestore.getFirestoreSettings().getHost());
     }
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
+    } else {
+      firestoreSettings.setPersistenceEnabled(firestore.getFirestoreSettings().isPersistenceEnabled());
     }
     if (settings.hasKey("ssl")) {
       firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
+    } else {
+      firestoreSettings.setSslEnabled(firestore.getFirestoreSettings().isSslEnabled());
     }
     if (settings.hasKey("timestampsInSnapshots")) {
       // TODO: Not supported on Android yet
