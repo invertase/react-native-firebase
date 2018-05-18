@@ -832,7 +832,10 @@ declare module 'react-native-firebase' {
         EMAIL_LINK_SIGN_IN_METHOD: string;
         EMAIL_PASSWORD_SIGN_IN_METHOD: string;
         credential: (email: string, password: string) => AuthCredential;
-        credentialWithLink: (email: string, emailLink: string) => AuthCredential;
+        credentialWithLink: (
+          email: string,
+          emailLink: string
+        ) => AuthCredential;
       };
 
       interface Auth {
@@ -1277,7 +1280,6 @@ declare module 'react-native-firebase' {
           semanticAction?: SemanticAction;
           showUserInterface?: boolean;
           title: string;
-          runInBackground?: boolean;
 
           constructor(action: string, icon: string, title: string);
 
@@ -1285,7 +1287,6 @@ declare module 'react-native-firebase' {
           setAllowGenerateReplies(allowGeneratedReplies: boolean): Action;
           setSemanticAction(semanticAction: SemanticAction): Action;
           setShowUserInterface(showUserInterface: boolean): Action;
-          setRunInBackground(runInBackground: boolean): Action;
         }
 
         class RemoteInput {

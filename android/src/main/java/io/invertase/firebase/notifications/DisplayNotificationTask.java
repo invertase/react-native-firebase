@@ -294,11 +294,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private NotificationCompat.Action createAction(Bundle action, Class intentClass, Bundle notification) {
-    boolean runInBackground = action.containsKey("runInBackground") && action.getBoolean("runInBackground");
+    boolean showUserInterface = action.containsKey("showUserInterface") && action.getBoolean("showUserInterface");
     String actionKey = action.getString("action");
-    PendingIntent actionIntent = runInBackground ?
-      createBroadcastIntent(notification, actionKey) :
-      createIntent(intentClass, notification, actionKey);
+    PendingIntent actionIntent = showUserInterface ?
+      createIntent(intentClass, notification, actionKey) :
+      createBroadcastIntent(notification, actionKey);
     int icon = getIcon(action.getString("icon"));
     String title = action.getString("title");
 
