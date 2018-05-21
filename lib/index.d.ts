@@ -25,7 +25,7 @@ declare module 'react-native-firebase' {
       RNFirebase.auth.Auth,
       RNFirebase.auth.AuthStatics
     >;
-    // config: FirebaseModule<RNFirebase.config.Config>;
+    config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
     crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
     crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<
@@ -54,7 +54,7 @@ declare module 'react-native-firebase' {
       RNFirebase.notifications.Notifications,
       RNFirebase.notifications.NotificationsStatics
     >;
-    // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
+    perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
     storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
     // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
     initializeApp(options: Firebase.Options, name: string): App;
@@ -81,7 +81,7 @@ declare module 'react-native-firebase' {
     // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
-    // config(): RNFirebase.config.Config;
+    config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
@@ -92,7 +92,7 @@ declare module 'react-native-firebase' {
     links(): RNFirebase.links.Links;
     messaging(): RNFirebase.messaging.Messaging;
     notifications(): RNFirebase.notifications.Notifications;
-    // perf(): RNFirebase.perf.Performance;
+    perf(): RNFirebase.perf.Perf;
     storage(): RNFirebase.storage.Storage;
     // utils(): RNFirebase.utils.Utils;
     readonly name: string;
@@ -1474,6 +1474,66 @@ declare module 'react-native-firebase' {
           Visibility: typeof Android.Visibility;
         };
         Notification: typeof Notification;
+      }
+    }
+
+    namespace perf {
+      interface Perf {
+        /** Globally enables or disables performance monitoring capture across the app. */
+        setPerformanceCollectionEnabled(enabled: boolean): void;
+
+        /**
+         * Returns a new instance of Trace (see API below).
+         * The id is the unique name of something you'd like to run performance monitoring against.
+         */
+        newTrace(name: string): Trace;
+      }
+
+      interface Trace {
+        /* Initializes the trace to start tracing performance to relay back to Firebase. */
+        start(): void;
+
+        /* Notifies Firebase an event has occured. These events will be visible on Firebase once your trace has stopped. */
+        incrementCounter(name: string): void;
+
+        /* Stops performance tracing. The completed trace stats are now sent to Firebase. */
+        stop(): void;
+      }
+    }
+
+    namespace config {
+
+      interface Config {
+        /* Enable Remote Config developer mode to allow for frequent refreshes of the cache. */
+        enableDeveloperMode(enabled: boolean): void;
+        /*
+          * Sets default values for the app to use when accessing values. Any data fetched and activated will override any default values.
+          * Any values in the defaults but not on Firebase will be untouched.
+          */
+        setDefaults(defaults: Object): void;
+        /* Fetches the remote config data from Firebase, defined in the dashboard.
+          * If duration is defined (seconds), data will be locally cached for this duration.
+          *
+          * The default duration is 43200 seconds (12 hours). To force a cache refresh call the method with a duration of 0.
+          * Thrown errors can be one of the following:
+          * config/failure - Config fetch failed.
+          * config/no_fetch_yet - Config has never been fetched.
+          * config/throttled - Config fetch was throttled.
+          */
+        fetch(duration?: number): Promise<String>;
+        /* Moves fetched data in the apps active config. Always successfully resolves with a boolean value. */
+        activateFetched(): Promise<Boolean>;
+        /* Gets a config item by key. Returns an object containing source (default, remote or static) and val function. */
+        getValue(key: String): Promise<Object>;
+        /*Gets multiple values by key. Returns an object of keys with the same object returned from getValue.*/
+        getValues(keys: Array<String>): Promise<Object>;
+        /* Returns all keys as an array by a prefix. If no prefix is defined all keys are returned. */
+        getKeysByPrefix(prefix?: String): Promise <Array<String>>;
+        /* Sets the default values from a resource:
+          * Android: Id for the XML resource, which should be in your application's res/xml folder.
+          * iOS: The plist file name, with no file name extension
+          */
+        setDefaultsFromResource(filename: String): void;
       }
     }
 
