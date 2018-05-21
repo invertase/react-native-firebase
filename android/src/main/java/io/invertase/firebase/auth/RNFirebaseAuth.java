@@ -1636,16 +1636,15 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     final Map<String, Object> appLanguage = new HashMap<>();
 
-    for (FirebaseApp app : firebaseAppList) {
+     for (FirebaseApp app : firebaseAppList) {
       String appName = app.getName();
-
       FirebaseApp instance = FirebaseApp.getInstance(appName);
-      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
 
-      appLanguage.put(appName, firebaseAuth.getLanguageCode());
+      if (instance.getOptions().getApiKey() != null)
+      {
+        // TODO: Temporary workaround since OneSignal SDK does not set an API key, which throws an exception here otherwise
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
+        appLanguage.put(appName, firebaseAuth.getLanguageCode());
+      }
     }
-
-    constants.put("APP_LANGUAGE", appLanguage);
-    return constants;
-  }
 }
