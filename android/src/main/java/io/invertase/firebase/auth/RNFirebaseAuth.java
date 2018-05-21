@@ -1636,7 +1636,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     final Map<String, Object> appLanguage = new HashMap<>();
 
-    for (FirebaseApp app : firebaseAppList) {
+     for (FirebaseApp app : firebaseAppList) {
       String appName = app.getName();
       FirebaseApp instance = FirebaseApp.getInstance(appName);
 
@@ -1647,8 +1647,4 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         appLanguage.put(appName, firebaseAuth.getLanguageCode());
       }
     }
-
-    constants.put("APP_LANGUAGE", appLanguage);
-    return constants;
-  }
 }
