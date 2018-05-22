@@ -283,6 +283,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (reactContext != null) {
         Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));
       }
+      
+      if (promise != null) {
+        promise.resolve(null);
+      }
+      
     } catch (Exception e) {
       Log.e(TAG, "Failed to send notification", e);
       if (promise != null) {
