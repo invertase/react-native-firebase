@@ -1,6 +1,8 @@
 package io.invertase.firebase.instanceid;
 
 
+import java.io.IOException;
+
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -41,5 +43,27 @@ public class RNFirebaseInstanceId extends ReactContextBaseJavaModule {
   public void get(Promise promise){
     String id = FirebaseInstanceId.getInstance().getId();
     promise.resolve(id);
+  }
+
+  @ReactMethod
+  public void getToken(String authorizedEntity, String scope, Promise promise) {
+    try {
+      String token = FirebaseInstanceId.getInstance().getToken(authorizedEntity, scope);
+      Log.d(TAG, "Firebase token for " + authorizedEntity + ": " + token);
+      promise.resolve(token);
+    } catch (IOException e) {
+      promise.reject("iid/request-failed", "getToken request failed", e);
+    }
+  }
+
+  @ReactMethod
+  public void deleteToken(String authorizedEntity, String scope, Promise promise) {
+    try {
+      FirebaseInstanceId.getInstance().deleteToken(authorizedEntity, scope);
+      Log.d(TAG, "Firebase token deleted for " + authorizedEntity);
+      promise.resolve(null);
+    } catch (IOException e) {
+      promise.reject("iid/request-failed", "deleteToken request failed", e);
+    }
   }
 }
