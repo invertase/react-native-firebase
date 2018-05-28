@@ -39,14 +39,6 @@ android {
 }
 
 
-allprojects {
-  repositories {
-    jcenter()
-    mavenLocal()
-    google()
-  }
-}
-
 rootProject.gradle.buildFinished { buildResult ->
   if (buildResult.getFailure() != null) {
     try {
