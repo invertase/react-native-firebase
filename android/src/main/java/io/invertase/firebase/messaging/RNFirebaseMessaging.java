@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -14,6 +15,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
@@ -96,15 +99,37 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void subscribeToTopic(String topic, Promise promise) {
-    FirebaseMessaging.getInstance().subscribeToTopic(topic);
-    promise.resolve(null);
+  public void subscribeToTopic(String topic, final Promise promise) {
+    FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "subscribeToTopic:onComplete:success");
+          promise.resolve(null);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "subscribeToTopic:onComplete:failure", exception);
+          promise.reject(exception);
+        }
+      }
+    });
   }
 
   @ReactMethod
-  public void unsubscribeFromTopic(String topic, Promise promise) {
-    FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-    promise.resolve(null);
+  public void unsubscribeFromTopic(String topic, final Promise promise) {
+    FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(@NonNull Task<Void> task) {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "unsubscribeFromTopic:onComplete:success");
+          promise.resolve(null);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "unsubscribeFromTopic:onComplete:failure", exception);
+          promise.reject(exception);
+        }
+      }
+    });
   }
 
   private class MessageReceiver extends BroadcastReceiver {

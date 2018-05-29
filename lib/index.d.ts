@@ -333,7 +333,6 @@ declare module 'react-native-firebase' {
 
       interface FullMetadata extends storage.UploadMetadata {
         bucket: string;
-        downloadURLs: string[];
         fullPath: string;
         generation: string;
         metageneration: string;

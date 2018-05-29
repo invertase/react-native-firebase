@@ -87,26 +87,26 @@ dependencies {
   }
 
   implementation fileTree(dir: "libs", include: ["*.jar"])
-  implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+  implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
   }
 
   // RNFirebase required dependencies
-  implementation "com.google.firebase:firebase-core:15.0.2"
+  implementation "com.google.firebase:firebase-core:16.0.0"
   implementation "com.google.android.gms:play-services-base:15.0.1"
 
   // RNFirebase optional dependencies
   implementation "com.google.firebase:firebase-ads:15.0.1"
-  implementation "com.google.firebase:firebase-auth:15.1.0"
-  implementation "com.google.firebase:firebase-config:15.0.2"
-  implementation "com.google.firebase:firebase-crash:15.0.2"
-  implementation "com.google.firebase:firebase-database:15.0.1"
-  implementation "com.google.firebase:firebase-firestore:16.0.0"
-  implementation "com.google.firebase:firebase-functions:15.0.0"
-  // implementation "com.google.firebase:firebase-invites:15.0.1"
-  implementation "com.google.firebase:firebase-storage:15.0.2"
-  implementation "com.google.firebase:firebase-messaging:15.0.2"
-  implementation "com.google.firebase:firebase-perf:15.2.0"
+  implementation "com.google.firebase:firebase-auth:16.0.1"
+  implementation "com.google.firebase:firebase-config:16.0.0"
+  implementation "com.google.firebase:firebase-crash:16.0.0"
+  implementation "com.google.firebase:firebase-database:16.0.1"
+  implementation "com.google.firebase:firebase-firestore:17.0.1"
+  implementation "com.google.firebase:firebase-functions:16.0.1"
+  implementation "com.google.firebase:firebase-invites:16.0.0"
+  implementation "com.google.firebase:firebase-storage:16.0.1"
+  implementation "com.google.firebase:firebase-messaging:17.0.0"
+  implementation "com.google.firebase:firebase-perf:16.0.0"
 
   implementation "com.facebook.react:react-native:+"
   implementation "com.android.support:appcompat-v7:27.1.0"

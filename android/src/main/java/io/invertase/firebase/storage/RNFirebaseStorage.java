@@ -356,30 +356,51 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
           @Override
           public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
             Log.d(TAG, "putFile success " + taskSnapshot);
-            WritableMap resp = getUploadTaskAsMap(taskSnapshot);
-            sendJSEvent(appName, STORAGE_STATE_CHANGED, path, resp);
+            // to avoid readable map already consumed errors we run this three times
+            getUploadTaskAsMap(taskSnapshot, new OnSuccessListener<WritableMap>() {
+              @Override
+              public void onSuccess(WritableMap event) {
+                sendJSEvent(appName, STORAGE_STATE_CHANGED, path, event);
+              }
+            });
 
-            // to avoid readable map already consumed errors
-            resp = getUploadTaskAsMap(taskSnapshot);
-            sendJSEvent(appName, STORAGE_UPLOAD_SUCCESS, path, resp);
+            getUploadTaskAsMap(taskSnapshot, new OnSuccessListener<WritableMap>() {
+              @Override
+              public void onSuccess(WritableMap event) {
+                sendJSEvent(appName, STORAGE_UPLOAD_SUCCESS, path, event);
+              }
+            });
 
-            resp = getUploadTaskAsMap(taskSnapshot);
-            promise.resolve(resp);
+            getUploadTaskAsMap(taskSnapshot, new OnSuccessListener<WritableMap>() {
+              @Override
+              public void onSuccess(WritableMap event) {
+                promise.resolve(event);
+              }
+            });
           }
         })
         .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
             Log.d(TAG, "putFile progress " + taskSnapshot);
-            sendJSEvent(appName, STORAGE_STATE_CHANGED, path, getUploadTaskAsMap(taskSnapshot));
+            getUploadTaskAsMap(taskSnapshot, new OnSuccessListener<WritableMap>() {
+              @Override
+              public void onSuccess(WritableMap event) {
+                sendJSEvent(appName, STORAGE_STATE_CHANGED, path, event);
+              }
+            });
           }
         })
         .addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
             Log.d(TAG, "putFile paused " + taskSnapshot);
-            WritableMap event = getUploadTaskAsMap(taskSnapshot);
-            sendJSEvent(appName, STORAGE_STATE_CHANGED, path, event);
+            getUploadTaskAsMap(taskSnapshot, new OnSuccessListener<WritableMap>() {
+              @Override
+              public void onSuccess(WritableMap event) {
+                sendJSEvent(appName, STORAGE_STATE_CHANGED, path, event);
+              }
+            });
           }
         });
     } catch (Exception exception) {
@@ -476,24 +497,32 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
    * @param taskSnapshot
    * @return
    */
-  private WritableMap getUploadTaskAsMap(UploadTask.TaskSnapshot taskSnapshot) {
-    WritableMap resp = Arguments.createMap();
-
+  private void getUploadTaskAsMap(final UploadTask.TaskSnapshot taskSnapshot, final OnSuccessListener<WritableMap> listener) {
     if (taskSnapshot != null) {
-      resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-      resp.putString("downloadURL", taskSnapshot.getDownloadUrl() != null ? taskSnapshot.getDownloadUrl().toString() : null);
+      taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        @Override
+        public void onSuccess(Uri downloadUrl) {
+          WritableMap resp = Arguments.createMap();
 
-      StorageMetadata d = taskSnapshot.getMetadata();
-      if (d != null) {
-        WritableMap metadata = getMetadataAsMap(d);
-        resp.putMap("metadata", metadata);
-      }
+          resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
+          resp.putString("downloadURL", downloadUrl.toString());
 
-      resp.putString("ref", taskSnapshot.getStorage().getPath());
-      resp.putString("state", this.getTaskStatus(taskSnapshot.getTask()));
-      resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
+          StorageMetadata d = taskSnapshot.getMetadata();
+          if (d != null) {
+            WritableMap metadata = getMetadataAsMap(d);
+            resp.putMap("metadata", metadata);
+          }
+
+          resp.putString("ref", taskSnapshot.getStorage().getPath());
+          resp.putString("state", RNFirebaseStorage.this.getTaskStatus(taskSnapshot.getTask()));
+          resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
+
+          listener.onSuccess(resp);
+        }
+      });
+    } else {
+      listener.onSuccess(Arguments.createMap());
     }
-    return resp;
   }
 
   /**
@@ -518,17 +547,6 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     metadata.putString("contentEncoding", storageMetadata.getContentEncoding());
     metadata.putString("contentLanguage", storageMetadata.getContentLanguage());
     metadata.putString("contentType", storageMetadata.getContentType());
-
-    WritableArray downloadURLs = Arguments.createArray();
-    List<Uri> _downloadURLS = storageMetadata.getDownloadUrls();
-
-    if (_downloadURLS != null) {
-      for (Uri uri : _downloadURLS) {
-        downloadURLs.pushString(uri.getPath());
-      }
-    }
-
-    metadata.putArray("downloadURLs", downloadURLs);
 
     WritableMap customMetadata = Arguments.createMap();
     for (String key : storageMetadata.getCustomMetadataKeys()) {
