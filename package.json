@@ -82,9 +82,6 @@
       "buildPatch": "    implementation project(':react-native-firebase')",
       "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
       "packageInstance": "new RNFirebasePackage()"
-    },
-    "commands": {
-      "postlink": "node node_modules/react-native-firebase/scripts/rnpm-postlink"
     }
   },
   "collective": {
