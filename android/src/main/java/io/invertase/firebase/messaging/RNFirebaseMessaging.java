@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -56,7 +57,8 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   // Non Web SDK methods
   @ReactMethod
   public void hasPermission(Promise promise) {
-    promise.resolve(true);
+    Boolean enabled = NotificationManagerCompat.from(getReactApplicationContext()).areNotificationsEnabled();
+    promise.resolve(enabled);
   }
 
   @ReactMethod
