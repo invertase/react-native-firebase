@@ -200,7 +200,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setPriority(priority.intValue());
       }
       if (android.containsKey("progress")) {
-        Bundle progress = android.getBundle("lights");
+        Bundle progress = android.getBundle("progress");
         Double max = progress.getDouble("max");
         Double progressI = progress.getDouble("progress");
         nb = nb.setProgress(max.intValue(), progressI.intValue(), progress.getBoolean("indeterminate"));
@@ -283,11 +283,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (reactContext != null) {
         Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));
       }
-      
+
       if (promise != null) {
         promise.resolve(null);
       }
-      
+
     } catch (Exception e) {
       Log.e(TAG, "Failed to send notification", e);
       if (promise != null) {
