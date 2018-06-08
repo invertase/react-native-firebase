@@ -7,6 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
+#import <React/RCTUtils.h>
 
 @implementation RNFirebaseStorage
 
@@ -120,7 +121,7 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appDisplayName
     NSURL *localFile = [NSURL fileURLWithPath:localPath];
     
     __block FIRStorageDownloadTask *downloadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         downloadTask = [fileRef writeToFile:localFile];
     });
 
@@ -298,7 +299,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
 - (void)uploadFile:(NSString *)appDisplayName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     __block FIRStorageUploadTask *uploadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         uploadTask = [fileRef putFile:url metadata:firmetadata];
     });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
@@ -307,7 +308,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
 - (void)uploadData:(NSString *)appDisplayName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     __block FIRStorageUploadTask *uploadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         uploadTask = [fileRef putData:data metadata:firmetadata];
     });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
