@@ -387,7 +387,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
     } else if (image.startsWith("file://")) {
       return BitmapFactory.decodeFile(image.replace("file://", ""));
     } else {
-      int largeIconResId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", image);
+      int largeIconResId = getIcon(image);
       return BitmapFactory.decodeResource(context.getResources(), largeIconResId);
     }
   }
