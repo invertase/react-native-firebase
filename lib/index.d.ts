@@ -807,7 +807,7 @@ declare module 'react-native-firebase' {
         event: string,
         observer: (snapshot: PhoneAuthSnapshot) => void,
         errorCb?: (error: PhoneAuthError) => void,
-        successCb?: (snapshot: PhoneAuthSnapshot) => void 
+        successCb?: (snapshot: PhoneAuthSnapshot) => void
       ): PhoneAuthListener;
 
       then(fn: (snapshot: PhoneAuthSnapshot) => void): Promise<any>;
@@ -1808,7 +1808,7 @@ declare module 'react-native-firebase' {
         readonly doc: DocumentSnapshot;
         readonly newIndex: number;
         readonly oldIndex: number;
-        readonly type: string;
+        readonly type: 'added' | 'modified' | 'removed';
       }
 
       interface DocumentReference {
