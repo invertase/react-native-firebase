@@ -405,11 +405,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private int getIcon(String icon) {
-    int smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
-    if (smallIconResourceId == 0) {
-      smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
+    int resourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
+    if (resourceId == 0) {
+      resourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
     }
-    return smallIconResourceId;
+    return resourceId;
   }
 
   private Class getMainActivityClass() {
