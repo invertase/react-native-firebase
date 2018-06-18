@@ -12,6 +12,7 @@ import performance from './perf';
 import admob from './admob';
 import firestore from './firestore';
 import links from './links/index';
+import iid from './iid';
 
 window.getCoverage = function getCoverage() {
   return JSON.stringify(global.__coverage__);
@@ -31,6 +32,7 @@ const testSuiteInstances = [
   performance,
   storage,
   links,
+  iid,
 ];
 
 /*
