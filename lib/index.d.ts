@@ -1511,7 +1511,7 @@ declare module 'react-native-firebase' {
          * The default duration is 43200 seconds (12 hours).
          * To force a cache refresh call the method with a duration of 0.
          */
-        fetch(duration?: number): Promise<void>;
+        fetch(duration?: number): Promise<string>;
 
         /**
          * Fetches the remote config data from Firebase, defined in the dashboard.
@@ -1535,6 +1535,11 @@ declare module 'react-native-firebase' {
          * Returns all keys as an array by a prefix. If no prefix is defined all keys are returned.
          */
         getKeysByPrefix(prefix?: string): Promise<Array<String>>;
+
+        /**
+         * Sets config defaults for parameter keys and values in the default namespace config.
+         */
+        setDefault(defaults: Object): void;
 
         /**
          * Sets the default values from a resource:
