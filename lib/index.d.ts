@@ -1537,11 +1537,6 @@ declare module 'react-native-firebase' {
         getKeysByPrefix(prefix?: string): Promise<Array<String>>;
 
         /**
-         * Sets config defaults for parameter keys and values in the default namespace config.
-         */
-        setDefault(defaults: Object): void;
-
-        /**
          * Sets the default values from a resource:
          * - Android: Id for the XML resource, which should be in your application's res/xml folder.
          * - iOS: The plist file name, with no file name extension.
