@@ -25,7 +25,7 @@ declare module 'react-native-firebase' {
       RNFirebase.auth.Auth,
       RNFirebase.auth.AuthStatics
     >;
-    // config: FirebaseModule<RNFirebase.config.Config>;
+    config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
     crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
     crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<
@@ -81,7 +81,7 @@ declare module 'react-native-firebase' {
     // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
-    // config(): RNFirebase.config.Config;
+    config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
@@ -1480,6 +1480,68 @@ declare module 'react-native-firebase' {
           Visibility: typeof Android.Visibility;
         };
         Notification: typeof Notification;
+      }
+    }
+
+    namespace config {
+      interface ConfigSnapshot {
+        source: string;
+        val(): any;
+      }
+
+      interface Object<ConfigSnapshot> {
+        [key: string]: ConfigSnapshot;
+      }
+
+      interface Config {
+        /** Enable Remote Config developer mode to allow for frequent refreshes of the cache. */
+        enableDeveloperMode(): void;
+
+        /**
+         * Sets default values for the app to use when accessing values.
+         * Any data fetched and activated will override any default values.
+         * Any values in the defaults but not on Firebase will be untouched.
+         */
+        setDefaults(defaults: object): void;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * If duration is defined (seconds), data will be locally cached for this duration.
+         *
+         * The default duration is 43200 seconds (12 hours).
+         * To force a cache refresh call the method with a duration of 0.
+         */
+        fetch(duration?: number): Promise<void>;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * The default expiration duration is 43200 seconds (12 hours)
+         */
+        activateFetched(): Promise<boolean>;
+
+        /**
+         * Gets a config item by key.
+         * Returns a snapshot containing source (default, remote or static) and val function.
+         */
+        getValue(key: string): Promise<ConfigSnapshot>;
+
+        /**
+         * Gets multiple values by key.
+         * Returns a snapshot object with snapshot keys e.g. snapshots.foo.val().
+         */
+        getValues(array: Array<string>): Promise<Object<ConfigSnapshot>>;
+
+        /**
+         * Returns all keys as an array by a prefix. If no prefix is defined all keys are returned.
+         */
+        getKeysByPrefix(prefix?: string): Promise<Array<String>>;
+
+        /**
+         * Sets the default values from a resource:
+         * - Android: Id for the XML resource, which should be in your application's res/xml folder.
+         * - iOS: The plist file name, with no file name extension.
+         */
+        setDefaultsFromResource(resource: string | number): void;
       }
     }
 
