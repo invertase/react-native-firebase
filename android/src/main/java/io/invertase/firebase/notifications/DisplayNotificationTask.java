@@ -142,12 +142,19 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (android.containsKey("contentInfo")) {
         nb = nb.setContentInfo(android.getString("contentInfo"));
       }
-      if (notification.containsKey("defaults")) {
-        double[] defaultsArray = android.getDoubleArray("defaults");
-        int defaults = 0;
-        for (Double d : defaultsArray) {
-          defaults |= d.intValue();
+      if (android.containsKey("defaults")) {
+        Double defaultValues = android.getDouble("defaults");
+        int defaults = defaultValues.intValue();
+
+        if (defaults == 0) {
+          ArrayList<Integer> defaultsArray = android.getIntegerArrayList("defaults");
+          if(defaultsArray != null) {
+            for (Integer defaultValue : defaultsArray) {
+              defaults |= defaultValue;
+            }
+          }
         }
+
         nb = nb.setDefaults(defaults);
       }
       if (android.containsKey("group")) {
