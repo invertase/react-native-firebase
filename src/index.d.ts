@@ -2462,6 +2462,11 @@ declare module 'react-native-firebase/notifications' {
   export type IOSAttachmentOptions = RNFirebase.notifications.IOSAttachmentOptions;
 }
 
+declare module 'react-native-firebase/config' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type ConfigSnapshot = RNFirebase.config.ConfigSnapshot;
+  export type Config = RNFirebase.config.Config;
+}
 
 declare module 'react-native-firebase/crashlytics' {
   import { RNFirebase } from 'react-native-firebase';
