@@ -500,7 +500,12 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   public static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
     if(dbURL != null && dbURL.length() > 0) {
-      firebaseDatabase = FirebaseDatabase.getInstance(dbURL);
+      if (appName != null && appName.length() > 0) {
+        FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+        firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp, dbURL);
+      } else {
+        firebaseDatabase = FirebaseDatabase.getInstance(dbURL);
+      }
     } else {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       firebaseDatabase = FirebaseDatabase.getInstance(firebaseApp);
