@@ -23,29 +23,35 @@ The issue list of this repo is exclusively for bug reports.
 
 ### Environment
 
+1. Application Target Platform: 
+
 <!--- (e.g. iOS, Android, Both) --->
-
-1. Application Target Platform:
-
-<!--- (e.g. macOS Sierra, Windows 10) --->
 
 2. Development Operating System:
 
-<!--- (Xcode or Android Studio version, iOS or Android SDK version - if relevant) --->
+<!--- (e.g. macOS Sierra, Windows 10) --->
 
 3. Build Tools:
 
-<!--- (e.g. 0.45.1) --->
+<!--- (Xcode or Android Studio version, iOS or Android SDK version - if relevant) --->
 
-4. React Native version:
+4. `React Native` version:
 
-<!--- (e.g. 2.1.3) --->
+<!--- (e.g. 0.52.0) --->
 
-5. RNFirebase Version:
+5. `React Native Firebase` Version:
+
+<!--- (e.g. 4.3.0) --->
+
+6. `Firebase` Module:
 
 <!--- (e.g. database, auth, messaging, analytics etc - or N/A if not applicable) --->
 
-6. Firebase Module:
+7. Are you using `typescript`? 
 
-<!-- Love react-native-firebase? Please consider supporting our collective:
+<!--- yes/no --->
+
+
+---
+Loving `react-native-firebase`? Please consider supporting their open collective:
 👉  https://opencollective.com/react-native-firebase/donate -->
