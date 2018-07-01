@@ -54,4 +54,4 @@ The issue list of this repo is exclusively for bug reports.
 
 ---
 Loving `react-native-firebase`? Please consider supporting their open collective:
-👉  https://opencollective.com/react-native-firebase/donate -->
+  👉  [https://opencollective.com/react-native-firebase/donate](https://opencollective.com/react-native-firebase/donate)
