@@ -1179,7 +1179,7 @@ declare module 'react-native-firebase' {
       class Schedule {
         exact: boolean;
         fireDate: number;
-        repeatInterval?: string;
+        repeatInterval?: "minute" | "hour" | "day" | "week";
 
         constructor();
       }
