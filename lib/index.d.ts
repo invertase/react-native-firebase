@@ -1176,6 +1176,14 @@ declare module 'react-native-firebase' {
         setTitle(title: string): Notification;
       }
 
+      class Schedule {
+        exact: boolean;
+        fireDate: number;
+        repeatInterval?: string;
+
+        constructor();
+      }
+
       class NotificationOpen {
         action: string;
         notification: Notification;
@@ -1480,6 +1488,7 @@ declare module 'react-native-firebase' {
           Visibility: typeof Android.Visibility;
         };
         Notification: typeof Notification;
+        Schedule: typeof Schedule;
       }
     }
 
