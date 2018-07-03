@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +56,21 @@ public class RNFirebaseFirestoreDocumentReference {
     });
   }
 
-  void get(final Promise promise) {
-    this.ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+  void get(final ReadableMap getOptions, final Promise promise) {
+    Source source;
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+    this.ref.get(source).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
       @Override
       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {

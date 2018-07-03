@@ -20,6 +20,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,8 +53,21 @@ public class RNFirebaseFirestoreCollectionReference {
     this.reactContext = reactContext;
   }
 
-  void get(final Promise promise) {
-    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+  void get(ReadableMap getOptions, final Promise promise) {
+    Source source;
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+    query.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
       @Override
       public void onComplete(@NonNull Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
