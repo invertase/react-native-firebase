@@ -1837,7 +1837,7 @@ declare module 'react-native-firebase' {
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -1882,7 +1882,7 @@ declare module 'react-native-firebase' {
         readonly path: string;
         collection(collectionPath: string): CollectionReference;
         delete(): Promise<void>;
-        get(): Promise<DocumentSnapshot>;
+        get(options?: Types.GetOptions): Promise<DocumentSnapshot>;
         onSnapshot(
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
@@ -1897,7 +1897,7 @@ declare module 'react-native-firebase' {
           metadataChanges: MetadataChanges,
           observer: DocumentReference.Observer
         ): () => void;
-        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        set(data: object, writeOptions?: Types.SetOptions): Promise<void>;
         update(obj: object): Promise<void>;
         update(key1: Types.UpdateKey, val1: any): Promise<void>;
         update(
@@ -2000,7 +2000,7 @@ declare module 'react-native-firebase' {
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -2096,7 +2096,7 @@ declare module 'react-native-firebase' {
         set(
           documentRef: DocumentReference,
           data: Object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): Transaction;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -2153,7 +2153,7 @@ declare module 'react-native-firebase' {
         set(
           docRef: DocumentReference,
           data: object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): WriteBatch;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -2247,7 +2247,11 @@ declare module 'react-native-firebase' {
         /** The key in update() function for DocumentReference and WriteBatch. */
         type UpdateKey = string | FieldPath;
 
-        interface WriteOptions {
+        interface GetOptions {
+          source: 'default' | 'server' | 'cache';
+        }
+
+        interface SetOptions {
           merge?: boolean;
         }
       }

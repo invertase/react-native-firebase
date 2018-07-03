@@ -236,9 +236,10 @@ RCT_EXPORT_METHOD(collectionGet:(NSString *)appDisplayName
                   filters:(NSArray *)filters
                   orders:(NSArray *)orders
                   options:(NSDictionary *)options
+                  getOptions:(NSDictionary *)getOptions
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    [[self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options] get:resolve rejecter:reject];
+    [[self getCollectionForAppPath:appDisplayName path:path filters:filters orders:orders options:options] get:getOptions resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(collectionOffSnapshot:(NSString *)appDisplayName
@@ -307,16 +308,10 @@ RCT_EXPORT_METHOD(documentDelete:(NSString *)appDisplayName
 
 RCT_EXPORT_METHOD(documentGet:(NSString *)appDisplayName
                   path:(NSString *)path
+                  getOptions:(NSDictionary *)getOptions
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    [[self getDocumentForAppPath:appDisplayName path:path] get:resolve rejecter:reject];
-}
-
-RCT_EXPORT_METHOD(documentGetAll:(NSString *)appDisplayName
-                  documents:(NSString *)documents
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
-    // Not supported on iOS out of the box
+    [[self getDocumentForAppPath:appDisplayName path:path] get:getOptions resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(documentOffSnapshot:(NSString *)appDisplayName
@@ -356,10 +351,10 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
                   rejecter:(RCTPromiseRejectBlock)reject) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
     FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
-    
+
     // Make sure the dispatch queue is set correctly
     firestoreSettings.dispatchQueue = firestoreQueue;
-    
+
     // Apply the settings passed by the user, or ensure that the current settings are preserved
     if (settings[@"host"]) {
         firestoreSettings.host = settings[@"host"];
@@ -396,7 +391,7 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
 + (FIRFirestore *)getFirestoreForApp:(NSString *)appDisplayName {
     FIRApp *app = [RNFirebaseUtil getApp:appDisplayName];
     FIRFirestore *firestore = [FIRFirestore firestoreForApp:app];
-    
+
     // This is the first time we've tried to do something on this Firestore instance
     // So we need to make sure the dispatch queue is set correctly
     if (!initialisedApps[appDisplayName]) {
@@ -529,4 +524,3 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
 @implementation RNFirebaseFirestore
 @end
 #endif
-

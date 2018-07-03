@@ -21,7 +21,7 @@
 @property FIRQuery *query;
 
 - (id)initWithPathAndModifiers:(RCTEventEmitter *)emitter appDisplayName:(NSString *)appDisplayName path:(NSString *)path filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options;
-- (void)get:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
+- (void)get:(NSDictionary *)getOptions resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 + (void)offSnapshot:(NSString *)listenerId;
 - (void)onSnapshot:(NSString *)listenerId queryListenOptions:(NSDictionary *) queryListenOptions;
 + (NSDictionary *)snapshotToDictionary:(FIRQuerySnapshot *)querySnapshot;
