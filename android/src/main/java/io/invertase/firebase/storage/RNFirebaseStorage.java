@@ -1,5 +1,7 @@
 package io.invertase.firebase.storage;
 
+import android.content.ContentResolver;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.os.Environment;
 
@@ -7,16 +9,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
@@ -185,7 +186,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
   @ReactMethod
   public void updateMetadata(String appName, final String path, final ReadableMap metadata, final Promise promise) {
     StorageReference reference = this.getReference(path, appName);
-    StorageMetadata md = buildMetadataFromMap(metadata);
+    StorageMetadata md = buildMetadataFromMap(metadata, null);
 
     reference.updateMetadata(md).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
       @Override
@@ -338,7 +339,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
 
     try {
       Uri file = getURI(localPath);
-      StorageMetadata md = buildMetadataFromMap(metadata);
+      StorageMetadata md = buildMetadataFromMap(metadata, file);
       UploadTask uploadTask = reference.putFile(file, md);
 
       // register observers to listen for when the download is done or if it fails
@@ -447,13 +448,11 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
    * @param metadata
    * @return
    */
-  private StorageMetadata buildMetadataFromMap(ReadableMap metadata) {
+  private StorageMetadata buildMetadataFromMap(ReadableMap metadata, @Nullable Uri file) {
     StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
 
     try {
-
       Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
-
       Map<String, Object> customMetadata = (Map<String, Object>) m.get("customMetadata");
       if (customMetadata != null) {
         for (Map.Entry<String, Object> entry : customMetadata.entrySet()) {
@@ -465,8 +464,24 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       metadataBuilder.setContentDisposition((String) m.get("contentDisposition"));
       metadataBuilder.setContentEncoding((String) m.get("contentEncoding"));
       metadataBuilder.setContentLanguage((String) m.get("contentLanguage"));
-      metadataBuilder.setContentType((String) m.get("contentType"));
 
+      if (metadata.hasKey("contentType")) {
+        metadataBuilder.setContentType((String) m.get("contentType"));
+      } else if (file != null) {
+        String mimeType = null;
+
+        if (file.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+          ContentResolver cr = getReactApplicationContext().getContentResolver();
+          mimeType = cr.getType(file);
+        } else {
+          String fileExtension = MimeTypeMap.getFileExtensionFromUrl(file
+            .toString());
+          mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+            fileExtension.toLowerCase());
+        }
+
+        if (mimeType != null) metadataBuilder.setContentType(mimeType);
+      }
     } catch (Exception e) {
       Log.e(TAG, "error while building meta data " + e.getMessage());
     }
