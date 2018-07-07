@@ -209,91 +209,33 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
                  metadata:(NSDictionary *) metadata
                  resolver:(RCTPromiseResolveBlock) resolve
                  rejecter:(RCTPromiseRejectBlock) reject) {
-    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
-    if ([localPath hasPrefix:@"assets-library://"] || [localPath hasPrefix:@"ph://"]) {
-        PHFetchResult *assets;
-
-        if ([localPath hasPrefix:@"assets-library://"]) {
-            NSURL *localFile = [[NSURL alloc] initWithString:localPath];
-            assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
-        } else {
-            NSString *assetId = [localPath substringFromIndex:@"ph://".length];
-            assets = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil];
-        }
-
-        PHAsset *asset = [assets firstObject];
-
-        // this is based on http://stackoverflow.com/questions/35241449
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            // images
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = true;
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                if (info[PHImageErrorKey] == nil) {
-                    if (UTTypeConformsTo((__bridge CFStringRef)dataUTI, kUTTypeJPEG)) {
-                        firmetadata.contentType = [self utiToMimeType:dataUTI];
-                        [self uploadData:appDisplayName data:imageData firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
-                    } else {
-                        // if the image UTI is not JPEG then convert to JPEG, e.g. HEI
-                        CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-                        NSDictionary *imageInfo = (__bridge NSDictionary*)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
-                        NSDictionary *imageMetadata = [imageInfo copy];
-                        NSMutableData *imageDataJPEG = [NSMutableData data];
-                        CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageDataJPEG, kUTTypeJPEG, 1, NULL);
-                        CGImageDestinationAddImageFromSource(destination, source, 0, (__bridge CFDictionaryRef)imageMetadata);
-                        CGImageDestinationFinalize(destination);
-                        // Manually set mimetype to JPEG
-                        firmetadata.contentType = @"image/jpeg";
-                        [self uploadData:appDisplayName data:[NSData dataWithData:imageDataJPEG] firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
-                    }
-                } else {
-                    reject(@"storage/request-image-data-failed", @"Could not obtain image data for the specified file.", nil);
-                }
-            }];
-        } else if (asset.mediaType == PHAssetMediaTypeVideo) {
-            // video
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = true;
-            [[PHImageManager defaultManager] requestExportSessionForVideo:asset options:options exportPreset:AVAssetExportPresetHighestQuality resultHandler:^(AVAssetExportSession *_Nullable exportSession, NSDictionary *_Nullable info) {
-                if (info[PHImageErrorKey] == nil) {
-                    NSURL *tempUrl = [self temporaryFileUrl];
-                    exportSession.outputURL = tempUrl;
-
-                    NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
-                    for (PHAssetResource *resource in resources) {
-                        exportSession.outputFileType = resource.uniformTypeIdentifier;
-                        if (exportSession.outputFileType != nil) break;
-                    }
-
-                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                        if (exportSession.status == AVAssetExportSessionStatusCompleted) {
-                            firmetadata.contentType = [self utiToMimeType:exportSession.outputFileType];
-                            [self uploadFile:appDisplayName url:tempUrl firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
-                            // we're not cleaning up the temporary file at the moment, just relying on the OS to do that in it's own time - todo?
-                        } else {
-                            reject(@"storage/temporary-file-failure", @"Unable to create temporary file for upload.", nil);
-                        }
-                    }];
-                } else {
-                    reject(@"storage/export-session-failure", @"Unable to create export session for asset.", nil);
-                }
-            }];
-        }
-    } else {
-        // TODO: Content type for file?
-        NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
-        [self uploadData:appDisplayName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
+        reject(@"storage/file-not-found", @"File specified at path does not exist.", nil);
+        return;
     }
-
+    
+    NSData *data = [NSData dataWithContentsOfFile:localPath];
+    FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
+    
+    if ([firmetadata valueForKey:@"contentType"] == nil) {
+        firmetadata.contentType = [self mimeTypeForPath:localPath];
+    }
+    
+    // TODO convert heic -> jpeg only if users asks for it
+    
+    [self uploadData:appDisplayName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
 }
 
-- (NSURL *)temporaryFileUrl {
-    NSString *filename = [NSString stringWithFormat:@"%@.tmp", [[NSProcessInfo processInfo] globallyUniqueString]];
-    return [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:filename];
-}
-
-- (NSString *)utiToMimeType:(NSString *) dataUTI {
-    return (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)dataUTI, kUTTagClassMIMEType);
+- (NSString*) mimeTypeForPath: (NSString *) path {
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+    CFStringRef mimeType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+    CFRelease(UTI);
+    
+    if (!mimeType) {
+        return @"application/octet-stream";
+    }
+    
+    return (__bridge_transfer NSString *) mimeType;
 }
 
 - (void)uploadFile:(NSString *)appDisplayName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {

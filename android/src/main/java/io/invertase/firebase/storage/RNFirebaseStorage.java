@@ -601,12 +601,10 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
    */
   private void sendJSEvent(String appName, final String name, final String path, WritableMap body) {
     WritableMap event = Arguments.createMap();
-
-    event.putString("appName", appName);
-    event.putString("eventName", name);
-    event.putString("path", path);
     event.putMap("body", body);
-
+    event.putString("path", path);
+    event.putString("eventName", name);
+    event.putString("appName", appName);
     Utils.sendEvent(this.getReactApplicationContext(), STORAGE_EVENT, event);
   }
 
