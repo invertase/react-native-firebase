@@ -50,7 +50,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
   private static final String ExternalDirectoryPath = "EXTERNAL_DIRECTORY_PATH";
   private static final String ExternalStorageDirectoryPath = "EXTERNAL_STORAGE_DIRECTORY_PATH";
   private static final String PicturesDirectoryPath = "PICTURES_DIRECTORY_PATH";
-  private static final String TemporaryDirectoryPath = "TEMPORARY_DIRECTORY_PATH";
+  private static final String TemporaryDirectoryPath = "TEMP_DIRECTORY_PATH";
   private static final String CachesDirectoryPath = "CACHES_DIRECTORY_PATH";
 
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
@@ -684,7 +684,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     final Map<String, Object> constants = new HashMap<>();
 
     constants.put(DocumentDirectoryPath, this.getReactApplicationContext().getFilesDir().getAbsolutePath());
-    constants.put(TemporaryDirectoryPath, null);
+    constants.put(TemporaryDirectoryPath, this.getReactApplicationContext().getCacheDir().getAbsolutePath());
     constants.put(PicturesDirectoryPath, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
     constants.put(CachesDirectoryPath, this.getReactApplicationContext().getCacheDir().getAbsolutePath());
     constants.put(FileTypeRegular, 0);
