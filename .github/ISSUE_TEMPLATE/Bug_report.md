@@ -53,6 +53,8 @@ The issue list of this repo is exclusively for bug reports.
 
 
 ---
-Loving `react-native-firebase`? Please consider supporting their open collective:
+Loving `react-native-firebase`? Please consider supporting them with any of the below:
 
-  👉  [https://opencollective.com/react-native-firebase/donate](https://opencollective.com/react-native-firebase/donate)
+  - 👉  Back financially via [Open Collective](https://opencollective.com/react-native-firebase/donate)  
+  - 👉  Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter 
+  - 👉  Star this repo on GitHub ⭐️
