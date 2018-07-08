@@ -944,7 +944,7 @@ declare module 'react-native-firebase' {
         /**
          * Asynchronously signs in using a phone number.
          */
-        signInWithPhoneNumber(phoneNumber: string): Promise<ConfirmationResult>;
+        signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult>;
 
         /**
          * Returns a PhoneAuthListener to listen to phone verification events,
@@ -953,7 +953,8 @@ declare module 'react-native-firebase' {
          */
         verifyPhoneNumber(
           phoneNumber: string,
-          autoVerifyTimeout?: number
+          autoVerifyTimeout?: number,
+          forceResend?: boolean,
         ): PhoneAuthListener;
 
         /**
