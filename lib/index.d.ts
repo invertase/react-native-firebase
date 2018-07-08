@@ -953,7 +953,7 @@ declare module 'react-native-firebase' {
          */
         verifyPhoneNumber(
           phoneNumber: string,
-          autoVerifyTimeout?: number,
+          autoVerifyTimeoutOrForceResend?: number | boolean,
           forceResend?: boolean,
         ): PhoneAuthListener;
 
