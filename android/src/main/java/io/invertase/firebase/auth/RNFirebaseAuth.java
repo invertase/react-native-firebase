@@ -59,6 +59,7 @@ import io.invertase.firebase.Utils;
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
   private String mVerificationId;
+  private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
   private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
@@ -729,75 +730,99 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param phoneNumber
    */
   @ReactMethod
-  public void signInWithPhoneNumber(String appName, final String phoneNumber, final Promise promise) {
+  public void signInWithPhoneNumber(String appName, final String phoneNumber, final boolean forceResend, final Promise promise) {
     Log.d(TAG, "signInWithPhoneNumber");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    Activity activity = mReactContext.getCurrentActivity();
 
     // Reset the verification Id
     mVerificationId = null;
 
-    PhoneAuthProvider.getInstance(firebaseAuth).verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS,
-      mReactContext.getCurrentActivity(), new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        private boolean promiseResolved = false;
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+      private boolean promiseResolved = false;
 
-        @Override
-        public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-          // User has been automatically verified, log them in
-          firebaseAuth.signInWithCredential(phoneAuthCredential)
-            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-              @Override
-              public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                  // onAuthStateChanged will pick up the user change
-                  Log.d(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:success");
-                  // To ensure that there is no hanging promise, we resolve it with a null verificationId
-                  // as calling ConfirmationResult.confirm(code) is invalid in this case anyway
-                  if (!promiseResolved) {
-                    WritableMap verificationMap = Arguments.createMap();
-                    verificationMap.putNull("verificationId");
-                    promise.resolve(verificationMap);
-                  }
-                } else {
-                  // With phone auth, the credential will only every be rejected if the user
-                  // account linked to the phone number has been disabled
-                  Exception exception = task.getException();
-                  Log.e(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure", exception);
-                  // In the scenario where an SMS code has been sent, we have no way to report
-                  // back to the front-end that as the promise has already been used
-                  if (!promiseResolved) {
-                    promiseRejectAuthException(promise, exception);
-                  }
+      @Override
+      public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+        // User has been automatically verified, log them in
+        firebaseAuth.signInWithCredential(phoneAuthCredential)
+          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+              if (task.isSuccessful()) {
+                // onAuthStateChanged will pick up the user change
+                Log.d(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:success");
+                // To ensure that there is no hanging promise, we resolve it with a null verificationId
+                // as calling ConfirmationResult.confirm(code) is invalid in this case anyway
+                if (!promiseResolved) {
+                  WritableMap verificationMap = Arguments.createMap();
+                  verificationMap.putNull("verificationId");
+                  promise.resolve(verificationMap);
+                }
+              } else {
+                // With phone auth, the credential will only every be rejected if the user
+                // account linked to the phone number has been disabled
+                Exception exception = task.getException();
+                Log.e(TAG, "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure", exception);
+                // In the scenario where an SMS code has been sent, we have no way to report
+                // back to the front-end that as the promise has already been used
+                if (!promiseResolved) {
+                  promiseRejectAuthException(promise, exception);
                 }
               }
-            });
-        }
+            }
+          });
+      }
 
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-          // This callback is invoked in an invalid request for verification is made,
-          // e.g. phone number format is incorrect, or the SMS quota for the project
-          // has been exceeded
-          Log.d(TAG, "signInWithPhoneNumber:verification:failed");
-          promiseRejectAuthException(promise, e);
-        }
+      @Override
+      public void onVerificationFailed(FirebaseException e) {
+        // This callback is invoked in an invalid request for verification is made,
+        // e.g. phone number format is incorrect, or the SMS quota for the project
+        // has been exceeded
+        Log.d(TAG, "signInWithPhoneNumber:verification:failed");
+        promiseRejectAuthException(promise, e);
+      }
 
-        @Override
-        public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-          // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
-          mVerificationId = verificationId;
-          WritableMap verificationMap = Arguments.createMap();
-          verificationMap.putString("verificationId", verificationId);
-          promise.resolve(verificationMap);
-          promiseResolved = true;
-        }
+      @Override
+      public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+        // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
+        mVerificationId = verificationId;
+        mForceResendingToken = forceResendingToken;
+        WritableMap verificationMap = Arguments.createMap();
+        verificationMap.putString("verificationId", verificationId);
+        promise.resolve(verificationMap);
+        promiseResolved = true;
+      }
 
-        @Override
-        public void onCodeAutoRetrievalTimeOut(String verificationId) {
-          super.onCodeAutoRetrievalTimeOut(verificationId);
-          // Purposefully not doing anything with this at the moment
-        }
-      });
+      @Override
+      public void onCodeAutoRetrievalTimeOut(String verificationId) {
+        super.onCodeAutoRetrievalTimeOut(verificationId);
+        // Purposefully not doing anything with this at the moment
+      }
+    };
+
+    if (activity != null) {
+      if (forceResend && mForceResendingToken != null) {
+        PhoneAuthProvider.getInstance(firebaseAuth)
+          .verifyPhoneNumber(
+            phoneNumber,
+            60,
+            TimeUnit.SECONDS,
+            activity,
+            callbacks,
+            mForceResendingToken
+          );
+      } else {
+        PhoneAuthProvider.getInstance(firebaseAuth)
+          .verifyPhoneNumber(
+            phoneNumber,
+            60,
+            TimeUnit.SECONDS,
+            activity,
+            callbacks
+          );
+      }
+    }
   }
 
   @ReactMethod
@@ -831,7 +856,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
    * @param timeout
    */
   @ReactMethod
-  public void verifyPhoneNumber(final String appName, final String phoneNumber, final String requestKey, final int timeout) {
+  public void verifyPhoneNumber(final String appName, final String phoneNumber, final String requestKey, final int timeout, final boolean forceResend) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final Activity activity = mReactContext.getCurrentActivity();
@@ -882,8 +907,10 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       @Override
       public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
         Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
+        mForceResendingToken = forceResendingToken;
         WritableMap state = Arguments.createMap();
         state.putString("verificationId", verificationId);
+
 
         // todo forceResendingToken  - it's actually just an empty class ... no actual token >.>
         // Parcel parcel = Parcel.obtain();
@@ -912,15 +939,26 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     };
 
     if (activity != null) {
-      PhoneAuthProvider.getInstance(firebaseAuth)
-        .verifyPhoneNumber(
-          phoneNumber,
-          timeout,
-          TimeUnit.SECONDS,
-          activity,
-          callbacks
-          //, PhoneAuthProvider.ForceResendingToken.zzboe() // TODO FORCE RESENDING
-        );
+      if (forceResend && mForceResendingToken != null) {
+        PhoneAuthProvider.getInstance(firebaseAuth)
+          .verifyPhoneNumber(
+            phoneNumber,
+            timeout,
+            TimeUnit.SECONDS,
+            activity,
+            callbacks,
+            mForceResendingToken
+          );
+      } else {
+        PhoneAuthProvider.getInstance(firebaseAuth)
+          .verifyPhoneNumber(
+            phoneNumber,
+            timeout,
+            TimeUnit.SECONDS,
+            activity,
+            callbacks
+          );
+      }
     }
   }
 
