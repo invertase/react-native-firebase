@@ -59,6 +59,7 @@ import io.invertase.firebase.Utils;
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
   private String mVerificationId;
+  private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
@@ -736,6 +737,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     Activity activity = mReactContext.getCurrentActivity();
 
+    // reset force resending token if phone number changes
+    if (!phoneNumber.equals(mLastPhoneNumber)) {
+      mForceResendingToken = null;
+      mLastPhoneNumber = phoneNumber;
+    }
+
     // Reset the verification Id
     mVerificationId = null;
 
@@ -862,6 +869,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     final Activity activity = mReactContext.getCurrentActivity();
 
     Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
+
+    // reset force resending token if phone number changes
+    if (!phoneNumber.equals(mLastPhoneNumber)) {
+      mForceResendingToken = null;
+      mLastPhoneNumber = phoneNumber;
+    }
 
     // Reset the credential
     mCredential = null;
