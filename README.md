@@ -35,28 +35,30 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > '**?**' indicates partial support
 
+> '🤔' denotes functionality with separate libraries
+
 | Firebase Features                                                                                                                 | v2.2.x | v3.3.x | v4.2.x | Web SDK |
 | --------------------------------------------------------------------------------------------------------------------------------- | :----: | :----: | :----: | :-----: |
-| **AdMob**                                                                                                                         |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Analytics**                                                                                                                     |   ✅   |   ✅   |   ✅   |   ❌    |
+| **AdMob**                                                                                                                         |   ✅   |   ✅   |   ✅   |   [🤔](https://stackoverflow.com/a/37322845/4047926)    |
+| **Analytics**                                                                                                                     |   ✅   |   ✅   |   ✅   |   [🤔](https://support.google.com/analytics/answer/2587086)    |
 | **App Indexing**                                                                                                                  |   ❌   |   ❌   |   ❌   |   ❌    |
 | **Authentication**                                                                                                                |   ✅   |   ✅   |   ✅   |   ✅    |
 | _-- Phone Auth_                                                                                                                   |   ❌   |   ✅   |   ✅   |   ❌    |
 | **Core**                                                                                                                          | **?**  |   ✅   |   ✅   |   ✅    |
 | _-- Multiple Apps_                                                                                                                |   ❌   |   ✅   |   ✅   |   ✅    |
-| **Cloud Firestore**                                                                                                               |   ❌   |   ✅   |   ✅   |  **?**  |
+| **Cloud Firestore**                                                                                                               |   ❌   |   ✅   |   ✅   |   ✅    |
 | **Cloud Messaging (FCM)**                                                                                                         | **?**  | **?**  |   ✅   |   ❌    |
 | **Crashlytics**                                                                                                                   |   ❌   |   ✅   |   ✅   |   ❌    |
 | **Crash Reporting**                                                                                                               |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Dynamic Links**                                                                                                                 |   ❌   |   ✅   |   ✅   |   ❌    |
-| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |   ❌   |   ❌   |    ✅  |   ✅    |
+| **Dynamic Links**                                                                                                                 |   ❌   |   ✅   |   ✅   |   ✅    |
+| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |   ❌   |   ❌   |   ✅   |   ✅    |
 | **Invites**                                                                                                                       |   ❌   |   ❌   |   ✅   |   ❌    |
 | **Instance ID**                                                                                                                   |   ❌   |   ❌   | **?**  |   ❌    |
 | **Performance Monitoring**                                                                                                        |   ✅   |   ✅   |   ✅   |   ❌    |
 | **Realtime Database**                                                                                                             |   ✅   |   ✅   |   ✅   |   ✅    |
-| _-- Offline Persistence_                                                                                                          |   ✅   |   ✅   |   ✅   |  **?**  |
-| **Remote Config**                                                                                                                 |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Storage**                                                                                                                       |   ✅   |   ✅   |   ✅   |  **?**  |
+| _-- Offline Persistence_                                                                                                          |   ✅   |   ✅   |   ✅   |   ✅    |
+| **Remote Config**                                                                                                                 |   ✅   |   ✅   |   ✅   |   [❌](https://github.com/firebase/firebase-js-sdk/issues/36)    |
+| **Storage**                                                                                                                       |   ✅   |   ✅   |   ✅   |   [✅](https://firebase.google.com/docs/storage/web/start)    |
 
 ---
 
