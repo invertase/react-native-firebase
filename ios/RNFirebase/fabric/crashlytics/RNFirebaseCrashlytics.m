@@ -1,7 +1,7 @@
 #import "RNFirebaseCrashlytics.h"
 
-#if __has_include(<Crashlytics/Crashlytics.h>)
-#import <Crashlytics/Crashlytics.h>
+#if __has_include(<Crashlytics/Crashlytics/Crashlytics.h>)
+#import <Crashlytics/Crashlytics/Crashlytics.h>
 
 @implementation RNFirebaseCrashlytics
 RCT_EXPORT_MODULE();
