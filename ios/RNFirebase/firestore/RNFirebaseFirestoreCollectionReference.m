@@ -29,9 +29,22 @@ static NSMutableDictionary *_listeners;
     return self;
 }
 
-- (void)get:(RCTPromiseResolveBlock) resolve
+- (void)get:(NSDictionary *) getOptions
+   resolver:(RCTPromiseResolveBlock) resolve
    rejecter:(RCTPromiseRejectBlock) reject {
-    [_query getDocumentsWithCompletion:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+    FIRFirestoreSource source;
+    if (getOptions && getOptions[@"source"]) {
+        if ([getOptions[@"source"] isEqualToString:@"server"]) {
+            source = FIRFirestoreSourceServer;
+        } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
+            source = FIRFirestoreSourceCache;
+        } else {
+            source = FIRFirestoreSourceDefault;
+        }
+    } else {
+        source = FIRFirestoreSourceDefault;
+    }
+    [_query getDocumentsWithSource:source completion:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
         if (error) {
             [RNFirebaseFirestore promiseRejectException:reject error:error];
         } else {

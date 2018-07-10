@@ -7,6 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <Firebase.h>
+#import <React/RCTUtils.h>
 
 @implementation RNFirebaseStorage
 
@@ -120,7 +121,7 @@ RCT_EXPORT_METHOD(downloadFile:(NSString *) appDisplayName
     NSURL *localFile = [NSURL fileURLWithPath:localPath];
     
     __block FIRStorageDownloadTask *downloadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         downloadTask = [fileRef writeToFile:localFile];
     });
 
@@ -209,9 +210,10 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
                  resolver:(RCTPromiseResolveBlock) resolve
                  rejecter:(RCTPromiseRejectBlock) reject) {
     FIRStorageMetadata *firmetadata = [self buildMetadataFromMap:metadata];
+    
     if ([localPath hasPrefix:@"assets-library://"] || [localPath hasPrefix:@"ph://"]) {
         PHFetchResult *assets;
-
+        
         if ([localPath hasPrefix:@"assets-library://"]) {
             NSURL *localFile = [[NSURL alloc] initWithString:localPath];
             assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
@@ -219,9 +221,9 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
             NSString *assetId = [localPath substringFromIndex:@"ph://".length];
             assets = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil];
         }
-
+        
         PHAsset *asset = [assets firstObject];
-
+        
         // this is based on http://stackoverflow.com/questions/35241449
         if (asset.mediaType == PHAssetMediaTypeImage) {
             // images
@@ -257,18 +259,18 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
                 if (info[PHImageErrorKey] == nil) {
                     NSURL *tempUrl = [self temporaryFileUrl];
                     exportSession.outputURL = tempUrl;
-
+                    
                     NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
                     for (PHAssetResource *resource in resources) {
                         exportSession.outputFileType = resource.uniformTypeIdentifier;
                         if (exportSession.outputFileType != nil) break;
                     }
-
+                    
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         if (exportSession.status == AVAssetExportSessionStatusCompleted) {
                             firmetadata.contentType = [self utiToMimeType:exportSession.outputFileType];
                             [self uploadFile:appDisplayName url:tempUrl firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
-                            // we're not cleaning up the temporary file at the moment, just relying on the OS to do that in it's own time - todo?
+                            // TODO we're not cleaning up the temporary file at the moment, relying on the OS to do it
                         } else {
                             reject(@"storage/temporary-file-failure", @"Unable to create temporary file for upload.", nil);
                         }
@@ -279,11 +281,37 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
             }];
         }
     } else {
-        // TODO: Content type for file?
-        NSData *data = [[NSFileManager defaultManager] contentsAtPath:localPath];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:localPath]) {
+            reject(@"storage/file-not-found", @"File specified at path does not exist.", nil);
+            return;
+        }
+        
+        // TODO large files should not go through 'data', should use file directly
+        // TODO heic conversion not working here UIImageJPEGRepresentation -> returns nil
+        
+        // BOOL isHeic = [self isHeic:localPath];
+        NSData *data = [NSData dataWithContentsOfFile:localPath];
+        
+        if ([firmetadata valueForKey:@"contentType"] == nil) {
+            firmetadata.contentType = [self mimeTypeForPath:localPath];
+        }
+        
+        // if (isHeic) {
+        //      UIImage *image = [UIImage imageWithData: data];
+        //      data = UIImageJPEGRepresentation(image, 1);
+        //      firmetadata.contentType = @"image/jpeg";
+        // }
+        
         [self uploadData:appDisplayName data:data firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
     }
+}
 
+-(BOOL) isHeic: (NSString*) path {
+    return [[path pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
+}
+
+- (NSString *)utiToMimeType:(NSString *) dataUTI {
+    return (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)dataUTI, kUTTagClassMIMEType);
 }
 
 - (NSURL *)temporaryFileUrl {
@@ -291,14 +319,22 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
     return [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:filename];
 }
 
-- (NSString *)utiToMimeType:(NSString *) dataUTI {
-    return (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)dataUTI, kUTTagClassMIMEType);
+- (NSString*) mimeTypeForPath: (NSString *) path {
+    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+    CFStringRef mimeType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+    CFRelease(UTI);
+    
+    if (!mimeType) {
+        return @"application/octet-stream";
+    }
+    
+    return (__bridge_transfer NSString *) mimeType;
 }
 
 - (void)uploadFile:(NSString *)appDisplayName url:(NSURL *)url firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     __block FIRStorageUploadTask *uploadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         uploadTask = [fileRef putFile:url metadata:firmetadata];
     });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];
@@ -307,7 +343,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
 - (void)uploadData:(NSString *)appDisplayName data:(NSData *)data firmetadata:(FIRStorageMetadata *)firmetadata path:(NSString *)path resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
     FIRStorageReference *fileRef = [self getReference:path appDisplayName:appDisplayName];
     __block FIRStorageUploadTask *uploadTask;
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
         uploadTask = [fileRef putData:data metadata:firmetadata];
     });
     [self addUploadObservers:appDisplayName uploadTask:uploadTask path:path resolver:resolve rejecter:reject];

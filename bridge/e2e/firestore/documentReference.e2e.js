@@ -67,6 +67,62 @@ describe('firestore()', () => {
         snapshot.id.should.equal(COL2_DOC_1_ID);
         snapshot.metadata.should.be.an.Object();
       });
+
+      it('should support GetOptions source=`default`', async () => {
+        await resetTestCollectionDoc(COL2_DOC_1_PATH, COL2_DOC_1());
+        const snapshot = await test2DocRef(COL2_DOC_1_ID).get({
+          source: 'default',
+        });
+        snapshot.id.should.equal(COL2_DOC_1_ID);
+        snapshot.metadata.should.be.an.Object();
+        should.equal(snapshot.metadata.fromCache, false);
+      });
+
+      it('should support GetOptions source=`server`', async () => {
+        await resetTestCollectionDoc(COL2_DOC_1_PATH, COL2_DOC_1());
+        const snapshot = await test2DocRef(COL2_DOC_1_ID).get({
+          source: 'server',
+        });
+        snapshot.id.should.equal(COL2_DOC_1_ID);
+        snapshot.metadata.should.be.an.Object();
+        should.equal(snapshot.metadata.fromCache, false);
+      });
+
+      // TODO: For some reason when using `cache` it's not seeing the data as available, even if
+      // first requesting it from the server, although interestingly it works fine in the old
+      // tests app
+      xit('should support GetOptions source=`cache`', async () => {
+        await resetTestCollectionDoc(COL2_DOC_1_PATH, COL2_DOC_1());
+        const ref = test2DocRef(COL2_DOC_1_ID);
+        // Make sure the reference data is populated in the cache
+        await ref.get({ source: 'server' });
+        // Retrieve the cached version
+        const snapshot = await ref.get({ source: 'cache' });
+        snapshot.id.should.equal(COL2_DOC_1_ID);
+        snapshot.metadata.should.be.an.Object();
+        should.equal(snapshot.metadata.fromCache, true);
+      });
+
+      it('should error with invalid GetOptions source option', async () => {
+        const docRef = test2DocRef(COL2_DOC_1_ID);
+        try {
+          await docRef.get(() => {});
+          return Promise.reject(
+            new Error('get() did not reject with invalid argument.')
+          );
+        } catch (e) {
+          // do nothing
+        }
+        try {
+          await docRef.get({ source: 'invalid' });
+          return Promise.reject(
+            new Error('get() did not reject with invalid source property.')
+          );
+        } catch (e) {
+          // do nothing
+        }
+        return Promise.resolve();
+      });
     });
 
     describe('onSnapshot()', () => {

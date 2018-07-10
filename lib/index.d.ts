@@ -25,7 +25,7 @@ declare module 'react-native-firebase' {
       RNFirebase.auth.Auth,
       RNFirebase.auth.AuthStatics
     >;
-    // config: FirebaseModule<RNFirebase.config.Config>;
+    config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
     crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
     crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<
@@ -81,7 +81,7 @@ declare module 'react-native-firebase' {
     // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
-    // config(): RNFirebase.config.Config;
+    config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
@@ -333,7 +333,6 @@ declare module 'react-native-firebase' {
 
       interface FullMetadata extends storage.UploadMetadata {
         bucket: string;
-        downloadURLs: string[];
         fullPath: string;
         generation: string;
         metageneration: string;
@@ -806,14 +805,14 @@ declare module 'react-native-firebase' {
     interface PhoneAuthListener {
       on(
         event: string,
-        observer: () => PhoneAuthSnapshot,
-        errorCb?: () => PhoneAuthError,
-        successCb?: () => PhoneAuthSnapshot
+        observer: (snapshot: PhoneAuthSnapshot) => void,
+        errorCb?: (error: PhoneAuthError) => void,
+        successCb?: (snapshot: PhoneAuthSnapshot) => void
       ): PhoneAuthListener;
 
-      then(fn: () => PhoneAuthSnapshot): Promise<any>;
+      then(fn: (snapshot: PhoneAuthSnapshot) => void): Promise<any>;
 
-      catch(fn: () => Error): Promise<any>;
+      catch(fn: (error: Error) => void): Promise<any>;
     }
 
     namespace auth {
@@ -945,7 +944,7 @@ declare module 'react-native-firebase' {
         /**
          * Asynchronously signs in using a phone number.
          */
-        signInWithPhoneNumber(phoneNumber: string): Promise<ConfirmationResult>;
+        signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult>;
 
         /**
          * Returns a PhoneAuthListener to listen to phone verification events,
@@ -954,7 +953,8 @@ declare module 'react-native-firebase' {
          */
         verifyPhoneNumber(
           phoneNumber: string,
-          autoVerifyTimeout?: number
+          autoVerifyTimeoutOrForceResend?: number | boolean,
+          forceResend?: boolean,
         ): PhoneAuthListener;
 
         /**
@@ -1089,6 +1089,8 @@ declare module 'react-native-firebase' {
       interface InstanceId {
         delete(): Promise<void>;
         get(): Promise<string>;
+        getToken(authorizedEntity: string, scope: string): Promise<string>;
+        deleteToken(authorizedEntity: string, scope: string): Promise<void>;
       }
     }
 
@@ -1482,6 +1484,68 @@ declare module 'react-native-firebase' {
       }
     }
 
+    namespace config {
+      interface ConfigSnapshot {
+        source: string;
+        val(): any;
+      }
+
+      interface Object<ConfigSnapshot> {
+        [key: string]: ConfigSnapshot;
+      }
+
+      interface Config {
+        /** Enable Remote Config developer mode to allow for frequent refreshes of the cache. */
+        enableDeveloperMode(): void;
+
+        /**
+         * Sets default values for the app to use when accessing values.
+         * Any data fetched and activated will override any default values.
+         * Any values in the defaults but not on Firebase will be untouched.
+         */
+        setDefaults(defaults: object): void;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * If duration is defined (seconds), data will be locally cached for this duration.
+         *
+         * The default duration is 43200 seconds (12 hours).
+         * To force a cache refresh call the method with a duration of 0.
+         */
+        fetch(duration?: number): Promise<string>;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * The default expiration duration is 43200 seconds (12 hours)
+         */
+        activateFetched(): Promise<boolean>;
+
+        /**
+         * Gets a config item by key.
+         * Returns a snapshot containing source (default, remote or static) and val function.
+         */
+        getValue(key: string): Promise<ConfigSnapshot>;
+
+        /**
+         * Gets multiple values by key.
+         * Returns a snapshot object with snapshot keys e.g. snapshots.foo.val().
+         */
+        getValues(array: Array<string>): Promise<Object<ConfigSnapshot>>;
+
+        /**
+         * Returns all keys as an array by a prefix. If no prefix is defined all keys are returned.
+         */
+        getKeysByPrefix(prefix?: string): Promise<Array<String>>;
+
+        /**
+         * Sets the default values from a resource:
+         * - Android: Id for the XML resource, which should be in your application's res/xml folder.
+         * - iOS: The plist file name, with no file name extension.
+         */
+        setDefaultsFromResource(resource: string | number): void;
+      }
+    }
+
     namespace crash {
       interface Crash {
         /** Logs a message that will appear in a subsequent crash report. */
@@ -1774,7 +1838,7 @@ declare module 'react-native-firebase' {
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -1809,7 +1873,7 @@ declare module 'react-native-firebase' {
         readonly doc: DocumentSnapshot;
         readonly newIndex: number;
         readonly oldIndex: number;
-        readonly type: string;
+        readonly type: 'added' | 'modified' | 'removed';
       }
 
       interface DocumentReference {
@@ -1819,7 +1883,7 @@ declare module 'react-native-firebase' {
         readonly path: string;
         collection(collectionPath: string): CollectionReference;
         delete(): Promise<void>;
-        get(): Promise<DocumentSnapshot>;
+        get(options?: Types.GetOptions): Promise<DocumentSnapshot>;
         onSnapshot(
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
@@ -1834,7 +1898,7 @@ declare module 'react-native-firebase' {
           metadataChanges: MetadataChanges,
           observer: DocumentReference.Observer
         ): () => void;
-        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        set(data: object, writeOptions?: Types.SetOptions): Promise<void>;
         update(obj: object): Promise<void>;
         update(key1: Types.UpdateKey, val1: any): Promise<void>;
         update(
@@ -1937,7 +2001,7 @@ declare module 'react-native-firebase' {
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -2033,7 +2097,7 @@ declare module 'react-native-firebase' {
         set(
           documentRef: DocumentReference,
           data: Object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): Transaction;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -2090,7 +2154,7 @@ declare module 'react-native-firebase' {
         set(
           docRef: DocumentReference,
           data: object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): WriteBatch;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -2184,7 +2248,11 @@ declare module 'react-native-firebase' {
         /** The key in update() function for DocumentReference and WriteBatch. */
         type UpdateKey = string | FieldPath;
 
-        interface WriteOptions {
+        interface GetOptions {
+          source: 'default' | 'server' | 'cache';
+        }
+
+        interface SetOptions {
           merge?: boolean;
         }
       }

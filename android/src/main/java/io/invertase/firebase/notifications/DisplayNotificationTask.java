@@ -142,12 +142,19 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (android.containsKey("contentInfo")) {
         nb = nb.setContentInfo(android.getString("contentInfo"));
       }
-      if (notification.containsKey("defaults")) {
-        double[] defaultsArray = android.getDoubleArray("defaults");
-        int defaults = 0;
-        for (Double d : defaultsArray) {
-          defaults |= d.intValue();
+      if (android.containsKey("defaults")) {
+        Double defaultValues = android.getDouble("defaults");
+        int defaults = defaultValues.intValue();
+
+        if (defaults == 0) {
+          ArrayList<Integer> defaultsArray = android.getIntegerArrayList("defaults");
+          if(defaultsArray != null) {
+            for (Integer defaultValue : defaultsArray) {
+              defaults |= defaultValue;
+            }
+          }
         }
+
         nb = nb.setDefaults(defaults);
       }
       if (android.containsKey("group")) {
@@ -387,7 +394,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
     } else if (image.startsWith("file://")) {
       return BitmapFactory.decodeFile(image.replace("file://", ""));
     } else {
-      int largeIconResId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", image);
+      int largeIconResId = getIcon(image);
       return BitmapFactory.decodeResource(context.getResources(), largeIconResId);
     }
   }
@@ -405,11 +412,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private int getIcon(String icon) {
-    int smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
-    if (smallIconResourceId == 0) {
-      smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
+    int resourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
+    if (resourceId == 0) {
+      resourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
     }
-    return smallIconResourceId;
+    return resourceId;
   }
 
   private Class getMainActivityClass() {
