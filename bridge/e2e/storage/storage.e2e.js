@@ -49,6 +49,18 @@ describe('storage()', () => {
           .downloadFile(
             `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`
           );
+        await firebase
+          .storage()
+          .ref('/cat.gif')
+          .downloadFile(
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cat.gif`
+          );
+        await firebase
+          .storage()
+          .ref('/hei.heic')
+          .downloadFile(
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/hei.heic`
+          );
       });
 
       it('errors if permission denied', async () => {
@@ -73,6 +85,20 @@ describe('storage()', () => {
           .ref('/uploadOk.jpeg')
           .putFile(
             `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`
+          );
+
+        await firebase
+          .storage()
+          .ref('/uploadCat.gif')
+          .putFile(
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cat.gif`
+          );
+
+        await firebase
+          .storage()
+          .ref('/uploadHei.heic')
+          .putFile(
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/hei.heic`
           );
 
         uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
