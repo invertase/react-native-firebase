@@ -363,25 +363,28 @@ public class RNFirebaseNotificationManager {
       if (fireDate < System.currentTimeMillis()) {
         Log.w(TAG, "Scheduled notification date is in the past, will adjust it to be in future");
         Calendar newFireDate = Calendar.getInstance();
-        Calendar currentFireDate = Calendar.getInstance();
-        currentFireDate.setTimeInMillis(fireDate);
+        Calendar pastFireDate = Calendar.getInstance();
+        pastFireDate.setTimeInMillis(fireDate);
 
-        newFireDate.set(Calendar.DATE, currentFireDate.get(Calendar.DATE));
-        newFireDate.set(Calendar.HOUR_OF_DAY, currentFireDate.get(Calendar.HOUR_OF_DAY));
-        newFireDate.set(Calendar.MINUTE, currentFireDate.get(Calendar.MINUTE));
-        newFireDate.set(Calendar.SECOND, currentFireDate.get(Calendar.SECOND));
+        newFireDate.set(Calendar.SECOND, pastFireDate.get(Calendar.SECOND));
 
         switch (schedule.getString("repeatInterval")) {
           case "minute":
             newFireDate.add(Calendar.MINUTE, 1);
             break;
           case "hour":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
             newFireDate.add(Calendar.HOUR, 1);
             break;
           case "day":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
+            newFireDate.set(Calendar.HOUR_OF_DAY, pastFireDate.get(Calendar.HOUR_OF_DAY));
             newFireDate.add(Calendar.DATE, 1);
             break;
           case "week":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
+            newFireDate.set(Calendar.HOUR_OF_DAY, pastFireDate.get(Calendar.HOUR_OF_DAY));
+            newFireDate.set(Calendar.DATE, pastFireDate.get(Calendar.DATE));
             newFireDate.add(Calendar.DATE, 7);
             break;
         }
