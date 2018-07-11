@@ -13,7 +13,7 @@
     "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
     "test-android-cover": "nyc detox test --configuration android.emu.debug",
     "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
-    "test-ios": "detox test --configuration ios.sim.debug",
+    "test-ios": "detox test --configuration ios.sim.debug --loglevel warn",
     "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",

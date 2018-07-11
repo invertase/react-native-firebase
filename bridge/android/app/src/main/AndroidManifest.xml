@@ -65,18 +65,45 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
       <!-- App Links -->
-      <intent-filter android:autoVerify="true">
+      <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data
-          android:host="je786.app.goo.gl"
-          android:scheme="http" />
+          android:scheme="http"
+          android:host="je786.app.goo.gl" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
         <data
-          android:host="je786.app.goo.gl"
-          android:scheme="https" />
+          android:scheme="http"
+          android:host="je786.app.goo.gl" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data
+          android:scheme="https"
+          android:host="je786.app.goo.gl" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data
+          android:scheme="https"
+          android:host="je786.app.goo.gl" />
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />

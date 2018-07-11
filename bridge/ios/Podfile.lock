@@ -5,9 +5,9 @@ PODS:
   - BoringSSL/Implementation (10.0.5):
     - BoringSSL/Interface (= 10.0.5)
   - BoringSSL/Interface (10.0.5)
-  - Crashlytics (3.10.2):
-    - Fabric (~> 1.7.7)
-  - Fabric (1.7.7)
+  - Crashlytics (3.10.4):
+    - Fabric (~> 1.7.9)
+  - Fabric (1.7.9)
   - Firebase/AdMob (5.3.0):
     - Firebase/Core
     - Google-Mobile-Ads-SDK (= 7.31.0)
@@ -162,25 +162,27 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.4)
     - "GoogleToolboxForMac/NSDictionary+URLArguments (= 2.1.4)"
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)"
-  - gRPC (1.12.0):
-    - gRPC-RxLibrary (= 1.12.0)
-    - gRPC/Main (= 1.12.0)
-  - gRPC-Core (1.12.0):
-    - gRPC-Core/Implementation (= 1.12.0)
-    - gRPC-Core/Interface (= 1.12.0)
-  - gRPC-Core/Implementation (1.12.0):
+  - gRPC (1.13.0):
+    - gRPC-RxLibrary (= 1.13.0)
+    - gRPC/Main (= 1.13.0)
+  - gRPC-Core (1.13.0):
+    - gRPC-Core/Implementation (= 1.13.0)
+    - gRPC-Core/Interface (= 1.13.0)
+  - gRPC-Core/Implementation (1.13.0):
     - BoringSSL (~> 10.0)
-    - gRPC-Core/Interface (= 1.12.0)
+    - gRPC-Core/Interface (= 1.13.0)
     - nanopb (~> 0.3)
-  - gRPC-Core/Interface (1.12.0)
-  - gRPC-ProtoRPC (1.12.0):
-    - gRPC (= 1.12.0)
-    - gRPC-RxLibrary (= 1.12.0)
+  - gRPC-Core/Interface (1.13.0)
+  - gRPC-ProtoRPC (1.13.0):
+    - gRPC-ProtoRPC/Main (= 1.13.0)
+  - gRPC-ProtoRPC/Main (1.13.0):
+    - gRPC (= 1.13.0)
+    - gRPC-RxLibrary (= 1.13.0)
     - Protobuf (~> 3.0)
-  - gRPC-RxLibrary (1.12.0)
-  - gRPC/Main (1.12.0):
-    - gRPC-Core (= 1.12.0)
-    - gRPC-RxLibrary (= 1.12.0)
+  - gRPC-RxLibrary (1.13.0)
+  - gRPC/Main (1.13.0):
+    - gRPC-Core (= 1.13.0)
+    - gRPC-RxLibrary (= 1.13.0)
   - GTMOAuth2 (1.1.6):
     - GTMSessionFetcher (~> 1.1)
   - GTMSessionFetcher (1.1.15):
@@ -216,21 +218,21 @@ PODS:
   - yoga (0.55.3.React)
 
 DEPENDENCIES:
-  - Crashlytics (~> 3.10.1)
+  - Crashlytics (~> 3.10.4)
   - Fabric (~> 1.7.5)
-  - Firebase/AdMob
-  - Firebase/Auth
-  - Firebase/Core
-  - Firebase/Crash
-  - Firebase/Database
-  - Firebase/DynamicLinks
-  - Firebase/Firestore
-  - Firebase/Functions
-  - Firebase/Invites
-  - Firebase/Messaging
-  - Firebase/Performance
-  - Firebase/RemoteConfig
-  - Firebase/Storage
+  - Firebase/AdMob (~> 5.3.0)
+  - Firebase/Auth (~> 5.3.0)
+  - Firebase/Core (~> 5.3.0)
+  - Firebase/Crash (~> 5.3.0)
+  - Firebase/Database (~> 5.3.0)
+  - Firebase/DynamicLinks (~> 5.3.0)
+  - Firebase/Firestore (~> 5.3.0)
+  - Firebase/Functions (~> 5.3.0)
+  - Firebase/Invites (~> 5.3.0)
+  - Firebase/Messaging (~> 5.3.0)
+  - Firebase/Performance (~> 5.3.0)
+  - Firebase/RemoteConfig (~> 5.3.0)
+  - Firebase/Storage (~> 5.3.0)
   - React/Core (from `../node_modules/react-native`)
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
@@ -284,8 +286,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BoringSSL: cf3f1793eb6e3c445c4d150456341f149c268a35
-  Crashlytics: 0360624eea1c978a743feddb2fb1ef8b37fb7a0d
-  Fabric: bda89e242bce1b7b8ab264248cf3407774ce0095
+  Crashlytics: 915a7787b84f635fb2a81f92a90e265c2c413f76
+  Fabric: a2917d3895e4c1569b9c3170de7320ea1b1e6661
   Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
@@ -307,10 +309,10 @@ SPEC CHECKSUMS:
   GoogleAPIClientForREST: f7951c455df271bc6259b3ddb4073d0026475ccf
   GoogleSignIn: d9ef55b10f0aa401a5de2747f59b725e4b9732ac
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
-  gRPC: 9362451032695e2dfb7bafcd3740e3a27939e4ff
-  gRPC-Core: 9696b220565b283e021cf2722d473a4a74b7622a
-  gRPC-ProtoRPC: a1bd56fb1991a8dae4581250d7259eddabb66779
-  gRPC-RxLibrary: 1ed5314e8b38cd6e55c9bfa048387136ae925ce9
+  gRPC: 81b990caa01d7c32605d300c2ffd1b5ba0ef9e49
+  gRPC-Core: a56b086a8ef5ced6f6ba5be5bc0a63fca185015a
+  gRPC-ProtoRPC: 842797fbe05dfcf891afb4a5048e5ccf5f06ef86
+  gRPC-RxLibrary: fa6852f98d6ec0b73c0ec2f6406c26943099d501
   GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
   GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
@@ -320,6 +322,6 @@ SPEC CHECKSUMS:
   RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 582ceaad051470812ad9203e13b5ea8ad20c78ac
+PODFILE CHECKSUM: af3286375d5c28aa5d912b64dee23c8f7c4f9282
 
 COCOAPODS: 1.5.3
