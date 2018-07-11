@@ -365,10 +365,25 @@ public class RNFirebaseNotificationManager {
         Calendar currentFireDate = Calendar.getInstance();
         currentFireDate.setTimeInMillis(fireDate);
 
-        newFireDate.add(Calendar.DATE, 1);
+        newFireDate.set(Calendar.DATE, currentFireDate.get(Calendar.DATE));
         newFireDate.set(Calendar.HOUR_OF_DAY, currentFireDate.get(Calendar.HOUR_OF_DAY));
         newFireDate.set(Calendar.MINUTE, currentFireDate.get(Calendar.MINUTE));
         newFireDate.set(Calendar.SECOND, currentFireDate.get(Calendar.SECOND));
+
+        switch (schedule.getString("repeatInterval")) {
+          case "minute":
+            newFireDate.add(Calendar.MINUTE, 1);
+            break;
+          case "hour":
+            newFireDate.add(Calendar.HOUR, 1);
+            break;
+          case "day":
+            newFireDate.add(Calendar.DATE, 1);
+            break;
+          case "week":
+            newFireDate.add(Calendar.DATE, 7);
+            break;
+        }
 
         fireDate = newFireDate.getTimeInMillis();
       }
