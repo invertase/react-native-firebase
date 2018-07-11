@@ -361,6 +361,7 @@ public class RNFirebaseNotificationManager {
       // If fireDate you specify is in the past, the alarm triggers immediately.
       // So we need to adjust the time for correct operation.
       if (fireDate < System.currentTimeMillis()) {
+        Log.w(TAG, "Scheduled notification date is in the past, will adjust it to be in future");
         Calendar newFireDate = Calendar.getInstance();
         Calendar currentFireDate = Calendar.getInstance();
         currentFireDate.setTimeInMillis(fireDate);
