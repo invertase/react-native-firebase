@@ -120,7 +120,7 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
         @Override
         public void onComplete(@NonNull Task<Void> task) {
           if (task.isSuccessful()) {
-            promise.resolve("remoteConfigFetchStatusSuccess");
+            promise.resolve("config/success");
           } else {
             if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
               promise.reject("config/throttled", "fetch() operation cannot be completed successfully, due to throttling.", task.getException());
