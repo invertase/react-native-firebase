@@ -48,6 +48,7 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getTraceAttribute(String identifier, String attribute, Promise promise) {
     promise.resolve(getOrCreateTrace(identifier).getAttribute(attribute));
+<<<<<<< Updated upstream
   }
 
   @ReactMethod
@@ -75,6 +76,35 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+=======
+  }
+
+  @ReactMethod
+  public void getTraceAttributes(String identifier, Promise promise) {
+    Map<String, String> attributes = getOrCreateTrace(identifier).getAttributes();
+    WritableMap map = Arguments.createMap();
+
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      map.putString(entry.getKey(), entry.getValue());
+    }
+
+    promise.resolve(map);
+  }
+
+  @ReactMethod
+  public void getTraceLongMetric(String identifier, String metricName, Promise promise) {
+    Integer value = Long.valueOf(getOrCreateTrace(identifier).getLongMetric(metricName)).intValue();
+    promise.resolve(value);
+  }
+
+  @ReactMethod
+  public void incrementTraceMetric(String identifier, String metricName, Integer incrementBy, Promise promise) {
+    getOrCreateTrace(identifier).incrementMetric(metricName, incrementBy.longValue());
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+>>>>>>> Stashed changes
   public void putTraceAttribute(String identifier, String attribute, String value, Promise promise) {
     getOrCreateTrace(identifier).putAttribute(attribute, value);
     promise.resolve(null);
@@ -197,8 +227,40 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
     if (httpMetrics.containsKey(identifier)) {
       return httpMetrics.get(identifier);
     }
+<<<<<<< Updated upstream
     HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
     httpMetrics.put(identifier, httpMetric);
     return httpMetric;
   }
+=======
+    HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, this.mapStringToMethod(httpMethod));
+    httpMetrics.put(identifier, httpMetric);
+    return httpMetric;
+  }
+
+  private String mapStringToMethod(String value) {
+    switch (value) {
+      case "CONNECT":
+        return FirebasePerformance.HttpMethod.CONNECT;
+      case "DELETE":
+        return FirebasePerformance.HttpMethod.DELETE;
+      case "GET":
+        return FirebasePerformance.HttpMethod.GET;
+      case "HEAD":
+        return FirebasePerformance.HttpMethod.HEAD;
+      case "OPTIONS":
+        return FirebasePerformance.HttpMethod.OPTIONS;
+      case "PATCH":
+        return FirebasePerformance.HttpMethod.PATCH;
+      case "POST":
+        return FirebasePerformance.HttpMethod.POST;
+      case "PUT":
+        return FirebasePerformance.HttpMethod.PUT;
+      case "TRACE":
+        return FirebasePerformance.HttpMethod.TRACE;
+    }
+
+    return "";
+  }
+>>>>>>> Stashed changes
 }
