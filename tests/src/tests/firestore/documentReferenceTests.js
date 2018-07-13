@@ -93,6 +93,26 @@ function documentReferenceTests({
         snapshot.id.should.equal('doc1');
         snapshot.metadata.should.be.an.Object();
       });
+
+      it('should support GetOptions source=`default`', async () => {
+        const snapshot = await firebase.native
+          .firestore()
+          .doc('document-tests/doc1')
+          .get({ source: 'default' });
+        snapshot.id.should.equal('doc1');
+        snapshot.metadata.should.be.an.Object();
+        should.equal(snapshot.metadata.fromCache, false);
+      });
+
+      it('should support GetOptions source=`cache`', async () => {
+        const snapshot = await firebase.native
+          .firestore()
+          .doc('document-tests/doc1')
+          .get({ source: 'cache' });
+        snapshot.id.should.equal('doc1');
+        snapshot.metadata.should.be.an.Object();
+        should.equal(snapshot.metadata.fromCache, true);
+      });
     });
 
     context('onSnapshot()', () => {

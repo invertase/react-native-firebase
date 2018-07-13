@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,7 @@ public class RNFirebaseNotificationManager {
     try {
       cancelAlarm(notificationId);
       preferences.edit().remove(notificationId).apply();
+      promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
       // In some devices/situations cancelAllLocalNotifications can throw a SecurityException.
@@ -127,6 +129,18 @@ public class RNFirebaseNotificationManager {
         channels.add(channel);
       }
       notificationManager.createNotificationChannels(channels);
+    }
+  }
+
+  public void deleteChannelGroup(String groupId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannelGroup(groupId);
+    }
+  }
+
+  public void deleteChannel(String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannel(channelId);
     }
   }
 
@@ -319,17 +333,19 @@ public class RNFirebaseNotificationManager {
     // fireDate is stored in the Bundle as Long after notifications are rescheduled.
     // This would lead to a fireDate of 0.0 when trying to extract a Double from the bundle.
     // Instead always try extract a Long
-    Long fireDate = schedule.getLong("fireDate", -1);
-    if (fireDate == -1) {
+    Long fireDate = -1L;
+    try {
       fireDate = (long) schedule.getDouble("fireDate", -1);
-      if (fireDate == -1) {
-        if (promise == null) {
-          Log.e(TAG, "Missing schedule information");
-        } else {
-          promise.reject("notification/schedule_notification_error", "Missing fireDate information");
-        }
-        return;
+    } catch (ClassCastException e) {
+      fireDate = schedule.getLong("fireDate", -1);
+    }
+    if (fireDate == -1) {
+      if (promise == null) {
+        Log.e(TAG, "Missing schedule information");
+      } else {
+        promise.reject("notification/schedule_notification_error", "Missing fireDate information");
       }
+      return;
     }
 
     // Scheduled alarms are cleared on restart
@@ -352,6 +368,21 @@ public class RNFirebaseNotificationManager {
       notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
     if (schedule.containsKey("repeatInterval")) {
+      // If fireDate you specify is in the past, the alarm triggers immediately.
+      // So we need to adjust the time for correct operation.
+      if (fireDate < System.currentTimeMillis()) {
+        Calendar newFireDate = Calendar.getInstance();
+        Calendar currentFireDate = Calendar.getInstance();
+        currentFireDate.setTimeInMillis(fireDate);
+
+        newFireDate.add(Calendar.DATE, 1);
+        newFireDate.set(Calendar.HOUR_OF_DAY, currentFireDate.get(Calendar.HOUR_OF_DAY));
+        newFireDate.set(Calendar.MINUTE, currentFireDate.get(Calendar.MINUTE));
+        newFireDate.set(Calendar.SECOND, currentFireDate.get(Calendar.SECOND));
+
+        fireDate = newFireDate.getTimeInMillis();
+      }
+
       Long interval = null;
       switch (schedule.getString("repeatInterval")) {
         case "minute":

@@ -29,9 +29,22 @@ static NSMutableDictionary *_listeners;
     return self;
 }
 
-- (void)get:(RCTPromiseResolveBlock) resolve
+- (void)get:(NSDictionary *) getOptions
+   resolver:(RCTPromiseResolveBlock) resolve
    rejecter:(RCTPromiseRejectBlock) reject {
-    [_query getDocumentsWithCompletion:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+    FIRFirestoreSource source;
+    if (getOptions && getOptions[@"source"]) {
+        if ([getOptions[@"source"] isEqualToString:@"server"]) {
+            source = FIRFirestoreSourceServer;
+        } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
+            source = FIRFirestoreSourceCache;
+        } else {
+            source = FIRFirestoreSourceDefault;
+        }
+    } else {
+        source = FIRFirestoreSourceDefault;
+    }
+    [_query getDocumentsWithSource:source completion:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
         if (error) {
             [RNFirebaseFirestore promiseRejectException:reject error:error];
         } else {
@@ -65,17 +78,14 @@ queryListenOptions:(NSDictionary *) queryListenOptions {
             }
         };
 
-        FIRQueryListenOptions *options = [[FIRQueryListenOptions alloc] init];
-        if (queryListenOptions) {
-            if (queryListenOptions[@"includeDocumentMetadataChanges"]) {
-                [options includeDocumentMetadataChanges:TRUE];
-            }
-            if (queryListenOptions[@"includeQueryMetadataChanges"]) {
-                [options includeQueryMetadataChanges:TRUE];
-            }
+        bool includeMetadataChanges;
+        if (queryListenOptions && queryListenOptions[@"includeMetadataChanges"]) {
+            includeMetadataChanges = true;
+        } else {
+            includeMetadataChanges = false;
         }
 
-        id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithOptions:options listener:listenerBlock];
+        id<FIRListenerRegistration> listener = [_query addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges listener:listenerBlock];
         _listeners[listenerId] = listener;
     }
 }

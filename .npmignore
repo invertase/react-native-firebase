@@ -75,9 +75,15 @@ coverage
 yarn.lock
 tests
 bridge/
-lib/.watchmanconfig
 buddybuild_postclone.sh
 bin/test.js
 .github
 example
 codorials
+.vscode
+.nyc_output
+React-Native-Firebase.svg
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+android/.settings
+README.md

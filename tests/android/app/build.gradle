@@ -70,29 +70,31 @@ android {
     }
 }
 
-project.ext.firebaseVersion = '12.0.0'
-
 dependencies {
     implementation project(':react-native-vector-icons')
-    implementation(project(':react-native-firebase')) {
-        transitive = false
-    }
+    implementation project(':react-native-firebase')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.google.android.gms:play-services-base:$firebaseVersion"
-    implementation "com.google.firebase:firebase-ads:$firebaseVersion"
-    implementation "com.google.firebase:firebase-auth:$firebaseVersion"
-    implementation "com.google.firebase:firebase-config:$firebaseVersion"
-    implementation "com.google.firebase:firebase-core:$firebaseVersion"
-    implementation "com.google.firebase:firebase-crash:$firebaseVersion"
-    implementation "com.google.firebase:firebase-database:$firebaseVersion"
-    implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
-    implementation "com.google.firebase:firebase-perf:$firebaseVersion"
-    implementation "com.google.firebase:firebase-storage:$firebaseVersion"
-    implementation "com.google.firebase:firebase-firestore:$firebaseVersion"
-    implementation "com.google.firebase:firebase-invites:$firebaseVersion"
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
         transitive = true
     }
+
+    // RNFirebase required dependencies
+    implementation "com.google.firebase:firebase-core:16.0.1"
+    implementation "com.google.android.gms:play-services-base:15.0.1"
+
+    // RNFirebase optional dependencies
+    implementation "com.google.firebase:firebase-ads:15.0.1"
+    implementation "com.google.firebase:firebase-auth:16.0.2"
+    implementation "com.google.firebase:firebase-config:16.0.0"
+    implementation "com.google.firebase:firebase-crash:16.0.1"
+    implementation "com.google.firebase:firebase-database:16.0.1"
+    implementation "com.google.firebase:firebase-firestore:17.0.2"
+    implementation "com.google.firebase:firebase-functions:16.0.1"
+    implementation "com.google.firebase:firebase-invites:16.0.1"
+    implementation "com.google.firebase:firebase-storage:16.0.1"
+    implementation "com.google.firebase:firebase-messaging:17.0.0"
+    implementation "com.google.firebase:firebase-perf:16.0.0"
+
     implementation "com.android.support:appcompat-v7:27.0.2"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 }

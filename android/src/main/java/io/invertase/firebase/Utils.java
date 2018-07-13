@@ -69,11 +69,21 @@ public class Utils {
         case "java.lang.String":
           map.putString(key, (String) value);
           break;
+        case "org.json.JSONObject$1":
+          map.putString(key, value.toString());
+          break;
         default:
           if (List.class.isAssignableFrom(value.getClass())) {
             map.putArray(key, Arguments.makeNativeArray((List<Object>) value));
           } else if (Map.class.isAssignableFrom(value.getClass())) {
-            map.putMap(key, Arguments.makeNativeMap((Map<String, Object>) value));
+            WritableMap childMap = Arguments.createMap();
+            Map<String, Object> valueMap = (Map<String, Object>) value;
+
+            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+              mapPutValue(entry.getKey(), entry.getValue(), childMap);
+            }
+
+            map.putMap(key, childMap);
           } else {
             Log.d(TAG, "utils:mapPutValue:unknownType:" + type);
             map.putNull(key);

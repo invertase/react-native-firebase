@@ -1,6 +1,6 @@
-// Type definitions for React Native Firebase  v1.0.0-alpha7
+// Type definitions for React Native Firebase v4.2.0
 // Project: https://github.com/invertase/react-native-firebase
-// Definitions by: Tal <https://github.com/taljacobson>
+// Definitions by: React Native Firebase Contributors
 // TypeScript Version: 2.1
 
 declare module 'react-native-firebase' {
@@ -25,7 +25,7 @@ declare module 'react-native-firebase' {
       RNFirebase.auth.Auth,
       RNFirebase.auth.AuthStatics
     >;
-    // config: FirebaseModule<RNFirebase.config.Config>;
+    config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
     crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
     crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<
@@ -35,6 +35,10 @@ declare module 'react-native-firebase' {
     firestore: FirebaseModuleAndStatics<
       RNFirebase.firestore.Firestore,
       RNFirebase.firestore.FirestoreStatics
+    >;
+    functions: FirebaseModuleAndStatics<
+      RNFirebase.functions.Functions,
+      RNFirebase.functions.FunctionsStatics
     >;
     iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
     // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
@@ -77,11 +81,12 @@ declare module 'react-native-firebase' {
     // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
-    // config(): RNFirebase.config.Config;
+    config(): RNFirebase.config.Config;
     crash(): RNFirebase.crash.Crash;
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
     firestore(): RNFirebase.firestore.Firestore;
+    functions(): RNFirebase.functions.Functions;
     iid(): RNFirebase.iid.InstanceId;
     // invites(): RNFirebase.invites.Invites;
     links(): RNFirebase.links.Links;
@@ -328,7 +333,6 @@ declare module 'react-native-firebase' {
 
       interface FullMetadata extends storage.UploadMetadata {
         bucket: string;
-        downloadURLs: string[];
         fullPath: string;
         generation: string;
         metageneration: string;
@@ -801,14 +805,14 @@ declare module 'react-native-firebase' {
     interface PhoneAuthListener {
       on(
         event: string,
-        observer: () => PhoneAuthSnapshot,
-        errorCb?: () => PhoneAuthError,
-        successCb?: () => PhoneAuthSnapshot
+        observer: (snapshot: PhoneAuthSnapshot) => void,
+        errorCb?: (error: PhoneAuthError) => void,
+        successCb?: (snapshot: PhoneAuthSnapshot) => void
       ): PhoneAuthListener;
 
-      then(fn: () => PhoneAuthSnapshot): Promise<any>;
+      then(fn: (snapshot: PhoneAuthSnapshot) => void): Promise<any>;
 
-      catch(fn: () => Error): Promise<any>;
+      catch(fn: (error: Error) => void): Promise<any>;
     }
 
     namespace auth {
@@ -820,6 +824,17 @@ declare module 'react-native-firebase' {
       type AuthProvider = {
         PROVIDER_ID: string;
         credential: (token: string, secret?: string) => AuthCredential;
+      };
+
+      type EmailAuthProvider = {
+        PROVIDER_ID: string;
+        EMAIL_LINK_SIGN_IN_METHOD: string;
+        EMAIL_PASSWORD_SIGN_IN_METHOD: string;
+        credential: (email: string, password: string) => AuthCredential;
+        credentialWithLink: (
+          email: string,
+          emailLink: string
+        ) => AuthCredential;
       };
 
       interface Auth {
@@ -874,6 +889,13 @@ declare module 'react-native-firebase' {
           password: string
         ): Promise<UserCredential>;
 
+        signInWithEmailLink(
+          email: string,
+          emailLink: string
+        ): Promise<UserCredential>;
+
+        isSignInWithEmailLink(emailLink: string): boolean;
+
         /**
          * We can create a user by calling the createUserWithEmailAndPassword() function.
          * The method accepts two parameters, an email and a password.
@@ -922,7 +944,7 @@ declare module 'react-native-firebase' {
         /**
          * Asynchronously signs in using a phone number.
          */
-        signInWithPhoneNumber(phoneNumber: string): Promise<ConfirmationResult>;
+        signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult>;
 
         /**
          * Returns a PhoneAuthListener to listen to phone verification events,
@@ -931,7 +953,8 @@ declare module 'react-native-firebase' {
          */
         verifyPhoneNumber(
           phoneNumber: string,
-          autoVerifyTimeout?: number
+          autoVerifyTimeoutOrForceResend?: number | boolean,
+          forceResend?: boolean,
         ): PhoneAuthListener;
 
         /**
@@ -940,6 +963,11 @@ declare module 'react-native-firebase' {
          * the email will contain a password reset link rather than a code.
          */
         sendPasswordResetEmail(
+          email: string,
+          actionCodeSettings?: ActionCodeSettings
+        ): Promise<void>;
+
+        sendSignInLinkToEmail(
           email: string,
           actionCodeSettings?: ActionCodeSettings
         ): Promise<void>;
@@ -970,7 +998,7 @@ declare module 'react-native-firebase' {
       }
 
       interface AuthStatics {
-        EmailAuthProvider: AuthProvider;
+        EmailAuthProvider: EmailAuthProvider;
         PhoneAuthProvider: AuthProvider;
         GoogleAuthProvider: AuthProvider;
         GithubAuthProvider: AuthProvider;
@@ -1061,6 +1089,8 @@ declare module 'react-native-firebase' {
       interface InstanceId {
         delete(): Promise<void>;
         get(): Promise<string>;
+        getToken(authorizedEntity: string, scope: string): Promise<string>;
+        deleteToken(authorizedEntity: string, scope: string): Promise<void>;
       }
     }
 
@@ -1072,6 +1102,8 @@ declare module 'react-native-firebase' {
           channelGroups: Android.ChannelGroup[]
         ): Promise<void>;
         createChannels(channels: Android.Channel[]): Promise<void>;
+        deleteChannelGroup(groupId: string): Promise<void>;
+        deleteChannel(channelId: string): Promise<void>;
       }
 
       interface Notifications {
@@ -1454,6 +1486,68 @@ declare module 'react-native-firebase' {
       }
     }
 
+    namespace config {
+      interface ConfigSnapshot {
+        source: string;
+        val(): any;
+      }
+
+      interface Object<ConfigSnapshot> {
+        [key: string]: ConfigSnapshot;
+      }
+
+      interface Config {
+        /** Enable Remote Config developer mode to allow for frequent refreshes of the cache. */
+        enableDeveloperMode(): void;
+
+        /**
+         * Sets default values for the app to use when accessing values.
+         * Any data fetched and activated will override any default values.
+         * Any values in the defaults but not on Firebase will be untouched.
+         */
+        setDefaults(defaults: object): void;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * If duration is defined (seconds), data will be locally cached for this duration.
+         *
+         * The default duration is 43200 seconds (12 hours).
+         * To force a cache refresh call the method with a duration of 0.
+         */
+        fetch(duration?: number): Promise<string>;
+
+        /**
+         * Fetches the remote config data from Firebase, defined in the dashboard.
+         * The default expiration duration is 43200 seconds (12 hours)
+         */
+        activateFetched(): Promise<boolean>;
+
+        /**
+         * Gets a config item by key.
+         * Returns a snapshot containing source (default, remote or static) and val function.
+         */
+        getValue(key: string): Promise<ConfigSnapshot>;
+
+        /**
+         * Gets multiple values by key.
+         * Returns a snapshot object with snapshot keys e.g. snapshots.foo.val().
+         */
+        getValues(array: Array<string>): Promise<Object<ConfigSnapshot>>;
+
+        /**
+         * Returns all keys as an array by a prefix. If no prefix is defined all keys are returned.
+         */
+        getKeysByPrefix(prefix?: string): Promise<Array<String>>;
+
+        /**
+         * Sets the default values from a resource:
+         * - Android: Id for the XML resource, which should be in your application's res/xml folder.
+         * - iOS: The plist file name, with no file name extension.
+         */
+        setDefaultsFromResource(resource: string | number): void;
+      }
+    }
+
     namespace crash {
       interface Crash {
         /** Logs a message that will appear in a subsequent crash report. */
@@ -1597,6 +1691,121 @@ declare module 'react-native-firebase' {
       }
     }
 
+    // Source: https://github.com/firebase/firebase-js-sdk/blob/master/packages/functions-types/index.d.ts
+    namespace functions {
+      type HttpsErrorCode = { [name: string]: FunctionsErrorCode };
+
+      /**
+       * The set of Firebase Functions status codes. The codes are the same at the
+       * ones exposed by gRPC here:
+       * https://github.com/grpc/grpc/blob/master/doc/statuscodes.md
+       *
+       * Possible values:
+       * - 'cancelled': The operation was cancelled (typically by the caller).
+       * - 'unknown': Unknown error or an error from a different error domain.
+       * - 'invalid-argument': Client specified an invalid argument. Note that this
+       *   differs from 'failed-precondition'. 'invalid-argument' indicates
+       *   arguments that are problematic regardless of the state of the system
+       *   (e.g. an invalid field name).
+       * - 'deadline-exceeded': Deadline expired before operation could complete.
+       *   For operations that change the state of the system, this error may be
+       *   returned even if the operation has completed successfully. For example,
+       *   a successful response from a server could have been delayed long enough
+       *   for the deadline to expire.
+       * - 'not-found': Some requested document was not found.
+       * - 'already-exists': Some document that we attempted to create already
+       *   exists.
+       * - 'permission-denied': The caller does not have permission to execute the
+       *   specified operation.
+       * - 'resource-exhausted': Some resource has been exhausted, perhaps a
+       *   per-user quota, or perhaps the entire file system is out of space.
+       * - 'failed-precondition': Operation was rejected because the system is not
+       *   in a state required for the operation's execution.
+       * - 'aborted': The operation was aborted, typically due to a concurrency
+       *   issue like transaction aborts, etc.
+       * - 'out-of-range': Operation was attempted past the valid range.
+       * - 'unimplemented': Operation is not implemented or not supported/enabled.
+       * - 'internal': Internal errors. Means some invariants expected by
+       *   underlying system has been broken. If you see one of these errors,
+       *   something is very broken.
+       * - 'unavailable': The service is currently unavailable. This is most likely
+       *   a transient condition and may be corrected by retrying with a backoff.
+       * - 'data-loss': Unrecoverable data loss or corruption.
+       * - 'unauthenticated': The request does not have valid authentication
+       *   credentials for the operation.
+       */
+      type FunctionsErrorCode =
+        | 'ok'
+        | 'cancelled'
+        | 'unknown'
+        | 'invalid-argument'
+        | 'deadline-exceeded'
+        | 'not-found'
+        | 'already-exists'
+        | 'permission-denied'
+        | 'resource-exhausted'
+        | 'failed-precondition'
+        | 'aborted'
+        | 'out-of-range'
+        | 'unimplemented'
+        | 'internal'
+        | 'unavailable'
+        | 'data-loss'
+        | 'unauthenticated';
+
+      /**
+       * An HttpsCallableResult wraps a single result from a function call.
+       */
+      interface HttpsCallableResult {
+        readonly data: any;
+      }
+
+      /**
+       * An HttpsCallable is a reference to a "callable" http trigger in
+       * Google Cloud Functions.
+       */
+      interface HttpsCallable {
+        (data?: any): Promise<HttpsCallableResult>;
+      }
+
+      /**
+       * `FirebaseFunctions` represents a Functions app, and is the entry point for
+       * all Functions operations.
+       */
+      interface Functions {
+        /**
+         * Gets an `HttpsCallable` instance that refers to the function with the given
+         * name.
+         *
+         * @param name The name of the https callable function.
+         * @return The `HttpsCallable` instance.
+         */
+        httpsCallable(name: string): HttpsCallable;
+      }
+
+      /**
+       * firebase.functions.X
+       */
+      interface FunctionsStatics {
+        /**
+         * Uppercased + underscored variables of @FunctionsErrorCode
+         */
+        HttpsErrorCode: HttpsErrorCode;
+      }
+
+      interface HttpsError extends Error {
+        /**
+         * A standard error code that will be returned to the client. This also
+         * determines the HTTP status code of the response, as defined in code.proto.
+         */
+        readonly code: FunctionsErrorCode;
+        /**
+         * Extra data to be converted to JSON and included in the error response.
+         */
+        readonly details?: any;
+      }
+    }
+
     namespace firestore {
       interface Firestore {
         readonly app: App;
@@ -1631,7 +1840,7 @@ declare module 'react-native-firebase' {
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -1639,12 +1848,12 @@ declare module 'react-native-firebase' {
         ): () => void;
         onSnapshot(observer: Query.Observer): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
         orderBy(
@@ -1666,7 +1875,7 @@ declare module 'react-native-firebase' {
         readonly doc: DocumentSnapshot;
         readonly newIndex: number;
         readonly oldIndex: number;
-        readonly type: string;
+        readonly type: 'added' | 'modified' | 'removed';
       }
 
       interface DocumentReference {
@@ -1676,22 +1885,22 @@ declare module 'react-native-firebase' {
         readonly path: string;
         collection(collectionPath: string): CollectionReference;
         delete(): Promise<void>;
-        get(): Promise<DocumentSnapshot>;
+        get(options?: Types.GetOptions): Promise<DocumentSnapshot>;
         onSnapshot(
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
         ): () => void;
         onSnapshot(observer: DocumentReference.Observer): () => void;
         onSnapshot(
-          documentListenOptions: DocumentReference.DocumentListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
         ): () => void;
         onSnapshot(
-          documentListenOptions: DocumentReference.DocumentListenOptions,
+          metadataChanges: MetadataChanges,
           observer: DocumentReference.Observer
         ): () => void;
-        set(data: object, writeOptions?: Types.WriteOptions): Promise<void>;
+        set(data: object, writeOptions?: Types.SetOptions): Promise<void>;
         update(obj: object): Promise<void>;
         update(key1: Types.UpdateKey, val1: any): Promise<void>;
         update(
@@ -1732,10 +1941,6 @@ declare module 'react-native-firebase' {
         ): Promise<void>;
       }
       namespace DocumentReference {
-        interface DocumentListenOptions {
-          includeMetadataChanges: boolean;
-        }
-
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
         type ObserverOnError = (err: object) => void;
         interface Observer {
@@ -1788,13 +1993,17 @@ declare module 'react-native-firebase' {
         parent(): Path | null;
       }
 
+      type MetadataChanges = {
+        includeMetadataChanges: boolean;
+      };
+
       interface Query {
         readonly firestore: Firestore;
         endAt(snapshot: DocumentSnapshot): Query;
         endAt(...varargs: any[]): Query;
         endBefore(snapshot: DocumentSnapshot): Query;
         endBefore(...varargs: any[]): Query;
-        get(): Promise<QuerySnapshot>;
+        get(options?: Types.GetOptions): Promise<QuerySnapshot>;
         limit(limit: number): Query;
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -1802,12 +2011,12 @@ declare module 'react-native-firebase' {
         ): () => void;
         onSnapshot(observer: Query.Observer): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
         onSnapshot(
-          queryListenOptions: Query.QueryListenOptions,
+          metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
         orderBy(
@@ -1852,19 +2061,6 @@ declare module 'react-native-firebase' {
           startAt?: any[];
         }
 
-        // The JS code expects at least one of 'includeDocumentMetadataChanges'
-        // or 'includeQueryMetadataChanges' to be defined.
-        interface _IncludeDocumentMetadataChanges {
-          includeDocumentMetadataChanges: boolean;
-        }
-        interface _IncludeQueryMetadataChanges {
-          includeQueryMetadataChanges: boolean;
-        }
-        type QueryListenOptions =
-          | _IncludeDocumentMetadataChanges
-          | _IncludeQueryMetadataChanges
-          | (_IncludeDocumentMetadataChanges & _IncludeQueryMetadataChanges);
-
         type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
         type ObserverOnError = (err: object) => void;
         interface Observer {
@@ -1903,7 +2099,7 @@ declare module 'react-native-firebase' {
         set(
           documentRef: DocumentReference,
           data: Object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): Transaction;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -1960,7 +2156,7 @@ declare module 'react-native-firebase' {
         set(
           docRef: DocumentReference,
           data: object,
-          options?: Types.WriteOptions
+          options?: Types.SetOptions
         ): WriteBatch;
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
@@ -2054,7 +2250,11 @@ declare module 'react-native-firebase' {
         /** The key in update() function for DocumentReference and WriteBatch. */
         type UpdateKey = string | FieldPath;
 
-        interface WriteOptions {
+        interface GetOptions {
+          source: 'default' | 'server' | 'cache';
+        }
+
+        interface SetOptions {
           merge?: boolean;
         }
       }
