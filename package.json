@@ -1,8 +1,8 @@
 {
   "name": "react-native-firebase",
-  "version": "4.0.7",
+  "version": "4.3.5",
   "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Messaging (FCM), Remote Config, Storage and Performance.",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -35,8 +35,8 @@
     "setupFiles": [],
     "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modules/react-native-mock", "./node_modules/react-addons-test-utils"]
   },
-  "license": "APACHE-2.0",
-  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
+  "license": "Apache-2.0",
+  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "functions", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
   "peerDependencies": {
     "react": "*",
     "react-native": ">= 0.48.0",
@@ -79,12 +79,9 @@
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    compile(project(':react-native-firebase')) {\n        transitive = false\n    }\n",
+      "buildPatch": "    implementation project(':react-native-firebase')",
       "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
       "packageInstance": "new RNFirebasePackage()"
-    },
-    "commands": {
-      "postlink": "node node_modules/react-native-firebase/scripts/rnpm-postlink"
     }
   },
   "collective": {

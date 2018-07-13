@@ -10,13 +10,14 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +56,21 @@ public class RNFirebaseFirestoreDocumentReference {
     });
   }
 
-  void get(final Promise promise) {
-    this.ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+  void get(final ReadableMap getOptions, final Promise promise) {
+    Source source;
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+    this.ref.get(source).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
       @Override
       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
         if (task.isSuccessful()) {
@@ -94,11 +108,15 @@ public class RNFirebaseFirestoreDocumentReference {
           }
         }
       };
-      DocumentListenOptions options = new DocumentListenOptions();
-      if (docListenOptions != null && docListenOptions.hasKey("includeMetadataChanges") && docListenOptions.getBoolean("includeMetadataChanges")) {
-        options.includeMetadataChanges();
+      MetadataChanges metadataChanges;
+      if (docListenOptions != null
+        && docListenOptions.hasKey("includeMetadataChanges")
+        && docListenOptions.getBoolean("includeMetadataChanges")) {
+        metadataChanges = MetadataChanges.INCLUDE;
+      } else {
+        metadataChanges = MetadataChanges.EXCLUDE;
       }
-      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(options, listener);
+      ListenerRegistration listenerRegistration = this.ref.addSnapshotListener(metadataChanges, listener);
       documentSnapshotListeners.put(listenerId, listenerRegistration);
     }
   }

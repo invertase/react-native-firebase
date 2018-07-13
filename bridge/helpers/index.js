@@ -93,6 +93,25 @@ console.log = (...args) => {
   return originalLog(...args);
 };
 
+/**
+ * Old style deferred promise shim - for niceness
+ *
+ * @returns {{resolve: null, reject: null}}
+ */
+Promise.defer = function defer() {
+  const deferred = {
+    resolve: null,
+    reject: null,
+  };
+
+  deferred.promise = new Promise((resolve, reject) => {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
+  });
+
+  return deferred;
+};
+
 global.TestHelpers = {
   functions: {
     data: require('./../functions/test-data'),

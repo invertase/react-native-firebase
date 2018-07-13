@@ -12,15 +12,15 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryListenOptions;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,8 +53,21 @@ public class RNFirebaseFirestoreCollectionReference {
     this.reactContext = reactContext;
   }
 
-  void get(final Promise promise) {
-    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+  void get(ReadableMap getOptions, final Promise promise) {
+    Source source;
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+    query.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
       @Override
       public void onComplete(@NonNull Task<QuerySnapshot> task) {
         if (task.isSuccessful()) {
@@ -92,19 +105,17 @@ public class RNFirebaseFirestoreCollectionReference {
           }
         }
       };
-      QueryListenOptions options = new QueryListenOptions();
-      if (queryListenOptions != null) {
-        if (queryListenOptions.hasKey("includeDocumentMetadataChanges")
-          && queryListenOptions.getBoolean("includeDocumentMetadataChanges")) {
-          options.includeDocumentMetadataChanges();
-        }
-        if (queryListenOptions.hasKey("includeQueryMetadataChanges")
-          && queryListenOptions.getBoolean("includeQueryMetadataChanges")) {
-          options.includeQueryMetadataChanges();
-        }
+      MetadataChanges metadataChanges;
+
+      if (queryListenOptions != null
+        && queryListenOptions.hasKey("includeMetadataChanges")
+        && queryListenOptions.getBoolean("includeMetadataChanges")) {
+        metadataChanges = MetadataChanges.INCLUDE;
+      } else {
+        metadataChanges = MetadataChanges.EXCLUDE;
       }
 
-      ListenerRegistration listenerRegistration = this.query.addSnapshotListener(options, listener);
+      ListenerRegistration listenerRegistration = this.query.addSnapshotListener(metadataChanges, listener);
       collectionSnapshotListeners.put(listenerId, listenerRegistration);
     }
   }

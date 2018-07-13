@@ -31,6 +31,10 @@
 }
 
 - (void)requestAd {
+    #ifndef __LP64__
+        return; // prevent crash on 32bit
+    #endif
+
     if (_unitId == nil || _size == nil || _request == nil) {
         [self setRequested:NO];
         return;

@@ -142,12 +142,19 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (android.containsKey("contentInfo")) {
         nb = nb.setContentInfo(android.getString("contentInfo"));
       }
-      if (notification.containsKey("defaults")) {
-        double[] defaultsArray = android.getDoubleArray("defaults");
-        int defaults = 0;
-        for (Double d : defaultsArray) {
-          defaults |= d.intValue();
+      if (android.containsKey("defaults")) {
+        Double defaultValues = android.getDouble("defaults");
+        int defaults = defaultValues.intValue();
+
+        if (defaults == 0) {
+          ArrayList<Integer> defaultsArray = android.getIntegerArrayList("defaults");
+          if(defaultsArray != null) {
+            for (Integer defaultValue : defaultsArray) {
+              defaults |= defaultValue;
+            }
+          }
         }
+
         nb = nb.setDefaults(defaults);
       }
       if (android.containsKey("group")) {
@@ -200,7 +207,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setPriority(priority.intValue());
       }
       if (android.containsKey("progress")) {
-        Bundle progress = android.getBundle("lights");
+        Bundle progress = android.getBundle("progress");
         Double max = progress.getDouble("max");
         Double progressI = progress.getDouble("progress");
         nb = nb.setProgress(max.intValue(), progressI.intValue(), progress.getBoolean("indeterminate"));
@@ -288,6 +295,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       if (reactContext != null) {
         Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));
       }
+
+      if (promise != null) {
+        promise.resolve(null);
+      }
+
     } catch (Exception e) {
       Log.e(TAG, "Failed to send notification", e);
       if (promise != null) {
@@ -299,9 +311,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private NotificationCompat.Action createAction(Bundle action, Class intentClass, Bundle notification) {
+    boolean showUserInterface = action.containsKey("showUserInterface") && action.getBoolean("showUserInterface");
     String actionKey = action.getString("action");
-    PendingIntent actionIntent = createIntent(intentClass, notification, actionKey);
-
+    PendingIntent actionIntent = showUserInterface ?
+      createIntent(intentClass, notification, actionKey) :
+      createBroadcastIntent(notification, actionKey);
     int icon = getIcon(action.getString("icon"));
     String title = action.getString("title");
 
@@ -339,8 +353,19 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
     }
 
     String notificationId = notification.getString("notificationId");
-
     return PendingIntent.getActivity(context, notificationId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+  }
+
+  private PendingIntent createBroadcastIntent(Bundle notification, String action) {
+    Intent intent = new Intent(context, RNFirebaseBackgroundNotificationActionReceiver.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    String notificationId = notification.getString("notificationId") + action;
+
+    intent.setAction("io.invertase.firebase.notifications.BackgroundAction");
+    intent.putExtra("action", action);
+    intent.putExtra("notification", notification);
+    return PendingIntent.getBroadcast(context, notificationId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
   private RemoteInput createRemoteInput(Bundle remoteInput) {
@@ -374,7 +399,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
     } else if (image.startsWith("file://")) {
       return BitmapFactory.decodeFile(image.replace("file://", ""));
     } else {
-      int largeIconResId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", image);
+      int largeIconResId = getIcon(image);
       return BitmapFactory.decodeResource(context.getResources(), largeIconResId);
     }
   }
@@ -392,11 +417,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   }
 
   private int getIcon(String icon) {
-    int smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
-    if (smallIconResourceId == 0) {
-      smallIconResourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
+    int resourceId = RNFirebaseNotificationManager.getResourceId(context,"mipmap", icon);
+    if (resourceId == 0) {
+      resourceId = RNFirebaseNotificationManager.getResourceId(context,"drawable", icon);
     }
-    return smallIconResourceId;
+    return resourceId;
   }
 
   private Class getMainActivityClass() {

@@ -1,14 +1,14 @@
 buildscript {
   repositories {
-    jcenter()
     google()
+    jcenter()
     maven {
       url 'https://maven.fabric.io/public'
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.0'
-    classpath 'io.fabric.tools:gradle:1.25.1'
+    classpath 'com.android.tools.build:gradle:3.1.2'
+    classpath 'io.fabric.tools:gradle:1.25.4'
   }
 }
 
@@ -17,7 +17,6 @@ apply plugin: 'com.android.library'
 def DEFAULT_COMPILE_SDK_VERSION = 27
 def DEFAULT_BUILD_TOOLS_VERSION = "27.0.3"
 def DEFAULT_TARGET_SDK_VERSION = 26
-def DEFAULT_FIREBASE_VERSION = "12.0.0"
 def DEFAULT_SUPPORT_LIB_VERSION = "27.0.2"
 
 android {
@@ -36,15 +35,6 @@ android {
     }
   }
   productFlavors {
-  }
-}
-
-
-allprojects {
-  repositories {
-    jcenter()
-    mavenLocal()
-    google()
   }
 }
 
@@ -82,28 +72,29 @@ rootProject.gradle.buildFinished { buildResult ->
   }
 }
 
-def firebaseVersion = rootProject.hasProperty('googlePlayServicesVersion') ? rootProject.googlePlayServicesVersion : DEFAULT_FIREBASE_VERSION
 def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
 
 dependencies {
   // compile fileTree(include: ['*.jar'], dir: 'libs')
   api "com.facebook.react:react-native:+"  // From node_modules
   api "com.android.support:support-v4:$supportVersion"
-  compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
-  compileOnly "com.google.android.gms:play-services-base:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-core:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-config:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-auth:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-database:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-storage:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-messaging:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-crash:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-perf:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-ads:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-firestore:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-invites:$firebaseVersion"
-  compileOnly "com.google.firebase:firebase-functions:$firebaseVersion"
-  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
+
+  // Firebase SDKs
+  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
   }
+  compileOnly "com.google.android.gms:play-services-base:15.0.1"
+  compileOnly "com.google.firebase:firebase-ads:15.0.1"
+  compileOnly "com.google.firebase:firebase-auth:16.0.2"
+  compileOnly "com.google.firebase:firebase-config:16.0.0"
+  compileOnly "com.google.firebase:firebase-core:16.0.1"
+  compileOnly "com.google.firebase:firebase-crash:16.0.1"
+  compileOnly "com.google.firebase:firebase-database:16.0.1"
+  compileOnly "com.google.firebase:firebase-firestore:17.0.2"
+  compileOnly "com.google.firebase:firebase-functions:16.0.1"
+  compileOnly "com.google.firebase:firebase-invites:16.0.1"
+  compileOnly "com.google.firebase:firebase-storage:16.0.1"
+  compileOnly "com.google.firebase:firebase-messaging:17.1.0"
+  compileOnly "com.google.firebase:firebase-perf:16.0.0"
+  compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
 }
