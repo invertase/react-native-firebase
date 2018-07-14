@@ -231,11 +231,15 @@ RCT_EXPORT_METHOD(putFile:(NSString *) appDisplayName
             options.networkAccessAllowed = true;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 if (info[PHImageErrorKey] == nil) {
-                    if (UTTypeConformsTo((__bridge CFStringRef)dataUTI, kUTTypeJPEG)) {
+                    if (
+                        UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypeJPEG) ||
+                        UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypePNG) ||
+                        UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypeGIF)
+                    ) {
                         firmetadata.contentType = [self utiToMimeType:dataUTI];
                         [self uploadData:appDisplayName data:imageData firmetadata:firmetadata path:path resolver:resolve rejecter:reject];
                     } else {
-                        // if the image UTI is not JPEG then convert to JPEG, e.g. HEI
+                        // all other image types are converted to JPEG, e.g. HEI
                         CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
                         NSDictionary *imageInfo = (__bridge NSDictionary*)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
                         NSDictionary *imageMetadata = [imageInfo copy];
