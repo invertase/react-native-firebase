@@ -1,4 +1,4 @@
-describe.only('iid()', () => {
+describe('iid()', () => {
   describe('get()', () => {
     it('returns instance id string', async () => {
       const iid = await firebase.iid().get();
