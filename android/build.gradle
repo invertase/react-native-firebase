@@ -36,6 +36,9 @@ android {
   }
   productFlavors {
   }
+  lintOptions {
+    disable 'GradleCompatible'
+  }
 }
 
 rootProject.gradle.buildFinished { buildResult ->
@@ -68,7 +71,8 @@ rootProject.gradle.buildFinished { buildResult ->
         logger.log(LogLevel.ERROR, "|                                                           |")
         logger.log(LogLevel.ERROR, " ----------------------------------------------------------- ")
       }
-    } catch (Exception exception) {}
+    } catch (Exception exception) {
+    }
   }
 }
 
