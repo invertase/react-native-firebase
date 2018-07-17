@@ -320,15 +320,19 @@ public class RNFirebaseNotificationManager {
     String notificationId = notification.getString("notificationId");
     Bundle schedule = notification.getBundle("schedule");
 
-    // fireDate is stored in the Bundle as Long after notifications are rescheduled.
-    // This would lead to a fireDate of 0.0 when trying to extract a Double from the bundle.
-    // Instead always try extract a Long
+    // fireDate may be stored in the Bundle as 2 different types that we need to handle:
+    // 1. Double - when a call comes directly from React
+    // 2. Long   - when notifications are rescheduled from boot service (Bundle is loaded from prefences).
+    // At the end we need Long value (timestamp) for the scheduler
     Long fireDate = -1L;
-    try {
-      fireDate = (long) schedule.getDouble("fireDate", -1);
-    } catch (ClassCastException e) {
-      fireDate = schedule.getLong("fireDate", -1);
+    Object fireDateObject = schedule.get("fireDate");
+    if (fireDateObject instanceof Long) {
+      fireDate = (Long) fireDateObject;
+    } else if (fireDateObject instanceof Double) {
+      Double fireDateDouble = (Double) fireDateObject;
+      fireDate = fireDateDouble.longValue();
     }
+
     if (fireDate == -1) {
       if (promise == null) {
         Log.e(TAG, "Missing schedule information");
@@ -401,14 +405,14 @@ public class RNFirebaseNotificationManager {
         return;
       }
 
-      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate.longValue(), interval, pendingIntent);
+      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate, interval, pendingIntent);
     } else {
       if (schedule.containsKey("exact")
         && schedule.getBoolean("exact")
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
       } else {
-        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
       }
     }
 
