@@ -28,7 +28,7 @@ describe('perf()', () => {
       await trace.start();
       await trace.putAttribute('foo', 'bar');
       const value = await trace.getAttribute('foo');
-      value.shoud.equal('bar');
+      value.should.equal('bar');
       await trace.stop();
     });
 

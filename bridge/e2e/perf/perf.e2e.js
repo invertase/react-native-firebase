@@ -30,7 +30,7 @@ describe('perf()', () => {
 
   describe('newHttpMetric()', () => {
     it('returns an instance of HttpMetric', async () => {
-      const trace = firebase.perf().newHttpMetric('foo', 'bar');
+      const trace = firebase.perf().newHttpMetric('http://foo.com', 'GET');
       trace.constructor.name.should.be.equal('HttpMetric');
     });
 
