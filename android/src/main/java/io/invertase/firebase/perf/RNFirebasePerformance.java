@@ -178,6 +178,7 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   @ReactMethod
   public void stopHttpMetric(String url, String httpMethod, Promise promise) {
     getOrCreateHttpMetric(url, httpMethod).stop();
+    httpMetrics.remove(url + httpMethod);
     promise.resolve(null);
   }
 
