@@ -1,5 +1,5 @@
 describe('perf()', () => {
-  describe.only('Trace', () => {
+  describe('Trace', () => {
     it('start() & stop()', async () => {
       const trace = firebase.perf().newTrace('bar');
       await trace.start();
@@ -74,7 +74,7 @@ describe('perf()', () => {
       await trace.stop();
     });
 
-    it.only('incrementMetric()', async () => {
+    it('incrementMetric()', async () => {
       const trace = firebase.perf().newTrace('bar');
       await trace.start();
       await trace.putMetric('baz', 1);

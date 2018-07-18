@@ -30,17 +30,7 @@ describe('perf()', () => {
 
   describe('newHttpMetric()', () => {
     it('returns an instance of HttpMetric', async () => {
-<<<<<<< Updated upstream
       const trace = firebase.perf().newHttpMetric('foo', 'bar');
-      trace.constructor.name.should.be.equal('HttpMetric');
-    });
-
-    it('errors if url/httpMethod not a string', async () => {
-      (() => firebase.perf().newHttpMetric(123, [1, 2])).should.throw(
-        'firebase.perf().newHttpMetric() requires url and httpMethod string values'
-      );
-=======
-      const trace = firebase.perf().newHttpMetric('foo', 'GET');
       trace.constructor.name.should.be.equal('HttpMetric');
     });
 
@@ -52,7 +42,6 @@ describe('perf()', () => {
 
     it('errors if httpMethod not a valid type', async () => {
       (() => firebase.perf().newHttpMetric('foo', 'FOO')).should.throw(); // TODO error
->>>>>>> Stashed changes
     });
   });
 });
