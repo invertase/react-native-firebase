@@ -1089,8 +1089,8 @@ declare module 'react-native-firebase' {
       interface InstanceId {
         delete(): Promise<void>;
         get(): Promise<string>;
-        getToken(authorizedEntity: string, scope: string): Promise<string>;
-        deleteToken(authorizedEntity: string, scope: string): Promise<void>;
+        getToken(authorizedEntity?: string, scope?: string): Promise<string>;
+        deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
       }
     }
 
