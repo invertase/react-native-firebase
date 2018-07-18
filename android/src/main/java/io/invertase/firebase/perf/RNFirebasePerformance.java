@@ -77,8 +77,13 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   @ReactMethod
   public void putTraceAttribute(String identifier, String attribute, String value, Promise promise) {
     getOrCreateTrace(identifier).putAttribute(attribute, value);
-    // TODO putAttribute returns void? Docs state it returns true/false.
-    promise.resolve(true);
+    // Docs say it returns a bool, actually void so we internally check attributes
+    Map<String, String> attributes = getOrCreateTrace(identifier).getAttributes();
+    if (attributes.containsKey(attribute)) {
+      promise.resolve(true);
+    } else {
+      promise.resolve(false);
+    }
   }
 
   @ReactMethod
@@ -135,8 +140,13 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   @ReactMethod
   public void putHttpMetricAttribute(String url, String httpMethod, String attribute, String value, Promise promise) {
     getOrCreateHttpMetric(url, httpMethod).putAttribute(attribute, value);
-    // TODO putAttribute returns void? Docs state it returns true/false.
-    promise.resolve(true);
+    // Docs say it returns a bool, actually void so we internally check attributes
+    Map<String, String> attributes = getOrCreateHttpMetric(url, httpMethod).getAttributes();
+    if (attributes.containsKey(attribute)) {
+      promise.resolve( true);
+    } else {
+      promise.resolve(false);
+    }
   }
 
   @ReactMethod
