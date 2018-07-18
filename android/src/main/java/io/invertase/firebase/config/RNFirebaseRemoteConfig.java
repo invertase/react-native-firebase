@@ -120,7 +120,7 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
         @Override
         public void onComplete(@NonNull Task<Void> task) {
           if (task.isSuccessful()) {
-            promise.resolve("config/success");
+            promise.resolve(null);
           } else {
             if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
               promise.reject("config/throttled", "fetch() operation cannot be completed successfully, due to throttling.", task.getException());
@@ -159,7 +159,6 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
       map.putNull(NUMBER_VALUE);
     }
 
-    // TODO check with ios
     switch (value.getSource()) {
       case FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT:
         map.putString(SOURCE, "default");
