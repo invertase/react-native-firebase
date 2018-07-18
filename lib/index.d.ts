@@ -92,7 +92,7 @@ declare module 'react-native-firebase' {
     links(): RNFirebase.links.Links;
     messaging(): RNFirebase.messaging.Messaging;
     notifications(): RNFirebase.notifications.Notifications;
-    perf(): RNFirebase.perf.Performance;
+    perf(): RNFirebase.perf.Perf;
     storage(): RNFirebase.storage.Storage;
     // utils(): RNFirebase.utils.Utils;
     readonly name: string;
