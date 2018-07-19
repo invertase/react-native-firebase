@@ -1199,6 +1199,7 @@ declare module 'react-native-firebase' {
         group?: string;
         groupAlertBehaviour?: Android.GroupAlert;
         groupSummary?: boolean;
+        inboxStyle?: Android.InboxStyle;
         largeIcon?: string;
         lights?: Android.Lights;
         localOnly?: boolean;
@@ -1247,6 +1248,11 @@ declare module 'react-native-firebase' {
           groupAlertBehaviour: Android.GroupAlert
         ): Notification;
         setGroupSummary(groupSummary: boolean): Notification;
+        setInboxStyle(
+          lines: string[],
+          contentTitle?: string,
+          summaryText?: string
+        ): Notification;
         setLargeIcon(largeIcon: string): Notification;
         setLights(argb: number, onMs: number, offMs: number): Notification;
         setLocalOnly(localOnly: boolean): Notification;
@@ -1415,6 +1421,12 @@ declare module 'react-native-firebase' {
           Private = 0,
           Public = 1,
           Secret = -1,
+        }
+
+        class InboxStyle {
+          lines: string[];
+          contentTitle?: string;
+          summaryText?: string;
         }
 
         class Lights {
