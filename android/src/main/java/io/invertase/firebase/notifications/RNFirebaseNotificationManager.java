@@ -17,6 +17,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
@@ -153,7 +154,7 @@ public class RNFirebaseNotificationManager {
     if (!notification.getBundle("schedule").containsKey("repeated")
       || !notification.getBundle("schedule").getBoolean("repeated")) {
       String notificationId = notification.getString("notificationId");
-      preferences.edit().remove(notificationId).apply();;
+      preferences.edit().remove(notificationId).apply();
     }
 
     if (Utils.isAppInForeground(context)) {
@@ -195,6 +196,15 @@ public class RNFirebaseNotificationManager {
     promise.resolve(null);
   }
 
+  public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
+    StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
+    for (StatusBarNotification statusBarNotification : statusBarNotifications) {
+        if (statusBarNotification.getTag() == tag) {
+            notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+        }
+    }
+    promise.resolve(null);
+  }
 
   public void rescheduleNotifications() {
     ArrayList<Bundle> bundles = getScheduledNotifications();
