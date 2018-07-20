@@ -16,7 +16,9 @@
 #endif
 @end
 
-@implementation RNFirebaseNotifications
+@implementation RNFirebaseNotifications {
+    NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
+}
 
 static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -54,6 +56,8 @@ RCT_EXPORT_MODULE();
 
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
+
+    completionHandlers = [[NSMutableDictionary alloc] init];
 }
 
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -95,6 +99,24 @@ RCT_EXPORT_MODULE();
     }
 }
 
+RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetchResult) {
+    UIBackgroundFetchResult fetchResult = UIBackgroundFetchResultNoData;
+    if ([@"noData" isEqualToString:rnFetchResult]) {
+        fetchResult = UIBackgroundFetchResultNoData;
+    } else if ([@"newData" isEqualToString:rnFetchResult]) {
+        fetchResult = UIBackgroundFetchResultNewData;
+    } else if ([@"failed" isEqualToString:rnFetchResult]) {
+        fetchResult = UIBackgroundFetchResultFailed;
+    }
+
+    void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
+    completionHandlers[handlerKey] = nil;
+
+    if(completionHandler != nil) {
+        completionHandler(fetchResult);
+    }
+}
+
 // Listen for background messages
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
               fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -102,7 +124,6 @@ RCT_EXPORT_MODULE();
     // Pass them over to the RNFirebaseMessaging handler instead
     if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
-        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
@@ -120,7 +141,6 @@ RCT_EXPORT_MODULE();
         // - foreground notifications also go through willPresentNotification
         // - background notification presses also go through didReceiveNotificationResponse
         // This prevents duplicate messages from hitting the JS app
-        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
@@ -133,8 +153,10 @@ RCT_EXPORT_MODULE();
                          };
     }
 
+    NSString *handlerKey = notification[@"notificationId"];
+    completionHandlers[handlerKey] = completionHandler;
+
     [self sendJSEvent:self name:event body:notification];
-    completionHandler(UIBackgroundFetchResultNoData);
 }
 
 // *******************************************************
@@ -226,7 +248,7 @@ RCT_EXPORT_METHOD(cancelNotification:(NSString*) notificationId
     if ([self isIOS89]) {
         for (UILocalNotification *notification in RCTSharedApplication().scheduledLocalNotifications) {
             NSDictionary *notificationInfo = notification.userInfo;
-            if ([notificationId isEqualToString:[notificationInfo valueForKey:@"notificationId"]]) {
+            if ([notificationId isEqualToString:notificationInfo[@"notificationId"]]) {
                 [RCTSharedApplication() cancelLocalNotification:notification];
             }
         }
@@ -372,7 +394,7 @@ RCT_EXPORT_METHOD(setBadge:(NSInteger) number
         resolve(nil);
     });
 }
-    
+
 RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     jsReady = TRUE;
     resolve(nil);
@@ -487,11 +509,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
                 NSString *identifier = a[@"identifier"];
                 NSURL *url = [NSURL fileURLWithPath:a[@"url"]];
                 NSMutableDictionary *attachmentOptions = nil;
-                
+
                 if (a[@"options"]) {
                     NSDictionary *options = a[@"options"];
                     attachmentOptions = [[NSMutableDictionary alloc] init];
-                    
+
                     for (id key in options) {
                         if ([key isEqualToString:@"typeHint"]) {
                             attachmentOptions[UNNotificationAttachmentOptionsTypeHintKey] = options[key];
