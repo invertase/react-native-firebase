@@ -1213,6 +1213,7 @@ declare module 'react-native-firebase' {
         showWhen?: boolean;
         smallIcon?: any;
         sortKey?: string;
+        tag?: string;
         ticker?: string;
         timeoutAfter?: number;
         usesChronometer?: boolean;
@@ -1265,6 +1266,7 @@ declare module 'react-native-firebase' {
         setShowWhen(showWhen: boolean): Notification;
         setSmallIcon(icon: string, level?: number): Notification;
         setSortKey(sortKey: string): Notification;
+        setTag(tag: string): Notification;
         setTicker(ticker: string): Notification;
         setTimeoutAfter(timeoutAfter: number): Notification;
         setUsesChronometer(usesChronometer: boolean): Notification;
