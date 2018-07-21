@@ -61,7 +61,7 @@ RCT_EXPORT_METHOD(fetch:
         if (error) {
             reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
         } else {
-            resolve(nil);
+            resolve([NSNull null]);
         }
     }];
 }
@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(fetchWithExpirationDuration:
         if (error) {
             reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
         } else {
-            resolve(nil);
+            resolve([NSNull null]);
         }
     }];
 }
