@@ -156,4 +156,12 @@ public class Utils {
 
     return false;
   }
+
+  public static int getResId(Context ctx, String resName) {
+    int resourceId = ctx.getResources().getIdentifier(resName, "string", ctx.getPackageName());
+    if (resourceId == 0) {
+      Log.e(TAG, "resource " + resName + " could not be found");
+    }
+    return resourceId;
+  }
 }
