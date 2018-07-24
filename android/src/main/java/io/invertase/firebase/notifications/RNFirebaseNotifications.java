@@ -316,28 +316,30 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   }
 
   private @Nullable String getNotificationTitle(RemoteMessage.Notification notification) {
-    String title, titleLocKey;
-    if ((title = notification.getTitle()) != null) {
-      return title;
-    } else if ((titleLocKey = notification.getTitleLocalizationKey()) != null) {
+    String title = notification.getTitle();
+    String titleLocKey = notification.getTitleLocalizationKey();
+    if (titleLocKey != null) {
       String[] titleLocArgs = notification.getTitleLocalizationArgs();
       Context ctx = getReactApplicationContext();
       int resId = getResId(ctx, titleLocKey);
       return ctx.getResources().getString(resId, (Object[]) titleLocArgs);
+    } else if (title != null) {
+      return title;
     } else {
       return null;
     }
   }
 
   private @Nullable String getNotificationBody(RemoteMessage.Notification notification) {
-    String body = notification.getBody(), bodyLocKey = notification.getBodyLocalizationKey();
-    if (body != null) {
-      return body;
-    } else if (bodyLocKey != null) {
+    String body = notification.getBody();
+    String bodyLocKey = notification.getBodyLocalizationKey();
+    if (bodyLocKey != null) {
       String[] bodyLocArgs = notification.getBodyLocalizationArgs();
       Context ctx = getReactApplicationContext();
       int resId = getResId(ctx, bodyLocKey);
       return ctx.getResources().getString(resId, (Object[]) bodyLocArgs);
+    } else if (body != null) {
+      return body;
     } else {
       return null;
     }
