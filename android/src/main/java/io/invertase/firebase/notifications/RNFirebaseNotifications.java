@@ -315,21 +315,6 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     return notificationMap;
   }
 
-  private @Nullable String getNotificationTitle(RemoteMessage.Notification notification) {
-    String title = notification.getTitle();
-    String titleLocKey = notification.getTitleLocalizationKey();
-    if (titleLocKey != null) {
-      String[] titleLocArgs = notification.getTitleLocalizationArgs();
-      Context ctx = getReactApplicationContext();
-      int resId = getResId(ctx, titleLocKey);
-      return ctx.getResources().getString(resId, (Object[]) titleLocArgs);
-    } else if (title != null) {
-      return title;
-    } else {
-      return null;
-    }
-  }
-
   private @Nullable String getNotificationBody(RemoteMessage.Notification notification) {
     String body = notification.getBody();
     String bodyLocKey = notification.getBodyLocalizationKey();
@@ -340,6 +325,21 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       return ctx.getResources().getString(resId, (Object[]) bodyLocArgs);
     } else if (body != null) {
       return body;
+    } else {
+      return null;
+    }
+  }
+
+  private @Nullable String getNotificationTitle(RemoteMessage.Notification notification) {
+    String title = notification.getTitle();
+    String titleLocKey = notification.getTitleLocalizationKey();
+    if (titleLocKey != null) {
+      String[] titleLocArgs = notification.getTitleLocalizationArgs();
+      Context ctx = getReactApplicationContext();
+      int resId = getResId(ctx, titleLocKey);
+      return ctx.getResources().getString(resId, (Object[]) titleLocArgs);
+    } else if (title != null) {
+      return title;
     } else {
       return null;
     }
