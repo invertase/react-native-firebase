@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -29,6 +30,8 @@ import java.util.Map;
 import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.RNFirebaseMessagingService;
 import me.leolin.shortcutbadger.ShortcutBadger;
+
+import static io.invertase.firebase.Utils.getResId;
 
 public class RNFirebaseNotifications extends ReactContextBaseJavaModule implements ActivityEventListener {
   private static final String BADGE_FILE = "BadgeCountFile";
@@ -269,7 +272,10 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     WritableMap dataMap = Arguments.createMap();
 
     // Cross platform notification properties
-    notificationMap.putString("body", notification.getBody());
+    String body = getNotificationBody(notification);
+    if (body != null) {
+      notificationMap.putString("body", body);
+    }
     if (message.getData() != null) {
       for (Map.Entry<String, String> e : message.getData().entrySet()) {
         dataMap.putString(e.getKey(), e.getValue());
@@ -282,8 +288,9 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     if (notification.getSound() != null) {
       notificationMap.putString("sound", notification.getSound());
     }
-    if (notification.getTitle() != null) {
-      notificationMap.putString("title", notification.getTitle());
+    String title = getNotificationTitle(notification);
+    if (title != null) {
+      notificationMap.putString("title", title);
     }
 
     // Android specific notification properties
@@ -306,6 +313,34 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     notificationMap.putMap("android", androidMap);
 
     return notificationMap;
+  }
+
+  private @Nullable String getNotificationTitle(RemoteMessage.Notification notification) {
+    String title, titleLocKey;
+    if ((title = notification.getTitle()) != null) {
+      return title;
+    } else if ((titleLocKey = notification.getTitleLocalizationKey()) != null) {
+      String[] titleLocArgs = notification.getTitleLocalizationArgs();
+      Context ctx = getReactApplicationContext();
+      int resId = getResId(ctx, titleLocKey);
+      return ctx.getResources().getString(resId, titleLocArgs);
+    } else {
+      return null;
+    }
+  }
+
+  private @Nullable String getNotificationBody(RemoteMessage.Notification notification) {
+    String body = notification.getBody(), bodyLocKey = notification.getBodyLocalizationKey();
+    if (body != null) {
+      return body;
+    } else if (bodyLocKey != null) {
+      String[] bodyLocArgs = notification.getBodyLocalizationArgs();
+      Context ctx = getReactApplicationContext();
+      int resId = getResId(ctx, bodyLocKey);
+      return ctx.getResources().getString(resId, bodyLocArgs);
+    } else {
+      return null;
+    }
   }
 
   private class RemoteNotificationReceiver extends BroadcastReceiver {

@@ -156,4 +156,8 @@ public class Utils {
 
     return false;
   }
+
+  public static int getResId(Context ctx, String resName) {
+    return ctx.getResources().getIdentifier(resName, "string", ctx.getPackageName());
+  }
 }
