@@ -323,10 +323,8 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       Context ctx = getReactApplicationContext();
       int resId = getResId(ctx, bodyLocKey);
       return ctx.getResources().getString(resId, (Object[]) bodyLocArgs);
-    } else if (body != null) {
-      return body;
     } else {
-      return null;
+      return body;
     }
   }
 
@@ -338,10 +336,8 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       Context ctx = getReactApplicationContext();
       int resId = getResId(ctx, titleLocKey);
       return ctx.getResources().getString(resId, (Object[]) titleLocArgs);
-    } else if (title != null) {
-      return title;
     } else {
-      return null;
+      return title;
     }
   }
 
