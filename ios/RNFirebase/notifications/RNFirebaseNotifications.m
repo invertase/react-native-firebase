@@ -17,6 +17,7 @@
 @end
 
 @implementation RNFirebaseNotifications {
+    BOOL isUserHandlingOnNotificationDisplayed;
     NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
 }
 
@@ -56,8 +57,6 @@ RCT_EXPORT_MODULE();
 
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
-
-    completionHandlers = [[NSMutableDictionary alloc] init];
 }
 
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -99,6 +98,21 @@ RCT_EXPORT_MODULE();
     }
 }
 
+RCT_EXPORT_METHOD(startHandlingNotificationDisplayed) {
+    isUserHandlingOnNotificationDisplayed = YES;
+    completionHandlers = [[NSMutableDictionary alloc] init];
+}
+
+RCT_EXPORT_METHOD(stopHandlingNotificationDisplayed) {
+    isUserHandlingOnNotificationDisplayed = NO;
+    NSArray *allHandlers = completionHandlers.allValues;
+    for (void (^ completionHandler)(UIBackgroundFetchResult) in allHandlers) {
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+    [completionHandlers removeAllObjects];
+    completionHandlers = nil;
+}
+
 RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetchResult) {
     UIBackgroundFetchResult fetchResult = UIBackgroundFetchResultNoData;
     if ([@"noData" isEqualToString:rnFetchResult]) {
@@ -117,6 +131,15 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetch
     }
 }
 
+- (void)executeOrStoreCompletionHandler:(void (^ _Nonnull)(UIBackgroundFetchResult))completionHandler notification:(NSDictionary *)notification {
+    if(isUserHandlingOnNotificationDisplayed) {
+        NSString *handlerKey = notification[@"notificationId"];
+        completionHandlers[handlerKey] = completionHandler;
+    } else {
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+}
+
 // Listen for background messages
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo
               fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -124,8 +147,11 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetch
     // Pass them over to the RNFirebaseMessaging handler instead
     if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
         [[RNFirebaseMessaging instance] didReceiveRemoteNotification:userInfo];
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
+
+    NSDictionary *notification = [self parseUserInfo:userInfo];
 
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
@@ -141,10 +167,10 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetch
         // - foreground notifications also go through willPresentNotification
         // - background notification presses also go through didReceiveNotificationResponse
         // This prevents duplicate messages from hitting the JS app
+        completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
 
-    NSDictionary *notification = [self parseUserInfo:userInfo];
     // For onOpened events, we set the default action name as iOS 8/9 has no concept of actions
     if (event == NOTIFICATIONS_NOTIFICATION_OPENED) {
         notification = @{
@@ -153,8 +179,7 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetch
                          };
     }
 
-    NSString *handlerKey = notification[@"notificationId"];
-    completionHandlers[handlerKey] = completionHandler;
+    [self executeOrStoreCompletionHandler:completionHandler notification:notification];
 
     [self sendJSEvent:self name:event body:notification];
 }
