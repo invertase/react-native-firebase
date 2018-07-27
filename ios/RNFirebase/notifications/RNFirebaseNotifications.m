@@ -113,16 +113,7 @@ RCT_EXPORT_METHOD(stopHandlingNotificationDisplayed) {
     completionHandlers = nil;
 }
 
-RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(NSString *)rnFetchResult) {
-    UIBackgroundFetchResult fetchResult = UIBackgroundFetchResultNoData;
-    if ([@"noData" isEqualToString:rnFetchResult]) {
-        fetchResult = UIBackgroundFetchResultNoData;
-    } else if ([@"newData" isEqualToString:rnFetchResult]) {
-        fetchResult = UIBackgroundFetchResultNewData;
-    } else if ([@"failed" isEqualToString:rnFetchResult]) {
-        fetchResult = UIBackgroundFetchResultFailed;
-    }
-
+RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchResult)fetchResult) {
     void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
     completionHandlers[handlerKey] = nil;
 
@@ -785,6 +776,12 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[NOTIFICATIONS_NOTIFICATION_DISPLAYED, NOTIFICATIONS_NOTIFICATION_OPENED, NOTIFICATIONS_NOTIFICATION_RECEIVED];
+}
+
+- (NSDictionary *) constantsToExport {
+    return @{ @"backgroundFetchResultNoData" : @(UIBackgroundFetchResultNoData),
+              @"backgroundFetchResultNewData" : @(UIBackgroundFetchResultNewData),
+              @"backgroundFetchResultFailed" : @(UIBackgroundFetchResultFailed)};
 }
 
 + (BOOL)requiresMainQueueSetup
