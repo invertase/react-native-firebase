@@ -192,7 +192,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setOngoing(android.getBoolean("ongoing"));
       }
       if (android.containsKey("onlyAlertOnce")) {
-        nb = nb.setOngoing(android.getBoolean("onlyAlertOnce"));
+        nb = nb.setOnlyAlertOnce(android.getBoolean("onlyAlertOnce"));
       }
       if (android.containsKey("people")) {
         List<String> people = android.getStringArrayList("people");
