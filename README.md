@@ -86,7 +86,7 @@ Please make sure to complete the issue template before opening an issue. Issues 
 
 ## Feature Requests
 
-For feature requests please visit our [Freature Request Board](https://boards.invertase.io/react-native-firebase).
+For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 
 ## Changelog
 
