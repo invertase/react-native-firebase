@@ -9,7 +9,7 @@ BEFORE YOU MAKE AN ISSUE
 
 The issue list of this repo is exclusively for bug reports.
 
-1) For feature requests, please use our Canny board: https://react-native-firebase.canny.io/feature-requests
+1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 
 2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
 
