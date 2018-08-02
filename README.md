@@ -74,7 +74,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 ## Documentation
 
-To check out our latest docs, visit [rnfirebase.io](https://rnfirebase.io)
+To check out our latest docs, visit [https://invertase.io/oss/react-native-firebase](https://invertase.io/oss/react-native-firebase)
 
 ## Questions
 
