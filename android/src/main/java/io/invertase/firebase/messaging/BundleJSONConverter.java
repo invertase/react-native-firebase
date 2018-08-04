@@ -39,9 +39,9 @@ import java.util.Map;
  * com.facebook.internal is solely for the use of other packages within the Facebook SDK for
  * Android. Use of any of the classes in this package is unsupported, and they may be modified or
  * removed without warning at any time.
- *
+ * <p>
  * A helper class that can round trip between JSON and Bundle objects that contains the types:
- *   Boolean, Integer, Long, Double, String
+ * Boolean, Integer, Long, Double, String
  * If other types are found, an IllegalArgumentException is thrown.
  */
 public class BundleJSONConverter {
@@ -126,13 +126,13 @@ public class BundleJSONConverter {
         } else if (jsonArray.get(0) instanceof Boolean) {
           boolean[] booleanArray = new boolean[jsonArray.length()];
           for (int i = 0; i < jsonArray.length(); i++) {
-            booleanArray[i] = (Boolean)jsonArray.get(i);
+            booleanArray[i] = (Boolean) jsonArray.get(i);
           }
           bundle.putBooleanArray(key, booleanArray);
         } else if (jsonArray.get(0) instanceof Double) {
           double[] doubleArray = new double[jsonArray.length()];
           for (int i = 0; i < jsonArray.length(); i++) {
-            doubleArray[i] = (Double)jsonArray.get(i);
+            doubleArray[i] = (Double) jsonArray.get(i);
           }
           bundle.putDoubleArray(key, doubleArray);
         } else if (jsonArray.get(0) instanceof Long) {
@@ -143,12 +143,14 @@ public class BundleJSONConverter {
           bundle.putLongArray(key, longArray);
         } else if (jsonArray.get(0) instanceof JSONObject) {
           ArrayList<Bundle> bundleArrayList = new ArrayList<>();
-          for (int i =0; i < jsonArray.length(); i++) {
+          for (int i = 0; i < jsonArray.length(); i++) {
             bundleArrayList.add(convertToBundle((JSONObject) jsonArray.get(i)));
           }
           bundle.putSerializable(key, bundleArrayList);
         } else {
-          throw new IllegalArgumentException("Unexpected type in an array: " + jsonArray.get(0).getClass());
+          throw new IllegalArgumentException("Unexpected type in an array: " + jsonArray
+            .get(0)
+            .getClass());
         }
       }
 
@@ -157,12 +159,6 @@ public class BundleJSONConverter {
         throw new IllegalArgumentException("JSONArray's are not supported in bundles.");
       }
     });
-  }
-
-  public interface Setter {
-    public void setOnBundle(Bundle bundle, String key, Object value) throws JSONException;
-
-    public void setOnJSON(JSONObject json, String key, Object value) throws JSONException;
   }
 
   public static JSONObject convertToJSON(Bundle bundle) throws JSONException {
@@ -238,5 +234,11 @@ public class BundleJSONConverter {
     }
 
     return bundle;
+  }
+
+  public interface Setter {
+    public void setOnBundle(Bundle bundle, String key, Object value) throws JSONException;
+
+    public void setOnJSON(JSONObject json, String key, Object value) throws JSONException;
   }
 }

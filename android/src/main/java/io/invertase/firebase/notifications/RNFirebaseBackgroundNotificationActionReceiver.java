@@ -36,12 +36,18 @@ public class RNFirebaseBackgroundNotificationActionReceiver extends BroadcastRec
     if (Utils.isAppInForeground(context)) {
       WritableMap notificationOpenMap = toNotificationOpenMap(intent);
 
-      ReactApplication reactApplication =  (ReactApplication)context.getApplicationContext();
-      ReactContext reactContext = reactApplication.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+      ReactApplication reactApplication = (ReactApplication) context.getApplicationContext();
+      ReactContext reactContext = reactApplication
+        .getReactNativeHost()
+        .getReactInstanceManager()
+        .getCurrentReactContext();
 
       Utils.sendEvent(reactContext, "notifications_notification_opened", notificationOpenMap);
     } else {
-      Intent serviceIntent = new Intent(context, RNFirebaseBackgroundNotificationActionsService.class);
+      Intent serviceIntent = new Intent(
+        context,
+        RNFirebaseBackgroundNotificationActionsService.class
+      );
       serviceIntent.putExtras(intent.getExtras());
       context.startService(serviceIntent);
       HeadlessJsTaskService.acquireWakeLockNow(context);

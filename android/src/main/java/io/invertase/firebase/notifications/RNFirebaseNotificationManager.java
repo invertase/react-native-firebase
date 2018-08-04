@@ -2,7 +2,6 @@ package io.invertase.firebase.notifications;
 
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
@@ -10,8 +9,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,8 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -33,9 +28,6 @@ import com.facebook.react.bridge.ReadableMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -45,8 +37,8 @@ import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.BundleJSONConverter;
 
 public class RNFirebaseNotificationManager {
-  private static final String PREFERENCES_KEY = "RNFNotifications";
   public static final String SCHEDULED_NOTIFICATION_EVENT = "notifications-scheduled-notification";
+  private static final String PREFERENCES_KEY = "RNFNotifications";
   private static final String TAG = "RNFNotificationManager";
   private AlarmManager alarmManager;
   private Context context;
@@ -62,31 +54,63 @@ public class RNFirebaseNotificationManager {
   public RNFirebaseNotificationManager(Context context) {
     this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     this.context = context;
-    this.notificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     this.preferences = context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+  }
+
+  public static int getResourceId(Context context, String type, String image) {
+    return context
+      .getResources()
+      .getIdentifier(image, type, context.getPackageName());
+  }
+
+  public static Uri getSound(Context context, String sound) {
+    if (sound == null) {
+      return null;
+    } else if (sound.contains("://")) {
+      return Uri.parse(sound);
+    } else if (sound.equalsIgnoreCase("default")) {
+      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    } else {
+      int soundResourceId = getResourceId(context, "raw", sound);
+      if (soundResourceId == 0) {
+        soundResourceId = getResourceId(context, "raw", sound.substring(0, sound.lastIndexOf('.')));
+      }
+      return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId);
+    }
   }
 
   public void cancelAllNotifications(Promise promise) {
     try {
       Map<String, ?> notifications = preferences.getAll();
 
-      for(String notificationId : notifications.keySet()){
+      for (String notificationId : notifications.keySet()) {
         cancelAlarm(notificationId);
       }
-      preferences.edit().clear().apply();
+      preferences
+        .edit()
+        .clear()
+        .apply();
       promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
       // In some devices/situations cancelAllLocalNotifications can throw a SecurityException.
       Log.e(TAG, e.getMessage());
-      promise.reject("notification/cancel_notifications_error", "Could not cancel notifications", e);
+      promise.reject(
+        "notification/cancel_notifications_error",
+        "Could not cancel notifications",
+        e
+      );
     }
   }
 
   public void cancelNotification(String notificationId, Promise promise) {
     try {
       cancelAlarm(notificationId);
-      preferences.edit().remove(notificationId).apply();
+      preferences
+        .edit()
+        .remove(notificationId)
+        .apply();
       promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
@@ -151,10 +175,17 @@ public class RNFirebaseNotificationManager {
 
   public void displayScheduledNotification(Bundle notification) {
     // If this isn't a repeated notification, clear it from the scheduled notifications list
-    if (!notification.getBundle("schedule").containsKey("repeated")
-      || !notification.getBundle("schedule").getBoolean("repeated")) {
+    if (!notification
+      .getBundle("schedule")
+      .containsKey("repeated")
+      || !notification
+      .getBundle("schedule")
+      .getBoolean("repeated")) {
       String notificationId = notification.getString("notificationId");
-      preferences.edit().remove(notificationId).apply();
+      preferences
+        .edit()
+        .remove(notificationId)
+        .apply();
     }
 
     if (Utils.isAppInForeground(context)) {
@@ -162,21 +193,23 @@ public class RNFirebaseNotificationManager {
       // It is up to the JS to decide whether to display the notification
       Intent scheduledNotificationEvent = new Intent(SCHEDULED_NOTIFICATION_EVENT);
       scheduledNotificationEvent.putExtra("notification", notification);
-      LocalBroadcastManager.getInstance(context).sendBroadcast(scheduledNotificationEvent);
+      LocalBroadcastManager
+        .getInstance(context)
+        .sendBroadcast(scheduledNotificationEvent);
     } else {
       // If the app is in the background, then we display it automatically
       displayNotification(notification, null);
     }
   }
 
-  public ArrayList<Bundle> getScheduledNotifications(){
+  public ArrayList<Bundle> getScheduledNotifications() {
     ArrayList<Bundle> array = new ArrayList<>();
 
     Map<String, ?> notifications = preferences.getAll();
 
-    for(String notificationId : notifications.keySet()){
+    for (String notificationId : notifications.keySet()) {
       try {
-        JSONObject json = new JSONObject((String)notifications.get(notificationId));
+        JSONObject json = new JSONObject((String) notifications.get(notificationId));
         Bundle bundle = BundleJSONConverter.convertToBundle(json);
         array.add(bundle);
       } catch (JSONException e) {
@@ -199,16 +232,16 @@ public class RNFirebaseNotificationManager {
   public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
     StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
     for (StatusBarNotification statusBarNotification : statusBarNotifications) {
-        if (statusBarNotification.getTag() == tag) {
-            notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
-        }
+      if (statusBarNotification.getTag() == tag) {
+        notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+      }
     }
     promise.resolve(null);
   }
 
   public void rescheduleNotifications() {
     ArrayList<Bundle> bundles = getScheduledNotifications();
-    for(Bundle bundle: bundles){
+    for (Bundle bundle : bundles) {
       scheduleNotification(bundle, null);
     }
   }
@@ -221,32 +254,23 @@ public class RNFirebaseNotificationManager {
 
   private void cancelAlarm(String notificationId) {
     Intent notificationIntent = new Intent(context, RNFirebaseNotificationReceiver.class);
-    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+      context,
+      notificationId.hashCode(),
+      notificationIntent,
+      PendingIntent.FLAG_UPDATE_CURRENT
+    );
     alarmManager.cancel(pendingIntent);
   }
 
   private void displayNotification(Bundle notification, Promise promise) {
-    new DisplayNotificationTask(context, reactContext, notificationManager, notification, promise).execute();
-  }
-
-  public static int getResourceId(Context context, String type, String image) {
-    return context.getResources().getIdentifier(image, type, context.getPackageName());
-  }
-
-  public static Uri getSound(Context context, String sound) {
-    if (sound == null) {
-      return null;
-    } else if (sound.contains("://")) {
-      return Uri.parse(sound);
-    } else if (sound.equalsIgnoreCase("default")) {
-      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    } else {
-      int soundResourceId = getResourceId(context,"raw", sound);
-      if (soundResourceId == 0) {
-        soundResourceId = getResourceId(context,"raw", sound.substring(0, sound.lastIndexOf('.')));
-      }
-      return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId);
-    }
+    new DisplayNotificationTask(
+      context,
+      reactContext,
+      notificationManager,
+      notification,
+      promise
+    ).execute();
   }
 
   private NotificationChannelGroup parseChannelGroupMap(ReadableMap channelGroupMap) {
@@ -356,20 +380,31 @@ public class RNFirebaseNotificationManager {
     // We store them so that they can be re-scheduled when the phone restarts in RNFirebaseNotificationsRebootReceiver
     try {
       JSONObject json = BundleJSONConverter.convertToJSON(notification);
-      preferences.edit().putString(notificationId, json.toString()).apply();
+      preferences
+        .edit()
+        .putString(notificationId, json.toString())
+        .apply();
     } catch (JSONException e) {
       if (promise == null) {
         Log.e(TAG, "Failed to store notification");
       } else {
-        promise.reject("notification/schedule_notification_error", "Failed to store notification", e);
+        promise.reject(
+          "notification/schedule_notification_error",
+          "Failed to store notification",
+          e
+        );
       }
       return;
     }
 
     Intent notificationIntent = new Intent(context, RNFirebaseNotificationReceiver.class);
     notificationIntent.putExtras(notification);
-    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId.hashCode(),
-      notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+      context,
+      notificationId.hashCode(),
+      notificationIntent,
+      PendingIntent.FLAG_UPDATE_CURRENT
+    );
 
     if (schedule.containsKey("repeatInterval")) {
       // If fireDate you specify is in the past, the alarm triggers immediately.
