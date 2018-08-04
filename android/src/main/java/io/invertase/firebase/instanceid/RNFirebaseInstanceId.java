@@ -1,8 +1,6 @@
 package io.invertase.firebase.instanceid;
 
 
-import java.io.IOException;
-
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -28,10 +26,12 @@ public class RNFirebaseInstanceId extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void delete(Promise promise){
+  public void delete(Promise promise) {
     try {
       Log.d(TAG, "Deleting instance id");
-      FirebaseInstanceId.getInstance().deleteInstanceId();
+      FirebaseInstanceId
+        .getInstance()
+        .deleteInstanceId();
       promise.resolve(null);
     } catch (IOException e) {
       Log.e(TAG, e.getMessage());
@@ -40,15 +40,19 @@ public class RNFirebaseInstanceId extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void get(Promise promise){
-    String id = FirebaseInstanceId.getInstance().getId();
+  public void get(Promise promise) {
+    String id = FirebaseInstanceId
+      .getInstance()
+      .getId();
     promise.resolve(id);
   }
 
   @ReactMethod
   public void getToken(String authorizedEntity, String scope, Promise promise) {
     try {
-      String token = FirebaseInstanceId.getInstance().getToken(authorizedEntity, scope);
+      String token = FirebaseInstanceId
+        .getInstance()
+        .getToken(authorizedEntity, scope);
       Log.d(TAG, "Firebase token for " + authorizedEntity + ": " + token);
       promise.resolve(token);
     } catch (IOException e) {
@@ -59,7 +63,9 @@ public class RNFirebaseInstanceId extends ReactContextBaseJavaModule {
   @ReactMethod
   public void deleteToken(String authorizedEntity, String scope, Promise promise) {
     try {
-      FirebaseInstanceId.getInstance().deleteToken(authorizedEntity, scope);
+      FirebaseInstanceId
+        .getInstance()
+        .deleteToken(authorizedEntity, scope);
       Log.d(TAG, "Firebase token deleted for " + authorizedEntity);
       promise.resolve(null);
     } catch (IOException e) {
