@@ -1,7 +1,6 @@
 package io.invertase.firebase.firestore;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -29,7 +28,7 @@ public class RNFirebaseFirestorePackage implements ReactPackage {
   }
 
   /**
-   * @param reactContext
+   * @param reactContext reactContext
    * @return a list of view managers that should be registered with {@link UIManagerModule}
    */
   @Override

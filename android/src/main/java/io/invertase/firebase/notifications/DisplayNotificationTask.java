@@ -192,7 +192,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setOngoing(android.getBoolean("ongoing"));
       }
       if (android.containsKey("onlyAlertOnce")) {
-        nb = nb.setOngoing(android.getBoolean("onlyAlertOnce"));
+        nb = nb.setOnlyAlertOnce(android.getBoolean("onlyAlertOnce"));
       }
       if (android.containsKey("people")) {
         List<String> people = android.getStringArrayList("people");
@@ -279,13 +279,18 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         }
       }
 
+      String tag = null;
+      if (android.containsKey("tag")) {
+          tag = android.getString("tag");
+      }
+
       // Create the notification intent
       PendingIntent contentIntent = createIntent(intentClass, notification, android.getString("clickAction"));
       nb = nb.setContentIntent(contentIntent);
 
       // Build the notification and send it
       Notification builtNotification = nb.build();
-      notificationManager.notify(notificationId.hashCode(), builtNotification);
+      notificationManager.notify(tag, notificationId.hashCode(), builtNotification);
 
       if (reactContext != null) {
         Utils.sendEvent(reactContext, "notifications_notification_displayed", Arguments.fromBundle(notification));

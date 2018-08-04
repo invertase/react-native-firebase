@@ -17,6 +17,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
@@ -153,7 +154,7 @@ public class RNFirebaseNotificationManager {
     if (!notification.getBundle("schedule").containsKey("repeated")
       || !notification.getBundle("schedule").getBoolean("repeated")) {
       String notificationId = notification.getString("notificationId");
-      preferences.edit().remove(notificationId).apply();;
+      preferences.edit().remove(notificationId).apply();
     }
 
     if (Utils.isAppInForeground(context)) {
@@ -195,6 +196,15 @@ public class RNFirebaseNotificationManager {
     promise.resolve(null);
   }
 
+  public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
+    StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
+    for (StatusBarNotification statusBarNotification : statusBarNotifications) {
+        if (statusBarNotification.getTag() == tag) {
+            notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+        }
+    }
+    promise.resolve(null);
+  }
 
   public void rescheduleNotifications() {
     ArrayList<Bundle> bundles = getScheduledNotifications();
@@ -320,15 +330,19 @@ public class RNFirebaseNotificationManager {
     String notificationId = notification.getString("notificationId");
     Bundle schedule = notification.getBundle("schedule");
 
-    // fireDate is stored in the Bundle as Long after notifications are rescheduled.
-    // This would lead to a fireDate of 0.0 when trying to extract a Double from the bundle.
-    // Instead always try extract a Long
+    // fireDate may be stored in the Bundle as 2 different types that we need to handle:
+    // 1. Double - when a call comes directly from React
+    // 2. Long   - when notifications are rescheduled from boot service (Bundle is loaded from prefences).
+    // At the end we need Long value (timestamp) for the scheduler
     Long fireDate = -1L;
-    try {
-      fireDate = (long) schedule.getDouble("fireDate", -1);
-    } catch (ClassCastException e) {
-      fireDate = schedule.getLong("fireDate", -1);
+    Object fireDateObject = schedule.get("fireDate");
+    if (fireDateObject instanceof Long) {
+      fireDate = (Long) fireDateObject;
+    } else if (fireDateObject instanceof Double) {
+      Double fireDateDouble = (Double) fireDateObject;
+      fireDate = fireDateDouble.longValue();
     }
+
     if (fireDate == -1) {
       if (promise == null) {
         Log.e(TAG, "Missing schedule information");
@@ -361,14 +375,33 @@ public class RNFirebaseNotificationManager {
       // If fireDate you specify is in the past, the alarm triggers immediately.
       // So we need to adjust the time for correct operation.
       if (fireDate < System.currentTimeMillis()) {
+        Log.w(TAG, "Scheduled notification date is in the past, will adjust it to be in future");
         Calendar newFireDate = Calendar.getInstance();
-        Calendar currentFireDate = Calendar.getInstance();
-        currentFireDate.setTimeInMillis(fireDate);
+        Calendar pastFireDate = Calendar.getInstance();
+        pastFireDate.setTimeInMillis(fireDate);
 
-        newFireDate.add(Calendar.DATE, 1);
-        newFireDate.set(Calendar.HOUR_OF_DAY, currentFireDate.get(Calendar.HOUR_OF_DAY));
-        newFireDate.set(Calendar.MINUTE, currentFireDate.get(Calendar.MINUTE));
-        newFireDate.set(Calendar.SECOND, currentFireDate.get(Calendar.SECOND));
+        newFireDate.set(Calendar.SECOND, pastFireDate.get(Calendar.SECOND));
+
+        switch (schedule.getString("repeatInterval")) {
+          case "minute":
+            newFireDate.add(Calendar.MINUTE, 1);
+            break;
+          case "hour":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
+            newFireDate.add(Calendar.HOUR, 1);
+            break;
+          case "day":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
+            newFireDate.set(Calendar.HOUR_OF_DAY, pastFireDate.get(Calendar.HOUR_OF_DAY));
+            newFireDate.add(Calendar.DATE, 1);
+            break;
+          case "week":
+            newFireDate.set(Calendar.MINUTE, pastFireDate.get(Calendar.MINUTE));
+            newFireDate.set(Calendar.HOUR_OF_DAY, pastFireDate.get(Calendar.HOUR_OF_DAY));
+            newFireDate.set(Calendar.DATE, pastFireDate.get(Calendar.DATE));
+            newFireDate.add(Calendar.DATE, 7);
+            break;
+        }
 
         fireDate = newFireDate.getTimeInMillis();
       }
@@ -401,14 +434,14 @@ public class RNFirebaseNotificationManager {
         return;
       }
 
-      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate.longValue(), interval, pendingIntent);
+      alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, fireDate, interval, pendingIntent);
     } else {
       if (schedule.containsKey("exact")
         && schedule.getBoolean("exact")
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
       } else {
-        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate.longValue(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
       }
     }
 
