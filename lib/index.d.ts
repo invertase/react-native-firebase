@@ -26,7 +26,6 @@ declare module 'react-native-firebase' {
       RNFirebase.auth.AuthStatics
     >;
     config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
-    crash: FirebaseModuleAndStatics<RNFirebase.crash.Crash>;
     crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
     database: FirebaseModuleAndStatics<
       RNFirebase.database.Database,
@@ -82,7 +81,6 @@ declare module 'react-native-firebase' {
     analytics(): RNFirebase.Analytics;
     auth(): RNFirebase.auth.Auth;
     config(): RNFirebase.config.Config;
-    crash(): RNFirebase.crash.Crash;
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
     database(): RNFirebase.database.Database;
     firestore(): RNFirebase.firestore.Firestore;
@@ -1545,27 +1543,6 @@ declare module 'react-native-firebase' {
          * - iOS: The plist file name, with no file name extension.
          */
         setDefaultsFromResource(resource: string | number): void;
-      }
-    }
-
-    namespace crash {
-      interface Crash {
-        /** Logs a message that will appear in a subsequent crash report. */
-        log(message: string): void;
-
-        /**
-         * Android: Logs a message that will appear in a subsequent crash report as well as in logcat.
-         * iOS: Logs the message in the subsequest crash report only (same as log).
-         */
-        logcat(level: number, tag: string, message: string): void;
-
-        /**
-         * Files a crash report, along with any previous logs to Firebase.
-         * An Error object must be passed into the report method.
-         */
-        report(error: RnError, maxStackSize: Number): void;
-
-        [key: string]: any;
       }
     }
 

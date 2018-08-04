@@ -27,7 +27,6 @@
 		839D916F1EF3E20B0077C7C8 /* RNFirebaseAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91561EF3E20A0077C7C8 /* RNFirebaseAnalytics.m */; };
 		839D91701EF3E20B0077C7C8 /* RNFirebaseAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91591EF3E20A0077C7C8 /* RNFirebaseAuth.m */; };
 		839D91711EF3E20B0077C7C8 /* RNFirebaseRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D915C1EF3E20A0077C7C8 /* RNFirebaseRemoteConfig.m */; };
-		839D91721EF3E20B0077C7C8 /* RNFirebaseCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D915F1EF3E20A0077C7C8 /* RNFirebaseCrash.m */; };
 		839D91731EF3E20B0077C7C8 /* RNFirebaseDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91621EF3E20A0077C7C8 /* RNFirebaseDatabase.m */; };
 		839D91751EF3E20B0077C7C8 /* RNFirebasePerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = 839D91681EF3E20A0077C7C8 /* RNFirebasePerformance.m */; };
 		83AAA0792063DEC2007EC5F7 /* RNFirebaseInvites.m in Sources */ = {isa = PBXBuildFile; fileRef = 83AAA0772063DEC2007EC5F7 /* RNFirebaseInvites.m */; };
@@ -90,8 +89,6 @@
 		839D91591EF3E20A0077C7C8 /* RNFirebaseAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseAuth.m; sourceTree = "<group>"; };
 		839D915B1EF3E20A0077C7C8 /* RNFirebaseRemoteConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseRemoteConfig.h; sourceTree = "<group>"; };
 		839D915C1EF3E20A0077C7C8 /* RNFirebaseRemoteConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseRemoteConfig.m; sourceTree = "<group>"; };
-		839D915E1EF3E20A0077C7C8 /* RNFirebaseCrash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseCrash.h; sourceTree = "<group>"; };
-		839D915F1EF3E20A0077C7C8 /* RNFirebaseCrash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseCrash.m; sourceTree = "<group>"; };
 		839D91611EF3E20A0077C7C8 /* RNFirebaseDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebaseDatabase.h; sourceTree = "<group>"; };
 		839D91621EF3E20A0077C7C8 /* RNFirebaseDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFirebaseDatabase.m; sourceTree = "<group>"; };
 		839D91671EF3E20A0077C7C8 /* RNFirebasePerformance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFirebasePerformance.h; sourceTree = "<group>"; };
@@ -160,7 +157,6 @@
 				839D91541EF3E20A0077C7C8 /* analytics */,
 				839D91571EF3E20A0077C7C8 /* auth */,
 				839D915A1EF3E20A0077C7C8 /* config */,
-				839D915D1EF3E20A0077C7C8 /* crash */,
 				839D91601EF3E20A0077C7C8 /* database */,
 				8376F70D1F7C141500D45A85 /* firestore */,
 				839D91631EF3E20A0077C7C8 /* messaging */,
@@ -275,16 +271,6 @@
 			);
 			name = config;
 			path = RNFirebase/config;
-			sourceTree = "<group>";
-		};
-		839D915D1EF3E20A0077C7C8 /* crash */ = {
-			isa = PBXGroup;
-			children = (
-				839D915E1EF3E20A0077C7C8 /* RNFirebaseCrash.h */,
-				839D915F1EF3E20A0077C7C8 /* RNFirebaseCrash.m */,
-			);
-			name = crash;
-			path = RNFirebase/crash;
 			sourceTree = "<group>";
 		};
 		839D91601EF3E20A0077C7C8 /* database */ = {
@@ -416,7 +402,6 @@
 				83AAA0792063DEC2007EC5F7 /* RNFirebaseInvites.m in Sources */,
 				8323CF071F6FBD870071420B /* NativeExpressComponent.m in Sources */,
 				83C3EEEE1FA1EACC00B64D3C /* RNFirebaseUtil.m in Sources */,
-				839D91721EF3E20B0077C7C8 /* RNFirebaseCrash.m in Sources */,
 				839D91751EF3E20B0077C7C8 /* RNFirebasePerformance.m in Sources */,
 				8323CF061F6FBD870071420B /* BannerComponent.m in Sources */,
 				839D916D1EF3E20B0077C7C8 /* RNFirebaseAdMobInterstitial.m in Sources */,
@@ -520,7 +505,6 @@
 					"$(SRCROOT)/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseAuth/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseCore/Frameworks",
-					"$(SRCROOT)/../../../ios/Pods/FirebaseCrash/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseDatabase/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseDynamicLinks/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseFirestore/Frameworks",
@@ -564,7 +548,6 @@
 					"$(SRCROOT)/../../../ios/Pods/FirebaseAnalytics/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseAuth/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseCore/Frameworks",
-					"$(SRCROOT)/../../../ios/Pods/FirebaseCrash/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseDatabase/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseDynamicLinks/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseFirestore/Frameworks",

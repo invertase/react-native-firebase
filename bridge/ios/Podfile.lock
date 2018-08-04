@@ -212,7 +212,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (4.2.0):
+  - RNFirebase (4.3.8):
     - Firebase/Core
     - React
   - yoga (0.55.3.React)

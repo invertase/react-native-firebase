@@ -99,7 +99,6 @@ dependencies {
   implementation "com.google.firebase:firebase-ads:15.0.1"
   implementation "com.google.firebase:firebase-auth:16.0.2"
   implementation "com.google.firebase:firebase-config:16.0.0"
-  implementation "com.google.firebase:firebase-crash:16.0.1"
   implementation "com.google.firebase:firebase-database:16.0.1"
   implementation "com.google.firebase:firebase-firestore:17.0.2"
   implementation "com.google.firebase:firebase-functions:16.0.1"
