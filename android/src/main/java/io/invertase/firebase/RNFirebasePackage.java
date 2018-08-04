@@ -8,9 +8,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class RNFirebasePackage implements ReactPackage {

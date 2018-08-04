@@ -39,7 +39,9 @@ public class RNFirebaseFirestoreDocumentReference {
     this.path = path;
     this.appName = appName;
     this.reactContext = reactContext;
-    this.ref = RNFirebaseFirestore.getFirestoreForApp(appName).document(path);
+    this.ref = RNFirebaseFirestore
+      .getFirestoreForApp(appName)
+      .document(path);
   }
 
   static void offSnapshot(final String listenerId) {
@@ -50,21 +52,23 @@ public class RNFirebaseFirestoreDocumentReference {
   }
 
   void delete(final Promise promise) {
-    this.ref.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "delete:onComplete:success");
-          promise.resolve(null);
-        } else {
-          Log.e(TAG, "delete:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    this.ref
+      .delete()
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "delete:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Log.e(TAG, "delete:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   void get(final ReadableMap getOptions, final Promise promise) {
@@ -92,21 +96,23 @@ public class RNFirebaseFirestoreDocumentReference {
       }
     };
 
-    this.ref.get(source).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-      @Override
-      public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "get:onComplete:success");
-          serializeAsyncTask.execute(task.getResult());
-        } else {
-          Log.e(TAG, "get:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    this.ref
+      .get(source)
+      .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "get:onComplete:success");
+            serializeAsyncTask.execute(task.getResult());
+          } else {
+            Log.e(TAG, "get:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   void onSnapshot(final String listenerId, final ReadableMap docListenOptions) {
@@ -187,21 +193,23 @@ public class RNFirebaseFirestoreDocumentReference {
       data
     );
 
-    this.ref.update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "update:onComplete:success");
-          promise.resolve(null);
-        } else {
-          Log.e(TAG, "update:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    this.ref
+      .update(map)
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "update:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Log.e(TAG, "update:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   /*

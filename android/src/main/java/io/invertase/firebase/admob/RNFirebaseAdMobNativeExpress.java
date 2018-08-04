@@ -25,38 +25,10 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   public static final String REACT_CLASS = "RNFirebaseAdMobNativeExpress";
   public static final String BANNER_EVENT = "onBannerEvent";
-
-  public enum Events {
-    EVENT_AD_SIZE_CHANGE("onSizeChange"),
-    EVENT_AD_LOADED("onAdLoaded"),
-    EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
-    EVENT_AD_OPENED("onAdOpened"),
-    EVENT_AD_CLOSED("onAdClosed"),
-    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication"),
-    EVENT_AD_VIDEO_END("onVideoEnd"),
-    EVENT_AD_VIDEO_MUTE("onVideoMute"),
-    EVENT_AD_VIDEO_PAUSE("onVideoPause"),
-    EVENT_AD_VIDEO_PLAY("onVideoPlay"),
-    EVENT_AD_VIDEO_START("onVideoStart"),
-    EVENT_AD_VIDEO_CONTENT("hasVideoContent");
-
-    private final String event;
-
-    Events(final String name) {
-      event = name;
-    }
-
-    @Override
-    public String toString() {
-      return event;
-    }
-  }
-
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
   private Boolean requested = false;
-
   // Internal prop values
   private AdRequest.Builder request;
   private VideoOptions.Builder videoOptions;
@@ -70,6 +42,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Create & return view instance
+   *
    * @param themedReactContext
    * @return
    */
@@ -105,6 +78,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Declare custom events
+   *
    * @return
    */
   @Override
@@ -116,6 +90,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Handle unitId prop
+   *
    * @param view
    * @param value
    */
@@ -127,6 +102,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Handle request prop
+   *
    * @param view
    * @param map
    */
@@ -138,6 +114,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Handle video prop
+   *
    * @param view
    * @param map
    */
@@ -149,6 +126,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Handle size prop
+   *
    * @param view
    * @param value
    */
@@ -210,8 +188,12 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
         int left = adView.getLeft();
         int top = adView.getTop();
 
-        int width = adView.getAdSize().getWidthInPixels(context);
-        int height = adView.getAdSize().getHeightInPixels(context);
+        int width = adView
+          .getAdSize()
+          .getWidthInPixels(context);
+        int height = adView
+          .getAdSize()
+          .getHeightInPixels(context);
 
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
@@ -230,17 +212,21 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
             public void onVideoEnd() {
               sendEvent(Events.EVENT_AD_VIDEO_END.toString(), null);
             }
+
             public void onVideoMute(boolean isMuted) {
               WritableMap videoMutePayload = Arguments.createMap();
               videoMutePayload.putBoolean("isMuted", isMuted);
               sendEvent(Events.EVENT_AD_VIDEO_MUTE.toString(), videoMutePayload);
             }
+
             public void onVideoPause() {
               sendEvent(Events.EVENT_AD_VIDEO_PAUSE.toString(), null);
             }
+
             public void onVideoPlay() {
               sendEvent(Events.EVENT_AD_VIDEO_PLAY.toString(), null);
             }
+
             public void onVideoStart() {
               sendEvent(Events.EVENT_AD_VIDEO_START.toString(), null);
             }
@@ -273,6 +259,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
   /**
    * Sends an event back to the JS component to handle
+   *
    * @param type
    * @param payload
    */
@@ -286,5 +273,31 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
 
     int id = viewGroup.getId();
     emitter.receiveEvent(viewGroup.getId(), BANNER_EVENT, event);
+  }
+
+  public enum Events {
+    EVENT_AD_SIZE_CHANGE("onSizeChange"),
+    EVENT_AD_LOADED("onAdLoaded"),
+    EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
+    EVENT_AD_OPENED("onAdOpened"),
+    EVENT_AD_CLOSED("onAdClosed"),
+    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication"),
+    EVENT_AD_VIDEO_END("onVideoEnd"),
+    EVENT_AD_VIDEO_MUTE("onVideoMute"),
+    EVENT_AD_VIDEO_PAUSE("onVideoPause"),
+    EVENT_AD_VIDEO_PLAY("onVideoPlay"),
+    EVENT_AD_VIDEO_START("onVideoStart"),
+    EVENT_AD_VIDEO_CONTENT("hasVideoContent");
+
+    private final String event;
+
+    Events(final String name) {
+      event = name;
+    }
+
+    @Override
+    public String toString() {
+      return event;
+    }
   }
 }

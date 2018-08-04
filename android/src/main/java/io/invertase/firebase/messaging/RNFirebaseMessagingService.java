@@ -11,9 +11,9 @@ import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessagingService extends FirebaseMessagingService {
-  private static final String TAG = "RNFMessagingService";
   public static final String MESSAGE_EVENT = "messaging-message";
   public static final String REMOTE_NOTIFICATION_EVENT = "notifications-remote-notification";
+  private static final String TAG = "RNFMessagingService";
 
   @Override
   public void onMessageReceived(RemoteMessage message) {
@@ -25,7 +25,9 @@ public class RNFirebaseMessagingService extends FirebaseMessagingService {
       notificationEvent.putExtra("notification", message);
 
       // Broadcast it to the (foreground) RN Application
-      LocalBroadcastManager.getInstance(this).sendBroadcast(notificationEvent);
+      LocalBroadcastManager
+        .getInstance(this)
+        .sendBroadcast(notificationEvent);
     } else {
       // It's a data message
       // If the app is in the foreground we send it to the Messaging module
@@ -33,16 +35,27 @@ public class RNFirebaseMessagingService extends FirebaseMessagingService {
         Intent messagingEvent = new Intent(MESSAGE_EVENT);
         messagingEvent.putExtra("message", message);
         // Broadcast it so it is only available to the RN Application
-        LocalBroadcastManager.getInstance(this).sendBroadcast(messagingEvent);
+        LocalBroadcastManager
+          .getInstance(this)
+          .sendBroadcast(messagingEvent);
       } else {
         try {
           // If the app is in the background we send it to the Headless JS Service
-          Intent headlessIntent = new Intent(this.getApplicationContext(), RNFirebaseBackgroundMessagingService.class);
+          Intent headlessIntent = new Intent(
+            this.getApplicationContext(),
+            RNFirebaseBackgroundMessagingService.class
+          );
           headlessIntent.putExtra("message", message);
-          this.getApplicationContext().startService(headlessIntent);
+          this
+            .getApplicationContext()
+            .startService(headlessIntent);
           HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
         } catch (IllegalStateException ex) {
-          Log.e(TAG, "Background messages will only work if the message priority is set to 'high'", ex);
+          Log.e(
+            TAG,
+            "Background messages will only work if the message priority is set to 'high'",
+            ex
+          );
         }
       }
     }

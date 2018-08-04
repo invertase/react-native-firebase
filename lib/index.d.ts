@@ -53,7 +53,7 @@ declare module 'react-native-firebase' {
       RNFirebase.notifications.Notifications,
       RNFirebase.notifications.NotificationsStatics
     >;
-    // perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
+    perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
     storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
     // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
     initializeApp(options: Firebase.Options, name: string): App;
@@ -90,7 +90,7 @@ declare module 'react-native-firebase' {
     links(): RNFirebase.links.Links;
     messaging(): RNFirebase.messaging.Messaging;
     notifications(): RNFirebase.notifications.Notifications;
-    // perf(): RNFirebase.perf.Performance;
+    perf(): RNFirebase.perf.Perf;
     storage(): RNFirebase.storage.Storage;
     // utils(): RNFirebase.utils.Utils;
     readonly name: string;
@@ -1543,6 +1543,135 @@ declare module 'react-native-firebase' {
          * - iOS: The plist file name, with no file name extension.
          */
         setDefaultsFromResource(resource: string | number): void;
+      }
+    }
+
+    namespace perf {
+      type HttpMethod =
+        | 'CONNECT'
+        | 'DELETE'
+        | 'GET'
+        | 'HEAD'
+        | 'OPTIONS'
+        | 'PATCH'
+        | 'POST'
+        | 'PUT'
+        | 'TRACE';
+
+      interface Perf {
+        /**
+         * Globally enable or disable performance monitoring.
+         */
+        setPerformanceCollectionEnabled(enabled: boolean): void;
+
+        /**
+         * Returns a new Trace instance.
+         */
+        newTrace(trace: string): Trace;
+
+        /**
+         * Returns a new HTTP Metric instance.
+         */
+        newHttpMetric(url: string, httpMethod: HttpMethod): HttpMetric;
+      }
+
+      interface Trace {
+        /**
+         * Return an attribute by name, or null if it does not exist.
+         */
+        getAttribute(attribute: string): Promise<string | null>;
+
+        /**
+         * Return an object of key-value attributes.
+         */
+        getAttributes(): Promise<Object>;
+
+        /**
+         * Get a metric by name. Returns 0 if it does not exist.
+         */
+        getMetric(metricName: string): Promise<number>;
+
+        /**
+         * Increment a metric by name and value.
+         */
+        incrementMetric(metricName: string, incrementBy: number): Promise<null>;
+
+        /**
+         * Set an attribute. Returns true if it was set, false if it was not.
+         */
+        putAttribute(attribute: string, value: string): Promise<true | false>;
+
+        /**
+         * Set a metric.
+         */
+        putMetric(metricName: string, value: number): Promise<null>;
+
+        /**
+         * Remove an attribute by name.
+         */
+        removeAttribute(attribute: string): Promise<null>;
+
+        /**
+         * Start a Trace instance.
+         */
+        start(): Promise<null>;
+
+        /**
+         * Stop a Trace instance.
+         */
+        stop(): Promise<null>;
+      }
+
+      interface HttpMetric {
+        /**
+         * Return an attribute by name, or null if it does not exist.
+         */
+        getAttribute(attribute: string): Promise<string | null>;
+
+        /**
+         * Return an object of key-value attributes.
+         */
+        getAttributes(): Promise<Object>
+
+        /**
+         * Set an attribute. Returns true if it was set, false if it was not.
+         */
+        putAttribute(attribute: string, value: string): Promise<true | false>;
+
+        /**
+         * Remove an attribute by name.
+         */
+        removeAttribute(attribute: string): Promise<null>;
+
+        /**
+         * Set the request HTTP response code.
+         */
+        setHttpResponseCode(code: number): Promise<null>;
+
+        /**
+         * Set the request payload size, in bytes.
+         */
+        setRequestPayloadSize(bytes: number): Promise<null>;
+
+        /**
+         * Set the response content type.
+         */
+        setResponseContentType(type: string): Promise<null>;
+
+        /**
+         * Set the response payload size, in bytes.
+         */
+        setResponsePayloadSize(bytes: number): Promise<null>;
+
+        /**
+         * Start a HttpMetric instance.
+         */
+        start(): Promise<null>;
+
+        /**
+         * Stop a HttpMetric instance.
+         */
+        stop(): Promise<null>;
       }
     }
 

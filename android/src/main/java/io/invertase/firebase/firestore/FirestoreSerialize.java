@@ -48,15 +48,30 @@ public class FirestoreSerialize {
   static WritableMap snapshotToWritableMap(DocumentSnapshot documentSnapshot) {
     WritableMap documentMap = Arguments.createMap();
 
-    documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
+    documentMap.putString(
+      KEY_PATH,
+      documentSnapshot
+        .getReference()
+        .getPath()
+    );
     if (documentSnapshot.exists()) {
       documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
     }
 
     // metadata
     WritableMap metadata = Arguments.createMap();
-    metadata.putBoolean("fromCache", documentSnapshot.getMetadata().isFromCache());
-    metadata.putBoolean("hasPendingWrites", documentSnapshot.getMetadata().hasPendingWrites());
+    metadata.putBoolean(
+      "fromCache",
+      documentSnapshot
+        .getMetadata()
+        .isFromCache()
+    );
+    metadata.putBoolean(
+      "hasPendingWrites",
+      documentSnapshot
+        .getMetadata()
+        .hasPendingWrites()
+    );
     documentMap.putMap(KEY_METADATA, metadata);
     return documentMap;
   }
@@ -77,8 +92,18 @@ public class FirestoreSerialize {
 
     // metadata
     WritableMap metadata = Arguments.createMap();
-    metadata.putBoolean("fromCache", querySnapshot.getMetadata().isFromCache());
-    metadata.putBoolean("hasPendingWrites", querySnapshot.getMetadata().hasPendingWrites());
+    metadata.putBoolean(
+      "fromCache",
+      querySnapshot
+        .getMetadata()
+        .isFromCache()
+    );
+    metadata.putBoolean(
+      "hasPendingWrites",
+      querySnapshot
+        .getMetadata()
+        .hasPendingWrites()
+    );
     queryMap.putMap(KEY_METADATA, metadata);
 
     return queryMap;

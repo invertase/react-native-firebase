@@ -3,26 +3,25 @@ package io.invertase.firebase.config;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.Task;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableArray;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.google.firebase.FirebaseApp;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 import io.invertase.firebase.Utils;
 
@@ -49,11 +48,14 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
     return TAG;
   }
 
-  @ReactMethod  public void enableDeveloperMode() {
+  @ReactMethod
+  public void enableDeveloperMode() {
     FirebaseRemoteConfigSettings.Builder settings = new FirebaseRemoteConfigSettings.Builder();
     settings.setDeveloperModeEnabled(true);
 
-    FirebaseRemoteConfig.getInstance().setConfigSettings(settings.build());
+    FirebaseRemoteConfig
+      .getInstance()
+      .setConfigSettings(settings.build());
   }
 
   @ReactMethod
@@ -68,13 +70,19 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void activateFetched(final Promise promise) {
-    Boolean status = FirebaseRemoteConfig.getInstance().activateFetched();
+    Boolean status = FirebaseRemoteConfig
+      .getInstance()
+      .activateFetched();
+
     promise.resolve(status);
   }
 
   @ReactMethod
   public void getValue(String key, final Promise promise) {
-    FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue(key);
+    FirebaseRemoteConfigValue value = FirebaseRemoteConfig
+      .getInstance()
+      .getValue(key);
+
     promise.resolve(convertRemoteConfigValue(value));
   }
 
@@ -84,7 +92,10 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
     List<Object> keysList = Utils.recursivelyDeconstructReadableArray(keys);
 
     for (Object key : keysList) {
-      FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue((String) key);
+      FirebaseRemoteConfigValue value = FirebaseRemoteConfig
+        .getInstance()
+        .getValue((String) key);
+
       array.pushMap(convertRemoteConfigValue(value));
     }
 
@@ -93,7 +104,10 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getKeysByPrefix(String prefix, final Promise promise) {
-    Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
+    Set<String> keys = FirebaseRemoteConfig
+      .getInstance()
+      .getKeysByPrefix(prefix);
+
     WritableArray array = Arguments.createArray();
 
     for (String key : keys) {
@@ -106,16 +120,26 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setDefaults(ReadableMap map) {
     Map<String, Object> convertedMap = Utils.recursivelyDeconstructReadableMap(map);
-    FirebaseRemoteConfig.getInstance().setDefaults(convertedMap);
+    FirebaseRemoteConfig
+      .getInstance()
+      .setDefaults(convertedMap);
   }
 
   @ReactMethod
   public void setDefaultsFromResource(int resourceId) {
-    FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
+    FirebaseRemoteConfig
+      .getInstance()
+      .setDefaults(resourceId);
   }
 
-  private void fetchInternal(final Promise promise, Boolean withExpiration, long expirationDuration) {
-    FirebaseRemoteConfig.getInstance().fetch(withExpiration ? expirationDuration : 43200) // 12 hours default
+  private void fetchInternal(
+    final Promise promise,
+    Boolean withExpiration,
+    long expirationDuration
+  ) {
+    FirebaseRemoteConfig
+      .getInstance()
+      .fetch(withExpiration ? expirationDuration : 43200) // 12 hours default
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
         public void onComplete(@NonNull Task<Void> task) {
@@ -123,9 +147,17 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
             promise.resolve(null);
           } else {
             if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
-              promise.reject("config/throttled", "fetch() operation cannot be completed successfully, due to throttling.", task.getException());
+              promise.reject(
+                "config/throttled",
+                "fetch() operation cannot be completed successfully, due to throttling.",
+                task.getException()
+              );
             } else {
-              promise.reject("config/failure", "fetch() operation cannot be completed successfully.", task.getException());
+              promise.reject(
+                "config/failure",
+                "fetch() operation cannot be completed successfully.",
+                task.getException()
+              );
             }
           }
         }
