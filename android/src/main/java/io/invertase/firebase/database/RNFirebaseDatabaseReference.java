@@ -1,81 +1,40 @@
 package io.invertase.firebase.database;
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.lang.ref.WeakReference;
-
-import android.util.Log;
-import android.os.AsyncTask;
 import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-
-import com.google.firebase.database.Query;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.invertase.firebase.Utils;
 
 class RNFirebaseDatabaseReference {
+  private static final String TAG = "RNFirebaseDBReference";
   private String key;
   private Query query;
   private String appName;
   private String dbURL;
   private ReactContext reactContext;
-  private static final String TAG = "RNFirebaseDBReference";
   private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
   private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
-
-  /**
-   * AsyncTask to convert DataSnapshot instances to WritableMap instances.
-   *
-   * Introduced due to https://github.com/invertase/react-native-firebase/issues/1284
-   */
-  private static class DataSnapshotToMapAsyncTask extends AsyncTask<Object, Void, WritableMap> {
-
-    private WeakReference<ReactContext> reactContextWeakReference;
-    private WeakReference<RNFirebaseDatabaseReference> referenceWeakReference;
-
-    DataSnapshotToMapAsyncTask(ReactContext context, RNFirebaseDatabaseReference reference) {
-      referenceWeakReference = new WeakReference<>(reference);
-      reactContextWeakReference = new WeakReference<>(context);
-    }
-
-    @Override
-    protected final WritableMap doInBackground(Object... params) {
-      DataSnapshot dataSnapshot = (DataSnapshot) params[0];
-      @Nullable String previousChildName = (String) params[1];
-
-      try {
-        return RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
-      } catch (RuntimeException e) {
-        if (isAvailable()) {
-          reactContextWeakReference.get().handleException(e);
-        }
-        throw e;
-      }
-    }
-
-    @Override
-    protected void onPostExecute(WritableMap writableMap) {
-      // do nothing as overridden on usage
-    }
-
-    Boolean isAvailable() {
-      return reactContextWeakReference.get() != null && referenceWeakReference.get() != null;
-    }
-  }
 
   /**
    * RNFirebase wrapper around FirebaseDatabaseReference,
@@ -87,7 +46,14 @@ class RNFirebaseDatabaseReference {
    * @param refPath
    * @param modifiersArray
    */
-  RNFirebaseDatabaseReference(ReactContext context, String app, String url, String refKey, String refPath, ReadableArray modifiersArray) {
+  RNFirebaseDatabaseReference(
+    ReactContext context,
+    String app,
+    String url,
+    String refKey,
+    String refPath,
+    ReadableArray modifiersArray
+  ) {
     key = refKey;
     query = null;
     appName = app;
@@ -95,7 +61,6 @@ class RNFirebaseDatabaseReference {
     reactContext = context;
     buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
   }
-
 
   /**
    * Used outside of class for keepSynced etc.
@@ -113,7 +78,8 @@ class RNFirebaseDatabaseReference {
    * @return
    */
   private Boolean hasEventListener(String eventRegistrationKey) {
-    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(eventRegistrationKey);
+    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(
+      eventRegistrationKey);
   }
 
   /**
@@ -155,7 +121,6 @@ class RNFirebaseDatabaseReference {
 
   }
 
-
   /**
    * Add a ChildEventListener to the query and internally keep a reference to it.
    *
@@ -174,8 +139,10 @@ class RNFirebaseDatabaseReference {
    * @param promise
    */
   private void addOnceValueEventListener(final Promise promise) {
-    @SuppressLint("StaticFieldLeak")
-    final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(reactContext, this) {
+    @SuppressLint("StaticFieldLeak") final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(
+      reactContext,
+      this
+    ) {
       @Override
       protected void onPostExecute(WritableMap writableMap) {
         if (this.isAvailable()) promise.resolve(writableMap);
@@ -252,7 +219,6 @@ class RNFirebaseDatabaseReference {
     query.addChildEventListener(childEventListener);
   }
 
-
   /**
    * Handles a React Native JS '.on(..)' request and initializes listeners.
    *
@@ -279,7 +245,6 @@ class RNFirebaseDatabaseReference {
       addChildOnceEventListener(eventType, promise);
     }
   }
-
 
   /**
    * Add a native .on('child_X',.. ) event listener.
@@ -365,7 +330,12 @@ class RNFirebaseDatabaseReference {
    * @param dataSnapshot
    * @param previousChildName
    */
-  private void handleDatabaseEvent(final String eventType, final ReadableMap registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+  private void handleDatabaseEvent(
+    final String eventType,
+    final ReadableMap registration,
+    DataSnapshot dataSnapshot,
+    @Nullable String previousChildName
+  ) {
     @SuppressLint("StaticFieldLeak")
     DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(reactContext, this) {
       @Override
@@ -424,11 +394,6 @@ class RNFirebaseDatabaseReference {
     }
   }
 
-  /* =================
-   *  QUERY MODIFIERS
-   * =================
-   */
-
   /**
    * @param name
    * @param type
@@ -450,6 +415,11 @@ class RNFirebaseDatabaseReference {
         query = query.orderByChild(key);
     }
   }
+
+  /* =================
+   *  QUERY MODIFIERS
+   * =================
+   */
 
   /**
    * @param name
@@ -481,12 +451,6 @@ class RNFirebaseDatabaseReference {
     }
   }
 
-
-  /* ===============
-   *  QUERY FILTERS
-   * ===============
-   */
-
   /**
    * @param key
    * @param valueType
@@ -516,6 +480,12 @@ class RNFirebaseDatabaseReference {
       }
     }
   }
+
+
+  /* ===============
+   *  QUERY FILTERS
+   * ===============
+   */
 
   /**
    * @param key
@@ -574,6 +544,48 @@ class RNFirebaseDatabaseReference {
       } else {
         query = query.startAt(value, key);
       }
+    }
+  }
+
+  /**
+   * AsyncTask to convert DataSnapshot instances to WritableMap instances.
+   * <p>
+   * Introduced due to https://github.com/invertase/react-native-firebase/issues/1284
+   */
+  private static class DataSnapshotToMapAsyncTask extends AsyncTask<Object, Void, WritableMap> {
+
+    private WeakReference<ReactContext> reactContextWeakReference;
+    private WeakReference<RNFirebaseDatabaseReference> referenceWeakReference;
+
+    DataSnapshotToMapAsyncTask(ReactContext context, RNFirebaseDatabaseReference reference) {
+      referenceWeakReference = new WeakReference<>(reference);
+      reactContextWeakReference = new WeakReference<>(context);
+    }
+
+    @Override
+    protected final WritableMap doInBackground(Object... params) {
+      DataSnapshot dataSnapshot = (DataSnapshot) params[0];
+      @Nullable String previousChildName = (String) params[1];
+
+      try {
+        return RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
+      } catch (RuntimeException e) {
+        if (isAvailable()) {
+          reactContextWeakReference
+            .get()
+            .handleException(e);
+        }
+        throw e;
+      }
+    }
+
+    @Override
+    protected void onPostExecute(WritableMap writableMap) {
+      // do nothing as overridden on usage
+    }
+
+    Boolean isAvailable() {
+      return reactContextWeakReference.get() != null && referenceWeakReference.get() != null;
     }
   }
 }
