@@ -8,9 +8,10 @@ describe('perf()', () => {
       await firebase.perf().setPerformanceCollectionEnabled(false);
     });
 
-    xit('errors if not boolean', async () => {
-      // TODO add validations to lib
-      await firebase.perf().setPerformanceCollectionEnabled();
+    it('errors if not boolean', async () => {
+      (() => firebase.perf().setPerformanceCollectionEnabled()).should.throw(
+        'firebase.perf().setPerformanceCollectionEnabled() requires a boolean value'
+      );
     });
   });
 
@@ -20,15 +21,27 @@ describe('perf()', () => {
       trace.constructor.name.should.be.equal('Trace');
     });
 
-    xit('errors if identifier not a string', async () => {
-      // TODO add validations to lib
-      try {
-        firebase.perf().newTrace([1, 2, 3, 4]);
-      } catch (e) {
-        return undefined;
-      }
+    it('errors if identifier not a string', async () => {
+      (() => firebase.perf().newTrace([1, 2, 3, 4])).should.throw(
+        'firebase.perf().newTrace() requires a string value'
+      );
+    });
+  });
 
-      throw new Error('Trace did not error on invalid identifier');
+  describe('newHttpMetric()', () => {
+    it('returns an instance of HttpMetric', async () => {
+      const trace = firebase.perf().newHttpMetric('http://foo.com', 'GET');
+      trace.constructor.name.should.be.equal('HttpMetric');
+    });
+
+    it('errors if url/httpMethod not a string', async () => {
+      (() => firebase.perf().newHttpMetric(123, [1, 2])).should.throw(
+        'firebase.perf().newHttpMetric() requires url and httpMethod string values'
+      );
+    });
+
+    it('errors if httpMethod not a valid type', async () => {
+      (() => firebase.perf().newHttpMetric('foo', 'FOO')).should.throw(); // TODO error
     });
   });
 });

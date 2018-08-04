@@ -34,7 +34,6 @@ import java.util.Map;
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
 
-
 public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseFirestore";
   private SparseArray<RNFirebaseFirestoreTransactionHandler> transactionHandlers = new SparseArray<>();
@@ -83,7 +82,12 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
    */
   static WritableMap getJSError(FirebaseFirestoreException nativeException) {
     WritableMap errorMap = Arguments.createMap();
-    errorMap.putInt("nativeErrorCode", nativeException.getCode().value());
+    errorMap.putInt(
+      "nativeErrorCode",
+      nativeException
+        .getCode()
+        .value()
+    );
     errorMap.putString("nativeErrorMessage", nativeException.getMessage());
 
     String code;
@@ -228,21 +232,23 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void disableNetwork(String appName, final Promise promise) {
-    getFirestoreForApp(appName).disableNetwork().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "disableNetwork:onComplete:success");
-          promise.resolve(null);
-        } else {
-          Log.e(TAG, "disableNetwork:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    getFirestoreForApp(appName)
+      .disableNetwork()
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "disableNetwork:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Log.e(TAG, "disableNetwork:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   @ReactMethod
@@ -256,21 +262,23 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void enableNetwork(String appName, final Promise promise) {
-    getFirestoreForApp(appName).enableNetwork().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "enableNetwork:onComplete:success");
-          promise.resolve(null);
-        } else {
-          Log.e(TAG, "enableNetwork:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    getFirestoreForApp(appName)
+      .enableNetwork()
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "enableNetwork:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Log.e(TAG, "enableNetwork:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   @ReactMethod
@@ -314,8 +322,10 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void documentBatch(final String appName, final ReadableArray writes,
-                            final Promise promise) {
+  public void documentBatch(
+    final String appName, final ReadableArray writes,
+    final Promise promise
+  ) {
     FirebaseFirestore firestore = getFirestoreForApp(appName);
     WriteBatch batch = firestore.batch();
     final List<Object> writesArray = FirestoreSerialize.parseDocumentBatches(firestore, writes);
@@ -346,18 +356,23 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
       }
     }
 
-    batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(@NonNull Task<Void> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "documentBatch:onComplete:success");
-          promise.resolve(null);
-        } else {
-          Log.e(TAG, "documentBatch:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(promise, (FirebaseFirestoreException) task.getException());
+    batch
+      .commit()
+      .addOnCompleteListener(new OnCompleteListener<Void>() {
+        @Override
+        public void onComplete(@NonNull Task<Void> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "documentBatch:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Log.e(TAG, "documentBatch:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   @ReactMethod
@@ -421,17 +436,23 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     if (settings.hasKey("host")) {
       firestoreSettings.setHost(settings.getString("host"));
     } else {
-      firestoreSettings.setHost(firestore.getFirestoreSettings().getHost());
+      firestoreSettings.setHost(firestore
+                                  .getFirestoreSettings()
+                                  .getHost());
     }
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
     } else {
-      firestoreSettings.setPersistenceEnabled(firestore.getFirestoreSettings().isPersistenceEnabled());
+      firestoreSettings.setPersistenceEnabled(firestore
+                                                .getFirestoreSettings()
+                                                .isPersistenceEnabled());
     }
     if (settings.hasKey("ssl")) {
       firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
     } else {
-      firestoreSettings.setSslEnabled(firestore.getFirestoreSettings().isSslEnabled());
+      firestoreSettings.setSslEnabled(firestore
+                                        .getFirestoreSettings()
+                                        .isSslEnabled());
     }
 
 //    if (settings.hasKey("timestampsInSnapshots")) {
@@ -731,8 +752,18 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("deleteFieldValue", FieldValue.delete().toString());
-    constants.put("serverTimestampFieldValue", FieldValue.serverTimestamp().toString());
+    constants.put(
+      "deleteFieldValue",
+      FieldValue
+        .delete()
+        .toString()
+    );
+    constants.put(
+      "serverTimestampFieldValue",
+      FieldValue
+        .serverTimestamp()
+        .toString()
+    );
     return constants;
   }
 }

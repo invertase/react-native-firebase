@@ -89,21 +89,23 @@ class RNFirebaseFirestoreCollectionReference {
       }
     };
 
-    query.get(source).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-      @Override
-      public void onComplete(@NonNull Task<QuerySnapshot> task) {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "get:onComplete:success");
-          serializeAsyncTask.execute(task.getResult());
-        } else {
-          Log.e(TAG, "get:onComplete:failure", task.getException());
-          RNFirebaseFirestore.promiseRejectException(
-            promise,
-            (FirebaseFirestoreException) task.getException()
-          );
+    query
+      .get(source)
+      .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        @Override
+        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "get:onComplete:success");
+            serializeAsyncTask.execute(task.getResult());
+          } else {
+            Log.e(TAG, "get:onComplete:failure", task.getException());
+            RNFirebaseFirestore.promiseRejectException(
+              promise,
+              (FirebaseFirestoreException) task.getException()
+            );
+          }
         }
-      }
-    });
+      });
   }
 
   void onSnapshot(final String listenerId, final ReadableMap queryListenOptions) {

@@ -1,9 +1,7 @@
 package io.invertase.firebase;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -48,7 +46,9 @@ public class Utils {
     if (value == null) {
       map.putNull(key);
     } else {
-      String type = value.getClass().getName();
+      String type = value
+        .getClass()
+        .getName();
       switch (type) {
         case "java.lang.Boolean":
           map.putBoolean(key, (Boolean) value);
@@ -159,7 +159,9 @@ public class Utils {
   }
 
   public static int getResId(Context ctx, String resName) {
-    int resourceId = ctx.getResources().getIdentifier(resName, "string", ctx.getPackageName());
+    int resourceId = ctx
+      .getResources()
+      .getIdentifier(resName, "string", ctx.getPackageName());
     if (resourceId == 0) {
       Log.e(TAG, "resource " + resName + " could not be found");
     }
