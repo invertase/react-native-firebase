@@ -35,7 +35,7 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > '**?**' indicates partial support
 
-| Firebase Features                                                                                                                 | v2.2.x | v3.3.x | v4.2.x | Web SDK |
+| Firebase Features                                                                                                                 | v2.2.x | v3.3.x | v4.3.x | Web SDK |
 | --------------------------------------------------------------------------------------------------------------------------------- | :----: | :----: | :----: | :-----: |
 | **AdMob**                                                                                                                         |   ✅   |   ✅   |   ✅   |   ❌    |
 | **Analytics**                                                                                                                     |   ✅   |   ✅   |   ✅   |   ❌    |
@@ -64,11 +64,11 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`.
 
-|                      | 2.2.x    | 3.3.x    | 4.0.x    | 4.1.x    | 4.2.x     |
-| -------------------- | -------- | -------- | -------- | -------- | --------- |
-| React Native         | 0.47 +   | 0.50 +   | 0.52 +   | 0.52 +   | 0.52-55.x |
-| Firebase Android SDK | 11.0.0 + | 11.8.0 + | 12.0.0 + | 15.0.0 + | 15.0.0 +  |
-| Firebase iOS SDK     | 4.0.0 +  | 4.7.0 +  | 4.11.0 + | 4.13.0 + | 5.0.0 +   |
+|                           |  3.3.x   |  4.3.x  | 5.0.x |
+| ------------------------- | :------: | :-----: | :---: |
+| React Native              |  0.50 +  | 0.52-55 | 0.56+ |
+| Play Services Android SDK | 11.8.0 + | 15.0.1  |  TBC  |
+| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  |  TBC  |
 
 ---
 
@@ -98,7 +98,7 @@ Detailed changes for each release are documented in the [releases notes](https:/
 
 RNFirebase is an Apache-2.0 licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [sponsors](#sponsors) and [backers](#backers). If you'd like to join them, please consider:
 
-* [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
+- [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
 
 ### Sponsors
 
@@ -133,4 +133,4 @@ Thank you to all the people who have already contributed to RNFirebase!
 
 ## License
 
-* See [LICENSE](/LICENSE)
+- See [LICENSE](/LICENSE)
