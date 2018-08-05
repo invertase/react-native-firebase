@@ -30,26 +30,28 @@
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.1.1",
     "prop-types": "^15.6.1",
-    "react": "^16.3.2",
-    "react-native": "^0.55.3",
+    "react": "^16.4.1",
+    "react-native": "^0.56.0",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^4.5.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-eslint": "^8.2.3",
-    "babel-plugin-istanbul": "^4.1.6",
+    "@babel/cli": "7.0.0-beta.47",
+    "@babel/core": "7.0.0-beta.47",
+    "babel-eslint": "^8.2.6",
+    "babel-plugin-istanbul": "^5.0.1",
     "babel-plugin-module-resolver": "^3.1.1",
-    "babel-preset-react-native": "^4.0.0",
+    "babel-preset-react-native": "^5.0.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-flowtype": "^2.46.3",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.70.0",
-    "nyc": "^11.7.1"
+    "flow-bin": "^0.78.0",
+    "nyc": "^11.7.1",
+    "rimraf": "^2.6.2"
   },
   "nyc": {
     "check-coverage": false,
@@ -57,12 +59,22 @@
     "statements": 95,
     "functions": 95,
     "branches": 95,
-    "include": ["**/dist/**"],
-    "exclude": ["node_modules", "**/dist/utils/emitter**", "**/dist/modules/admob**", "**/dist/modules/auth/phone**"],
+    "include": [
+      "**/dist/**"
+    ],
+    "exclude": [
+      "node_modules",
+      "**/dist/utils/emitter**",
+      "**/dist/modules/admob**",
+      "**/dist/modules/auth/phone**"
+    ],
     "sourceMap": true,
     "instrument": true,
     "cwd": "..",
-    "reporter": ["lcov", "text-summary"]
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "detox": {
     "test-runner": "mocha",
