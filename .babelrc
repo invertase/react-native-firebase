@@ -7,7 +7,7 @@
       ]
     },
     "publish": {
-      "presets": ["react-native-syntax"],
+      "presets": ["@invertase/react-native-syntax"],
       "plugins": [
         "transform-flow-strip-types"
       ]
