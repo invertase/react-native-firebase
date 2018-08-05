@@ -17,15 +17,11 @@
 
 ## Introduction
 
-**RNFirebase** makes using [Firebase](http://firebase.com) with React Native simple. It is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the Firebase Web SDK as closely as possible.
+**React Native Firebase** is a _light-weight_ javascript layer connecting you to the native Firebase SDKs for both iOS and Android which aimes to mirror the offical Firebase Web SDK as closely as possible.
 
-Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library will work with React Native, it is mainly built for the web.
+Although the [Firebase Web SDK](https://www.npmjs.com/package/firebase) library will work with React Native; it is mainly built for the web and has a limited web constrained feature-set.
 
-RNFirebase provides a JavaScript bridge to the native Firebase SDKs for both iOS and Android therefore Firebase will run on the native thread, allowing the rest of your app to run on the [JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate). The Firebase Web SDK also runs on the JS thread, therefore potentially affecting the frame rate causing jank with animations, touch events etc.
-
-The native SDKs also allow us to hook into device sdk's which are not possible with the web SDK, for example crash reporting, offline realtime database support, analytics and more!
-
-All in all, RNFirebase provides much faster performance (~2x) over the web SDK and provides device sdk's not found in the web sdk (see the feature table below).
+Using the native Firebase SDKs with **React Native Firebase** allows you to consume device SDKs which don't exist on the Firebase Web SDK - for example; Remote Config, Performance Monitoring, Dynamic Links, Analytics and more (see the feature table below for comparison).
 
 ---
 
@@ -47,7 +43,6 @@ All in all, RNFirebase provides much faster performance (~2x) over the web SDK a
 | **Cloud Firestore**                                                                                                               |   ❌   |   ✅   |   ✅   |  **?**  |
 | **Cloud Messaging (FCM)**                                                                                                         | **?**  | **?**  |   ✅   |   ❌    |
 | **Crashlytics**                                                                                                                   |   ❌   |   ✅   |   ✅   |   ❌    |
-| **Crash Reporting**                                                                                                               |   ✅   |   ✅   |   ✅   |   ❌    |
 | **Dynamic Links**                                                                                                                 |   ❌   |   ✅   |   ✅   |   ❌    |
 | **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |   ❌   |   ❌   |   ✅   |   ✅    |
 | **Invites**                                                                                                                       |   ❌   |   ❌   |   ✅   |   ❌    |
@@ -92,7 +87,7 @@ For feature requests please visit our [Feature Request Board](https://boards.inv
 
 Detailed changes for each release are documented in the [releases notes](https://github.com/invertase/react-native-firebase/releases).
 
-<hr>
+----
 
 ## Supporting RNFirebase
 
