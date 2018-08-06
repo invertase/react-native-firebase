@@ -99,12 +99,22 @@ RCT_EXPORT_MODULE();
 }
 
 RCT_EXPORT_METHOD(startHandlingNotificationDisplayed) {
+    if(isUserHandlingOnNotificationDisplayed == YES) {
+        return;
+    }
+    
     isUserHandlingOnNotificationDisplayed = YES;
+    
     completionHandlers = [[NSMutableDictionary alloc] init];
 }
 
 RCT_EXPORT_METHOD(stopHandlingNotificationDisplayed) {
+    if(isUserHandlingOnNotificationDisplayed == NO) {
+        return;
+    }
+    
     isUserHandlingOnNotificationDisplayed = NO;
+    
     NSArray *allHandlers = completionHandlers.allValues;
     for (void (^ completionHandler)(UIBackgroundFetchResult) in allHandlers) {
         completionHandler(UIBackgroundFetchResultNoData);
