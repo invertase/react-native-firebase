@@ -3,7 +3,7 @@ package com.testing;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import io.invertase.bridge.RNBridgePackage;
+import io.salakar.bridge.RNBridgePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
