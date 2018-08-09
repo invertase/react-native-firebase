@@ -95,7 +95,7 @@ declare module 'react-native-firebase' {
   // export const admob: AdmobModule;
   export const analytics: AnalyticsModule;
   export const auth: AuthModule;
-  // export const config: ConfigModule;
+  export const config: ConfigModule;
   export const crashlytics: CrashlyticsModule;
   export const database: DatabaseModule;
   export const firestore: FirestoreModule;
