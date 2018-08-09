@@ -16,46 +16,65 @@ declare module 'react-native-firebase' {
     nativeModuleExists: boolean;
   } & S;
 
+  // type AdmobModule = FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
+  type AnalyticsModule = FirebaseModuleAndStatics<RNFirebase.Analytics>;
+  type AuthModule = FirebaseModuleAndStatics<
+    RNFirebase.auth.Auth,
+    RNFirebase.auth.AuthStatics
+  >;
+  type ConfigModule = FirebaseModuleAndStatics<RNFirebase.config.Config>;
+  type CrashlyticsModule = FirebaseModuleAndStatics<
+    RNFirebase.crashlytics.Crashlytics
+  >;
+  type DatabaseModule = FirebaseModuleAndStatics<
+    RNFirebase.database.Database,
+    RNFirebase.database.DatabaseStatics
+  >;
+  type FirestoreModule = FirebaseModuleAndStatics<
+    RNFirebase.firestore.Firestore,
+    RNFirebase.firestore.FirestoreStatics
+  >;
+  type FunctionsModule = FirebaseModuleAndStatics<
+    RNFirebase.functions.Functions,
+    RNFirebase.functions.FunctionsStatics
+  >;
+  type IidModule = FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
+  // type InvitesModule = FirebaseModuleAndStatics<RNFirebase.invites.Invites>;
+  type LinksModule = FirebaseModuleAndStatics<
+    RNFirebase.links.Links,
+    RNFirebase.links.LinksStatics
+  >;
+  type MessagingModule = FirebaseModuleAndStatics<
+    RNFirebase.messaging.Messaging,
+    RNFirebase.messaging.MessagingStatics
+  >;
+  type NotificationsModule = FirebaseModuleAndStatics<
+    RNFirebase.notifications.Notifications,
+    RNFirebase.notifications.NotificationsStatics
+  >;
+  type PerfModule = FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
+  type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
+  // type UtilsModule: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
+
   // Modules commented-out do not currently have type definitions
   export class Firebase {
     private constructor();
-    // admob: FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
-    analytics: FirebaseModuleAndStatics<RNFirebase.Analytics>;
-    auth: FirebaseModuleAndStatics<
-      RNFirebase.auth.Auth,
-      RNFirebase.auth.AuthStatics
-    >;
-    config: FirebaseModuleAndStatics<RNFirebase.config.Config>;
-    crashlytics: FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
-    database: FirebaseModuleAndStatics<
-      RNFirebase.database.Database,
-      RNFirebase.database.DatabaseStatics
-    >;
-    firestore: FirebaseModuleAndStatics<
-      RNFirebase.firestore.Firestore,
-      RNFirebase.firestore.FirestoreStatics
-    >;
-    functions: FirebaseModuleAndStatics<
-      RNFirebase.functions.Functions,
-      RNFirebase.functions.FunctionsStatics
-    >;
-    iid: FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
-    // invites: FirebaseModuleAndStatics<RNFirebase.invites.Invites>
-    links: FirebaseModuleAndStatics<
-      RNFirebase.links.Links,
-      RNFirebase.links.LinksStatics
-    >;
-    messaging: FirebaseModuleAndStatics<
-      RNFirebase.messaging.Messaging,
-      RNFirebase.messaging.MessagingStatics
-    >;
-    notifications: FirebaseModuleAndStatics<
-      RNFirebase.notifications.Notifications,
-      RNFirebase.notifications.NotificationsStatics
-    >;
-    perf: FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
-    storage: FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
-    // utils: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
+    // admob: AdmobModule;
+    analytics: AnalyticsModule;
+    auth: AuthModule;
+    config: ConfigModule;
+    crashlytics: CrashlyticsModule;
+    database: DatabaseModule;
+    firestore: FirestoreModule;
+    functions: FunctionsModule;
+    iid: IidModule;
+    // invites: InvitesModule;
+    links: LinksModule;
+    messaging: MessagingModule;
+    notifications: NotificationsModule;
+    perf: PerfModule;
+    storage: StorageModule;
+    // utils: UtilsModule;
     initializeApp(options: Firebase.Options, name: string): App;
     app(name?: string): App;
     readonly apps: App[];
@@ -73,6 +92,19 @@ declare module 'react-native-firebase' {
   }
   const firebase: Firebase;
   export default firebase;
+  // export const admob: AdmobModule;
+  export const analytics: AnalyticsModule;
+  export const auth: AuthModule;
+  export const config: ConfigModule;
+  export const crashlytics: CrashlyticsModule;
+  export const database: DatabaseModule;
+  export const firestore: FirestoreModule;
+  export const iid: IidModule;
+  // export const invites: InvitesModule;
+  export const links: LinksModule;
+  export const messaging: MessagingModule;
+  export const notifications: NotificationsModule;
+  export const storage: StorageModule;
 
   // Modules commented-out do not currently have type definitions
   export class App {
@@ -100,7 +132,7 @@ declare module 'react-native-firebase' {
   }
 
   export namespace RNFirebase {
-    interface RnError extends Error {
+    export interface RnError extends Error {
       code?: string;
     }
 
@@ -2366,4 +2398,115 @@ declare module 'react-native-firebase' {
       }
     }
   }
+}
+
+declare module 'react-native-firebase/storage' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type StorageTask<T> = RNFirebase.storage.StorageTask<T>;
+  export type RNStorage = RNFirebase.storage.RNStorage;
+  export type Storage = RNFirebase.storage.Storage;
+  export type Reference = RNFirebase.storage.Reference;
+  export type UploadMetadata = RNFirebase.storage.UploadMetadata;
+  export type SettableMetadata = RNFirebase.storage.SettableMetadata;
+  export type StringFormat = RNFirebase.storage.StringFormat;
+  export type UploadTask = RNFirebase.storage.UploadTask;
+  export type UploadTaskSnapshot = RNFirebase.storage.UploadTaskSnapshot;
+  export type FullMetadata = RNFirebase.storage.FullMetadata;
+  export type TaskEvent = RNFirebase.storage.TaskEvent;
+  export type TaskState = RNFirebase.storage.TaskState;
+}
+
+declare module 'react-native-firebase/database' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type Database = RNFirebase.database.Database;
+  export type RnReference = RNFirebase.database.RnReference;
+  export type QueryEventType = RNFirebase.database.QueryEventType;
+  export type QuerySuccessCallback = RNFirebase.database.QuerySuccessCallback;
+  export type QueryErrorCallback = RNFirebase.database.QueryErrorCallback;
+  export type Query = RNFirebase.database.Query;
+  export type DataSnapshot = RNFirebase.database.DataSnapshot;
+  export type Reference = RNFirebase.database.Reference;
+  export type DatabaseStatics = RNFirebase.database.DatabaseStatics;
+  interface ThenableReference<T> extends Promise<T> {}
+  interface ThenableReference<T> extends RNFirebase.database.Reference {}
+}
+
+declare module 'react-native-firebase/auth' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type AuthResult = RNFirebase.auth.AuthResult;
+  export type AuthProvider = RNFirebase.auth.AuthProvider;
+  export type Auth = RNFirebase.auth.Auth;
+  export type AuthStatics = RNFirebase.auth.AuthStatics;
+}
+
+declare module 'react-native-firebase/messaging' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type Messaging = RNFirebase.messaging.Messaging;
+  export type RemoteMessage = RNFirebase.messaging.RemoteMessage;
+}
+
+declare module 'react-native-firebase/iid' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type InstanceId = RNFirebase.iid.InstanceId;
+}
+
+declare module 'react-native-firebase/notifications' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type AndroidNotifications = RNFirebase.notifications.AndroidNotifications;
+  export type Notifications = RNFirebase.notifications.Notifications;
+  export type Notification = RNFirebase.notifications.Notification;
+  export type NotificationOpen = RNFirebase.notifications.NotificationOpen;
+  export type AndroidNotification = RNFirebase.notifications.AndroidNotification;
+  export type IOSNotification = RNFirebase.notifications.IOSNotification;
+  export type IOSAttachment = RNFirebase.notifications.IOSAttachment;
+  export type IOSAttachmentOptions = RNFirebase.notifications.IOSAttachmentOptions;
+}
+
+declare module 'react-native-firebase/config' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type ConfigSnapshot = RNFirebase.config.ConfigSnapshot;
+  export type Config = RNFirebase.config.Config;
+}
+
+declare module 'react-native-firebase/crashlytics' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type Crashlytics = RNFirebase.crashlytics.Crashlytics;
+}
+
+declare module 'react-native-firebase/links' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type Links = RNFirebase.links.Links;
+  export type DynamicLink = RNFirebase.links.DynamicLink;
+  export type AnalyticsParameters = RNFirebase.links.AnalyticsParameters;
+  export type AndroidParameters = RNFirebase.links.AndroidParameters;
+  export type IOSParameters = RNFirebase.links.IOSParameters;
+  export type ITunesParameters = RNFirebase.links.ITunesParameters;
+  export type NavigationParameters = RNFirebase.links.NavigationParameters;
+  export type SocialParameters = RNFirebase.links.SocialParameters;
+}
+
+declare module 'react-native-firebase/functions' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type HttpsErrorCode = RNFirebase.functions.HttpsErrorCode;
+  export type FunctionsErrorCode = RNFirebase.functions.FunctionsErrorCode;
+  export type HttpsCallableResult = RNFirebase.functions.HttpsCallableResult;
+  export type Funtions = RNFirebase.functions.Functions;
+  export type HttpsError = RNFirebase.functions.HttpsError;
+}
+
+declare module 'react-native-firebase/firestore' {
+  import { RNFirebase } from 'react-native-firebase';
+  export type Firestore = RNFirebase.firestore.Firestore;
+  export type FirestoreStatics = RNFirebase.firestore.FirestoreStatics;
+  export type CollectionReference = RNFirebase.firestore.CollectionReference;
+  export type DocumentChange = RNFirebase.firestore.DocumentChange;
+  export type DocumentReference = RNFirebase.firestore.DocumentReference;
+  export type DocumentSnapshot = RNFirebase.firestore.DocumentSnapshot;
+  export type FieldPath = RNFirebase.firestore.FieldPath;
+  export type FieldValue = RNFirebase.firestore.FieldValue;
+  export type GeoPoint = RNFirebase.firestore.GeoPoint;
+  export type Path = RNFirebase.firestore.Path;
+  export type Query = RNFirebase.firestore.Query;
+  export type QuerySnapshot = RNFirebase.firestore.QuerySnapshot;
+  export type WriteBatch = RNFirebase.firestore.WriteBatch;
 }
