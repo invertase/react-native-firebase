@@ -247,7 +247,6 @@ export const {
   analytics,
   auth,
   config,
-  crash,
   crashlytics,
   database,
   firestore,

@@ -2496,7 +2496,7 @@ declare module 'react-native-firebase/functions' {
 
 declare module 'react-native-firebase/firestore' {
   import { RNFirebase } from 'react-native-firebase';
-  export type FireStore = RNFirebase.firestore.Firestore;
+  export type Firestore = RNFirebase.firestore.Firestore;
   export type FirestoreStatics = RNFirebase.firestore.FirestoreStatics;
   export type CollectionReference = RNFirebase.firestore.CollectionReference;
   export type DocumentChange = RNFirebase.firestore.DocumentChange;
