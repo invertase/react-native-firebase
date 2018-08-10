@@ -1106,6 +1106,9 @@ declare module 'react-native-firebase' {
         deleteChannel(channelId: string): Promise<void>;
       }
 
+      type BackgroundFetchResultValue = string;
+      type CompletionHandler = (backgroundFetchResult: BackgroundFetchResultValue) => void;
+
       interface Notifications {
         android: AndroidNotifications;
 
@@ -1135,7 +1138,7 @@ declare module 'react-native-firebase' {
         ): () => any;
 
         onNotificationDisplayed(
-          listener: (notification: Notification) => any
+          listener: (notification: Notification, done: CompletionHandler) => Promise<any>
         ): () => any;
 
         onNotificationOpened(
