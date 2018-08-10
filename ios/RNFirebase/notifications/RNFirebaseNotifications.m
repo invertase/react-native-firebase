@@ -17,7 +17,6 @@
 @end
 
 @implementation RNFirebaseNotifications {
-    BOOL isUserHandlingOnNotificationDisplayed;
     NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
 }
 
@@ -57,6 +56,7 @@ RCT_EXPORT_MODULE();
 
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
+    completionHandlers = [[NSMutableDictionary alloc] init];
 }
 
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -98,46 +98,12 @@ RCT_EXPORT_MODULE();
     }
 }
 
-RCT_EXPORT_METHOD(startHandlingNotificationDisplayed) {
-    if(isUserHandlingOnNotificationDisplayed == YES) {
-        return;
-    }
-    
-    isUserHandlingOnNotificationDisplayed = YES;
-    
-    completionHandlers = [[NSMutableDictionary alloc] init];
-}
-
-RCT_EXPORT_METHOD(stopHandlingNotificationDisplayed) {
-    if(isUserHandlingOnNotificationDisplayed == NO) {
-        return;
-    }
-    
-    isUserHandlingOnNotificationDisplayed = NO;
-    
-    NSArray *allHandlers = completionHandlers.allValues;
-    for (void (^ completionHandler)(UIBackgroundFetchResult) in allHandlers) {
-        completionHandler(UIBackgroundFetchResultNoData);
-    }
-    [completionHandlers removeAllObjects];
-    completionHandlers = nil;
-}
-
 RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchResult)fetchResult) {
     void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
     completionHandlers[handlerKey] = nil;
 
     if(completionHandler != nil) {
         completionHandler(fetchResult);
-    }
-}
-
-- (void)executeOrStoreCompletionHandler:(void (^ _Nonnull)(UIBackgroundFetchResult))completionHandler notification:(NSDictionary *)notification {
-    if(isUserHandlingOnNotificationDisplayed) {
-        NSString *handlerKey = notification[@"notificationId"];
-        completionHandlers[handlerKey] = completionHandler;
-    } else {
-        completionHandler(UIBackgroundFetchResultNoData);
     }
 }
 
@@ -153,6 +119,7 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchR
     }
 
     NSDictionary *notification = [self parseUserInfo:userInfo];
+    NSString *handlerKey = notification[@"notificationId"];
 
     NSString *event;
     if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
@@ -180,8 +147,8 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchR
                          };
     }
 
-    [self executeOrStoreCompletionHandler:completionHandler notification:notification];
-
+    completionHandlers[handlerKey] = completionHandler;
+    
     [self sendJSEvent:self name:event body:notification];
 }
 
