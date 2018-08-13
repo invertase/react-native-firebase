@@ -48,8 +48,8 @@ export default class Database extends ModuleBase {
       {
         events: NATIVE_EVENTS,
         moduleName: MODULE_NAME,
-        multiApp: true,
-        hasShards: true,
+        hasMultiAppSupport: true,
+        hasCustomUrlSupport: true,
         namespace: NAMESPACE,
       },
       serviceUrl
