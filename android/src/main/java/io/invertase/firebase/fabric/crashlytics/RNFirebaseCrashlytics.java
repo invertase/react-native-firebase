@@ -2,11 +2,10 @@ package io.invertase.firebase.fabric.crashlytics;
 
 import android.util.Log;
 
-import com.facebook.react.bridge.ReactMethod;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-
-import com.crashlytics.android.Crashlytics;
+import com.facebook.react.bridge.ReactMethod;
 
 
 public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
@@ -25,7 +24,9 @@ public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void crash() {
-    Crashlytics.getInstance().crash();
+    Crashlytics
+      .getInstance()
+      .crash();
   }
 
   @ReactMethod

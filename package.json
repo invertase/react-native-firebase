@@ -1,29 +1,23 @@
 {
   "name": "react-native-firebase",
-  "version": "4.3.7",
-  "author": "Invertase <contact@invertase.io> (http://invertase.io)",
+  "version": "5.0.0",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "genversion lib/version.js && npm run validate-ts-declarations && npm run build-lib && npm run build-flow",
-    "build-flow": "flow-copy-source -i */__tests__* lib dist",
-    "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
-    "build-lib-watch": "genversion lib/version.js && BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files --watch",
+    "build": "genversion src/version.js && npm run validate-ts-declarations && npm run build-src && npm run build-flow",
+    "build-flow": "flow-copy-source -i */__tests__* src dist",
+    "build-src": "BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
+    "build-src-watch": "genversion src/version.js && BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files --watch",
     "clean": "rimraf dist/",
     "flow": "flow",
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
     "format": "npm run format:assets && npm run lint -- --fix",
-    "lint": "eslint ./lib ./tests/src ./tests/lib",
+    "lint": "eslint ./src",
     "precommit": "lint-staged",
     "prepublish": "npm run clean && npm run build",
     "postinstall": "postinstall-build dist && opencollective postinstall || exit 0",
-    "test-cli": "node ./bin/test.js",
-    "tests-packager": "cd tests && npm run start",
-    "tests-npm-install": "cd tests && npm install",
-    "tests-pod-install": "cd tests && npm run ios:pod:install",
-    "tests-watch-start": "npm run test-cli watch init start",
-    "tests-watch-stop": "npm run test-cli watch stop",
     "validate-ts-declarations": "tsc --project ./"
   },
   "repository": {
@@ -33,49 +27,81 @@
   "jest": {
     "preset": "jest-react-native",
     "setupFiles": [],
-    "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modules/react-native-mock", "./node_modules/react-addons-test-utils"]
+    "unmockedModulePathPatterns": [
+      "./node_modules/react",
+      "./node_modules/react-native",
+      "./node_modules/react-native-mock",
+      "./node_modules/react-addons-test-utils"
+    ]
   },
   "license": "Apache-2.0",
-  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "functions", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
+  "keywords": [
+    "react",
+    "admob",
+    "auth",
+    "config",
+    "digits",
+    "fabric",
+    "functions",
+    "phone-auth",
+    "sms",
+    "firestore",
+    "cloud-firestore",
+    "datastore",
+    "remote-config",
+    "transactions",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "fcm",
+    "apn",
+    "gcm",
+    "analytics",
+    "messaging",
+    "database",
+    "android",
+    "ios",
+    "crash",
+    "firestack",
+    "performance",
+    "firestore",
+    "dynamic-links",
+    "crashlytics"
+  ],
   "peerDependencies": {
-    "react": "*",
-    "react-native": ">= 0.48.0",
+    "react": ">= 16.4.1",
+    "react-native": ">= 0.56.0",
     "fbjs": "*"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.2",
-    "babel-jest": "^14.1.0",
-    "babel-preset-react-native": "^1.9.0",
-    "babel-preset-react-native-syntax": "^1.0.0",
-    "debug": "^2.6.9",
-    "enzyme": "^2.4.1",
-    "eslint": "^4.18.1",
-    "eslint-config-airbnb": "^16.1.0",
+    "@babel/core": "7.0.0-beta.47",
+    "@babel/cli": "7.0.0-beta.47",
+    "babel-eslint": "^8.2.6",
+    "babel-preset-react-native": "^5.0.2",
+    "@invertase/babel-preset-react-native-syntax": "^0.1.0",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-flowtype": "^2.46.1",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-prettier": "^2.6.0",
-    "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.65.0",
-    "flow-copy-source": "^1.3.0",
-    "genversion": "^2.0.1",
+    "eslint-plugin-flowtype": "^2.50.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-react": "^7.10.0",
+    "flow-bin": "^0.78.0",
+    "flow-copy-source": "^2.0.2",
+    "genversion": "^2.1.0",
     "husky": "^0.14.3",
-    "lint-staged": "^6.1.1",
-    "prettier": "1.10.2",
-    "react": "^16.3.0-alpha.1",
-    "react-dom": "^16.3.0-alpha.1",
-    "react-native": "^0.54.4",
-    "rimraf": "^2.6.2",
-    "shelljs": "^0.7.8",
-    "typescript": "^2.7.2",
-    "wml": "0.0.82"
+    "lint-staged": "^7.2.0",
+    "prettier": "1.14.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-native": "^0.56.0",
+    "typescript": "^3.0.1"
   },
   "dependencies": {
     "opencollective": "^1.0.3",
     "postinstall-build": "^5.0.1",
-    "prop-types": "^15.6.1"
+    "prop-types": "^15.6.2"
   },
   "rnpm": {
     "android": {
@@ -89,8 +115,13 @@
     "url": "https://opencollective.com/react-native-firebase"
   },
   "lint-staged": {
-    "lib/**/*.js": ["eslint --fix", "git add"],
-    "tests/{src|lib}/**/*.js": ["eslint --fix", "git add"],
-    "*.{json,md,scss}": ["prettier --write", "git add"]
+    "src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

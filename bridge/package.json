@@ -20,36 +20,35 @@
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
-    "babel-preset-es2015-mod": "^6.6.0",
-    "babel-preset-es3": "^1.0.1",
     "bridge": "^0.2.7",
-    "detox": "^7.3.3",
-    "escape-string-regexp": "^1.0.5",
+    "detox": "^8.1.1",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
     "jsonwebtoken": "^8.2.1",
-    "mocha": "^5.1.1",
+    "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "^16.3.2",
-    "react-native": "^0.55.3",
+    "react": "^16.4.1",
+    "react-native": "^0.56.0",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^4.5.0"
+    "sinon": "^6.1.4"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-eslint": "^8.2.3",
-    "babel-plugin-istanbul": "^4.1.6",
+    "@babel/cli": "7.0.0-beta.47",
+    "@babel/core": "7.0.0-beta.47",
+    "babel-eslint": "^8.2.6",
+    "babel-plugin-istanbul": "^5.0.1",
     "babel-plugin-module-resolver": "^3.1.1",
-    "babel-preset-react-native": "^4.0.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^16.1.0",
+    "babel-preset-react-native": "^5.0.2",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-flowtype": "^2.46.3",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.70.0",
-    "nyc": "^11.7.1"
+    "flow-bin": "^0.78.0",
+    "nyc": "^12.0.2",
+    "rimraf": "^2.6.2"
   },
   "nyc": {
     "check-coverage": false,
@@ -57,12 +56,22 @@
     "statements": 95,
     "functions": 95,
     "branches": 95,
-    "include": ["**/dist/**"],
-    "exclude": ["node_modules", "**/dist/utils/emitter**", "**/dist/modules/admob**", "**/dist/modules/auth/phone**"],
+    "include": [
+      "**/dist/**"
+    ],
+    "exclude": [
+      "node_modules",
+      "**/dist/utils/emitter**",
+      "**/dist/modules/admob**",
+      "**/dist/modules/auth/phone**"
+    ],
     "sourceMap": true,
     "instrument": true,
     "cwd": "..",
-    "reporter": ["lcov", "text-summary"]
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "detox": {
     "test-runner": "mocha",

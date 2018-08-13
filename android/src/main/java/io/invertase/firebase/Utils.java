@@ -4,16 +4,15 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import com.facebook.react.bridge.ReadableArray;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -47,7 +46,9 @@ public class Utils {
     if (value == null) {
       map.putNull(key);
     } else {
-      String type = value.getClass().getName();
+      String type = value
+        .getClass()
+        .getName();
       switch (type) {
         case "java.lang.Boolean":
           map.putBoolean(key, (Boolean) value);
@@ -155,5 +156,15 @@ public class Utils {
     }
 
     return false;
+  }
+
+  public static int getResId(Context ctx, String resName) {
+    int resourceId = ctx
+      .getResources()
+      .getIdentifier(resName, "string", ctx.getPackageName());
+    if (resourceId == 0) {
+      Log.e(TAG, "resource " + resName + " could not be found");
+    }
+    return resourceId;
   }
 }

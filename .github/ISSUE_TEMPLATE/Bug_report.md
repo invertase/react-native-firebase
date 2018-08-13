@@ -2,7 +2,6 @@
 name: ⚠️ Bug/Issue report
 about: Please provide as much detail as possible to help us with a bug or issue. Issues
   will be closed if they do not follow the template.
-
 ---
 
 <!---
@@ -10,7 +9,7 @@ BEFORE YOU MAKE AN ISSUE
 
 The issue list of this repo is exclusively for bug reports.
 
-1) For feature requests, please use our Canny board: https://react-native-firebase.canny.io/feature-requests
+1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 
 2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
 
@@ -23,7 +22,7 @@ The issue list of this repo is exclusively for bug reports.
 
 ### Environment
 
-1. Application Target Platform: 
+1. Application Target Platform:
 
 <!--- (e.g. iOS, Android, Both) --->
 
@@ -47,14 +46,14 @@ The issue list of this repo is exclusively for bug reports.
 
 <!--- (e.g. database, auth, messaging, analytics etc - or N/A if not applicable) --->
 
-7. Are you using `typescript`? 
+7. Are you using `typescript`?
 
 <!--- yes/no --->
 
-
 ---
+
 Loving `react-native-firebase`? Please consider supporting them with any of the below:
 
-  - 👉  Back financially via [Open Collective](https://opencollective.com/react-native-firebase/donate)  
-  - 👉  Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter 
-  - 👉  Star this repo on GitHub ⭐️
+* 👉 Back financially via [Open Collective](https://opencollective.com/react-native-firebase/donate)
+* 👉 Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter
+* 👉 Star this repo on GitHub ⭐️

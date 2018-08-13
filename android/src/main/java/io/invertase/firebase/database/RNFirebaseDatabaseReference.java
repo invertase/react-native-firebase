@@ -1,35 +1,38 @@
 package io.invertase.firebase.database;
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-
-import android.util.Log;
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-
-import com.google.firebase.database.Query;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.invertase.firebase.Utils;
 
 class RNFirebaseDatabaseReference {
+  private static final String TAG = "RNFirebaseDBReference";
   private String key;
   private Query query;
   private String appName;
   private String dbURL;
   private ReactContext reactContext;
-  private static final String TAG = "RNFirebaseDBReference";
   private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
   private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
 
@@ -43,7 +46,14 @@ class RNFirebaseDatabaseReference {
    * @param refPath
    * @param modifiersArray
    */
-  RNFirebaseDatabaseReference(ReactContext context, String app, String url, String refKey, String refPath, ReadableArray modifiersArray) {
+  RNFirebaseDatabaseReference(
+    ReactContext context,
+    String app,
+    String url,
+    String refKey,
+    String refPath,
+    ReadableArray modifiersArray
+  ) {
     key = refKey;
     query = null;
     appName = app;
@@ -51,7 +61,6 @@ class RNFirebaseDatabaseReference {
     reactContext = context;
     buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
   }
-
 
   /**
    * Used outside of class for keepSynced etc.
@@ -69,7 +78,8 @@ class RNFirebaseDatabaseReference {
    * @return
    */
   private Boolean hasEventListener(String eventRegistrationKey) {
-    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(eventRegistrationKey);
+    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(
+      eventRegistrationKey);
   }
 
   /**
@@ -111,7 +121,6 @@ class RNFirebaseDatabaseReference {
 
   }
 
-
   /**
    * Add a ChildEventListener to the query and internally keep a reference to it.
    *
@@ -130,15 +139,24 @@ class RNFirebaseDatabaseReference {
    * @param promise
    */
   private void addOnceValueEventListener(final Promise promise) {
+    @SuppressLint("StaticFieldLeak") final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(
+      reactContext,
+      this
+    ) {
+      @Override
+      protected void onPostExecute(WritableMap writableMap) {
+        if (this.isAvailable()) promise.resolve(writableMap);
+      }
+    };
+
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
-      public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, null);
-        promise.resolve(data);
+      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        asyncTask.execute(dataSnapshot, null);
       }
 
       @Override
-      public void onCancelled(DatabaseError error) {
+      public void onCancelled(@NonNull DatabaseError error) {
         RNFirebaseDatabase.handlePromise(promise, error);
       }
     };
@@ -156,7 +174,7 @@ class RNFirebaseDatabaseReference {
   private void addChildOnceEventListener(final String eventName, final Promise promise) {
     ChildEventListener childEventListener = new ChildEventListener() {
       @Override
-      public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -165,7 +183,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -174,7 +192,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildRemoved(DataSnapshot dataSnapshot) {
+      public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, null);
@@ -183,7 +201,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -192,7 +210,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onCancelled(DatabaseError error) {
+      public void onCancelled(@NonNull DatabaseError error) {
         query.removeEventListener(this);
         RNFirebaseDatabase.handlePromise(promise, error);
       }
@@ -200,7 +218,6 @@ class RNFirebaseDatabaseReference {
 
     query.addChildEventListener(childEventListener);
   }
-
 
   /**
    * Handles a React Native JS '.on(..)' request and initializes listeners.
@@ -229,7 +246,6 @@ class RNFirebaseDatabaseReference {
     }
   }
 
-
   /**
    * Add a native .on('child_X',.. ) event listener.
    *
@@ -243,35 +259,35 @@ class RNFirebaseDatabaseReference {
     if (!hasEventListener(eventRegistrationKey)) {
       ChildEventListener childEventListener = new ChildEventListener() {
         @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_added".equals(eventType)) {
             handleDatabaseEvent("child_added", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_changed".equals(eventType)) {
             handleDatabaseEvent("child_changed", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
           if ("child_removed".equals(eventType)) {
             handleDatabaseEvent("child_removed", registration, dataSnapshot, null);
           }
         }
 
         @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_moved".equals(eventType)) {
             handleDatabaseEvent("child_moved", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onCancelled(DatabaseError error) {
+        public void onCancelled(@NonNull DatabaseError error) {
           removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }
@@ -292,12 +308,12 @@ class RNFirebaseDatabaseReference {
     if (!hasEventListener(eventRegistrationKey)) {
       ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
           handleDatabaseEvent("value", registration, dataSnapshot, null);
         }
 
         @Override
-        public void onCancelled(DatabaseError error) {
+        public void onCancelled(@NonNull DatabaseError error) {
           removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }
@@ -314,16 +330,28 @@ class RNFirebaseDatabaseReference {
    * @param dataSnapshot
    * @param previousChildName
    */
-  private void handleDatabaseEvent(String eventType, ReadableMap registration, DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-    WritableMap event = Arguments.createMap();
-    WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
+  private void handleDatabaseEvent(
+    final String eventType,
+    final ReadableMap registration,
+    DataSnapshot dataSnapshot,
+    @Nullable String previousChildName
+  ) {
+    @SuppressLint("StaticFieldLeak")
+    DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(reactContext, this) {
+      @Override
+      protected void onPostExecute(WritableMap data) {
+        if (this.isAvailable()) {
+          WritableMap event = Arguments.createMap();
+          event.putMap("data", data);
+          event.putString("key", key);
+          event.putString("eventType", eventType);
+          event.putMap("registration", Utils.readableMapToWritableMap(registration));
+          Utils.sendEvent(reactContext, "database_sync_event", event);
+        }
+      }
+    };
 
-    event.putMap("data", data);
-    event.putString("key", key);
-    event.putString("eventType", eventType);
-    event.putMap("registration", Utils.readableMapToWritableMap(registration));
-
-    Utils.sendEvent(reactContext, "database_sync_event", event);
+    asyncTask.execute(dataSnapshot, previousChildName);
   }
 
   /**
@@ -366,11 +394,6 @@ class RNFirebaseDatabaseReference {
     }
   }
 
-  /* =================
-   *  QUERY MODIFIERS
-   * =================
-   */
-
   /**
    * @param name
    * @param type
@@ -392,6 +415,11 @@ class RNFirebaseDatabaseReference {
         query = query.orderByChild(key);
     }
   }
+
+  /* =================
+   *  QUERY MODIFIERS
+   * =================
+   */
 
   /**
    * @param name
@@ -423,12 +451,6 @@ class RNFirebaseDatabaseReference {
     }
   }
 
-
-  /* ===============
-   *  QUERY FILTERS
-   * ===============
-   */
-
   /**
    * @param key
    * @param valueType
@@ -458,6 +480,12 @@ class RNFirebaseDatabaseReference {
       }
     }
   }
+
+
+  /* ===============
+   *  QUERY FILTERS
+   * ===============
+   */
 
   /**
    * @param key
@@ -516,6 +544,48 @@ class RNFirebaseDatabaseReference {
       } else {
         query = query.startAt(value, key);
       }
+    }
+  }
+
+  /**
+   * AsyncTask to convert DataSnapshot instances to WritableMap instances.
+   * <p>
+   * Introduced due to https://github.com/invertase/react-native-firebase/issues/1284
+   */
+  private static class DataSnapshotToMapAsyncTask extends AsyncTask<Object, Void, WritableMap> {
+
+    private WeakReference<ReactContext> reactContextWeakReference;
+    private WeakReference<RNFirebaseDatabaseReference> referenceWeakReference;
+
+    DataSnapshotToMapAsyncTask(ReactContext context, RNFirebaseDatabaseReference reference) {
+      referenceWeakReference = new WeakReference<>(reference);
+      reactContextWeakReference = new WeakReference<>(context);
+    }
+
+    @Override
+    protected final WritableMap doInBackground(Object... params) {
+      DataSnapshot dataSnapshot = (DataSnapshot) params[0];
+      @Nullable String previousChildName = (String) params[1];
+
+      try {
+        return RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
+      } catch (RuntimeException e) {
+        if (isAvailable()) {
+          reactContextWeakReference
+            .get()
+            .handleException(e);
+        }
+        throw e;
+      }
+    }
+
+    @Override
+    protected void onPostExecute(WritableMap writableMap) {
+      // do nothing as overridden on usage
+    }
+
+    Boolean isAvailable() {
+      return reactContextWeakReference.get() != null && referenceWeakReference.get() != null;
     }
   }
 }
