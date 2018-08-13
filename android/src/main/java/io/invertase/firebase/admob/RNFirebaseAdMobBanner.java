@@ -23,37 +23,14 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
 
   public static final String REACT_CLASS = "RNFirebaseAdMobBanner";
   public static final String BANNER_EVENT = "onBannerEvent";
-
-  public enum Events {
-    EVENT_AD_SIZE_CHANGE("onSizeChange"),
-    EVENT_AD_LOADED("onAdLoaded"),
-    EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
-    EVENT_AD_OPENED("onAdOpened"),
-    EVENT_AD_CLOSED("onAdClosed"),
-    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication");
-
-    private final String event;
-
-    Events(final String name) {
-      event = name;
-    }
-
-    @Override
-    public String toString() {
-      return event;
-    }
-  }
-
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
   private Boolean requested = false;
-
   // Internal prop values
   private AdRequest.Builder request;
   private AdSize size;
   private String unitId;
-
 
   @Override
   public String getName() {
@@ -197,15 +174,22 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
         int left = adView.getLeft();
         int top = adView.getTop();
 
-        int width = adView.getAdSize().getWidthInPixels(context);
-        int height = adView.getAdSize().getHeightInPixels(context);
+        int width = adView
+          .getAdSize()
+          .getWidthInPixels(context);
+        int height = adView
+          .getAdSize()
+          .getHeightInPixels(context);
 
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
 
         WritableMap payload = Arguments.createMap();
 
-        payload.putBoolean(RNFirebaseAdMobNativeExpress.Events.EVENT_AD_VIDEO_CONTENT.toString(), false);
+        payload.putBoolean(
+          RNFirebaseAdMobNativeExpress.Events.EVENT_AD_VIDEO_CONTENT.toString(),
+          false
+        );
         payload.putInt("width", width);
         payload.putInt("height", height);
 
@@ -250,5 +234,25 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
     }
 
     emitter.receiveEvent(viewGroup.getId(), BANNER_EVENT, event);
+  }
+
+  public enum Events {
+    EVENT_AD_SIZE_CHANGE("onSizeChange"),
+    EVENT_AD_LOADED("onAdLoaded"),
+    EVENT_AD_FAILED_TO_LOAD("onAdFailedToLoad"),
+    EVENT_AD_OPENED("onAdOpened"),
+    EVENT_AD_CLOSED("onAdClosed"),
+    EVENT_AD_LEFT_APPLICATION("onAdLeftApplication");
+
+    private final String event;
+
+    Events(final String name) {
+      event = name;
+    }
+
+    @Override
+    public String toString() {
+      return event;
+    }
   }
 }

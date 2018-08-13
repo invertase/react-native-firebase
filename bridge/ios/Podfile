@@ -21,7 +21,6 @@ target 'testing' do
   pod 'Firebase/AdMob', '~> 5.3.0'
   pod 'Firebase/Auth', '~> 5.3.0'
   pod 'Firebase/Core', '~> 5.3.0'
-  pod 'Firebase/Crash', '~> 5.3.0'
   pod 'Firebase/Database', '~> 5.3.0'
   pod 'Firebase/Functions', '~> 5.3.0'
   pod 'Firebase/DynamicLinks', '~> 5.3.0'

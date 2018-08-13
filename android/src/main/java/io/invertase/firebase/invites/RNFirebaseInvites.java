@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.invertase.firebase.Utils;
-import io.invertase.firebase.links.RNFirebaseLinks;
 
 public class RNFirebaseInvites extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
   private static final String TAG = "RNFirebaseInvites";
@@ -58,21 +57,28 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
       }
     } else {
       if (getCurrentActivity() != null) {
-        FirebaseDynamicLinks.getInstance()
+        FirebaseDynamicLinks
+          .getInstance()
           .getDynamicLink(getCurrentActivity().getIntent())
           .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
             @Override
             public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
               if (pendingDynamicLinkData != null) {
-                FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
+                FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(
+                  pendingDynamicLinkData);
                 if (invite == null) {
                   promise.resolve(null);
                   return;
                 }
 
-                mInitialDeepLink = pendingDynamicLinkData.getLink().toString();
+                mInitialDeepLink = pendingDynamicLinkData
+                  .getLink()
+                  .toString();
                 mInitialInvitationId = invite.getInvitationId();
-                promise.resolve(buildInvitationMap(mInitialDeepLink, mInitialInvitationId));
+                promise.resolve(buildInvitationMap(
+                  mInitialDeepLink,
+                  mInitialInvitationId
+                ));
               } else {
                 promise.resolve(null);
               }
@@ -83,7 +89,11 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
             @Override
             public void onFailure(@NonNull Exception e) {
               Log.e(TAG, "getInitialInvitation: failed to resolve invitation", e);
-              promise.reject("invites/initial-invitation-error", e.getMessage(), e);
+              promise.reject(
+                "invites/initial-invitation-error",
+                e.getMessage(),
+                e
+              );
             }
           });
       } else {
@@ -96,15 +106,22 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
   @ReactMethod
   public void sendInvitation(ReadableMap invitationMap, Promise promise) {
     if (!invitationMap.hasKey("message")) {
-      promise.reject("invites/invalid-invitation", "The supplied invitation is missing a 'message' field");
+      promise.reject(
+        "invites/invalid-invitation",
+        "The supplied invitation is missing a 'message' field"
+      );
       return;
     }
     if (!invitationMap.hasKey("title")) {
-      promise.reject("invites/invalid-invitation", "The supplied invitation is missing a 'title' field");
+      promise.reject(
+        "invites/invalid-invitation",
+        "The supplied invitation is missing a 'title' field"
+      );
       return;
     }
 
-    AppInviteInvitation.IntentBuilder ib = new AppInviteInvitation.IntentBuilder(invitationMap.getString("title"));
+    AppInviteInvitation.IntentBuilder ib = new AppInviteInvitation.IntentBuilder(invitationMap.getString(
+      "title"));
     if (invitationMap.hasKey("androidMinimumVersionCode")) {
       Double androidMinimumVersionCode = invitationMap.getDouble("androidMinimumVersionCode");
       ib = ib.setAndroidMinimumVersionCode(androidMinimumVersionCode.intValue());
@@ -121,7 +138,8 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
     if (invitationMap.hasKey("iosClientId")) {
       ib = ib.setOtherPlatformsTargetApplication(
         AppInviteInvitation.IntentBuilder.PlatformMode.PROJECT_PLATFORM_IOS,
-        invitationMap.getString("iosClientId"));
+        invitationMap.getString("iosClientId")
+      );
     }
     ib = ib.setMessage(invitationMap.getString("message"));
 
@@ -155,7 +173,9 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
     this.mPromise = promise;
 
     // Start the intent
-    this.getCurrentActivity().startActivityForResult(invitationIntent, REQUEST_INVITE);
+    this
+      .getCurrentActivity()
+      .startActivityForResult(invitationIntent, REQUEST_INVITE);
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -179,22 +199,33 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
 
   @Override
   public void onNewIntent(Intent intent) {
-    FirebaseDynamicLinks.getInstance()
+    FirebaseDynamicLinks
+      .getInstance()
       .getDynamicLink(intent)
       .addOnSuccessListener(new OnSuccessListener<PendingDynamicLinkData>() {
         @Override
         public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
           if (pendingDynamicLinkData != null) {
-            FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
+            FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(
+              pendingDynamicLinkData);
             if (invite == null) {
               // this is a dynamic link, not an invitation
               return;
             }
 
-            String deepLink = pendingDynamicLinkData.getLink().toString();
+            String deepLink = pendingDynamicLinkData
+              .getLink()
+              .toString();
             String invitationId = invite.getInvitationId();
-            WritableMap invitationMap = buildInvitationMap(deepLink, invitationId);
-            Utils.sendEvent(getReactApplicationContext(), "invites_invitation_received", invitationMap);
+            WritableMap invitationMap = buildInvitationMap(
+              deepLink,
+              invitationId
+            );
+            Utils.sendEvent(
+              getReactApplicationContext(),
+              "invites_invitation_received",
+              invitationMap
+            );
           }
         }
       });

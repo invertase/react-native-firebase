@@ -76,6 +76,15 @@ rootProject.gradle.buildFinished { buildResult ->
   }
 }
 
+repositories {
+  google()
+  jcenter()
+  maven {
+      url "$rootDir/../node_modules/react-native/android"
+      name 'React Native (local)'
+  }
+}
+
 def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
 
 dependencies {
