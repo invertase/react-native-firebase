@@ -55,6 +55,11 @@ export default class RNFirebaseUtils extends ModuleBase {
     }
   }
 
+  getPlayServicesStatus(): Promise<GoogleApiAvailabilityType | null> {
+    if (isIOS) return Promise.resolve(null);
+    return FirebaseCoreModule.getPlayServicesStatus();
+  }
+
   promptForPlayServices() {
     if (isIOS) return null;
     return FirebaseCoreModule.promptForPlayServices();
