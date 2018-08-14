@@ -69,8 +69,8 @@ export default {
 
       if (!APP_MODULES[appInstanceIdentifier][namespace]) {
         APP_MODULES[appInstanceIdentifier][namespace] = new InstanceClass(
-          customUrlOrRegion || app,
-          app.options
+          app,
+          customUrlOrRegion
         );
 
         // only check once on new app namespace instance
@@ -185,9 +185,12 @@ export default {
     statics: S,
     moduleName: FirebaseModuleName
   ): FirebaseModuleAndStatics<M, S> {
-    const getModule = (appOrUrlOrRegion?: App | string): FirebaseModule => {
+    const getModule = (
+      appOrUrlOrRegion?: App | string,
+      customUrlOrRegion?: string
+    ): FirebaseModule => {
       let _app = appOrUrlOrRegion;
-      let _customUrlOrRegion: ?string = null;
+      let _customUrlOrRegion: ?string = customUrlOrRegion || null;
 
       if (typeof appOrUrlOrRegion === 'string' && namespace === 'database') {
         _app = null;
