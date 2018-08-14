@@ -160,13 +160,8 @@ export default class Messaging extends ModuleBase {
    * KNOWN UNSUPPORTED METHODS
    */
 
-  deleteToken() {
-    throw new Error(
-      INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD(
-        'messaging',
-        'deleteToken'
-      )
-    );
+  deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
+    return this.app.iid().deleteToken(authorizedEntity, scope);
   }
 
   setBackgroundMessageHandler() {

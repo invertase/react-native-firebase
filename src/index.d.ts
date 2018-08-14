@@ -1051,6 +1051,8 @@ declare module 'react-native-firebase' {
          */
         getToken(): Promise<string>;
 
+        deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
+
         /**
          * On a new message,
          * the payload object is passed to the listener callback.
