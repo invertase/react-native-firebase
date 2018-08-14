@@ -97,29 +97,10 @@ export default class Notifications extends ModuleBase {
       // public event name: onNotificationDisplayed
       'notifications_notification_displayed',
       (notification: NativeNotification) => {
-        const rnNotification = new Notification(notification);
-        const done = Platform.select({
-          ios: (fetchResult: string) => {
-            getLogger(this).debug(
-              `Completion handler called for notificationId=${
-                rnNotification.notificationId
-              }`
-            );
-            getNativeModule(this).complete(
-              rnNotification.notificationId,
-              fetchResult
-            );
-          },
-          android: () => {},
-        });
-
-        const publicEventName = 'onNotificationDisplayed';
-
-        if (this.ios.shouldAutoComplete) {
-          done(this.ios.backgroundFetchResult.noData);
-        }
-
-        SharedEventEmitter.emit(publicEventName, rnNotification, done);
+        SharedEventEmitter.emit(
+          'onNotificationDisplayed',
+          new Notification(notification, this)
+        );
       }
     );
 
@@ -130,7 +111,7 @@ export default class Notifications extends ModuleBase {
       (notificationOpen: NativeNotificationOpen) => {
         SharedEventEmitter.emit('onNotificationOpened', {
           action: notificationOpen.action,
-          notification: new Notification(notificationOpen.notification),
+          notification: new Notification(notificationOpen.notification, this),
           results: notificationOpen.results,
         });
       }
@@ -143,7 +124,7 @@ export default class Notifications extends ModuleBase {
       (notification: NativeNotification) => {
         SharedEventEmitter.emit(
           'onNotification',
-          new Notification(notification)
+          new Notification(notification, this)
         );
       }
     );
@@ -215,7 +196,7 @@ export default class Notifications extends ModuleBase {
         if (notificationOpen) {
           return {
             action: notificationOpen.action,
-            notification: new Notification(notificationOpen.notification),
+            notification: new Notification(notificationOpen.notification, this),
             results: notificationOpen.results,
           };
         }
