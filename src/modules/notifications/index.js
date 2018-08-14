@@ -77,9 +77,9 @@ export default class Notifications extends ModuleBase {
   constructor(app: App) {
     super(app, {
       events: NATIVE_EVENTS,
-      hasShards: false,
+      hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
-      multiApp: false,
+      hasMultiAppSupport: false,
       namespace: NAMESPACE,
     });
     this._android = new AndroidNotifications(this);
