@@ -32,16 +32,20 @@ export default class Database extends ModuleBase {
 
   _serviceUrl: string;
 
-  constructor(appOrUrl: App | string, options: Object = {}) {
+  constructor(appOrCustomUrl: App | string, customUrl?: string) {
     let app;
-    let serviceUrl;
-    if (typeof appOrUrl === 'string') {
+    let url;
+
+    if (typeof appOrCustomUrl === 'string') {
       app = firebase.app();
-      serviceUrl = appOrUrl.endsWith('/') ? appOrUrl : `${appOrUrl}/`;
+      url = appOrCustomUrl;
     } else {
-      app = appOrUrl;
-      serviceUrl = app.options.databaseURL;
+      app = appOrCustomUrl;
+      url = customUrl || app.options.databaseURL;
     }
+
+    // enforce trailing slash
+    url = url.endsWith('/') ? url : `${url}/`;
 
     super(
       app,
@@ -52,15 +56,15 @@ export default class Database extends ModuleBase {
         hasCustomUrlSupport: true,
         namespace: NAMESPACE,
       },
-      serviceUrl
+      url
     );
 
     this._serverTimeOffset = 0;
     this._serviceUrl = serviceUrl;
     this._transactionHandler = new TransactionHandler(this);
 
-    if (options.persistence) {
-      getNativeModule(this).setPersistence(options.persistence);
+    if (app.options.persistence) {
+      getNativeModule(this).setPersistence(app.options.persistence);
     }
 
     // server time listener

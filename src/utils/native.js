@@ -42,7 +42,13 @@ export const initialiseNativeModule = (
   config: FirebaseModuleConfig,
   customUrlOrRegion: ?string
 ): Object => {
-  const { moduleName, hasMultiAppSupport, hasCustomUrlSupport, hasRegionsSupport, namespace } = config;
+  const {
+    moduleName,
+    hasMultiAppSupport,
+    hasCustomUrlSupport,
+    hasRegionsSupport,
+    namespace,
+  } = config;
   const nativeModule = NativeModules[moduleName];
   const key = nativeModuleKey(module);
 

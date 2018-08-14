@@ -40,16 +40,19 @@ function errorOrResult(possibleError): HttpsCallablePromise {
   return Promise.resolve(possibleError);
 }
 
+/**
+ * -------------
+ *  functions()
+ * -------------
+ */
 export default class Functions extends ModuleBase {
-  _region: string;
-
-  constructor(appOrRegion: App, region: string = 'us-central1') {
+  constructor(appOrRegion: App, region?: string = 'us-central1') {
     let _app = appOrRegion;
     let _region = region;
 
-    if (typeof appOrRegion === 'string') {
+    if (typeof _app === 'string') {
+      _region = _app;
       _app = firebase.app();
-      _region = appOrRegion;
     }
 
     super(
@@ -77,7 +80,7 @@ export default class Functions extends ModuleBase {
    */
   httpsCallable(name: string): HttpsCallable {
     return (data?: any): HttpsCallablePromise => {
-      const promise = getNativeModule(this).httpsCallable(this._region, name, {
+      const promise = getNativeModule(this).httpsCallable(name, {
         data,
       });
 
