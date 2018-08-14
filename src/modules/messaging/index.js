@@ -75,6 +75,10 @@ export default class Messaging extends ModuleBase {
     return getNativeModule(this).getToken();
   }
 
+  deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
+    return this.app.iid().deleteToken(authorizedEntity, scope);
+  }
+
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {
     let listener: RemoteMessage => any;
     if (isFunction(nextOrObserver)) {
@@ -159,10 +163,6 @@ export default class Messaging extends ModuleBase {
   /**
    * KNOWN UNSUPPORTED METHODS
    */
-
-  deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
-    return this.app.iid().deleteToken(authorizedEntity, scope);
-  }
 
   setBackgroundMessageHandler() {
     throw new Error(
