@@ -61,9 +61,9 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 
 |                           |  3.3.x   |  4.3.x  | 5.0.x |
 | ------------------------- | :------: | :-----: | :---: |
-| React Native              |  0.50 +  | 0.52-55 | 0.56+ |
+| React Native              | 0.50-52  | 0.52-55 | 0.56  |
 | Play Services Android SDK | 11.8.0 + | 15.0.1  |  TBC  |
-| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  |  TBC  |
+| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  | 5.5.0 |
 
 ---
 
@@ -87,7 +87,7 @@ For feature requests please visit our [Feature Request Board](https://boards.inv
 
 Detailed changes for each release are documented in the [releases notes](https://github.com/invertase/react-native-firebase/releases).
 
-----
+---
 
 ## Supporting RNFirebase
 

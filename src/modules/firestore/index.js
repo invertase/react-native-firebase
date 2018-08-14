@@ -69,8 +69,8 @@ export default class Firestore extends ModuleBase {
     super(app, {
       events: NATIVE_EVENTS,
       moduleName: MODULE_NAME,
-      multiApp: true,
-      hasShards: false,
+      hasMultiAppSupport: true,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
 

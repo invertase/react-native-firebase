@@ -49,38 +49,50 @@ export default {
     namespace: FirebaseNamespace,
     InstanceClass: Class<M>
   ): () => FirebaseModule {
-    return (serviceUrl: ?string = null): M => {
-      if (serviceUrl && namespace !== 'database') {
-        throw new Error(
-          INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_UNSUPPORTED(namespace)
-        );
-      }
-
-      const appOrShardName = serviceUrl || app.name;
-      if (!APP_MODULES[appOrShardName]) {
-        APP_MODULES[appOrShardName] = {};
-      }
-
+    return (customUrlOrRegion: ?string = null): M => {
       if (
-        isAndroid &&
-        namespace !== 'utils' &&
-        !INTERNALS.FLAGS.checkedPlayServices
+        customUrlOrRegion &&
+        (namespace !== 'database' || namespace !== 'functions')
       ) {
-        INTERNALS.FLAGS.checkedPlayServices = true;
-        app.utils().checkPlayServicesAvailability();
-      }
-
-      if (!APP_MODULES[appOrShardName][namespace]) {
-        APP_MODULES[appOrShardName][namespace] = new InstanceClass(
-          serviceUrl || app,
-          app.options
+        throw new Error(
+          INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_OR_REGION_UNSUPPORTED(
+            namespace
+          )
         );
       }
 
-      return APP_MODULES[appOrShardName][namespace];
+      const appInstanceIdentifier = `${app.name}${customUrlOrRegion || ''}`;
+
+      if (!APP_MODULES[appInstanceIdentifier]) {
+        APP_MODULES[appInstanceIdentifier] = {};
+      }
+
+      if (!APP_MODULES[appInstanceIdentifier][namespace]) {
+        APP_MODULES[appInstanceIdentifier][namespace] = new InstanceClass(
+          app,
+          customUrlOrRegion
+        );
+
+        // only check once on new app namespace instance
+        if (
+          isAndroid &&
+          namespace !== 'utils' &&
+          !INTERNALS.FLAGS.checkedPlayServices
+        ) {
+          INTERNALS.FLAGS.checkedPlayServices = true;
+          app.utils().checkPlayServicesAvailability();
+        }
+      }
+
+      return APP_MODULES[appInstanceIdentifier][namespace];
     };
   },
 
+  /**
+   *
+   * @param name
+   * @returns {*}
+   */
   deleteApp(name: string): Promise<boolean> {
     const app = APPS[name];
     if (!app) return Promise.resolve(true);
@@ -173,24 +185,34 @@ export default {
     statics: S,
     moduleName: FirebaseModuleName
   ): FirebaseModuleAndStatics<M, S> {
-    const getModule = (appOrUrl?: App | string): FirebaseModule => {
-      let _app = appOrUrl;
-      let _serviceUrl: ?string = null;
-      if (typeof appOrUrl === 'string' && namespace === 'database') {
+    const getModule = (
+      appOrUrlOrRegion?: App | string,
+      customUrlOrRegion?: string
+    ): FirebaseModule => {
+      let _app = appOrUrlOrRegion;
+      let _customUrlOrRegion: ?string = customUrlOrRegion || null;
+
+      if (typeof appOrUrlOrRegion === 'string' && namespace === 'database') {
         _app = null;
-        _serviceUrl = appOrUrl;
+        _customUrlOrRegion = appOrUrlOrRegion;
+      }
+
+      if (typeof appOrUrlOrRegion === 'string' && namespace === 'functions') {
+        _app = null;
+        _customUrlOrRegion = appOrUrlOrRegion;
       }
 
       // throw an error if it's not a valid app instance
-      if (_app && !(_app instanceof App))
+      if (_app && !(_app instanceof App)) {
         throw new Error(INTERNALS.STRINGS.ERROR_NOT_APP(namespace));
-      else if (!_app)
+      } else if (!_app) {
         // default to the 'DEFAULT' app if no arg provided - will throw an error
         // if default app not initialized
         _app = this.app(DEFAULT_APP_NAME);
+      }
       // $FlowExpectedError: Flow doesn't support indexable signatures on classes: https://github.com/facebook/flow/issues/1323
       const module = _app[namespace];
-      return module(_serviceUrl);
+      return module(_customUrlOrRegion);
     };
 
     return Object.assign(getModule, statics, {

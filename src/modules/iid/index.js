@@ -13,9 +13,9 @@ export const MODULE_NAME = 'RNFirebaseInstanceId';
 export default class InstanceId extends ModuleBase {
   constructor(app: App) {
     super(app, {
-      hasShards: false,
+      hasCustomUrlSupport: false,
       moduleName: MODULE_NAME,
-      multiApp: false,
+      hasMultiAppSupport: false,
       namespace: NAMESPACE,
     });
   }
