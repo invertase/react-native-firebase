@@ -12,6 +12,9 @@ import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 import AndroidNotifications from './AndroidNotifications';
+import IOSNotifications, {
+  type BackgroundFetchResultValue,
+} from './IOSNotifications';
 import AndroidRemoteInput from './AndroidRemoteInput';
 import Notification from './Notification';
 import {
@@ -32,14 +35,6 @@ import type {
   NativeNotificationOpen,
   Schedule,
 } from './types';
-
-type BackgroundFetchResultValue = string;
-
-type BackgroundFetchResult = {
-  noData: BackgroundFetchResultValue,
-  newData: BackgroundFetchResultValue,
-  failure: BackgroundFetchResultValue,
-};
 
 type CompletionHandler = BackgroundFetchResultValue => void;
 
@@ -83,8 +78,8 @@ export const NAMESPACE = 'notifications';
  */
 export default class Notifications extends ModuleBase {
   _android: AndroidNotifications;
-  _shouldAutoComplete: boolean;
-  _backgroundFetchResult: BackgroundFetchResult;
+
+  _ios: IOSNotifications;
 
   constructor(app: App) {
     super(app, {
@@ -95,15 +90,7 @@ export default class Notifications extends ModuleBase {
       namespace: NAMESPACE,
     });
     this._android = new AndroidNotifications(this);
-
-    const nativeModule = getNativeModule(this);
-    this._backgroundFetchResult = {
-      noData: nativeModule.backgroundFetchResultNoData,
-      newData: nativeModule.backgroundFetchResultNewData,
-      failure: nativeModule.backgroundFetchResultFailure,
-    };
-
-    this.startAutoCompleting();
+    this._ios = new IOSNotifications(this);
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
@@ -128,8 +115,8 @@ export default class Notifications extends ModuleBase {
 
         const publicEventName = 'onNotificationDisplayed';
 
-        if (this._shouldAutoComplete) {
-          done(this.backgroundFetchResult.noData);
+        if (this.ios.shouldAutoComplete) {
+          done(this.ios.backgroundFetchResult.noData);
         }
 
         SharedEventEmitter.emit(publicEventName, rnNotification, done);
@@ -171,16 +158,8 @@ export default class Notifications extends ModuleBase {
     return this._android;
   }
 
-  get backgroundFetchResult(): BackgroundFetchResult {
-    return { ...this._backgroundFetchResult };
-  }
-
-  startAutoCompleting(): void {
-    this._shouldAutoComplete = true;
-  }
-
-  stopAutoCompleting(): void {
-    this._shouldAutoComplete = false;
+  get ios(): IOSNotifications {
+    return this._ios;
   }
 
   /**
