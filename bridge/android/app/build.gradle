@@ -82,7 +82,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation project(':react-native-firebase')
 
-  implementation(project(':bridge')) {
+  implementation(project(':jet')) {
     transitive = false
   }
 

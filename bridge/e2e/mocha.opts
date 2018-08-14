@@ -4,5 +4,5 @@
 --slow 600
 --bail
 --exit
---require bridge/platform/node
+--require jet/platform/node
 --require ./helpers
