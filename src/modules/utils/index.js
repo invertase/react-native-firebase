@@ -22,8 +22,8 @@ export default class RNFirebaseUtils extends ModuleBase {
   constructor(app: App) {
     super(app, {
       moduleName: MODULE_NAME,
-      multiApp: false,
-      hasShards: false,
+      hasMultiAppSupport: false,
+      hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
   }
@@ -53,6 +53,11 @@ export default class RNFirebaseUtils extends ModuleBase {
         }
       }
     }
+  }
+
+  getPlayServicesStatus(): Promise<GoogleApiAvailabilityType | null> {
+    if (isIOS) return Promise.resolve(null);
+    return FirebaseCoreModule.getPlayServicesStatus();
   }
 
   promptForPlayServices() {

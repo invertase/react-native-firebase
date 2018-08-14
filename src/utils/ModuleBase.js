@@ -10,7 +10,7 @@ import type { FirebaseModuleConfig, FirebaseNamespace } from '../types';
 export default class ModuleBase {
   _app: App;
 
-  _serviceUrl: ?string;
+  _customUrlOrRegion: ?string;
 
   namespace: FirebaseNamespace;
 
@@ -18,21 +18,29 @@ export default class ModuleBase {
    *
    * @param app
    * @param config
+   * @param customUrlOrRegion
    */
-  constructor(app: App, config: FirebaseModuleConfig, serviceUrl: ?string) {
+  constructor(
+    app: App,
+    config: FirebaseModuleConfig,
+    customUrlOrRegion: ?string
+  ) {
     if (!config.moduleName) {
       throw new Error('Missing module name');
     }
+
     if (!config.namespace) {
       throw new Error('Missing namespace');
     }
+
     const { moduleName } = config;
     this._app = app;
-    this._serviceUrl = serviceUrl;
+    this._customUrlOrRegion = customUrlOrRegion;
     this.namespace = config.namespace;
 
     // check if native module exists as all native
-    initialiseNativeModule(this, config, serviceUrl);
+    initialiseNativeModule(this, config, customUrlOrRegion);
+
     initialiseLogger(
       this,
       `${app.name}:${moduleName.replace('RNFirebase', '')}`
