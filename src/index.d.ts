@@ -1168,7 +1168,7 @@ declare module 'react-native-firebase' {
         ): () => any;
 
         onNotificationDisplayed(
-          listener: (notification: Notification, done: CompletionHandler) => Promise<any>
+          listener: (notification: Notification, done: CompletionHandler) => any
         ): () => any;
 
         onNotificationOpened(

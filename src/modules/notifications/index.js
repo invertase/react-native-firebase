@@ -43,7 +43,7 @@ type BackgroundFetchResult = {
 
 type CompletionHandler = BackgroundFetchResultValue => void;
 
-type OnNotification = (Notification, CompletionHandler) => Promise<any>;
+type OnNotification = (Notification, CompletionHandler) => any;
 
 type OnNotificationObserver = {
   next: OnNotification,
@@ -64,11 +64,6 @@ const NATIVE_EVENTS = [
 export const MODULE_NAME = 'RNFirebaseNotifications';
 export const NAMESPACE = 'notifications';
 
-const hasListeners = (eventType: string): boolean => {
-  const listeners = SharedEventEmitter.listeners(eventType);
-  return listeners && listeners.length;
-};
-
 // iOS 8/9 scheduling
 // fireDate: Date;
 // timeZone: TimeZone;
@@ -88,6 +83,7 @@ const hasListeners = (eventType: string): boolean => {
  */
 export default class Notifications extends ModuleBase {
   _android: AndroidNotifications;
+  _shouldAutoComplete: boolean;
   _backgroundFetchResult: BackgroundFetchResult;
 
   constructor(app: App) {
@@ -106,6 +102,8 @@ export default class Notifications extends ModuleBase {
       newData: nativeModule.backgroundFetchResultNewData,
       failure: nativeModule.backgroundFetchResultFailure,
     };
+
+    this.startAutoCompleting();
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
@@ -130,8 +128,7 @@ export default class Notifications extends ModuleBase {
 
         const publicEventName = 'onNotificationDisplayed';
 
-        if (!hasListeners(publicEventName)) {
-          // if user is not handling completion then we need to
+        if (this._shouldAutoComplete) {
           done(this.backgroundFetchResult.noData);
         }
 
@@ -176,6 +173,14 @@ export default class Notifications extends ModuleBase {
 
   get backgroundFetchResult(): BackgroundFetchResult {
     return { ...this._backgroundFetchResult };
+  }
+
+  startAutoCompleting(): void {
+    this._shouldAutoComplete = true;
+  }
+
+  stopAutoCompleting(): void {
+    this._shouldAutoComplete = false;
   }
 
   /**
@@ -273,38 +278,23 @@ export default class Notifications extends ModuleBase {
   onNotificationDisplayed(
     nextOrObserver: OnNotification | OnNotificationObserver
   ): () => any {
-    const isNext = isFunction(nextOrObserver);
-    const isObserver =
-      isObject(nextOrObserver) && isFunction(nextOrObserver.next);
-    const eventName = 'onNotificationDisplayed';
-    if (!isNext && !isObserver) {
+    let listener;
+    if (isFunction(nextOrObserver)) {
+      listener = nextOrObserver;
+    } else if (isObject(nextOrObserver) && isFunction(nextOrObserver.next)) {
+      listener = nextOrObserver.next;
+    } else {
       throw new Error(
-        `Notifications.${eventName} failed: First argument must be a function or observer object with a \`next\` function.`
+        'Notifications.onNotificationDisplayed failed: First argument must be a function or observer object with a `next` function.'
       );
     }
 
-    let listener: OnNotification;
-    if (nextOrObserver.next) {
-      listener = nextOrObserver.next;
-    } else {
-      listener = nextOrObserver;
-    }
-
-    const autoCompletingListener: OnNotification = async (
-      notification,
-      done
-    ) => {
-      const listenerResult = await listener(notification, done);
-      done(this.backgroundFetchResult.noData);
-      return listenerResult;
-    };
-
-    getLogger(this).info(`Creating ${eventName} listener`);
-    SharedEventEmitter.addListener(eventName, autoCompletingListener);
+    getLogger(this).info('Creating onNotificationDisplayed listener');
+    SharedEventEmitter.addListener('onNotificationDisplayed', listener);
 
     return () => {
-      getLogger(this).info(`Removing ${eventName} listener`);
-      SharedEventEmitter.removeListener(eventName, autoCompletingListener);
+      getLogger(this).info('Removing onNotificationDisplayed listener');
+      SharedEventEmitter.removeListener('onNotificationDisplayed', listener);
     };
   }
 
