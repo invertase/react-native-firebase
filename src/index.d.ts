@@ -5,7 +5,7 @@
 
 declare module 'react-native-firebase' {
   /** 3rd party provider Credentials */
-  type AuthCredential = {
+  export type AuthCredential = {
     providerId: string;
     token: string;
     secret: string;
