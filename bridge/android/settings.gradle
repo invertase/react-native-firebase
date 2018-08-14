@@ -1,6 +1,6 @@
 rootProject.name = 'RNFTests'
-include ':bridge'
-project(':bridge').projectDir = new File(rootProject.projectDir, '../node_modules/bridge/android')
+include ':jet'
+project(':jet').projectDir = new File(rootProject.projectDir, '../node_modules/jet/android')
 
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')

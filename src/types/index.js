@@ -49,8 +49,9 @@ export type FirebaseModule = $Subtype<ModuleBase>;
 export type FirebaseModuleConfig = {
   events?: string[],
   moduleName: FirebaseModuleName,
-  multiApp: boolean,
-  hasShards: boolean,
+  hasMultiAppSupport: boolean,
+  hasCustomUrlSupport: boolean,
+  hasRegionsSupport: boolean,
   namespace: FirebaseNamespace,
 };
 

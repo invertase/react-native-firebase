@@ -100,8 +100,8 @@ export default {
     /**
      * @return {string}
      */
-    ERROR_INIT_SERVICE_URL_UNSUPPORTED(namespace: string) {
-      return `${namespace} does not support URL as a param, please pass in an app.`;
+    ERROR_INIT_SERVICE_URL_OR_REGION_UNSUPPORTED(namespace: string) {
+      return `${namespace} does not support a URL or region as a param, please pass in an app.`;
     },
 
     /**

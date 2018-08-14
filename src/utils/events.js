@@ -23,9 +23,11 @@ const getNativeEmitter = (
 ): NativeEventEmitter => {
   const name = `${module.app.name}-${moduleName}`;
   const nativeModule = NativeModules[moduleName];
+
   if (!NATIVE_EMITTERS[name]) {
     NATIVE_EMITTERS[name] = new NativeEventEmitter(nativeModule);
   }
+
   return NATIVE_EMITTERS[name];
 };
 
@@ -35,6 +37,7 @@ const getNativeEmitter = (
  *    so we use a single event send it to js and js then internally can prefix it
  *    and distribute dynamically.
  *
+ * @param moduleName
  * @param module
  * @param eventName
  * @private
@@ -65,6 +68,7 @@ export const initialiseNativeModuleEventEmitter = (
   config: FirebaseModuleConfig
 ): void => {
   const { events, moduleName } = config;
+
   if (events && events.length) {
     for (let i = 0, len = events.length; i < len; i++) {
       subscribeToNativeModuleEvents(moduleName, module, events[i]);
