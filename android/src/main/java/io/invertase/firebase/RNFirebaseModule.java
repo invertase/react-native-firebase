@@ -73,10 +73,15 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void getPlayServicesStatus(Promise promise) {
+    promise.resolve(getPlayServicesStatusMap());
+  }
+
   /**
    * @return
    */
-  private WritableMap getPlayServicesStatus() {
+  private WritableMap getPlayServicesStatusMap() {
     GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
     final int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
     WritableMap result = Arguments.createMap();
@@ -176,7 +181,7 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule {
     }
 
     constants.put("apps", appMapsList);
-    constants.put("playServicesAvailability", getPlayServicesStatus());
+    constants.put("playServicesAvailability", getPlayServicesStatusMap());
     return constants;
   }
 }
