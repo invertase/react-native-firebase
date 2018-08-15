@@ -1168,7 +1168,7 @@ declare module 'react-native-firebase' {
         ): () => any;
 
         onNotificationDisplayed(
-          listener: (notification: Notification, done: CompletionHandler) => any
+          listener: (notification: Notification) => any
         ): () => any;
 
         onNotificationOpened(
@@ -1473,6 +1473,7 @@ declare module 'react-native-firebase' {
         hasAction?: boolean;
         launchImage?: string;
         threadIdentifier?: string;
+        complete?: CompletionHandler;
 
         addAttachment(
           identifier: string,
