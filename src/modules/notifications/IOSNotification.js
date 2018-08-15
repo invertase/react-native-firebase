@@ -3,9 +3,8 @@
  * IOSNotification representation wrapper
  */
 import type Notification from './Notification';
-import IOSNotifications, {
-  type BackgroundFetchResultValue,
-} from './IOSNotifications';
+import type Notifications from '.';
+import { type BackgroundFetchResultValue } from './IOSNotifications';
 import type {
   IOSAttachment,
   IOSAttachmentOptions,
@@ -42,7 +41,7 @@ export default class IOSNotification {
 
   constructor(
     notification: Notification,
-    notifications: IOSNotifications,
+    notifications: Notifications,
     data?: NativeIOSNotification
   ) {
     this._notification = notification;
@@ -65,8 +64,8 @@ export default class IOSNotification {
       getNativeModule(notifications).complete(notificationId, fetchResult);
     };
 
-    if (notifications.shouldAutoComplete) {
-      complete(notifications.backgroundFetchResult.noData);
+    if (notifications.ios.shouldAutoComplete) {
+      complete(notifications.ios.backgroundFetchResult.noData);
     } else {
       this._complete = complete;
     }
