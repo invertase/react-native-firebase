@@ -42,6 +42,15 @@ export default class Notification {
     nativeNotification?: NativeNotification,
     notifications: Notifications
   ) {
+    if (nativeNotification) {
+      this._body = nativeNotification.body;
+      this._data = nativeNotification.data;
+      this._notificationId = nativeNotification.notificationId;
+      this._sound = nativeNotification.sound;
+      this._subtitle = nativeNotification.subtitle;
+      this._title = nativeNotification.title;
+    }
+
     this._android = new AndroidNotification(
       this,
       nativeNotification && nativeNotification.android
@@ -51,15 +60,6 @@ export default class Notification {
       notifications.ios,
       nativeNotification && nativeNotification.ios
     );
-
-    if (nativeNotification) {
-      this._body = nativeNotification.body;
-      this._data = nativeNotification.data;
-      this._notificationId = nativeNotification.notificationId;
-      this._sound = nativeNotification.sound;
-      this._subtitle = nativeNotification.subtitle;
-      this._title = nativeNotification.title;
-    }
 
     // Defaults
     this._data = this._data || {};
