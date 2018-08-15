@@ -102,6 +102,10 @@ export default class IOSNotification {
     return this._threadIdentifier;
   }
 
+  get complete(): CompletionHandler {
+    return this._complete;
+  }
+
   /**
    *
    * @param identifier
