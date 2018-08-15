@@ -12,9 +12,7 @@ import AndroidAction from './AndroidAction';
 import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 import AndroidNotifications from './AndroidNotifications';
-import IOSNotifications, {
-  type BackgroundFetchResultValue,
-} from './IOSNotifications';
+import IOSNotifications from './IOSNotifications';
 import AndroidRemoteInput from './AndroidRemoteInput';
 import Notification from './Notification';
 import {
@@ -36,9 +34,7 @@ import type {
   Schedule,
 } from './types';
 
-type CompletionHandler = BackgroundFetchResultValue => void;
-
-type OnNotification = (Notification, CompletionHandler) => any;
+type OnNotification = Notification => any;
 
 type OnNotificationObserver = {
   next: OnNotification,
