@@ -24,13 +24,13 @@ export const NAMESPACE = 'database';
  * @class Database
  */
 export default class Database extends ModuleBase {
+  _databaseURL: string;
+
   _offsetRef: Reference;
 
   _serverTimeOffset: number;
 
   _transactionHandler: TransactionHandler;
-
-  _serviceUrl: string;
 
   constructor(appOrCustomUrl: App | string, customUrl?: string) {
     let app;
@@ -60,7 +60,7 @@ export default class Database extends ModuleBase {
     );
 
     this._serverTimeOffset = 0;
-    this._serviceUrl = serviceUrl;
+    this._databaseURL = url;
     this._transactionHandler = new TransactionHandler(this);
 
     if (app.options.persistence) {
@@ -115,7 +115,7 @@ export default class Database extends ModuleBase {
    * @returns {string}
    */
   get databaseUrl(): string {
-    return this._serviceUrl;
+    return this._databaseURL;
   }
 }
 
