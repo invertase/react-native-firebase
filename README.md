@@ -63,7 +63,7 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 | ------------------------- | :------: | :-----: | :---: |
 | React Native              | 0.50-52  | 0.52-55 | 0.56  |
 | Play Services Android SDK | 11.8.0 + | 15.0.1  |  TBC  |
-| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  | 5.5.0 |
+| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  | 5.6.0 |
 
 ---
 
