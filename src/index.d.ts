@@ -853,7 +853,7 @@ declare module 'react-native-firebase' {
 
       type AuthProvider = {
         PROVIDER_ID: string;
-        credential: (token?: string, secret?: string) => AuthCredential;
+        credential: (token: string | null, secret?: string) => AuthCredential;
       };
 
       type EmailAuthProvider = {
