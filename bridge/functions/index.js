@@ -3,6 +3,10 @@ const functions = require('firebase-functions');
 
 const TEST_DATA = require('./test-data');
 
+exports.runTestWithRegion = functions
+  .region('europe-west1')
+  .https.onCall(() => 'europe-west1');
+
 exports.runTest = functions.https.onCall(data => {
   console.log(Date.now(), data);
 
