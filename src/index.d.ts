@@ -1141,6 +1141,9 @@ declare module 'react-native-firebase' {
         deleteChannel(channelId: string): Promise<void>;
       }
 
+      type BackgroundFetchResultValue = string;
+      type CompletionHandler = (backgroundFetchResult: BackgroundFetchResultValue) => void;
+
       interface Notifications {
         android: AndroidNotifications;
 
@@ -1475,6 +1478,7 @@ declare module 'react-native-firebase' {
         hasAction?: boolean;
         launchImage?: string;
         threadIdentifier?: string;
+        complete?: CompletionHandler;
 
         addAttachment(
           identifier: string,
