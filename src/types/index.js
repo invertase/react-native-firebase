@@ -50,8 +50,8 @@ export type FirebaseModuleConfig = {
   events?: string[],
   moduleName: FirebaseModuleName,
   hasMultiAppSupport: boolean,
-  hasCustomUrlSupport: boolean,
-  hasRegionsSupport: boolean,
+  hasCustomUrlSupport?: boolean,
+  hasRegionsSupport?: boolean,
   namespace: FirebaseNamespace,
 };
 
@@ -98,6 +98,7 @@ export type FirebaseOptions = {
   messagingSenderId: string,
   projectId: string,
   storageBucket: string,
+  persistence?: boolean,
 };
 
 export type FirebaseModuleAndStatics<M: FirebaseModule, S: FirebaseStatics> = {
