@@ -1,31 +1,3 @@
-const androidTestConfig = {
-  // firebase android sdk completely ignores client id
-  clientId:
-    '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
-  appId: '1:305229645282:android:af36d4d29a83e04c',
-  apiKey: 'AIzaSyCzbBYFyX8d6VdSu7T4s10IWYbPc-dguwM',
-  databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
-  storageBucket: 'rnfirebase-b9ad4.appspot.com',
-  messagingSenderId: '305229645282',
-  projectId: 'rnfirebase-b9ad4',
-};
-
-const iosTestConfig = {
-  clientId:
-    '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
-  androidClientId: androidTestConfig.clientId,
-  appId: '1:305229645282:ios:af36d4d29a83e04c',
-  apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
-  databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
-  storageBucket: 'rnfirebase-b9ad4.appspot.com',
-  messagingSenderId: '305229645282',
-  projectId: 'rnfirebase-b9ad4',
-};
-
-function rand(from = 1, to = 9999) {
-  const r = Math.random();
-  return Math.floor(r * (to - from + from));
-}
 describe('Core', () => {
   describe('Firebase', () => {
     it('it should create js apps for natively initialized apps', () => {
@@ -34,30 +6,24 @@ describe('Core', () => {
     });
 
     it('natively initialized apps should have options available in js', () => {
-      should.equal(
-        firebase.app().options.apiKey,
-        device.getPlatform() === 'ios'
-          ? iosTestConfig.apiKey
-          : androidTestConfig.apiKey
-      );
-      should.equal(
-        firebase.app().options.appId,
-        device.getPlatform() === 'ios'
-          ? iosTestConfig.appId
-          : androidTestConfig.appId
-      );
+      const platformAppConfig = TestHelpers.core.config();
+      should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
+      should.equal(firebase.app().options.appId, platformAppConfig.appId);
       should.equal(
         firebase.app().options.databaseURL,
-        iosTestConfig.databaseURL
+        platformAppConfig.databaseURL
       );
       should.equal(
         firebase.app().options.messagingSenderId,
-        iosTestConfig.messagingSenderId
+        platformAppConfig.messagingSenderId
       );
-      should.equal(firebase.app().options.projectId, iosTestConfig.projectId);
+      should.equal(
+        firebase.app().options.projectId,
+        platformAppConfig.projectId
+      );
       should.equal(
         firebase.app().options.storageBucket,
-        iosTestConfig.storageBucket
+        platformAppConfig.storageBucket
       );
       return Promise.resolve();
     });
@@ -66,20 +32,15 @@ describe('Core', () => {
       firebase.app().onReady());
 
     it('it should initialize dynamic apps', () => {
-      const name = `testscoreapp${rand()}`;
+      const name = `testscoreapp${global.testRunId}`;
+      const platformAppConfig = TestHelpers.core.config();
       return firebase
-        .initializeApp(
-          device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig,
-          name
-        )
+        .initializeApp(platformAppConfig, name)
         .onReady()
         .then(newApp => {
           newApp.name.should.equal(name.toUpperCase());
           newApp.toString().should.equal(name.toUpperCase());
-          newApp.options.apiKey.should.equal(
-            (device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig)
-              .apiKey
-          );
+          newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
           // TODO add back in when android sdk support for deleting apps becomes available
           // return newApp.delete();
           return Promise.resolve();
