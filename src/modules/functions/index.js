@@ -46,9 +46,9 @@ function errorOrResult(possibleError): HttpsCallablePromise {
  * -------------
  */
 export default class Functions extends ModuleBase {
-  constructor(appOrRegion: App, region?: string = 'us-central1') {
+  constructor(appOrRegion: App, region?: string) {
     let _app = appOrRegion;
-    let _region = region;
+    let _region = region || 'us-central1';
 
     if (typeof _app === 'string') {
       _region = _app;
