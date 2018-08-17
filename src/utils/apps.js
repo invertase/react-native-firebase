@@ -18,8 +18,13 @@ import type {
 const FirebaseCoreModule = NativeModules.RNFirebase;
 
 const APPS: { [string]: App } = {};
-const APP_MODULES: { [string]: { [string]: FirebaseModule } } = {};
 const DEFAULT_APP_NAME = '[DEFAULT]';
+const APP_MODULES: { [string]: { [string]: FirebaseModule } } = {};
+const CUSTOM_URL_OR_REGION_NAMESPACES = {
+  database: true,
+  functions: true,
+  storage: false, // TODO true once multi-bucket support added.
+};
 
 export default {
   DEFAULT_APP_NAME,
@@ -50,10 +55,7 @@ export default {
     InstanceClass: Class<M>
   ): () => FirebaseModule {
     return (customUrlOrRegion: ?string = null): M => {
-      if (
-        customUrlOrRegion &&
-        (namespace !== 'database' || namespace !== 'functions')
-      ) {
+      if (customUrlOrRegion && CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
         throw new Error(
           INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_OR_REGION_UNSUPPORTED(
             namespace
@@ -192,12 +194,10 @@ export default {
       let _app = appOrUrlOrRegion;
       let _customUrlOrRegion: ?string = customUrlOrRegion || null;
 
-      if (typeof appOrUrlOrRegion === 'string' && namespace === 'database') {
-        _app = null;
-        _customUrlOrRegion = appOrUrlOrRegion;
-      }
-
-      if (typeof appOrUrlOrRegion === 'string' && namespace === 'functions') {
+      if (
+        typeof appOrUrlOrRegion === 'string' &&
+        CUSTOM_URL_OR_REGION_NAMESPACES[namespace]
+      ) {
         _app = null;
         _customUrlOrRegion = appOrUrlOrRegion;
       }
