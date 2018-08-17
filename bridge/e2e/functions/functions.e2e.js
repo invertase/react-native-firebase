@@ -1,6 +1,55 @@
 const TEST_DATA = TestHelpers.functions.data;
 
 describe('functions()', () => {
+  it('accepts passing in an FirebaseApp instance as first arg', async () => {
+    const appName = `functionsApp${global.testRunId}1`;
+    const platformAppConfig = TestHelpers.core.config();
+    const app = await firebase
+      .initializeApp(platformAppConfig, appName)
+      .onReady();
+
+    const functionsForApp = firebase.functions(app);
+
+    functionsForApp.app.should.equal(app);
+    functionsForApp.app.name.should.equal(app.name);
+
+    // check from an app
+    app.functions().app.should.equal(app);
+    app.functions().app.name.should.equal(app.name);
+  });
+
+  it('accepts passing in a region string as first arg', async () => {
+    const region = 'europe-west1';
+    const functionsForRegion = firebase.functions(region);
+
+    // check internal region property
+    functionsForRegion._customUrlOrRegion.should.equal(region);
+    // app should be default app
+    functionsForRegion.app.should.equal(firebase.app());
+    functionsForRegion.app.name.should.equal(firebase.app().name);
+
+    firebase
+      .app()
+      .functions(region)
+      .app.should.equal(firebase.app());
+
+    firebase
+      .app()
+      .functions(region)
+      ._customUrlOrRegion.should.equal(region);
+
+    const functionRunner = functionsForRegion.httpsCallable(
+      'runTestWithRegion'
+    );
+
+    const response = await functionRunner();
+    // the function just sends back it's region as a string
+    response.data.should.equal(region);
+  });
+
+  // TODO app and region test both args
+  // TODO app passed to existing app instance - should error?
+
   describe('httpsCallable(fnName)(args)', () => {
     it('accepts primitive args: undefined', async () => {
       const functionRunner = firebase.functions().httpsCallable('runTest');
