@@ -55,7 +55,7 @@ export default {
     InstanceClass: Class<M>
   ): () => FirebaseModule {
     return (customUrlOrRegion: ?string = null): M => {
-      if (customUrlOrRegion && CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
+      if (customUrlOrRegion && !CUSTOM_URL_OR_REGION_NAMESPACES[namespace]) {
         throw new Error(
           INTERNALS.STRINGS.ERROR_INIT_SERVICE_URL_OR_REGION_UNSUPPORTED(
             namespace
