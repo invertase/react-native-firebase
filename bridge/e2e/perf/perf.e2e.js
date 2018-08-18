@@ -6,6 +6,8 @@ describe('perf()', () => {
 
     it('false', async () => {
       await firebase.perf().setPerformanceCollectionEnabled(false);
+      await firebase.perf().setPerformanceCollectionEnabled(true);
+      await device.launchApp({ newInstance: true });
     });
 
     it('errors if not boolean', async () => {
