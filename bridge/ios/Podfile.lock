@@ -242,8 +242,8 @@ PODS:
   - yoga (0.56.0.React)
 
 DEPENDENCIES:
-  - Crashlytics
-  - Fabric
+  - Crashlytics (~> 3.10.7)
+  - Fabric (~> 1.7.11)
   - Firebase/AdMob (~> 5.6.0)
   - Firebase/Auth (~> 5.6.0)
   - Firebase/Core (~> 5.6.0)
@@ -347,6 +347,6 @@ SPEC CHECKSUMS:
   RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 1edf381d0411e539ac08abccf8b3c3b2b45a3fa6
+PODFILE CHECKSUM: 33388e8d8d1b7c967a58d636efdd0c9f4d74a9b5
 
 COCOAPODS: 1.5.3
