@@ -97,6 +97,7 @@ module.exports = {
         }
       }
 
+      if (!batch._writes.length) return Promise.resolve();
       return batch.commit();
     }
 
@@ -155,8 +156,11 @@ module.exports = {
   },
 };
 
+firebaseAdmin.firestore().settings({ timestampsInSnapshots: true });
+
 // call a get request without waiting to force firestore to connect
 // so the first test isn't delayed whilst connecting
+
 module.exports
   .testCollectionDocAdmin(module.exports.DOC_1_PATH)
   .get()
