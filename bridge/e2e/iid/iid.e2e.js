@@ -15,20 +15,18 @@ describe('iid()', () => {
       const iidAfter = await firebase.iid().get();
       iidAfter.should.be.a.String();
       iidBefore.should.not.equal(iidAfter);
+      await sleep(4000);
     });
   });
 
   describe('getToken()', () => {
     it('should return an FCM token from getToken with arguments', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
-
-      await firebase.iid().delete();
       const token = await firebase.iid().getToken(authorizedEntity, '*');
       token.should.be.a.String();
     });
 
     it('should return an FCM token from getToken without arguments', async () => {
-      await firebase.iid().delete();
       const token = await firebase.iid().getToken();
       token.should.be.a.String();
     });
@@ -36,7 +34,6 @@ describe('iid()', () => {
     it('should return an FCM token from getToken with 1 argument', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
 
-      await firebase.iid().delete();
       const token = await firebase.iid().getToken(authorizedEntity);
       token.should.be.a.String();
     });
@@ -45,7 +42,6 @@ describe('iid()', () => {
   describe('deleteToken()', () => {
     it('should return nil from deleteToken with arguments', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
-
       const token = await firebase.iid().deleteToken(authorizedEntity, '*');
       should.not.exist(token);
     });
@@ -57,7 +53,6 @@ describe('iid()', () => {
 
     it('should return nil from deleteToken with 1 argument', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
-
       const token = await firebase.iid().deleteToken(authorizedEntity);
       should.not.exist(token);
     });
