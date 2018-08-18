@@ -105,7 +105,7 @@ RCT_EXPORT_METHOD(getTraceLongMetric:
 RCT_EXPORT_METHOD(incrementTraceMetric:
                   (NSString *) identifier
                   metricName:(NSString *) metricName
-                  incrementBy:(NSNumber *) incrementBy
+                  incrementBy:(nonnull NSNumber *) incrementBy
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     int64_t byInt = [incrementBy intValue];
@@ -132,7 +132,7 @@ RCT_EXPORT_METHOD(putTraceAttribute:
 RCT_EXPORT_METHOD(putTraceMetric:
                   (NSString *) identifier
                   attribute:(NSString *) attribute
-                  value:(NSNumber *) value
+                  value:(nonnull NSNumber *) value
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     int64_t byInt = [value intValue];
@@ -220,7 +220,7 @@ RCT_EXPORT_METHOD(removeHttpMetricAttribute:
 RCT_EXPORT_METHOD(setHttpMetricResponseCode:
                   (NSString *) url
                   httpMethod:(NSString *) httpMethod
-                  code:(NSNumber *) code
+                  code:(nonnull NSNumber *) code
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponseCode:[code integerValue]];
@@ -230,7 +230,7 @@ RCT_EXPORT_METHOD(setHttpMetricResponseCode:
 RCT_EXPORT_METHOD(setHttpMetricRequestPayloadSize:
                   (NSString *) url
                   httpMethod:(NSString *) httpMethod
-                  bytes:(NSNumber *) bytes
+                  bytes:(nonnull NSNumber *) bytes
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setRequestPayloadSize:[bytes longLongValue]];
@@ -250,7 +250,7 @@ RCT_EXPORT_METHOD(setHttpMetricResponseContentType:
 RCT_EXPORT_METHOD(setHttpMetricResponsePayloadSize:
                   (NSString *) url
                   httpMethod:(NSString *) httpMethod
-                  bytes:(NSNumber *) bytes
+                  bytes:(nonnull NSNumber *) bytes
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     [[self getOrCreateHttpMetric:url httpMethod:httpMethod] setResponsePayloadSize:[bytes longLongValue]];
