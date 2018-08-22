@@ -3,6 +3,7 @@
  * ConfirmationResult representation wrapper
  */
 import { getNativeModule } from '../../../utils/native';
+
 import type Auth from '..';
 import type User from '../User';
 

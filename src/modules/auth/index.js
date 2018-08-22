@@ -3,32 +3,33 @@
  * Auth representation wrapper
  */
 import User from './User';
-import ModuleBase from '../../utils/ModuleBase';
-import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { isAndroid, isBoolean } from '../../utils';
 import { getLogger } from '../../utils/log';
-import { getNativeModule } from '../../utils/native';
 import INTERNALS from '../../utils/internals';
-import ConfirmationResult from './phone/ConfirmationResult';
+import ModuleBase from '../../utils/ModuleBase';
+import { isAndroid, isBoolean } from '../../utils';
+import { getNativeModule } from '../../utils/native';
 import PhoneAuthListener from './phone/PhoneAuthListener';
+import ConfirmationResult from './phone/ConfirmationResult';
+import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
 // providers
+import OAuthProvider from './providers/OAuthProvider';
 import EmailAuthProvider from './providers/EmailAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import GithubAuthProvider from './providers/GithubAuthProvider';
-import OAuthProvider from './providers/OAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
 
 import type {
-  ActionCodeInfo,
-  ActionCodeSettings,
-  AuthCredential,
   NativeUser,
-  NativeUserCredential,
+  AuthCredential,
+  ActionCodeInfo,
   UserCredential,
-} from './types';
+  ActionCodeSettings,
+  NativeUserCredential,
+} from './types.flow';
+
 import type App from '../core/app';
 
 type AuthState = {
@@ -526,7 +527,7 @@ export default class Auth extends ModuleBase {
    * @param code
    * @returns {*}
    */
-  set languageCode(code: string) {
+  set languageCode(code: string): void {
     this._languageCode = code;
     getNativeModule(this).setLanguageCode(code);
   }

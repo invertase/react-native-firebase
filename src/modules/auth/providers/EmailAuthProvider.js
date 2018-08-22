@@ -2,7 +2,7 @@
  * @flow
  * EmailAuthProvider representation wrapper
  */
-import type { AuthCredential } from '../types';
+import type { AuthCredential } from '../types.flow';
 
 const linkProviderId = 'emailLink';
 const passwordProviderId = 'password';

@@ -1224,7 +1224,9 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:(NSString *) appDisplayName
     NSString *code = @"auth/unknown";
     NSString *message = [error localizedDescription];
     NSString *nativeErrorMessage = [error localizedDescription];
-
+    
+    code = AuthErrorCode_toJSErrorCode[error.code];
+    // TODO remove switch case after testing AuthErrorCode_toJSErrorCode
     switch (error.code) {
         case FIRAuthErrorCodeInvalidCustomToken:
             code = @"auth/invalid-custom-token";
@@ -1298,8 +1300,6 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:(NSString *) appDisplayName
             code = @"auth/internal-error";
             message = @"An internal error has occurred, please try again.";
             break;
-
-            // unsure of the below codes so leaving them as the default error message
         case FIRAuthErrorCodeTooManyRequests:
             code = @"auth/too-many-requests";
             break;
@@ -1329,6 +1329,18 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:(NSString *) appDisplayName
             break;
         case FIRAuthErrorCodeKeychainError:
             code = @"auth/keychain-error";
+            break;
+        case FIRAuthErrorCodeInvalidVerificationCode:
+            code = @"auth/invalid-verification-code";
+            message = @"The verification code used to create the phone auth credential is invalid";
+            break;
+        case FIRAuthErrorCodeInvalidVerificationID:
+            code = @"auth/invalid-verification-id";
+            message = @"The verification ID used to create the phone auth credential is invalid";
+            break;
+        case FIRAuthErrorCodeInvalidActionCode:
+            code = @"auth/invalid-action-code";
+            message = @"The action code is invalid. This can happen if the code is malformed, expired, or has already been used.";
             break;
         default:
             break;

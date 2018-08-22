@@ -5,7 +5,6 @@
 import INTERNALS from '../../utils/internals';
 import { getNativeModule } from '../../utils/native';
 
-import type Auth from '.';
 import type {
   ActionCodeSettings,
   AuthCredential,
@@ -13,7 +12,9 @@ import type {
   UserCredential,
   UserInfo,
   UserMetadata,
-} from './types';
+} from './types.flow';
+
+import type Auth from '.';
 
 type UpdateProfile = {
   displayName?: string,

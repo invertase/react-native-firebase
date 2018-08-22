@@ -2,7 +2,7 @@
  * @flow
  * FacebookAuthProvider representation wrapper
  */
-import type { AuthCredential } from '../types';
+import type { AuthCredential } from '../types.flow';
 
 const providerId = 'facebook.com';
 

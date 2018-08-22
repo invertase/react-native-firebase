@@ -2,7 +2,7 @@
  * @flow
  * TwitterAuthProvider representation wrapper
  */
-import type { AuthCredential } from '../types';
+import type { AuthCredential } from '../types.flow';
 
 const providerId = 'twitter.com';
 

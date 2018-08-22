@@ -1,23 +1,23 @@
 // @flow
-import INTERNALS from '../../../utils/internals';
-import { SharedEventEmitter } from '../../../utils/events';
 import {
-  generatePushID,
-  isFunction,
-  isAndroid,
   isIOS,
   isString,
+  isAndroid,
+  isFunction,
+  generatePushID,
   nativeToJSError,
 } from '../../../utils';
+import INTERNALS from '../../../utils/internals';
 import { getNativeModule } from '../../../utils/native';
+import { SharedEventEmitter } from '../../../utils/events';
 
 import type Auth from '..';
 
 type PhoneAuthSnapshot = {
-  state: 'sent' | 'timeout' | 'verified' | 'error',
-  verificationId: string,
-  code: string | null,
   error: Error | null,
+  code: string | null,
+  verificationId: string,
+  state: 'sent' | 'timeout' | 'verified' | 'error',
 };
 
 type PhoneAuthError = {
@@ -194,6 +194,7 @@ export default class PhoneAuthListener {
   /**
    * Create a new internal deferred promise, if not already created
    * @private
+   * TODO use promise deferred util
    */
   _promiseDeferred() {
     if (!this._promise) {
@@ -341,6 +342,7 @@ export default class PhoneAuthListener {
     return this;
   }
 
+  // TODO have these inherit from extending a ThenableClass util/helper?
   /**
    * Promise .then proxy
    * @param fn
