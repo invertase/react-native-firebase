@@ -6,19 +6,20 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "genversion src/version.js && npm run validate-ts-declarations && npm run build-src && npm run build-flow",
-    "build-flow": "flow-copy-source -i */__tests__* src dist",
+    "build": "genversion src/version.js && npm run build-src",
     "build-src": "BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
+    "build-flow": "flow-copy-source -i */__tests__* src dist",
     "build-src-watch": "genversion src/version.js && BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files --watch",
-    "clean": "rimraf dist/",
-    "flow": "flow",
-    "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "format": "npm run format:assets && npm run lint -- --fix",
     "lint": "eslint ./src",
+    "clean": "rimraf dist/",
+    "validate-ts-declarations": "tsc --project ./",
+    "validate-flow-declarations": "flow",
+    "format": "npm run format:assets && npm run lint -- --fix",
+    "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
+    "prepare": "npm run clean && npm run build && npm run build-flow",
     "precommit": "lint-staged",
-    "prepublish": "npm run clean && npm run build",
-    "postinstall": "postinstall-build dist && opencollective-postinstall || exit 0",
-    "validate-ts-declarations": "tsc --project ./"
+    "postinstall": "opencollective-postinstall || exit 0",
+    "prepublishOnly": "npm run validate-ts-declarations && npm run validate-flow-declarations"
   },
   "repository": {
     "type": "git",
@@ -74,14 +75,14 @@
     "fbjs": "*"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.47",
     "@babel/cli": "7.0.0-beta.47",
+    "@babel/core": "7.0.0-beta.47",
+    "@invertase/babel-preset-react-native-syntax": "^0.1.0",
     "babel-eslint": "^8.2.6",
     "babel-preset-react-native": "^5.0.2",
-    "@invertase/babel-preset-react-native-syntax": "^0.1.0",
     "eslint": "^5.3.0",
     "eslint-config-airbnb": "^17.0.0",
-    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
@@ -92,7 +93,7 @@
     "genversion": "^2.1.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.2.0",
-    "prettier": "1.14.0",
+    "prettier": "^1.14.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-native": "^0.56.0",
@@ -100,7 +101,6 @@
   },
   "dependencies": {
     "opencollective-postinstall": "^2.0.0",
-    "postinstall-build": "^5.0.1",
     "prop-types": "^15.6.2"
   },
   "rnpm": {
