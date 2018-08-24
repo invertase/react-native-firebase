@@ -7,11 +7,15 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.3'
+    classpath 'com.android.tools.build:gradle:3.1.4'
     classpath 'com.google.gms:google-services:4.0.1'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
+}
+
+subprojects {
+  task listAllDependencies(type: DependencyReportTask) {}
 }
 
 allprojects {
