@@ -79,40 +79,71 @@ android {
 }
 
 dependencies {
-  //noinspection GradleDynamicVersion
-  implementation project(':react-native-firebase')
-
-  implementation(project(':jet')) {
-    transitive = false
-  }
-
+  implementation "com.facebook.react:react-native:+"
   implementation fileTree(dir: "libs", include: ["*.jar"])
+
+
+
+  /* ----------------------------
+   *    REACT NATIVE FIREBASE
+   * ---------------------------- */
+
+  // Library as defined in settings.gradle
+  implementation project(':react-native-firebase')
+  // Required dependencies
+  //noinspection GradleCompatible
+  implementation "com.google.firebase:firebase-core:16.0.3"
+  implementation "com.google.android.gms:play-services-base:15.0.1"
+
+  /* -------------------------
+   *   OPTIONAL FIREBASE SDKS
+   * ------------------------- */
+
+  // Ads
+  implementation('com.google.firebase:firebase-ads:15.0.1') {
+    // exclude `customtabs` as the support lib version is out of date
+    // we manually add it as a dependency below with a custom version
+    exclude group: 'com.android.support', module: 'customtabs'
+  }
+  // Authentication
+  implementation "com.google.firebase:firebase-auth:16.0.3"
+  // Performance Monitoring
+  implementation "com.google.firebase:firebase-perf:16.1.0"
+  // Remote Config
+  implementation "com.google.firebase:firebase-config:16.0.0"
+  // Cloud Storage
+  implementation "com.google.firebase:firebase-storage:16.0.1"
+  // Invites
+  implementation "com.google.firebase:firebase-invites:16.0.3"
+  // Real-time Database
+  implementation "com.google.firebase:firebase-database:16.0.1"
+  // Cloud Functions
+  implementation "com.google.firebase:firebase-functions:16.1.0"
+  // Cloud Firestore
+  implementation "com.google.firebase:firebase-firestore:17.1.0"
+  // Cloud Messaging / FCM
+  implementation "com.google.firebase:firebase-messaging:17.3.0"
+  // Crashlytics
   implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
   }
 
-  // RNFirebase required dependencies
-  implementation "com.google.firebase:firebase-core:16.0.1"
-  implementation "com.google.android.gms:play-services-base:15.0.1"
+  /* --------------------------------
+   *  OPTIONAL ANDROID SUPPORT LIBS
+   * -------------------------------- */
 
-  // RNFirebase optional dependencies
-  implementation "com.google.firebase:firebase-ads:15.0.1"
-  implementation "com.google.firebase:firebase-auth:16.0.2"
-  implementation "com.google.firebase:firebase-config:16.0.0"
-  implementation "com.google.firebase:firebase-database:16.0.1"
-  implementation "com.google.firebase:firebase-firestore:17.0.4"
-  implementation "com.google.firebase:firebase-functions:16.1.0"
-  implementation "com.google.firebase:firebase-invites:16.0.1"
-  implementation "com.google.firebase:firebase-storage:16.0.1"
-  implementation "com.google.firebase:firebase-messaging:17.1.0"
-  implementation "com.google.firebase:firebase-perf:16.0.0"
-
-  implementation "com.facebook.react:react-native:+"
-  implementation "com.android.support:appcompat-v7:27.1.0"
+  // For Firebase Ads
+  implementation "com.android.support:customtabs:27.1.1"
+  // For React Native Firebase Notifications
+  implementation "com.android.support:appcompat-v7:27.1.1"
   implementation 'com.android.support:support-annotations:27.1.1'
-  implementation fileTree(dir: "libs", include: ["*.jar"])
 
-  // Tests
+  /* ------------------------
+   *  TESTING SDKS/LIBRARIES
+   * ------------------------ */
+  implementation(project(':jet')) {
+    transitive = false
+  }
   androidTestImplementation(project(path: ":detox"))
   androidTestImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
