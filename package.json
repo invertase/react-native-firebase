@@ -17,7 +17,7 @@
     "lint": "eslint ./src",
     "precommit": "lint-staged",
     "prepublish": "npm run clean && npm run build",
-    "postinstall": "postinstall-build dist && opencollective postinstall || exit 0",
+    "postinstall": "postinstall-build dist && opencollective-postinstall || exit 0",
     "validate-ts-declarations": "tsc --project ./"
   },
   "repository": {
@@ -99,7 +99,7 @@
     "typescript": "^3.0.1"
   },
   "dependencies": {
-    "opencollective": "^1.0.3",
+    "opencollective-postinstall": "^2.0.0",
     "postinstall-build": "^5.0.1",
     "prop-types": "^15.6.2"
   },
