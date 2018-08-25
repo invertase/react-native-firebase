@@ -114,9 +114,7 @@ Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e
 
 > 💡 Don't forget to remove these before committing your code and submitting a pull request
 
-#### Mocha options
-
-See https://mochajs.org/#usage
+For more Mocha options see https://mochajs.org/#usage
 
 ### TODO - Troubleshooting
 
