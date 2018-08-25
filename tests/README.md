@@ -51,8 +51,9 @@ npm run build-src-watch
 cd tests/ && npm run packager-jet
 ```
 
-> It must be this script only that starts the RN Packager, using the default RN packager command will not work.
-> Also ensure that all existing packagers are terminated and that you have no React Native debugger tabs open on your browsers.
+> ⚠️ It must be this script only that starts the RN Packager, using the default RN packager command will not work.
+
+> ⚠️ Also ensure that all existing packagers are terminated and that you have no React Native debugger tabs open on your browsers.
 
 ### Step 3: Build Native App
 
