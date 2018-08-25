@@ -20,7 +20,6 @@ import type EventSubscriptionVendor from './EventSubscriptionVendor';
  * EmitterSubscription represents a subscription with listener and context data.
  */
 class EmitterSubscription extends EventSubscription {
-
   emitter: EventEmitter;
   listener: Function;
   context: ?Object;

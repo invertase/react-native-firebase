@@ -32,7 +32,6 @@ const invariant = require('fbjs/lib/invariant');
  * more advanced emitter may use an EventHolder and EventFactory.
  */
 class EventEmitter {
-
   _subscriber: EventSubscriptionVendor;
   _currentSubscription: ?EmitterSubscription;
 
@@ -61,12 +60,14 @@ class EventEmitter {
    *   listener
    */
   addListener(
-    eventType: string, listener: Function, context: ?Object): EmitterSubscription {
-
+    eventType: string,
+    listener: Function,
+    context: ?Object
+  ): EmitterSubscription {
     return (this._subscriber.addSubscription(
       eventType,
       new EmitterSubscription(this, this._subscriber, listener, context)
-    ) : any);
+    ): any);
   }
 
   /**
@@ -79,7 +80,11 @@ class EventEmitter {
    * @param {*} context - Optional context object to use when invoking the
    *   listener
    */
-  once(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
+  once(
+    eventType: string,
+    listener: Function,
+    context: ?Object
+  ): EmitterSubscription {
     return this.addListener(eventType, (...args) => {
       this.removeCurrentListener();
       listener.apply(context, args);
@@ -146,10 +151,13 @@ class EventEmitter {
    * @returns {array}
    */
   listeners(eventType: string): [EmitterSubscription] {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     return subscriptions
-      ? subscriptions.filter(emptyFunction.thatReturnsTrue).map(
-          function(subscription) {
+      ? subscriptions
+          .filter(emptyFunction.thatReturnsTrue)
+          .map(function(subscription) {
             return subscription.listener;
           })
       : [];
@@ -170,7 +178,9 @@ class EventEmitter {
    *   emitter.emit('someEvent', 'abc'); // logs 'abc'
    */
   emit(eventType: string) {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {
         const subscription = subscriptions[i];
@@ -202,7 +212,9 @@ class EventEmitter {
    *
    */
   removeListener(eventType: string, listener) {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {
         const subscription = subscriptions[i];

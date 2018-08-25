@@ -1142,7 +1142,9 @@ declare module 'react-native-firebase' {
       }
 
       type BackgroundFetchResultValue = string;
-      type CompletionHandler = (backgroundFetchResult: BackgroundFetchResultValue) => void;
+      type CompletionHandler = (
+        backgroundFetchResult: BackgroundFetchResultValue
+      ) => void;
 
       interface Notifications {
         android: AndroidNotifications;
