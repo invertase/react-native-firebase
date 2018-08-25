@@ -1,4 +1,9 @@
 rootProject.name = 'RNFTests'
+include ':ReactAndroid'
+
+project(':ReactAndroid').projectDir = new File(
+  rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
+
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, '../node_modules/jet/android')
 

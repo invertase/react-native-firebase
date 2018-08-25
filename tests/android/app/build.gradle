@@ -13,6 +13,11 @@ apply from: "../../node_modules/react-native/react.gradle"
 def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
+// comment out when not building RN from source
+configurations.all {
+  exclude group: 'com.facebook.react', module: 'react-native'
+}
+
 android {
   compileSdkVersion 27
 //  buildToolsVersion '27.0.2'
@@ -79,9 +84,13 @@ android {
 }
 
 dependencies {
-  implementation "com.facebook.react:react-native:+"
   implementation fileTree(dir: "libs", include: ["*.jar"])
+  // uncomment when not building RN from source:
+  // implementation "com.facebook.react:react-native:+"
 
+  // compile from source
+  // comment out when not building RN from source:
+  implementation project(':ReactAndroid')
 
 
   /* ----------------------------
