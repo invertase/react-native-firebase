@@ -58,7 +58,7 @@ cd tests/ && npm run packager-jet
 
 The first build for each platform will take a while. Subsequent builds are much much quicker ⚡️
 
-> You must rebuild native every time you make changes to native code (anything in /android /ios directories).
+> ⚠️ You must rebuild native every time you make changes to native code (anything in /android /ios directories).
 
 #### Android
 
@@ -76,10 +76,10 @@ cd tests/ && npm run build-ios
 
 This action will launch a new simulator (if not already open) and run the tests on it.
 
-> iOS by default will background launch the simulator - to have
+> 💡 iOS by default will background launch the simulator - to have
 > it launch in the foreground make sure any simulator is currently open, `Finder -> Simulator.app`.
 
-> Android by default looks for a pre-defined emulator named `TestingAVD` - make sure you have one named the same setup on Android Studio.
+> 💡 Android by default looks for a pre-defined emulator named `TestingAVD` - make sure you have one named the same setup on Android Studio.
 > Or you can change this name in the `package.json` of the tests project (don't commit the change though please).
 > **DO NOT** rename an existing AVD to this name - it will not work, rename does not change the file path currently so Detox will
 > fail to find the AVD in the correct directory. Create a new one with Google Play Services.
@@ -106,11 +106,13 @@ Coverage is output to the root directory of the project: `react-native-firebase/
 open `react-native-firebase/coverage/lcov-report/index.html` in your browser after running tests
 to view coverage output.
 
-#### Running specific tests
+### Running specific tests
 
 Mocha supports the `.only` syntax, e.g. instead of `describe(...) || it(...)` you can use `describe.only(...) || it.only(...)` to only run that specific context or test.
 
 Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
+
+> 💡 Don't forget to remove these before committing your code and submitting a pull request
 
 #### Mocha options
 
