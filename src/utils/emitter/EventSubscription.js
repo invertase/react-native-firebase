@@ -18,7 +18,6 @@ import type EventSubscriptionVendor from './EventSubscriptionVendor';
  * remove its own subscription.
  */
 class EventSubscription {
-
   eventType: string;
   key: number;
   subscriber: EventSubscriptionVendor;
