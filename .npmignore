@@ -88,3 +88,4 @@ android/.settings
 README.md
 /src
 *.coverage.json
+.opensource
