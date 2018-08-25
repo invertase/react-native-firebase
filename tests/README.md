@@ -23,6 +23,8 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
     npm install -g detox-cli
     ```
 
+---
+
 ### Step 1: Install test project dependencies
 
 NPM install at project root and also inside tests directory.
@@ -34,6 +36,8 @@ npm i
 cd tests/ && npm i
 cd tests/ios && pod install --repo-update
 ```
+
+---
 
 ### Step 2: Start Build & Packager Scripts
 
@@ -55,6 +59,8 @@ cd tests/ && npm run packager-jet
 
 > ⚠️ Also ensure that all existing packagers are terminated and that you have no React Native debugger tabs open on your browsers.
 
+---
+
 ### Step 3: Build Native App
 
 The first build for each platform will take a while. Subsequent builds are much much quicker ⚡️
@@ -73,7 +79,9 @@ cd tests/ && npm run build-android
 cd tests/ && npm run build-ios
 ```
 
-### Step 4: Run the tests
+---
+
+### Step 4: Finally, run the tests
 
 This action will launch a new simulator (if not already open) and run the tests on it.
 
@@ -106,6 +114,8 @@ The `cover` variant of the npm scripts will additionally run tests with coverage
 Coverage is output to the root directory of the project: `react-native-firebase/coverage`,
 open `react-native-firebase/coverage/lcov-report/index.html` in your browser after running tests
 to view coverage output.
+
+---
 
 ### Running specific tests
 
