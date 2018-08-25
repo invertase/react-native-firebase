@@ -73,8 +73,7 @@ docs
 .idea
 coverage
 yarn.lock
-tests
-bridge/
+tests/
 buddybuild_postclone.sh
 bin/test.js
 .github

@@ -22,8 +22,8 @@
 # Ignore dist folder
 .*/dist/.*
 
-# Ignore bridge project
-.*/bridge/.*
+# Ignore tests project
+.*/tests/.*
 
 [include]
 
