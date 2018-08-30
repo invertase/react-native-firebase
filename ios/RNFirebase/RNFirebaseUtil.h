@@ -3,7 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTEventEmitter.h>
-#import <Firebase.h>
+#import "Firebase.h"
 
 @interface RNFirebaseUtil : NSObject
 

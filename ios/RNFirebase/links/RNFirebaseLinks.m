@@ -1,7 +1,7 @@
 #import "RNFirebaseLinks.h"
 
 #if __has_include(<FirebaseDynamicLinks/FirebaseDynamicLinks.h>)
-#import <Firebase.h>
+#import "Firebase.h"
 #import "RNFirebaseEvents.h"
 #import "RNFirebaseUtil.h"
 
