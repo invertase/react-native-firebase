@@ -2,7 +2,7 @@
   <a href="https://rnfirebase.io">
     <img src="https://i.imgur.com/eBNJlHd.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase</h2>
+  <h1 align="center">React Native Firebase</h2>
 </p>
 
 <p align="center">
