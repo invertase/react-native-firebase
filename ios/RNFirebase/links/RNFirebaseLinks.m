@@ -140,7 +140,7 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
                && [self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey][UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         NSDictionary *dictionary = self.bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
         NSUserActivity* userActivity = (NSUserActivity*) dictionary[@"UIApplicationLaunchOptionsUserActivityKey"];
-        [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+        BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                  completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
                                                      if (error != nil){
                                                          NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
@@ -151,6 +151,9 @@ RCT_EXPORT_METHOD(getInitialLink:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
                                                          resolve(urlString);
                                                      }
                                                  }];
+        if (!handled) {
+            resolve(nil);
+        }
     } else {
         resolve(initialLink);
     }

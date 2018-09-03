@@ -1,0 +1,13 @@
+# Label name and color to set, when potential duplicates are detected
+issueLabel: potential-duplicate
+labelColor: cfd3d7
+
+# If similarity is higher than this threshold, issue will be marked as duplicate
+threshold: 0.65
+
+# Comment to post when potential duplicates are detected
+referenceComment: >
+  Potential duplicates found:
+  {{#issues}}
+    - [#{{ number }}] {{ title }} ({{ accuracy }}%)
+  {{/issues}}

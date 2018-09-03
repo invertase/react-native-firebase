@@ -30,7 +30,8 @@
     "no-plusplus": 0,
     "no-undef": 0,
     "no-underscore-dangle": "off",
-    "no-use-before-define": 0
+    "no-use-before-define": 0,
+    "import/no-cycle": 0
   },
   "globals": {
     "__DEV__": true,

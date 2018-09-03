@@ -17,7 +17,7 @@ apply plugin: 'com.android.library'
 def DEFAULT_COMPILE_SDK_VERSION = 27
 def DEFAULT_BUILD_TOOLS_VERSION = "27.0.3"
 def DEFAULT_TARGET_SDK_VERSION = 26
-def DEFAULT_SUPPORT_LIB_VERSION = "27.0.2"
+def DEFAULT_SUPPORT_LIB_VERSION = "27.1.1"
 
 android {
   compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
@@ -96,18 +96,20 @@ dependencies {
   compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
   }
+
+  //noinspection GradleCompatible
+  compileOnly "com.google.firebase:firebase-core:16.0.3"
   compileOnly "com.google.android.gms:play-services-base:15.0.1"
   compileOnly "com.google.firebase:firebase-ads:15.0.1"
-  compileOnly "com.google.firebase:firebase-auth:16.0.2"
+  compileOnly "com.google.firebase:firebase-auth:16.0.3"
   compileOnly "com.google.firebase:firebase-config:16.0.0"
-  compileOnly "com.google.firebase:firebase-core:16.0.1"
-  compileOnly "com.google.firebase:firebase-crash:16.0.1"
+  compileOnly "com.google.firebase:firebase-crash:16.2.0"
   compileOnly "com.google.firebase:firebase-database:16.0.1"
-  compileOnly "com.google.firebase:firebase-firestore:17.0.2"
-  compileOnly "com.google.firebase:firebase-functions:16.0.1"
-  compileOnly "com.google.firebase:firebase-invites:16.0.1"
+  compileOnly "com.google.firebase:firebase-firestore:17.1.0"
+  compileOnly "com.google.firebase:firebase-functions:16.1.0"
+  compileOnly "com.google.firebase:firebase-invites:16.0.3"
   compileOnly "com.google.firebase:firebase-storage:16.0.1"
-  compileOnly "com.google.firebase:firebase-messaging:17.1.0"
-  compileOnly "com.google.firebase:firebase-perf:16.0.0"
+  compileOnly "com.google.firebase:firebase-messaging:17.3.0"
+  compileOnly "com.google.firebase:firebase-perf:16.1.0"
   compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
 }
