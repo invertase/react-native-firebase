@@ -25,6 +25,25 @@ aliases:
       yarn install --non-interactive --cache-folder ~/.cache/yarn
       cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn
 
+  # -------------------------
+  #         ANALYSE
+  # -------------------------
+
+  # eslint
+  - &eslint
+      name: Lint Code
+      command: yarn run lint
+
+  # flow
+  - &validate-flow-declarations
+    name: Validate Flow Declarations
+    command: yarn run validate-flow-declarations
+
+  # typescript
+  - &validate-ts-declarations
+    name: Validate TypeScript Declarations
+    command: yarn run validate-ts-declarations
+
 # -------------------------
 #        DEFAULTS
 # -------------------------
@@ -78,6 +97,15 @@ jobs:
         root: .
         paths: .
 
+  analyse:
+    <<: *js_defaults
+    steps:
+    - attach_workspace:
+        at: ~/react-native-firebase
+    - run: *eslint
+    - run: *validate-flow-declarations
+    - run: *validate-ts-declarations
+
 # -------------------------
 #        WORK FLOWS
 # -------------------------
@@ -87,3 +115,8 @@ workflows:
     jobs:
     # Checkout repo and run Yarn install at root and in tests
     - checkout_code
+
+    # Run lint, flow, and typescript checks
+    - analyse:
+        requires:
+        - checkout_code
