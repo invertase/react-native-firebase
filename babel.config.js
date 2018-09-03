@@ -1,12 +1,24 @@
 module.exports = {
   env: {
     development: {
-      presets: ['module:metro-react-native-babel-preset'],
-      plugins: ['transform-flow-strip-types'],
+      presets: [
+        [
+          '@invertase/react-native-syntax',
+          {
+            flow: 'comment',
+          },
+        ],
+      ],
     },
     publish: {
-      presets: ['@invertase/react-native-syntax'],
-      plugins: ['transform-flow-strip-types'],
+      presets: [
+        [
+          '@invertase/react-native-syntax',
+          {
+            flow: 'strip',
+          },
+        ],
+      ],
     },
   },
 };
