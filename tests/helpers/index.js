@@ -75,7 +75,9 @@ global.testRunId = randomString(4, 'aA#');
 global.firebaseAdmin = require('firebase-admin');
 
 firebaseAdmin.initializeApp({
-  credential: firebaseAdmin.credential.cert(require('./service-account')),
+  credential: firebaseAdmin.credential.cert(
+    JSON.parse(process.env.FB_ADMIN_SERVICE_ACCOUNT)
+  ),
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
 });
 
