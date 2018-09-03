@@ -1,0 +1,90 @@
+# -------------------------
+#         ALIASES
+# -------------------------
+
+aliases:
+  # -------------------------
+  #          CACHE
+  # -------------------------
+  - &restore-yarn-cache
+    keys:
+    - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
+    - v1-yarn-cache-{{ arch }}
+  - &save-yarn-cache
+    paths:
+    - ~/.cache/yarn
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
+
+
+  # -------------------------
+  #       INSTALLATION
+  # -------------------------
+  - &yarn
+    name: Run Yarn
+    command: |
+      yarn install --non-interactive --cache-folder ~/.cache/yarn
+      cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn
+
+# -------------------------
+#        DEFAULTS
+# -------------------------
+defaults: &defaults
+  working_directory: ~/react-native-firebase
+  environment:
+  - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+  - FIREBASE_SEVICE_ACCOUNT: git log --format=oneline -n 1 $CIRCLE_SHA1
+
+# JAVASCRIPT
+js_defaults: &js_defaults
+  <<: *defaults
+  docker:
+  - image: circleci/node:8
+  environment:
+  - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# ANDROID
+android_defaults: &android_defaults
+  <<: *defaults
+  docker:
+  - image: circleci/android:api-27-node8-alpha
+  resource_class: "large"
+  environment:
+  - TERM: "dumb"
+  - ADB_INSTALL_TIMEOUT: 10
+  - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+  - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+  - BUILD_THREADS: 2
+
+# IOS
+macos_defaults: &macos_defaults
+  <<: *defaults
+  macos:
+    xcode: "9.4.0"
+
+# -------------------------
+#          JOBS
+# -------------------------
+version: 2
+jobs:
+  # Set up a Node environment for downstream jobs
+  checkout_code:
+    <<: *js_defaults
+    steps:
+    - checkout
+    - restore-cache: *restore-yarn-cache
+    - run: *yarn
+    - save-cache: *save-yarn-cache
+    - persist_to_workspace:
+        root: .
+        paths: .
+
+# -------------------------
+#        WORK FLOWS
+# -------------------------
+workflows:
+  version: 2
+
+  tests:
+    jobs:
+    # Checkout repo and run Yarn
+    - checkout_code:
