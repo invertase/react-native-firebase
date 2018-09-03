@@ -184,15 +184,15 @@ jobs:
           pod install
     - save-cache: *save-pods-cache
 
+    # must always be after environment config job but before ios build
+    - run: *packager-jet
+
     # XCode Build
     - restore-cache: *restore-ios-build-cache
     - run:
         name: Build iOS Testing App
         command: cd tests && yarn run build-ios
     - save-cache: *save-ios-build-cache
-
-    # must always be after environment  config job
-    - run: *packager-jet
 
     # Now Test \o/
     - run:
