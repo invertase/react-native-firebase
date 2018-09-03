@@ -71,6 +71,7 @@ public class RNFirebaseTransactionHandler {
    */
   void await() throws InterruptedException {
     lock.lock();
+    signalled = false;
 
     long timeoutExpired = System.currentTimeMillis() + 5000;
 

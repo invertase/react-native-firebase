@@ -1,7 +1,24 @@
-const blacklist = require('metro/src/blacklist');
+const { resolve } = require('path');
+
+let metroBundler;
+try {
+  metroBundler = require('metro');
+} catch (ex) {
+  metroBundler = require('metro-bundler');
+}
+
+const blacklist = metroBundler.createBlacklist;
 
 module.exports = {
+  getProjectRoots() {
+    return [__dirname, resolve(__dirname, '..')];
+  },
+  getProvidesModuleNodeModules() {
+    return ['react-native', 'react', 'prop-types', 'fbjs'];
+  },
   getBlacklistRE() {
-    return blacklist([/react-native\/local-cli\/core\/__fixtures__.*/]);
+    return blacklist([
+      new RegExp(`^${escape(resolve(__dirname, '..', 'node_modules'))}\\/.*$`),
+    ]);
   },
 };
