@@ -32,7 +32,7 @@ defaults: &defaults
   working_directory: ~/react-native-firebase
   environment:
   - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
-  - FIREBASE_SEVICE_ACCOUNT: git log --format=oneline -n 1 $CIRCLE_SHA1
+  - FB_ADMIN_SERVICE_ACCOUNT: $FIREBASE_SERVICE_ACCOUNT
 
 # JAVASCRIPT
 js_defaults: &js_defaults
@@ -83,8 +83,7 @@ jobs:
 # -------------------------
 workflows:
   version: 2
-
   tests:
     jobs:
-    # Checkout repo and run Yarn
+    # Checkout repo and run Yarn install at root and in tests
     - checkout_code:
