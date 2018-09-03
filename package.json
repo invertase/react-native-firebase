@@ -76,9 +76,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "metro-react-native-babel-preset": "^0.45.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.0",
     "babel-eslint": "^9.0.0",
-    "babel-preset-react-native": "^5.0.2",
     "eslint": "^5.3.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^3.0.1",
