@@ -34,6 +34,7 @@ node_modules/react-native/flow-github/
 
 [options]
 emoji=true
+esproposal.optional_chaining=enable
 
 # Taken from: https://github.com/facebook/react-native/issues/19766
 module.system=haste
@@ -72,4 +73,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-^0.78.0
+^0.80.0
