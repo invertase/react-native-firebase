@@ -76,6 +76,7 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
+  resource_class: "large"
   macos:
     xcode: "9.4.0"
 
@@ -111,6 +112,7 @@ jobs:
     - attach_workspace:
         at: ~/react-native-firebase
     - run: xcrun simctl boot "iPhone 7 Plus" || true
+    - run: cd tests && yarn run packager-jet || true
     - run:
         name: Configure Environment Variables
         command: |
@@ -136,9 +138,9 @@ jobs:
     - run:
         name: Build iOS Testing App
         command: cd tests && yarn run build-ios
-#    - run:
-#        name: Run Jet Tests
-#        command: cd tests && yarn run test-ios-cover
+    - run:
+        name: Run Jet Tests
+        command: cd tests && yarn run test-ios-cover
 
 # -------------------------
 #        WORK FLOWS
