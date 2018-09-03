@@ -86,4 +86,4 @@ workflows:
   tests:
     jobs:
     # Checkout repo and run Yarn install at root and in tests
-    - checkout_code:
+    - checkout_code
