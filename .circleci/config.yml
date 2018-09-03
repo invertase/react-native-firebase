@@ -19,8 +19,7 @@ aliases:
   - &save-pods-cache
     paths:
     - ~/react-native-firebase/tests/ios/Pods
-    keys:
-    - pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
@@ -29,8 +28,7 @@ aliases:
   - &save-ios-build-cache
     paths:
     - ~/react-native-firebase/tests/ios/build
-    keys:
-    - ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-ios-build-cache
     keys:
