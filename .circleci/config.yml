@@ -15,7 +15,6 @@ aliases:
     - ~/.cache/yarn
     key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
 
-
   # -------------------------
   #       INSTALLATION
   # -------------------------
@@ -86,7 +85,7 @@ macos_defaults: &macos_defaults
 version: 2
 jobs:
   # Set up a Node environment for downstream jobs
-  checkout_code:
+  checkout-code:
     <<: *js_defaults
     steps:
     - checkout
@@ -106,17 +105,56 @@ jobs:
     - run: *validate-flow-declarations
     - run: *validate-ts-declarations
 
+  jet-test-ios:
+    <<: *macos_defaults
+    steps:
+    - attach_workspace:
+        at: ~/react-native-firebase
+    - run: xcrun simctl boot "iPhone 7 Plus" || true
+    - run:
+        name: Configure Environment Variables
+        command: |
+          echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+          source $BASH_ENV
+    - run:
+        name: Install Node 8
+        command: |
+          brew install node@8
+          brew link node@8
+          brew tap wix/brew
+          brew install applesimutils
+          node -v
+    - run: *yarn
+    # Download CocoaPods specs via HTTPS (faster than Git)
+    # and install CocoaPods.
+    - run:
+        name: Install CocoaPods
+        command: |
+          cd tests/ios
+          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+          pod install
+    - run:
+        name: Build iOS Testing App
+        command: cd tests && yarn run build-ios
+#    - run:
+#        name: Run Jet Tests
+#        command: cd tests && yarn run test-ios-cover
+
 # -------------------------
 #        WORK FLOWS
 # -------------------------
 workflows:
   version: 2
-  tests:
+  Test:
     jobs:
     # Checkout repo and run Yarn install at root and in tests
-    - checkout_code
+    - checkout-code
 
     # Run lint, flow, and typescript checks
     - analyse:
         requires:
-        - checkout_code
+        - checkout-code
+
+    - jet-test-ios:
+        requires:
+        - checkout-code
