@@ -75,8 +75,7 @@
     "fbjs": "*"
   },
   "devDependencies": {
-    "@babel/cli": "7.0.0-beta.47",
-    "@babel/core": "7.0.0-beta.47",
+    "@babel/core": "^7.0.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.0",
     "babel-eslint": "^8.2.6",
     "babel-preset-react-native": "^5.0.2",
