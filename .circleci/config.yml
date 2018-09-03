@@ -16,6 +16,27 @@ aliases:
     - ~/.cache/yarn
     key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
 
+  - &save-pods-cache
+    paths:
+    - ~/react-native-firebase/tests/ios/Pods
+    keys:
+    - pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+  - &restore-pods-cache
+    keys:
+    - pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+  - &save-ios-build-cache
+    paths:
+    - ~/react-native-firebase/tests/ios/build
+    keys:
+    - ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+  - &restore-ios-build-cache
+    keys:
+    - ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
     command: |
@@ -138,17 +159,20 @@ jobs:
           echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
           source $BASH_ENV
     - run: *configure-jet-detox-environment
-    - run: *yarn
     - run: *packager-jet
+    - restore-cache: *restore-pods-cache
     - run:
         name: Install CocoaPods +  Pod Install
         command: |
           cd tests/ios
           curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           pod install
+    - save-cache: *save-pods-cache
+    - restore-cache: *restore-ios-build-cache
     - run:
         name: Build iOS Testing App
         command: cd tests && yarn run build-ios
+    - save-cache: *save-ios-build-cache
     - run:
         name: Run Jet Tests
         command: cd tests && yarn run test-ios-cover
