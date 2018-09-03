@@ -67,7 +67,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithCustomToken()', () => {
+  xdescribe('signInWithCustomToken()', () => {
     it('signs in with a admin sdk created custom auth token', async () => {
       const customUID = `custom${randomString(12, '#aA')}`;
       const token = await firebaseAdmin.auth().createCustomToken(customUID);
