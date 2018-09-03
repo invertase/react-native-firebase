@@ -159,7 +159,6 @@ jobs:
         name: Start iPhone 7 Plus simulator (background)
         background: true
         command: xcrun simctl boot "iPhone 7 Plus" || true
-    - run: *packager-jet
     - run:
         name: Configure Environment Variables
         command: |
@@ -185,13 +184,15 @@ jobs:
           pod install
     - save-cache: *save-pods-cache
 
-
     # XCode Build
     - restore-cache: *restore-ios-build-cache
     - run:
         name: Build iOS Testing App
         command: cd tests && yarn run build-ios
     - save-cache: *save-ios-build-cache
+
+    # must always be after environment  config job
+    - run: *packager-jet
 
     # Now Test \o/
     - run:
