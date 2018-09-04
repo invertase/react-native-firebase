@@ -57,13 +57,13 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "**/react-native-firebase/src/**"
+      "**/src/**"
     ],
     "exclude": [
       "node_modules",
-      "**/react-native-firebase/src/utils/emitter**",
-      "**/react-native-firebase/src/modules/admob**",
-      "**/react-native-firebase/src/modules/auth/phone**"
+      "**/src/utils/emitter**",
+      "**/src/modules/admob**",
+      "**/src/modules/auth/phone**"
     ],
     "sourceMap": true,
     "instrument": true,
