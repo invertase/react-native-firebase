@@ -31,11 +31,11 @@ aliases:
   - &save-ios-build-cache
     paths:
     - ~/react-native-firebase/tests/ios/build
-    key: ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-ios-build-cache
     keys:
-    - ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - v1-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
     - ios-build-cache-{{ arch }}
 
   - &save-brew-cache
@@ -52,10 +52,12 @@ aliases:
     name: Configure Jet + Detox Environment
     command: |
       brew install node@8
-      brew link node@8
+      brew link node@8 --force
       brew tap wix/brew
       brew install applesimutils
+      brew link applesimutils --force
       brew install watchman
+      brew link watchman --force
       touch .watchmanconfig
       node -v
 
@@ -190,8 +192,9 @@ jobs:
         name: Install CocoaPods +  Pod Install
         command: |
           cd tests/ios
-          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+          pod repo update
           pod install
+#          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
     - save-cache: *save-pods-cache
 
     # must always be after environment config job but before ios build
