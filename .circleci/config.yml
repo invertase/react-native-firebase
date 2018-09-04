@@ -29,35 +29,31 @@ aliases:
 
   - &save-ios-build-cache
     paths:
-    - ~/react-native-firebase/tests/ios/build
-    key: v1-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - ~/react-native-firebase/tests/ios/build/Build
+    key: v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-ios-build-cache
     keys:
-    - v1-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-    - ios-build-cache-{{ arch }}
+    - v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - v2-ios-build-cache-{{ arch }}
 
   - &save-brew-cache
     paths:
     - /usr/local/Homebrew
-    - /usr/local/Cellar
-    - /usr/local/opt
-    key: v2-brew-cache-{{ arch }}
+    - ~/Library/Caches/Homebrew
+    key: v3-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-    - v2-brew-cache-{{ arch }}
+    - v3-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
     command: |
       brew install node@8
-      brew link --overwrite node@8 --force
       brew tap wix/brew
       brew install applesimutils
-      brew link applesimutils --force
       brew install watchman
-      brew link watchman --force
       touch .watchmanconfig
       node -v
 
@@ -78,8 +74,7 @@ aliases:
   - &yarn
     name: Run Yarn
     command: |
-      yarn install --non-interactive --cache-folder ~/.cache/yarn
-      cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn
+      yarn install --non-interactive --cache-folder ~/.cache/yarn & cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn & wait
 
   # -------------------------
   #         ANALYSE
@@ -146,9 +141,6 @@ jobs:
     <<: *js_defaults
     steps:
     - checkout
-    - restore-cache: *restore-yarn-cache
-    - run: *yarn
-    - save-cache: *save-yarn-cache
     - persist_to_workspace:
         root: .
         paths: .
@@ -158,6 +150,9 @@ jobs:
     steps:
     - attach_workspace:
         at: ~/react-native-firebase
+    - restore-cache: *restore-yarn-cache
+    - run: *yarn
+    - save-cache: *save-yarn-cache
     - run: *eslint
     - run: *validate-flow-declarations
     - run: *validate-ts-declarations
