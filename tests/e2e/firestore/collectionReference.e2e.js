@@ -11,19 +11,19 @@ const {
 } = TestHelpers.firestore;
 
 function getCollectionReferenceClass() {
-  return bridge.require('dist/modules/firestore/CollectionReference');
+  return bridge.require('src/modules/firestore/CollectionReference');
 }
 
 function getDocumentReferenceClass() {
-  return bridge.require('dist/modules/firestore/DocumentReference');
+  return bridge.require('src/modules/firestore/DocumentReference');
 }
 
 function getDocumentSnapshotClass() {
-  return bridge.require('dist/modules/firestore/DocumentSnapshot');
+  return bridge.require('src/modules/firestore/DocumentSnapshot');
 }
 
 function getPathClass() {
-  return bridge.require('dist/modules/firestore/Path');
+  return bridge.require('src/modules/firestore/Path');
 }
 
 describe('firestore()', () => {
