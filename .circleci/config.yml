@@ -214,10 +214,10 @@ jobs:
         name: Submit Coverage
         command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
-    - store_test_results:
-        path: ~/detox-artifacts
     - store_artifacts:
         path: ~/detox-artifacts
+    - store_artifacts:
+        path: ~/react-native-firebase/coverage
 
 
 # -------------------------
