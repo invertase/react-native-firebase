@@ -155,6 +155,7 @@ jobs:
 
   analyse:
     <<: *js_defaults
+    parallelism: 3
     steps:
     - attach_workspace:
         at: ~/react-native-firebase
