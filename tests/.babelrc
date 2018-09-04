@@ -22,7 +22,7 @@
             "instrument": true,
             "relativePath": false,
             "include": [
-              "**/dist/**"
+              "**/react-native-firebase/src/**"
             ]
           }
         ]

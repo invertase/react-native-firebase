@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
 import bridge from 'jet/platform/react-native';
-import firebase from 'react-native-firebase';
+import firebase from 'react-native-firebase/src';
 
 require('sinon');
 require('should-sinon');
