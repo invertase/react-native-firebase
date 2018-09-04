@@ -20,13 +20,12 @@ aliases:
   - &save-pods-cache
     paths:
     - ~/react-native-firebase/tests/ios/Pods
-    - ~/.cocoapods/repos/master
-    key: v1-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
-    - v1-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-    - v1-pods-cache-{{ arch }}
+    - v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - v2-pods-cache-{{ arch }}
 
   - &save-ios-build-cache
     paths:
@@ -193,9 +192,8 @@ jobs:
         name: Install CocoaPods +  Pod Install
         command: |
           cd tests/ios
-          pod repo update
+          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           pod install
-#          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
     - save-cache: *save-pods-cache
 
     # must always be after environment config job but before ios build
