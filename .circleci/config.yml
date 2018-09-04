@@ -83,7 +83,10 @@ aliases:
 # eslint
 - &eslint
   name: Lint Code
-  command: yarn run lint
+  command: |
+    mkdir -p ~/reports
+    eslint ./src/ --format junit --output-file ~/reports/eslint.xml
+  when: always
 
 # flow
 - &validate-flow-declarations
@@ -202,6 +205,8 @@ jobs:
         command: cd tests && yarn run build-ios
     - save-cache: *save-ios-build-cache
 
+    - run: mkdir ~/reports
+
     # Now Test \o/
     - run:
         name: Run Jet Tests
@@ -211,6 +216,8 @@ jobs:
     - run:
         name: Submit Coverage
         command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+
+
 
 # -------------------------
 #        WORK FLOWS
@@ -226,7 +233,15 @@ workflows:
     - analyse:
         requires:
         - checkout-code
+        - store_test_results:
+            path: ~/reports
+        - store_artifacts:
+            path: ~/reports
 
     - jet-test-ios:
         requires:
         - checkout-code
+        - store_test_results:
+            path: ~/reports
+        - store_artifacts:
+            path: ~/reports
