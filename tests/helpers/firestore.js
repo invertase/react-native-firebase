@@ -8,10 +8,12 @@ const ONE_HOUR = 60 * 60 * 1000;
 module.exports = {
   async cleanup() {
     if (!shouldCleanup) return Promise.resolve();
-    await Promise.all([
-      module.exports.cleanCollection(TEST_COLLECTION_NAME),
-      module.exports.cleanCollection(TEST2_COLLECTION_NAME),
-    ]);
+    // TODO flakey
+    // await Promise.all([
+    //   module.exports.cleanCollection(TEST_COLLECTION_NAME),
+    //   module.exports.cleanCollection(TEST2_COLLECTION_NAME),
+    // ]);
+
     // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}3`);
     // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}4`);
     return Promise.resolve();
