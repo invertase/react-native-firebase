@@ -8,25 +8,25 @@ aliases:
   # -------------------------
   - &restore-yarn-cache
     keys:
-    - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
+    - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
     - yarn-cache-{{ arch }}
 
   - &save-yarn-cache
     paths:
     - ~/.cache/yarn
     - ~/Library/Detox/ios
-    key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "tests/package.json" }}
+    key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
   - &save-pods-cache
     paths:
     - ~/react-native-firebase/tests/ios/Pods
     - ~/.cocoapods/repos/master
-    key: pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
-    - pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-    - pods-cache-{{ arch }}
+    - v1-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - v1-pods-cache-{{ arch }}
 
   - &save-ios-build-cache
     paths:
@@ -42,11 +42,11 @@ aliases:
     paths:
     - /usr/local/Homebrew
     - /usr/local/Cellar
-    key: brew-cache-{{ arch }}
+    key: v1-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-    - brew-cache-{{ arch }}
+    - v1-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
@@ -190,7 +190,7 @@ jobs:
         name: Install CocoaPods +  Pod Install
         command: |
           cd tests/ios
-          pod repo update
+          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           pod install
     - save-cache: *save-pods-cache
 
