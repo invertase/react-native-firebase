@@ -68,7 +68,6 @@ android/gradle
 lib/.watchmanconfig
 .idea
 coverage
-yarn.lock
 
 .gradle
 local.properties
