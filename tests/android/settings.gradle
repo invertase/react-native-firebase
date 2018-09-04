@@ -1,7 +1,11 @@
-rootProject.name = 'ReactNativeFirebaseDemo'
+rootProject.name = 'RNFTests'
+include ':jet'
+project(':jet').projectDir = new File(rootProject.projectDir, '../node_modules/jet/android')
+
 include ':react-native-firebase'
 project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')
-include ':react-native-vector-icons'
-project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
 
 include ':app'
+
+include ':detox'
+project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')

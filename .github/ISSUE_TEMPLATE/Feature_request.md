@@ -1,7 +1,7 @@
 ---
 name: 🎁 Feature request
-about: Please create feature requests on our canny board: [https://react-native-firebase.canny.io/feature-requests](https://react-native-firebase.canny.io/feature-requests)
+about: For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 
 ---
 
-[https://react-native-firebase.canny.io/feature-requests](https://react-native-firebase.canny.io/feature-requests)
+For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).

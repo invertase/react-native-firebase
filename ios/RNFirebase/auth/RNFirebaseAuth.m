@@ -688,9 +688,23 @@ RCT_EXPORT_METHOD(checkActionCode:
                     actionType = @"EMAIL_SIGNIN";
                     break;
             }
+            
+            NSMutableDictionary *data = [NSMutableDictionary dictionary];
 
-            NSDictionary *result = @{@"data": @{@"email": [info dataForKey:FIRActionCodeEmailKey], @"fromEmail": [info dataForKey:FIRActionCodeFromEmailKey],}, @"actionType": actionType,};
+            if ([info dataForKey:FIRActionCodeEmailKey] != nil) {
+                [data setValue:[info dataForKey:FIRActionCodeEmailKey] forKey:@"email"];
+            } else {
+                [data setValue:[NSNull null] forKey:@"email"];
+            }
 
+            if ([info dataForKey:FIRActionCodeFromEmailKey] != nil) {
+                [data setValue:[info dataForKey:FIRActionCodeFromEmailKey] forKey:@"fromEmail"];
+            } else {
+                [data setValue:[NSNull null] forKey:@"fromEmail"];
+            }
+
+            NSDictionary *result = @{ @"data": data, @"actionType": actionType };
+            
             resolve(result);
         }
     }];

@@ -19,18 +19,17 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseTransactionHandler {
-  private int transactionId;
-  private String appName;
-  private String dbURL;
   private final ReentrantLock lock;
   private final Condition condition;
-  private Map<String, Object> data;
-  private boolean signalled;
-
   public Object value;
   boolean interrupted;
   boolean abort = false;
   boolean timeout = false;
+  private int transactionId;
+  private String appName;
+  private String dbURL;
+  private Map<String, Object> data;
+  private boolean signalled;
 
   RNFirebaseTransactionHandler(int id, String app, String url) {
     appName = app;
@@ -72,6 +71,7 @@ public class RNFirebaseTransactionHandler {
    */
   void await() throws InterruptedException {
     lock.lock();
+    signalled = false;
 
     long timeoutExpired = System.currentTimeMillis() + 5000;
 
@@ -127,7 +127,11 @@ public class RNFirebaseTransactionHandler {
   }
 
 
-  WritableMap createResultMap(@Nullable DatabaseError error, boolean committed, DataSnapshot snapshot) {
+  WritableMap createResultMap(
+    @Nullable DatabaseError error,
+    boolean committed,
+    DataSnapshot snapshot
+  ) {
     WritableMap resultMap = Arguments.createMap();
 
     resultMap.putInt("id", transactionId);
@@ -144,7 +148,10 @@ public class RNFirebaseTransactionHandler {
       if (error == null && timeout) {
         WritableMap timeoutError = Arguments.createMap();
         timeoutError.putString("code", "DATABASE/INTERNAL-TIMEOUT");
-        timeoutError.putString("message", "A timeout occurred whilst waiting for RN JS thread to send transaction updates.");
+        timeoutError.putString(
+          "message",
+          "A timeout occurred whilst waiting for RN JS thread to send transaction updates."
+        );
         resultMap.putMap("error", timeoutError);
       }
     } else {

@@ -108,7 +108,22 @@ didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
 
 // ** Start React Module methods **
 RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    resolve([[FIRInstanceID instanceID] token]);
+    if (initialToken) {
+        resolve(initialToken);
+    } else if ([[FIRInstanceID instanceID] token]) {
+        resolve([[FIRInstanceID instanceID] token]);
+    } else {
+        NSString * senderId = [[FIRApp defaultApp] options].GCMSenderID;
+        [[FIRMessaging messaging] retrieveFCMTokenForSenderID:senderId completion:^(NSString * _Nullable FCMToken, NSError * _Nullable error) {
+            if (error) {
+                reject(@"messaging/fcm-token-error", @"Failed to retrieve FCM token.", error);
+            } else if (FCMToken) {
+                resolve(FCMToken);
+            } else {
+                resolve([NSNull null]);
+            }
+        }];
+    }
 }
 
 RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {

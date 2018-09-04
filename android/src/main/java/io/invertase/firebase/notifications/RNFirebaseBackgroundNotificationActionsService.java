@@ -13,7 +13,8 @@ import static io.invertase.firebase.notifications.RNFirebaseBackgroundNotificati
 
 public class RNFirebaseBackgroundNotificationActionsService extends HeadlessJsTaskService {
   @Override
-  protected @Nullable HeadlessJsTaskConfig getTaskConfig(Intent intent) {
+  protected @Nullable
+  HeadlessJsTaskConfig getTaskConfig(Intent intent) {
     if (isBackgroundNotficationIntent(intent)) {
       WritableMap notificationOpenMap = toNotificationOpenMap(intent);
 

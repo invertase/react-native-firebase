@@ -14,5 +14,5 @@
     "emitDecoratorMetadata": true,
     "lib": ["es2015", "es2016", "esnext", "dom"]
   },
-  "files": ["./lib/index.d.ts"]
+  "files": ["./src/index.d.ts"]
 }

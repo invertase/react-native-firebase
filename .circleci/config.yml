@@ -1,0 +1,240 @@
+# -------------------------
+#         ALIASES
+# -------------------------
+
+aliases:
+# -------------------------
+#          CACHE
+# -------------------------
+- &restore-yarn-cache
+  keys:
+  - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  - yarn-cache-{{ arch }}
+
+- &save-yarn-cache
+  paths:
+  - ~/.cache/yarn
+  - ~/Library/Detox/ios
+  key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+
+- &save-pods-cache
+  paths:
+  - ~/react-native-firebase/tests/ios/Pods
+  key: v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+- &restore-pods-cache
+  keys:
+  - v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v2-pods-cache-{{ arch }}
+
+- &save-ios-build-cache
+  paths:
+  - ~/react-native-firebase/tests/ios/build/Build
+  key: v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+- &restore-ios-build-cache
+  keys:
+  - v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v2-ios-build-cache-{{ arch }}
+
+- &save-brew-cache
+  paths:
+  - /usr/local/Homebrew
+  - ~/Library/Caches/Homebrew
+  key: v3-brew-cache-{{ arch }}
+
+- &restore-brew-cache
+  keys:
+  - v3-brew-cache-{{ arch }}
+
+- &configure-jet-detox-environment
+  name: Configure Jet + Detox Environment
+  command: |
+    brew install node@8
+    brew tap wix/brew
+    brew install applesimutils
+    brew install watchman
+    touch .watchmanconfig
+    node -v
+
+- &packager-jet
+  name: Start React Native Pacakager (background)
+  background: true
+  command: cd tests && yarn run packager-jet || true
+
+- &packager-warmup
+  name: Warming up Packager
+  background: true
+  command: node .circleci/scripts/packager-warmup.js
+
+
+# -------------------------
+#       INSTALLATION
+# -------------------------
+- &yarn
+  name: Yarn Install ./ and ./tests
+  command: |
+    yarn install --non-interactive --cache-folder ~/.cache/yarn & cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn & wait
+
+# -------------------------
+#         ANALYSE
+# -------------------------
+
+# eslint
+- &eslint
+  name: Lint Code
+  command: yarn run lint
+
+# flow
+- &validate-flow-declarations
+  name: Validate Flow Declarations
+  command: yarn run validate-flow-declarations
+
+# typescript
+- &validate-ts-declarations
+  name: Validate TypeScript Declarations
+  command: yarn run validate-ts-declarations
+
+# -------------------------
+#        DEFAULTS
+# -------------------------
+defaults: &defaults
+  working_directory: ~/react-native-firebase
+  environment:
+  - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+
+# JAVASCRIPT
+js_defaults: &js_defaults
+  <<: *defaults
+  docker:
+  - image: circleci/node:8
+  environment:
+  - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# ANDROID
+android_defaults: &android_defaults
+  <<: *defaults
+  docker:
+  - image: circleci/android:api-27-node8-alpha
+  resource_class: "large"
+  environment:
+  - TERM: "dumb"
+  - ADB_INSTALL_TIMEOUT: 10
+  - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+  - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+  - BUILD_THREADS: 2
+
+# IOS
+macos_defaults: &macos_defaults
+  <<: *defaults
+  resource_class: "large"
+  macos:
+    xcode: "9.4.0"
+
+# -------------------------
+#          JOBS
+# -------------------------
+version: 2
+jobs:
+  # Set up a Node environment for downstream jobs
+  checkout-code:
+    <<: *js_defaults
+    steps:
+    - checkout
+    - persist_to_workspace:
+        root: .
+        paths: .
+
+  analyse:
+    <<: *js_defaults
+    steps:
+    - attach_workspace:
+        at: ~/react-native-firebase
+    - restore-cache: *restore-yarn-cache
+    - run: *yarn
+    - save-cache: *save-yarn-cache
+    - run: *eslint
+    - run: *validate-flow-declarations
+    - run: *validate-ts-declarations
+
+  jet-test-ios:
+    <<: *macos_defaults
+    steps:
+    - attach_workspace:
+        at: ~/react-native-firebase
+    - run:
+        name: Start iPhone 7 Plus simulator (background)
+        background: true
+        command: xcrun simctl boot "iPhone 7 Plus" || true
+    - run:
+        name: Configure Environment Variables
+        command: |
+          echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+          source $BASH_ENV
+    # Brew
+    - restore-cache: *restore-brew-cache
+    - run: *configure-jet-detox-environment
+    - save-cache: *save-brew-cache
+
+    # Yarn install - to ensure detox post install builds
+    - restore-cache: *restore-yarn-cache
+    - run: *yarn
+    - save-cache: *save-yarn-cache
+
+    # Pods
+    - restore-cache: *restore-pods-cache
+    - run:
+        name: Install CocoaPods +  Pod Install
+        command: |
+          cd tests/ios
+          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+          pod install
+    - save-cache: *save-pods-cache
+
+    # must always be after environment config job but before ios build
+    - run: *packager-jet
+    - run: *packager-warmup
+
+    # XCode Build
+    - restore-cache: *restore-ios-build-cache
+    - run:
+        name: Build iOS Testing App
+        command: cd tests && yarn run build-ios
+    - save-cache: *save-ios-build-cache
+
+    - run: mkdir ~/detox-artifacts
+
+    # Now Test \o/
+    - run:
+        name: Run Jet Tests
+        command: cd tests && yarn run test-ios-cover
+
+    # TODO merge coverage output from android and iOS
+    - run:
+        name: Submit Coverage
+        command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+
+    - store_artifacts:
+        path: ~/detox-artifacts
+    - store_artifacts:
+        path: ~/react-native-firebase/coverage
+
+
+# -------------------------
+#        WORK FLOWS
+# -------------------------
+workflows:
+  version: 2
+  Test:
+    jobs:
+    # Checkout repo and run Yarn install at root and in tests
+    - checkout-code
+
+    # Run lint, flow, and typescript checks
+    - analyse:
+        requires:
+        - checkout-code
+
+    - jet-test-ios:
+        requires:
+        - checkout-code

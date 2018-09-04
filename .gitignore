@@ -68,16 +68,7 @@ android/gradle
 lib/.watchmanconfig
 .idea
 coverage
-yarn.lock
 
-tests/build
-tests/android/app/build
-tests/ios/Pods
-tests/firebase
-tests-new/build
-tests-new/android/app/build
-tests-new/ios/Pods
-tests-new/firebase
 .gradle
 local.properties
 *.iml
@@ -88,12 +79,12 @@ dist
 version.js
 .nyc_output
 ios.coverage.json
-tests/ios/Fabric.framework/Fabric
 **/android/.project
 **/android/.classpath
 **/android/.settings
 **/android/app/.settings
-bridge/android/app/.classpath
-bridge/android/app/.project
 **/.vscode
-bridge/functions/firebase-debug.log
+tests/android/app/.project
+tests/android/app/.classpath
+**/*.xcworkspace/**
+tests/functions/firebase-debug.log
