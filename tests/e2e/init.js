@@ -1,12 +1,6 @@
 const detox = require('detox');
 const config = require('../package.json').detox;
 
-if (process.env.CIRCLECI) {
-  config['runner-config'] = 'e2e/mocha.ci.opts';
-} else {
-  config['runner-config'] = 'e2e/mocha.local.opts';
-}
-
 before(async () => {
   await detox.init(config);
   // needs to be called before any usage of firestore

@@ -83,10 +83,7 @@ aliases:
 # eslint
 - &eslint
   name: Lint Code
-  command: |
-    mkdir -p ~/reports
-    ./node_modules/.bin/eslint ./src/ --format junit --output-file ~/reports/eslint.xml
-  when: always
+  command: yarn run lint
 
 # flow
 - &validate-flow-declarations
@@ -159,10 +156,6 @@ jobs:
     - run: *eslint
     - run: *validate-flow-declarations
     - run: *validate-ts-declarations
-    - store_test_results:
-        path: ~/reports
-    - store_artifacts:
-        path: ~/reports
 
   jet-test-ios:
     <<: *macos_defaults
@@ -209,7 +202,7 @@ jobs:
         command: cd tests && yarn run build-ios
     - save-cache: *save-ios-build-cache
 
-    - run: mkdir ~/reports
+    - run: mkdir ~/detox-artifacts
 
     # Now Test \o/
     - run:
@@ -222,9 +215,9 @@ jobs:
         command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
     - store_test_results:
-        path: ~/reports
+        path: ~/detox-artifacts
     - store_artifacts:
-        path: ~/reports
+        path: ~/detox-artifacts
 
 
 # -------------------------
