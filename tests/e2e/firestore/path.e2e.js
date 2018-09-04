@@ -2,14 +2,14 @@ describe('firestore()', () => {
   describe('Path', () => {
     describe('id', () => {
       it('returns the document id', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection/documentId');
         path.id.should.be.equal('documentId');
       });
 
       it('returns null if no path', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('');
         should.equal(path.id, null);
@@ -18,14 +18,14 @@ describe('firestore()', () => {
 
     describe('isDocument', () => {
       it('returns true if path is a document', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection/documentId');
         path.isDocument.should.be.equal(true);
       });
 
       it('returns false if path is a collection', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection');
         path.isDocument.should.be.equal(false);
@@ -34,14 +34,14 @@ describe('firestore()', () => {
 
     describe('isCollection', () => {
       it('returns true if path is a collection', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection');
         path.isCollection.should.be.equal(true);
       });
 
       it('returns false if path is a document', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection/documentId');
         path.isCollection.should.be.equal(false);
@@ -50,7 +50,7 @@ describe('firestore()', () => {
 
     describe('relativeName', () => {
       it('returns original full path', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection');
         const path2 = Path.fromName('collection/documentId');
@@ -61,7 +61,7 @@ describe('firestore()', () => {
 
     describe('child()', () => {
       it('returns original path joined with the provided child path', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection');
         const path2 = path.child('documentId');
@@ -72,7 +72,7 @@ describe('firestore()', () => {
 
     describe('parent()', () => {
       it('returns the parent of the current child path', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection/documentId');
         const path2 = path.parent();
@@ -81,7 +81,7 @@ describe('firestore()', () => {
       });
 
       it('returns null if no path', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('');
         const path2 = path.parent();
@@ -92,7 +92,7 @@ describe('firestore()', () => {
 
     describe('static fromName()', () => {
       it('returns a new instance from a / delimited path string', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('collection/document');
         path.should.be.instanceOf(Path);
@@ -100,7 +100,7 @@ describe('firestore()', () => {
       });
 
       it('returns a new instance from an empty string', async () => {
-        const Path = bridge.require('dist/modules/firestore/Path');
+        const Path = bridge.require('src/modules/firestore/Path');
 
         const path = Path.fromName('');
         path.should.be.instanceOf(Path);
@@ -109,7 +109,7 @@ describe('firestore()', () => {
     });
 
     it('returns a new instance with no args provided', async () => {
-      const Path = bridge.require('dist/modules/firestore/Path');
+      const Path = bridge.require('src/modules/firestore/Path');
 
       const path = Path.fromName();
       path.should.be.instanceOf(Path);
