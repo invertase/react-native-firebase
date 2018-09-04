@@ -20,11 +20,13 @@ aliases:
   - &save-pods-cache
     paths:
     - ~/react-native-firebase/tests/ios/Pods
+    - ~/.cocoapods/repos/master
     key: pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
     - pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - pods-cache-{{ arch }}
 
   - &save-ios-build-cache
     paths:
@@ -34,10 +36,12 @@ aliases:
   - &restore-ios-build-cache
     keys:
     - ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    - ios-build-cache-{{ arch }}
 
   - &save-brew-cache
     paths:
     - /usr/local/Homebrew
+    - /usr/local/Cellar
     key: brew-cache-{{ arch }}
 
   - &restore-brew-cache
@@ -59,6 +63,12 @@ aliases:
     name: Start React Native Pacakager (background)
     background: true
     command: cd tests && yarn run packager-jet || true
+
+  - &packager-warmup
+    name: Warming up Packager
+    background: true
+    command: node .circleci/scripts/packager-warmup.js
+
 
   # -------------------------
   #       INSTALLATION
@@ -180,12 +190,13 @@ jobs:
         name: Install CocoaPods +  Pod Install
         command: |
           cd tests/ios
-          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+          pod repo update
           pod install
     - save-cache: *save-pods-cache
 
     # must always be after environment config job but before ios build
     - run: *packager-jet
+    - run: *packager-warmup
 
     # XCode Build
     - restore-cache: *restore-ios-build-cache
