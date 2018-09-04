@@ -3,97 +3,97 @@
 # -------------------------
 
 aliases:
-  # -------------------------
-  #          CACHE
-  # -------------------------
-  - &restore-yarn-cache
-    keys:
-    - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
-    - yarn-cache-{{ arch }}
+# -------------------------
+#          CACHE
+# -------------------------
+- &restore-yarn-cache
+  keys:
+  - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  - yarn-cache-{{ arch }}
 
-  - &save-yarn-cache
-    paths:
-    - ~/.cache/yarn
-    - ~/Library/Detox/ios
-    key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+- &save-yarn-cache
+  paths:
+  - ~/.cache/yarn
+  - ~/Library/Detox/ios
+  key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
-  - &save-pods-cache
-    paths:
-    - ~/react-native-firebase/tests/ios/Pods
-    key: v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+- &save-pods-cache
+  paths:
+  - ~/react-native-firebase/tests/ios/Pods
+  key: v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
-  - &restore-pods-cache
-    keys:
-    - v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-    - v2-pods-cache-{{ arch }}
+- &restore-pods-cache
+  keys:
+  - v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v2-pods-cache-{{ arch }}
 
-  - &save-ios-build-cache
-    paths:
-    - ~/react-native-firebase/tests/ios/build/Build
-    key: v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+- &save-ios-build-cache
+  paths:
+  - ~/react-native-firebase/tests/ios/build/Build
+  key: v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
-  - &restore-ios-build-cache
-    keys:
-    - v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-    - v2-ios-build-cache-{{ arch }}
+- &restore-ios-build-cache
+  keys:
+  - v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v2-ios-build-cache-{{ arch }}
 
-  - &save-brew-cache
-    paths:
-    - /usr/local/Homebrew
-    - ~/Library/Caches/Homebrew
-    key: v3-brew-cache-{{ arch }}
+- &save-brew-cache
+  paths:
+  - /usr/local/Homebrew
+  - ~/Library/Caches/Homebrew
+  key: v3-brew-cache-{{ arch }}
 
-  - &restore-brew-cache
-    keys:
-    - v3-brew-cache-{{ arch }}
+- &restore-brew-cache
+  keys:
+  - v3-brew-cache-{{ arch }}
 
-  - &configure-jet-detox-environment
-    name: Configure Jet + Detox Environment
-    command: |
-      brew install node@8
-      brew tap wix/brew
-      brew install applesimutils
-      brew install watchman
-      touch .watchmanconfig
-      node -v
+- &configure-jet-detox-environment
+  name: Configure Jet + Detox Environment
+  command: |
+    brew install node@8
+    brew tap wix/brew
+    brew install applesimutils
+    brew install watchman
+    touch .watchmanconfig
+    node -v
 
-  - &packager-jet
-    name: Start React Native Pacakager (background)
-    background: true
-    command: cd tests && yarn run packager-jet || true
+- &packager-jet
+  name: Start React Native Pacakager (background)
+  background: true
+  command: cd tests && yarn run packager-jet || true
 
-  - &packager-warmup
-    name: Warming up Packager
-    background: true
-    command: node .circleci/scripts/packager-warmup.js
+- &packager-warmup
+  name: Warming up Packager
+  background: true
+  command: node .circleci/scripts/packager-warmup.js
 
 
-  # -------------------------
-  #       INSTALLATION
-  # -------------------------
-  - &yarn
-    name: Run Yarn
-    command: |
-      yarn install --non-interactive --cache-folder ~/.cache/yarn & cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn & wait
+# -------------------------
+#       INSTALLATION
+# -------------------------
+- &yarn
+  name: Run Yarn
+  command: |
+    yarn install --non-interactive --cache-folder ~/.cache/yarn & cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn & wait
 
-  # -------------------------
-  #         ANALYSE
-  # -------------------------
+# -------------------------
+#         ANALYSE
+# -------------------------
 
-  # eslint
-  - &eslint
-      name: Lint Code
-      command: yarn run lint
+# eslint
+- &eslint
+  name: Lint Code
+  command: yarn run lint
 
-  # flow
-  - &validate-flow-declarations
-    name: Validate Flow Declarations
-    command: yarn run validate-flow-declarations
+# flow
+- &validate-flow-declarations
+  name: Validate Flow Declarations
+  command: yarn run validate-flow-declarations
 
-  # typescript
-  - &validate-ts-declarations
-    name: Validate TypeScript Declarations
-    command: yarn run validate-ts-declarations
+# typescript
+- &validate-ts-declarations
+  name: Validate TypeScript Declarations
+  command: yarn run validate-ts-declarations
 
 # -------------------------
 #        DEFAULTS
@@ -206,6 +206,11 @@ jobs:
     - run:
         name: Run Jet Tests
         command: cd tests && yarn run test-ios-cover
+
+    # TODO merge coverage output from android and iOS
+    - run:
+        name: Submit Coverage
+        command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 # -------------------------
 #        WORK FLOWS
