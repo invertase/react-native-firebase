@@ -6,8 +6,7 @@ const {
   resetTestCollectionDoc,
 } = TestHelpers.firestore;
 
-// TODO flakey firestore helpers - so we can't cleanup
-xdescribe('firestore()', () => {
+describe('firestore()', () => {
   describe('DocumentSnapshot', () => {
     before(async () => {
       await resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1());

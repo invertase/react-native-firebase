@@ -26,8 +26,7 @@ function getPathClass() {
   return bridge.require('dist/modules/firestore/Path');
 }
 
-// TODO flakey firestore helpers - so we can't cleanup
-xdescribe('firestore()', () => {
+describe('firestore()', () => {
   describe('CollectionReference', () => {
     before(() => resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1()));
 
@@ -81,16 +80,16 @@ xdescribe('firestore()', () => {
         });
 
         const doc = await firebase
-        .firestore()
-        .doc(docRef.path)
-        .get();
+          .firestore()
+          .doc(docRef.path)
+          .get();
 
         doc.data().first.should.equal('Ada');
 
         await firebase
-        .firestore()
-        .doc(docRef.path)
-        .delete();
+          .firestore()
+          .doc(docRef.path)
+          .delete();
       });
     });
 
@@ -103,9 +102,9 @@ xdescribe('firestore()', () => {
       it('should error when supplied an incorrect path', () => {
         (() => {
           firebase
-          .firestore()
-          .collection('collection')
-          .doc('invalid/doc');
+            .firestore()
+            .collection('collection')
+            .doc('invalid/doc');
         }).should.throw('Argument "documentPath" must point to a document.');
       });
     });
@@ -152,8 +151,7 @@ xdescribe('firestore()', () => {
       it('should error with invalid GetOptions source option', async () => {
         const collectionRef = testCollection(TEST_COLLECTION_NAME);
         try {
-          await collectionRef.get(() => {
-          });
+          await collectionRef.get(() => {});
           return Promise.reject(
             new Error('get() did not reject with invalid argument.')
           );
@@ -252,8 +250,8 @@ xdescribe('firestore()', () => {
         await sleep(50);
 
         const collectionRef = firebase
-        .firestore()
-        .collection(TEST_COLLECTION_NAME);
+          .firestore()
+          .collection(TEST_COLLECTION_NAME);
 
         const newDocValue = { foo: 'updated' };
 
