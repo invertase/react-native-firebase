@@ -159,6 +159,10 @@ jobs:
     - run: *eslint
     - run: *validate-flow-declarations
     - run: *validate-ts-declarations
+    - store_test_results:
+        path: ~/reports
+    - store_artifacts:
+        path: ~/reports
 
   jet-test-ios:
     <<: *macos_defaults
@@ -217,6 +221,10 @@ jobs:
         name: Submit Coverage
         command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
+    - store_test_results:
+        path: ~/reports
+    - store_artifacts:
+        path: ~/reports
 
 
 # -------------------------
@@ -233,15 +241,7 @@ workflows:
     - analyse:
         requires:
         - checkout-code
-        - store_test_results:
-            path: ~/reports
-        - store_artifacts:
-            path: ~/reports
 
     - jet-test-ios:
         requires:
         - checkout-code
-        - store_test_results:
-            path: ~/reports
-        - store_artifacts:
-            path: ~/reports
