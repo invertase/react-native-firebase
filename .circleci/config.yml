@@ -85,7 +85,7 @@ aliases:
   name: Lint Code
   command: |
     mkdir -p ~/reports
-    eslint ./src/ --format junit --output-file ~/reports/eslint.xml
+    ./node_modules/.bin/eslint ./src/ --format junit --output-file ~/reports/eslint.xml
   when: always
 
 # flow
