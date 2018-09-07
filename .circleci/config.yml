@@ -212,7 +212,7 @@ jobs:
     # TODO merge coverage output from android and iOS
     - run:
         name: Submit Coverage
-        command: cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+        command: yarn run codecov
 
     - store_artifacts:
         path: ~/detox-artifacts
