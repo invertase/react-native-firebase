@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE()
 - (id)init {
     self = [super init];
     if (self != nil) {
-        NSLog(@"Setting up RNFirebaseInvites instance");
+        DLog(@"Setting up RNFirebaseInvites instance");
         // Set static instance for use from AppDelegate
         theRNFirebaseInvites = self;
     }
@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(getInitialInvitation:(RCTPromiseResolveBlock)resolve rejecter:
     if (url) {
         [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
             if (error) {
-                NSLog(@"Failed to handle universal link: %@", [error localizedDescription]);
+                DLog(@"Failed to handle universal link: %@", [error localizedDescription]);
                 reject(@"invites/initial-invitation-error", @"Failed to handle invitation", error);
             } else if (receivedInvite && receivedInvite.inviteId) {
                 resolve(@{
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 - (BOOL)handleUrl:(NSURL *)url {
     return [FIRInvites handleUniversalLink:url completion:^(FIRReceivedInvite * _Nullable receivedInvite, NSError * _Nullable error) {
         if (error) {
-            NSLog(@"Failed to handle invitation: %@", [error localizedDescription]);
+            DLog(@"Failed to handle invitation: %@", [error localizedDescription]);
         } else if (receivedInvite && receivedInvite.inviteId) {
             [self sendJSEvent:self name:INVITES_INVITATION_RECEIVED body:@{
                                                                            @"deepLink": receivedInvite.deepLink,
@@ -188,7 +188,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
     } else if (!initialInvite) {
         initialInvite = body;
     } else {
-        NSLog(@"Multiple invite events received before the JS invites module has been initialised");
+        DLog(@"Multiple invite events received before the JS invites module has been initialised");
     }
 }
 

@@ -478,7 +478,7 @@ RCT_EXPORT_METHOD(updateProfile:
                     [changeRequest setValue:props[key] forKey:key];
                 }
             } @catch (NSException *exception) {
-                NSLog(@"Exception occurred while configuring: %@", exception);
+                DLog(@"Exception occurred while configuring: %@", exception);
             }
         }
 
@@ -1128,7 +1128,7 @@ RCT_EXPORT_METHOD(fetchSignInMethodsForEmail:
     } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIROAuthProvider credentialWithProviderID:@"oauth" IDToken:authToken accessToken:authTokenSecret];
     } else {
-        NSLog(@"Provider not yet handled: %@", provider);
+        DLog(@"Provider not yet handled: %@", provider);
     }
 
     return credential;

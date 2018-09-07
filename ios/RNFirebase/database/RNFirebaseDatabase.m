@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(transactionTryCommit:(NSString *)appDisplayName
     });
 
     if (!transactionState) {
-        NSLog(@"tryCommitTransaction for unknown ID %@", transactionId);
+        DLog(@"tryCommitTransaction for unknown ID %@", transactionId);
         return;
     }
 
