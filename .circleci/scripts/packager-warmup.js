@@ -10,10 +10,18 @@ async function waitForPackager() {
   while (waitAttempts < maxWaitAttempts) {
     console.log(`Waiting for packager to be ready, attempt ${waitAttempts} of ${maxWaitAttempts}...`);
     const [error, response] = await A2A(axios.get('http://localhost:8081/status', { timeout: 500 }));
+    // metro bundler only
+    if (error && error.response && error.response.data && error.response.data.includes('Cannot GET /status')) {
+      ready = true;
+      break;
+    }
+
+    // rn-cli only
     if (!error && response.data.includes('packager-status:running')) {
       ready = true;
       break;
     }
+
     await sleep(1500);
     waitAttempts++;
   }
