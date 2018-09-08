@@ -34,10 +34,8 @@
     "sinon": "^6.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/runtime": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
     "babel-eslint": "^9.0.0",
     "babel-plugin-istanbul": "^5.0.1",
     "babel-plugin-module-resolver": "^3.1.1",
