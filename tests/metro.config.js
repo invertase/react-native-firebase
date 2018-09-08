@@ -19,7 +19,7 @@ const config = {
   },
   serializer: {
     getModulesRunBeforeMainModule: () => [
-      // TODO
+      // TODO inject Jet
     ],
   },
 };
