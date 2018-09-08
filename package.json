@@ -71,8 +71,7 @@
   ],
   "peerDependencies": {
     "react": ">= 16.5.0",
-    "react-native": ">= 0.57.0-rc.4",
-    "fbjs": "*"
+    "react-native": ">= 0.57.0-rc.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
