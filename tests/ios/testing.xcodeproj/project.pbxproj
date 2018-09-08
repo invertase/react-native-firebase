@@ -1092,6 +1092,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
 				PRODUCT_NAME = testing;
+				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
 			name = Debug;
 		};
@@ -1114,6 +1115,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
 				PRODUCT_NAME = testing;
+				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
 			name = Release;
 		};
