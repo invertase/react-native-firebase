@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
-import bridge from 'jet/platform/react-native';
+import jet from 'jet/platform/react-native';
 import firebase from 'react-native-firebase';
 
 require('sinon');
@@ -16,7 +16,7 @@ class Root extends Component {
       message: '',
     };
 
-    bridge.setBridgeProperty('module', firebase);
+    jet.setBridgeProperty('module', firebase);
   }
 
   render() {
