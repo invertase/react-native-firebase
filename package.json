@@ -70,13 +70,14 @@
     "crashlytics"
   ],
   "peerDependencies": {
-    "react": ">= 16.4.1",
-    "react-native": ">= 0.57.0-rc.3",
+    "react": ">= 16.5.0",
+    "react-native": ">= 0.57.0-rc.4",
     "fbjs": "*"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.3",
     "axios": "^0.18.0",
     "babel-eslint": "^9.0.0",
