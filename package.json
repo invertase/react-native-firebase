@@ -98,7 +98,7 @@
     "prettier": "^1.14.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-native": "^0.57.0-rc.3",
+    "react-native": "^0.57.0-rc.4",
     "typescript": "^3.0.3"
   },
   "dependencies": {

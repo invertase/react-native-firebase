@@ -11,7 +11,7 @@ const config = {
     blackListRE: createBlacklist([
       new RegExp(`^${escape(resolve(__dirname, '..', 'node_modules'))}\\/.*$`),
     ]),
-    providesModuleNodeModules: ['react-native', 'react', 'prop-types', 'fbjs'],
+    // providesModuleNodeModules: ['react-native', 'react', 'prop-types', 'fbjs'],
   },
   watchFolders: [resolve(__dirname, '../src')],
   transformer: {
