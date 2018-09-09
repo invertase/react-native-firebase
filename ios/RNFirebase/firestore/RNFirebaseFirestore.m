@@ -47,7 +47,7 @@ RCT_EXPORT_METHOD(transactionGetDocument:(NSString *)appDisplayName
     });
 
     if (!transactionState) {
-        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
         return;
     }
 
@@ -77,7 +77,7 @@ RCT_EXPORT_METHOD(transactionDispose:(NSString *)appDisplayName
     });
 
     if (!transactionState) {
-        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
         return;
     }
 
@@ -96,7 +96,7 @@ RCT_EXPORT_METHOD(transactionApplyBuffer:(NSString *)appDisplayName
     });
 
     if (!transactionState) {
-        NSLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
         return;
     }
 
