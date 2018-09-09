@@ -6,77 +6,64 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 
 ## Requirements
 
-- Make sure you have Xcode installed (tested with Xcode 9+).
+- Make sure you have Xcode installed (tested with Xcode 9.2+).
 - Make sure you have NodeJS installed (Node 8.4.0 and up is required).
-- Make sure you have all required global dependencies installed:
-  - React Native CLI:
-    ```bash
-    npm install -g react-native-cli
-    ```
+- Make sure you have all required dependencies installed:
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):
+
     ```bash
     brew tap wix/brew
     brew install wix/brew/applesimutils
-    ```
-  - Detox CLI:
-    ```bash
-    npm install -g detox-cli
     ```
 
 ---
 
 ### Step 1: Install test project dependencies
 
-NPM install at project root and also inside tests directory.
+Yarn install at project root and also inside tests directory.
 
 Also install tests project iOS Pods.
 
 ```bash
-npm i
-cd tests/ && npm i
+yarn
+cd tests/ && yarn
 cd tests/ios && pod install --repo-update
 ```
 
 ---
 
-### Step 2: Start Build & Packager Scripts
+### Step 2: Start Packager Script
 
-1. First, start the build script to compile the library and watch for changes;
-
-```bash
-npm run build-src-watch
-```
-
-> This will automatically rebuild on any JS changes to the library code. You don't need to restart this, leave it running whilst developing.
-
-2. Secondly, start the React Native packager using the script provided;
+Start the React Native packager using the script provided;
 
 ```bash
-cd tests/ && npm run packager-jet
+cd tests/ && yarn run packager-jet
 ```
 
 > ⚠️ It must be this script only that starts the RN Packager, using the default RN packager command will not work.
 
 > ⚠️ Also ensure that all existing packagers are terminated and that you have no React Native debugger tabs open on your browsers.
 
+> This packager will automatically rebuild on any JS changes to the library code. You don't need to restart this, leave it running whilst developing.
+
 ---
 
 ### Step 3: Build Native App
 
-The first build for each platform will take a while. Subsequent builds are much much quicker ⚡️
+As always; the first build for each platform will take a while. Subsequent builds are much much quicker ⚡️
 
 > ⚠️ You must rebuild native every time you make changes to native code (anything in /android /ios directories).
 
 #### Android
 
 ```bash
-cd tests/ && npm run build-android
+cd tests/ && yarn run build-android
 ```
 
 #### iOS
 
 ```bash
-cd tests/ && npm run build-ios
+cd tests/ && yarn run build-ios
 ```
 
 ---
@@ -96,13 +83,13 @@ This action will launch a new simulator (if not already open) and run the tests 
 #### Android
 
 ```bash
-cd tests/ && npm run test-android
+cd tests/ && yarn run test-android
 ```
 
 #### iOS
 
 ```bash
-cd tests/ && npm run test-ios
+cd tests/ && yarn run test-ios
 ```
 
 The `test-${platform}` commands uninstall any existing app and installs a fresh copy. You can
@@ -110,10 +97,10 @@ run `test-${platform}-reuse` instead if you don't need to re-install the app (i.
 Just remember to use `test-${platform}` if you made native code changes and rebuilt - after installing once you can
 go back to using the `reuse` variant.
 
-The `cover` variant of the npm scripts will additionally run tests with coverage.
+The `cover` variant of the yarn scripts will additionally run tests with coverage.
 Coverage is output to the root directory of the project: `react-native-firebase/coverage`,
 open `react-native-firebase/coverage/lcov-report/index.html` in your browser after running tests
-to view coverage output.
+to view detailed coverage output.
 
 ---
 
@@ -126,27 +113,3 @@ Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e
 > 💡 Don't forget to remove these before committing your code and submitting a pull request
 
 For more Mocha options see https://mochajs.org/#usage
-
-### TODO - Troubleshooting
-
-These notes are TODO.
-
-Gradle issues... https://stackoverflow.com/questions/46917365/error-could-not-initialize-class-com-android-sdklib-repository-androidsdkhandle?rq=1
-
-mac: `export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"`
-windows `"C://Program Files/Java/jdk_1.x_"`
-
-android sdk root `export ANDROID_SDK_ROOT="/Users/mike/Library/Android/sdk"`
-
-Add platform-tools to your path
-
-echo 'export ANDROID_HOME=/Users/$USER/Library/Android/sdk' >> ~/.bash_profile
-echo 'export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools' >> ~/.bash_profile
-
-Name: TestingAVD
-
-CPU/ABI: null (null)
-
-Path: /Users/mike/.android/avd/Actually_THIS_one.avd
-
-Error: Failed to parse properties from /Users/mike/.android/avd/Actually_THIS_one.avd/config.ini
