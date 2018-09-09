@@ -13,14 +13,6 @@ module.exports = {
         extensions: ['.js', '.ts', '.tsx', '.css'],
       },
     ],
-    // TODO - errors without this =/ rn57 not correctly providing babelHelpers?
-    [
-      'module:@babel/plugin-transform-runtime',
-      {
-        helpers: true,
-        regenerator: true,
-      },
-    ],
     [
       'istanbul',
       {
