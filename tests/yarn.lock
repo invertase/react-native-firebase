@@ -2763,13 +2763,6 @@ detect-newline@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
-detox-cli@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/detox-cli/-/detox-cli-7.4.0.tgz#d1de0d4a4bb2f29ffe5383474fd5d1f50dfa3952"
-  dependencies:
-    commander "^2.9.0"
-    minimist "^1.2.0"
-
 detox@^8.1.1:
   version "8.2.3"
   resolved "https://registry.yarnpkg.com/detox/-/detox-8.2.3.tgz#574ffbc3680e7285a07a340ede6f415163bbc725"
