@@ -163,7 +163,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   }
 
   @ReactMethod
-  public void createChannelGroup(ReadableArray channelGroupsArray, Promise promise) {
+  public void createChannelGroups(ReadableArray channelGroupsArray, Promise promise) {
     notificationManager.createChannelGroups(channelGroupsArray);
     promise.resolve(null);
   }
