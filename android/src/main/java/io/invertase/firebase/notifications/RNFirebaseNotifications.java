@@ -176,8 +176,13 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   @ReactMethod
   public void deleteChannelGroup(String channelId, Promise promise) {
-    notificationManager.deleteChannelGroup(channelId);
-    promise.resolve(null);
+    try {
+      notificationManager.deleteChannelGroup(channelId);
+      promise.resolve(null);
+    } catch (NullPointerException e) {
+      promise.reject("notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?");
+    }
   }
 
   @ReactMethod
