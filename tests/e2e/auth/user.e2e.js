@@ -461,18 +461,6 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('updatePhoneNumber()', () => {
-    it('should throw an unsupported error', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
-      (() => {
-        firebase.auth().currentUser.updatePhoneNumber();
-      }).should.throw(
-        'User.updatePhoneNumber() is unsupported by the native Firebase SDKs.'
-      );
-      await firebase.auth().signOut();
-    });
-  });
-
   describe('refreshToken', () => {
     it('should throw an unsupported error', async () => {
       await firebase.auth().signInAnonymouslyAndRetrieveData();
