@@ -6,6 +6,7 @@ daysUntilClose: 14
 exemptLabels:
   - await-invertase-feedback
   - await-firebase-sdk-fix
+  - await-maintainer-feedback
   - await-google-feedback
   - await-react-native-pr
 # Label to use when marking an issue as stale
