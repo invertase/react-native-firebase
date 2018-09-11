@@ -132,6 +132,9 @@ declare module 'react-native-firebase' {
   }
 
   export namespace RNFirebase {
+    type Handler<T> = (value: T) => void;
+    type ErrorHandler = Handler<RnError>;
+
     export interface RnError extends Error {
       code?: string;
     }
@@ -213,98 +216,137 @@ declare module 'react-native-firebase' {
     }
 
     namespace storage {
-      interface StorageTask<T> extends Promise<T> {
-        on(
-          event: TaskEvent,
-          nextOrObserver: (snapshot: any) => any,
-          error: (error: RnError) => any,
-          complete: (complete: any) => any
-        ): any;
+      /**
+       * The Firebase Storage service interface.
+       *
+       * An instance can be accessed using `firebase.storage()`.
+       */
+      class Storage {
+        static TaskState: TaskState;
+        static TaskEvent: TaskState;
+        static Native?: {
+          MAIN_BUNDLE_PATH: string,
+          CACHES_DIRECTORY_PATH: string,
+          DOCUMENT_DIRECTORY_PATH: string,
+          EXTERNAL_DIRECTORY_PATH: string,
+          EXTERNAL_STORAGE_DIRECTORY_PATH: string,
+          TEMP_DIRECTORY_PATH: string,
+          LIBRARY_DIRECTORY_PATH: string,
+          FILETYPE_REGULAR: string,
+          FILETYPE_DIRECTORY: string,
+        };
 
         /**
-         * is not currently supported by react-native-firebase
+         * The app associated with the Storage service instance.
          */
-        pause(): void;
+        app: App;
 
         /**
-         * is not currently supported by react-native-firebase
+         * Returns a reference for the given path in the default bucket.
+         *
+         * @param path A relative path to initialize the reference with, for
+         *        example path/to/image.jpg. If not passed, the returned
+         *        reference points to the bucket root.
          */
-        resume(): void;
+        ref(path?: string): Reference;
 
         /**
-         * is not currently supported by react-native-firebase
+         * Returns a reference for the given absolute URL.
+         *
+         * @param url URL must be in the form of either
+         *        -   a Cloud Storage URL, for example gs://bucket/files/image.png; or
+         *        -   download URL taken from object metadata.
          */
-        cancel(): void;
-      }
-
-      interface RNStorage extends Reference {
-        /**
-         *  Downloads a reference to the device
-         *  @param {String} filePath Where to store the file
-         *  @return {Promise}
-         * */
-        downloadFile(filePath: string): StorageTask<any>;
+        refFromURL(url: string): Reference;
 
         /**
-         * Upload a file path
-         * @returns {Promise}
+         * @param time The new maximum operation retry time in milliseconds.
          */
-        putFile(filePath: string, metadata?: any): StorageTask<any>;
+        setMaxOperationRetryTime(time: number): void;
 
+        /**
+         * @param time The new maximum upload retry time in milliseconds.
+         */
+        setMaxUploadRetryTime(time: number): void;
+
+        /**
+         * @param time The new maximum download retry time in milliseconds.
+         */
         setMaxDownloadRetryTime(time: number): void;
-
-        [key: string]: any;
       }
 
-      interface Storage {
-        maxOperationRetryTime: number;
-        maxUploadRetryTime: number;
-
-        ref(path?: string): storage.RNStorage;
-
-        refFromURL(url: string): storage.RNStorage;
-
-        setMaxOperationRetryTime(time: number): any;
-
-        setMaxUploadRetryTime(time: number): any;
-      }
-
+      /**
+       * A reference represents a reference to a Google Cloud Storage object.
+       *
+       * You can upload, download, and delete objects, as well as get/set object
+       * metadata for a file via this reference.
+       */
       interface Reference {
-        bucket: string;
-
-        child(path: string): storage.Reference;
-
-        delete(): Promise<any>;
-
         fullPath: string;
-
-        getDownloadURL(): Promise<any>;
-
-        getMetadata(): Promise<any>;
-
-        name: string;
-        parent: storage.Reference | null;
-
-        put(
-          data: any | Uint8Array | ArrayBuffer,
-          metadata?: storage.UploadMetadata
-        ): storage.UploadTask;
-
-        putString(
-          data: string,
-          format?: storage.StringFormat,
-          metadata?: storage.UploadMetadata
-        ): storage.UploadTask;
-
-        root: storage.Reference;
-        storage: storage.Storage;
-
         toString(): string;
 
-        updateMetadata(metadata: storage.SettableMetadata): Promise<any>;
+        /**
+         * Returns a reference to a relative path from this reference.
+         *
+         * @param path The relative path
+         */
+        child(path: string): Reference;
+
+        /**
+         * Deletes the object at this reference's location.
+         */
+        delete(): Promise<void>;
+
+        /**
+         * Fetches a long lived download URL for this object.
+         */
+        getDownloadURL(): Promise<string>;
+
+        /**
+         * Fetches metadata for the object at this location, if one exists.
+         *
+         * @returns A promise that is resolved with the metadata; or rejected on
+         *          failure, including if the object does not exist.
+         */
+        getMetadata(): Promise<FullMetadata>;
+
+        /**
+         * Updates the metadata for the object at this location, if one exists.
+         *
+         * @param metadata
+         */
+        updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
+
+        /**
+         * Downloads the storage object for this reference to the device file
+         * path specified.
+         *
+         * @param filePath The destination path of the downloaded file.
+         */
+        downloadFile(filePath: string): StorageTask<DownloadTaskSnapshot>;
+
+        /**
+         * Uploads the file path specified from the device into a storage object
+         * for this reference.
+         *
+         * @param filePath The path to the file on the device. It must be a full
+         *        file path.
+         * @param metadata The metadata to associate with this file.
+         */
+        putFile(
+          filePath: string, metadata?: SettableMetadata
+        ): StorageTask<UploadTaskSnapshot>;
       }
 
-      interface UploadMetadata extends storage.SettableMetadata {
+      interface FullMetadata extends SettableMetadata {
+        bucket: string;
+        fullPath: string;
+        generation: string;
+        metageneration: string;
+        name: string;
+        size: number;
+        timeCreated: string;
+        updated: string;
         md5Hash?: string | null;
       }
 
@@ -314,77 +356,69 @@ declare module 'react-native-firebase' {
         contentEncoding?: string | null;
         contentLanguage?: string | null;
         contentType?: string | null;
-        customMetadata?: {
-          [/* warning: coerced from ? */ key: string]: string;
-        } | null;
+        customMetadata?: Partial<Record<string, string>>;
       }
 
-      type StringFormat = string;
-      var StringFormat: {
-        BASE64: StringFormat;
-        BASE64URL: StringFormat;
-        DATA_URL: StringFormat;
-        RAW: StringFormat;
-      };
-
-      interface UploadTask {
-        cancel(): boolean;
-
-        catch(onRejected: (a: RnError) => any): Promise<any>;
-
+      interface StorageTask<T> extends Promise<T> {
         on(
-          event: storage.TaskEvent,
-          nextOrObserver?: null | Object,
-          error?: ((a: RnError) => any) | null,
-          complete?: (() => any) | null
-        ): Function;
+          event: TaskEvent,
+          next: Handler<T>,
+          error?: ErrorHandler,
+          complete?: Handler<T>,
+        ): () => void;
+        on(
+          event: TaskEvent,
+          observer: {
+            next?: Handler<T>;
+            error?: ErrorHandler;
+            complete?: Handler<T>;
+          }
+        ): () => void;
 
-        pause(): boolean;
+        /**
+         * Not supported by react-native-firebase
+         */
+        pause(): void;
 
-        resume(): boolean;
+        /**
+         * Not supported by react-native-firebase
+         */
+        resume(): void;
 
-        snapshot: storage.UploadTaskSnapshot;
-
-        then(
-          onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
-          onRejected?: ((a: RnError) => any) | null
-        ): Promise<any>;
+        /**
+         * Not supported by react-native-firebase
+         */
+        cancel(): void;
       }
 
       interface UploadTaskSnapshot {
         bytesTransferred: number;
         downloadURL: string | null;
-        metadata: storage.FullMetadata;
-        ref: storage.Reference;
-        state: storage.TaskState;
-        task: storage.UploadTask;
+        metadata: FullMetadata;
+        ref: Reference;
+        state: TaskState;
+        task: StorageTask<UploadTaskSnapshot>;
         totalBytes: number;
       }
 
-      interface FullMetadata extends storage.UploadMetadata {
-        bucket: string;
-        fullPath: string;
-        generation: string;
-        metageneration: string;
-        name: string;
-        size: number;
-        timeCreated: string;
-        updated: string;
+      interface DownloadTaskSnapshot {
+        bytesTransferred: number;
+        ref: Reference;
+        state: TaskState;
+        totalBytes: number;
       }
 
-      type TaskEvent = string;
-      var TaskEvent: {
-        STATE_CHANGED: TaskEvent;
-      };
+      enum TaskEvent {
+        STATE_CHANGED = 'state_changed',
+      }
 
-      type TaskState = string;
-      var TaskState: {
-        CANCELED: TaskState;
-        ERROR: TaskState;
-        PAUSED: TaskState;
-        RUNNING: TaskState;
-        SUCCESS: TaskState;
-      };
+      enum TaskState {
+        CANCELLED = 'cancelled',
+        ERROR = 'error',
+        PAUSED = 'paused',
+        RUNNING = 'running',
+        SUCCESS = 'success',
+      }
     }
 
     namespace database {
@@ -2426,16 +2460,13 @@ declare module 'react-native-firebase' {
 
 declare module 'react-native-firebase/storage' {
   import { RNFirebase } from 'react-native-firebase';
-  export type StorageTask<T> = RNFirebase.storage.StorageTask<T>;
-  export type RNStorage = RNFirebase.storage.RNStorage;
   export type Storage = RNFirebase.storage.Storage;
   export type Reference = RNFirebase.storage.Reference;
-  export type UploadMetadata = RNFirebase.storage.UploadMetadata;
-  export type SettableMetadata = RNFirebase.storage.SettableMetadata;
-  export type StringFormat = RNFirebase.storage.StringFormat;
-  export type UploadTask = RNFirebase.storage.UploadTask;
-  export type UploadTaskSnapshot = RNFirebase.storage.UploadTaskSnapshot;
   export type FullMetadata = RNFirebase.storage.FullMetadata;
+  export type SettableMetadata = RNFirebase.storage.SettableMetadata;
+  export type StorageTask<T> = RNFirebase.storage.StorageTask<T>;
+  export type UploadTaskSnapshot = RNFirebase.storage.UploadTaskSnapshot;
+  export type DownloadTaskSnapshot = RNFirebase.storage.DownloadTaskSnapshot;
   export type TaskEvent = RNFirebase.storage.TaskEvent;
   export type TaskState = RNFirebase.storage.TaskState;
 }
