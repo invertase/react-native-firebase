@@ -177,6 +177,10 @@ jobs:
         - ~/react-native-firebase/tests/android/.gradle
         key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
 
+    - run:
+        name: Build Android Testing App
+        command: cd tests && yarn run build-android
+
 
   jet-test-ios:
     <<: *macos_defaults
