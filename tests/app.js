@@ -16,7 +16,7 @@ class Root extends Component {
       message: '',
     };
 
-    jet.setBridgeProperty('module', firebase);
+    jet.exposeContextProperty('module', firebase);
   }
 
   render() {
