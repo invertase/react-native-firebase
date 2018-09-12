@@ -157,6 +157,26 @@ jobs:
     - run: *validate-flow-declarations
     - run: *validate-ts-declarations
 
+  jet-test-android:
+    <<: *android_defaults
+    - attach_workspace:
+        at: ~/react-native-firebase
+
+    - restore-cache: *restore-yarn-cache
+    - run: *yarn
+    - save-cache: *save-yarn-cache
+
+    - restore_cache:
+        key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+    - run:
+        name: Download Dependencies
+        command: cd ~/react-native-firebase/tests/android && ./gradlew androidDependencies
+    - save_cache:
+        paths:
+        - ~/react-native-firebase/tests/android/.gradle
+        key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+
+
   jet-test-ios:
     <<: *macos_defaults
     steps:
@@ -235,6 +255,10 @@ workflows:
         requires:
         - checkout-code
 
-    - jet-test-ios:
+    - jet-test-android:
         requires:
         - checkout-code
+#
+#    - jet-test-ios:
+#        requires:
+#        - checkout-code
