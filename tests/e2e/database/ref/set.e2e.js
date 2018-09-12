@@ -16,14 +16,14 @@ describe('database()', () => {
     it('changes value', async () => {
       await Promise.all(
         Object.keys(CONTENTS.DEFAULT).map(async dataRef => {
-          const previousValue = bridge.contextify(CONTENTS.DEFAULT[dataRef]);
+          const previousValue = jet.contextify(CONTENTS.DEFAULT[dataRef]);
 
           const ref = firebase.database().ref(`tests/types/${dataRef}`);
 
           const snapshot = await ref.once('value');
           snapshot.val().should.eql(previousValue);
 
-          const newValue = bridge.contextify(CONTENTS.NEW[dataRef]);
+          const newValue = jet.contextify(CONTENTS.NEW[dataRef]);
 
           await ref.set(newValue);
 
@@ -36,7 +36,7 @@ describe('database()', () => {
     it('can unset values', async () => {
       await Promise.all(
         Object.keys(CONTENTS.DEFAULT).map(async dataRef => {
-          const previousValue = bridge.contextify(CONTENTS.DEFAULT[dataRef]);
+          const previousValue = jet.contextify(CONTENTS.DEFAULT[dataRef]);
           const ref = firebase.database().ref(`tests/types/${dataRef}`);
 
           const snapshot = await ref.once('value');

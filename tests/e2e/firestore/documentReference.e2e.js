@@ -622,14 +622,14 @@ describe('firestore()', () => {
       });
 
       it('should handle Date field', async () => {
-        const date = new bridge.context.window.Date();
+        const date = new jet.context.window.Date();
         const docRef = test2DocRef('reference');
         await docRef.set({
           field: date,
         });
 
         const doc = await docRef.get();
-        doc.data().field.should.be.instanceof(bridge.context.window.Date);
+        doc.data().field.should.be.instanceof(jet.context.window.Date);
         should.equal(doc.data().field.toISOString(), date.toISOString());
         should.equal(doc.data().field.getTime(), date.getTime());
       });

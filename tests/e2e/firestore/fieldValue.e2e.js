@@ -42,7 +42,7 @@ describe('firestore()', () => {
         ).get();
 
         dataAfterUpdate().creationDate.should.be.instanceof(
-          bridge.context.window.Date
+          jet.context.window.Date
         );
       });
     });
