@@ -122,7 +122,7 @@ android_defaults: &android_defaults
   - ADB_INSTALL_TIMEOUT: 10
   - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
   - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-  - BUILD_THREADS: 4
+  - BUILD_THREADS: 2
 
 # IOS
 macos_defaults: &macos_defaults
