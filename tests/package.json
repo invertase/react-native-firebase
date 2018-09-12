@@ -28,7 +28,7 @@
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
     "react": "^16.5.0",
-    "react-native": "^0.57.0-rc.4",
+    "react-native": "^0.57.0",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
