@@ -159,6 +159,7 @@ jobs:
 
   jet-test-android:
     <<: *android_defaults
+    steps:
     - attach_workspace:
         at: ~/react-native-firebase
 
