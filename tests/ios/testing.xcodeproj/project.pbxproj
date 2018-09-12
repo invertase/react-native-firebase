@@ -22,7 +22,7 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */; };
 		46EE18632047465300FAAB0E /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 46EE18602047463E00FAAB0E /* libRCTAnimation.a */; };
-		5A11192C255B4F608BFBD79F /* libRNBridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA941BEDD3364F60AC158950 /* libRNBridge.a */; };
+		5A11192C255B4F608BFBD79F /* libJet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA941BEDD3364F60AC158950 /* libJet.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9A9C8DD2F99538A5CBDE81CE /* libPods-testing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 192F58E8DACEAD066404F67A /* libPods-testing.a */; };
 		AF4FD9113A25433387C08427 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C209A3AD2122409BBE1C6A58 /* libRCTActionSheet.a */; };
@@ -276,10 +276,10 @@
 		};
 		8E5D64EB21259B31009E4783 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A04EE4A34A2C40819812AF63 /* RNBridge.xcodeproj */;
+			containerPortal = A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = RNBridge;
+			remoteInfo = Jet;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -324,8 +324,8 @@
 		78B0E372306B6EFE53BFA0C5 /* Pods-testing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.release.xcconfig"; path = "Pods/Target Support Files/Pods-testing/Pods-testing.release.xcconfig"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		A04EE4A34A2C40819812AF63 /* RNBridge.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBridge.xcodeproj; path = ../node_modules/jet/ios/RNBridge.xcodeproj; sourceTree = "<group>"; };
-		AA941BEDD3364F60AC158950 /* libRNBridge.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBridge.a; sourceTree = "<group>"; };
+		A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = Jet.xcodeproj; path = ../node_modules/jet/ios/Jet.xcodeproj; sourceTree = "<group>"; };
+		AA941BEDD3364F60AC158950 /* libJet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libJet.a; sourceTree = "<group>"; };
 		C209A3AD2122409BBE1C6A58 /* libRCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTActionSheet.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -345,7 +345,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				5A11192C255B4F608BFBD79F /* libRNBridge.a in Frameworks */,
+				5A11192C255B4F608BFBD79F /* libJet.a in Frameworks */,
 				AF4FD9113A25433387C08427 /* libRCTActionSheet.a in Frameworks */,
 				9A9C8DD2F99538A5CBDE81CE /* libPods-testing.a in Frameworks */,
 			);
@@ -474,7 +474,7 @@
 		271CB231206B024300EBADF4 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				AA941BEDD3364F60AC158950 /* libRNBridge.a */,
+				AA941BEDD3364F60AC158950 /* libJet.a */,
 				C209A3AD2122409BBE1C6A58 /* libRCTActionSheet.a */,
 			);
 			name = "Recovered References";
@@ -520,7 +520,7 @@
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				30F8459A53F04DD0B22777D1 /* testing.xcodeproj */,
-				A04EE4A34A2C40819812AF63 /* RNBridge.xcodeproj */,
+				A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -569,7 +569,7 @@
 		8E5D64C521259B30009E4783 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8E5D64EC21259B31009E4783 /* libRNBridge.a */,
+				8E5D64EC21259B31009E4783 /* libJet.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -690,7 +690,7 @@
 				},
 				{
 					ProductGroup = 8E5D64C521259B30009E4783 /* Products */;
-					ProjectRef = A04EE4A34A2C40819812AF63 /* RNBridge.xcodeproj */;
+					ProjectRef = A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */;
 				},
 				{
 					ProductGroup = 271CB34F206B13E700EBADF4 /* Products */;
@@ -950,10 +950,10 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		8E5D64EC21259B31009E4783 /* libRNBridge.a */ = {
+		8E5D64EC21259B31009E4783 /* libJet.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libRNBridge.a;
+			path = libJet.a;
 			remoteRef = 8E5D64EB21259B31009E4783 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1092,6 +1092,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
 				PRODUCT_NAME = testing;
+				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
 			name = Debug;
 		};
@@ -1114,6 +1115,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
 				PRODUCT_NAME = testing;
+				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
 			name = Release;
 		};

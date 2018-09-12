@@ -5,39 +5,7 @@ global.should = require('should');
 
 Object.defineProperty(global, 'firebase', {
   get() {
-    return bridge.module;
-  },
-});
-
-// TODO move as part of bridge
-const { Uint8Array } = global;
-Object.defineProperty(global, 'Uint8Array', {
-  get() {
-    const { stack } = new Error();
-    if (
-      (stack.includes('Context.it') || stack.includes('Context.beforeEach')) &&
-      global.bridge &&
-      global.bridge.context
-    ) {
-      return bridge.context.window.Uint8Array;
-    }
-    return Uint8Array;
-  },
-});
-
-// TODO move as part of bridge
-const { Array } = global;
-Object.defineProperty(global, 'Array', {
-  get() {
-    const { stack } = new Error();
-    if (
-      (stack.includes('Context.it') || stack.includes('Context.beforeEach')) &&
-      global.bridge &&
-      global.bridge.context
-    ) {
-      return bridge.context.window.Array;
-    }
-    return Array;
+    return jet.module;
   },
 });
 
@@ -76,7 +44,9 @@ global.firebaseAdmin = require('firebase-admin');
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(
-    JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+    JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT
+    )
   ),
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
 });
