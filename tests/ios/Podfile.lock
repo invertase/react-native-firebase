@@ -221,25 +221,25 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
-  - React (0.57.0-rc.4):
-    - React/Core (= 0.57.0-rc.4)
-  - React/Core (0.57.0-rc.4):
-    - yoga (= 0.57.0-rc.4.React)
-  - React/fishhook (0.57.0-rc.4)
-  - React/RCTBlob (0.57.0-rc.4):
+  - React (0.57.0):
+    - React/Core (= 0.57.0)
+  - React/Core (0.57.0):
+    - yoga (= 0.57.0.React)
+  - React/fishhook (0.57.0)
+  - React/RCTBlob (0.57.0):
     - React/Core
-  - React/RCTNetwork (0.57.0-rc.4):
+  - React/RCTNetwork (0.57.0):
     - React/Core
-  - React/RCTText (0.57.0-rc.4):
+  - React/RCTText (0.57.0):
     - React/Core
-  - React/RCTWebSocket (0.57.0-rc.4):
+  - React/RCTWebSocket (0.57.0):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFirebase (5.0.0-rc1):
     - Firebase/Core
     - React
-  - yoga (0.57.0-rc.4.React)
+  - yoga (0.57.0.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)

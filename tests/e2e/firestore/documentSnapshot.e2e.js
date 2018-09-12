@@ -23,7 +23,7 @@ describe('firestore()', () => {
     describe('ref', () => {
       it('returns a DocumentReference', async () => {
         const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
-        const DocumentReference = bridge.require(
+        const DocumentReference = jet.require(
           'src/modules/firestore/DocumentReference'
         );
         snapshot.ref.should.be.an.instanceOf(DocumentReference);
