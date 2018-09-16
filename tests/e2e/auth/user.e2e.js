@@ -1,4 +1,11 @@
 describe('auth().currentUser', () => {
+  beforeEach(async () => {
+    if (firebase.auth().currentUser) {
+      await firebase.auth().signOut();
+      await sleep(50);
+    }
+  });
+
   describe('getIdToken()', () => {
     it('should return a token', async () => {
       const random = randomString(12, '#aA');
