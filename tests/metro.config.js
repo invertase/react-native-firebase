@@ -17,6 +17,7 @@ const config = {
         get: (target, name) => join(__dirname, `node_modules/${name}`),
       }
     ),
+    platforms: ['android', 'ios'],
   },
   watchFolders: [resolve(__dirname, '../src')],
   // serializer: {
