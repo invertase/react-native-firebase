@@ -2,7 +2,7 @@ describe('auth()', () => {
   beforeEach(async () => {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
-      await sleep(25);
+      await sleep(50);
     }
   });
 
