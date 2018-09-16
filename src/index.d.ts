@@ -819,6 +819,13 @@ declare module 'react-native-firebase' {
       updatePassword(password: string): Promise<void>;
 
       /**
+       * Updates the user's phone number.
+       * See Firebase docs for more information on security & email validation.
+       * This will Promise reject is the user is anonymous.
+       */
+      updatePhoneNumber(credential: AuthCredential): Promise<void>;
+
+      /**
        * Updates a user's profile data.
        * Profile data should be an object of fields to update:
        */

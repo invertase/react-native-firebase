@@ -251,6 +251,24 @@ export default class User {
   }
 
   /**
+   * Update the current user's phone number
+   *
+   * @param  {AuthCredential} credential Auth credential with the _new_ phone number
+   * @return {Promise}
+   */
+  updatePhoneNumber(credential: AuthCredential): Promise<void> {
+    return getNativeModule(this._auth)
+      .updatePhoneNumber(
+        credential.providerId,
+        credential.token,
+        credential.secret
+      )
+      .then(user => {
+        this._auth._setUser(user);
+      });
+  }
+
+  /**
    * Update the current user's profile
    * @param  {Object} updates An object containing the keys listed [here](https://firebase.google.com/docs/auth/ios/manage-users#update_a_users_profile)
    * @return {Promise}
@@ -314,15 +332,6 @@ export default class User {
       INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD(
         'User',
         'reauthenticateWithRedirect'
-      )
-    );
-  }
-
-  updatePhoneNumber() {
-    throw new Error(
-      INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD(
-        'User',
-        'updatePhoneNumber'
       )
     );
   }

@@ -445,6 +445,48 @@ RCT_EXPORT_METHOD(updatePassword:
     }
 }
 
+
+/**
+ updatePhoneNumber
+
+ @param NSString password
+ @param NSString provider
+ @param NSString authToken
+ @param NSString authSecret
+ @param RCTPromiseResolveBlock resolve
+ @param RCTPromiseRejectBlock reject
+ @return
+ */
+RCT_EXPORT_METHOD(updatePhoneNumber:(NSString *) appDisplayName
+                  provider:(NSString *) provider
+                  token:(NSString *) authToken
+                  secret:(NSString *) authSecret
+                  resolver:(RCTPromiseResolveBlock) resolve
+                  rejecter:(RCTPromiseRejectBlock) reject) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+
+    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+
+    if (user) {
+        FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+
+        if (credential == nil) {
+            return reject(@"auth/invalid-credential", @"The supplied auth credential is malformed, has expired or is not currently supported.", nil);
+        }
+
+        [user updatePhoneNumberCredential:credential completion:^(NSError *_Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                FIRUser *userAfterUpdate = [FIRAuth authWithApp:firApp].currentUser;
+                [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
 /**
  updateProfile
 

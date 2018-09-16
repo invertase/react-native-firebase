@@ -712,6 +712,63 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
+   * updatePhoneNumber
+   *
+   * @param provider
+   * @param authToken
+   * @param authSecret
+   * @param promise
+   */
+  @ReactMethod
+  private void updatePhoneNumber(
+    String appName,
+    String provider,
+    String authToken,
+    String authSecret,
+    final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+
+    if(!provider.equals("phone")) {
+      promise.reject(
+        "auth/invalid-credential",
+        "The supplied auth credential does not have a phone provider."
+      );
+    }
+
+    PhoneAuthCredential credential = getPhoneAuthCredential(authToken, authSecret);
+
+    if (credential == null) {
+      promise.reject(
+        "auth/invalid-credential",
+        "The supplied auth credential is malformed, has expired or is not currently supported."
+      );
+    } else if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "updatePhoneNumber:failure:noCurrentUser");
+    } else {
+      Log.d(TAG, "updatePhoneNumber");
+      user
+        .updatePhoneNumber(credential)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "updatePhoneNumber:onComplete:success");
+              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "updatePhoneNumber:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          }
+        });
+    }
+  }
+
+  /**
    * updateProfile
    *
    * @param props
@@ -1452,16 +1509,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       case "oauth":
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
-        // If the phone number is auto-verified quickly, then the verificationId can be null
-        // We cached the credential as part of the verifyPhoneNumber request to be re-used here
-        // if possible
-        if (authToken == null && mCredential != null) {
-          PhoneAuthCredential credential = mCredential;
-          // Reset the cached credential
-          mCredential = null;
-          return credential;
-        }
-        return PhoneAuthProvider.getCredential(authToken, authSecret);
+        return getPhoneAuthCredential(authToken, authSecret);
       case "password":
         // authToken = email
         // authSecret = password
@@ -1473,6 +1521,25 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       default:
         return null;
     }
+  }
+
+  /**
+   * Returns an instance of PhoneAuthCredential, potentially cached
+   */
+  private PhoneAuthCredential getPhoneAuthCredential(
+    String authToken,
+    String authSecret
+  ) {
+    // If the phone number is auto-verified quickly, then the verificationId can be null
+    // We cached the credential as part of the verifyPhoneNumber request to be re-used here
+    // if possible
+    if (authToken == null && mCredential != null) {
+      PhoneAuthCredential credential = mCredential;
+      // Reset the cached credential
+      mCredential = null;
+      return credential;
+    }
+    return PhoneAuthProvider.getCredential(authToken, authSecret);
   }
 
   @ReactMethod
