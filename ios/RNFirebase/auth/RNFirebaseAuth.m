@@ -88,6 +88,20 @@ RCT_EXPORT_METHOD(removeIdTokenListener:
     }
 }
 
+/**
+ * Flag to determine whether app verification should be disabled for testing or not.
+ * 
+ * @return
+ */
+RCT_EXPORT_METHOD(
+      setAppVerificationDisabledForTesting:
+      (NSString *) appDisplayName
+      disabled:
+      (BOOL) disabled
+) {
+  FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+  [FIRAuth authWithApp:firApp].settings.appVerificationDisabledForTesting = disabled;
+}
 
 
 /**
