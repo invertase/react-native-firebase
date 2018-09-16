@@ -645,6 +645,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 8E5D64C521259B30009E4783 /* Products */;
+					ProjectRef = A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */;
+				},
+				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -687,10 +691,6 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
-				},
-				{
-					ProductGroup = 8E5D64C521259B30009E4783 /* Products */;
-					ProjectRef = A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */;
 				},
 				{
 					ProductGroup = 271CB34F206B13E700EBADF4 /* Products */;
