@@ -2,8 +2,8 @@
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
-import jet from 'jet/platform/react-native';
 import firebase from 'react-native-firebase';
+import jet from 'jet/platform/react-native';
 
 require('sinon');
 require('should-sinon');

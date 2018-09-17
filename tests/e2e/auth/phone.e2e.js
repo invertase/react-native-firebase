@@ -5,16 +5,20 @@ const TEST_PHONE_B = '+447445123457';
 const TEST_CODE_B = '654321';
 
 describe('auth() => Phone', () => {
-  // TODO implement settings api
-  // before(async () => {
-  //   await firebase.auth().settings({
-  //     appVerificationDisabledForTesting: true,
-  //     autoRetrievedSmsCodesForPhoneNumbers: [
-  //       { phoneNumber: TEST_PHONE_A, smsCode: TEST_CODE_A },
-  //       { phoneNumber: TEST_PHONE_B, smsCode: TEST_CODE_B },
-  //     ],
-  //   });
-  // });
+  before(async () => {
+    // iOS
+    firebase.auth().settings.appVerificationDisabledForTesting = true;
+
+    // android
+    await firebase
+      .auth()
+      .settings.setAutoRetrievedSmsCodeForPhoneNumber(
+        TEST_PHONE_A,
+        TEST_CODE_A
+      );
+
+    await sleep(50);
+  });
 
   beforeEach(async () => {
     if (firebase.auth().currentUser) {

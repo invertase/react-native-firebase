@@ -37,7 +37,7 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "babel-eslint": "^9.0.0",
-    "babel-plugin-istanbul": "^5.0.1",
+    "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "eslint": "^5.5.0",
     "eslint-config-airbnb": "^17.0.0",
@@ -46,7 +46,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "flow-bin": "^0.78.0",
-    "nyc": "^13.0.1",
+    "nyc": "^13.1.0",
     "rimraf": "^2.6.2"
   },
   "nyc": {
@@ -56,17 +56,20 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "**/src/**"
+      "src/**"
     ],
     "exclude": [
       "node_modules",
-      "**/src/utils/emitter**",
-      "**/src/modules/admob**",
-      "**/src/modules/auth/phone**"
+      "src/modules/admob**",
+      "src/modules/messaging**",
+      "src/modules/notifications**",
+      "src/types**",
+      "**/types.js"
     ],
-    "sourceMap": true,
-    "instrument": true,
     "cwd": "..",
+    "all": true,
+    "sourceMap": false,
+    "instrument": false,
     "reporter": [
       "lcov",
       "text-summary"
