@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -177,6 +178,33 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       firebaseAuth.removeIdTokenListener(mIdTokenListener);
       mIdTokenListeners.remove(appName);
     }
+  }
+
+  /**
+   * The phone number and SMS code here must have been configured in the
+   * Firebase Console (Authentication > Sign In Method > Phone).
+   * <p>
+   * Calling this method a second time will overwrite the previously passed parameters.
+   * Only one number can be configured at a given time.
+   *
+   * @param appName
+   * @param phoneNumber
+   * @param smsCode
+   * @param promise
+   */
+  @ReactMethod
+  public void setAutoRetrievedSmsCodeForPhoneNumber(
+    String appName,
+    String phoneNumber,
+    String smsCode,
+    Promise promise
+  ) {
+    Log.d(TAG, "setAutoRetrievedSmsCodeForPhoneNumber");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseAuthSettings firebaseAuthSettings = firebaseAuth.getFirebaseAuthSettings();
+    firebaseAuthSettings.setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode);
+    promise.resolve(null);
   }
 
   @ReactMethod
@@ -731,7 +759,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     FirebaseUser user = firebaseAuth.getCurrentUser();
 
-    if(!provider.equals("phone")) {
+    if (!provider.equals("phone")) {
       promise.reject(
         "auth/invalid-credential",
         "The supplied auth credential does not have a phone provider."
@@ -870,9 +898,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
               if (withData) {
                 promiseWithAuthResult(task.getResult(), promise);
               } else {
-                promiseWithUser(task
-                                  .getResult()
-                                  .getUser(), promise);
+                promiseWithUser(
+                  task
+                    .getResult()
+                    .getUser(),
+                  promise
+                );
               }
             } else {
               Exception exception = task.getException();
@@ -932,7 +963,15 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
                 // as calling ConfirmationResult.confirm(code) is invalid in this case anyway
                 if (!promiseResolved) {
                   WritableMap verificationMap = Arguments.createMap();
-                  verificationMap.putNull("verificationId");
+
+                  Parcel parcel = Parcel.obtain();
+                  phoneAuthCredential.writeToParcel(parcel, 0);
+                  parcel.setDataPosition(16); // verificationId
+                  String verificationId = parcel.readString();
+                  mVerificationId = verificationId;
+                  parcel.recycle();
+
+                  verificationMap.putString("verificationId", verificationId);
                   promise.resolve(verificationMap);
                 }
               } else {
@@ -1034,9 +1073,12 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
               TAG,
               "_confirmVerificationCode:signInWithCredential:onComplete:success"
             );
-            promiseWithUser(task
-                              .getResult()
-                              .getUser(), promise);
+            promiseWithUser(
+              task
+                .getResult()
+                .getUser(),
+              promise
+            );
           } else {
             Exception exception = task.getException();
             Log.e(

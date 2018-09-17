@@ -21,6 +21,7 @@ const config = {
         },
       }
     ),
+    platforms: ['android', 'ios'],
   },
   watchFolders: [resolve(__dirname, '../src')],
 };
