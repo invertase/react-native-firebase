@@ -11,6 +11,7 @@ import { getNativeModule } from '../../utils/native';
 import INTERNALS from '../../utils/internals';
 import ConfirmationResult from './phone/ConfirmationResult';
 import PhoneAuthListener from './phone/PhoneAuthListener';
+import AuthSettings from './AuthSettings';
 
 // providers
 import EmailAuthProvider from './providers/EmailAuthProvider';
@@ -49,6 +50,8 @@ export default class Auth extends ModuleBase {
 
   _languageCode: string;
 
+  _settings: AuthSettings | null;
+
   _user: User | null;
 
   constructor(app: App) {
@@ -59,7 +62,9 @@ export default class Auth extends ModuleBase {
       hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
+
     this._user = null;
+    this._settings = null;
     this._authResult = false;
     this._languageCode =
       getNativeModule(this).APP_LANGUAGE[app._name] ||
@@ -522,13 +527,36 @@ export default class Auth extends ModuleBase {
   }
 
   /**
-   * Sets the language for the auth module
+   * Sets the language for the auth module.
+   *
    * @param code
-   * @returns {*}
    */
   set languageCode(code: string) {
     this._languageCode = code;
     getNativeModule(this).setLanguageCode(code);
+  }
+
+  /**
+   * The language for the auth module.
+   *
+   * @return {string}
+   */
+  get languageCode(): string {
+    return this._languageCode;
+  }
+
+  /**
+   * The current Auth instance's settings. This is used to edit/read configuration
+   * related options like app verification mode for phone authentication.
+   *
+   * @return {AuthSettings}
+   */
+  get settings(): AuthSettings {
+    if (!this._settings) {
+      // lazy initialize
+      this._settings = new AuthSettings(this);
+    }
+    return this._settings;
   }
 
   /**
@@ -537,10 +565,6 @@ export default class Auth extends ModuleBase {
    */
   get currentUser(): User | null {
     return this._user;
-  }
-
-  get languageCode(): string {
-    return this._languageCode;
   }
 
   /**
