@@ -86,6 +86,5 @@ CONTRIBUTING.md
 CODE_OF_CONDUCT.md
 android/.settings
 README.md
-/src
 *.coverage.json
 .opensource
