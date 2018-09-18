@@ -56,18 +56,20 @@ export default class IOSNotification {
       this._threadIdentifier = data.threadIdentifier;
     }
 
-    const complete = (fetchResult: BackgroundFetchResultValue) => {
-      const { notificationId } = notification;
-      getLogger(notifications).debug(
-        `Completion handler called for notificationId=${notificationId}`
-      );
-      getNativeModule(notifications).complete(notificationId, fetchResult);
-    };
+    if (notifications && notifications.ios) {
+      const complete = (fetchResult: BackgroundFetchResultValue) => {
+        const { notificationId } = notification;
+        getLogger(notifications).debug(
+          `Completion handler called for notificationId=${notificationId}`
+        );
+        getNativeModule(notifications).complete(notificationId, fetchResult);
+      };
 
-    if (notifications.ios.shouldAutoComplete) {
-      complete(notifications.ios.backgroundFetchResult.noData);
-    } else {
-      this._complete = complete;
+      if (notifications.ios.shouldAutoComplete) {
+        complete(notifications.ios.backgroundFetchResult.noData);
+      } else {
+        this._complete = complete;
+      }
     }
 
     // Defaults
