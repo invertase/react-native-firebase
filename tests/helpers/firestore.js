@@ -60,6 +60,8 @@ module.exports = {
       gaz: 12.1234567,
       geopoint: new firebase.firestore.GeoPoint(0, 0),
       naz: null,
+      arrNumber: [1, 2, 3, 4],
+      arrString: ['a', 'b', 'c', 'd'],
       object: {
         daz: 123,
       },
@@ -115,7 +117,7 @@ module.exports = {
     shouldCleanup = true;
     return firebase
       .firestore()
-      .collection(TEST_COLLECTION_NAME)
+      .collection(TEST_COLLECTION_NAME_DYNAMIC)
       .doc(
         docId.startsWith(testRunId) || docId.endsWith(testRunId)
           ? docId
@@ -127,7 +129,7 @@ module.exports = {
     shouldCleanup = true;
     return firebase
       .firestore()
-      .collection(TEST2_COLLECTION_NAME)
+      .collection(TEST_COLLECTION_NAME_DYNAMIC)
       .doc(
         docId.startsWith(testRunId) || docId.endsWith(testRunId)
           ? docId
@@ -153,9 +155,7 @@ module.exports = {
   async resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
     const _doc = doc || module.exports.COL_DOC_1();
-
     await module.exports.cleanCollection(TEST_COLLECTION_NAME_DYNAMIC);
-
     await firebase
       .firestore()
       .doc(path || module.exports.COL_DOC_1_PATH)
