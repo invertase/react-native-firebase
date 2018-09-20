@@ -2,6 +2,7 @@ const {
   test2DocRef,
   COL2_DOC_1,
   COL2_DOC_1_ID,
+  cleanCollection,
   COL2_DOC_1_PATH,
   TEST_COLLECTION_NAME_DYNAMIC,
   resetTestCollectionDoc,
@@ -126,6 +127,12 @@ describe('firestore()', () => {
     });
 
     describe('onSnapshot()', () => {
+      beforeEach(async () => {
+        await sleep(50);
+        await cleanCollection(TEST_COLLECTION_NAME_DYNAMIC);
+        await sleep(50);
+      });
+
       it('calls callback with the initial data and then when value changes', async () => {
         await resetTestCollectionDoc(COL2_DOC_1_PATH, { name: 'doc1' });
         const docRef = test2DocRef(COL2_DOC_1_ID);
