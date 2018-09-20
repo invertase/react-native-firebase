@@ -2,13 +2,14 @@
  * @flow
  * Query representation wrapper
  */
-import DocumentSnapshot from './DocumentSnapshot';
 import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
-import { buildNativeArray, buildTypeMap } from './utils/serialize';
-import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { firestoreAutoId, isFunction, isObject } from '../../utils';
+import SnapshotError from './SnapshotError';
+import DocumentSnapshot from './DocumentSnapshot';
 import { getNativeModule } from '../../utils/native';
+import { buildNativeArray, buildTypeMap } from './utils/serialize';
+import { firestoreAutoId, isFunction, isObject } from '../../utils';
+import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
 import type Firestore from '.';
 import type Path from './Path';
@@ -17,7 +18,8 @@ import type {
   QueryDirection,
   QueryOperator,
   GetOptions,
-} from './types';
+} from './firestoreTypes.flow';
+import type { NativeErrorResponse } from '../../common/commonTypes.flow';
 
 const DIRECTIONS: { [QueryDirection]: string } = {
   ASC: 'ASCENDING',
@@ -41,15 +43,18 @@ type NativeFieldPath = {|
   string?: string,
   type: 'fieldpath' | 'string',
 |};
+
 type FieldFilter = {|
   fieldPath: NativeFieldPath,
   operator: string,
   value: any,
 |};
+
 type FieldOrder = {|
   direction: string,
   fieldPath: NativeFieldPath,
 |};
+
 type QueryOptions = {
   endAt?: any[],
   endBefore?: any[],
@@ -60,17 +65,14 @@ type QueryOptions = {
   startAt?: any[],
 };
 
-export type ObserverOnError = Object => void;
+export type ObserverOnError = SnapshotError => void;
 export type ObserverOnNext = QuerySnapshot => void;
-
 export type Observer = {
   error?: ObserverOnError,
   next: ObserverOnNext,
 };
 
-const buildNativeFieldPath = (
-  fieldPath: string | FieldPath
-): NativeFieldPath => {
+function buildNativeFieldPath(fieldPath: string | FieldPath): NativeFieldPath {
   if (fieldPath instanceof FieldPath) {
     return {
       elements: fieldPath._segments,
@@ -81,7 +83,7 @@ const buildNativeFieldPath = (
     string: fieldPath,
     type: 'string',
   };
-};
+}
 
 /**
  * @class Query
@@ -167,6 +169,7 @@ export default class Query {
         );
       }
     }
+
     return getNativeModule(this._firestore)
       .collectionGet(
         this._referencePath.relativeName,
@@ -309,20 +312,24 @@ export default class Query {
       observer.next(querySnapshot);
     };
 
+    let unsubscribe: () => void;
+
     // Listen to snapshot events
     const snapshotSubscription = SharedEventEmitter.addListener(
       getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
       listener
     );
 
-    // Listen for snapshot error events
-    let errorSubscription;
-    if (observer.error) {
-      errorSubscription = SharedEventEmitter.addListener(
-        getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
-        observer.error
-      );
-    }
+    // listen for snapshot error events
+    const errorSubscription = SharedEventEmitter.addListener(
+      getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
+      (e: NativeErrorResponse) => {
+        if (unsubscribe) unsubscribe();
+        const error = new SnapshotError(e);
+        if (observer.error) observer.error(error);
+        else this.firestore.log.error(error);
+      }
+    );
 
     // Add the native listener
     getNativeModule(this._firestore).collectionOnSnapshot(
@@ -335,9 +342,9 @@ export default class Query {
     );
 
     // return an unsubscribe method
-    return () => {
+    unsubscribe = () => {
       snapshotSubscription.remove();
-      if (errorSubscription) errorSubscription.remove();
+      errorSubscription.remove();
       // cancel native listener
       getNativeModule(this._firestore).collectionOffSnapshot(
         this._referencePath.relativeName,
@@ -347,6 +354,8 @@ export default class Query {
         listenerId
       );
     };
+
+    return unsubscribe;
   }
 
   orderBy(
