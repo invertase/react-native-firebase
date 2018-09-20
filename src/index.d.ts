@@ -2670,7 +2670,7 @@ declare module 'react-native-firebase' {
         }
 
         type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
-        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=';
+        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=' | 'array-contains';
 
         interface TypeMap {
           type:
