@@ -1,6 +1,7 @@
 /*
  * @flow
  */
+import type { NativeErrorInterface } from '../../common/commonTypes.flow';
 
 export type MetadataChanges = {|
   includeMetadataChanges: boolean,
@@ -59,3 +60,8 @@ export type NativeTypeMap = {
     | 'string',
   value: any,
 };
+
+export interface SnapshotErrorInterface extends NativeErrorInterface {
+  +path: string;
+  +appName: string;
+}

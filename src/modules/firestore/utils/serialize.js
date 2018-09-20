@@ -14,7 +14,7 @@ import Path from '../Path';
 import { typeOf } from '../../../utils';
 
 import type Firestore from '..';
-import type { NativeTypeMap } from '../types';
+import type { NativeTypeMap } from '../firestoreTypes.flow';
 
 /*
  * Functions that build up the data needed to represent

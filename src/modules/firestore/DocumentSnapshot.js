@@ -9,7 +9,10 @@ import { isObject, deepGet } from '../../utils';
 import { parseNativeMap } from './utils/serialize';
 
 import type Firestore from '.';
-import type { NativeDocumentSnapshot, SnapshotMetadata } from './types';
+import type {
+  NativeDocumentSnapshot,
+  SnapshotMetadata,
+} from './firestoreTypes.flow';
 
 const extractFieldPathData = (data: Object | void, segments: string[]): any => {
   if (!data || !isObject(data)) {
