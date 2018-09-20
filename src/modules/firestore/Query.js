@@ -34,6 +34,7 @@ const OPERATORS: { [QueryOperator]: string } = {
   '>=': 'GREATER_THAN_OR_EQUAL',
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
+  'array-contains': 'ARRAY_CONTAINS',
 };
 
 type NativeFieldPath = {|
@@ -200,6 +201,7 @@ export default class Query {
     observerOrOnNextOrOnError?: Observer | ObserverOnNext | ObserverOnError,
     onError?: ObserverOnError
   ) {
+    // TODO refactor this 💩
     let observer: Observer;
     let metadataChanges = {};
     // Called with: onNext, ?onError
@@ -458,6 +460,7 @@ export default class Query {
 
   /**
    * Remove query snapshot listener
+   * @param listenerId
    * @param listener
    */
   _offCollectionSnapshot(listenerId: string, listener: Function) {
