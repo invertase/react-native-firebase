@@ -8,8 +8,58 @@ const {
 describe('firestore()', () => {
   describe('CollectionReference', () => {
     before(() => resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1()));
-    describe('where()', () => {
-      it('correctly handles == boolean values', () =>
+    describe.only('where()', () => {
+      it('`array-contains` a string value', async () => {
+        const found = await firebase
+          .firestore()
+          .collection(TEST_COLLECTION_NAME_DYNAMIC)
+          .where('arrString', 'array-contains', 'a')
+          .get();
+
+        should.equal(found.size, 1);
+        found.forEach(documentSnapshot => {
+          should.deepEqual(
+            documentSnapshot.data().arrString,
+            jet.contextify(['a', 'b', 'c', 'd'])
+          );
+        });
+
+        const notFound = await firebase
+          .firestore()
+          .collection(TEST_COLLECTION_NAME_DYNAMIC)
+          .where('arrString', 'array-contains', 'f')
+          .get();
+
+        should.equal(notFound.size, 0);
+      });
+
+      it('`array-contains` a number value', async () => {
+        const found = await firebase
+          .firestore()
+          .collection(TEST_COLLECTION_NAME_DYNAMIC)
+          .where('arrNumber', 'array-contains', 1)
+          .get();
+
+        should.equal(found.size, 1);
+        found.forEach(documentSnapshot => {
+          should.deepEqual(
+            documentSnapshot.data().arrNumber,
+            jet.contextify([1, 2, 3, 4])
+          );
+        });
+
+        const notFound = await firebase
+          .firestore()
+          .collection(TEST_COLLECTION_NAME_DYNAMIC)
+          .where('arrNumber', 'array-contains', 5)
+          .get();
+
+        should.equal(notFound.size, 0);
+      });
+
+      // TODO: below tests should also check the inverse to ensure working as
+      // TODO: currently there is only one document in the collection so might be false positives in future
+      it('== boolean value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -22,7 +72,7 @@ describe('firestore()', () => {
             });
           }));
 
-      it('correctly handles == string values', () =>
+      it('== string value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -35,7 +85,7 @@ describe('firestore()', () => {
             });
           }));
 
-      it('correctly handles == null values', () =>
+      it('== null value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -48,7 +98,7 @@ describe('firestore()', () => {
             });
           }));
 
-      it('correctly handles == date values', () =>
+      it('== date value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -58,7 +108,7 @@ describe('firestore()', () => {
             should.equal(querySnapshot.size, 1);
           }));
 
-      it('correctly handles == geopoint values', () =>
+      it('== GeoPoint value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -68,7 +118,7 @@ describe('firestore()', () => {
             should.equal(querySnapshot.size, 1);
           }));
 
-      it('correctly handles >= number values', () =>
+      it('>= number value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -81,7 +131,7 @@ describe('firestore()', () => {
             });
           }));
 
-      it('correctly handles >= geopoint values', () =>
+      it('>= GeoPoint value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -91,7 +141,7 @@ describe('firestore()', () => {
             should.equal(querySnapshot.size, 1);
           }));
 
-      it('correctly handles <= float values', () =>
+      it('<= float value', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
@@ -104,7 +154,7 @@ describe('firestore()', () => {
             });
           }));
 
-      it('correctly handles FieldPath', () =>
+      it('FieldPath', () =>
         firebase
           .firestore()
           .collection(TEST_COLLECTION_NAME_DYNAMIC)
