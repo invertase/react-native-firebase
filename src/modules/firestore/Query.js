@@ -7,7 +7,6 @@ import FieldPath from './FieldPath';
 import QuerySnapshot from './QuerySnapshot';
 import { buildNativeArray, buildTypeMap } from './utils/serialize';
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { getLogger } from '../../utils/log';
 import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getNativeModule } from '../../utils/native';
 
@@ -34,6 +33,7 @@ const OPERATORS: { [QueryOperator]: string } = {
   '>=': 'GREATER_THAN_OR_EQUAL',
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
+  'array-contains': 'ARRAY_CONTAINS',
 };
 
 type NativeFieldPath = {|
@@ -200,6 +200,7 @@ export default class Query {
     observerOrOnNextOrOnError?: Observer | ObserverOnNext | ObserverOnError,
     onError?: ObserverOnError
   ) {
+    // TODO refactor this 💩
     let observer: Observer;
     let metadataChanges = {};
     // Called with: onNext, ?onError
@@ -309,14 +310,15 @@ export default class Query {
     };
 
     // Listen to snapshot events
-    SharedEventEmitter.addListener(
+    const snapshotSubscription = SharedEventEmitter.addListener(
       getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
       listener
     );
 
     // Listen for snapshot error events
+    let errorSubscription;
     if (observer.error) {
-      SharedEventEmitter.addListener(
+      errorSubscription = SharedEventEmitter.addListener(
         getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
         observer.error
       );
@@ -332,8 +334,19 @@ export default class Query {
       metadataChanges
     );
 
-    // Return an unsubscribe method
-    return this._offCollectionSnapshot.bind(this, listenerId, listener);
+    // return an unsubscribe method
+    return () => {
+      snapshotSubscription.remove();
+      if (errorSubscription) errorSubscription.remove();
+      // cancel native listener
+      getNativeModule(this._firestore).collectionOffSnapshot(
+        this._referencePath.relativeName,
+        this._fieldFilters,
+        this._fieldOrders,
+        this._queryOptions,
+        listenerId
+      );
+    };
   }
 
   orderBy(
@@ -414,6 +427,7 @@ export default class Query {
       operator: OPERATORS[opStr],
       value: nativeValue,
     };
+
     const combinedFilters = this._fieldFilters.concat(newFilter);
     return new Query(
       this.firestore,
@@ -454,28 +468,5 @@ export default class Query {
     }
 
     return buildNativeArray(values);
-  }
-
-  /**
-   * Remove query snapshot listener
-   * @param listener
-   */
-  _offCollectionSnapshot(listenerId: string, listener: Function) {
-    getLogger(this._firestore).info('Removing onQuerySnapshot listener');
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onQuerySnapshot:${listenerId}`),
-      listener
-    );
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onQuerySnapshotError:${listenerId}`),
-      listener
-    );
-    getNativeModule(this._firestore).collectionOffSnapshot(
-      this._referencePath.relativeName,
-      this._fieldFilters,
-      this._fieldOrders,
-      this._queryOptions,
-      listenerId
-    );
   }
 }

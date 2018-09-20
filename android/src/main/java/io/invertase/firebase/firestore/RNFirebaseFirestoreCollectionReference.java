@@ -189,6 +189,9 @@ class RNFirebaseFirestoreCollectionReference {
           case "LESS_THAN_OR_EQUAL":
             query = query.whereLessThanOrEqualTo(fieldPath, value);
             break;
+          case "ARRAY_CONTAINS":
+            query = query.whereArrayContains(fieldPath, value);
+            break;
         }
       } else {
         ReadableArray fieldPathElements = fieldPathMap.getArray("elements");
@@ -212,6 +215,9 @@ class RNFirebaseFirestoreCollectionReference {
             break;
           case "LESS_THAN_OR_EQUAL":
             query = query.whereLessThanOrEqualTo(fieldPath, value);
+            break;
+          case "ARRAY_CONTAINS":
+            query = query.whereArrayContains(fieldPath, value);
             break;
         }
       }

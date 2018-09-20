@@ -3,7 +3,7 @@ const {
   COL2_DOC_1,
   COL2_DOC_1_ID,
   COL2_DOC_1_PATH,
-  TEST2_COLLECTION_NAME,
+  TEST_COLLECTION_NAME_DYNAMIC,
   resetTestCollectionDoc,
 } = TestHelpers.firestore;
 
@@ -31,7 +31,7 @@ describe('firestore()', () => {
     describe('parent', () => {
       it('should return parent collection', () => {
         const document = test2DocRef(COL2_DOC_1_ID);
-        document.parent.id.should.equal(TEST2_COLLECTION_NAME);
+        document.parent.id.should.equal(TEST_COLLECTION_NAME_DYNAMIC);
       });
     });
 

@@ -8,7 +8,14 @@ export type MetadataChanges = {|
 
 export type QueryDirection = 'DESC' | 'desc' | 'ASC' | 'asc';
 
-export type QueryOperator = '<' | '<=' | '=' | '==' | '>' | '>=';
+export type QueryOperator =
+  | '<'
+  | '<='
+  | '='
+  | '=='
+  | '>'
+  | '>='
+  | 'array-contains';
 
 export type GetOptions = {
   source: 'default' | 'server' | 'cache',
