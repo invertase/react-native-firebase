@@ -8,7 +8,7 @@ const {
 describe('firestore()', () => {
   describe('CollectionReference', () => {
     before(() => resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1()));
-    describe.only('where()', () => {
+    describe('where()', () => {
       it('`array-contains` a string value', async () => {
         const found = await firebase
           .firestore()
