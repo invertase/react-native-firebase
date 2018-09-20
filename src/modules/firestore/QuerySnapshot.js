@@ -10,7 +10,7 @@ import type {
   NativeDocumentChange,
   NativeDocumentSnapshot,
   SnapshotMetadata,
-} from './types';
+} from './firestoreTypes.flow';
 import type Query from './Query';
 
 type NativeQuerySnapshot = {
