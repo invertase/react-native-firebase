@@ -7,7 +7,6 @@ import DocumentSnapshot from './DocumentSnapshot';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { getLogger } from '../../utils/log';
 import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getNativeModule } from '../../utils/native';
 
@@ -212,19 +211,25 @@ export default class DocumentReference {
     };
 
     // Listen to snapshot events
-    SharedEventEmitter.addListener(
+    const snapshotSubscription = SharedEventEmitter.addListener(
       getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
       listener
     );
 
-    // Listen for snapshot error events
+    let unsubscribe;
+
+    // listen for snapshot error events
+    let errorSubscription;
     if (observer.error) {
-      SharedEventEmitter.addListener(
+      errorSubscription = SharedEventEmitter.addListener(
         getAppEventName(
           this._firestore,
           `onDocumentSnapshotError:${listenerId}`
         ),
-        observer.error
+        e => {
+          if (unsubscribe) unsubscribe();
+          return observer.error(e);
+        }
       );
     }
 
@@ -235,8 +240,18 @@ export default class DocumentReference {
       docListenOptions
     );
 
-    // Return an unsubscribe method
-    return this._offDocumentSnapshot.bind(this, listenerId, listener);
+    // return an unsubscribe method
+    unsubscribe = () => {
+      snapshotSubscription.remove();
+      if (errorSubscription) errorSubscription.remove();
+      // cancel native listener
+      getNativeModule(this._firestore).documentOffSnapshot(
+        this.path,
+        listenerId
+      );
+    };
+
+    return unsubscribe;
   }
 
   set(data: Object, options?: SetOptions): Promise<void> {
@@ -255,26 +270,5 @@ export default class DocumentReference {
       this.path,
       nativeData
     );
-  }
-
-  /**
-   * INTERNALS
-   */
-
-  /**
-   * Remove document snapshot listener
-   * @param listener
-   */
-  _offDocumentSnapshot(listenerId: string, listener: Function) {
-    getLogger(this._firestore).info('Removing onDocumentSnapshot listener');
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
-      listener
-    );
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
-      listener
-    );
-    getNativeModule(this._firestore).documentOffSnapshot(this.path, listenerId);
   }
 }
