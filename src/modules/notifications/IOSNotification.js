@@ -10,6 +10,8 @@ import type {
   IOSAttachmentOptions,
   NativeIOSNotification,
 } from './types';
+
+import { isIOS } from '../../utils';
 import { getLogger } from '../../utils/log';
 import { getNativeModule } from '../../utils/native';
 
@@ -56,7 +58,7 @@ export default class IOSNotification {
       this._threadIdentifier = data.threadIdentifier;
     }
 
-    if (notifications && notifications.ios) {
+    if (isIOS && notifications && notifications.ios) {
       const complete = (fetchResult: BackgroundFetchResultValue) => {
         const { notificationId } = notification;
         getLogger(notifications).debug(
