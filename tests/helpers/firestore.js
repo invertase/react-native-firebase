@@ -1,7 +1,7 @@
 const TEST_COLLECTION_NAME = 'tests';
 const TEST2_COLLECTION_NAME = 'tests2';
-const TEST_COLLECTION_NAME_DYNAMIC = `tests${Math.floor(Math.random() * 31) +
-  2}`;
+const TEST_COLLECTION_NAME_DYNAMIC = `tests${Math.floor(Math.random() * 30) +
+  1}`;
 // const TEST3_COLLECTION_NAME = 'tests3';
 
 let shouldCleanup = false;
@@ -25,10 +25,10 @@ module.exports = {
   // TEST3_COLLECTION_NAME,
 
   DOC_1: { name: 'doc1' },
-  DOC_1_PATH: `tests/doc1${testRunId}`,
+  DOC_1_PATH: `${TEST_COLLECTION_NAME_DYNAMIC}/doc1${testRunId}`,
 
   DOC_2: { name: 'doc2', title: 'Document 2' },
-  DOC_2_PATH: `tests/doc2${testRunId}`,
+  DOC_2_PATH: `${TEST_COLLECTION_NAME_DYNAMIC}/doc2${testRunId}`,
 
   // needs to be a fn as firebase may not yet be available
   COL_DOC_1() {
@@ -71,7 +71,7 @@ module.exports = {
   COL_DOC_1_PATH: `${TEST_COLLECTION_NAME_DYNAMIC}/col1${testRunId}`,
 
   COL2_DOC_1_ID: `doc1${testRunId}`,
-  COL2_DOC_1_PATH: `${TEST2_COLLECTION_NAME}/doc1${testRunId}`,
+  COL2_DOC_1_PATH: `${TEST_COLLECTION_NAME_DYNAMIC}/doc1${testRunId}`,
 
   /**
    * Removes all documents on the collection for the current testId or
@@ -81,7 +81,7 @@ module.exports = {
    * @return {Promise<*>}
    */
   async cleanCollection(collectionName) {
-    const firestore = firebaseAdmin.firestore();
+    const firestore = firebase.firestore();
     const collection = firestore.collection(
       collectionName || TEST_COLLECTION_NAME
     );
