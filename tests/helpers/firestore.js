@@ -1,5 +1,7 @@
 const TEST_COLLECTION_NAME = 'tests';
 const TEST2_COLLECTION_NAME = 'tests2';
+const TEST_COLLECTION_NAME_DYNAMIC = `tests${Math.floor(Math.random() * 31) +
+  2}`;
 // const TEST3_COLLECTION_NAME = 'tests3';
 
 let shouldCleanup = false;
@@ -11,15 +13,15 @@ module.exports = {
     await Promise.all([
       module.exports.cleanCollection(TEST_COLLECTION_NAME),
       module.exports.cleanCollection(TEST2_COLLECTION_NAME),
+      module.exports.cleanCollection(TEST_COLLECTION_NAME_DYNAMIC),
     ]);
 
-    // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}3`);
-    // await module.exports.cleanCollection(`${TEST_COLLECTION_NAME}4`);
     return Promise.resolve();
   },
 
   TEST_COLLECTION_NAME,
   TEST2_COLLECTION_NAME,
+  TEST_COLLECTION_NAME_DYNAMIC,
   // TEST3_COLLECTION_NAME,
 
   DOC_1: { name: 'doc1' },
@@ -32,12 +34,15 @@ module.exports = {
   COL_DOC_1() {
     shouldCleanup = true;
     return {
+      testRunId,
       baz: true,
       daz: 123,
       foo: 'bar',
       gaz: 12.1234567,
       geopoint: new firebase.firestore.GeoPoint(0, 0),
       naz: null,
+      arrNumber: [1, 2, 3, 4],
+      arrString: ['a', 'b', 'c', 'd'],
       object: {
         daz: 123,
       },
@@ -63,7 +68,7 @@ module.exports = {
   },
 
   COL_DOC_1_ID: `col1${testRunId}`,
-  COL_DOC_1_PATH: `${TEST_COLLECTION_NAME}/col1${testRunId}`,
+  COL_DOC_1_PATH: `${TEST_COLLECTION_NAME_DYNAMIC}/col1${testRunId}`,
 
   COL2_DOC_1_ID: `doc1${testRunId}`,
   COL2_DOC_1_PATH: `${TEST2_COLLECTION_NAME}/doc1${testRunId}`,
@@ -92,7 +97,8 @@ module.exports = {
 
         if (
           ref.path.includes(testRunId) ||
-          new Date(docsToDelete[i].createTime) <= yesterday
+          new Date(docsToDelete[i].createTime) <= yesterday ||
+          collectionName === TEST_COLLECTION_NAME_DYNAMIC
         ) {
           batch.delete(ref);
         }
@@ -147,6 +153,8 @@ module.exports = {
   async resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
     const _doc = doc || module.exports.COL_DOC_1();
+
+    await module.exports.cleanCollection(TEST_COLLECTION_NAME_DYNAMIC);
 
     await firebase
       .firestore()
