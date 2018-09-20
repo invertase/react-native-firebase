@@ -2,13 +2,14 @@
  * @flow
  * DocumentReference representation wrapper
  */
-import CollectionReference from './CollectionReference';
+import SnapshotError from './SnapshotError';
 import DocumentSnapshot from './DocumentSnapshot';
+import CollectionReference from './CollectionReference';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
-import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getNativeModule } from '../../utils/native';
+import { firestoreAutoId, isFunction, isObject } from '../../utils';
+import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
 import type Firestore from '.';
 import type {
@@ -16,8 +17,9 @@ import type {
   MetadataChanges,
   NativeDocumentSnapshot,
   SetOptions,
-} from './types';
+} from './firestoreTypes.flow';
 import type Path from './Path';
+import type { NativeErrorResponse } from '../../common/commonTypes.flow';
 
 type ObserverOnError = Object => void;
 type ObserverOnNext = DocumentSnapshot => void;
@@ -216,22 +218,18 @@ export default class DocumentReference {
       listener
     );
 
-    let unsubscribe;
+    let unsubscribe: () => void;
 
     // listen for snapshot error events
-    let errorSubscription;
-    if (observer.error) {
-      errorSubscription = SharedEventEmitter.addListener(
-        getAppEventName(
-          this._firestore,
-          `onDocumentSnapshotError:${listenerId}`
-        ),
-        e => {
-          if (unsubscribe) unsubscribe();
-          return observer.error(e);
-        }
-      );
-    }
+    const errorSubscription = SharedEventEmitter.addListener(
+      getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
+      (e: NativeErrorResponse) => {
+        if (unsubscribe) unsubscribe();
+        const error = new SnapshotError(e);
+        if (observer.error) observer.error(error);
+        else this.firestore.log.error(error);
+      }
+    );
 
     // Add the native listener
     getNativeModule(this._firestore).documentOnSnapshot(
@@ -243,7 +241,7 @@ export default class DocumentReference {
     // return an unsubscribe method
     unsubscribe = () => {
       snapshotSubscription.remove();
-      if (errorSubscription) errorSubscription.remove();
+      errorSubscription.remove();
       // cancel native listener
       getNativeModule(this._firestore).documentOffSnapshot(
         this.path,
