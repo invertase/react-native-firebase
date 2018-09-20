@@ -31,7 +31,7 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseInvites extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
   private static final String TAG = "RNFirebaseInvites";
-  private static final int REQUEST_INVITE = 81283;
+  private static final int REQUEST_INVITE = 17517;
   private boolean mInitialInvitationInitialized = false;
   private String mInitialDeepLink = null;
   private String mInitialInvitationId = null;
