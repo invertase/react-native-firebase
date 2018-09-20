@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-import { initialiseLogger } from './log';
+import { initialiseLogger, getLogger } from './log';
 import { initialiseNativeModule } from './native';
 
 import type App from '../modules/core/app';
@@ -53,5 +53,9 @@ export default class ModuleBase {
    */
   get app(): App {
     return this._app;
+  }
+
+  get log() {
+    return getLogger(this);
   }
 }
