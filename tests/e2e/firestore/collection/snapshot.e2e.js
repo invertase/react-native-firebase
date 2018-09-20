@@ -7,6 +7,10 @@ const {
   TEST_COLLECTION_NAME_DYNAMIC,
 } = TestHelpers.firestore;
 
+function getSnapshotErrorClass() {
+  return jet.require('src/modules/firestore/SnapshotError');
+}
+
 describe('firestore()', () => {
   describe('CollectionReference', () => {
     describe('onSnapshot()', () => {
@@ -429,6 +433,36 @@ describe('firestore()', () => {
         // Tear down
 
         unsubscribe();
+      });
+
+      it('snapshot error returns instance of SnapshotError', () => {
+        let unsubscribe;
+        const { reject, resolve, promise } = Promise.defer();
+        const collection = firebase
+          .firestore()
+          .collection('blocked-collection');
+
+        const observer = {
+          next: () => {
+            unsubscribe();
+            reject(new Error('Did not error!'));
+          },
+          error: snapshotError => {
+            snapshotError.should.be.instanceOf(getSnapshotErrorClass());
+            snapshotError.code.should.be.a.String();
+            snapshotError.path.should.be.a.String();
+            snapshotError.appName.should.be.a.String();
+            snapshotError.message.should.be.a.String();
+            snapshotError.nativeErrorMessage.should.be.a.String();
+            snapshotError.appName.should.equal('[DEFAULT]');
+            snapshotError.path.should.equal('blocked-collection');
+            snapshotError.code.should.equal('firestore/permission-denied');
+            resolve();
+          },
+        };
+
+        unsubscribe = collection.onSnapshot(observer);
+        return promise;
       });
 
       it('errors when invalid parameters supplied', async () => {
