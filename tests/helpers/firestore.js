@@ -41,6 +41,8 @@ module.exports = {
       gaz: 12.1234567,
       geopoint: new firebase.firestore.GeoPoint(0, 0),
       naz: null,
+      nan: NaN,
+      infinity: Infinity,
       arrNumber: [1, 2, 3, 4],
       arrString: ['a', 'b', 'c', 'd'],
       object: {

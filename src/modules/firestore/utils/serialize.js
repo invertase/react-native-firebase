@@ -50,42 +50,63 @@ export const buildNativeArray = (array: Object[]): NativeTypeMap[] => {
 
 export const buildTypeMap = (value: any): NativeTypeMap | null => {
   const type = typeOf(value);
-  if (value === null || value === undefined || Number.isNaN(value)) {
+
+  if (Number.isNaN(value)) {
+    return {
+      type: 'nan',
+      value: null,
+    };
+  }
+
+  if (value === Infinity) {
+    return {
+      type: 'infinity',
+      value: null,
+    };
+  }
+
+  if (value === null || value === undefined) {
     return {
       type: 'null',
       value: null,
     };
   }
+
   if (value === DELETE_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
       value: 'delete',
     };
   }
+
   if (value === SERVER_TIMESTAMP_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
       value: 'timestamp',
     };
   }
+
   if (value === DOCUMENT_ID) {
     return {
       type: 'documentid',
       value: null,
     };
   }
+
   if (type === 'boolean' || type === 'number' || type === 'string') {
     return {
       type,
       value,
     };
   }
+
   if (type === 'array') {
     return {
       type,
       value: buildNativeArray(value),
     };
   }
+
   if (type === 'object') {
     if (value instanceof DocumentReference) {
       return {
@@ -93,6 +114,7 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
         value: value.path,
       };
     }
+
     if (value instanceof GeoPoint) {
       return {
         type: 'geopoint',
@@ -102,23 +124,27 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
         },
       };
     }
+
     if (value instanceof Date) {
       return {
         type: 'date',
         value: value.getTime(),
       };
     }
+
     if (value instanceof Blob) {
       return {
         type: 'blob',
         value: value.toBase64(),
       };
     }
+
     return {
       type: 'object',
       value: buildNativeMap(value),
     };
   }
+
   console.warn(`Unknown data type received ${type}`);
   return null;
 };
@@ -160,27 +186,43 @@ const parseTypeMap = (firestore: Firestore, typeMap: NativeTypeMap): any => {
   if (type === 'null') {
     return null;
   }
+
   if (type === 'boolean' || type === 'number' || type === 'string') {
     return value;
   }
+
   if (type === 'array') {
     return parseNativeArray(firestore, value);
   }
+
   if (type === 'object') {
     return parseNativeMap(firestore, value);
   }
+
   if (type === 'reference') {
     return new DocumentReference(firestore, Path.fromName(value));
   }
+
   if (type === 'geopoint') {
     return new GeoPoint(value.latitude, value.longitude);
   }
+
   if (type === 'date') {
     return new Date(value);
   }
+
   if (type === 'blob') {
     return Blob.fromBase64String(value);
   }
+
+  if (type === 'infinity') {
+    return Infinity;
+  }
+
+  if (type === 'nan') {
+    return NaN;
+  }
+
   console.warn(`Unknown data type received ${type}`);
   return value;
 };
