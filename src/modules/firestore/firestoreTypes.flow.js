@@ -46,6 +46,8 @@ export type NativeDocumentSnapshot = {
 
 export type NativeTypeMap = {
   type:
+    | 'nan'
+    | 'infinity'
     | 'array'
     | 'boolean'
     | 'date'
