@@ -112,17 +112,17 @@ dependencies {
   // Remote Config
   implementation "com.google.firebase:firebase-config:16.0.0"
   // Cloud Storage
-  implementation "com.google.firebase:firebase-storage:16.0.1"
+  implementation "com.google.firebase:firebase-storage:16.0.2"
   // Invites
   implementation "com.google.firebase:firebase-invites:16.0.3"
   // Real-time Database
-  implementation "com.google.firebase:firebase-database:16.0.1"
+  implementation "com.google.firebase:firebase-database:16.0.2"
   // Cloud Functions
   implementation "com.google.firebase:firebase-functions:16.1.0"
   // Cloud Firestore
   implementation "com.google.firebase:firebase-firestore:17.1.0"
   // Cloud Messaging / FCM
-  implementation "com.google.firebase:firebase-messaging:17.3.0"
+  implementation "com.google.firebase:firebase-messaging:17.3.3"
   // Crashlytics
   implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
