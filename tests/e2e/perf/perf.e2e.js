@@ -2,11 +2,14 @@ describe('perf()', () => {
   describe('setPerformanceCollectionEnabled()', () => {
     it('true', async () => {
       await firebase.perf().setPerformanceCollectionEnabled(true);
+      await sleep(2000);
     });
 
     it('false', async () => {
       await firebase.perf().setPerformanceCollectionEnabled(false);
+      await sleep(2000);
       await firebase.perf().setPerformanceCollectionEnabled(true);
+      await sleep(2000);
       await device.launchApp({ newInstance: true });
     });
 
