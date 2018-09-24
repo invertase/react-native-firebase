@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://rnfirebase.io">
-    <img src="https://i.imgur.com/eBNJlHd.png"><br/>
+    <img src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h1 align="center">React Native Firebase</h2>
 </p>
