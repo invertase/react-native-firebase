@@ -103,7 +103,6 @@ describe('firestore()', () => {
         unsubscribe();
       });
 
-      // crappy race condition somewhere =/ will come back to it later
       it('calls callback with the initial data and then when document is added', async () => {
         const colDoc = await resetTestCollectionDoc();
         await sleep(50);
