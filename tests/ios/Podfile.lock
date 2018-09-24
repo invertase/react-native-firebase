@@ -305,6 +305,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
+    :version: "~> 5.0.0-rc5"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -347,6 +348,6 @@ SPEC CHECKSUMS:
   RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 33388e8d8d1b7c967a58d636efdd0c9f4d74a9b5
+PODFILE CHECKSUM: f795130025a049aa8df38dd82ec2841030247cc7
 
 COCOAPODS: 1.5.3
