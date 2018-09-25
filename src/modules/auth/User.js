@@ -13,6 +13,7 @@ import type {
   UserCredential,
   UserInfo,
   UserMetadata,
+  IdTokenResult,
 } from './types';
 
 type UpdateProfile = {
@@ -96,24 +97,25 @@ export default class User {
   }
 
   /**
-   * get the token of current user
-   * @return {Promise}
+   * Returns a JWT token used to identify the user to a Firebase service.
+   *
+   * @param forceRefresh boolean Force refresh regardless of token expiration.
+   * @return {Promise<string>}
    */
   getIdToken(forceRefresh: boolean = false): Promise<string> {
-    return getNativeModule(this._auth).getToken(forceRefresh);
+    return getNativeModule(this._auth).getIdToken(forceRefresh);
   }
 
-  // /**
-  //  * get the token of current user
-  //  * @deprecated Deprecated getToken in favor of getIdToken.
-  //  * @return {Promise}
-  //  */
-  // getToken(forceRefresh: boolean = false): Promise<Object> {
-  //   console.warn(
-  //     'Deprecated firebase.User.prototype.getToken in favor of firebase.User.prototype.getIdToken.'
-  //   );
-  //   return getNativeModule(this._auth).getToken(forceRefresh);
-  // }
+  /**
+   * Returns a IdTokenResult object which contains the ID token JWT string and other properties for getting
+   * data associated with the token and all the decoded payload claims.
+   *
+   * @param forceRefresh boolean Force refresh regardless of token expiration.
+   * @return {Promise<IdTokenResult>}
+   */
+  getIdTokenResult(forceRefresh: boolean = false): Promise<IdTokenResult> {
+    return getNativeModule(this._auth).getIdTokenResult(forceRefresh);
+  }
 
   /**
    * @param credential
