@@ -88,3 +88,6 @@ README.md
 /src
 *.coverage.json
 .opensource
+.circleci
+.eslintignore
+codecov.yml
