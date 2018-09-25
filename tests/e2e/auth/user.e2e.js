@@ -10,11 +10,10 @@ describe('auth().currentUser', () => {
     it('should return a token', async () => {
       const random = randomString(12, '#aA');
       const email = `${random}@${random}.com`;
-      const pass = random;
 
       const { user } = await firebase
         .auth()
-        .createUserWithEmailAndPassword(email, pass);
+        .createUserWithEmailAndPassword(email, random);
 
       // Test
       const token = await user.getIdToken();
@@ -28,22 +27,39 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('getToken()', () => {
-    it('should return a token', async () => {
+  describe('getIdTokenResult()', () => {
+    it('should return a valid IdTokenResult Object', async () => {
       const random = randomString(12, '#aA');
       const email = `${random}@${random}.com`;
-      const pass = random;
 
       const { user } = await firebase
         .auth()
-        .createUserWithEmailAndPassword(email, pass);
+        .createUserWithEmailAndPassword(email, random);
 
       // Test
-      const token = await user.getToken();
+      const tokenResult = await user.getIdTokenResult();
 
-      // Assertions
-      token.should.be.a.String();
-      token.length.should.be.greaterThan(24);
+      tokenResult.token.should.be.a.String();
+      tokenResult.authTime.should.be.a.String();
+      tokenResult.issuedAtTime.should.be.a.String();
+      tokenResult.expirationTime.should.be.a.String();
+
+      new Date(tokenResult.authTime)
+        .toString()
+        .should.not.equal('Invalid Date');
+      new Date(tokenResult.issuedAtTime)
+        .toString()
+        .should.not.equal('Invalid Date');
+      new Date(tokenResult.expirationTime)
+        .toString()
+        .should.not.equal('Invalid Date');
+
+      tokenResult.claims.should.be.a.Object();
+      tokenResult.claims.iat.should.be.a.Number();
+      tokenResult.claims.iss.should.be.a.String();
+
+      tokenResult.signInProvider.should.equal('password');
+      tokenResult.token.length.should.be.greaterThan(24);
 
       // Clean up
       await firebase.auth().currentUser.delete();
