@@ -789,8 +789,6 @@ declare module 'react-native-firebase' {
        */
       getIdToken(forceRefresh?: boolean): Promise<string>;
 
-      getToken(forceRefresh?: boolean): Promise<string>;
-
       /**
        * @deprecated
        * @param credential
@@ -1142,9 +1140,9 @@ declare module 'react-native-firebase' {
         checkActionCode(code: string): Promise<ActionCodeInfo>;
 
         /**
-         * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
+         * Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).
          */
-        fetchProvidersForEmail(email: string): Promise<Array<string>>;
+        fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
 
         verifyPasswordResetCode(code: string): Promise<string>;
 
