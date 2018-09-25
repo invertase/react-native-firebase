@@ -738,6 +738,17 @@ declare module 'react-native-firebase' {
       lastSignInTime?: string;
     };
 
+    type IdTokenResult = {
+      token: string;
+      authTime: string;
+      issuedAtTime: string;
+      expirationTime: string;
+      signInProvider: null | string;
+      claims: {
+        [key: string]: any;
+      };
+    };
+
     interface User {
       /**
        * The user's display name (if available).
@@ -788,6 +799,15 @@ declare module 'react-native-firebase' {
        * @param forceRefresh: boolean - default to false
        */
       getIdToken(forceRefresh?: boolean): Promise<string>;
+
+      /**
+       * Returns a firebase.auth.IdTokenResult object which contains the ID token JWT string and
+       * other helper properties for getting different data associated with the token as well as
+       * all the decoded payload claims.
+       *
+       * @param forceRefresh boolean Force refresh regardless of token expiration.
+       */
+      getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
 
       /**
        * @deprecated
