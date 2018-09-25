@@ -173,7 +173,7 @@ export default class User {
     credential: AuthCredential
   ): Promise<UserCredential> {
     console.warn(
-      'Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential..'
+      'Deprecated reauthenticateAndRetrieveDataWithCredential in favor of reauthenticateWithCredential.'
     );
     return getNativeModule(this._auth)
       .reauthenticateWithCredential(
