@@ -531,13 +531,13 @@ RCT_EXPORT_METHOD(updateProfile:
 }
 
 /**
- getToken
+ getIdToken
 
  @param RCTPromiseResolveBlock resolve
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(getToken:
+RCT_EXPORT_METHOD(getIdToken:
                     (NSString *) appDisplayName
                         forceRefresh:
                         (BOOL) forceRefresh
