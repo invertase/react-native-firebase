@@ -152,7 +152,15 @@ public class Utils {
         appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
           && appProcess.processName.equals(packageName)
         ) {
-        ReactContext reactContext = (ReactContext) context;
+        ReactContext reactContext;
+
+        try {
+          reactContext = (ReactContext) context;
+        } catch(ClassCastException exception) {
+          // Not react context so default to true
+          return true;
+        }
+
         return reactContext.getLifecycleState() == LifecycleState.RESUMED;
       }
     }

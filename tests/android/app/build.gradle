@@ -122,7 +122,7 @@ dependencies {
   // Cloud Firestore
   implementation "com.google.firebase:firebase-firestore:17.1.0"
   // Cloud Messaging / FCM
-  implementation "com.google.firebase:firebase-messaging:17.3.3"
+  implementation "com.google.firebase:firebase-messaging:17.3.2"
   // Crashlytics
   implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
     transitive = true
