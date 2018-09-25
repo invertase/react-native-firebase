@@ -1422,42 +1422,119 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   }
 
   /**
-   * getToken
+   * getIdToken
    *
    * @param appName
    * @param forceRefresh
    * @param promise
    */
   @ReactMethod
-  public void getToken(String appName, Boolean forceRefresh, final Promise promise) {
+  public void getIdToken(String appName, Boolean forceRefresh, final Promise promise) {
+    Log.d(TAG, "getIdToken");
+
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
     FirebaseUser user = firebaseAuth.getCurrentUser();
-    Log.d(TAG, "getToken/getIdToken");
 
-    if (user != null) {
-      user
-        .getIdToken(forceRefresh)
-        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-          @Override
-          public void onComplete(@NonNull Task<GetTokenResult> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "getToken:onComplete:success");
-              promise.resolve(task
-                                .getResult()
-                                .getToken());
-            } else {
-              Exception exception = task.getException();
-              Log.e(TAG, "getToken:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          }
-        });
-    } else {
+    if (user == null) {
       promiseNoUser(promise, true);
+      return;
     }
+
+    user
+      .getIdToken(forceRefresh)
+      .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        @Override
+        public void onComplete(@NonNull Task<GetTokenResult> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "getIdToken:onComplete:success");
+            GetTokenResult tokenResult = task.getResult();
+            promise.resolve(tokenResult.getToken());
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "getIdToken:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        }
+      });
   }
+
+  /**
+   * getIdTokenResult
+   *
+   * @param appName
+   * @param forceRefresh
+   * @param promise
+   */
+  @ReactMethod
+  public void getIdTokenResult(String appName, Boolean forceRefresh, final Promise promise) {
+    Log.d(TAG, "getIdTokenResult");
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    user
+      .getIdToken(forceRefresh)
+      .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        @Override
+        public void onComplete(@NonNull Task<GetTokenResult> task) {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "getIdTokenResult:onComplete:success");
+            GetTokenResult tokenResult = task.getResult();
+            WritableMap tokenResultMap = Arguments.createMap();
+
+            Utils.mapPutValue(
+              "authTime",
+              Utils.timestampToUTC(tokenResult.getAuthTimestamp()),
+              tokenResultMap
+            );
+
+            Utils.mapPutValue(
+              "expirationTime",
+              Utils.timestampToUTC(tokenResult.getExpirationTimestamp()),
+              tokenResultMap
+            );
+
+            Utils.mapPutValue(
+              "issuedAtTime",
+              Utils.timestampToUTC(tokenResult.getIssuedAtTimestamp()),
+              tokenResultMap
+            );
+
+            Utils.mapPutValue(
+              "claims",
+              tokenResult.getClaims(),
+              tokenResultMap
+            );
+
+            Utils.mapPutValue(
+              "signInProvider",
+              tokenResult.getSignInProvider(),
+              tokenResultMap
+            );
+
+            Utils.mapPutValue(
+              "token",
+              tokenResult.getToken(),
+              tokenResultMap
+            );
+
+            promise.resolve(tokenResultMap);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "getIdTokenResult:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        }
+      });
+  }
+
 
   /**
    * fetchSignInMethodsForEmail
