@@ -593,7 +593,13 @@ RCT_EXPORT_METHOD(getIdTokenResult:
 
         [tokenResultDict setValue:tokenResult.token forKey:@"token"];
         [tokenResultDict setValue:tokenResult.claims forKey:@"claims"];
-        [tokenResultDict setValue:tokenResult.signInProvider forKey:@"signInProvider"];
+        
+        NSString *provider = tokenResult.signInProvider;
+        if (!provider) {
+          provider = tokenResult.claims[@"firebase"][@"sign_in_provider"];
+        }
+          
+        [tokenResultDict setValue:provider forKey:@"signInProvider"];
         resolve(tokenResultDict);
       }
     }];
