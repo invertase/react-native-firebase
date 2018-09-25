@@ -103,17 +103,17 @@ export default class User {
     return getNativeModule(this._auth).getToken(forceRefresh);
   }
 
-  /**
-   * get the token of current user
-   * @deprecated Deprecated getToken in favor of getIdToken.
-   * @return {Promise}
-   */
-  getToken(forceRefresh: boolean = false): Promise<Object> {
-    console.warn(
-      'Deprecated firebase.User.prototype.getToken in favor of firebase.User.prototype.getIdToken.'
-    );
-    return getNativeModule(this._auth).getToken(forceRefresh);
-  }
+  // /**
+  //  * get the token of current user
+  //  * @deprecated Deprecated getToken in favor of getIdToken.
+  //  * @return {Promise}
+  //  */
+  // getToken(forceRefresh: boolean = false): Promise<Object> {
+  //   console.warn(
+  //     'Deprecated firebase.User.prototype.getToken in favor of firebase.User.prototype.getIdToken.'
+  //   );
+  //   return getNativeModule(this._auth).getToken(forceRefresh);
+  // }
 
   /**
    * @deprecated Deprecated linkWithCredential in favor of linkAndRetrieveDataWithCredential.
