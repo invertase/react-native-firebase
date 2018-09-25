@@ -503,18 +503,6 @@ export default class Auth extends ModuleBase {
   }
 
   /**
-   * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
-   * @return {Promise}
-   * @Deprecated
-   */
-  fetchProvidersForEmail(email: string): Promise<string[]> {
-    console.warn(
-      'Deprecated firebase.auth().fetchProvidersForEmail in favor of firebase.auth().fetchSignInMethodsForEmail()'
-    );
-    return getNativeModule(this).fetchSignInMethodsForEmail(email);
-  }
-
-  /**
    * Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).
    * @return {Promise}
    */
