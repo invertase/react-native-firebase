@@ -531,13 +531,13 @@ RCT_EXPORT_METHOD(updateProfile:
 }
 
 /**
- getToken
+ getIdToken
 
  @param RCTPromiseResolveBlock resolve
  @param RCTPromiseRejectBlock reject
  @return
  */
-RCT_EXPORT_METHOD(getToken:
+RCT_EXPORT_METHOD(getIdToken:
                     (NSString *) appDisplayName
                         forceRefresh:
                         (BOOL) forceRefresh
@@ -555,6 +555,52 @@ RCT_EXPORT_METHOD(getToken:
         [self promiseRejectAuthException:reject error:error];
       } else {
         resolve(token);
+      }
+    }];
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
+/**
+ * getIdTokenResult
+ *
+ * @param RCTPromiseResolveBlock resolve
+ * @param RCTPromiseRejectBlock reject
+ * @return
+ */
+RCT_EXPORT_METHOD(getIdTokenResult:
+                    (NSString *) appDisplayName
+                        forceRefresh:
+                        (BOOL) forceRefresh
+                        resolver:
+                        (RCTPromiseResolveBlock) resolve
+                        rejecter:
+                        (RCTPromiseRejectBlock) reject) {
+  FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+
+  if (user) {
+    [user getIDTokenResultForcingRefresh:(BOOL) forceRefresh completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                                                          NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        NSMutableDictionary *tokenResultDict = [NSMutableDictionary dictionary];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.authDate] forKey:@"authTime"];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.issuedAtDate] forKey:@"issuedAtTime"];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.expirationDate] forKey:@"expirationTime"];
+
+        [tokenResultDict setValue:tokenResult.token forKey:@"token"];
+        [tokenResultDict setValue:tokenResult.claims forKey:@"claims"];
+        
+        NSString *provider = tokenResult.signInProvider;
+        if (!provider) {
+          provider = tokenResult.claims[@"firebase"][@"sign_in_provider"];
+        }
+          
+        [tokenResultDict setValue:provider forKey:@"signInProvider"];
+        resolve(tokenResultDict);
       }
     }];
   } else {

@@ -943,7 +943,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('fetchProvidersForEmail/fetchSignInMethodsForEmail()', () => {
+  describe('fetchSignInMethodsForEmail()', () => {
     it('it should return password provider for an email address', () =>
       new Promise((resolve, reject) => {
         const successCb = providers => {
@@ -958,7 +958,7 @@ describe('auth()', () => {
 
         return firebase
           .auth()
-          .fetchProvidersForEmail('test@test.com')
+          .fetchSignInMethodsForEmail('test@test.com')
           .then(successCb)
           .catch(failureCb);
       }));
