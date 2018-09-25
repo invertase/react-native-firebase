@@ -563,6 +563,46 @@ RCT_EXPORT_METHOD(getIdToken:
 }
 
 /**
+ * getIdTokenResult
+ *
+ * @param RCTPromiseResolveBlock resolve
+ * @param RCTPromiseRejectBlock reject
+ * @return
+ */
+RCT_EXPORT_METHOD(getIdTokenResult:
+                    (NSString *) appDisplayName
+                        forceRefresh:
+                        (BOOL) forceRefresh
+                        resolver:
+                        (RCTPromiseResolveBlock) resolve
+                        rejecter:
+                        (RCTPromiseRejectBlock) reject) {
+  FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
+  FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+
+  if (user) {
+    [user getIDTokenResultForcingRefresh:(BOOL) forceRefresh completion:^(FIRAuthTokenResult *_Nullable tokenResult,
+                                                                          NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        NSMutableDictionary *tokenResultDict = [NSMutableDictionary dictionary];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.authDate] forKey:@"authTime"];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.issuedAtDate] forKey:@"issuedAtTime"];
+        [tokenResultDict setValue:[RNFirebaseUtil getISO8601String:tokenResult.expirationDate] forKey:@"expirationTime"];
+
+        [tokenResultDict setValue:tokenResult.token forKey:@"token"];
+        [tokenResultDict setValue:tokenResult.claims forKey:@"claims"];
+        [tokenResultDict setValue:tokenResult.signInProvider forKey:@"signInProvider"];
+        resolve(tokenResultDict);
+      }
+    }];
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
+/**
  signInWithCredential
 
  @param NSString provider
