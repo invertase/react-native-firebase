@@ -13,6 +13,7 @@
 
 @interface RNFirebaseUtil : NSObject
 
++ (NSString *)getISO8601String:(NSDate *)date;
 + (FIRApp *)getApp:(NSString *)appDisplayName;
 + (NSString *)getAppName:(NSString *)appDisplayName;
 + (NSString *)getAppDisplayName:(NSString *)appName;
