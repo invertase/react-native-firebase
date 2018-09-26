@@ -759,7 +759,7 @@ RCT_EXPORT_METHOD(checkActionCode:
         [data setValue:[NSNull null] forKey:@"fromEmail"];
       }
 
-      NSDictionary *result = @{@"data": data, @"actionType": actionType};
+      NSDictionary *result = @{@"data": data, @"operation": actionType};
 
       resolve(result);
     }

@@ -1225,7 +1225,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
                 break;
             }
 
-            writableMap.putString("actionType", actionType);
+            writableMap.putString("operation", actionType);
 
             promise.resolve(writableMap);
           } else {

@@ -19,7 +19,12 @@ export type ActionCodeInfo = {
     email?: string,
     fromEmail?: string,
   },
-  operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL',
+  operation:
+    | 'PASSWORD_RESET'
+    | 'VERIFY_EMAIL'
+    | 'RECOVER_EMAIL'
+    | 'EMAIL_SIGNIN'
+    | 'ERROR',
 };
 
 export type ActionCodeSettings = {
