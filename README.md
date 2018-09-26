@@ -37,14 +37,14 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 | **Analytics**                                                                                                                     |   ✅   |   ❌    |
 | **App Indexing**                                                                                                                  |   ❌   |   ❌    |
 | **Authentication**                                                                                                                |   ✅   |   ✅    |
-| _-- Phone Auth_                                                                                                                   |   ✅   |   ❌    |
+| _-- Phone Auth_                                                                                                                   |   ✅   |   ✅    |
 | **Core**                                                                                                                          |   ✅   |   ✅    |
 | _-- Multiple Apps_                                                                                                                |   ✅   |   ✅    |
 | **Cloud Firestore**                                                                                                               |   ✅   |   ✅    |
 | **Cloud Messaging (FCM)**                                                                                                         |   ✅   |   ❌    |
 | **Crashlytics**                                                                                                                   |   ✅   |   ❌    |
 | **Dynamic Links**                                                                                                                 |   ✅   |   ❌    |
-| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |    ✅  |   ✅    |
+| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |   ✅   |   ✅    |
 | **Invites**                                                                                                                       |   ✅   |   ❌    |
 | **Instance ID**                                                                                                                   |   ✅   |   ❌    |
 | **Performance Monitoring**                                                                                                        |   ✅   |   ❌    |
