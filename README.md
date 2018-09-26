@@ -31,27 +31,27 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 
 > '**?**' indicates partial support
 
-| Firebase Features                                                                                                                 | v2.2.x | v3.3.x | v4.3.x | Web SDK |
-| --------------------------------------------------------------------------------------------------------------------------------- | :----: | :----: | :----: | :-----: |
-| **AdMob**                                                                                                                         |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Analytics**                                                                                                                     |   ✅   |   ✅   |   ✅   |   ❌    |
-| **App Indexing**                                                                                                                  |   ❌   |   ❌   |   ❌   |   ❌    |
-| **Authentication**                                                                                                                |   ✅   |   ✅   |   ✅   |   ✅    |
-| _-- Phone Auth_                                                                                                                   |   ❌   |   ✅   |   ✅   |   ❌    |
-| **Core**                                                                                                                          | **?**  |   ✅   |   ✅   |   ✅    |
-| _-- Multiple Apps_                                                                                                                |   ❌   |   ✅   |   ✅   |   ✅    |
-| **Cloud Firestore**                                                                                                               |   ❌   |   ✅   |   ✅   |  **?**  |
-| **Cloud Messaging (FCM)**                                                                                                         | **?**  | **?**  |   ✅   |   ❌    |
-| **Crashlytics**                                                                                                                   |   ❌   |   ✅   |   ✅   |   ❌    |
-| **Dynamic Links**                                                                                                                 |   ❌   |   ✅   |   ✅   |   ❌    |
-| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |   ❌   |   ❌   |   ✅   |   ✅    |
-| **Invites**                                                                                                                       |   ❌   |   ❌   |   ✅   |   ❌    |
-| **Instance ID**                                                                                                                   |   ❌   |   ❌   | **?**  |   ❌    |
-| **Performance Monitoring**                                                                                                        |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Realtime Database**                                                                                                             |   ✅   |   ✅   |   ✅   |   ✅    |
-| _-- Offline Persistence_                                                                                                          |   ✅   |   ✅   |   ✅   |  **?**  |
-| **Remote Config**                                                                                                                 |   ✅   |   ✅   |   ✅   |   ❌    |
-| **Storage**                                                                                                                       |   ✅   |   ✅   |   ✅   |  **?**  |
+| Firebase Features                                                                                                                 | v5.x.x | Web SDK |
+| --------------------------------------------------------------------------------------------------------------------------------- | :----: | :-----: |
+| **AdMob**                                                                                                                         |   ✅   |   ❌    |
+| **Analytics**                                                                                                                     |   ✅   |   ❌    |
+| **App Indexing**                                                                                                                  |   ❌   |   ❌    |
+| **Authentication**                                                                                                                |   ✅   |   ✅    |
+| _-- Phone Auth_                                                                                                                   |   ✅   |   ❌    |
+| **Core**                                                                                                                          |   ✅   |   ✅    |
+| _-- Multiple Apps_                                                                                                                |   ✅   |   ✅    |
+| **Cloud Firestore**                                                                                                               |   ✅   |   ✅    |
+| **Cloud Messaging (FCM)**                                                                                                         |   ✅   |   ❌    |
+| **Crashlytics**                                                                                                                   |   ✅   |   ❌    |
+| **Dynamic Links**                                                                                                                 |   ✅   |   ❌    |
+| **[Functions Callable](https://firebase.googleblog.com/2018/04/launching-cloud-functions-for-firebase-1-0.html?m=1)**             |    ✅  |   ✅    |
+| **Invites**                                                                                                                       |   ✅   |   ❌    |
+| **Instance ID**                                                                                                                   |   ✅   |   ❌    |
+| **Performance Monitoring**                                                                                                        |   ✅   |   ❌    |
+| **Realtime Database**                                                                                                             |   ✅   |   ✅    |
+| _-- Offline Persistence_                                                                                                          |   ✅   |  **?**  |
+| **Remote Config**                                                                                                                 |   ✅   |   ❌    |
+| **Storage**                                                                                                                       |   ✅   |   ✅    |
 
 ---
 
