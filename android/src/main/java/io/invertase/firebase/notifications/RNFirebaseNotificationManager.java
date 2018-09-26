@@ -321,7 +321,7 @@ public class RNFirebaseNotificationManager {
       }
       if (channelMap.hasKey("vibrationPattern")) {
         ReadableArray vibrationArray = channelMap.getArray("vibrationPattern");
-        long[] vibration = new long[]{};
+        long[] vibration = new long[vibrationArray.size()];
         for (int i = 0; i < vibrationArray.size(); i++) {
           vibration[i] = (long) vibrationArray.getDouble(i);
         }
