@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -25,13 +26,14 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
+public class RNFirebaseDatabase extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "RNFirebaseDatabase";
   private static boolean enableLogging = false;
   private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
@@ -42,6 +44,27 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     super(reactContext);
   }
 
+  @Override
+  public void onHostResume() {
+    // Not required for this module
+  }
+
+  @Override
+  public void onHostPause() {
+    // Not required for this module
+  }
+
+  @Override
+  public void onHostDestroy() {
+    Iterator refIterator = references.entrySet().iterator();
+
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      RNFirebaseDatabaseReference nativeRef = (RNFirebaseDatabaseReference) pair.getValue();
+      nativeRef.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
+  }
 
   /*
    * REACT NATIVE METHODS

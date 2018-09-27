@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -106,6 +107,26 @@ class RNFirebaseDatabaseReference {
     if (childEventListeners.containsKey(eventRegistrationKey)) {
       query.removeEventListener(childEventListeners.get(eventRegistrationKey));
       childEventListeners.remove(eventRegistrationKey);
+    }
+  }
+
+  void removeAllEventListeners() {
+    if (hasListeners()) {
+      Iterator valueIterator = valueEventListeners.entrySet().iterator();
+      while (valueIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) valueIterator.next();
+        ValueEventListener valueEventListener = (ValueEventListener) pair.getValue();
+        query.removeEventListener(valueEventListener);
+        valueIterator.remove();
+      }
+
+      Iterator childIterator = childEventListeners.entrySet().iterator();
+      while (childIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) childIterator.next();
+        ChildEventListener childEventListener = (ChildEventListener) pair.getValue();
+        query.removeEventListener(childEventListener);
+        childIterator.remove();
+      }
     }
   }
 
