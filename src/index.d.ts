@@ -88,6 +88,7 @@ declare module 'react-native-firebase' {
   export const crashlytics: CrashlyticsModule;
   export const database: DatabaseModule;
   export const firestore: FirestoreModule;
+  export const functions: FunctionsModule;
   export const iid: IidModule;
   // export const invites: InvitesModule;
   export const links: LinksModule;
