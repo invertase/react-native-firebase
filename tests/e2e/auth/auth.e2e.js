@@ -45,7 +45,7 @@ describe('auth()', () => {
       }
     });
 
-    xit('accepts a valid code', async () => {
+   xit('accepts a valid code', async () => {
       // todo not sure how to generate a code yet - maybe via admin sdk?
     });
   });
