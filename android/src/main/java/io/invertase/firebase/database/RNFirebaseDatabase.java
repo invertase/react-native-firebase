@@ -5,7 +5,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -33,42 +32,26 @@ import java.util.Map;
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
 
-public class RNFirebaseDatabase extends ReactContextBaseJavaModule implements LifecycleEventListener {
+@SuppressWarnings("JavaDoc")
+public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private static boolean enableLogging = false;
+  private static RNFirebaseDatabase instance = null;
   private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
-  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
-  private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
+  private static HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private static SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
-  RNFirebaseDatabase(ReactApplicationContext reactContext) {
-    super(reactContext);
+  protected ReactApplicationContext reactContext = null;
+
+  RNFirebaseDatabase(ReactApplicationContext _reactContext) {
+    super(_reactContext);
+    instance = this;
+    reactContext = _reactContext;
   }
 
-  @Override
-  public void onHostResume() {
-    // Not required for this module
+  public static RNFirebaseDatabase getInstance() {
+    return instance;
   }
-
-  @Override
-  public void onHostPause() {
-    // Not required for this module
-  }
-
-  @Override
-  public void onHostDestroy() {
-    Iterator refIterator = references.entrySet().iterator();
-
-    while (refIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) refIterator.next();
-      RNFirebaseDatabaseReference nativeRef = (RNFirebaseDatabaseReference) pair.getValue();
-      nativeRef.removeAllEventListeners();
-      refIterator.remove(); // avoids a ConcurrentModificationException
-    }
-  }
-
-  /*
-   * REACT NATIVE METHODS
-   */
 
   /**
    * Resolve null or reject with a js like error if databaseError exists
@@ -96,7 +79,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule implements Li
    * @param dbURL
    * @return
    */
-  public static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
+  static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
     if (dbURL != null && dbURL.length() > 0) {
       if (appName != null && appName.length() > 0) {
@@ -272,6 +255,19 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule implements Li
     errorMap.putString("code", code);
     errorMap.putString("message", message);
     return errorMap;
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    instance = null;
+    reactContext = null;
+    Iterator refIterator = references.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      RNFirebaseDatabaseReference nativeRef = (RNFirebaseDatabaseReference) pair.getValue();
+      nativeRef.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
   }
 
   /**
@@ -808,7 +804,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule implements Li
     ReadableArray modifiers
   ) {
     return new RNFirebaseDatabaseReference(
-      getReactApplicationContext(),
       appName,
       dbURL,
       key,
