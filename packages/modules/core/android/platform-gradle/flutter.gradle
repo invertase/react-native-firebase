@@ -1,0 +1,4 @@
+// TODO: Mike: Better error
+throw new GradleException(
+  "Flutter support through Expo only for now"
+)

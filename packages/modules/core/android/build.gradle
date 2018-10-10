@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+
+def DEFAULT_COMPILE_SDK_VERSION = 27
+def DEFAULT_BUILD_TOOLS_VERSION = "28.0.2"
+def DEFAULT_TARGET_SDK_VERSION = 26
+
+android {
+  compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
+  buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
+  defaultConfig {
+    minSdkVersion 16
+    targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
+    versionCode 1
+    versionName "1.0"
+    multiDexEnabled true
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.2.0'
+  }
+}
+
+dependencies {
+  implementation "com.google.firebase:firebase-core:16.0.4"
+  implementation "com.google.android.gms:play-services-base:16.0.1"
+}
+
+repositories {
+  google()
+  jcenter()
+}
+
+// Flutter - Non Expo
+if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists() && findProject(':expo-core') == null) {
+  apply from: file("./platform-gradle/flutter.gradle")
+// Expo
+} else if (findProject(':expo-core') != null) {
+  apply from: file("./platform-gradle/expo.gradle")
+// React Native
+} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+  apply from: file("./platform-gradle/react-native.gradle")
+} else {
+  // TODO: Mike: Proper error - unknown project type
+  throw new GradleException("TODO")
+}

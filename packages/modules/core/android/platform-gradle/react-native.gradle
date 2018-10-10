@@ -1,0 +1,71 @@
+rootProject.gradle.buildFinished { buildResult ->
+  if (buildResult.getFailure() != null) {
+    try {
+      String message = buildResult.getFailure().properties.get("reportableCauses").toString()
+      if (message.contains("com.android.dex.DexException: Multiple dex files define Lcom/google/") ||
+        message.contains("java.util.zip.ZipException: duplicate entry: com/google/android/gms/")) {
+        logger.log(LogLevel.ERROR, "")
+        logger.log(LogLevel.ERROR, " -----------------------------------------------------------")
+        logger.log(LogLevel.ERROR, "|                    REACT NATIVE FIREBASE                  |")
+        logger.log(LogLevel.ERROR, " ----------------------------------------------------------- ")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  This is a common build error when using libraries that   |")
+        logger.log(LogLevel.ERROR, "|  require google play services.                            |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  This error occurs because different versions of google   |")
+        logger.log(LogLevel.ERROR, "|  play services or google play services modules are being  |")
+        logger.log(LogLevel.ERROR, "|  required by different libraries.                         |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  A temporary fix would be to set:                         |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|             android { multiDexEnabled true }              |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  inside your build gradle, however it is recommended for  |")
+        logger.log(LogLevel.ERROR, "|  your prod build that you de-duplicate these to minimize  |")
+        logger.log(LogLevel.ERROR, "|  bundle size.                                             |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, "|  See http://invertase.link/dupe-dex for how to do this.   |")
+        logger.log(LogLevel.ERROR, "|                                                           |")
+        logger.log(LogLevel.ERROR, " ----------------------------------------------------------- ")
+      }
+    } catch (Exception exception) {
+    }
+  }
+}
+
+repositories {
+  def found = false
+  def parentDir = rootProject.projectDir
+  def reactNativeAndroidName = 'React Native (Node Modules)'
+
+  1.upto(4, {
+    if (found) return true
+    parentDir = parentDir.parentFile
+    def reactNativeAndroid = new File(
+      parentDir,
+      'node_modules/react-native/android'
+    )
+
+    if (reactNativeAndroid.exists()) {
+      maven {
+        url reactNativeAndroid.toString()
+        name reactNativeAndroidName
+      }
+
+      println "${project.name}: using React Native sources from ${reactNativeAndroid.toString()}"
+      found = true
+    }
+  })
+
+  if (!found) {
+    throw new GradleException(
+      "${project.name}: unable to locate React Native Android sources, " +
+        "ensure you have you installed React Native as a dependency and try again."
+    )
+  }
+}
+
+dependencies {
+  //noinspection GradleDynamicVersion
+  compileOnly "com.facebook.react:react-native:+"  // From node_modules
+}
