@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
 
@@ -73,7 +75,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param dbURL
    * @return
    */
-  public static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
+  static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
     if (dbURL != null && dbURL.length() > 0) {
       if (appName != null && appName.length() > 0) {
@@ -386,8 +388,9 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
         DatabaseReference reference = getReferenceForAppPath(appName, dbURL, path);
 
         reference.runTransaction(new Transaction.Handler() {
+          @Nonnull
           @Override
-          public Transaction.Result doTransaction(MutableData mutableData) {
+          public Transaction.Result doTransaction(@Nonnull MutableData mutableData) {
             final RNFirebaseTransactionHandler transactionHandler = new RNFirebaseTransactionHandler(
               transactionId,
               appName,

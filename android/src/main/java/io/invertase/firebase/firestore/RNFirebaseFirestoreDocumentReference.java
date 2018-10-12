@@ -1,7 +1,6 @@
 package io.invertase.firebase.firestore;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -22,6 +21,8 @@ import com.google.firebase.firestore.Source;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
@@ -56,7 +57,7 @@ public class RNFirebaseFirestoreDocumentReference {
       .delete()
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "delete:onComplete:success");
             promise.resolve(null);
@@ -100,7 +101,7 @@ public class RNFirebaseFirestoreDocumentReference {
       .get(source)
       .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
         @Override
-        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+        public void onComplete(@Nonnull Task<DocumentSnapshot> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "get:onComplete:success");
             serializeAsyncTask.execute(task.getResult());
@@ -172,7 +173,7 @@ public class RNFirebaseFirestoreDocumentReference {
 
     task.addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
-      public void onComplete(@NonNull Task<Void> task) {
+      public void onComplete(@Nonnull Task<Void> task) {
         if (task.isSuccessful()) {
           Log.d(TAG, "set:onComplete:success");
           promise.resolve(null);
@@ -197,7 +198,7 @@ public class RNFirebaseFirestoreDocumentReference {
       .update(map)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "update:onComplete:success");
             promise.resolve(null);

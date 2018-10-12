@@ -10,8 +10,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
 import com.google.firebase.perf.metrics.HttpMetric;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,13 +69,23 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void incrementTraceMetric(String identifier, String metricName, Integer incrementBy, Promise promise) {
+  public void incrementTraceMetric(
+    String identifier,
+    String metricName,
+    Integer incrementBy,
+    Promise promise
+  ) {
     getOrCreateTrace(identifier).incrementMetric(metricName, incrementBy.longValue());
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void putTraceAttribute(String identifier, String attribute, String value, Promise promise) {
+  public void putTraceAttribute(
+    String identifier,
+    String attribute,
+    String value,
+    Promise promise
+  ) {
     getOrCreateTrace(identifier).putAttribute(attribute, value);
     // Docs say it returns a bool, actually void so we internally check attributes
     Map<String, String> attributes = getOrCreateTrace(identifier).getAttributes();
@@ -121,7 +131,12 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
    */
 
   @ReactMethod
-  public void getHttpMetricAttribute(String url, String httpMethod, String attribute, Promise promise) {
+  public void getHttpMetricAttribute(
+    String url,
+    String httpMethod,
+    String attribute,
+    Promise promise
+  ) {
     promise.resolve(getOrCreateHttpMetric(url, httpMethod).getAttribute(attribute));
   }
 
@@ -138,43 +153,74 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void putHttpMetricAttribute(String url, String httpMethod, String attribute, String value, Promise promise) {
+  public void putHttpMetricAttribute(
+    String url,
+    String httpMethod,
+    String attribute,
+    String value,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).putAttribute(attribute, value);
     // Docs say it returns a bool, actually void so we internally check attributes
     Map<String, String> attributes = getOrCreateHttpMetric(url, httpMethod).getAttributes();
     if (attributes.containsKey(attribute)) {
-      promise.resolve( true);
+      promise.resolve(true);
     } else {
       promise.resolve(false);
     }
   }
 
   @ReactMethod
-  public void removeHttpMetricAttribute(String url, String httpMethod, String attribute, Promise promise) {
+  public void removeHttpMetricAttribute(
+    String url,
+    String httpMethod,
+    String attribute,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).removeAttribute(attribute);
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void setHttpMetricResponseCode(String url, String httpMethod, Integer code, Promise promise) {
+  public void setHttpMetricResponseCode(
+    String url,
+    String httpMethod,
+    Integer code,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).setHttpResponseCode(code);
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void setHttpMetricRequestPayloadSize(String url, String httpMethod, Integer bytes, Promise promise) {
+  public void setHttpMetricRequestPayloadSize(
+    String url,
+    String httpMethod,
+    Integer bytes,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).setRequestPayloadSize(bytes.longValue());
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void setHttpMetricResponseContentType(String url, String httpMethod, String type, Promise promise) {
+  public void setHttpMetricResponseContentType(
+    String url,
+    String httpMethod,
+    String type,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).setResponseContentType(type);
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void setHttpMetricResponsePayloadSize(String url, String httpMethod, Integer bytes, Promise promise) {
+  public void setHttpMetricResponsePayloadSize(
+    String url,
+    String httpMethod,
+    Integer bytes,
+    Promise promise
+  ) {
     getOrCreateHttpMetric(url, httpMethod).setResponsePayloadSize(bytes.longValue());
     promise.resolve(null);
   }
@@ -210,7 +256,10 @@ public class RNFirebasePerformance extends ReactContextBaseJavaModule {
     if (httpMetrics.containsKey(identifier)) {
       return httpMetrics.get(identifier);
     }
-    HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, this.mapStringToMethod(httpMethod));
+    HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(
+      url,
+      this.mapStringToMethod(httpMethod)
+    );
     httpMetrics.put(identifier, httpMetric);
     return httpMetric;
   }
