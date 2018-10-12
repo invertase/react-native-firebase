@@ -11,11 +11,9 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
-def enableProguardInReleaseBuilds = false
 
 android {
   compileSdkVersion 27
-//  buildToolsVersion '27.0.2'
 
   defaultConfig {
     applicationId "com.testing"
@@ -79,6 +77,7 @@ android {
 }
 
 dependencies {
+  //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation fileTree(dir: "libs", include: ["*.jar"])
 
@@ -92,51 +91,55 @@ dependencies {
   implementation project(':react-native-firebase')
   // Required dependencies
   //noinspection GradleCompatible
-  implementation "com.google.firebase:firebase-core:16.0.3"
-  implementation "com.google.android.gms:play-services-base:15.0.1"
+  implementation "com.google.firebase:firebase-core:16.0.4"
+  implementation "com.google.android.gms:play-services-base:16.0.1"
 
   /* -------------------------
    *   OPTIONAL FIREBASE SDKS
    * ------------------------- */
 
-  // Ads
   implementation('com.google.firebase:firebase-ads:15.0.1') {
     // exclude `customtabs` as the support lib version is out of date
     // we manually add it as a dependency below with a custom version
     exclude group: 'com.android.support', module: 'customtabs'
   }
+
   // Authentication
-  implementation "com.google.firebase:firebase-auth:16.0.3"
+  implementation "com.google.firebase:firebase-auth:16.0.4"
+  // Analytics
+  implementation "com.google.firebase:firebase-analytics:16.0.4"
   // Performance Monitoring
-  implementation "com.google.firebase:firebase-perf:16.1.0"
+  implementation "com.google.firebase:firebase-perf:16.1.2"
   // Remote Config
-  implementation "com.google.firebase:firebase-config:16.0.0"
+  implementation "com.google.firebase:firebase-config:16.0.1"
   // Cloud Storage
-  implementation "com.google.firebase:firebase-storage:16.0.2"
+  implementation "com.google.firebase:firebase-storage:16.0.3"
   // Invites
-  implementation "com.google.firebase:firebase-invites:16.0.3"
+  implementation "com.google.firebase:firebase-invites:16.0.4"
+  // Dynamic Links
+  implementation "com.google.firebase:firebase-dynamic-links:16.1.2"
   // Real-time Database
-  implementation "com.google.firebase:firebase-database:16.0.2"
+  implementation "com.google.firebase:firebase-database:16.0.3"
   // Cloud Functions
-  implementation "com.google.firebase:firebase-functions:16.1.0"
+  implementation "com.google.firebase:firebase-functions:16.1.1"
   // Cloud Firestore
-  implementation "com.google.firebase:firebase-firestore:17.1.0"
+  implementation "com.google.firebase:firebase-firestore:17.1.1"
   // Cloud Messaging / FCM
-  implementation "com.google.firebase:firebase-messaging:17.3.2"
+  implementation "com.google.firebase:firebase-messaging:17.3.3"
   // Crashlytics
-  implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
+  implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
     transitive = true
   }
 
   /* --------------------------------
-   *  OPTIONAL ANDROID SUPPORT LIBS
+   *  OPTIONAL SUPPORT LIBS
    * -------------------------------- */
 
   // For Firebase Ads
   implementation "com.android.support:customtabs:27.1.1"
+
   // For React Native Firebase Notifications
-  implementation "com.android.support:appcompat-v7:27.1.1"
-  implementation 'com.android.support:support-annotations:27.1.1'
+  implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
