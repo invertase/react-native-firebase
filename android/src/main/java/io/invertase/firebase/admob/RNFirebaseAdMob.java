@@ -21,7 +21,7 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   private HashMap<String, RNFirebaseAdmobInterstitial> interstitials = new HashMap<>();
   private HashMap<String, RNFirebaseAdMobRewardedVideo> rewardedVideos = new HashMap<>();
 
-  public RNFirebaseAdMob(ReactApplicationContext reactContext) {
+  RNFirebaseAdMob(ReactApplicationContext reactContext) {
     super(reactContext);
     Log.d(TAG, "New instance");
   }

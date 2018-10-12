@@ -1,7 +1,6 @@
 package io.invertase.firebase.firestore;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -30,6 +29,8 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
@@ -236,7 +237,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
       .disableNetwork()
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "disableNetwork:onComplete:success");
             promise.resolve(null);
@@ -266,7 +267,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
       .enableNetwork()
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "enableNetwork:onComplete:success");
             promise.resolve(null);
@@ -360,7 +361,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
       .commit()
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "documentBatch:onComplete:success");
             promise.resolve(null);
@@ -569,7 +570,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
         getFirestoreForApp(appName)
           .runTransaction(new Transaction.Function<Void>() {
             @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+            public Void apply(@Nonnull Transaction transaction) throws FirebaseFirestoreException {
               transactionHandler.resetState(transaction);
 
               // emit the update cycle to JS land using an async task
@@ -675,7 +676,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
           })
           .addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
+            public void onFailure(@Nonnull Exception e) {
               if (!transactionHandler.aborted) {
                 Log.w(TAG, "Transaction onFailure.", e);
                 WritableMap eventMap = transactionHandler.createEventMap(

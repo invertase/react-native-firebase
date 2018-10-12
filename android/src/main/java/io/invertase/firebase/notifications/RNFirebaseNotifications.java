@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -26,6 +25,8 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.RNFirebaseMessagingService;
@@ -180,8 +181,10 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       notificationManager.deleteChannelGroup(channelId);
       promise.resolve(null);
     } catch (NullPointerException e) {
-      promise.reject("notifications/channel-group-not-found",
-        "The requested NotificationChannelGroup does not exist, have you created it?");
+      promise.reject(
+        "notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?"
+      );
     }
   }
 

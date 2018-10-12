@@ -3,7 +3,6 @@ package io.invertase.firebase.auth;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -52,6 +51,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+
 import io.invertase.firebase.Utils;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "JavaDoc"})
@@ -91,7 +92,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     if (mAuthListener == null) {
       FirebaseAuth.AuthStateListener newAuthListener = new FirebaseAuth.AuthStateListener() {
         @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        public void onAuthStateChanged(@Nonnull FirebaseAuth firebaseAuth) {
           FirebaseUser user = firebaseAuth.getCurrentUser();
           WritableMap msgMap = Arguments.createMap();
           if (user != null) {
@@ -141,7 +142,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     if (!mIdTokenListeners.containsKey(appName)) {
       FirebaseAuth.IdTokenListener newIdTokenListener = new FirebaseAuth.IdTokenListener() {
         @Override
-        public void onIdTokenChanged(@NonNull FirebaseAuth firebaseAuth) {
+        public void onIdTokenChanged(@Nonnull FirebaseAuth firebaseAuth) {
           FirebaseUser user = firebaseAuth.getCurrentUser();
           WritableMap msgMap = Arguments.createMap();
           if (user != null) {
@@ -238,7 +239,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "signInAnonymously:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
@@ -274,7 +275,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "createUserWithEmailAndPassword:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
@@ -310,7 +311,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "signInWithEmailAndPassword:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
@@ -347,7 +348,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
@@ -375,7 +376,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "signInWithCustomToken:onComplete:failure", exception);
           promiseRejectAuthException(promise, exception);
         }
@@ -401,7 +402,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
       @Override
-      public void onComplete(@NonNull Task<Void> task) {
+      public void onComplete(@Nonnull Task<Void> task) {
         if (task.isSuccessful()) {
           Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
           promiseNoUser(promise, false);
@@ -444,7 +445,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
       @Override
-      public void onComplete(@NonNull Task<Void> task) {
+      public void onComplete(@Nonnull Task<Void> task) {
         if (task.isSuccessful()) {
           Log.d(TAG, "sendSignInLinkToEmail:onComplete:success");
           promiseNoUser(promise, false);
@@ -486,7 +487,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .delete()
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "delete:onComplete:success");
               promiseNoUser(promise, false);
@@ -524,7 +525,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .reload()
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "reload:onComplete:success");
               promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -561,7 +562,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
     } else {
       OnCompleteListener<Void> listener = new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "sendEmailVerification:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -608,7 +609,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .updateEmail(email)
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "updateEmail:onComplete:success");
               promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -644,7 +645,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .updatePassword(password)
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "updatePassword:onComplete:success");
               promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -701,7 +702,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .updatePhoneNumber(credential)
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "updatePhoneNumber:onComplete:success");
               promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -751,7 +752,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .updateProfile(profileUpdates)
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
-          public void onComplete(@NonNull Task<Void> task) {
+          public void onComplete(@Nonnull Task<Void> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "updateProfile:onComplete:success");
               promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -789,7 +790,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .signInWithCredential(credential)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
           @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
+          public void onComplete(@Nonnull Task<AuthResult> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "signInWithCredential:onComplete:success");
               promiseWithAuthResult(task.getResult(), promise);
@@ -840,7 +841,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           .signInWithCredential(phoneAuthCredential)
           .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+            public void onComplete(@Nonnull Task<AuthResult> task) {
               if (task.isSuccessful()) {
                 // onAuthStateChanged will pick up the user change
                 Log.d(
@@ -955,7 +956,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .signInWithCredential(credential)
       .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
         @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
+        public void onComplete(@Nonnull Task<AuthResult> task) {
           if (task.isSuccessful()) {
             Log.d(
               TAG,
@@ -1134,7 +1135,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .confirmPasswordReset(code, newPassword)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "confirmPasswordReset:onComplete:success");
             promiseNoUser(promise, false);
@@ -1164,7 +1165,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .applyActionCode(code)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "applyActionCode:onComplete:success");
             promiseNoUser(promise, false);
@@ -1192,7 +1193,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .checkActionCode(code)
       .addOnCompleteListener(new OnCompleteListener<ActionCodeResult>() {
         @Override
-        public void onComplete(@NonNull Task<ActionCodeResult> task) {
+        public void onComplete(@Nonnull Task<ActionCodeResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "checkActionCode:onComplete:success");
             ActionCodeResult result = task.getResult();
@@ -1272,7 +1273,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           .linkWithCredential(credential)
           .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+            public void onComplete(@Nonnull Task<AuthResult> task) {
               if (task.isSuccessful()) {
                 Log.d(TAG, "link:onComplete:success");
                 promiseWithAuthResult(task.getResult(), promise);
@@ -1301,7 +1302,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         .unlink(providerId)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
           @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
+          public void onComplete(@Nonnull Task<AuthResult> task) {
             if (task.isSuccessful()) {
               Log.d(TAG, "unlink:onComplete:success");
               promiseWithUser(task
@@ -1346,7 +1347,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
           .reauthenticateAndRetrieveData(credential)
           .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+            public void onComplete(@Nonnull Task<AuthResult> task) {
               if (task.isSuccessful()) {
                 Log.d(TAG, "reauthenticate:onComplete:success");
                 promiseWithAuthResult(task.getResult(), promise);
@@ -1445,7 +1446,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .getIdToken(forceRefresh)
       .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
         @Override
-        public void onComplete(@NonNull Task<GetTokenResult> task) {
+        public void onComplete(@Nonnull Task<GetTokenResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "getIdToken:onComplete:success");
             GetTokenResult tokenResult = task.getResult();
@@ -1483,7 +1484,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .getIdToken(forceRefresh)
       .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
         @Override
-        public void onComplete(@NonNull Task<GetTokenResult> task) {
+        public void onComplete(@Nonnull Task<GetTokenResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "getIdTokenResult:onComplete:success");
             GetTokenResult tokenResult = task.getResult();
@@ -1554,7 +1555,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .fetchSignInMethodsForEmail(email)
       .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
         @Override
-        public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+        public void onComplete(@Nonnull Task<SignInMethodQueryResult> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
             List<String> providers = task
@@ -1616,7 +1617,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
       .verifyPasswordResetCode(code)
       .addOnCompleteListener(new OnCompleteListener<String>() {
         @Override
-        public void onComplete(@NonNull Task<String> task) {
+        public void onComplete(@Nonnull Task<String> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "verifyPasswordResetCode:onComplete:success");
             promise.resolve(task.getResult());

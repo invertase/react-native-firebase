@@ -2,8 +2,6 @@ package io.invertase.firebase.database;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -23,6 +21,9 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import io.invertase.firebase.Utils;
 
@@ -151,12 +152,12 @@ class RNFirebaseDatabaseReference {
 
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+      public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
         asyncTask.execute(dataSnapshot, null);
       }
 
       @Override
-      public void onCancelled(@NonNull DatabaseError error) {
+      public void onCancelled(@Nonnull DatabaseError error) {
         RNFirebaseDatabase.handlePromise(promise, error);
       }
     };
@@ -174,7 +175,7 @@ class RNFirebaseDatabaseReference {
   private void addChildOnceEventListener(final String eventName, final Promise promise) {
     ChildEventListener childEventListener = new ChildEventListener() {
       @Override
-      public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -183,7 +184,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -192,7 +193,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+      public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, null);
@@ -201,7 +202,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+      public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventName)) {
           query.removeEventListener(this);
           WritableMap data = RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
@@ -210,7 +211,7 @@ class RNFirebaseDatabaseReference {
       }
 
       @Override
-      public void onCancelled(@NonNull DatabaseError error) {
+      public void onCancelled(@Nonnull DatabaseError error) {
         query.removeEventListener(this);
         RNFirebaseDatabase.handlePromise(promise, error);
       }
@@ -259,35 +260,35 @@ class RNFirebaseDatabaseReference {
     if (!hasEventListener(eventRegistrationKey)) {
       ChildEventListener childEventListener = new ChildEventListener() {
         @Override
-        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_added".equals(eventType)) {
             handleDatabaseEvent("child_added", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_changed".equals(eventType)) {
             handleDatabaseEvent("child_changed", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
           if ("child_removed".equals(eventType)) {
             handleDatabaseEvent("child_removed", registration, dataSnapshot, null);
           }
         }
 
         @Override
-        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String previousChildName) {
+        public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_moved".equals(eventType)) {
             handleDatabaseEvent("child_moved", registration, dataSnapshot, previousChildName);
           }
         }
 
         @Override
-        public void onCancelled(@NonNull DatabaseError error) {
+        public void onCancelled(@Nonnull DatabaseError error) {
           removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }
@@ -308,12 +309,12 @@ class RNFirebaseDatabaseReference {
     if (!hasEventListener(eventRegistrationKey)) {
       ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
           handleDatabaseEvent("value", registration, dataSnapshot, null);
         }
 
         @Override
-        public void onCancelled(@NonNull DatabaseError error) {
+        public void onCancelled(@Nonnull DatabaseError error) {
           removeEventListener(eventRegistrationKey);
           handleDatabaseError(registration, error);
         }

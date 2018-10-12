@@ -1,7 +1,6 @@
 package io.invertase.firebase.analytics;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -11,12 +10,14 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import javax.annotation.Nullable;
+
 
 public class RNFirebaseAnalytics extends ReactContextBaseJavaModule {
 
   private static final String TAG = "RNFirebaseAnalytics";
 
-  public RNFirebaseAnalytics(ReactApplicationContext reactContext) {
+  RNFirebaseAnalytics(ReactApplicationContext reactContext) {
     super(reactContext);
     Log.d(TAG, "New instance");
   }

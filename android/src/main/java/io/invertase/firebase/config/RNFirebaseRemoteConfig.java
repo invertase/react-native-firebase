@@ -1,6 +1,5 @@
 package io.invertase.firebase.config;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -22,6 +21,8 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
@@ -142,7 +143,7 @@ class RNFirebaseRemoteConfig extends ReactContextBaseJavaModule {
       .fetch(withExpiration ? expirationDuration : 43200) // 12 hours default
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             promise.resolve(null);
           } else {
