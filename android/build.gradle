@@ -7,7 +7,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.1.2'
+    classpath 'com.android.tools.build:gradle:3.2.0'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
 }
@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'com.android.library'
 
 def DEFAULT_COMPILE_SDK_VERSION = 27
-def DEFAULT_BUILD_TOOLS_VERSION = "27.0.3"
+def DEFAULT_BUILD_TOOLS_VERSION = "28.0.2"
 def DEFAULT_TARGET_SDK_VERSION = 26
 def DEFAULT_SUPPORT_LIB_VERSION = "27.1.1"
 
@@ -83,37 +83,99 @@ rootProject.gradle.buildFinished { buildResult ->
 repositories {
   google()
   jcenter()
-  maven {
-      url "$rootDir/../node_modules/react-native/android"
-      name 'React Native (local)'
+
+  def found = false
+  def parentDir = rootProject.projectDir
+  def reactNativeAndroidName = 'React Native (Node Modules)'
+
+  1.upto(4, {
+    if (found) return true
+    parentDir = parentDir.parentFile
+    def reactNativeAndroid = new File(
+      parentDir,
+      'node_modules/react-native/android'
+    )
+
+    if (reactNativeAndroid.exists()) {
+      maven {
+        url reactNativeAndroid.toString()
+        name reactNativeAndroidName
+      }
+
+      println "${project.name}: using React Native sources from ${reactNativeAndroid.toString()}"
+      found = true
+    }
+  })
+
+  if (!found) {
+    throw new GradleException(
+      "${project.name}: unable to locate React Native Android sources, " +
+        "ensure you have you installed React Native as a dependency and try again."
+    )
   }
 }
 
 def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
 
 dependencies {
-  // compile fileTree(include: ['*.jar'], dir: 'libs')
-  api "com.facebook.react:react-native:+"  // From node_modules
-  api "com.android.support:support-v4:$supportVersion"
+  //noinspection GradleDynamicVersion
+  api "com.facebook.react:react-native:+"
 
-  // Firebase SDKs
-  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
+  /* ----------------------------
+   *    REACT NATIVE FIREBASE
+   * ---------------------------- */
+
+  // Required dependencies
+  //noinspection GradleCompatible
+  compileOnly "com.google.firebase:firebase-core:16.0.4"
+  compileOnly "com.google.android.gms:play-services-base:16.0.1"
+
+  /* -------------------------
+   *   OPTIONAL FIREBASE SDKS
+   * ------------------------- */
+
+  // Ads
+  compileOnly('com.google.firebase:firebase-ads:15.0.1') {
+    // exclude `customtabs` as the support lib version is out of date
+    // we manually add it as a dependency below with a custom version
+    exclude group: 'com.android.support', module: 'customtabs'
+  }
+  // Authentication
+  compileOnly "com.google.firebase:firebase-auth:16.0.4"
+  // Analytics
+  compileOnly "com.google.firebase:firebase-analytics:16.0.4"
+  // Performance Monitoring
+  compileOnly "com.google.firebase:firebase-perf:16.1.2"
+  // Remote Config
+  compileOnly "com.google.firebase:firebase-config:16.0.1"
+  // Cloud Storage
+  compileOnly "com.google.firebase:firebase-storage:16.0.3"
+  // Invites
+  compileOnly "com.google.firebase:firebase-invites:16.0.4"
+  // Dynamic Links
+  compileOnly "com.google.firebase:firebase-dynamic-links:16.1.2"
+  // Real-time Database
+  compileOnly "com.google.firebase:firebase-database:16.0.3"
+  // Cloud Functions
+  compileOnly "com.google.firebase:firebase-functions:16.1.1"
+  // Cloud Firestore
+  compileOnly "com.google.firebase:firebase-firestore:17.1.1"
+  // Cloud Messaging / FCM
+  compileOnly "com.google.firebase:firebase-messaging:17.3.3"
+  // Crashlytics
+  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
     transitive = true
   }
+  /* --------------------------------
+   *  OPTIONAL SUPPORT LIBS
+   * -------------------------------- */
 
-  //noinspection GradleCompatible
-  compileOnly "com.google.firebase:firebase-core:16.0.3"
-  compileOnly "com.google.android.gms:play-services-base:15.0.1"
-  compileOnly "com.google.firebase:firebase-ads:15.0.1"
-  compileOnly "com.google.firebase:firebase-auth:16.0.3"
-  compileOnly "com.google.firebase:firebase-config:16.0.0"
-  compileOnly "com.google.firebase:firebase-crash:16.2.0"
-  compileOnly "com.google.firebase:firebase-database:16.0.2"
-  compileOnly "com.google.firebase:firebase-firestore:17.1.0"
-  compileOnly "com.google.firebase:firebase-functions:16.1.0"
-  compileOnly "com.google.firebase:firebase-invites:16.0.3"
-  compileOnly "com.google.firebase:firebase-storage:16.0.2"
-  compileOnly "com.google.firebase:firebase-messaging:17.3.2"
-  compileOnly "com.google.firebase:firebase-perf:16.1.0"
+  // For Firebase Ads
+  compileOnly "com.android.support:customtabs:$supportVersion"
+
+  // For React Native Firebase Notifications
+  api "com.android.support:support-v4:$supportVersion"
+
+  // For React Native Firebase Notifications
   compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
 }
