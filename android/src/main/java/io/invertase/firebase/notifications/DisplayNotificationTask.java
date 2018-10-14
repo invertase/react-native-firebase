@@ -79,10 +79,11 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       String notificationId = notification.getString("notificationId");
 
       NotificationCompat.Builder nb;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
         String channelId = android.getString("channelId");
         nb = new NotificationCompat.Builder(context, channelId);
-      } else {
+      } catch (Throwable t) {
+        // thrown if v4 android support library < 26
         nb = new NotificationCompat.Builder(context);
       }
 
@@ -114,10 +115,13 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setAutoCancel(android.getBoolean("autoCancel"));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        if (android.containsKey("badgeIconType")) {
-          Double badgeIconType = android.getDouble("badgeIconType");
+      if (android.containsKey("badgeIconType") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Double badgeIconType = android.getDouble("badgeIconType");
+        try {
           nb = nb.setBadgeIconType(badgeIconType.intValue());
+        } catch (Throwable t) {
+          // thrown if v4 android support library < 26
+          // do nothing
         }
       }
 
@@ -171,9 +175,12 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setColor(Color.parseColor(color));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        if (android.containsKey("colorized")) {
+      if (android.containsKey("colorized") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        try {
           nb = nb.setColorized(android.getBoolean("colorized"));
+        } catch (Throwable t) {
+          // thrown if v4 android support library < 26
+          // do nothing
         }
       }
 
@@ -201,22 +208,27 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         nb = nb.setGroup(android.getString("group"));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        if (android.containsKey("groupAlertBehaviour")) {
-          Double groupAlertBehaviour = android.getDouble("groupAlertBehaviour");
+      if (android.containsKey("groupAlertBehaviour") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Double groupAlertBehaviour = android.getDouble("groupAlertBehaviour");
+        try {
           nb = nb.setGroupAlertBehavior(groupAlertBehaviour.intValue());
+        } catch (Throwable t) {
+          // thrown if v4 android support library < 26
+          // do nothing
         }
       }
 
       if (android.containsKey("groupSummary")) {
         nb = nb.setGroupSummary(android.getBoolean("groupSummary"));
       }
+
       if (android.containsKey("largeIcon")) {
         Bitmap largeIcon = getBitmap(android.getString("largeIcon"));
         if (largeIcon != null) {
           nb = nb.setLargeIcon(largeIcon);
         }
       }
+
       if (android.containsKey("lights")) {
         Bundle lights = android.getBundle("lights");
         Double argb = lights.getDouble("argb");
@@ -224,6 +236,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         Double offMs = lights.getDouble("offMs");
         nb = nb.setLights(argb.intValue(), onMs.intValue(), offMs.intValue());
       }
+
       if (android.containsKey("localOnly")) {
         nb = nb.setLocalOnly(android.getBoolean("localOnly"));
       }
@@ -232,12 +245,15 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
         Double number = android.getDouble("number");
         nb = nb.setNumber(number.intValue());
       }
+
       if (android.containsKey("ongoing")) {
         nb = nb.setOngoing(android.getBoolean("ongoing"));
       }
+
       if (android.containsKey("onlyAlertOnce")) {
         nb = nb.setOnlyAlertOnce(android.getBoolean("onlyAlertOnce"));
       }
+
       if (android.containsKey("people")) {
         List<String> people = android.getStringArrayList("people");
         if (people != null) {
@@ -246,10 +262,12 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
           }
         }
       }
+
       if (android.containsKey("priority")) {
         Double priority = android.getDouble("priority");
         nb = nb.setPriority(priority.intValue());
       }
+
       if (android.containsKey("progress")) {
         Bundle progress = android.getBundle("progress");
         Double max = progress.getDouble("max");
@@ -260,17 +278,22 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
           progress.getBoolean("indeterminate")
         );
       }
+
       // TODO: Public version of notification
       /* if (android.containsKey("publicVersion")) {
         nb = nb.setPublicVersion();
       } */
+
       if (android.containsKey("remoteInputHistory")) {
         nb = nb.setRemoteInputHistory(android.getStringArray("remoteInputHistory"));
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        if (android.containsKey("shortcutId")) {
+      if (android.containsKey("shortcutId") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        try {
           nb = nb.setShortcutId(android.getString("shortcutId"));
+        } catch (Throwable t) {
+          // thrown if v4 android support library < 26
+          // do nothing
         }
       }
 
@@ -471,6 +494,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   private RemoteInput createRemoteInput(Bundle remoteInput) {
     String resultKey = remoteInput.getString("resultKey");
     RemoteInput.Builder rb = new RemoteInput.Builder(resultKey);
+
     if (remoteInput.containsKey("allowedDataTypes")) {
       List<Bundle> allowedDataTypes = (List) remoteInput.getSerializable("allowedDataTypes");
       for (Bundle adt : allowedDataTypes) {
@@ -497,15 +521,17 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
   private Bitmap getBitmap(String image) {
     if (image.startsWith("http://") || image.startsWith("https://")) {
       return getBitmapFromUrl(image);
-    } else if (image.startsWith("file://")) {
-      return BitmapFactory.decodeFile(image.replace("file://", ""));
-    } else {
-      int largeIconResId = getIcon(image);
-      return BitmapFactory.decodeResource(
-        contextWeakReference.get().getResources(),
-        largeIconResId
-      );
     }
+
+    if (image.startsWith("file://")) {
+      return BitmapFactory.decodeFile(image.replace("file://", ""));
+    }
+
+    int largeIconResId = getIcon(image);
+    return BitmapFactory.decodeResource(
+      contextWeakReference.get().getResources(),
+      largeIconResId
+    );
   }
 
   private Bitmap getBitmapFromUrl(String imageUrl) {
