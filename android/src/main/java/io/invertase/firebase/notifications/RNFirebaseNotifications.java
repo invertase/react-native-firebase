@@ -43,7 +43,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   private RNFirebaseNotificationManager notificationManager;
 
-  public RNFirebaseNotifications(ReactApplicationContext context) {
+  RNFirebaseNotifications(ReactApplicationContext context) {
     super(context);
     context.addActivityEventListener(this);
 
@@ -153,25 +153,41 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   //////////////////////////////////////////////////////////////////////
   @ReactMethod
   public void createChannel(ReadableMap channelMap, Promise promise) {
-    notificationManager.createChannel(channelMap);
+    try {
+      notificationManager.createChannel(channelMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void createChannelGroup(ReadableMap channelGroupMap, Promise promise) {
-    notificationManager.createChannelGroup(channelGroupMap);
+    try {
+      notificationManager.createChannelGroup(channelGroupMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void createChannelGroups(ReadableArray channelGroupsArray, Promise promise) {
-    notificationManager.createChannelGroups(channelGroupsArray);
+    try {
+      notificationManager.createChannelGroups(channelGroupsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void createChannels(ReadableArray channelsArray, Promise promise) {
-    notificationManager.createChannels(channelsArray);
+    try {
+      notificationManager.createChannels(channelsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
@@ -190,7 +206,11 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   @ReactMethod
   public void deleteChannel(String channelId, Promise promise) {
-    notificationManager.deleteChannel(channelId);
+    try {
+      notificationManager.deleteChannel(channelId);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
   //////////////////////////////////////////////////////////////////////
