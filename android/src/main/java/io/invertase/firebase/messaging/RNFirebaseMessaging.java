@@ -28,7 +28,7 @@ import io.invertase.firebase.Utils;
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
 
-  public RNFirebaseMessaging(ReactApplicationContext context) {
+  RNFirebaseMessaging(ReactApplicationContext context) {
     super(context);
     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
 

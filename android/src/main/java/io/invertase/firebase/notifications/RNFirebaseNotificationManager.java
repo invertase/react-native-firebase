@@ -1,6 +1,5 @@
 package io.invertase.firebase.notifications;
 
-
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -37,8 +36,8 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.BundleJSONConverter;
 
-public class RNFirebaseNotificationManager {
-  public static final String SCHEDULED_NOTIFICATION_EVENT = "notifications-scheduled-notification";
+class RNFirebaseNotificationManager {
+  static final String SCHEDULED_NOTIFICATION_EVENT = "notifications-scheduled-notification";
   private static final String PREFERENCES_KEY = "RNFNotifications";
   private static final String TAG = "RNFNotificationManager";
   private AlarmManager alarmManager;
@@ -47,25 +46,25 @@ public class RNFirebaseNotificationManager {
   private NotificationManager notificationManager;
   private SharedPreferences preferences;
 
-  public RNFirebaseNotificationManager(ReactApplicationContext reactContext) {
+  RNFirebaseNotificationManager(ReactApplicationContext reactContext) {
     this(reactContext.getApplicationContext());
     this.reactContext = reactContext;
   }
 
-  public RNFirebaseNotificationManager(Context context) {
+  RNFirebaseNotificationManager(Context context) {
     this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     this.context = context;
     this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     this.preferences = context.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
   }
 
-  public static int getResourceId(Context context, String type, String image) {
+  static int getResourceId(Context context, String type, String image) {
     return context
       .getResources()
       .getIdentifier(image, type, context.getPackageName());
   }
 
-  public static Uri getSound(Context context, String sound) {
+  static Uri getSound(Context context, String sound) {
     if (sound == null) {
       return null;
     } else if (sound.contains("://")) {
@@ -81,17 +80,19 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public void cancelAllNotifications(Promise promise) {
+  void cancelAllNotifications(Promise promise) {
     try {
       Map<String, ?> notifications = preferences.getAll();
 
       for (String notificationId : notifications.keySet()) {
         cancelAlarm(notificationId);
       }
+
       preferences
         .edit()
         .clear()
         .apply();
+
       promise.resolve(null);
     } catch (SecurityException e) {
       // TODO: Identify what these situations are
@@ -105,7 +106,7 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public void cancelNotification(String notificationId, Promise promise) {
+  void cancelNotification(String notificationId, Promise promise) {
     try {
       cancelAlarm(notificationId);
       preferences
@@ -121,21 +122,21 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public void createChannel(ReadableMap channelMap) {
+  void createChannel(ReadableMap channelMap) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel channel = parseChannelMap(channelMap);
       notificationManager.createNotificationChannel(channel);
     }
   }
 
-  public void createChannelGroup(ReadableMap channelGroupMap) {
+  void createChannelGroup(ReadableMap channelGroupMap) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannelGroup channelGroup = parseChannelGroupMap(channelGroupMap);
       notificationManager.createNotificationChannelGroup(channelGroup);
     }
   }
 
-  public void createChannelGroups(ReadableArray channelGroupsArray) {
+  void createChannelGroups(ReadableArray channelGroupsArray) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       List<NotificationChannelGroup> channelGroups = new ArrayList<>();
       for (int i = 0; i < channelGroupsArray.size(); i++) {
@@ -146,7 +147,7 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public void createChannels(ReadableArray channelsArray) {
+  void createChannels(ReadableArray channelsArray) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       List<NotificationChannel> channels = new ArrayList<>();
       for (int i = 0; i < channelsArray.size(); i++) {
@@ -157,24 +158,24 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public void deleteChannelGroup(String groupId) {
+  void deleteChannelGroup(String groupId) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       notificationManager.deleteNotificationChannelGroup(groupId);
     }
   }
 
-  public void deleteChannel(String channelId) {
+  void deleteChannel(String channelId) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       notificationManager.deleteNotificationChannel(channelId);
     }
   }
 
-  public void displayNotification(ReadableMap notification, Promise promise) {
+  void displayNotification(ReadableMap notification, Promise promise) {
     Bundle notificationBundle = Arguments.toBundle(notification);
     displayNotification(notificationBundle, promise);
   }
 
-  public void displayScheduledNotification(Bundle notification) {
+  void displayScheduledNotification(Bundle notification) {
     // If this isn't a repeated notification, clear it from the scheduled notifications list
     if (!notification
       .getBundle("schedule")
@@ -190,7 +191,7 @@ public class RNFirebaseNotificationManager {
     }
 
     if (Utils.isAppInForeground(context)) {
-      // If the app is in the foregound, broadcast the notification to the RN Application
+      // If the app is in the foreground, broadcast the notification to the RN Application
       // It is up to the JS to decide whether to display the notification
       Intent scheduledNotificationEvent = new Intent(SCHEDULED_NOTIFICATION_EVENT);
       scheduledNotificationEvent.putExtra("notification", notification);
@@ -203,7 +204,7 @@ public class RNFirebaseNotificationManager {
     }
   }
 
-  public ArrayList<Bundle> getScheduledNotifications() {
+  ArrayList<Bundle> getScheduledNotifications() {
     ArrayList<Bundle> array = new ArrayList<>();
 
     Map<String, ?> notifications = preferences.getAll();
@@ -220,18 +221,23 @@ public class RNFirebaseNotificationManager {
     return array;
   }
 
-  public void removeAllDeliveredNotifications(Promise promise) {
+  void removeAllDeliveredNotifications(Promise promise) {
     notificationManager.cancelAll();
     promise.resolve(null);
   }
 
-  public void removeDeliveredNotification(String notificationId, Promise promise) {
+  void removeDeliveredNotification(String notificationId, Promise promise) {
     notificationManager.cancel(notificationId.hashCode());
     promise.resolve(null);
   }
 
-  public void removeDeliveredNotificationsByTag(String tag, Promise promise) {
-    StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
+  void removeDeliveredNotificationsByTag(String tag, Promise promise) {
+    StatusBarNotification[] statusBarNotifications = new StatusBarNotification[0];
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+      statusBarNotifications = notificationManager.getActiveNotifications();
+    }
+
     for (StatusBarNotification statusBarNotification : statusBarNotifications) {
       if (tag.equals(statusBarNotification.getTag())) {
         notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
@@ -240,14 +246,14 @@ public class RNFirebaseNotificationManager {
     promise.resolve(null);
   }
 
-  public void rescheduleNotifications() {
+  void rescheduleNotifications() {
     ArrayList<Bundle> bundles = getScheduledNotifications();
     for (Bundle bundle : bundles) {
       scheduleNotification(bundle, null);
     }
   }
 
-  public void scheduleNotification(ReadableMap notification, Promise promise) {
+  void scheduleNotification(ReadableMap notification, Promise promise) {
     Bundle notificationBundle = Arguments.toBundle(notification);
 
     scheduleNotification(notificationBundle, promise);
@@ -357,7 +363,7 @@ public class RNFirebaseNotificationManager {
 
     // fireDate may be stored in the Bundle as 2 different types that we need to handle:
     // 1. Double - when a call comes directly from React
-    // 2. Long   - when notifications are rescheduled from boot service (Bundle is loaded from prefences).
+    // 2. Long   - when notifications are rescheduled from boot service (Bundle is loaded from preferences).
     // At the end we need Long value (timestamp) for the scheduler
     Long fireDate = -1L;
     Object fireDateObject = schedule.get("fireDate");
