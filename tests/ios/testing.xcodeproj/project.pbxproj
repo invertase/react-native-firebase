@@ -20,11 +20,11 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		1492F08F5C89A4584B268327 /* libPods-testing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0FA6DCFB9C6221BE4EF74A8 /* libPods-testing.a */; };
 		271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */; };
 		46EE18632047465300FAAB0E /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 46EE18602047463E00FAAB0E /* libRCTAnimation.a */; };
 		5A11192C255B4F608BFBD79F /* libJet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA941BEDD3364F60AC158950 /* libJet.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		9A9C8DD2F99538A5CBDE81CE /* libPods-testing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 192F58E8DACEAD066404F67A /* libPods-testing.a */; };
 		AF4FD9113A25433387C08427 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C209A3AD2122409BBE1C6A58 /* libRCTActionSheet.a */; };
 /* End PBXBuildFile section */
 
@@ -314,7 +314,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = testing/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = testing/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		192F58E8DACEAD066404F67A /* libPods-testing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-testing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27034D93212869A1004B697E /* testing.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = testing.entitlements; path = testing/testing.entitlements; sourceTree = "<group>"; };
 		271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		271CB2D6206B12E600EBADF4 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNFirebase.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -326,6 +325,7 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		A04EE4A34A2C40819812AF63 /* Jet.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = Jet.xcodeproj; path = ../node_modules/jet/ios/Jet.xcodeproj; sourceTree = "<group>"; };
 		AA941BEDD3364F60AC158950 /* libJet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libJet.a; sourceTree = "<group>"; };
+		B0FA6DCFB9C6221BE4EF74A8 /* libPods-testing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-testing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C209A3AD2122409BBE1C6A58 /* libRCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTActionSheet.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -347,7 +347,7 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				5A11192C255B4F608BFBD79F /* libJet.a in Frameworks */,
 				AF4FD9113A25433387C08427 /* libRCTActionSheet.a in Frameworks */,
-				9A9C8DD2F99538A5CBDE81CE /* libPods-testing.a in Frameworks */,
+				1492F08F5C89A4584B268327 /* libPods-testing.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,7 +578,7 @@
 			isa = PBXGroup;
 			children = (
 				271CB2D6206B12E600EBADF4 /* libRNFirebase.a */,
-				192F58E8DACEAD066404F67A /* libPods-testing.a */,
+				B0FA6DCFB9C6221BE4EF74A8 /* libPods-testing.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
