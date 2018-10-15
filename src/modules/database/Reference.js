@@ -504,6 +504,14 @@ export default class Reference extends ReferenceBase {
   }
 
   /**
+   * Return a JSON-serializable representation of this object.
+   * @returns {string}
+   */
+  toJSON(): string {
+    return this.toString();
+  }
+
+  /**
    * Returns whether another Reference represent the same location and are from the
    * same instance of firebase.app.App - multiple firebase apps not currently supported.
    * @param {Reference} otherRef - Other reference to compare to this one
