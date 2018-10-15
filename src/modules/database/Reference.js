@@ -21,7 +21,7 @@ import {
 
 import SyncTree from '../../utils/SyncTree';
 
-import type Database from '.';
+import type Database from './';
 import type { DatabaseModifier, FirebaseError } from '../../types';
 
 // track all event registrations by path

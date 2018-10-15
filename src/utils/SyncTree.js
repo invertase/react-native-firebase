@@ -6,7 +6,7 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 import { SharedEventEmitter } from './events';
 import DataSnapshot from '../modules/database/DataSnapshot';
 import DatabaseReference from '../modules/database/Reference';
-import { isString, nativeToJSError } from '.';
+import { isString, nativeToJSError } from './';
 
 type Listener = DataSnapshot => any;
 

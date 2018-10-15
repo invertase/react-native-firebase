@@ -5,7 +5,7 @@
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 import { getNativeModule } from '../../utils/native';
 import Transaction from './Transaction';
-import type Firestore from '.';
+import type Firestore from './';
 
 let transactionId = 0;
 

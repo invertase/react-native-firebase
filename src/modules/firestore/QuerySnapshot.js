@@ -5,7 +5,7 @@
 import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   NativeDocumentChange,
   NativeDocumentSnapshot,

@@ -11,7 +11,7 @@ import { buildNativeArray, buildTypeMap } from './utils/serialize';
 import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type Path from './Path';
 import type {
   MetadataChanges,

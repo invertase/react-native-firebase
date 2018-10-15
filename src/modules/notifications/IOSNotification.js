@@ -3,7 +3,7 @@
  * IOSNotification representation wrapper
  */
 import type Notification from './Notification';
-import type Notifications from '.';
+import type Notifications from './';
 import { type BackgroundFetchResultValue } from './IOSNotifications';
 import type {
   IOSAttachment,
