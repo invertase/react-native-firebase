@@ -232,17 +232,15 @@ class RNFirebaseNotificationManager {
   }
 
   void removeDeliveredNotificationsByTag(String tag, Promise promise) {
-    StatusBarNotification[] statusBarNotifications = new StatusBarNotification[0];
-
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-      statusBarNotifications = notificationManager.getActiveNotifications();
-    }
-
-    for (StatusBarNotification statusBarNotification : statusBarNotifications) {
-      if (tag.equals(statusBarNotification.getTag())) {
-        notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+      StatusBarNotification[] statusBarNotifications = notificationManager.getActiveNotifications();
+      for (StatusBarNotification statusBarNotification : statusBarNotifications) {
+        if (tag.equals(statusBarNotification.getTag())) {
+          notificationManager.cancel(statusBarNotification.getTag(), statusBarNotification.getId());
+        }
       }
     }
+
     promise.resolve(null);
   }
 
