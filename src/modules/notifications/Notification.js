@@ -8,7 +8,7 @@ import IOSNotification from './IOSNotification';
 import { generatePushID, isObject } from '../../utils';
 
 import type { NativeNotification } from './types';
-import type Notifications from '.';
+import type Notifications from './';
 
 export type NotificationOpen = {|
   action: string,

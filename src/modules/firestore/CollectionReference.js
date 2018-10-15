@@ -6,7 +6,7 @@ import Query from './Query';
 import DocumentReference from './DocumentReference';
 import { firestoreAutoId } from '../../utils';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   GetOptions,
   MetadataChanges,

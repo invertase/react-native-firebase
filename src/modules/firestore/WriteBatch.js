@@ -7,7 +7,7 @@ import { buildNativeMap } from './utils/serialize';
 import { getNativeModule } from '../../utils/native';
 
 import type DocumentReference from './DocumentReference';
-import type Firestore from '.';
+import type Firestore from './';
 import type { SetOptions } from './firestoreTypes.flow';
 
 type DocumentWrite = {

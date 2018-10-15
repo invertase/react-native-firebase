@@ -4,7 +4,7 @@
 import { NativeModules } from 'react-native';
 import App from '../modules/core/app';
 import INTERNALS from './internals';
-import { isAndroid, isObject, isString } from '.';
+import { isAndroid, isObject, isString } from './';
 
 import type {
   FirebaseModule,

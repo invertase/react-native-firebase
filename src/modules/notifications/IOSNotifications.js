@@ -1,6 +1,6 @@
 import { getNativeModule } from '../../utils/native';
 
-import type Notifications from '.';
+import type Notifications from './';
 
 export type BackgroundFetchResultValue = string;
 type BackgroundFetchResult = {

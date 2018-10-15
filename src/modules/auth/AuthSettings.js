@@ -1,7 +1,7 @@
 import { getNativeModule } from '../../utils/native';
 import { isAndroid, isIOS } from '../../utils';
 
-import type Auth from '.';
+import type Auth from './';
 
 /**
  * Interface representing an Auth instance's settings, currently used

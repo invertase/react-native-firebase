@@ -8,7 +8,7 @@ import Path from './Path';
 import { isObject, deepGet } from '../../utils';
 import { parseNativeMap } from './utils/serialize';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   NativeDocumentSnapshot,
   SnapshotMetadata,
@@ -67,6 +67,6 @@ export default class DocumentSnapshot {
       return extractFieldPathData(this._data, fieldPath._segments);
     }
 
-    return deepGet(this._data, fieldPath, '.');
+    return deepGet(this._data, fieldPath, './');
   };
 }

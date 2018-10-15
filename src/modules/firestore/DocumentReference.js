@@ -11,7 +11,7 @@ import { getNativeModule } from '../../utils/native';
 import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   GetOptions,
   MetadataChanges,
