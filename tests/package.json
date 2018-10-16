@@ -20,15 +20,15 @@
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
-    "detox": "^9.0.1",
+    "detox": "^9.0.4",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
     "jet": "^0.1.0",
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "^16.5.0",
-    "react-native": "^0.57.0",
+    "react": "16.5.1",
+    "react-native": "0.57.1",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
@@ -85,7 +85,7 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus",
+        "name": "iPhone X",
         "logLevel": "error"
       },
       "android.emu.debug": {
@@ -98,7 +98,7 @@
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
         "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus"
+        "name": "iPhone X"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
