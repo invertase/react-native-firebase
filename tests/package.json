@@ -85,7 +85,7 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus",
+        "name": "iPhone X",
         "logLevel": "error"
       },
       "android.emu.debug": {
@@ -98,7 +98,7 @@
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
         "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus"
+        "name": "iPhone X"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
