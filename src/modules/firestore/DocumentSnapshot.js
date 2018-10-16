@@ -67,6 +67,6 @@ export default class DocumentSnapshot {
       return extractFieldPathData(this._data, fieldPath._segments);
     }
 
-    return deepGet(this._data, fieldPath, './');
+    return deepGet(this._data, fieldPath, '.');
   };
 }

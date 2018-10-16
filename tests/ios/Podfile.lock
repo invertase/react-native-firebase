@@ -5,9 +5,9 @@ PODS:
   - BoringSSL/Implementation (10.0.6):
     - BoringSSL/Interface (= 10.0.6)
   - BoringSSL/Interface (10.0.6)
-  - Crashlytics (3.10.7):
-    - Fabric (~> 1.7.11)
-  - Fabric (1.7.11)
+  - Crashlytics (3.10.9):
+    - Fabric (~> 1.7.13)
+  - Fabric (1.7.13)
   - Firebase/AdMob (5.10.0):
     - Firebase/Core
     - Google-Mobile-Ads-SDK (~> 7.34)
@@ -239,25 +239,25 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - Protobuf (3.6.1)
-  - React (0.57.0):
-    - React/Core (= 0.57.0)
-  - React/Core (0.57.0):
-    - yoga (= 0.57.0.React)
-  - React/fishhook (0.57.0)
-  - React/RCTBlob (0.57.0):
+  - React (0.57.1):
+    - React/Core (= 0.57.1)
+  - React/Core (0.57.1):
+    - yoga (= 0.57.1.React)
+  - React/fishhook (0.57.1)
+  - React/RCTBlob (0.57.1):
     - React/Core
-  - React/RCTNetwork (0.57.0):
+  - React/RCTNetwork (0.57.1):
     - React/Core
-  - React/RCTText (0.57.0):
+  - React/RCTText (0.57.1):
     - React/Core
-  - React/RCTWebSocket (0.57.0):
+  - React/RCTWebSocket (0.57.1):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFirebase (5.0.0):
     - Firebase/Core
     - React
-  - yoga (0.57.0.React)
+  - yoga (0.57.1.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)
@@ -331,8 +331,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BoringSSL: e10f92a27043805c01071fe815a5cd98ae8212e7
-  Crashlytics: ccaac42660eb9351b9960c0d66106b0bcf99f4fa
-  Fabric: f233c9492b3bbc1f04e3882986740f7988a58edb
+  Crashlytics: 55e24fc23989680285a21cb1146578d9d18e432c
+  Fabric: 25d0963b691fc97be566392243ff0ecef5a68338
   Firebase: 6691d47562a780c26281ce8464518faafc90c610
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: 831f1f127f4a75698e9875a87bf7e2668730d953

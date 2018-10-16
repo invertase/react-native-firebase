@@ -55,6 +55,7 @@ export default class Notification {
       this,
       nativeNotification && nativeNotification.android
     );
+
     this._ios = new IOSNotification(
       this,
       notifications,
