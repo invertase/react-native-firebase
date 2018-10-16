@@ -125,7 +125,6 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
                 eventMap[@"appName"] = appDisplayName;
                 [RNFirebaseUtil sendJSEvent:self name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
             });
-
         }
 
         // wait for the js event handler to call transactionApplyBuffer
@@ -136,6 +135,10 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
         
         @synchronized (transactionState) {
             aborted = [transactionState valueForKey:@"abort"];
+            
+            if (transactionState[@"semaphore"] != semaphore) {
+                return nil;
+            }
 
             if (aborted == YES) {
                 *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeAborted userInfo:@{}];
@@ -148,10 +151,6 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
             }
             
             if (completed == YES) {
-                return nil;
-            }
-            
-            if (transactionState[@"semaphore"] != semaphore) {
                 return nil;
             }
 
@@ -182,6 +181,7 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
         }
     } completion:^(id result, NSError *error) {
         if (completed == YES) return;
+        completed = YES;
         
         @synchronized (transactionState) {
             if (aborted == NO) {
@@ -202,7 +202,6 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
             [self->_transactions removeObjectForKey:[transactionId stringValue]];
         }
         
-        completed = YES;
     }];
 }
 
