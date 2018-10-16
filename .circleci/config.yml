@@ -163,9 +163,9 @@ jobs:
     - attach_workspace:
         at: ~/react-native-firebase
     - run:
-        name: Start iPhone 7 Plus simulator (background)
+        name: Start iPhone X simulator (background)
         background: true
-        command: xcrun simctl boot "iPhone 7 Plus" || true
+        command: xcrun simctl boot "iPhone X" || true
     - run:
         name: Configure Environment Variables
         command: |
