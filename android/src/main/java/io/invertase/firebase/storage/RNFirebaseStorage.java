@@ -564,29 +564,20 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       taskSnapshot
         .getStorage()
         .getDownloadUrl()
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@Nonnull Exception e) {
+            int errorCode = ((StorageException) e).getErrorCode();
+            if (errorCode == StorageException.ERROR_NOT_AUTHORIZED) {
+              WritableMap resp = getRespAsMap(taskSnapshot, null);
+              listener.onSuccess(resp);
+            }
+          }
+        })
         .addOnSuccessListener(new OnSuccessListener<Uri>() {
           @Override
           public void onSuccess(Uri downloadUrl) {
-            WritableMap resp = Arguments.createMap();
-
-            resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-            resp.putString("downloadURL", downloadUrl.toString());
-
-            StorageMetadata d = taskSnapshot.getMetadata();
-            if (d != null) {
-              WritableMap metadata = getMetadataAsMap(d);
-              resp.putMap("metadata", metadata);
-            }
-
-            resp.putString(
-              "ref",
-              taskSnapshot
-                .getStorage()
-                .getPath()
-            );
-            resp.putString("state", RNFirebaseStorage.this.getTaskStatus(taskSnapshot.getTask()));
-            resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
-
+            WritableMap resp = getRespAsMap(taskSnapshot, downloadUrl.toString());
             listener.onSuccess(resp);
           }
         });
@@ -595,6 +586,29 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     }
   }
 
+
+  private WritableMap getRespAsMap(final UploadTask.TaskSnapshot taskSnapshot, final String downloadUrl) {
+    WritableMap resp = Arguments.createMap();
+
+    resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
+    resp.putString("downloadURL", downloadUrl);
+
+    StorageMetadata d = taskSnapshot.getMetadata();
+    if (d != null) {
+      WritableMap metadata = getMetadataAsMap(d);
+      resp.putMap("metadata", metadata);
+    }
+
+    resp.putString(
+      "ref",
+      taskSnapshot
+        .getStorage()
+        .getPath()
+    );
+    resp.putString("state", RNFirebaseStorage.this.getTaskStatus(taskSnapshot.getTask()));
+    resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
+    return resp;
+  }
   /**
    * Converts storageMetadata into a map
    *
