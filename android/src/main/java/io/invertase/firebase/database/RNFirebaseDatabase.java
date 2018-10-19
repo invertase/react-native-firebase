@@ -424,6 +424,10 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
               return Transaction.abort();
             }
 
+            if (transactionHandler.timeout) {
+              return Transaction.abort();
+            }
+
             mutableData.setValue(transactionHandler.value);
             return Transaction.success(mutableData);
           }
