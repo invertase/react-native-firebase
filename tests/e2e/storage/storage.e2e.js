@@ -112,9 +112,9 @@ describe('storage()', () => {
       it('uploads a file without read permission', async () => {
         const uploadTaskSnapshot = await firebase
           .storage()
-          .ref('/ok.jpeg')
+          .ref('/writeOnly.jpeg')
           .putFile(
-            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/notRead.jpeg`
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`
           );
 
         uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
@@ -122,7 +122,7 @@ describe('storage()', () => {
           uploadTaskSnapshot.totalBytes
         );
         uploadTaskSnapshot.metadata.should.be.an.Object();
-        uploadTaskSnapshot.downloadURL.should.be.null();
+        should.not.exist(uploadTaskSnapshot.downloadURL);
       });
     });
 
