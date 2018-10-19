@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,6 @@ class RNFirebaseDatabaseReference {
   private Query query;
   private String appName;
   private String dbURL;
-  private ReactContext reactContext;
   private HashMap<String, ChildEventListener> childEventListeners = new HashMap<>();
   private HashMap<String, ValueEventListener> valueEventListeners = new HashMap<>();
 
@@ -41,14 +41,12 @@ class RNFirebaseDatabaseReference {
    * RNFirebase wrapper around FirebaseDatabaseReference,
    * handles Query generation and event listeners.
    *
-   * @param context
    * @param app
    * @param refKey
    * @param refPath
    * @param modifiersArray
    */
   RNFirebaseDatabaseReference(
-    ReactContext context,
     String app,
     String url,
     String refKey,
@@ -59,9 +57,31 @@ class RNFirebaseDatabaseReference {
     query = null;
     appName = app;
     dbURL = url;
-    reactContext = context;
     buildDatabaseQueryAtPathAndModifiers(refPath, modifiersArray);
   }
+
+  void removeAllEventListeners() {
+    if (hasListeners()) {
+      Iterator valueIterator = valueEventListeners.entrySet().iterator();
+
+      while (valueIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) valueIterator.next();
+        ValueEventListener valueEventListener = (ValueEventListener) pair.getValue();
+        query.removeEventListener(valueEventListener);
+        valueIterator.remove();
+      }
+
+      Iterator childIterator = childEventListeners.entrySet().iterator();
+
+      while (childIterator.hasNext()) {
+        Map.Entry pair = (Map.Entry) childIterator.next();
+        ChildEventListener childEventListener = (ChildEventListener) pair.getValue();
+        query.removeEventListener(childEventListener);
+        childIterator.remove();
+      }
+    }
+  }
+
 
   /**
    * Used outside of class for keepSynced etc.
@@ -141,7 +161,6 @@ class RNFirebaseDatabaseReference {
    */
   private void addOnceValueEventListener(final Promise promise) {
     @SuppressLint("StaticFieldLeak") final DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(
-      reactContext,
       this
     ) {
       @Override
@@ -338,7 +357,7 @@ class RNFirebaseDatabaseReference {
     @Nullable String previousChildName
   ) {
     @SuppressLint("StaticFieldLeak")
-    DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(reactContext, this) {
+    DataSnapshotToMapAsyncTask asyncTask = new DataSnapshotToMapAsyncTask(this) {
       @Override
       protected void onPostExecute(WritableMap data) {
         if (this.isAvailable()) {
@@ -347,7 +366,11 @@ class RNFirebaseDatabaseReference {
           event.putString("key", key);
           event.putString("eventType", eventType);
           event.putMap("registration", Utils.readableMapToWritableMap(registration));
-          Utils.sendEvent(reactContext, "database_sync_event", event);
+          Utils.sendEvent(
+            RNFirebaseDatabase.getReactApplicationContextInstance(),
+            "database_sync_event",
+            event
+          );
         }
       }
     };
@@ -367,7 +390,11 @@ class RNFirebaseDatabaseReference {
     event.putMap("error", RNFirebaseDatabase.getJSError(error));
     event.putMap("registration", Utils.readableMapToWritableMap(registration));
 
-    Utils.sendEvent(reactContext, "database_sync_event", event);
+    Utils.sendEvent(
+      RNFirebaseDatabase.getReactApplicationContextInstance(),
+      "database_sync_event",
+      event
+    );
   }
 
   /**
@@ -554,13 +581,10 @@ class RNFirebaseDatabaseReference {
    * Introduced due to https://github.com/invertase/react-native-firebase/issues/1284
    */
   private static class DataSnapshotToMapAsyncTask extends AsyncTask<Object, Void, WritableMap> {
-
-    private WeakReference<ReactContext> reactContextWeakReference;
     private WeakReference<RNFirebaseDatabaseReference> referenceWeakReference;
 
-    DataSnapshotToMapAsyncTask(ReactContext context, RNFirebaseDatabaseReference reference) {
+    DataSnapshotToMapAsyncTask(RNFirebaseDatabaseReference reference) {
       referenceWeakReference = new WeakReference<>(reference);
-      reactContextWeakReference = new WeakReference<>(context);
     }
 
     @Override
@@ -572,8 +596,7 @@ class RNFirebaseDatabaseReference {
         return RNFirebaseDatabaseUtils.snapshotToMap(dataSnapshot, previousChildName);
       } catch (RuntimeException e) {
         if (isAvailable()) {
-          reactContextWeakReference
-            .get()
+          RNFirebaseDatabase.getReactApplicationContextInstance()
             .handleException(e);
         }
         throw e;
@@ -586,7 +609,7 @@ class RNFirebaseDatabaseReference {
     }
 
     Boolean isAvailable() {
-      return reactContextWeakReference.get() != null && referenceWeakReference.get() != null;
+      return RNFirebaseDatabase.getReactApplicationContextInstance() != null && referenceWeakReference.get() != null;
     }
   }
 }
