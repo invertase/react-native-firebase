@@ -108,6 +108,22 @@ describe('storage()', () => {
         uploadTaskSnapshot.metadata.should.be.an.Object();
         uploadTaskSnapshot.downloadURL.should.be.a.String();
       });
+
+      it('uploads a file without read permission', async () => {
+        const uploadTaskSnapshot = await firebase
+          .storage()
+          .ref('/ok.jpeg')
+          .putFile(
+            `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/notRead.jpeg`
+          );
+
+        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.bytesTransferred.should.eql(
+          uploadTaskSnapshot.totalBytes
+        );
+        uploadTaskSnapshot.metadata.should.be.an.Object();
+        uploadTaskSnapshot.downloadURL.should.be.null();
+      });
     });
 
     describe('on()', () => {
