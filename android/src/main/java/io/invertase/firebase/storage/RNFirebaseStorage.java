@@ -577,7 +577,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
         .addOnSuccessListener(new OnSuccessListener<Uri>() {
           @Override
           public void onSuccess(Uri downloadUrl) {
-            WritableMap resp = getRespAsMap(taskSnapshot, downloadUrl);
+            WritableMap resp = getRespAsMap(taskSnapshot, downloadUrl.toString());
             listener.onSuccess(resp);
           }
         });
@@ -587,11 +587,11 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
   }
 
 
-  private WritableMap getRespAsMap(final UploadTask.TaskSnapshot taskSnapshot, final Uri downloadUrl) {
+  private WritableMap getRespAsMap(final UploadTask.TaskSnapshot taskSnapshot, final String downloadUrl) {
     WritableMap resp = Arguments.createMap();
 
     resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-    resp.putString("downloadURL", downloadUrl.toString());
+    resp.putString("downloadURL", downloadUrl);
 
     StorageMetadata d = taskSnapshot.getMetadata();
     if (d != null) {
