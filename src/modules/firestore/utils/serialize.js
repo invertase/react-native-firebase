@@ -8,6 +8,8 @@ import { DOCUMENT_ID } from '../FieldPath';
 import {
   DELETE_FIELD_VALUE,
   SERVER_TIMESTAMP_FIELD_VALUE,
+  ARRAY_UNION_FIELD_VALUE,
+  ARRAY_REMOVE_FIELD_VALUE,
 } from '../FieldValue';
 import GeoPoint from '../GeoPoint';
 import Path from '../Path';
@@ -75,14 +77,38 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
   if (value === DELETE_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
-      value: 'delete',
+      value: {
+        type: 'delete',
+      },
     };
   }
 
   if (value === SERVER_TIMESTAMP_FIELD_VALUE) {
     return {
       type: 'fieldvalue',
-      value: 'timestamp',
+      value: {
+        type: 'timestamp',
+      },
+    };
+  }
+
+  if (value === ARRAY_UNION_FIELD_VALUE) {
+    return {
+      type: 'fieldvalue',
+      value: {
+        elements: value.elements,
+        type: 'union',
+      },
+    };
+  }
+
+  if (value === ARRAY_REMOVE_FIELD_VALUE) {
+    return {
+      type: 'fieldvalue',
+      value: {
+        elements: value.elements,
+        type: 'remove',
+      },
     };
   }
 
