@@ -142,8 +142,8 @@ This issue list of this repo is exclusively for bug reports.
 <!-- Thanks for reading this far down ❤️  -->
 <!-- High quality, detailed issues are much easier and quicker to triage for maintainers -->
 
-<!-- For bonus points, if you put a 🔥 (:fire:) emojii in the issue title we'll know -->
-<!-- that you actually took the time to fill this out correctly, or at least read this far -->
+<!-- For bonus points, if you put a 🔥 (:fire:) emojii inside at the start of the issue description we'll know -->
+<!-- that you took the time to fill this out correctly, or, at least read this far -->
 
 ---
 
