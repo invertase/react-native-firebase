@@ -50,3 +50,12 @@
  [JS] [ENHANCEMENT] - Expose export of a internal thing utility for public usage
  [INTERNAL] [FEATURE] [./utils] - Added an internal util to make doing a thing easier
 -->
+
+---
+
+Think `react-native-firebase` is great? Please consider supporting the project with any of the below:
+
+- 👉 Donate via [Open Collective](https://opencollective.com/react-native-firebase/donate)
+- 👉 Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter
+- 👉 Star this repo on GitHub ⭐️
+- 👉 Contribute; see our [contributing guide](/CONTRIBUTING.md)
