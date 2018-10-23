@@ -1180,6 +1180,13 @@ declare module 'react-native-firebase' {
          */
         getToken(): Promise<string>;
 
+        /**
+         * Returns the devices APNS token.
+         *
+         * @platform iOS
+         */
+        getAPNSToken(): Promise<string>;
+
         deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
 
         /**

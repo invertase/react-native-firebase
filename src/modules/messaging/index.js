@@ -75,6 +75,13 @@ export default class Messaging extends ModuleBase {
     return getNativeModule(this).getToken();
   }
 
+  getAPNSToken() {
+    if (Platform.OS === 'ios') {
+      return getNativeModule(this).getToken();
+    }
+    return Promise.reject(null);
+  }
+
   deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
     return this.app.iid().deleteToken(authorizedEntity, scope);
   }
