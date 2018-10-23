@@ -4,6 +4,7 @@
  */
 import AnyJs from './utils/any';
 
+// TODO: Salakar: Refactor in v6
 export default class FieldValue {
   _type: string;
 
