@@ -75,7 +75,7 @@ export default class Messaging extends ModuleBase {
     return getNativeModule(this).getToken();
   }
 
-  getAPNSToken() {
+  getAPNSToken(): Promise<string> {
     if (Platform.OS === 'ios') {
       return getNativeModule(this).getToken();
     }
