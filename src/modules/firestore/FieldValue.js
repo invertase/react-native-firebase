@@ -5,36 +5,37 @@
 import AnyJs from './utils/any';
 
 export default class FieldValue {
-  _elements: AnyJs[];
+  constructor(type, elements?: AnyJs[]) {
+    this._type = type;
+    this._elements = elements;
+  }
+
+  get type(): string {
+    return this._type;
+  }
 
   get elements(): AnyJs[] {
     return this._elements;
   }
 
-  set elements(elements: AnyJs[]) {
-    this._elements = elements;
-  }
-
   static delete(): FieldValue {
-    return DELETE_FIELD_VALUE;
+    return new FieldValue(TypeFieldValueDelete);
   }
 
   static serverTimestamp(): FieldValue {
-    return SERVER_TIMESTAMP_FIELD_VALUE;
+    return new FieldValue(TypeFieldValueTimestamp);
   }
 
   static arrayUnion(...elements: AnyJs[]) {
-    ARRAY_UNION_FIELD_VALUE.elements = elements;
-    return ARRAY_UNION_FIELD_VALUE;
+    return new FieldValue(TypeFieldValueUnion, elements);
   }
 
   static arrayRemove(...elements: AnyJs[]) {
-    ARRAY_REMOVE_FIELD_VALUE.elements = elements;
-    return ARRAY_REMOVE_FIELD_VALUE;
+    return new FieldValue(TypeFieldValueRemove, elements);
   }
 }
 
-export const DELETE_FIELD_VALUE = new FieldValue();
-export const SERVER_TIMESTAMP_FIELD_VALUE = new FieldValue();
-export const ARRAY_UNION_FIELD_VALUE = new FieldValue();
-export const ARRAY_REMOVE_FIELD_VALUE = new FieldValue();
+export const TypeFieldValueDelete = 'delete';
+export const TypeFieldValueRemove = 'remove';
+export const TypeFieldValueUnion = 'union';
+export const TypeFieldValueTimestamp = 'timestamp';

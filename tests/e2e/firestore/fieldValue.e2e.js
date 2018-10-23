@@ -53,6 +53,7 @@ describe('firestore()', () => {
 
         await testCollectionDoc(DOC_2_PATH).update({
           elements: firebase.firestore.FieldValue.arrayUnion('element 1'),
+          elements2: firebase.firestore.FieldValue.arrayUnion('element 2'),
         });
 
         const { data: dataAfterUpdate } = await testCollectionDoc(
@@ -60,6 +61,7 @@ describe('firestore()', () => {
         ).get();
 
         dataAfterUpdate().elements.should.containDeep(['element 1']);
+        dataAfterUpdate().elements2.should.containDeep(['element 2']);
       });
     });
     describe('arrayRemove()', () => {
