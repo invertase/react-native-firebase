@@ -60,6 +60,11 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getAPNSToken(Promise promise) {
+    promise.reject("messaging/apns-token-error", "getAPNSToken is not supported on Android");
+  }
+
+  @ReactMethod
   public void requestPermission(Promise promise) {
     promise.resolve(null);
   }

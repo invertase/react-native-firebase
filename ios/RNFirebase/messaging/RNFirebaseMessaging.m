@@ -136,7 +136,7 @@ RCT_EXPORT_METHOD(getAPNSToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
         }
         resolve([token copy]);
     } else {
-        reject(@"messaging/fcm-token-error", @"Failed to retrieve APNS token.", nil);
+        reject(@"messaging/apns-token-error", @"Failed to retrieve APNS token.", nil);
     }
 }
 

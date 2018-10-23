@@ -76,10 +76,7 @@ export default class Messaging extends ModuleBase {
   }
 
   getAPNSToken(): Promise<string> {
-    if (Platform.OS === 'ios') {
-      return getNativeModule(this).getAPNSToken();
-    }
-    return Promise.reject(new Error('Messaging.getAPNSToken failed: This method only avaliable on iOS'));
+    return getNativeModule(this).getAPNSToken();
   }
 
   deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
