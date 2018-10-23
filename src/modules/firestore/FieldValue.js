@@ -5,7 +5,7 @@
 import AnyJs from './utils/any';
 
 export default class FieldValue {
-  constructor(type, elements?: AnyJs[]) {
+  constructor(type: string, elements?: AnyJs[]) {
     this._type = type;
     this._elements = elements;
   }
