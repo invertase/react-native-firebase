@@ -2404,10 +2404,16 @@ declare module 'react-native-firebase' {
         constructor(...segments: string[]);
       }
 
+      type AnyJs = null | undefined | boolean | number | string | object;
+
       class FieldValue {
         static delete(): FieldValue;
 
         static serverTimestamp(): FieldValue;
+
+        static arrayUnion(...elements: AnyJs[]): FieldValue;
+
+        static arrayRemove(...elements: AnyJs[]): FieldValue;
       }
 
       class GeoPoint {

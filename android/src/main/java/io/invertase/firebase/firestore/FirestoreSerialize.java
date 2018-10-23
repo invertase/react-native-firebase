@@ -68,6 +68,10 @@ class FirestoreSerialize {
   private static final String TYPE_FIELDVALUE = "fieldvalue";
   private static final String TYPE_FIELDVALUE_DELETE = "delete";
   private static final String TYPE_FIELDVALUE_TIMESTAMP = "timestamp";
+  private static final String TYPE_FIELDVALUE_UNION = "union";
+  private static final String TYPE_FIELDVALUE_REMOVE = "remove";
+  private static final String TYPE_FIELDVALUE_TYPE = "type";
+  private static final String TYPE_FIELDVALUE_ELEMENTS = "elements";
 
   // Document Change Types
   private static final String CHANGE_ADDED = "added";
@@ -446,7 +450,9 @@ class FirestoreSerialize {
     }
 
     if (TYPE_FIELDVALUE.equals(type)) {
-      String fieldValueType = typeMap.getString(VALUE);
+      ReadableMap fieldValueMap = typeMap.getMap(VALUE);
+      String fieldValueType = fieldValueMap.getString(TYPE_FIELDVALUE_TYPE);
+
 
       if (TYPE_FIELDVALUE_TIMESTAMP.equals(fieldValueType)) {
         return FieldValue.serverTimestamp();
@@ -454,6 +460,16 @@ class FirestoreSerialize {
 
       if (TYPE_FIELDVALUE_DELETE.equals(fieldValueType)) {
         return FieldValue.delete();
+      }
+
+      if (TYPE_FIELDVALUE_UNION.equals(fieldValueType)) {
+        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
+        return FieldValue.arrayUnion(elements.toArrayList().toArray());
+      }
+
+      if (TYPE_FIELDVALUE_REMOVE.equals(fieldValueType)) {
+        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
+        return FieldValue.arrayRemove(elements.toArrayList().toArray());
       }
 
       Log.w(TAG, "Unknown FieldValue type: " + fieldValueType);
