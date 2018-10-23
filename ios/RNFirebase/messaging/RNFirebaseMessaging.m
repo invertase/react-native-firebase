@@ -154,6 +154,10 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
             }];
         }
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() registerForRemoteNotifications];
+    });
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
