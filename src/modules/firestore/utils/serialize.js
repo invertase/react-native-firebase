@@ -122,6 +122,7 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
       };
     }
 
+    // TODO: Salakar: Refactor in v6 - add internal `type` flag
     if (value instanceof FieldValue) {
       return {
         type: 'fieldvalue',
