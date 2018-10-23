@@ -2,14 +2,17 @@
  * @flow
  * FieldValue representation wrapper
  */
+import AnyJs from './utils/any';
 
 export default class FieldValue {
-  get elements() {
-    return this._elemenets;
+  _elements: AnyJs[];
+
+  get elements(): AnyJs[] {
+    return this._elements;
   }
 
-  set elements(elements) {
-    this._elemenets = elements;
+  set elements(elements: AnyJs[]) {
+    this._elements = elements;
   }
 
   static delete(): FieldValue {
@@ -20,12 +23,12 @@ export default class FieldValue {
     return SERVER_TIMESTAMP_FIELD_VALUE;
   }
 
-  static arrayUnion(...elements: any[]) {
+  static arrayUnion(...elements: AnyJs[]) {
     ARRAY_UNION_FIELD_VALUE.elements = elements;
     return ARRAY_UNION_FIELD_VALUE;
   }
 
-  static arrayRemove(...elements: any[]) {
+  static arrayRemove(...elements: AnyJs[]) {
     ARRAY_REMOVE_FIELD_VALUE.elements = elements;
     return ARRAY_REMOVE_FIELD_VALUE;
   }
