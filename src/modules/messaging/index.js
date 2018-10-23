@@ -77,9 +77,9 @@ export default class Messaging extends ModuleBase {
 
   getAPNSToken(): Promise<string> {
     if (Platform.OS === 'ios') {
-      return getNativeModule(this).getToken();
+      return getNativeModule(this).getAPNSToken();
     }
-    return Promise.reject(null);
+    return Promise.reject(new Error('Messaging.getAPNSToken failed: This method only avaliable on iOS'));
   }
 
   deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
@@ -120,7 +120,7 @@ export default class Messaging extends ModuleBase {
       listener = nextOrObserver.next;
     } else {
       throw new Error(
-        'Messaging.OnTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
+        'Messaging.onTokenRefresh failed: First argument must be a function or observer object with a `next` function.'
       );
     }
 
