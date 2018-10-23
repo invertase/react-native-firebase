@@ -137,6 +137,10 @@ export default class Messaging extends ModuleBase {
     return getNativeModule(this).hasPermission();
   }
 
+  registerForRemoteNotifications(): Promise<void> {
+    return getNativeModule(this).registerForRemoteNotifications();
+  }
+
   sendMessage(remoteMessage: RemoteMessage): Promise<void> {
     if (!(remoteMessage instanceof RemoteMessage)) {
       return Promise.reject(

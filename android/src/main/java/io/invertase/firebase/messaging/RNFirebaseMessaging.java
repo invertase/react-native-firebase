@@ -64,6 +64,11 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void registerForRemoteNotifications(Promise promise) {
+    promise.resolve(null);
+  }
+
   // Non Web SDK methods
   @ReactMethod
   public void hasPermission(Promise promise) {
