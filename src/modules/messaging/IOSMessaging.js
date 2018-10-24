@@ -1,14 +1,18 @@
 import { getNativeModule } from '../../utils/native';
 
+import { isIOS } from '../../utils';
+
 import type Messaging from './';
 
 export default class IOSMessaging {
   constructor(messaging: Messaging) {
-    const nativeModule = getNativeModule(messaging);
-    this._getAPNSToken = nativeModule.getAPNSToken;
+    this._messaging = messaging;
   }
 
   getAPNSToken(): Promise<string | null> {
-    return this._getAPNSToken();
+    if (isIOS) {
+      return getNativeModule(this._messaging).getAPNSToken();
+    }
+    return null;
   }
 }
