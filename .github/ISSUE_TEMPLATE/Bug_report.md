@@ -152,4 +152,4 @@ Think `react-native-firebase` is great? Please consider supporting the project w
 - 👉 Donate via [Open Collective](https://opencollective.com/react-native-firebase/donate)
 - 👉 Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter
 - 👉 Star this repo on GitHub ⭐️
-- 👉 Contribute; see our [contributing guide](/CONTRIBUTING.md)
+- 👉 Contribute; see our [contributing guide](CONTRIBUTING.md)
