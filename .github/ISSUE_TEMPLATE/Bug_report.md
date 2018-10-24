@@ -108,7 +108,7 @@ This issue list of this repo is exclusively for bug reports.
   - [ ] Windows, version: `N/A`
   - [ ] Other, please specify: `N/A`
 - **Build Tools:**
-  - `ADD_SOMETHING_HERE`
+  - `ADD_SOMETHING_HERE` e.g. Xcode 10, Android Studio 3.2
 - **`React Native` version:**
   - `ADD_SOMETHING_HERE`
 - **`React Native Firebase` library version:**
