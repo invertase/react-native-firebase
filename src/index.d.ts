@@ -1251,8 +1251,16 @@ declare module 'react-native-firebase' {
         setTtl(ttl: number): RemoteMessage;
       }
 
+      class IOSMessaging {
+        /**
+         * Returns the devices APNS token.
+         */
+        getAPNSToken(): Promise<string | null>;
+      }
+
       interface MessagingStatics {
         RemoteMessage: typeof RemoteMessage;
+        ios: IOSMessaging;
       }
     }
 

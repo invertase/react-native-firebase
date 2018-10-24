@@ -126,6 +126,20 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
     }
 }
 
+RCT_EXPORT_METHOD(getAPNSToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+    if (apnsToken) {
+        const char *data = [apnsToken bytes];
+        NSMutableString *token = [NSMutableString string];
+        for (NSInteger i = 0; i < apnsToken.length; i++) {
+            [token appendFormat:@"%02.2hhX", data[i]];
+        }
+        resolve([token copy]);
+    } else {
+        resolve([NSNull null]);
+    }
+}
+
 RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (RCTRunningInAppExtension()) {
         reject(@"messaging/request-permission-unavailable", @"requestPermission is not supported in App Extensions", nil);
