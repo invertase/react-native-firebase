@@ -1669,7 +1669,7 @@ declare module 'react-native-firebase' {
       class IOSNotification {
         alertAction?: string;
         attachments: IOSAttachment[];
-        badge?: string;
+        badge?: number;
         category?: string;
         hasAction?: boolean;
         launchImage?: string;
@@ -1684,7 +1684,7 @@ declare module 'react-native-firebase' {
 
         setAlertAction(alertAction: string): Notification;
 
-        setBadge(badge: string): Notification;
+        setBadge(badge: number): Notification;
 
         setCategory(category: string): Notification;
 
