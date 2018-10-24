@@ -39,6 +39,8 @@ export const NAMESPACE = 'messaging';
  * @class Messaging
  */
 export default class Messaging extends ModuleBase {
+  _ios: IOSMessaging;
+
   constructor(app: App) {
     super(app, {
       events: NATIVE_EVENTS,
