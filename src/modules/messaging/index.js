@@ -9,6 +9,7 @@ import { getLogger } from '../../utils/log';
 import ModuleBase from '../../utils/ModuleBase';
 import { getNativeModule } from '../../utils/native';
 import { isFunction, isObject } from '../../utils';
+import IOSMessaging from './IOSMessaging';
 import RemoteMessage from './RemoteMessage';
 
 import type App from '../core/app';
@@ -46,6 +47,7 @@ export default class Messaging extends ModuleBase {
       hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
+    this._ios = new IOSMessaging(this);
 
     SharedEventEmitter.addListener(
       // sub to internal native event - this fans out to
@@ -71,12 +73,12 @@ export default class Messaging extends ModuleBase {
     }
   }
 
-  getToken(): Promise<string> {
-    return getNativeModule(this).getToken();
+  get ios(): IOSMessaging {
+    return this._ios;
   }
 
-  getAPNSToken(): Promise<string> {
-    return getNativeModule(this).getAPNSToken();
+  getToken(): Promise<string> {
+    return getNativeModule(this).getToken();
   }
 
   deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {

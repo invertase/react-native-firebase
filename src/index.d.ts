@@ -1180,13 +1180,6 @@ declare module 'react-native-firebase' {
          */
         getToken(): Promise<string>;
 
-        /**
-         * Returns the devices APNS token.
-         *
-         * @platform iOS
-         */
-        getAPNSToken(): Promise<string>;
-
         deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
 
         /**
@@ -1253,8 +1246,16 @@ declare module 'react-native-firebase' {
         setTtl(ttl: number): RemoteMessage;
       }
 
+      class IOSMessaging {
+        /**
+         * Returns the devices APNS token.
+         */
+        getAPNSToken(): Promise<string>;
+      }
+
       interface MessagingStatics {
         RemoteMessage: typeof RemoteMessage;
+        ios: IOSMessaging;
       }
     }
 
