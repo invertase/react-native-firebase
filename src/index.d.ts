@@ -1206,11 +1206,6 @@ declare module 'react-native-firebase' {
         hasPermission(): Promise<boolean>;
 
         /**
-         * Register for iOS remote notifications
-         */
-        registerForRemoteNotifications(): Promise<void>;
-
-        /**
          * Send an upstream message
          */
         sendMessage(remoteMessage: RemoteMessage): Promise<void>;
@@ -1256,6 +1251,11 @@ declare module 'react-native-firebase' {
          * Returns the devices APNS token.
          */
         getAPNSToken(): Promise<string | null>;
+
+        /**
+         * Register for iOS remote notifications
+         */
+        registerForRemoteNotifications(): Promise<void>;
       }
 
       interface MessagingStatics {
