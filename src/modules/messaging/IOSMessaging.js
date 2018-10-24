@@ -8,7 +8,7 @@ export default class IOSMessaging {
     this._getAPNSToken = nativeModule.getAPNSToken;
   }
 
-  getAPNSToken(): Promise<string> {
+  getAPNSToken(): Promise<string | null> {
     return this._getAPNSToken();
   }
 }

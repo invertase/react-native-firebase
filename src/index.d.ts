@@ -1250,7 +1250,7 @@ declare module 'react-native-firebase' {
         /**
          * Returns the devices APNS token.
          */
-        getAPNSToken(): Promise<string>;
+        getAPNSToken(): Promise<string | null>;
       }
 
       interface MessagingStatics {
