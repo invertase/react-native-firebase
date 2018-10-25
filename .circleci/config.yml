@@ -170,16 +170,12 @@ jobs:
     - restore_cache:
         key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
     - run:
-        name: Download Dependencies
-        command: cd ~/react-native-firebase/tests/android && ./gradlew androidDependencies
-    - save_cache:
-        paths:
-        - ~/react-native-firebase/tests/android/.gradle
-        key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
-
-    - run:
         name: Build Android Testing App
         command: cd tests && yarn run build-android
+    - save_cache:
+        paths:
+          - ~/react-native-firebase/tests/android/.gradle
+        key: gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
 
 
   jet-test-ios:
