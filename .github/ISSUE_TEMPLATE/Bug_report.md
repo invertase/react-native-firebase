@@ -7,7 +7,7 @@ about:
 
 <!---
 Hello there you awesome person;
-This issue list of this repo is exclusively for bug reports.
+Please note that the issue list of this repo is exclusively for bug reports;
 
 1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
@@ -17,7 +17,7 @@ This issue list of this repo is exclusively for bug reports.
 <!-- NOTE: You can change any of the `[ ]` to `[x]` to mark an option(s) as selected -->
 
 <!-- PLEASE DO NOT REMOVE ANY SECTIONS FROM THIS ISSUE TEMPLATE   -->
-<!--   Leave them as they are if they're irrelevant to your issue -->
+<!--   Leave them as they are even if they're irrelevant to your issue -->
 
 ## Issue
 
@@ -142,7 +142,7 @@ This issue list of this repo is exclusively for bug reports.
 <!-- Thanks for reading this far down ❤️  -->
 <!-- High quality, detailed issues are much easier and quicker to triage for maintainers -->
 
-<!-- For bonus points, if you put a 🔥 (:fire:) emojii at the start of the issue description we'll know -->
+<!-- For bonus points, if you put a 🔥 (:fire:) emojii at the start of the issue title we'll know -->
 <!-- that you took the time to fill this out correctly, or, at least read this far -->
 
 ---
