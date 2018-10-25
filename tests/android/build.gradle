@@ -22,10 +22,10 @@ allprojects {
   repositories {
     mavenLocal()
     google()
-    jcenter()
     maven {
       url "$rootDir/../node_modules/react-native/android"
     }
+    jcenter()
   }
 }
 
