@@ -1,6 +1,5 @@
 package io.invertase.firebase.functions;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -17,6 +16,8 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableReference;
 import com.google.firebase.functions.HttpsCallableResult;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
@@ -121,7 +122,7 @@ public class RNFirebaseFunctions extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.d(TAG, "function:call:onFailure:" + name, exception);
 
           String message;

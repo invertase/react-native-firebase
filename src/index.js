@@ -43,7 +43,7 @@ export type {
   MetadataChanges,
   SetOptions,
   SnapshotMetadata,
-} from './modules/firestore/types';
+} from './modules/firestore/firestoreTypes.flow';
 export type {
   default as CollectionReference,
 } from './modules/firestore/CollectionReference';

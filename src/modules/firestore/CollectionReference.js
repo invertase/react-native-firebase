@@ -2,17 +2,17 @@
  * @flow
  * CollectionReference representation wrapper
  */
-import DocumentReference from './DocumentReference';
 import Query from './Query';
+import DocumentReference from './DocumentReference';
 import { firestoreAutoId } from '../../utils';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   GetOptions,
   MetadataChanges,
   QueryDirection,
   QueryOperator,
-} from './types';
+} from './firestoreTypes.flow';
 import type FieldPath from './FieldPath';
 import type Path from './Path';
 import type { Observer, ObserverOnError, ObserverOnNext } from './Query';

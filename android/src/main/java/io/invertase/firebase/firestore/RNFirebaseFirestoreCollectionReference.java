@@ -2,7 +2,6 @@ package io.invertase.firebase.firestore;
 
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -26,6 +25,8 @@ import com.google.firebase.firestore.Source;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
@@ -93,7 +94,7 @@ class RNFirebaseFirestoreCollectionReference {
       .get(source)
       .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
         @Override
-        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        public void onComplete(@Nonnull Task<QuerySnapshot> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "get:onComplete:success");
             serializeAsyncTask.execute(task.getResult());
@@ -189,6 +190,9 @@ class RNFirebaseFirestoreCollectionReference {
           case "LESS_THAN_OR_EQUAL":
             query = query.whereLessThanOrEqualTo(fieldPath, value);
             break;
+          case "ARRAY_CONTAINS":
+            query = query.whereArrayContains(fieldPath, value);
+            break;
         }
       } else {
         ReadableArray fieldPathElements = fieldPathMap.getArray("elements");
@@ -212,6 +216,9 @@ class RNFirebaseFirestoreCollectionReference {
             break;
           case "LESS_THAN_OR_EQUAL":
             query = query.whereLessThanOrEqualTo(fieldPath, value);
+            break;
+          case "ARRAY_CONTAINS":
+            query = query.whereArrayContains(fieldPath, value);
             break;
         }
       }

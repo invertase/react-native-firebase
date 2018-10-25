@@ -1,9 +1,9 @@
-import { statics } from '.';
+import { statics } from './';
 import AdRequest from './AdRequest';
 import { SharedEventEmitter } from '../../utils/events';
 import { getNativeModule } from '../../utils/native';
 import { nativeToJSError } from '../../utils';
-import type AdMob from '.';
+import type AdMob from './';
 
 let subscriptions = [];
 

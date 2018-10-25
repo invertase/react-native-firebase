@@ -3,7 +3,7 @@
  * Trace representation wrapper
  */
 import { getNativeModule } from '../../utils/native';
-import type PerformanceMonitoring from '.';
+import type PerformanceMonitoring from './';
 
 export default class Trace {
   identifier: string;

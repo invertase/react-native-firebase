@@ -2,9 +2,9 @@
  * @flow
  * UploadTask representation wrapper
  */
-import { statics as StorageStatics } from '.';
+import { statics as StorageStatics } from './';
 import { isFunction } from '../../utils';
-import type Storage from '.';
+import type Storage from './';
 import type StorageReference from './reference';
 
 export const UPLOAD_TASK = 'upload';

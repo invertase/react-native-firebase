@@ -1,7 +1,5 @@
 package io.invertase.firebase.admob;
 
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -19,10 +17,11 @@ import com.google.android.gms.ads.AdView;
 
 import java.util.Map;
 
-public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
+import javax.annotation.Nullable;
 
-  public static final String REACT_CLASS = "RNFirebaseAdMobBanner";
-  public static final String BANNER_EVENT = "onBannerEvent";
+public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
+  private static final String REACT_CLASS = "RNFirebaseAdMobBanner";
+  private static final String BANNER_EVENT = "onBannerEvent";
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
@@ -56,7 +55,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
     return viewGroup;
   }
 
-  AdView getAdView() {
+  private AdView getAdView() {
     return (AdView) viewGroup.getChildAt(0);
   }
 
@@ -142,7 +141,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
   /**
    * Loads a new ad into a viewGroup
    */
-  void requestAd() {
+  private void requestAd() {
     // If the props have not yet been set
     if (size == null || unitId == null || request == null) {
       return;
@@ -165,7 +164,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
   /**
    * Listen to Ad events
    */
-  void setAdListener() {
+  private void setAdListener() {
     final AdView adView = getAdView();
 
     adView.setAdListener(new AdListener() {
@@ -225,7 +224,7 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
    * @param type
    * @param payload
    */
-  void sendEvent(String type, final @Nullable WritableMap payload) {
+  private void sendEvent(String type, final @Nullable WritableMap payload) {
     WritableMap event = Arguments.createMap();
     event.putString("type", type);
 

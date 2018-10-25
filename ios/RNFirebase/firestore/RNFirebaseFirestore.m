@@ -26,7 +26,6 @@ static NSMutableDictionary* initialisedApps;
     if (self != nil) {
         initialisedApps = [[NSMutableDictionary alloc] init];
         _transactions = [[NSMutableDictionary alloc] init];
-        _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.firestore.transactions", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
@@ -34,124 +33,129 @@ static NSMutableDictionary* initialisedApps;
 /**
  *  TRANSACTIONS
  */
-
 RCT_EXPORT_METHOD(transactionGetDocument:(NSString *)appDisplayName
                   transactionId:(nonnull NSNumber *)transactionId
                   path:(NSString *)path
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-    __block NSMutableDictionary *transactionState;
-
-    dispatch_sync(_transactionQueue, ^{
-        transactionState = _transactions[[transactionId stringValue]];
-    });
-
-    if (!transactionState) {
-        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
-        return;
-    }
-
-    NSError *error = nil;
-    FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
-    FIRDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path].ref;
-    FIRDocumentSnapshot *snapshot = [transaction getDocument:ref error:&error];
-
-    if (error != nil) {
-        [RNFirebaseFirestore promiseRejectException:reject error:error];
-    } else {
-        NSDictionary *snapshotDict = [RNFirebaseFirestoreDocumentReference snapshotToDictionary:snapshot];
-        NSString *path = snapshotDict[@"path"];
-        if (path == nil) {
-            [snapshotDict setValue:ref.path forKey:@"path"];
+    @synchronized (self->_transactions[[transactionId stringValue]]) {
+        __block NSMutableDictionary *transactionState = self->_transactions[[transactionId stringValue]];
+        
+        if (!transactionState) {
+            DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+            return;
         }
-        resolve(snapshotDict);
+
+        NSError *error = nil;
+        FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
+        FIRDocumentReference *ref = [self getDocumentForAppPath:appDisplayName path:path].ref;
+        FIRDocumentSnapshot *snapshot = [transaction getDocument:ref error:&error];
+
+        if (error != nil) {
+            [RNFirebaseFirestore promiseRejectException:reject error:error];
+        } else {
+            NSDictionary *snapshotDict = [RNFirebaseFirestoreDocumentReference snapshotToDictionary:snapshot];
+            NSString *path = snapshotDict[@"path"];
+            
+            if (path == nil) {
+                [snapshotDict setValue:ref.path forKey:@"path"];
+            }
+            
+            resolve(snapshotDict);
+        }
     }
 }
 
 RCT_EXPORT_METHOD(transactionDispose:(NSString *)appDisplayName
                   transactionId:(nonnull NSNumber *)transactionId) {
-    __block NSMutableDictionary *transactionState;
+    @synchronized (self->_transactions[[transactionId stringValue]]) {
+        __block NSMutableDictionary *transactionState = self->_transactions[[transactionId stringValue]];
 
-    dispatch_sync(_transactionQueue, ^{
-        transactionState = _transactions[[transactionId stringValue]];
-    });
+        if (!transactionState) {
+            DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+            return;
+        }
 
-    if (!transactionState) {
-        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
-        return;
+        dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
+        [transactionState setValue:@true forKey:@"abort"];
+        dispatch_semaphore_signal(semaphore);
     }
-
-    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
-    [transactionState setValue:@true forKey:@"abort"];
-    dispatch_semaphore_signal(semaphore);
 }
 
 RCT_EXPORT_METHOD(transactionApplyBuffer:(NSString *)appDisplayName
                   transactionId:(nonnull NSNumber *)transactionId
                   commandBuffer:(NSArray *)commandBuffer) {
-    __block NSMutableDictionary *transactionState;
+    @synchronized (self->_transactions[[transactionId stringValue]]) {
+        __block NSMutableDictionary *transactionState = self->_transactions[[transactionId stringValue]];
 
-    dispatch_sync(_transactionQueue, ^{
-        transactionState = _transactions[[transactionId stringValue]];
-    });
+        if (!transactionState) {
+            DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
+            return;
+        }
 
-    if (!transactionState) {
-        DLog(@"transactionGetDocument called for non-existant transactionId %@", transactionId);
-        return;
+        dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
+        [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
+        dispatch_semaphore_signal(semaphore);
     }
-
-    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
-    [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
-    dispatch_semaphore_signal(semaphore);
 }
 
 RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
                   transactionId:(nonnull NSNumber *)transactionId) {
     FIRFirestore *firestore = [RNFirebaseFirestore getFirestoreForApp:appDisplayName];
     __block BOOL aborted = false;
+    __block BOOL completed = false;
+    __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
 
-    dispatch_async(_transactionQueue, ^{
-        NSMutableDictionary *transactionState = [NSMutableDictionary new];
+    [firestore runTransactionWithBlock:^id (FIRTransaction *transaction, NSError * *errorPointer) {
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        transactionState[@"semaphore"] = semaphore;
-
-        [firestore runTransactionWithBlock:^id (FIRTransaction *transaction, NSError * *errorPointer) {
+        
+        @synchronized (transactionState) {
+            transactionState[@"semaphore"] = semaphore;
             transactionState[@"transaction"] = transaction;
 
+            if (!self->_transactions[[transactionId stringValue]]) {
+                [self->_transactions setValue:transactionState forKey:[transactionId stringValue]];
+            }
+            
             // Build and send transaction update event
-            dispatch_barrier_async(_transactionQueue, ^{
-                [_transactions setValue:transactionState forKey:[transactionId stringValue]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSMutableDictionary *eventMap = [NSMutableDictionary new];
                 eventMap[@"type"] = @"update";
                 eventMap[@"id"] = transactionId;
                 eventMap[@"appName"] = appDisplayName;
                 [RNFirebaseUtil sendJSEvent:self name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
             });
+        }
 
-            // wait for the js event handler to call transactionApplyBuffer
-            // this wait occurs on the RNFirestore Worker Queue so if transactionApplyBuffer fails to
-            // signal the semaphore then no further blocks will be executed by RNFirestore until the timeout expires
-            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 3000 * NSEC_PER_SEC);
-
-            BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
+        // wait for the js event handler to call transactionApplyBuffer
+        // this wait occurs on the RNFirestore Worker Queue so if transactionApplyBuffer fails to
+        // signal the semaphore then no further blocks will be executed by RNFirestore until the timeout expires
+        dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 5000 * NSEC_PER_SEC);
+        BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
+        
+        @synchronized (transactionState) {
             aborted = [transactionState valueForKey:@"abort"];
+            
+            if (transactionState[@"semaphore"] != semaphore) {
+                return nil;
+            }
 
-            // dispose of transaction dictionary
-            dispatch_barrier_async(_transactionQueue, ^{
-                [_transactions removeObjectForKey:[transactionId stringValue]];
-            });
-
-            if (aborted) {
+            if (aborted == YES) {
                 *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeAborted userInfo:@{}];
                 return nil;
             }
 
-            if (timedOut) {
+            if (timedOut == YES) {
                 *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeDeadlineExceeded userInfo:@{}];
+                return nil;
+            }
+            
+            if (completed == YES) {
                 return nil;
             }
 
             NSArray *commandBuffer = [transactionState valueForKey:@"commandBuffer"];
+            
             for (NSDictionary *command in commandBuffer) {
                 NSString *type = command[@"type"];
                 NSString *path = command[@"path"];
@@ -174,7 +178,12 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
             }
 
             return nil;
-        } completion:^(id result, NSError *error) {
+        }
+    } completion:^(id result, NSError *error) {
+        if (completed == YES) return;
+        completed = YES;
+        
+        @synchronized (transactionState) {
             if (aborted == NO) {
                 NSMutableDictionary *eventMap = [NSMutableDictionary new];
                 eventMap[@"id"] = transactionId;
@@ -186,11 +195,14 @@ RCT_EXPORT_METHOD(transactionBegin:(NSString *)appDisplayName
                 } else {
                     eventMap[@"type"] = @"complete";
                 }
-
+                
                 [RNFirebaseUtil sendJSEvent:self name:FIRESTORE_TRANSACTION_EVENT body:eventMap];
             }
-        }];
-    });
+            
+            [self->_transactions removeObjectForKey:[transactionId stringValue]];
+        }
+        
+    }];
 }
 
 /**

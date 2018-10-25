@@ -110,5 +110,4 @@ module.exports.A2A = function A2A(oOrP) {
 
   // non promise values - any other value
   return Promise.resolve([null, oOrP]);
-}
-
+};

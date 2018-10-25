@@ -1,4 +1,4 @@
-// Type definitions for React Native Firebase v4.2.0
+// Type definitions for React Native Firebase v5.0.0
 // Project: https://github.com/invertase/react-native-firebase
 // Definitions by: React Native Firebase Contributors
 // TypeScript Version: 2.1
@@ -18,40 +18,24 @@ declare module 'react-native-firebase' {
 
   // type AdmobModule = FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
   type AnalyticsModule = FirebaseModuleAndStatics<RNFirebase.Analytics>;
-  type AuthModule = FirebaseModuleAndStatics<
-    RNFirebase.auth.Auth,
-    RNFirebase.auth.AuthStatics
-  >;
+  type AuthModule = FirebaseModuleAndStatics<RNFirebase.auth.Auth,
+    RNFirebase.auth.AuthStatics>;
   type ConfigModule = FirebaseModuleAndStatics<RNFirebase.config.Config>;
-  type CrashlyticsModule = FirebaseModuleAndStatics<
-    RNFirebase.crashlytics.Crashlytics
-  >;
-  type DatabaseModule = FirebaseModuleAndStatics<
-    RNFirebase.database.Database,
-    RNFirebase.database.DatabaseStatics
-  >;
-  type FirestoreModule = FirebaseModuleAndStatics<
-    RNFirebase.firestore.Firestore,
-    RNFirebase.firestore.FirestoreStatics
-  >;
-  type FunctionsModule = FirebaseModuleAndStatics<
-    RNFirebase.functions.Functions,
-    RNFirebase.functions.FunctionsStatics
-  >;
+  type CrashlyticsModule = FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
+  type DatabaseModule = FirebaseModuleAndStatics<RNFirebase.database.Database,
+    RNFirebase.database.DatabaseStatics>;
+  type FirestoreModule = FirebaseModuleAndStatics<RNFirebase.firestore.Firestore,
+    RNFirebase.firestore.FirestoreStatics>;
+  type FunctionsModule = FirebaseModuleAndStatics<RNFirebase.functions.Functions,
+    RNFirebase.functions.FunctionsStatics>;
   type IidModule = FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
   // type InvitesModule = FirebaseModuleAndStatics<RNFirebase.invites.Invites>;
-  type LinksModule = FirebaseModuleAndStatics<
-    RNFirebase.links.Links,
-    RNFirebase.links.LinksStatics
-  >;
-  type MessagingModule = FirebaseModuleAndStatics<
-    RNFirebase.messaging.Messaging,
-    RNFirebase.messaging.MessagingStatics
-  >;
-  type NotificationsModule = FirebaseModuleAndStatics<
-    RNFirebase.notifications.Notifications,
-    RNFirebase.notifications.NotificationsStatics
-  >;
+  type LinksModule = FirebaseModuleAndStatics<RNFirebase.links.Links,
+    RNFirebase.links.LinksStatics>;
+  type MessagingModule = FirebaseModuleAndStatics<RNFirebase.messaging.Messaging,
+    RNFirebase.messaging.MessagingStatics>;
+  type NotificationsModule = FirebaseModuleAndStatics<RNFirebase.notifications.Notifications,
+    RNFirebase.notifications.NotificationsStatics>;
   type PerfModule = FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
   type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
   // type UtilsModule: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
@@ -59,6 +43,7 @@ declare module 'react-native-firebase' {
   // Modules commented-out do not currently have type definitions
   export class Firebase {
     private constructor();
+
     // admob: AdmobModule;
     analytics: AnalyticsModule;
     auth: AuthModule;
@@ -74,12 +59,16 @@ declare module 'react-native-firebase' {
     notifications: NotificationsModule;
     perf: PerfModule;
     storage: StorageModule;
+
     // utils: UtilsModule;
     initializeApp(options: Firebase.Options, name: string): App;
+
     app(name?: string): App;
+
     readonly apps: App[];
     readonly SDK_VERSION: string;
   }
+
   namespace Firebase {
     interface Options {
       apiKey: string;
@@ -99,6 +88,7 @@ declare module 'react-native-firebase' {
   export const crashlytics: CrashlyticsModule;
   export const database: DatabaseModule;
   export const firestore: FirestoreModule;
+  export const functions: FunctionsModule;
   export const iid: IidModule;
   // export const invites: InvitesModule;
   export const links: LinksModule;
@@ -109,21 +99,35 @@ declare module 'react-native-firebase' {
   // Modules commented-out do not currently have type definitions
   export class App {
     private constructor();
+
     // admob(): RNFirebase.admob.AdMob;
     analytics(): RNFirebase.Analytics;
+
     auth(): RNFirebase.auth.Auth;
+
     config(): RNFirebase.config.Config;
+
     crashlytics(): RNFirebase.crashlytics.Crashlytics;
+
     database(): RNFirebase.database.Database;
+
     firestore(): RNFirebase.firestore.Firestore;
+
     functions(): RNFirebase.functions.Functions;
+
     iid(): RNFirebase.iid.InstanceId;
+
     // invites(): RNFirebase.invites.Invites;
     links(): RNFirebase.links.Links;
+
     messaging(): RNFirebase.messaging.Messaging;
+
     notifications(): RNFirebase.notifications.Notifications;
+
     perf(): RNFirebase.perf.Perf;
+
     storage(): RNFirebase.storage.Storage;
+
     // utils(): RNFirebase.utils.Utils;
     readonly name: string;
     readonly options: Firebase.Options;
@@ -132,6 +136,9 @@ declare module 'react-native-firebase' {
   }
 
   export namespace RNFirebase {
+    type Handler<T> = (value: T) => void;
+    type ErrorHandler = Handler<RnError>;
+
     export interface RnError extends Error {
       code?: string;
     }
@@ -166,22 +173,22 @@ declare module 'react-native-firebase' {
        */
       bundleID?: string;
       /**
-       * defualt ""
+       * default ""
        * The Google App ID that is used to uniquely identify an instance of an app.
        */
       googleAppID?: string;
       /**
-       * deufalt ""
+       * default ""
        * The database root (i.e. https://my-app.firebaseio.com)
        */
       databaseURL?: string;
       /**
-       * defualt ""
+       * default ""
        * URL scheme to set up durable deep link service
        */
       deepLinkURLScheme?: string;
       /**
-       * defualt ""
+       * default ""
        * The Google Cloud storage bucket name
        */
       storageBucket?: string;
@@ -206,105 +213,146 @@ declare module 'react-native-firebase' {
        */
       clientID?: string;
       /**
-       * defualt ""
+       * default ""
        * The secret iOS API key used for authenticating requests from our app
        */
       APIKey?: string;
     }
 
     namespace storage {
-      interface StorageTask<T> extends Promise<T> {
-        on(
-          event: TaskEvent,
-          nextOrObserver: (snapshot: any) => any,
-          error: (error: RnError) => any,
-          complete: (complete: any) => any
-        ): any;
+      /**
+       * The Firebase Storage service interface.
+       *
+       * An instance can be accessed using `firebase.storage()`.
+       */
+      class Storage {
+        static TaskState: TaskState;
+        static TaskEvent: TaskState;
+        static Native?: {
+          MAIN_BUNDLE_PATH: string;
+          CACHES_DIRECTORY_PATH: string;
+          DOCUMENT_DIRECTORY_PATH: string;
+          EXTERNAL_DIRECTORY_PATH: string;
+          EXTERNAL_STORAGE_DIRECTORY_PATH: string;
+          TEMP_DIRECTORY_PATH: string;
+          LIBRARY_DIRECTORY_PATH: string;
+          FILETYPE_REGULAR: string;
+          FILETYPE_DIRECTORY: string;
+        };
 
         /**
-         * is not currently supported by react-native-firebase
+         * The app associated with the Storage service instance.
          */
-        pause(): void;
+        app: App;
 
         /**
-         * is not currently supported by react-native-firebase
+         * Returns a reference for the given path in the default bucket.
+         *
+         * @param path A relative path to initialize the reference with, for
+         *        example path/to/image.jpg. If not passed, the returned
+         *        reference points to the bucket root.
          */
-        resume(): void;
+        ref(path?: string): Reference;
 
         /**
-         * is not currently supported by react-native-firebase
+         * Returns a reference for the given absolute URL.
+         *
+         * @param url URL must be in the form of either
+         *        -   a Cloud Storage URL, for example gs://bucket/files/image.png; or
+         *        -   download URL taken from object metadata.
          */
-        cancel(): void;
-      }
-
-      interface RNStorage extends Reference {
-        /**
-         *  Downloads a reference to the device
-         *  @param {String} filePath Where to store the file
-         *  @return {Promise}
-         * */
-        downloadFile(filePath: string): StorageTask<any>;
+        refFromURL(url: string): Reference;
 
         /**
-         * Upload a file path
-         * @returns {Promise}
+         * @param time The new maximum operation retry time in milliseconds.
          */
-        putFile(filePath: string, metadata?: any): StorageTask<any>;
+        setMaxOperationRetryTime(time: number): void;
 
+        /**
+         * @param time The new maximum upload retry time in milliseconds.
+         */
+        setMaxUploadRetryTime(time: number): void;
+
+        /**
+         * @param time The new maximum download retry time in milliseconds.
+         */
         setMaxDownloadRetryTime(time: number): void;
-
-        [key: string]: any;
       }
 
-      interface Storage {
-        maxOperationRetryTime: number;
-        maxUploadRetryTime: number;
-
-        ref(path?: string): storage.RNStorage;
-
-        refFromURL(url: string): storage.RNStorage;
-
-        setMaxOperationRetryTime(time: number): any;
-
-        setMaxUploadRetryTime(time: number): any;
-      }
-
+      /**
+       * A reference represents a reference to a Google Cloud Storage object.
+       *
+       * You can upload, download, and delete objects, as well as get/set object
+       * metadata for a file via this reference.
+       */
       interface Reference {
-        bucket: string;
-
-        child(path: string): storage.Reference;
-
-        delete(): Promise<any>;
-
         fullPath: string;
-
-        getDownloadURL(): Promise<any>;
-
-        getMetadata(): Promise<any>;
-
-        name: string;
-        parent: storage.Reference | null;
-
-        put(
-          data: any | Uint8Array | ArrayBuffer,
-          metadata?: storage.UploadMetadata
-        ): storage.UploadTask;
-
-        putString(
-          data: string,
-          format?: storage.StringFormat,
-          metadata?: storage.UploadMetadata
-        ): storage.UploadTask;
-
-        root: storage.Reference;
-        storage: storage.Storage;
 
         toString(): string;
 
-        updateMetadata(metadata: storage.SettableMetadata): Promise<any>;
+        /**
+         * Returns a reference to a relative path from this reference.
+         *
+         * @param path The relative path
+         */
+        child(path: string): Reference;
+
+        /**
+         * Deletes the object at this reference's location.
+         */
+        delete(): Promise<void>;
+
+        /**
+         * Fetches a long lived download URL for this object.
+         */
+        getDownloadURL(): Promise<string>;
+
+        /**
+         * Fetches metadata for the object at this location, if one exists.
+         *
+         * @returns A promise that is resolved with the metadata; or rejected on
+         *          failure, including if the object does not exist.
+         */
+        getMetadata(): Promise<FullMetadata>;
+
+        /**
+         * Updates the metadata for the object at this location, if one exists.
+         *
+         * @param metadata
+         */
+        updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
+
+        /**
+         * Downloads the storage object for this reference to the device file
+         * path specified.
+         *
+         * @param filePath The destination path of the downloaded file.
+         */
+        downloadFile(filePath: string): StorageTask<DownloadTaskSnapshot>;
+
+        /**
+         * Uploads the file path specified from the device into a storage object
+         * for this reference.
+         *
+         * @param filePath The path to the file on the device. It must be a full
+         *        file path.
+         * @param metadata The metadata to associate with this file.
+         */
+        putFile(
+          filePath: string,
+          metadata?: SettableMetadata
+        ): StorageTask<UploadTaskSnapshot>;
       }
 
-      interface UploadMetadata extends storage.SettableMetadata {
+      interface FullMetadata extends SettableMetadata {
+        bucket: string;
+        fullPath: string;
+        generation: string;
+        metageneration: string;
+        name: string;
+        size: number;
+        timeCreated: string;
+        updated: string;
         md5Hash?: string | null;
       }
 
@@ -314,77 +362,70 @@ declare module 'react-native-firebase' {
         contentEncoding?: string | null;
         contentLanguage?: string | null;
         contentType?: string | null;
-        customMetadata?: {
-          [/* warning: coerced from ? */ key: string]: string;
-        } | null;
+        customMetadata?: Partial<Record<string, string>>;
       }
 
-      type StringFormat = string;
-      var StringFormat: {
-        BASE64: StringFormat;
-        BASE64URL: StringFormat;
-        DATA_URL: StringFormat;
-        RAW: StringFormat;
-      };
-
-      interface UploadTask {
-        cancel(): boolean;
-
-        catch(onRejected: (a: RnError) => any): Promise<any>;
+      interface StorageTask<T> extends Promise<T> {
+        on(
+          event: TaskEvent,
+          next: Handler<T>,
+          error?: ErrorHandler,
+          complete?: Handler<T>
+        ): () => void;
 
         on(
-          event: storage.TaskEvent,
-          nextOrObserver?: null | Object,
-          error?: ((a: RnError) => any) | null,
-          complete?: (() => any) | null
-        ): Function;
+          event: TaskEvent,
+          observer: {
+            next?: Handler<T>;
+            error?: ErrorHandler;
+            complete?: Handler<T>;
+          }
+        ): () => void;
 
-        pause(): boolean;
+        /**
+         * Not supported by react-native-firebase
+         */
+        pause(): void;
 
-        resume(): boolean;
+        /**
+         * Not supported by react-native-firebase
+         */
+        resume(): void;
 
-        snapshot: storage.UploadTaskSnapshot;
-
-        then(
-          onFulfilled?: ((a: storage.UploadTaskSnapshot) => any) | null,
-          onRejected?: ((a: RnError) => any) | null
-        ): Promise<any>;
+        /**
+         * Not supported by react-native-firebase
+         */
+        cancel(): void;
       }
 
       interface UploadTaskSnapshot {
         bytesTransferred: number;
         downloadURL: string | null;
-        metadata: storage.FullMetadata;
-        ref: storage.Reference;
-        state: storage.TaskState;
-        task: storage.UploadTask;
+        metadata: FullMetadata;
+        ref: Reference;
+        state: TaskState;
+        task: StorageTask<UploadTaskSnapshot>;
         totalBytes: number;
       }
 
-      interface FullMetadata extends storage.UploadMetadata {
-        bucket: string;
-        fullPath: string;
-        generation: string;
-        metageneration: string;
-        name: string;
-        size: number;
-        timeCreated: string;
-        updated: string;
+      interface DownloadTaskSnapshot {
+        bytesTransferred: number;
+        ref: Reference;
+        state: TaskState;
+        totalBytes: number;
       }
 
-      type TaskEvent = string;
-      var TaskEvent: {
-        STATE_CHANGED: TaskEvent;
-      };
+      enum TaskEvent {
+        STATE_CHANGED = 'state_changed',
+      }
 
-      type TaskState = string;
-      var TaskState: {
-        CANCELED: TaskState;
-        ERROR: TaskState;
-        PAUSED: TaskState;
-        RUNNING: TaskState;
-        SUCCESS: TaskState;
-      };
+      enum TaskState {
+        CANCELLED = 'cancelled',
+        ERROR = 'error',
+        PAUSED = 'paused',
+        RUNNING = 'running',
+        SUCCESS = 'success',
+      }
     }
 
     namespace database {
@@ -540,9 +581,11 @@ declare module 'react-native-firebase' {
         val(): any;
       }
 
-      interface ThenableReference<T> extends Promise<T> {}
+      interface ThenableReference<T> extends Promise<T> {
+      }
 
-      interface ThenableReference<T> extends Reference {}
+      interface ThenableReference<T> extends Reference {
+      }
 
       interface Reference extends database.Query {
         child(path: string): database.Reference;
@@ -626,16 +669,16 @@ declare module 'react-native-firebase' {
        * Sets the minimum engagement time required before starting a session.
        * The default value is 10000 (10 seconds)
        */
-      setMinimumSessionDuration(miliseconds: number): void;
+      setMinimumSessionDuration(milliseconds: number): void;
 
       /**
        * Sets the duration of inactivity that terminates the current session.
        * The default value is 1800000 (30 minutes).
        */
-      setSessionTimeoutDuration(miliseconds: number): void;
+      setSessionTimeoutDuration(milliseconds: number): void;
 
       /**
-       * Gives a user a uniqiue identificaition.
+       * Gives a user a unique identification.
        * @example
        * const id = firebase.auth().currentUser.uid;
        *
@@ -680,6 +723,17 @@ declare module 'react-native-firebase' {
     type UserMetadata = {
       creationTime?: string;
       lastSignInTime?: string;
+    };
+
+    type IdTokenResult = {
+      token: string;
+      authTime: string;
+      issuedAtTime: string;
+      expirationTime: string;
+      signInProvider: null | string;
+      claims: {
+        [key: string]: any;
+      };
     };
 
     interface User {
@@ -733,8 +787,19 @@ declare module 'react-native-firebase' {
        */
       getIdToken(forceRefresh?: boolean): Promise<string>;
 
-      getToken(forceRefresh?: boolean): Promise<string>;
+      /**
+       * Returns a firebase.auth.IdTokenResult object which contains the ID token JWT string and
+       * other helper properties for getting different data associated with the token as well as
+       * all the decoded payload claims.
+       *
+       * @param forceRefresh boolean Force refresh regardless of token expiration.
+       */
+      getIdTokenResult(forceRefresh?: boolean): Promise<IdTokenResult>;
 
+      /**
+       * @deprecated
+       * @param credential
+       */
       linkAndRetrieveDataWithCredential(
         credential: AuthCredential
       ): Promise<UserCredential>;
@@ -742,8 +807,12 @@ declare module 'react-native-firebase' {
       /**
        * Link the user with a 3rd party credential provider.
        */
-      linkWithCredential(credential: AuthCredential): Promise<User>;
+      linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
+      /**
+       * @deprecated
+       * @param credential
+       */
       reauthenticateAndRetrieveDataWithCredential(
         credential: AuthCredential
       ): Promise<UserCredential>;
@@ -751,7 +820,7 @@ declare module 'react-native-firebase' {
       /**
        * Re-authenticate a user with a third-party authentication provider
        */
-      reauthenticateWithCredential(credential: AuthCredential): Promise<void>;
+      reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
       /**
        * Refreshes the current user.
@@ -785,6 +854,13 @@ declare module 'react-native-firebase' {
       updatePassword(password: string): Promise<void>;
 
       /**
+       * Updates the user's phone number.
+       * See Firebase docs for more information on security & email validation.
+       * This will Promise reject is the user is anonymous.
+       */
+      updatePhoneNumber(credential: AuthCredential): Promise<void>;
+
+      /**
        * Updates a user's profile data.
        * Profile data should be an object of fields to update:
        */
@@ -809,7 +885,7 @@ declare module 'react-native-firebase' {
         email?: string;
         fromEmail?: string;
       };
-      operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL';
+      operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL' | 'EMAIL_SIGNIN' | 'ERROR';
     }
 
     interface ConfirmationResult {
@@ -867,6 +943,33 @@ declare module 'react-native-firebase' {
         ) => AuthCredential;
       };
 
+      interface AuthSettings {
+        /**
+         * Flag to determine whether app verification should be disabled for testing or not.
+         *
+         * @platform iOS
+         * @param disabled
+         */
+        appVerificationDisabledForTesting: boolean;
+
+        /**
+         * The phone number and SMS code here must have been configured in the
+         * Firebase Console (Authentication > Sign In Method > Phone).
+         *
+         * Calling this method a second time will overwrite the previously passed parameters.
+         * Only one number can be configured at a given time.
+         *
+         * @platform Android
+         * @param phoneNumber
+         * @param smsCode
+         * @return {*}
+         */
+        setAutoRetrievedSmsCodeForPhoneNumber(
+          phoneNumber: string,
+          smsCode: string
+        ): Promise<null>;
+      }
+
       interface Auth {
         readonly app: App;
         /**
@@ -882,6 +985,8 @@ declare module 'react-native-firebase' {
          * Gets/Sets the language for the app instance
          */
         languageCode: string | null;
+
+        settings: AuthSettings;
 
         /**
          * Listen for changes in the users auth state (logging in and out).
@@ -906,14 +1011,22 @@ declare module 'react-native-firebase' {
 
         signOut(): Promise<void>;
 
+        /**
+         * @deprecated
+         */
         signInAnonymouslyAndRetrieveData(): Promise<UserCredential>;
 
         /**
          * Sign an anonymous user.
          * If the user has already signed in, that user will be returned
          */
-        signInAnonymously(): Promise<User>;
+        signInAnonymously(): Promise<UserCredential>;
 
+        /**
+         * @deprecated
+         * @param email
+         * @param password
+         */
         createUserAndRetrieveDataWithEmailAndPassword(
           email: string,
           password: string
@@ -933,8 +1046,13 @@ declare module 'react-native-firebase' {
         createUserWithEmailAndPassword(
           email: string,
           password: string
-        ): Promise<User>;
+        ): Promise<UserCredential>;
 
+        /**
+         * @deprecated
+         * @param email
+         * @param password
+         */
         signInAndRetrieveDataWithEmailAndPassword(
           email: string,
           password: string
@@ -947,8 +1065,12 @@ declare module 'react-native-firebase' {
         signInWithEmailAndPassword(
           email: string,
           password: string
-        ): Promise<User>;
+        ): Promise<UserCredential>;
 
+        /**
+         * @deprecated
+         * @param token
+         */
         signInAndRetrieveDataWithCustomToken(
           token: string
         ): Promise<UserCredential>;
@@ -959,8 +1081,12 @@ declare module 'react-native-firebase' {
          * use the signInWithCustomToken() function.
          * It accepts one parameter, the custom token:
          */
-        signInWithCustomToken(token: string): Promise<User>;
+        signInWithCustomToken(token: string): Promise<UserCredential>;
 
+        /**
+         * @deprecated
+         * @param credential
+         */
         signInAndRetrieveDataWithCredential(
           credential: AuthCredential
         ): Promise<UserCredential>;
@@ -969,7 +1095,7 @@ declare module 'react-native-firebase' {
          * Sign in the user with a 3rd party credential provider.
          * credential requires the following properties:
          */
-        signInWithCredential(credential: AuthCredential): Promise<User>;
+        signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
         /**
          * Asynchronously signs in using a phone number.
@@ -1021,9 +1147,9 @@ declare module 'react-native-firebase' {
         checkActionCode(code: string): Promise<ActionCodeInfo>;
 
         /**
-         * Returns a list of authentication providers that can be used to sign in a given user (identified by its main email address).
+         * Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).
          */
-        fetchProvidersForEmail(email: string): Promise<Array<string>>;
+        fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
 
         verifyPasswordResetCode(code: string): Promise<string>;
 
@@ -1090,7 +1216,7 @@ declare module 'react-native-firebase' {
         subscribeToTopic(topic: string): void;
 
         /**
-         * Unsubscribes the device from a topic.
+         * Unsubscribe the device from a topic.
          */
         unsubscribeFromTopic(topic: string): void;
       }
@@ -1108,10 +1234,15 @@ declare module 'react-native-firebase' {
         constructor();
 
         setCollapseKey(collapseKey: string): RemoteMessage;
+
         setData(data: Object): RemoteMessage;
+
         setMessageId(messageId: string): RemoteMessage;
+
         setMessageType(messageType: string): RemoteMessage;
+
         setTo(to: string): RemoteMessage;
+
         setTtl(ttl: number): RemoteMessage;
       }
 
@@ -1123,8 +1254,11 @@ declare module 'react-native-firebase' {
     namespace iid {
       interface InstanceId {
         delete(): Promise<void>;
+
         get(): Promise<string>;
+
         getToken(authorizedEntity?: string, scope?: string): Promise<string>;
+
         deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
       }
     }
@@ -1132,12 +1266,17 @@ declare module 'react-native-firebase' {
     namespace notifications {
       interface AndroidNotifications {
         createChannel(channel: Android.Channel): Promise<void>;
+
         createChannelGroup(channelGroup: Android.ChannelGroup): Promise<void>;
+
         createChannelGroups(
           channelGroups: Android.ChannelGroup[]
         ): Promise<void>;
+
         createChannels(channels: Android.Channel[]): Promise<void>;
+
         deleteChannelGroup(groupId: string): Promise<void>;
+
         deleteChannel(channelId: string): Promise<void>;
       }
 
@@ -1210,10 +1349,15 @@ declare module 'react-native-firebase' {
         constructor();
 
         setBody(body: string): Notification;
+
         setData(data: any): Notification;
+
         setNotificationId(notificationId: string): Notification;
+
         setSound(sound: string): Notification;
+
         setSubtitle(subtitle: string): Notification;
+
         setTitle(title: string): Notification;
       }
 
@@ -1262,56 +1406,91 @@ declare module 'react-native-firebase' {
         when?: number;
 
         addAction(action: Android.Action): Notification;
+
         addPerson(person: string): Notification;
+
         setAutoCancel(autoCancel: boolean): Notification;
+
         setBadgeIconType(badgeIconType: Android.BadgeIconType): Notification;
+
         setBigPicture(
           picture: string,
           largeIcon?: string,
           contentTitle?: string,
           summaryText?: string
         ): Notification;
+
         setBigText(
           text: string,
           contentTitle?: string,
           summaryText?: string
         ): Notification;
+
         setCategory(category: Android.Category): Notification;
+
         setChannelId(channelId: string): Notification;
+
         setClickAction(clickAction: string): Notification;
+
         setColor(color: string): Notification;
+
         setColorized(colorized: boolean): Notification;
+
         setContentInfo(contentInfo: string): Notification;
+
         setDefaults(defaults: Android.Defaults[]): Notification;
+
         setGroup(group: string): Notification;
+
         setGroupAlertBehaviour(
           groupAlertBehaviour: Android.GroupAlert
         ): Notification;
+
         setGroupSummary(groupSummary: boolean): Notification;
+
         setLargeIcon(largeIcon: string): Notification;
+
         setLights(argb: number, onMs: number, offMs: number): Notification;
+
         setLocalOnly(localOnly: boolean): Notification;
+
         setNumber(number: number): Notification;
+
         setOngoing(ongoing: boolean): Notification;
+
         setOnlyAlertOnce(onlyAlertOnce: boolean): Notification;
+
         setPriority(priority: Android.Priority): Notification;
+
         setProgress(
           max: number,
           progress: number,
           indeterminate: boolean
         ): Notification;
+
         //setPublicVersion(publicVersion: Notification): Notification
         setRemoteInputHistory(remoteInputHistory: string[]): Notification;
+
         setShortcutId(shortcutId: string): Notification;
+
         setShowWhen(showWhen: boolean): Notification;
+
         setSmallIcon(icon: string, level?: number): Notification;
+
         setSortKey(sortKey: string): Notification;
+
         setTag(tag: string): Notification;
+
         setTicker(ticker: string): Notification;
+
         setTimeoutAfter(timeoutAfter: number): Notification;
+
         setUsesChronometer(usesChronometer: boolean): Notification;
+
         setVibrate(vibrate: number[]): Notification;
+
         setVisibility(visibility: Android.Visibility): Notification;
+
         setWhen(when: number): Notification;
       }
 
@@ -1328,8 +1507,11 @@ declare module 'react-native-firebase' {
           constructor(action: string, icon: string, title: string);
 
           addRemoteInput(remoteInput: RemoteInput): Action;
+
           setAllowGenerateReplies(allowGeneratedReplies: boolean): Action;
+
           setSemanticAction(semanticAction: SemanticAction): Action;
+
           setShowUserInterface(showUserInterface: boolean): Action;
         }
 
@@ -1343,8 +1525,11 @@ declare module 'react-native-firebase' {
           constructor(resultKey: string);
 
           setAllowDataType(mimeType: string, allow: boolean): RemoteInput;
+
           setAllowFreeFormInput(allowFreeFormInput: boolean): RemoteInput;
+
           setChoices(choices: string[]): RemoteInput;
+
           setLabel(label: string): RemoteInput;
         }
 
@@ -1367,14 +1552,23 @@ declare module 'react-native-firebase' {
           constructor(channelId: string, name: string, importance: Importance);
 
           enableLights(lightsEnabled: boolean): Channel;
+
           enableVibration(vibrationEnabled: boolean): Channel;
+
           setBypassDnd(bypassDnd: boolean): Channel;
+
           setDescription(description: string): Channel;
+
           setGroup(groupId: string): Channel;
+
           setLightColor(lightColor: string): Channel;
+
           setLockScreenVisibility(lockScreenVisibility: Visibility): Channel;
+
           setShowBadge(showBadge: boolean): Channel;
+
           setSound(sound: string): Channel;
+
           setVibrationPattern(vibrationPattern: number[]): Channel;
         }
 
@@ -1475,7 +1669,7 @@ declare module 'react-native-firebase' {
       class IOSNotification {
         alertAction?: string;
         attachments: IOSAttachment[];
-        badge?: string;
+        badge?: number;
         category?: string;
         hasAction?: boolean;
         launchImage?: string;
@@ -1487,11 +1681,17 @@ declare module 'react-native-firebase' {
           url: string,
           options: IOSAttachmentOptions
         ): Notification;
+
         setAlertAction(alertAction: string): Notification;
-        setBadge(badge: string): Notification;
+
+        setBadge(badge: number): Notification;
+
         setCategory(category: string): Notification;
+
         setHasAction(hasAction: boolean): Notification;
+
         setLaunchImage(launchImage: string): Notification;
+
         setThreadIdentifier(threadIdentifier: string): Notification;
       }
 
@@ -1530,6 +1730,7 @@ declare module 'react-native-firebase' {
     namespace config {
       interface ConfigSnapshot {
         source: string;
+
         val(): any;
       }
 
@@ -1766,13 +1967,16 @@ declare module 'react-native-firebase' {
       interface Links {
         /** Creates a standard dynamic link. */
         createDynamicLink(dynamicLink: DynamicLink): Promise<string>;
+
         /** Creates a short dynamic link. */
-        createShortDynamicLink(type: 'SHORT' | 'UNGUESSABLE'): Promise<string>;
+        createShortDynamicLink(dynamicLink: DynamicLink, type: 'SHORT' | 'UNGUESSABLE'): Promise<string>;
+
         /**
          * Returns the URL that the app has been launched from. If the app was
          * not launched from a URL the return value will be null.
          */
         getInitialLink(): Promise<string | null>;
+
         /**
          * Subscribe to URL open events while the app is still running.
          * The listener is called from URL open events whilst the app is still
@@ -1797,31 +2001,45 @@ declare module 'react-native-firebase' {
 
       interface AnalyticsParameters {
         setCampaign(campaign: string): DynamicLink;
+
         setContent(content: string): DynamicLink;
+
         setMedium(medium: string): DynamicLink;
+
         setSource(source: string): DynamicLink;
+
         setTerm(term: string): DynamicLink;
       }
 
       interface AndroidParameters {
         setFallbackUrl(fallbackUrl: string): DynamicLink;
+
         setMinimumVersion(minimumVersion: number): DynamicLink;
+
         setPackageName(packageName: string): DynamicLink;
       }
 
       interface IOSParameters {
         setAppStoreId(appStoreId: string): DynamicLink;
+
         setBundleId(bundleId: string): DynamicLink;
+
         setCustomScheme(customScheme: string): DynamicLink;
+
         setFallbackUrl(fallbackUrl: string): DynamicLink;
+
         setIPadBundleId(iPadBundleId: string): DynamicLink;
+
         setIPadFallbackUrl(iPadFallbackUrl: string): DynamicLink;
+
         setMinimumVersion(minimumVersion: string): DynamicLink;
       }
 
       interface ITunesParameters {
         setAffiliateToken(affiliateToken: string): DynamicLink;
+
         setCampaignToken(campaignToken: string): DynamicLink;
+
         setProviderToken(providerToken: string): DynamicLink;
       }
 
@@ -1831,7 +2049,9 @@ declare module 'react-native-firebase' {
 
       interface SocialParameters {
         setDescriptionText(descriptionText: string): DynamicLink;
+
         setImageUrl(imageUrl: string): DynamicLink;
+
         setTitle(title: string): DynamicLink;
       }
 
@@ -1971,15 +2191,23 @@ declare module 'react-native-firebase' {
     namespace firestore {
       interface Firestore {
         readonly app: App;
+
         batch(): WriteBatch;
+
         collection(collectionPath: string): CollectionReference;
+
         disableNetwork(): Promise<void>;
+
         doc(documentPath: string): DocumentReference;
+
         enableNetwork(): Promise<void>;
+
         enablePersistence(enabled: boolean): Promise<void>;
+
         runTransaction(
           updateFunction: (transaction: Transaction) => Promise<any>
         ): Promise<any>;
+
         settings(settings: Settings): Promise<void>;
       }
 
@@ -1988,7 +2216,9 @@ declare module 'react-native-firebase' {
         FieldPath: typeof FieldPath;
         FieldValue: typeof FieldValue;
         GeoPoint: typeof GeoPoint;
+
         enableLogging(enabled: boolean): void;
+
         setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
       }
 
@@ -1996,36 +2226,54 @@ declare module 'react-native-firebase' {
         readonly firestore: Firestore;
         readonly id: string;
         readonly parent: DocumentReference;
+
         add(data: object): Promise<DocumentReference>;
+
         doc(documentPath?: string): DocumentReference;
+
         endAt(snapshot: DocumentSnapshot): Query;
+
         endAt(...varargs: any[]): Query;
+
         endBefore(snapshot: DocumentSnapshot): Query;
+
         endBefore(...varargs: any[]): Query;
+
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
+
         limit(limit: number): Query;
+
         onSnapshot(
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
+
         onSnapshot(observer: Query.Observer): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
+
         orderBy(
           fieldPath: string | FieldPath,
           directionStr?: Types.QueryDirection
         ): Query;
+
         startAfter(snapshot: DocumentSnapshot): Query;
+
         startAfter(...varargs: any[]): Query;
+
         startAt(snapshot: DocumentSnapshot): Query;
+
         startAt(...varargs: any[]): Query;
+
         where(
           fieldPath: string | FieldPath,
           op: Types.QueryOperator,
@@ -2045,32 +2293,44 @@ declare module 'react-native-firebase' {
         readonly id: string | null;
         readonly parent: CollectionReference;
         readonly path: string;
+
         collection(collectionPath: string): CollectionReference;
+
         delete(): Promise<void>;
+
         get(options?: Types.GetOptions): Promise<DocumentSnapshot>;
+
         onSnapshot(
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
         ): () => void;
+
         onSnapshot(observer: DocumentReference.Observer): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           onNext: DocumentReference.ObserverOnNext,
           onError?: DocumentReference.ObserverOnError
         ): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           observer: DocumentReference.Observer
         ): () => void;
+
         set(data: object, writeOptions?: Types.SetOptions): Promise<void>;
+
         update(obj: object): Promise<void>;
+
         update(key1: Types.UpdateKey, val1: any): Promise<void>;
+
         update(
           key1: Types.UpdateKey,
           val1: any,
           key2: Types.UpdateKey,
           val2: any
         ): Promise<void>;
+
         update(
           key1: Types.UpdateKey,
           val1: any,
@@ -2079,6 +2339,7 @@ declare module 'react-native-firebase' {
           key3: Types.UpdateKey,
           val3: any
         ): Promise<void>;
+
         update(
           key1: Types.UpdateKey,
           val1: any,
@@ -2089,6 +2350,7 @@ declare module 'react-native-firebase' {
           key4: Types.UpdateKey,
           val4: any
         ): Promise<void>;
+
         update(
           key1: Types.UpdateKey,
           val1: any,
@@ -2102,9 +2364,11 @@ declare module 'react-native-firebase' {
           val5: any
         ): Promise<void>;
       }
+
       namespace DocumentReference {
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
         type ObserverOnError = (err: object) => void;
+
         interface Observer {
           next: ObserverOnNext;
           error?: ObserverOnError;
@@ -2116,42 +2380,61 @@ declare module 'react-native-firebase' {
         readonly id: string | null;
         readonly metadata: Types.SnapshotMetadata;
         readonly ref: DocumentReference;
+
         data(): object | void;
+
         get(fieldPath: string | FieldPath): any | undefined;
       }
 
       class Blob {
         static fromBase64String(base64: string): Blob;
+
         static fromUint8Array(array: Uint8Array): Blob;
+
         isEqual(other: Blob): boolean;
+
         toBase64(): string;
+
         toUint8Array: Uint8Array;
       }
 
       class FieldPath {
         static documentId(): FieldPath;
+
         constructor(...segments: string[]);
       }
 
+      type AnyJs = null | undefined | boolean | number | string | object;
+
       class FieldValue {
         static delete(): FieldValue;
+
         static serverTimestamp(): FieldValue;
+
+        static arrayUnion(...elements: AnyJs[]): FieldValue;
+
+        static arrayRemove(...elements: AnyJs[]): FieldValue;
       }
 
       class GeoPoint {
         constructor(latitude: number, longitude: number);
+
         readonly latitude: number;
         readonly longitude: number;
       }
 
       class Path {
         static fromName(name: string): Path;
+
         constructor(pathComponents: string[]);
+
         readonly id: string | null;
         readonly isDocument: boolean;
         readonly isCollection: boolean;
         readonly relativeName: string;
+
         child(relativePath: string): Path;
+
         parent(): Path | null;
       }
 
@@ -2161,40 +2444,57 @@ declare module 'react-native-firebase' {
 
       interface Query {
         readonly firestore: Firestore;
+
         endAt(snapshot: DocumentSnapshot): Query;
+
         endAt(...varargs: any[]): Query;
+
         endBefore(snapshot: DocumentSnapshot): Query;
+
         endBefore(...varargs: any[]): Query;
+
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
+
         limit(limit: number): Query;
+
         onSnapshot(
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
+
         onSnapshot(observer: Query.Observer): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           onNext: Query.ObserverOnNext,
           onError?: Query.ObserverOnError
         ): () => void;
+
         onSnapshot(
           metadataChanges: MetadataChanges,
           observer: Query.Observer
         ): () => void;
+
         orderBy(
           fieldPath: string | FieldPath,
           directionStr?: Types.QueryDirection
         ): Query;
+
         startAfter(snapshot: DocumentSnapshot): Query;
+
         startAfter(...varargs: any[]): Query;
+
         startAt(snapshot: DocumentSnapshot): Query;
+
         startAt(...varargs: any[]): Query;
+
         where(
           fieldPath: string | FieldPath,
           op: Types.QueryOperator,
           value: any
         ): Query;
       }
+
       namespace Query {
         interface NativeFieldPath {
           elements?: string[];
@@ -2225,6 +2525,7 @@ declare module 'react-native-firebase' {
 
         type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
         type ObserverOnError = (err: object) => void;
+
         interface Observer {
           next: ObserverOnNext;
           error?: ObserverOnError;
@@ -2238,8 +2539,10 @@ declare module 'react-native-firebase' {
         readonly metadata: Types.SnapshotMetadata;
         readonly query: Query;
         readonly size: number;
+
         forEach(callback: (snapshot: DocumentSnapshot) => any): void;
       }
+
       namespace QuerySnapshot {
         interface NativeData {
           changes: Types.NativeDocumentChange[];
@@ -2257,19 +2560,24 @@ declare module 'react-native-firebase' {
 
       interface Transaction {
         delete(docRef: DocumentReference): WriteBatch;
+
         get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
+
         set(
           documentRef: DocumentReference,
           data: Object,
           options?: Types.SetOptions
         ): Transaction;
+
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
           val1: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2277,6 +2585,7 @@ declare module 'react-native-firebase' {
           key2: Types.UpdateKey,
           val2: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2286,6 +2595,7 @@ declare module 'react-native-firebase' {
           key3: Types.UpdateKey,
           val3: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2297,6 +2607,7 @@ declare module 'react-native-firebase' {
           key4: Types.UpdateKey,
           val4: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2314,19 +2625,24 @@ declare module 'react-native-firebase' {
 
       interface WriteBatch {
         commit(): Promise<void>;
+
         delete(docRef: DocumentReference): WriteBatch;
+
         set(
           docRef: DocumentReference,
           data: object,
           options?: Types.SetOptions
         ): WriteBatch;
+
         // multiple overrides for update() to allow strong-typed var_args
         update(docRef: DocumentReference, obj: object): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
           val1: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2334,6 +2650,7 @@ declare module 'react-native-firebase' {
           key2: Types.UpdateKey,
           val2: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2343,6 +2660,7 @@ declare module 'react-native-firebase' {
           key3: Types.UpdateKey,
           val3: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2354,6 +2672,7 @@ declare module 'react-native-firebase' {
           key4: Types.UpdateKey,
           val4: any
         ): WriteBatch;
+
         update(
           docRef: DocumentReference,
           key1: Types.UpdateKey,
@@ -2391,7 +2710,7 @@ declare module 'react-native-firebase' {
         }
 
         type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
-        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=';
+        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=' | 'array-contains';
 
         interface TypeMap {
           type:
@@ -2425,23 +2744,20 @@ declare module 'react-native-firebase' {
 }
 
 declare module 'react-native-firebase/storage' {
-  import { RNFirebase } from 'react-native-firebase';
-  export type StorageTask<T> = RNFirebase.storage.StorageTask<T>;
-  export type RNStorage = RNFirebase.storage.RNStorage;
+  import {RNFirebase} from 'react-native-firebase';
   export type Storage = RNFirebase.storage.Storage;
   export type Reference = RNFirebase.storage.Reference;
-  export type UploadMetadata = RNFirebase.storage.UploadMetadata;
-  export type SettableMetadata = RNFirebase.storage.SettableMetadata;
-  export type StringFormat = RNFirebase.storage.StringFormat;
-  export type UploadTask = RNFirebase.storage.UploadTask;
-  export type UploadTaskSnapshot = RNFirebase.storage.UploadTaskSnapshot;
   export type FullMetadata = RNFirebase.storage.FullMetadata;
+  export type SettableMetadata = RNFirebase.storage.SettableMetadata;
+  export type StorageTask<T> = RNFirebase.storage.StorageTask<T>;
+  export type UploadTaskSnapshot = RNFirebase.storage.UploadTaskSnapshot;
+  export type DownloadTaskSnapshot = RNFirebase.storage.DownloadTaskSnapshot;
   export type TaskEvent = RNFirebase.storage.TaskEvent;
   export type TaskState = RNFirebase.storage.TaskState;
 }
 
 declare module 'react-native-firebase/database' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type Database = RNFirebase.database.Database;
   export type RnReference = RNFirebase.database.RnReference;
   export type QueryEventType = RNFirebase.database.QueryEventType;
@@ -2451,12 +2767,16 @@ declare module 'react-native-firebase/database' {
   export type DataSnapshot = RNFirebase.database.DataSnapshot;
   export type Reference = RNFirebase.database.Reference;
   export type DatabaseStatics = RNFirebase.database.DatabaseStatics;
-  interface ThenableReference<T> extends Promise<T> {}
-  interface ThenableReference<T> extends RNFirebase.database.Reference {}
+
+  interface ThenableReference<T> extends Promise<T> {
+  }
+
+  interface ThenableReference<T> extends RNFirebase.database.Reference {
+  }
 }
 
 declare module 'react-native-firebase/auth' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type AuthResult = RNFirebase.auth.AuthResult;
   export type AuthProvider = RNFirebase.auth.AuthProvider;
   export type Auth = RNFirebase.auth.Auth;
@@ -2464,18 +2784,18 @@ declare module 'react-native-firebase/auth' {
 }
 
 declare module 'react-native-firebase/messaging' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type Messaging = RNFirebase.messaging.Messaging;
   export type RemoteMessage = RNFirebase.messaging.RemoteMessage;
 }
 
 declare module 'react-native-firebase/iid' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type InstanceId = RNFirebase.iid.InstanceId;
 }
 
 declare module 'react-native-firebase/notifications' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type AndroidNotifications = RNFirebase.notifications.AndroidNotifications;
   export type Notifications = RNFirebase.notifications.Notifications;
   export type Notification = RNFirebase.notifications.Notification;
@@ -2487,18 +2807,18 @@ declare module 'react-native-firebase/notifications' {
 }
 
 declare module 'react-native-firebase/config' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type ConfigSnapshot = RNFirebase.config.ConfigSnapshot;
   export type Config = RNFirebase.config.Config;
 }
 
 declare module 'react-native-firebase/crashlytics' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type Crashlytics = RNFirebase.crashlytics.Crashlytics;
 }
 
 declare module 'react-native-firebase/links' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type Links = RNFirebase.links.Links;
   export type DynamicLink = RNFirebase.links.DynamicLink;
   export type AnalyticsParameters = RNFirebase.links.AnalyticsParameters;
@@ -2510,16 +2830,16 @@ declare module 'react-native-firebase/links' {
 }
 
 declare module 'react-native-firebase/functions' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type HttpsErrorCode = RNFirebase.functions.HttpsErrorCode;
   export type FunctionsErrorCode = RNFirebase.functions.FunctionsErrorCode;
   export type HttpsCallableResult = RNFirebase.functions.HttpsCallableResult;
-  export type Funtions = RNFirebase.functions.Functions;
+  export type Functions = RNFirebase.functions.Functions;
   export type HttpsError = RNFirebase.functions.HttpsError;
 }
 
 declare module 'react-native-firebase/firestore' {
-  import { RNFirebase } from 'react-native-firebase';
+  import {RNFirebase} from 'react-native-firebase';
   export type Firestore = RNFirebase.firestore.Firestore;
   export type FirestoreStatics = RNFirebase.firestore.FirestoreStatics;
   export type CollectionReference = RNFirebase.firestore.CollectionReference;

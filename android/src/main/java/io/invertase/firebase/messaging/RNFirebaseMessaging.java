@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -22,12 +21,14 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import javax.annotation.Nonnull;
+
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
 
-  public RNFirebaseMessaging(ReactApplicationContext context) {
+  RNFirebaseMessaging(ReactApplicationContext context) {
     super(context);
     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
@@ -117,7 +118,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
       .subscribeToTopic(topic)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "subscribeToTopic:onComplete:success");
             promise.resolve(null);
@@ -137,7 +138,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
       .unsubscribeFromTopic(topic)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "unsubscribeFromTopic:onComplete:success");
             promise.resolve(null);

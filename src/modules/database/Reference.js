@@ -21,7 +21,7 @@ import {
 
 import SyncTree from '../../utils/SyncTree';
 
-import type Database from '.';
+import type Database from './';
 import type { DatabaseModifier, FirebaseError } from '../../types';
 
 // track all event registrations by path
@@ -501,6 +501,14 @@ export default class Reference extends ReferenceBase {
    */
   toString(): string {
     return `${this._database.databaseUrl}/${this.path}`;
+  }
+
+  /**
+   * Return a JSON-serializable representation of this object.
+   * @returns {string}
+   */
+  toJSON(): string {
+    return this.toString();
   }
 
   /**
