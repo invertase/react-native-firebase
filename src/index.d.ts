@@ -1246,8 +1246,21 @@ declare module 'react-native-firebase' {
         setTtl(ttl: number): RemoteMessage;
       }
 
+      class IOSMessaging {
+        /**
+         * Returns the devices APNS token.
+         */
+        getAPNSToken(): Promise<string | null>;
+
+        /**
+         * Register for iOS remote notifications
+         */
+        registerForRemoteNotifications(): Promise<void>;
+      }
+
       interface MessagingStatics {
         RemoteMessage: typeof RemoteMessage;
+        ios: IOSMessaging;
       }
     }
 
@@ -1669,7 +1682,7 @@ declare module 'react-native-firebase' {
       class IOSNotification {
         alertAction?: string;
         attachments: IOSAttachment[];
-        badge?: string;
+        badge?: number;
         category?: string;
         hasAction?: boolean;
         launchImage?: string;
@@ -1684,7 +1697,7 @@ declare module 'react-native-firebase' {
 
         setAlertAction(alertAction: string): Notification;
 
-        setBadge(badge: string): Notification;
+        setBadge(badge: number): Notification;
 
         setCategory(category: string): Notification;
 
@@ -2404,10 +2417,16 @@ declare module 'react-native-firebase' {
         constructor(...segments: string[]);
       }
 
+      type AnyJs = null | undefined | boolean | number | string | object;
+
       class FieldValue {
         static delete(): FieldValue;
 
         static serverTimestamp(): FieldValue;
+
+        static arrayUnion(...elements: AnyJs[]): FieldValue;
+
+        static arrayRemove(...elements: AnyJs[]): FieldValue;
       }
 
       class GeoPoint {

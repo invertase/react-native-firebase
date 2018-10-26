@@ -147,13 +147,13 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchR
             @"notification": notification
         };
     }
-    
+
     if (handlerKey != nil) {
         completionHandlers[handlerKey] = completionHandler;
     } else {
         completionHandler(UIBackgroundFetchResultNoData);
     }
-    
+
     [self sendJSEvent:self name:event body:notification];
 }
 
@@ -566,9 +566,11 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
                 calendarUnit = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
             } else if ([interval isEqualToString:@"week"]) {
                 calendarUnit = NSCalendarUnitWeekday | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+            } else {
+                calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
             }
         } else {
-            // Needs to match exactly to the secpmd
+            // Needs to match exactly to the second
             calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
         }
 

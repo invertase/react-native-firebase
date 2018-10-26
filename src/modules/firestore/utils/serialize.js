@@ -5,10 +5,7 @@
 import DocumentReference from '../DocumentReference';
 import Blob from '../Blob';
 import { DOCUMENT_ID } from '../FieldPath';
-import {
-  DELETE_FIELD_VALUE,
-  SERVER_TIMESTAMP_FIELD_VALUE,
-} from '../FieldValue';
+import FieldValue from '../FieldValue';
 import GeoPoint from '../GeoPoint';
 import Path from '../Path';
 import { typeOf } from '../../../utils';
@@ -72,20 +69,6 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
     };
   }
 
-  if (value === DELETE_FIELD_VALUE) {
-    return {
-      type: 'fieldvalue',
-      value: 'delete',
-    };
-  }
-
-  if (value === SERVER_TIMESTAMP_FIELD_VALUE) {
-    return {
-      type: 'fieldvalue',
-      value: 'timestamp',
-    };
-  }
-
   if (value === DOCUMENT_ID) {
     return {
       type: 'documentid',
@@ -136,6 +119,17 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
       return {
         type: 'blob',
         value: value.toBase64(),
+      };
+    }
+
+    // TODO: Salakar: Refactor in v6 - add internal `type` flag
+    if (value instanceof FieldValue) {
+      return {
+        type: 'fieldvalue',
+        value: {
+          elements: value.elements,
+          type: value.type,
+        },
       };
     }
 
