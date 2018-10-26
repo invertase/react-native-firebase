@@ -500,7 +500,7 @@ export default class Reference extends ReferenceBase {
    * @returns {string}
    */
   toString(): string {
-    return `${this._database.databaseUrl}/${this.path}`;
+    return `${this._database.databaseUrl}${this.path}`;
   }
 
   /**
