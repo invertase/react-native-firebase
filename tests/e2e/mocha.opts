@@ -7,3 +7,4 @@
 --exit
 --require jet/platform/node
 --require ./helpers
+--inspect
