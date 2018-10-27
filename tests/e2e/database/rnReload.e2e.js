@@ -22,9 +22,9 @@ describe('database()', () => {
       ref = firebase.database().ref(path);
       snapshot = await ref.once('value');
       snapshot.val().should.eql(dataTypeValue);
-    });
+    }).timeout(15000);
 
-    it('same reference path works after app backgrounded', async () => {
+    it(':android: same reference path works after app backgrounded', async () => {
       let ref;
       let snapshot;
       const path = 'tests/types/number';
@@ -44,7 +44,7 @@ describe('database()', () => {
       ref = firebase.database().ref(path);
       snapshot = await ref.once('value');
       snapshot.val().should.eql(dataTypeValue);
-    });
+    }).timeout(15000);
   });
 
   describe('ref().on()', () => {
@@ -68,9 +68,9 @@ describe('database()', () => {
       snapshot.val().should.eql(dataTypeValue);
 
       firebase.utils().database.cleanup();
-    });
+    }).timeout(15000);
 
-    it('same reference path works after app backgrounded', async () => {
+    it(':android: same reference path works after app backgrounded', async () => {
       let ref;
       let snapshot;
       const path = 'tests/types/number';
@@ -92,6 +92,6 @@ describe('database()', () => {
       snapshot.val().should.eql(dataTypeValue);
 
       firebase.utils().database.cleanup();
-    });
+    }).timeout(15000);
   });
 });
