@@ -62,6 +62,7 @@ console.log = (...args) => {
     args[0] &&
     typeof args[0] === 'string' &&
     (args[0].toLowerCase().includes('deprecated') ||
+      args[0].toLowerCase().includes('require cycle') ||
       args[0].toLowerCase().includes('restrictions in the native sdk'))
   ) {
     return undefined;
