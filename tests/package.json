@@ -23,7 +23,7 @@
     "detox": "^9.0.4",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
-    "jet": "^0.1.0",
+    "jet": "^0.2.0",
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
