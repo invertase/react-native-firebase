@@ -9,6 +9,9 @@ describe('database()', () => {
     });
 
     it('returns true when the reference is for the same location', () => {
+      const ref = firebase.database().ref();
+      ref.ref.should.eql(ref);
+
       const ref2 = firebase.database().ref('tests/types');
       this.ref.isEqual(ref2).should.eql(true);
     });
