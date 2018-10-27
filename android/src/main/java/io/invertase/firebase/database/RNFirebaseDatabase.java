@@ -25,6 +25,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,18 +37,18 @@ import io.invertase.firebase.Utils;
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private static boolean enableLogging = false;
+  private static ReactApplicationContext reactApplicationContext = null;
   private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
-  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
-  private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
+  private static HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private static SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
-
-  /*
-   * REACT NATIVE METHODS
-   */
+  static ReactApplicationContext getReactApplicationContextInstance() {
+    return reactApplicationContext;
+  }
 
   /**
    * Resolve null or reject with a js like error if databaseError exists
@@ -67,6 +68,11 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
       promise.resolve(null);
     }
   }
+
+
+  /*
+   * REACT NATIVE METHODS
+   */
 
   /**
    * Get a database instance for a specific firebase app instance
@@ -251,6 +257,26 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     errorMap.putString("code", code);
     errorMap.putString("message", message);
     return errorMap;
+  }
+
+  @Override
+  public void initialize() {
+    super.initialize();
+    Log.d(TAG, "RNFirebaseDatabase:initialized");
+    reactApplicationContext = getReactApplicationContext();
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    Iterator refIterator = references.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      RNFirebaseDatabaseReference nativeRef = (RNFirebaseDatabaseReference) pair.getValue();
+      nativeRef.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
   }
 
   /**
@@ -792,7 +818,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     ReadableArray modifiers
   ) {
     return new RNFirebaseDatabaseReference(
-      getReactApplicationContext(),
       appName,
       dbURL,
       key,
