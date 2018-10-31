@@ -560,7 +560,10 @@ declare module 'react-native-firebase' {
 
         exists(): boolean;
 
-        exportVal(): any;
+        exportVal(): {
+          '.value': any,
+          '.priority': string | number | null,
+        };
 
         forEach(action: (a: database.DataSnapshot) => boolean): boolean;
 
