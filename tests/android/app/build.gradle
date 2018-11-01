@@ -105,27 +105,27 @@ dependencies {
   }
 
   // Authentication
-  implementation "com.google.firebase:firebase-auth:16.0.4"
+  implementation "com.google.firebase:firebase-auth:16.0.5"
   // Analytics
   implementation "com.google.firebase:firebase-analytics:16.0.4"
   // Performance Monitoring
-  implementation "com.google.firebase:firebase-perf:16.1.2"
+  implementation "com.google.firebase:firebase-perf:16.2.0"
   // Remote Config
-  implementation "com.google.firebase:firebase-config:16.0.1"
+  implementation "com.google.firebase:firebase-config:16.1.0"
   // Cloud Storage
-  implementation "com.google.firebase:firebase-storage:16.0.3"
+  implementation "com.google.firebase:firebase-storage:16.0.4"
   // Invites
   implementation "com.google.firebase:firebase-invites:16.0.4"
   // Dynamic Links
   implementation "com.google.firebase:firebase-dynamic-links:16.1.2"
   // Real-time Database
-  implementation "com.google.firebase:firebase-database:16.0.3"
+  implementation "com.google.firebase:firebase-database:16.0.4"
   // Cloud Functions
-  implementation "com.google.firebase:firebase-functions:16.1.1"
+  implementation "com.google.firebase:firebase-functions:16.1.2"
   // Cloud Firestore
-  implementation "com.google.firebase:firebase-firestore:17.1.1"
+  implementation "com.google.firebase:firebase-firestore:17.1.2"
   // Cloud Messaging / FCM
-  implementation "com.google.firebase:firebase-messaging:17.3.3"
+  implementation "com.google.firebase:firebase-messaging:17.3.4"
   // Crashlytics
   implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
     transitive = true
