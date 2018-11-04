@@ -26,16 +26,40 @@ static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 
+static NSMutableDictionary *authStateHandlers;
+static NSMutableDictionary *idTokenHandlers;
+
 @implementation RNFirebaseAuth
 RCT_EXPORT_MODULE();
 
 - (id)init {
   self = [super init];
-  if (self != nil) {
-    _authStateHandlers = [[NSMutableDictionary alloc] init];
-    _idTokenHandlers = [[NSMutableDictionary alloc] init];
-  }
+  
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    authStateHandlers = [[NSMutableDictionary alloc] init];
+    idTokenHandlers = [[NSMutableDictionary alloc] init];
+    DLog(@"RNFirebaseAuth:instance-created");
+  });
+  
+  DLog(@"RNFirebaseAuth:instance-initialized");
   return self;
+}
+
+- (void)dealloc {
+  DLog(@"RNFirebaseAuth:instance-destroyed");
+  
+  for(NSString* key in authStateHandlers) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:key];
+    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
+    [authStateHandlers removeObjectForKey:key];
+  }
+  
+  for(NSString* key in idTokenHandlers) {
+    FIRApp *firApp = [RNFirebaseUtil getApp:key];
+    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
+    [idTokenHandlers removeObjectForKey:key];
+  }
 }
 
 /**
@@ -46,7 +70,7 @@ RCT_EXPORT_METHOD(addAuthStateListener:
                     (NSString *) appDisplayName) {
   FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-  if (![_authStateHandlers valueForKey:firApp.name]) {
+  if (![authStateHandlers valueForKey:firApp.name]) {
     FIRAuthStateDidChangeListenerHandle newListenerHandle =
         [[FIRAuth authWithApp:firApp] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           if (user != nil) {
@@ -57,7 +81,7 @@ RCT_EXPORT_METHOD(addAuthStateListener:
           }
         }];
 
-    _authStateHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    authStateHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
 }
 
@@ -69,9 +93,9 @@ RCT_EXPORT_METHOD(removeAuthStateListener:
                     (NSString *) appDisplayName) {
   FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-  if ([_authStateHandlers valueForKey:firApp.name]) {
-    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[_authStateHandlers valueForKey:firApp.name]];
-    [_authStateHandlers removeObjectForKey:firApp.name];
+  if ([authStateHandlers valueForKey:firApp.name]) {
+    [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:firApp.name]];
+    [authStateHandlers removeObjectForKey:firApp.name];
   }
 }
 
@@ -83,7 +107,7 @@ RCT_EXPORT_METHOD(addIdTokenListener:
                     (NSString *) appDisplayName) {
   FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-  if (![_idTokenHandlers valueForKey:firApp.name]) {
+  if (![idTokenHandlers valueForKey:firApp.name]) {
     FIRIDTokenDidChangeListenerHandle newListenerHandle =
         [[FIRAuth authWithApp:firApp] addIDTokenDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           if (user != nil) {
@@ -94,7 +118,7 @@ RCT_EXPORT_METHOD(addIdTokenListener:
           }
         }];
 
-    _idTokenHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    idTokenHandlers[firApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
   }
 }
 
@@ -106,9 +130,9 @@ RCT_EXPORT_METHOD(removeIdTokenListener:
                     (NSString *) appDisplayName) {
   FIRApp *firApp = [RNFirebaseUtil getApp:appDisplayName];
 
-  if ([_idTokenHandlers valueForKey:firApp.name]) {
-    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[_idTokenHandlers valueForKey:firApp.name]];
-    [_idTokenHandlers removeObjectForKey:firApp.name];
+  if ([idTokenHandlers valueForKey:firApp.name]) {
+    [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firApp.name]];
+    [idTokenHandlers removeObjectForKey:firApp.name];
   }
 }
 

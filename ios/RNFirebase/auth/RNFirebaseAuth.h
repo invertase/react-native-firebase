@@ -8,9 +8,6 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RNFirebaseAuth : RCTEventEmitter <RCTBridgeModule> {};
-@property NSMutableDictionary *authStateHandlers;
-@property NSMutableDictionary *idTokenHandlers;
-
 @end
 
 #else
