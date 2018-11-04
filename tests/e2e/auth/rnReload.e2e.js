@@ -1,4 +1,4 @@
-describe.only('auth()', () => {
+describe('auth()', () => {
   beforeEach(async () => {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
