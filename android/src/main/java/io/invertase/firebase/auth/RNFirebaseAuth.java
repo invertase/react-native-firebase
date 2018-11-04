@@ -45,6 +45,7 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -63,19 +64,59 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
-  private HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
-  private HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
+  private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
+  private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
 
 
   RNFirebaseAuth(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactContext = reactContext;
-    Log.d(TAG, "RNFirebaseAuth:initialized");
+    Log.d(TAG, "instance-created");
   }
 
   @Override
   public String getName() {
     return TAG;
+  }
+
+  @Override
+  public void initialize() {
+    super.initialize();
+    Log.d(TAG, "instance-initialized");
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+    Log.d(TAG, "instance-destroyed");
+
+    Iterator authListenerIterator = mAuthListeners
+      .entrySet()
+      .iterator();
+
+    while (authListenerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) authListenerIterator.next();
+      String appName = (String) pair.getKey();
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      FirebaseAuth.AuthStateListener mAuthListener = (FirebaseAuth.AuthStateListener) pair.getValue();
+      firebaseAuth.removeAuthStateListener(mAuthListener);
+      authListenerIterator.remove();
+    }
+
+    Iterator idTokenListenerIterator = mIdTokenListeners
+      .entrySet()
+      .iterator();
+
+    while (idTokenListenerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) idTokenListenerIterator.next();
+      String appName = (String) pair.getKey();
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      FirebaseAuth.IdTokenListener mAuthListener = (FirebaseAuth.IdTokenListener) pair.getValue();
+      firebaseAuth.removeIdTokenListener(mAuthListener);
+      idTokenListenerIterator.remove();
+    }
   }
 
   /**
