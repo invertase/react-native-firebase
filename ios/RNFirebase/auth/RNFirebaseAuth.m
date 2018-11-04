@@ -1271,90 +1271,72 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
  @param error NSError
  */
 - (NSDictionary *)getJSError:(NSError *)error {
-  NSString *code = @"auth/unknown";
+  NSString *code = AuthErrorCode_toJSErrorCode[error.code];
   NSString *message = [error localizedDescription];
   NSString *nativeErrorMessage = [error localizedDescription];
-
+  
+  if (code == nil) code =  @"auth/unknown";
+  
+  // TODO: Salakar: replace these with a AuthErrorCode_toJSErrorMessage map (like codes now does)
   switch (error.code) {
-    case FIRAuthErrorCodeInvalidCustomToken:code = @"auth/invalid-custom-token";
+    case FIRAuthErrorCodeInvalidCustomToken:
       message = @"The custom token format is incorrect. Please check the documentation.";
       break;
-    case FIRAuthErrorCodeCustomTokenMismatch:code = @"auth/custom-token-mismatch";
+    case FIRAuthErrorCodeCustomTokenMismatch:
       message = @"The custom token corresponds to a different audience.";
       break;
-    case FIRAuthErrorCodeInvalidCredential:code = @"auth/invalid-credential";
+    case FIRAuthErrorCodeInvalidCredential:
       message = @"The supplied auth credential is malformed or has expired.";
       break;
-    case FIRAuthErrorCodeInvalidEmail:code = @"auth/invalid-email";
+    case FIRAuthErrorCodeInvalidEmail:
       message = @"The email address is badly formatted.";
       break;
-    case FIRAuthErrorCodeWrongPassword:code = @"auth/wrong-password";
+    case FIRAuthErrorCodeWrongPassword:
       message = @"The password is invalid or the user does not have a password.";
       break;
-    case FIRAuthErrorCodeUserMismatch:code = @"auth/user-mismatch";
+    case FIRAuthErrorCodeUserMismatch:
       message = @"The supplied credentials do not correspond to the previously signed in user.";
       break;
-    case FIRAuthErrorCodeRequiresRecentLogin:code = @"auth/requires-recent-login";
+    case FIRAuthErrorCodeRequiresRecentLogin:
       message =
           @"This operation is sensitive and requires recent authentication. Log in again before retrying this request.";
       break;
-    case FIRAuthErrorCodeAccountExistsWithDifferentCredential:code = @"auth/account-exists-with-different-credential";
+    case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
       message =
           @"An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.";
       break;
-    case FIRAuthErrorCodeEmailAlreadyInUse:code = @"auth/email-already-in-use";
+    case FIRAuthErrorCodeEmailAlreadyInUse:
       message = @"The email address is already in use by another account.";
       break;
-    case FIRAuthErrorCodeCredentialAlreadyInUse:code = @"auth/credential-already-in-use";
+    case FIRAuthErrorCodeCredentialAlreadyInUse:
       message = @"This credential is already associated with a different user account.";
       break;
-    case FIRAuthErrorCodeUserDisabled:code = @"auth/user-disabled";
+    case FIRAuthErrorCodeUserDisabled:
       message = @"The user account has been disabled by an administrator.";
       break;
-    case FIRAuthErrorCodeUserTokenExpired:code = @"auth/user-token-expired";
+    case FIRAuthErrorCodeUserTokenExpired:
       message = @"The user's credential is no longer valid. The user must sign in again.";
       break;
-    case FIRAuthErrorCodeUserNotFound:code = @"auth/user-not-found";
+    case FIRAuthErrorCodeUserNotFound:
       message = @"There is no user record corresponding to this identifier. The user may have been deleted.";
       break;
-    case FIRAuthErrorCodeInvalidUserToken:code = @"auth/invalid-user-token";
+    case FIRAuthErrorCodeInvalidUserToken:
       message = @"The user's credential is no longer valid. The user must sign in again.";
       break;
-    case FIRAuthErrorCodeWeakPassword:code = @"auth/weak-password";
+    case FIRAuthErrorCodeWeakPassword:
       message = @"The given password is invalid.";
       break;
-    case FIRAuthErrorCodeOperationNotAllowed:code = @"auth/operation-not-allowed";
+    case FIRAuthErrorCodeOperationNotAllowed:
       message = @"This operation is not allowed. You must enable this service in the console.";
       break;
-    case FIRAuthErrorCodeNetworkError:code = @"auth/network-error";
+    case FIRAuthErrorCodeNetworkError:
       message = @"A network error has occurred, please try again.";
       break;
-    case FIRAuthErrorCodeInternalError:code = @"auth/internal-error";
+    case FIRAuthErrorCodeInternalError:
       message = @"An internal error has occurred, please try again.";
       break;
-
-      // unsure of the below codes so leaving them as the default error message
-    case FIRAuthErrorCodeTooManyRequests:code = @"auth/too-many-requests";
+    default:
       break;
-    case FIRAuthErrorCodeProviderAlreadyLinked:code = @"auth/provider-already-linked";
-      break;
-    case FIRAuthErrorCodeNoSuchProvider:code = @"auth/no-such-provider";
-      break;
-    case FIRAuthErrorCodeInvalidAPIKey:code = @"auth/invalid-api-key";
-      break;
-    case FIRAuthErrorCodeAppNotAuthorized:code = @"auth/app-not-authorised";
-      break;
-    case FIRAuthErrorCodeExpiredActionCode:code = @"auth/expired-action-code";
-      break;
-    case FIRAuthErrorCodeInvalidMessagePayload:code = @"auth/invalid-message-payload";
-      break;
-    case FIRAuthErrorCodeInvalidSender:code = @"auth/invalid-sender";
-      break;
-    case FIRAuthErrorCodeInvalidRecipientEmail:code = @"auth/invalid-recipient-email";
-      break;
-    case FIRAuthErrorCodeKeychainError:code = @"auth/keychain-error";
-      break;
-    default:break;
   }
 
   return @{
