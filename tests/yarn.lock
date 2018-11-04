@@ -3713,9 +3713,9 @@ jest-worker@23.2.0, jest-worker@^23.2.0:
   dependencies:
     merge-stream "^1.0.1"
 
-jet@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/jet/-/jet-0.1.0.tgz#242f2b104e5626dee18f0f50cb889638ac1f6364"
+jet@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/jet/-/jet-0.2.0.tgz#84b7efc4fccd7da74c33447db7264d6942051e1d"
   dependencies:
     chalk "^2.4.1"
     error-stack-parser "^2.0.2"
