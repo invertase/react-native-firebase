@@ -2007,17 +2007,25 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
 
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
     final Map<String, Object> appLanguage = new HashMap<>();
+    final Map<String, Object> appUser = new HashMap<>();
 
     for (FirebaseApp app : firebaseAppList) {
       String appName = app.getName();
 
       FirebaseApp instance = FirebaseApp.getInstance(appName);
       FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
+      FirebaseUser user = firebaseAuth.getCurrentUser();
 
       appLanguage.put(appName, firebaseAuth.getLanguageCode());
+
+      if (user != null) {
+        appUser.put(appName, firebaseUserToMap(user));
+      }
     }
 
     constants.put("APP_LANGUAGE", appLanguage);
+    constants.put("APP_USER", appUser);
+
     return constants;
   }
 }

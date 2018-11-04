@@ -22,6 +22,7 @@ static NSString *const keyDisplayName = @"displayName";
 static NSString *const keyPackageName = @"packageName";
 static NSString *const keyMinVersion = @"minimumVersion";
 static NSString *const constAppLanguage = @"APP_LANGUAGE";
+static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 
@@ -1460,13 +1461,26 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   NSDictionary *firApps = [FIRApp allApps];
   NSMutableDictionary *constants = [NSMutableDictionary new];
   NSMutableDictionary *appLanguage = [NSMutableDictionary new];
+  NSMutableDictionary *appUser = [NSMutableDictionary new];
 
   for (id key in firApps) {
     FIRApp *firApp = firApps[key];
-    appLanguage[firApp.name] = [FIRAuth authWithApp:firApp].languageCode;
+    NSString *appName = firApp.name;
+    FIRUser *user = [FIRAuth authWithApp:firApp].currentUser;
+    
+    if ([appName isEqualToString:@"__FIRAPP_DEFAULT"]) {
+      appName = @"[DEFAULT]";
+    }
+    
+    appLanguage[appName] = [FIRAuth authWithApp:firApp].languageCode;
+    
+    if (user != nil) {
+      appUser[appName] = [self firebaseUserToDict: user];
+    }
   }
 
   constants[constAppLanguage] = appLanguage;
+  constants[constAppUser] = appUser;
   return constants;
 }
 
