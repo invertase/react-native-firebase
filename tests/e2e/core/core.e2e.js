@@ -41,9 +41,7 @@ describe('Core', () => {
           newApp.name.should.equal(name.toUpperCase());
           newApp.toString().should.equal(name.toUpperCase());
           newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
-          // TODO add back in when android sdk support for deleting apps becomes available
-          // return newApp.delete();
-          return Promise.resolve();
+          return newApp.delete();
         });
     });
 
@@ -59,12 +57,33 @@ describe('Core', () => {
       return Promise.resolve();
     });
 
-    it('delete is unsupported', () => {
+    it('can be deleted', async () => {
+      const name = `testscoreapp${global.testRunId}`;
+      const platformAppConfig = TestHelpers.core.config();
+      const newApp = firebase.initializeApp(platformAppConfig, name);
+
+      await newApp.onReady();
+
+      newApp.name.should.equal(name.toUpperCase());
+      newApp.toString().should.equal(name.toUpperCase());
+      newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
+
+      await newApp.delete();
+
       (() => {
-        firebase.app().delete();
+        firebase.app(name);
       }).should.throw(
-        'app.delete() is unsupported by the native Firebase SDKs.'
+        `The [${name.toUpperCase()}] firebase app has not been initialized!`
       );
+    });
+
+    it('prevents the default app from being deleted', async () => {
+      firebase
+        .app()
+        .delete()
+        .should.be.rejectedWith(
+          'Unable to delete the default native firebase app instance.'
+        );
     });
 
     it('extendApp should error if an object is not supplied', () => {
