@@ -170,18 +170,16 @@ export default class App {
    *
    * @return {Promise}
    */
-  delete() {
-    throw new Error(
-      INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('app', 'delete')
+  delete(): Promise<void> {
+    if (this._name === APPS.DEFAULT_APP_NAME && this._nativeInitialized) {
+      return Promise.reject(
+        new Error('Unable to delete the default native firebase app instance.')
+      );
+    }
+
+    return FirebaseCoreModule.deleteApp(this._name).then(() =>
+      APPS.deleteApp(this._name)
     );
-    // TODO only the ios sdk currently supports delete, add back in when android also supports it
-    // if (this._name === APPS.DEFAULT_APP_NAME && this._nativeInitialized) {
-    //   return Promise.reject(
-    //     new Error('Unable to delete the default native firebase app instance.'),
-    //   );
-    // }
-    //
-    // return FirebaseCoreModule.deleteApp(this._name);
   }
 
   /**
