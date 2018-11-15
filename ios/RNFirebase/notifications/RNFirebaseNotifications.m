@@ -20,6 +20,7 @@
     NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *fetchCompletionHandlers;
     NSMutableDictionary<NSString *, void(^)(void)> *completionHandlers;
 }
+@synthesize nativeDelegate;
 
 static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -36,6 +37,10 @@ static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionI
     // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
     // pendingEvents = [[NSMutableArray alloc] init];
     theRNFirebaseNotifications = [[RNFirebaseNotifications alloc] init];
+    id delegate = [RCTSharedApplication() delegate];
+    if ([delegate conformsToProtocol: @protocol(RNFirebaseNativeNotificationDelegate)]) {
+        theRNFirebaseNotifications.nativeDelegate = delegate;
+    }
 }
 
 RCT_EXPORT_MODULE();
@@ -221,8 +226,22 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 #else
          withCompletionHandler:(void(^)())completionHandler NS_AVAILABLE_IOS(10_0) {
 #endif
+
      NSDictionary *message = [self parseUNNotificationResponse:response];
-           
+
+    //Re-register the delegate here if necessary when launched from background state
+    if (!self.nativeDelegate) {
+        id delegate = [RCTSharedApplication() delegate];
+        if ([delegate conformsToProtocol: @protocol(RNFirebaseNativeNotificationDelegate)]) {
+            self.nativeDelegate = delegate;
+        }
+    }
+
+    if (self.nativeDelegate) {
+        [self.nativeDelegate firebaseNotificationResponseReceived: message];
+    }
+
+
      NSString *handlerKey = message[@"notification"][@"notificationId"];
 
      [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];

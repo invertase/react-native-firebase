@@ -6,6 +6,11 @@
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
+@import UserNotifications;
+
+@protocol RNFirebaseNativeMessagingDelegate <NSObject>
+- (void)registerFirebaseNotificationCategoriesAndActions: (UNUserNotificationCenter *) center;
+@end
 
 @interface RNFirebaseMessaging : RCTEventEmitter<RCTBridgeModule, FIRMessagingDelegate>
 
@@ -13,6 +18,7 @@
 
 @property _Nullable RCTPromiseRejectBlock permissionRejecter;
 @property _Nullable RCTPromiseResolveBlock permissionResolver;
+@property (nonatomic, weak) id <RNFirebaseNativeMessagingDelegate> nativeDelegate;
 
 #if !TARGET_OS_TV
 - (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
