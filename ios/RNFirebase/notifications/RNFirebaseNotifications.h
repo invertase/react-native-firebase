@@ -6,10 +6,15 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
+@protocol RNFirebaseNativeNotificationDelegate <NSObject>
+- (void)firebaseNotificationResponseReceived: (NSDictionary *) response;
+@end
+
 @interface RNFirebaseNotifications : RCTEventEmitter<RCTBridgeModule>
 
 + (void)configure;
 + (_Nonnull instancetype)instance;
+@property (nonatomic, weak) id <RNFirebaseNativeNotificationDelegate> nativeDelegate;
 
 #if !TARGET_OS_TV
 - (void)didReceiveLocalNotification:(nonnull UILocalNotification *)notification;

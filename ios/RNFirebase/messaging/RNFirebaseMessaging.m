@@ -17,6 +17,8 @@
 
 @implementation RNFirebaseMessaging
 
+@synthesize nativeDelegate;
+
 static RNFirebaseMessaging *theRNFirebaseMessaging = nil;
 static bool jsReady = FALSE;
 static NSString* initialToken = nil;
@@ -46,6 +48,11 @@ RCT_EXPORT_MODULE()
 
     // Set static instance for use from AppDelegate
     theRNFirebaseMessaging = self;
+    
+    id delegate = [RCTSharedApplication() delegate];
+    if ([delegate conformsToProtocol: @protocol(RNFirebaseNativeMessagingDelegate)]) {
+        theRNFirebaseMessaging.nativeDelegate = delegate;
+    }
 }
 
 // *******************************************************
@@ -162,26 +169,9 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
             UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
             [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
                 if (granted) {
-                    
-                    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_MESSAGE"
-                                                                                           title:@"View"
-                                                                                         options:UNNotificationActionOptionForeground];
-                    UNNotificationAction *replyAction = [UNTextInputNotificationAction actionWithIdentifier:@"REPLY_MESSAGE"
-                                                                                            title:@"Reply"
-                                                                                          options:UNNotificationActionOptionNone
-                                                                                          textInputButtonTitle: @"Send"
-                                                                                          textInputPlaceholder: @"Type your reply..."];
-                    NSArray *notificationActions = @[viewAction, replyAction ];
-                    
-                    // create a category
-                    UNNotificationCategory *messageCategory = [UNNotificationCategory categoryWithIdentifier:@"us.leapforward.thegardenofwe.alpha.answer"
-                                                                                                    actions:notificationActions
-                                                              
-                                                                                          intentIdentifiers:@[]
-                                                                                                    options:UNNotificationCategoryOptionCustomDismissAction];
-                    NSSet *categories = [NSSet setWithObject:messageCategory];
-                    [center setNotificationCategories: categories];
-
+                    if (self.nativeDelegate) {
+                        [self.nativeDelegate registerFirebaseNotificationCategoriesAndActions: center];
+                    }
                     resolve(nil);
                 } else {
                     reject(@"messaging/permission_error", @"Failed to grant permission", error);
