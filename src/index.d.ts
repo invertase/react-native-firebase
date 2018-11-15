@@ -993,22 +993,23 @@ declare module 'react-native-firebase' {
           smsCode: string
         ): Promise<null>;
       }
-
+      type OrNull<T> = T | null;
+      type OnAuthStateChangedCallback = (user: OrNull<User>) => void;
       interface Auth {
         readonly app: App;
         /**
          * Returns the current Firebase authentication state.
          */
-        authResult: AuthResult | null;
+        authResult: OrNull<AuthResult>;
         /**
          * Returns the currently signed-in user (or null). See the User class documentation for further usage.
          */
-        currentUser: User | null;
+        currentUser: OrNull<User>;
 
         /**
          * Gets/Sets the language for the app instance
          */
-        languageCode: string | null;
+        languageCode: OrNull<string>;
 
         settings: AuthSettings;
 
@@ -1017,7 +1018,7 @@ declare module 'react-native-firebase' {
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onAuthStateChanged(listener: Function): () => void;
+        onAuthStateChanged(listener: OnAuthStateChangedCallback): () => void;
 
         /**
          * Listen for changes in id token.
