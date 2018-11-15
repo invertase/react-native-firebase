@@ -159,8 +159,29 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
         if (@available(iOS 10.0, *)) {
             // For iOS 10 display notification (sent via APNS)
             UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            [center requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
                 if (granted) {
+                    
+                    UNNotificationAction *viewAction = [UNNotificationAction actionWithIdentifier:@"VIEW_MESSAGE"
+                                                                                           title:@"View"
+                                                                                         options:UNNotificationActionOptionForeground];
+                    UNNotificationAction *replyAction = [UNTextInputNotificationAction actionWithIdentifier:@"REPLY_MESSAGE"
+                                                                                            title:@"Reply"
+                                                                                          options:UNNotificationActionOptionNone
+                                                                                          textInputButtonTitle: @"Send"
+                                                                                          textInputPlaceholder: @"Type your reply..."];
+                    NSArray *notificationActions = @[viewAction, replyAction ];
+                    
+                    // create a category
+                    UNNotificationCategory *messageCategory = [UNNotificationCategory categoryWithIdentifier:@"us.leapforward.thegardenofwe.alpha.answer"
+                                                                                                    actions:notificationActions
+                                                              
+                                                                                          intentIdentifiers:@[]
+                                                                                                    options:UNNotificationCategoryOptionCustomDismissAction];
+                    NSSet *categories = [NSSet setWithObject:messageCategory];
+                    [center setNotificationCategories: categories];
+
                     resolve(nil);
                 } else {
                     reject(@"messaging/permission_error", @"Failed to grant permission", error);
