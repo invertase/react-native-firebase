@@ -52,4 +52,38 @@ describe('database()', () => {
       unsub();
     });
   });
+  describe('ref().on("child_removed")', () => {
+    it('returns a function', () => {
+      const ref = firebase.database().ref('tests/types/number');
+      const unsub = ref.on('child_removed', () => {});
+      unsub.should.be.Function();
+      unsub();
+    });
+  });
+  describe('ref().on("child_moved")', () => {
+    it('returns a function', () => {
+      const ref = firebase.database().ref('tests/types/number');
+      const unsub = ref.on('child_moved', () => {});
+      unsub.should.be.Function();
+      unsub();
+    });
+  });
+  describe('ref().on("child_changed")', () => {
+    it('returns a function', () => {
+      const ref = firebase.database().ref('tests/types/number');
+      const unsub = ref.on('child_changed', () => {});
+      unsub.should.be.Function();
+      unsub();
+    });
+  });
+  describe('ref().on("INVALID_EVENT_NAME")', () => {
+    it('throws', () => {
+      const ref = firebase.database().ref('tests/types/number');
+      (() => {
+        const unsub = ref.on('INVALID_EVENT_NAME', () => {});
+      }).should.throw(
+        'Query.on failed: First argument must be a valid string event type: "value, child_added, child_removed, child_changed, child_moved"'
+      );
+    });
+  });
 });
