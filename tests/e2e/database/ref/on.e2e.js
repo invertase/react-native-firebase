@@ -1,13 +1,4 @@
 const { CONTENTS, setDatabaseContents } = TestHelpers.database;
-const waitForValueAtRef = ref =>
-  new Promise(resolve => {
-    const unsub = ref.on('value', v => {
-      if (!v) return;
-      const nodeValue = v.val();
-      unsub();
-      resolve(nodeValue);
-    });
-  });
 
 describe('database()', () => {
   before(() => setDatabaseContents());
@@ -24,10 +15,19 @@ describe('database()', () => {
       unsub.should.be.Function();
       unsub();
     });
-    it('resolves with the correct value', async () => {
+    it('resolves with the correct value and key', async () => {
       const ref = firebase.database().ref('tests/types/number');
-      const nodeValue = await waitForValueAtRef(ref);
-      nodeValue.should.be.Number();
+      const nodeValue = await new Promise(resolve => {
+        const unsub = ref.on('value', v => {
+          if (!v) return;
+          const nodeValue = v.val();
+          unsub();
+          nodeValue.should.be.Number();
+          v.key.should.be.String();
+          v.key.should.equal('number');
+          resolve();
+        });
+      });
     });
 
     it('is called again when the value changes', async () => {
