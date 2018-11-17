@@ -22,6 +22,7 @@ describe('database()', () => {
       const ref = firebase.database().ref('tests/types/number');
       const unsub = ref.on('value', () => {});
       unsub.should.be.Function();
+      unsub();
     });
     it('resolves with the correct value', async () => {
       const ref = firebase.database().ref('tests/types/number');
@@ -48,6 +49,7 @@ describe('database()', () => {
       const ref = firebase.database().ref('tests/types/number');
       const unsub = ref.on('child_added', () => {});
       unsub.should.be.Function();
+      unsub();
     });
   });
 });
