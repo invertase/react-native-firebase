@@ -62,6 +62,22 @@ RCT_EXPORT_MODULE();
   }
 }
 
+- (void)invalidate {
+  // dealloc sometimes is not called when app is reloaded.
+
+  for(NSString* key in authStateHandlers) {
+      FIRApp *firApp = [RNFirebaseUtil getApp:key];
+      [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
+      [authStateHandlers removeObjectForKey:key];
+  }
+  
+  for(NSString* key in idTokenHandlers) {
+      FIRApp *firApp = [RNFirebaseUtil getApp:key];
+      [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
+      [idTokenHandlers removeObjectForKey:key];
+  }
+}
+
 /**
  * addAuthStateListener
  *
