@@ -711,7 +711,7 @@ declare module 'react-native-firebase' {
       /**
        * Sets multiple user properties to the supplied values.
        */
-      setUserProperties(fieldMapping: {[key: string]: any}): void;
+      setUserProperties(fieldMapping: {[key: string]: string | null}): void;
 
       [key: string]: any;
     }
