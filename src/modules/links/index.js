@@ -47,7 +47,7 @@ export default class Links extends ModuleBase {
   /**
    * Create long Dynamic Link from parameters
    * @param parameters
-   * @returns {Promise.<String>}
+   * @returns {Promise.<string>}
    */
   createDynamicLink(link: DynamicLink): Promise<string> {
     if (!(link instanceof DynamicLink)) {
@@ -67,12 +67,12 @@ export default class Links extends ModuleBase {
   /**
    * Create short Dynamic Link from parameters
    * @param parameters
-   * @returns {Promise.<String>}
+   * @returns {Promise.<string>}
    */
   createShortDynamicLink(
     link: DynamicLink,
     type?: 'SHORT' | 'UNGUESSABLE'
-  ): Promise<String> {
+  ): Promise<string> {
     if (!(link instanceof DynamicLink)) {
       return Promise.reject(
         new Error(
@@ -89,7 +89,7 @@ export default class Links extends ModuleBase {
 
   /**
    * Returns the link that triggered application open
-   * @returns {Promise.<String>}
+   * @returns {Promise.<string>}
    */
   getInitialLink(): Promise<?string> {
     return getNativeModule(this).getInitialLink();
