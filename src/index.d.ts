@@ -53,7 +53,7 @@ declare module 'react-native-firebase' {
     RNFirebase.notifications.NotificationsStatics
   >;
   type PerfModule = FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
-  type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
+  type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage, RNFirebase.storage.StorageStatics>;
   // type UtilsModule: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
 
   // Modules commented-out do not currently have type definitions
@@ -236,15 +236,10 @@ declare module 'react-native-firebase' {
     }
 
     namespace storage {
-      /**
-       * The Firebase Storage service interface.
-       *
-       * An instance can be accessed using `firebase.storage()`.
-       */
-      class Storage {
-        static TaskState: TaskState;
-        static TaskEvent: TaskState;
-        static Native?: {
+      interface StorageStatics {
+        TaskState: TaskState;
+        TaskEvent: TaskState;
+        Native?: {
           MAIN_BUNDLE_PATH: string;
           CACHES_DIRECTORY_PATH: string;
           DOCUMENT_DIRECTORY_PATH: string;
@@ -255,7 +250,14 @@ declare module 'react-native-firebase' {
           FILETYPE_REGULAR: string;
           FILETYPE_DIRECTORY: string;
         };
+      }
 
+      /**
+       * The Firebase Storage service interface.
+       *
+       * An instance can be accessed using `firebase.storage()`.
+       */
+      class Storage {
         /**
          * The app associated with the Storage service instance.
          */
