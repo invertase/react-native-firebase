@@ -46,6 +46,7 @@ android {
 
 rootProject.gradle.buildFinished { buildResult ->
   if (buildResult.getFailure() != null) {
+    //noinspection GroovyUnusedCatchParameter
     try {
       String message = buildResult.getFailure().properties.get("reportableCauses").toString()
       if (message.contains("com.android.dex.DexException: Multiple dex files define Lcom/google/") ||
@@ -85,31 +86,49 @@ repositories {
 
   def found = false
   def parentDir = rootProject.projectDir
-  def reactNativeAndroidName = 'React Native (Node Modules)'
+  def androidSourcesName = 'React Native sources'
+  def androidPrebuiltBinaryName = 'React Native prebuilt binary'
 
   1.upto(4, {
     if (found) return true
     parentDir = parentDir.parentFile
-    def reactNativeAndroid = new File(
+
+    // Running React Native from sources locally or for ExpoKit
+    def androidSourcesDir = new File(
+      parentDir,
+      'node_modules/react-native'
+    )
+
+    // Official releases of React Native come with a prebuilt version of Android sources
+    // in ./android, e.g. react-native/android/**/react-native-0.57.1.aar
+    def androidPrebuiltBinaryDir = new File(
       parentDir,
       'node_modules/react-native/android'
     )
 
-    if (reactNativeAndroid.exists()) {
+    if (androidPrebuiltBinaryDir.exists()) {
       maven {
-        url reactNativeAndroid.toString()
-        name reactNativeAndroidName
+        url androidPrebuiltBinaryDir.toString()
+        name androidPrebuiltBinaryName
       }
 
-      println "${project.name}: using React Native sources from ${reactNativeAndroid.toString()}"
+      println "${project.name}: using ${androidPrebuiltBinaryName} from ${androidPrebuiltBinaryDir.toString()}"
+      found = true
+    } else if (androidSourcesDir.exists()) {
+      maven {
+        url androidSourcesDir.toString()
+        name androidSourcesName
+      }
+
+      println "${project.name}: using ${androidSourcesName} from ${androidSourcesDir.toString()}"
       found = true
     }
   })
 
   if (!found) {
     throw new GradleException(
-      "${project.name}: unable to locate React Native Android sources, " +
-        "ensure you have you installed React Native as a dependency and try again."
+      "${project.name}: unable to locate React Native android sources or prebuilt binary. " +
+        "Ensure you have you installed React Native as a dependency in your project and try again."
     )
   }
 }
