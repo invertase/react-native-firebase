@@ -21,7 +21,7 @@ import type {
 import type Path from './Path';
 import type { NativeErrorResponse } from '../../common/commonTypes.flow';
 
-type ObserverOnError = Object => void;
+type ObserverOnError = SnapshotError => void;
 type ObserverOnNext = DocumentSnapshot => void;
 
 type Observer = {
