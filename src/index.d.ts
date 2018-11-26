@@ -53,7 +53,10 @@ declare module 'react-native-firebase' {
     RNFirebase.notifications.NotificationsStatics
   >;
   type PerfModule = FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
-  type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage, RNFirebase.storage.StorageStatics>;
+  type StorageModule = FirebaseModuleAndStatics<
+    RNFirebase.storage.Storage,
+    RNFirebase.storage.StorageStatics
+  >;
   // type UtilsModule: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
 
   // Modules commented-out do not currently have type definitions
@@ -713,7 +716,7 @@ declare module 'react-native-firebase' {
       /**
        * Sets multiple user properties to the supplied values.
        */
-      setUserProperties(fieldMapping: {[key: string]: string | null}): void;
+      setUserProperties(fieldMapping: { [key: string]: string | null }): void;
 
       [key: string]: any;
     }
@@ -2417,7 +2420,7 @@ declare module 'react-native-firebase' {
 
       namespace DocumentReference {
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
-        type ObserverOnError = (err: object) => void;
+        type ObserverOnError = (err: Query.SnapshotError) => void;
 
         interface Observer {
           next: ObserverOnNext;
@@ -2573,8 +2576,20 @@ declare module 'react-native-firebase' {
           startAt?: any[];
         }
 
+        interface NativeError extends Error {
+          code: string;
+          message: string;
+          nativeErrorCode?: string;
+          nativeErrorMessage?: string;
+        }
+
+        interface SnapshotError extends NativeError {
+          path: string;
+          appName: string;
+        }
+
         type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
-        type ObserverOnError = (err: object) => void;
+        type ObserverOnError = (err: SnapshotError) => void;
 
         interface Observer {
           next: ObserverOnNext;
@@ -2906,6 +2921,7 @@ declare module 'react-native-firebase/firestore' {
   export type GeoPoint = RNFirebase.firestore.GeoPoint;
   export type Path = RNFirebase.firestore.Path;
   export type Query = RNFirebase.firestore.Query;
+  export type SnapshotError = RNFirebase.firestore.Query.SnapshotError;
   export type QuerySnapshot = RNFirebase.firestore.QuerySnapshot;
   export type WriteBatch = RNFirebase.firestore.WriteBatch;
 }
