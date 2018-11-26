@@ -97,7 +97,7 @@
     "prettier": "^1.14.2",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",
-    "react-native": "^0.57.0",
+    "react-native": "0.57.1",
     "rimraf": "^2.6.2",
     "typescript": "^3.0.3"
   },

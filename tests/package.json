@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-    "packager-jet": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start",
-    "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --reset-cache",
+    "packager-chrome": "react-native start --platforms ios,android",
+    "packager-jet": "REACT_DEBUGGER='echo nope' react-native start",
+    "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
     "build-ios": "detox build --configuration ios.sim.debug",
     "build-ios-release": "detox build --configuration ios.sim.release",
     "build-android": "detox build --configuration android.emu.debug",
