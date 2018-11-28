@@ -2448,7 +2448,7 @@ declare module 'react-native-firebase' {
 
         toBase64(): string;
 
-        toUint8Array: Uint8Array;
+        toUint8Array(): Uint8Array;
       }
 
       class FieldPath {
