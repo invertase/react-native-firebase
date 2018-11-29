@@ -83,7 +83,7 @@ export default class Crashlytics extends ModuleBase {
    * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
    */
   enableCrashlyticsCollection(): void {
-    getNativeModule(this).enableCrashlyticsCollection(userId);
+    getNativeModule(this).enableCrashlyticsCollection();
   }
 }
 
