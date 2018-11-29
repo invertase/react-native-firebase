@@ -77,8 +77,8 @@ describe('crashlytics()', () => {
   });
 
   describe('enableCrashlyticsCollection()', () => {
-    it('should not throw', () => {
-      firebase.crashlytics().enableCrashlyticsCollection();
+    it('should not throw', async () => {
+      await firebase.crashlytics().enableCrashlyticsCollection();
     });
   });
 });
