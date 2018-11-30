@@ -52,7 +52,9 @@
     }
 
     RCT_EXPORT_METHOD(enableCrashlyticsCollection) {
+#if __has_include(<Fabric/Fabric.h>)
         [Fabric with:@[[Crashlytics class]]];
+#endif
     }
 
     @end
