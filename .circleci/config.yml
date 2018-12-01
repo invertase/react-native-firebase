@@ -8,14 +8,14 @@ aliases:
 # -------------------------
 - &restore-yarn-cache
   keys:
-  - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
-  - yarn-cache-{{ arch }}
+  - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  - v1-yarn-cache-{{ arch }}
 
 - &save-yarn-cache
   paths:
   - ~/.cache/yarn
   - ~/Library/Detox/ios
-  key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
 - &save-pods-cache
   paths:
