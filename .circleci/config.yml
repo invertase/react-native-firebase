@@ -187,6 +187,7 @@ jobs:
         name: Install CocoaPods +  Pod Install
         command: |
           curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+          sudo gem install cocoapods --pre
           cd tests/ios
           rm -rf Pods/
           rm Podfile.lock
