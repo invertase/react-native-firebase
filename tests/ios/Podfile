@@ -15,7 +15,7 @@ target 'testing' do
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
   # Pods for ReactNativeFirebaseDemo
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  pod 'React', :path => "#{react_native_path}/React.podspec", :subspecs => [
    'Core',
    'RCTText',
    'RCTNetwork',

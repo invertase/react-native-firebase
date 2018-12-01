@@ -275,10 +275,10 @@ DEPENDENCIES:
   - Firebase/Performance (~> 5.11.0)
   - Firebase/RemoteConfig (~> 5.11.0)
   - Firebase/Storage (~> 5.11.0)
-  - React/Core (from `../node_modules/react-native`)
-  - React/RCTNetwork (from `../node_modules/react-native`)
-  - React/RCTText (from `../node_modules/react-native`)
-  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - React/Core (from `../node_modules/react-native/React.podspec`)
+  - React/RCTNetwork (from `../node_modules/react-native/React.podspec`)
+  - React/RCTText (from `../node_modules/react-native/React.podspec`)
+  - React/RCTWebSocket (from `../node_modules/react-native/React.podspec`)
   - RNFirebase (from `../../ios/RNFirebase.podspec`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -323,7 +323,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   React:
-    :path: "../node_modules/react-native"
+    :path: "../node_modules/react-native/React.podspec"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
     :version: "~> 5.1.1"
@@ -371,6 +371,6 @@ SPEC CHECKSUMS:
   RNFirebase: 2b25fd2e60269f26bb0a76c71dcc942b35a77df0
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: d219a67a398d8e5ad35cbde6834206b0401163ba
+PODFILE CHECKSUM: 4a17cd31bba5415cba9b8f969b6ad5d489f5a07d
 
 COCOAPODS: 1.5.3
