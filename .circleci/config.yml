@@ -186,10 +186,11 @@ jobs:
     - run:
         name: Install CocoaPods +  Pod Install
         command: |
+          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           cd tests/ios
           rm -rf Pods/
-          curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-          pod install
+          rm Podfile.lock/
+          pod install --repo-update
     - save-cache: *save-pods-cache
 
     # must always be after environment config job but before ios build
