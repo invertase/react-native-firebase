@@ -22,8 +22,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.IOException;
-
 import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
