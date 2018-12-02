@@ -17,9 +17,12 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
@@ -45,6 +48,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     );
   }
 
+
   @Override
   public String getName() {
     return "RNFirebaseMessaging";
@@ -52,11 +56,16 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getToken(Promise promise) {
-    String token = FirebaseInstanceId
-      .getInstance()
-      .getToken();
-    Log.d(TAG, "Firebase token: " + token);
-    promise.resolve(token);
+    try {
+      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+      String token = FirebaseInstanceId
+              .getInstance()
+              .getToken(senderId, "FCM");
+      Log.d(TAG, "Firebase token: " + token);
+      promise.resolve(token);
+    } catch(IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @ReactMethod
