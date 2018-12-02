@@ -63,8 +63,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
               .getToken(senderId, "FCM");
       Log.d(TAG, "Firebase token: " + token);
       promise.resolve(token);
-    } catch(IOException e) {
-      e.printStackTrace();
+    } catch (Throwable e) {
+       e.printStackTrace();
+       promise.reject(null,e.getMessage());
     }
   }
 
