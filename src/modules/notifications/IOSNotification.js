@@ -43,9 +43,11 @@ export default class IOSNotification {
 
   constructor(
     notification: Notification,
-    notifications: Notifications,
+    notifications?: Notifications,
     data?: NativeIOSNotification
   ) {
+    const iosNotifications =
+      isIOS && notifications && notifications.ios && notifications;
     this._notification = notification;
 
     if (data) {
@@ -58,26 +60,26 @@ export default class IOSNotification {
       this._threadIdentifier = data.threadIdentifier;
     }
 
-    if (isIOS && notifications && notifications.ios) {
-      const complete = (fetchResult: BackgroundFetchResultValue) => {
-        const { notificationId } = notification;
-        if (notificationId) {
-          getLogger(notifications).debug(
-            `Completion handler called for notificationId=${notificationId}`
-          );
-          getNativeModule(notifications).complete(notificationId, fetchResult);
-        }
-      };
-
-      if (notifications.ios.shouldAutoComplete) {
-        complete(notifications.ios.backgroundFetchResult.noData);
-      } else {
-        this._complete = complete;
-      }
-    }
-
     // Defaults
     this._attachments = this._attachments || [];
+
+    if (!iosNotifications) return;
+
+    const complete = (fetchResult: BackgroundFetchResultValue) => {
+      const { notificationId } = notification;
+      if (notificationId) {
+        getLogger(iosNotifications).debug(
+          `Completion handler called for notificationId=${notificationId}`
+        );
+        getNativeModule(iosNotifications).complete(notificationId, fetchResult);
+      }
+    };
+
+    if (iosNotifications.ios.shouldAutoComplete) {
+      complete(iosNotifications.ios.backgroundFetchResult.noData);
+    } else {
+      this._complete = complete;
+    }
   }
 
   get alertAction(): ?string {
