@@ -2010,6 +2010,11 @@ declare module 'react-native-firebase' {
          * Set the user ID to show alongside any subsequent crash reports.
          */
         setUserIdentifier(userId: string): void;
+
+        /**
+         * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
+         */
+        enableCrashlyticsCollection(): void;
       }
     }
 
