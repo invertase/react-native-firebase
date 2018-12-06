@@ -6,7 +6,7 @@ install! 'cocoapods', :deterministic_uuids => false
 # platform :ios, '8.0'
 
 target 'testing' do
-  platform :ios, '9.0'
+  platform :ios, '10.0'
   # Uncomment this line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
 
@@ -15,12 +15,12 @@ target 'testing' do
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
   # Pods for ReactNativeFirebaseDemo
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  pod 'React', :path => "#{react_native_path}/React.podspec", :subspecs => [
    'Core',
    'RCTText',
    'RCTNetwork',
    'RCTWebSocket',
-   ]
+  ]
 
   pod 'Firebase/AdMob', '~> 5.11.0'
   pod 'Firebase/Auth', '~> 5.11.0'
@@ -41,9 +41,6 @@ target 'testing' do
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
-      if target.name == "React"
-        target.remove_from_project
-      end
       if target.name == 'yoga'
         target.build_configurations.each do |config|
           config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'

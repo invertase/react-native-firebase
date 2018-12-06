@@ -8,34 +8,34 @@ aliases:
 # -------------------------
 - &restore-yarn-cache
   keys:
-  - yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
-  - yarn-cache-{{ arch }}
+  - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  - v1-yarn-cache-{{ arch }}
 
 - &save-yarn-cache
   paths:
   - ~/.cache/yarn
   - ~/Library/Detox/ios
-  key: yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
 - &save-pods-cache
   paths:
   - ~/react-native-firebase/tests/ios/Pods
-  key: v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  key: v3-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &restore-pods-cache
   keys:
-  - v2-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-  - v2-pods-cache-{{ arch }}
+  - v3-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v3-pods-cache-{{ arch }}
 
 - &save-ios-build-cache
   paths:
   - ~/react-native-firebase/tests/ios/build/Build
-  key: v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  key: v3-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &restore-ios-build-cache
   keys:
-  - v2-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-  - v2-ios-build-cache-{{ arch }}
+  - v3-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  - v3-ios-build-cache-{{ arch }}
 
 - &save-brew-cache
   paths:
@@ -182,13 +182,17 @@ jobs:
     - save-cache: *save-yarn-cache
 
     # Pods
-    - restore-cache: *restore-pods-cache
+#    - restore-cache: *restore-pods-cache
     - run:
         name: Install CocoaPods +  Pod Install
         command: |
-          cd tests/ios
           curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-          pod install
+          cd tests
+          yarn
+          cd ios
+          rm -rf Pods/
+          rm Podfile.lock
+          pod install --repo-update
     - save-cache: *save-pods-cache
 
     # must always be after environment config job but before ios build
