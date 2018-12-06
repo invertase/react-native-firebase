@@ -189,6 +189,7 @@ jobs:
           curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           cd tests
           yarn
+          ls -la node_modules/
           cd ios
           rm -rf Pods/
           pod install --repo-update
