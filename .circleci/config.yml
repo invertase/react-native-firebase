@@ -191,7 +191,6 @@ jobs:
           yarn
           cd ios
           rm -rf Pods/
-
           pod install --repo-update
     - save-cache: *save-pods-cache
 
