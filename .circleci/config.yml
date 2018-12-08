@@ -209,7 +209,7 @@ jobs:
           key: v1-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
       - run:
           name: Build Android Testing App
-          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace --debug
       - save_cache:
           paths:
             - ~/react-native-firebase/tests/android/.gradle
