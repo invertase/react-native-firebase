@@ -81,6 +81,7 @@ aliases:
   - &android-create-avd
     name: Create AVD
     command: |
+      mkdir -p ~/.android
       touch ~/.android/repositories.cfg
       sdkmanager "$AVD_PACKAGE"
       avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
@@ -193,6 +194,10 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
+
+      # must always be after environment config job but before android build
+      - run: *packager-jet
+      - run: *packager-warmup
 
       - run: *android-create-avd
       - run: *android-launch-avd
