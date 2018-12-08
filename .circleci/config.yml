@@ -128,9 +128,9 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: "large"
+  resource_class: "medium"
   macos:
-    xcode: "9.4.0"
+    xcode: "10.1.0"
 
 # -------------------------
 #          JOBS
