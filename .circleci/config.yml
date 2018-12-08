@@ -75,6 +75,32 @@ aliases:
       cd tests && yarn install --non-interactive
 
   # -------------------------
+  #         ANDROID
+  # -------------------------
+
+  - &android-create-avd
+    name: Create AVD
+    command: |
+      AVD_ABI="armeabi-v7a"
+      AVD_NAME="TestingAVD"
+      AVD_PACKAGE="system-images;android-19;google_apis;$AVD_ABI"
+      sdkmanager "$AVD_PACKAGE"
+      avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
+
+  - &android-launch-avd
+    name: Launch AVD
+    background: true
+    command: |
+      AVD_NAME="TestingAVD"
+      "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+
+  - &android-wait-avd
+    name: Wait for AVD to be ready
+    background: true
+    command: ./.circleci/scripts/wait-for-avd.sh
+
+
+  # -------------------------
   #         ANALYSE
   # -------------------------
 
@@ -165,6 +191,9 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
+      - run: *android-create-avd
+      - run: *android-launch-avd
+
       - restore_cache:
           key: v1-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
       - run:
@@ -174,6 +203,8 @@ jobs:
           paths:
             - ~/react-native-firebase/tests/android/.gradle
           key: v1-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+
+      - run: *android-wait-avd
 
   android-build-release:
     <<: *android_defaults
@@ -277,10 +308,10 @@ workflows:
             - checkout-code
             - analyse
 
-      - android-build-release:
-          requires:
-            - checkout-code
-            - analyse
+#      - android-build-release:
+#          requires:
+#            - checkout-code
+#            - analyse
 
 #    - ios-test-e2e:
 #        requires:
