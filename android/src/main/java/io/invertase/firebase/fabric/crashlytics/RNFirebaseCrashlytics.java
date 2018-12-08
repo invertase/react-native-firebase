@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import io.fabric.sdk.android.Fabric;
 
 public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
 
@@ -63,4 +64,10 @@ public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
   public void setUserIdentifier(String userId) {
     Crashlytics.setUserIdentifier(userId);
   }
+
+  @ReactMethod
+  public void enableCrashlyticsCollection() {
+    Fabric.with(this, new Crashlytics());
+  }
+
 }

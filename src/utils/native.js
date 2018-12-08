@@ -24,8 +24,12 @@ const nativeWithArgs = (
 
   for (let i = 0, len = methods.length; i < len; i++) {
     const method = methods[i];
-    native[method] = (...args) =>
-      NativeModule[method](...[...argToPrepend, ...args]);
+    if (typeof NativeModule[method] === 'function') {
+      native[method] = (...args) =>
+        NativeModule[method](...[...argToPrepend, ...args]);
+    } else {
+      native[method] = NativeModule[method];
+    }
   }
 
   return native;

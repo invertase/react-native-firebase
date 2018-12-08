@@ -43,7 +43,7 @@ RCT_EXPORT_MODULE()
 
     // Establish Firebase managed data channel
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-    
+
     // Set static instance for use from AppDelegate
     theRNFirebaseMessaging = self;
 }
@@ -126,6 +126,20 @@ RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseR
     }
 }
 
+RCT_EXPORT_METHOD(getAPNSToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+    if (apnsToken) {
+        const char *data = [apnsToken bytes];
+        NSMutableString *token = [NSMutableString string];
+        for (NSInteger i = 0; i < apnsToken.length; i++) {
+            [token appendFormat:@"%02.2hhX", data[i]];
+        }
+        resolve([token copy]);
+    } else {
+        resolve([NSNull null]);
+    }
+}
+
 RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (RCTRunningInAppExtension()) {
         reject(@"messaging/request-permission-unavailable", @"requestPermission is not supported in App Extensions", nil);
@@ -160,6 +174,11 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
     });
 }
 
+RCT_EXPORT_METHOD(registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    [RCTSharedApplication() registerForRemoteNotifications];
+    resolve(nil);
+}
+
 // Non Web SDK methods
 RCT_EXPORT_METHOD(hasPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
@@ -188,7 +207,7 @@ RCT_EXPORT_METHOD(sendMessage:(NSDictionary *) message
     NSDictionary *data = message[@"data"];
 
     [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-    
+
     // TODO: Listen for send success / errors
     resolve(nil);
 }
@@ -267,7 +286,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 - (NSDictionary*)parseUserInfo:(NSDictionary *)userInfo {
     NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-    
+
     for (id k1 in userInfo) {
         if ([k1 isEqualToString:@"aps"]) {
             // Ignore notification section
@@ -287,9 +306,9 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
             data[k1] = userInfo[k1];
         }
     }
-    
+
     message[@"data"] = data;
-    
+
     return message;
 }
 
