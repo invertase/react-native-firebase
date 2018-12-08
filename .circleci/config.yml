@@ -117,9 +117,8 @@ android_defaults: &android_defaults
   resource_class: "large"
   working_directory: ~/react-native-firebase
   environment:
-    - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2000m"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
     - BUILD_THREADS: 2
 
@@ -156,7 +155,7 @@ jobs:
       - run: *validate-flow-declarations
       - run: *validate-ts-declarations
 
-  jet-test-android:
+  android-test-e2e:
     <<: *android_defaults
     steps:
       - attach_workspace:
@@ -170,14 +169,34 @@ jobs:
           key: v1-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
       - run:
           name: Build Android Testing App
-          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd
+          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
       - save_cache:
           paths:
             - ~/react-native-firebase/tests/android/.gradle
           key: v1-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
 
+  android-build-release:
+    <<: *android_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native-firebase
 
-  jet-test-ios:
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+
+      - restore_cache:
+          key: v1-release-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+      - run:
+          name: Build Android Release APK
+          command: cd tests/android && chmod +x gradlew && ./gradlew assembleRelease
+      - save_cache:
+          paths:
+            - ~/react-native-firebase/tests/android/.gradle
+          key: v1-release-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+
+
+  ios-test-e2e:
     <<: *macos_defaults
     steps:
       - attach_workspace:
@@ -247,18 +266,23 @@ workflows:
   version: 2
   Test:
     jobs:
-      # Checkout repo and run Yarn install at root and in tests
       - checkout-code
 
-      # Run lint, flow, and typescript checks
       - analyse:
           requires:
             - checkout-code
 
-      - jet-test-android:
+      - android-test-e2e:
           requires:
             - checkout-code
-#
-#    - jet-test-ios:
+            - analyse
+
+      - android-build-release:
+          requires:
+            - checkout-code
+            - analyse
+
+#    - ios-test-e2e:
 #        requires:
 #        - checkout-code
+#        - analyse
