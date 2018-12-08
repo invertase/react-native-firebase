@@ -27,8 +27,8 @@
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "16.5.1",
-    "react-native": "0.57.1",
+    "react": "16.6.3",
+    "react-native": "0.58.0-rc.1",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
@@ -83,7 +83,7 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone X",
         "logLevel": "error"
@@ -96,7 +96,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone X"
       },
