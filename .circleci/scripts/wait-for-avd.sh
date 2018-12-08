@@ -11,4 +11,6 @@ until [[ "$bootanim" =~ "stopped" ]]; do
   echo "Android device boot animation status is '$bootanim'"
 done
 
+sleep 5
+
 echo "Android Virtual Device is now ready."

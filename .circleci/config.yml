@@ -200,6 +200,7 @@ jobs:
       - run: *packager-warmup
 
       - run: *android-create-avd
+      - run: *android-launch-avd
 
       - restore_cache:
           key: v2-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
@@ -211,9 +212,9 @@ jobs:
             - ~/react-native-firebase/tests/android/.gradle
           key: v2-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
 
-      # TODO: Move before build once we have access to circle CI large resource size
-      - run: *android-launch-avd
-      - run: *android-wait-avd
+      - run:
+          name: AVD Config Logger
+          command: cat /root/.android/avd/TestingAVD.avd/config.ini
 
       # Now Test \o/
       - run:
