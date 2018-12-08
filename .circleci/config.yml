@@ -183,13 +183,11 @@ jobs:
     - save-cache: *save-yarn-cache
 
     # Pods
-#    - restore-cache: *restore-pods-cache
+    - restore-cache: *restore-pods-cache
     - run:
         name: Install CocoaPods +  Pod Install
         command: |
-          cd tests/node_modules/react-native
-          ls -la
-          cd ../../ios
+          cd tests/ios
           curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
           pod install
     - save-cache: *save-pods-cache

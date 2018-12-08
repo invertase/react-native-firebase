@@ -142,7 +142,7 @@ PODS:
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 5.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - Folly (2016.10.31.00):
+  - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
@@ -233,44 +233,46 @@ PODS:
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
   - Protobuf (3.6.1)
-  - React (0.57.1):
-    - React/Core (= 0.57.1)
-  - React/Core (0.57.1):
-    - yoga (= 0.57.1.React)
-  - React/CxxBridge (0.57.1):
-    - Folly (= 2016.10.31.00)
+  - React (0.58.0-rc.1):
+    - React/Core (= 0.58.0-rc.1)
+  - React/Core (0.58.0-rc.1):
+    - yoga (= 0.58.0-rc.1.React)
+  - React/CxxBridge (0.58.0-rc.1):
+    - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.57.1):
+    - React/jsiexecutor
+  - React/cxxreact (0.58.0-rc.1):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
-    - React/jschelpers
+    - Folly (= 2018.10.22.00)
     - React/jsinspector
-  - React/DevSupport (0.57.1):
+  - React/DevSupport (0.58.0-rc.1):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.57.1)
-  - React/jschelpers (0.57.1):
-    - Folly (= 2016.10.31.00)
-    - React/PrivateDatabase
-  - React/jsinspector (0.57.1)
-  - React/PrivateDatabase (0.57.1)
-  - React/RCTAnimation (0.57.1):
+  - React/fishhook (0.58.0-rc.1)
+  - React/jsi (0.58.0-rc.1):
+    - Folly (= 2018.10.22.00)
+  - React/jsiexecutor (0.58.0-rc.1):
+    - Folly (= 2018.10.22.00)
+    - React/cxxreact
+    - React/jsi
+  - React/jsinspector (0.58.0-rc.1)
+  - React/RCTAnimation (0.58.0-rc.1):
     - React/Core
-  - React/RCTBlob (0.57.1):
+  - React/RCTBlob (0.58.0-rc.1):
     - React/Core
-  - React/RCTNetwork (0.57.1):
+  - React/RCTNetwork (0.58.0-rc.1):
     - React/Core
-  - React/RCTText (0.57.1):
+  - React/RCTText (0.58.0-rc.1):
     - React/Core
-  - React/RCTWebSocket (0.57.1):
+  - React/RCTWebSocket (0.58.0-rc.1):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFirebase (5.1.1):
     - Firebase/Core
     - React
-  - yoga (0.57.1.React)
+  - yoga (0.58.0-rc.1.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.10.7)
@@ -375,8 +377,8 @@ SPEC CHECKSUMS:
   FirebasePerformance: 071ef097e7fb2d4f2f27fac1d4ed72ae3dd737d7
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   FirebaseStorage: 3d22c041370593e639fba013d1eb698a8dae2881
-  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
-  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
+  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   Google-Mobile-Ads-SDK: 5bb4d2cea811842e104a24780caef63b4808e1bd
   GoogleAPIClientForREST: 825503f12cb5824601cf526cf06d81a1cea4afd9
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
@@ -390,10 +392,10 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  RNFirebase: 44c26ec235b1778e98dd5a670a7dd3d5e1592b66
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
+  RNFirebase: 57f6c2adb24355b4e6211e028a8e97e473432245
+  yoga: 0885622311729a02c2bc02dca97167787a51488b
 
-PODFILE CHECKSUM: ed823a342cc1dba8063cb3f3f87f988a623598bb
+PODFILE CHECKSUM: 0a82f57ccab01fa0653819a7c741386bb97a5763
 
 COCOAPODS: 1.5.3
