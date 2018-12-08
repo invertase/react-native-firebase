@@ -81,6 +81,7 @@ aliases:
   - &android-create-avd
     name: Create AVD
     command: |
+      touch ~/.android/repositories.cfg
       sdkmanager "$AVD_PACKAGE"
       avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
 
@@ -145,7 +146,7 @@ android_defaults: &android_defaults
     - BUILD_THREADS: 2
     - AVD_ABI: "armeabi-v7a"
     - AVD_NAME: "TestingAVD"
-    - AVD_PACKAGE: "system-images;android-19;google_apis;$AVD_ABI"
+    - AVD_PACKAGE: "system-images;android-19;google_apis;armeabi-v7a"
 
 # IOS
 macos_defaults: &macos_defaults
