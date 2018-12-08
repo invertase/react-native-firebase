@@ -81,9 +81,6 @@ aliases:
   - &android-create-avd
     name: Create AVD
     command: |
-      AVD_ABI="armeabi-v7a"
-      AVD_NAME="TestingAVD"
-      AVD_PACKAGE="system-images;android-19;google_apis;$AVD_ABI"
       sdkmanager "$AVD_PACKAGE"
       avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
 
@@ -91,7 +88,6 @@ aliases:
     name: Launch AVD
     background: true
     command: |
-      AVD_NAME="TestingAVD"
       "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
 
   - &android-wait-avd
@@ -147,6 +143,9 @@ android_defaults: &android_defaults
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2000m"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
     - BUILD_THREADS: 2
+    - AVD_ABI: "armeabi-v7a"
+    - AVD_NAME: "TestingAVD"
+    - AVD_PACKAGE: "system-images;android-19;google_apis;$AVD_ABI"
 
 # IOS
 macos_defaults: &macos_defaults
