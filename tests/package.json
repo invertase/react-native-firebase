@@ -27,8 +27,8 @@
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "16.5.1",
-    "react-native": "0.57.1",
+    "react": "16.6.3",
+    "react-native": "0.58.0-rc.1",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
