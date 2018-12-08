@@ -148,7 +148,7 @@ android_defaults: &android_defaults
     - BUILD_THREADS: 1
     - AVD_ABI: "armeabi-v7a"
     - AVD_NAME: "TestingAVD"
-    - AVD_PACKAGE: "system-images;android-19;google_apis_playstore;armeabi-v7a"
+    - AVD_PACKAGE: "system-images;android-26;google_apis_playstore;armeabi-v7a"
 
 # IOS
 macos_defaults: &macos_defaults
