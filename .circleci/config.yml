@@ -143,12 +143,12 @@ android_defaults: &android_defaults
   working_directory: ~/react-native-firebase
   environment:
     - ADB_INSTALL_TIMEOUT: 10
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx1000m"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx1000m"'
+    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx750m"
+    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx750m"'
     - BUILD_THREADS: 1
     - AVD_ABI: "armeabi-v7a"
     - AVD_NAME: "TestingAVD"
-    - AVD_PACKAGE: "system-images;android-19;google_apis;armeabi-v7a"
+    - AVD_PACKAGE: "system-images;android-19;google_apis_playstore;armeabi-v7a"
 
 # IOS
 macos_defaults: &macos_defaults
@@ -204,15 +204,9 @@ jobs:
       - run: *android-create-avd
       - run: *android-launch-avd
 
-      - restore_cache:
-          key: v2-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
       - run:
           name: Build Android Testing App
-          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace --info
-      - save_cache:
-          paths:
-            - ~/react-native-firebase/tests/android/.gradle
-          key: v2-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+          command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
       - run: *android-wait-avd
 
@@ -247,15 +241,9 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      - restore_cache:
-          key: v1-release-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
       - run:
           name: Build Android Release APK
           command: cd tests/android && chmod +x gradlew && ./gradlew assembleRelease
-      - save_cache:
-          paths:
-            - ~/react-native-firebase/tests/android/.gradle
-          key: v1-release-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
 
 
 
