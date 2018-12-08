@@ -74,7 +74,8 @@ aliases:
 - &yarn
   name: Yarn Install ./ and ./tests
   command: |
-    yarn install --non-interactive --cache-folder ~/.cache/yarn & cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn & wait
+    yarn install --non-interactive --cache-folder ~/.cache/yarn
+    cd tests && yarn install --non-interactive --cache-folder ~/.cache/yarn
 
 # -------------------------
 #         ANALYSE
