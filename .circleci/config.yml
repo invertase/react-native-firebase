@@ -143,7 +143,6 @@ android_defaults: &android_defaults
   environment:
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2000m"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
     - BUILD_THREADS: 1
     - AVD_ABI: "armeabi-v7a"
     - AVD_NAME: "TestingAVD"
