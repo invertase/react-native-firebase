@@ -85,6 +85,8 @@ aliases:
       touch ~/.android/repositories.cfg
       sdkmanager "$AVD_PACKAGE"
       echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
+      echo "hw.lcd.height=1920" >> /root/.android/avd/$AVD_NAME.avd/config.ini
+      echo "hw.lcd.width=1080" >> /root/.android/avd/$AVD_NAME.avd/config.ini
 
   - &android-launch-avd
     name: Launch AVD
@@ -211,6 +213,8 @@ jobs:
           paths:
             - ~/react-native-firebase/tests/android/.gradle
           key: v2-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+
+      - run: *android-wait-avd
 
       - run:
           name: AVD Config Logger
