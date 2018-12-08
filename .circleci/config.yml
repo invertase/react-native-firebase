@@ -84,7 +84,7 @@ aliases:
       mkdir -p ~/.android
       touch ~/.android/repositories.cfg
       sdkmanager "$AVD_PACKAGE"
-      avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
+      echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
 
   - &android-launch-avd
     name: Launch AVD
@@ -138,7 +138,7 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: reactnativecommunity/react-native-android
-  resource_class: "large"
+  resource_class: "medium"
   working_directory: ~/react-native-firebase
   environment:
     - ADB_INSTALL_TIMEOUT: 10
@@ -182,6 +182,10 @@ jobs:
       - run: *validate-flow-declarations
       - run: *validate-ts-declarations
 
+
+
+
+
   android-test-e2e:
     <<: *android_defaults
     steps:
@@ -214,6 +218,23 @@ jobs:
 
       - run: *android-wait-avd
 
+      # Now Test \o/
+      - run:
+          name: Run Jet Tests
+          command: cd tests && yarn run test-android-cover
+
+      # TODO merge coverage output from android and iOS
+      - run:
+          name: Submit Coverage
+          command: yarn run codecov
+
+      - store_artifacts:
+          path: ~/detox-artifacts
+      - store_artifacts:
+          path: ~/react-native-firebase/coverage
+
+
+
   android-build-release:
     <<: *android_defaults
     steps:
@@ -236,6 +257,9 @@ jobs:
           paths:
             - ~/react-native-firebase/tests/android/.gradle
           key: v1-release-gradle-{{ checksum "tests/android/build.gradle" }}-{{ checksum  "tests/android/app/build.gradle" }}-{{ checksum  "android/build.gradle" }}
+
+
+
 
 
   ios-test-e2e:
