@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.summary             = <<-DESC
                             A well tested feature rich Firebase implementation for React Native, supporting iOS & Android.
                           DESC
-  s.homepage            = "http://invertase.io/react-native-firebase"
+  s.homepage            = "http://invertase.io/oss/react-native-firebase"
   s.license             = package['license']
   s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
