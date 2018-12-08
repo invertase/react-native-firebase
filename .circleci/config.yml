@@ -138,12 +138,13 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: reactnativecommunity/react-native-android
-  resource_class: "medium"
+  resource_class: "large"
   working_directory: ~/react-native-firebase
   environment:
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2000m"
-    - BUILD_THREADS: 1
+    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+    - BUILD_THREADS: 2
     - AVD_ABI: "armeabi-v7a"
     - AVD_NAME: "TestingAVD"
     - AVD_PACKAGE: "system-images;android-19;google_apis;armeabi-v7a"
