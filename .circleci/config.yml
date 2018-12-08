@@ -8,44 +8,41 @@ aliases:
 # -------------------------
 - &restore-yarn-cache
   keys:
-  - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
-  - v1-yarn-cache-{{ arch }}
+  - v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
 - &save-yarn-cache
   paths:
   - ~/.cache/yarn
   - ~/Library/Detox/ios
-  key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+  key: v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
 
 - &save-pods-cache
   paths:
   - ~/react-native-firebase/tests/ios/Pods
-  key: v3-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  key: v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &restore-pods-cache
   keys:
-  - v3-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-  - v3-pods-cache-{{ arch }}
+  - v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &save-ios-build-cache
   paths:
   - ~/react-native-firebase/tests/ios/build/Build
-  key: v3-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+  key: v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &restore-ios-build-cache
   keys:
-  - v3-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
-  - v3-ios-build-cache-{{ arch }}
+  - v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
 - &save-brew-cache
   paths:
   - /usr/local/Homebrew
   - ~/Library/Caches/Homebrew
-  key: v3-brew-cache-{{ arch }}
+  key: v4-brew-cache-{{ arch }}
 
 - &restore-brew-cache
   keys:
-  - v3-brew-cache-{{ arch }}
+  - v4-brew-cache-{{ arch }}
 
 - &configure-jet-detox-environment
   name: Configure Jet + Detox Environment
