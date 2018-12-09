@@ -179,17 +179,20 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
-      - run: *android-launch-avd
-
+      - restore-cache:
+          keys:
+            - v1-gradle-caches
       - run:
           name: Build Android Testing App
           command: cd tests/android && chmod +x gradlew && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
+      - save-cache:
+          paths:
+            - /root/.gradle
+          key: v1-gradle-caches
+
+      - run: *android-launch-avd
 
       - run: *android-wait-avd
-
-      - run:
-          name: AVD Config Logger
-          command: cat /root/.android/avd/TestingAVD.avd/config.ini
 
       # Now Test \o/
       - run:
@@ -206,8 +209,6 @@ jobs:
       - store_artifacts:
           path: ~/react-native-firebase/coverage
 
-
-
   android-build-release:
     <<: *android_defaults
     steps:
@@ -221,10 +222,6 @@ jobs:
       - run:
           name: Build Android Release APK
           command: cd tests/android && chmod +x gradlew && ./gradlew assembleRelease
-
-
-
-
 
   ios-test-e2e:
     <<: *macos_defaults
