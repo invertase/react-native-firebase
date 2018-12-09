@@ -85,7 +85,7 @@ aliases:
 
   - &android-wait-avd
     name: Wait for AVD to be ready
-    command: avd-wait-ready
+    command: timeout 240 avd-wait-ready
 
 
   # -------------------------
