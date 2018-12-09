@@ -27,7 +27,7 @@ android {
 
     testBuildType System.getProperty('testBuildType', 'debug')
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    missingDimensionStrategy "minReactNative", "minReactNative46"
+//    missingDimensionStrategy "minReactNative", "minReactNative46"
     multiDexEnabled true
   }
   splits {
