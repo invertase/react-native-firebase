@@ -27,7 +27,7 @@ android {
 
     testBuildType System.getProperty('testBuildType', 'debug')
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//    missingDimensionStrategy "minReactNative", "minReactNative46"
+    missingDimensionStrategy "minReactNative", "minReactNative46"
     multiDexEnabled true
   }
   splits {
@@ -88,7 +88,7 @@ dependencies {
    * ---------------------------- */
 
   // Library as defined in settings.gradle
-  implementation project(':react-native-firebase')
+  implementation project(path: ':react-native-firebase', configuration: 'default')
   // Required dependencies
   //noinspection GradleCompatible
   implementation "com.google.firebase:firebase-core:16.0.4"
@@ -144,10 +144,10 @@ dependencies {
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-  implementation(project(':jet')) {
+  implementation(project(path: ':jet', configuration: 'default')) {
     transitive = false
   }
-  androidTestImplementation(project(path: ":detox"))
+  androidTestImplementation(project(path: ":detox", configuration: 'default'))
   androidTestImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test:rules:1.0.2'

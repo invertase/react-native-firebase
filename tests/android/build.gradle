@@ -14,10 +14,6 @@ buildscript {
   }
 }
 
-subprojects {
-  task listAllDependencies(type: DependencyReportTask) {}
-}
-
 allprojects {
   task downloadDependencies() {
     description 'Download all dependencies to the Gradle cache'
@@ -36,6 +32,7 @@ allprojects {
 }
 
 subprojects {
+  task listAllDependencies(type: DependencyReportTask) {}
   ext {
     compileSdk = 27
     buildTools = "28.0.2"
