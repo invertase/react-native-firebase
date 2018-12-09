@@ -78,14 +78,14 @@ aliases:
   #         ANDROID
   # -------------------------
 
-  - &android-launch-avd
-    name: Launch AVD
-    background: true
-    command: avd-launch
-
-  - &android-wait-avd
-    name: Wait for AVD to be ready
-    command: timeout 240 avd-wait-ready
+#  - &android-launch-avd
+#    name: Launch AVD
+#    background: true
+#    command: avd-launch
+#
+#  - &android-wait-avd
+#    name: Wait for AVD to be ready
+#    command: timeout 300 avd-wait-ready
 
 
   # -------------------------
@@ -175,11 +175,10 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      # must always be after environment config job but before android build
-      - run: *packager-jet
-      - run: *packager-warmup
-
-      - run: *android-launch-avd
+#      # must always be after environment config job but before android build
+#      - run: *packager-jet
+#      - run: *packager-warmup#
+#      - run: *android-launch-avd
 
       # restore saved caches
       - restore_cache:
@@ -244,22 +243,22 @@ jobs:
           key: gradle-build-caches-{{ .Revision }}
           when: always
 
-      - run: *android-wait-avd
-
-      # Now Test \o/
-      - run:
-          name: Run Jet Tests
-          command: cd tests && yarn run test-android-cover
-
-      # TODO merge coverage output from android and iOS
-      - run:
-          name: Submit Coverage
-          command: yarn run codecov
-
-      - store_artifacts:
-          path: ~/detox-artifacts
-      - store_artifacts:
-          path: ~/react-native-firebase/coverage
+#      - run: *android-wait-avd
+#
+#      # Now Test \o/
+#      - run:
+#          name: Run Jet Tests
+#          command: cd tests && yarn run test-android-cover
+#
+#      # TODO merge coverage output from android and iOS
+#      - run:
+#          name: Submit Coverage
+#          command: yarn run codecov
+#
+#      - store_artifacts:
+#          path: ~/detox-artifacts
+#      - store_artifacts:
+#          path: ~/react-native-firebase/coverage
 
   android-build-release:
     <<: *android_defaults
@@ -271,9 +270,69 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
+      # restore saved caches
+      - restore_cache:
+          keys:
+            - gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+      - restore_cache:
+          keys:
+            # for multi-project builds where dependencies are not defined in one central file,
+            # an additional run step before is necessary that concatenates affected files
+            # into one file that can be checksummed
+            - gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+            - gradle-release-cache
+
+      - restore_cache:
+          keys:
+            - gradle-release-build-caches-{{ .Revision }}
+            - gradle-release-build-caches
+
       - run:
-          name: Build Android Release APK
-          command: cd tests/android && chmod +x gradlew && ./gradlew assembleRelease
+          name: Restoring Gradle Build Caches
+          command: |
+            [ -d ~/gradle-build-caches ] &&
+              [ -n "$(ls -A ~/gradle-build-caches)" ] &&
+              rm -rf ~/.gradle/caches/build-cache-* &&
+              mkdir -p ~/.gradle/caches/ &&
+              mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+      # download and cache dependencies and Gradle
+      - run:
+          name: Downloading Dependencies
+          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper/
+          key: gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches/
+          key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+
+      - run:
+          name: Build Android Testing App
+          command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleRelease
+
+      # cache gradle build caches
+      - run:
+          name: Collecting Gradle Build Caches
+          command: |
+            mkdir -p ~/gradle-build-caches
+            [ -d ~/.gradle/caches ] &&
+              [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
+              rm -rf ~/gradle-build-caches/* &&
+              mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
+          when: always
+
+      - save_cache:
+          paths:
+            - ~/gradle-build-caches
+          key: gradle-release-build-caches-{{ .Revision }}
+          when: always
+
 
   ios-test-e2e:
     <<: *macos_defaults
