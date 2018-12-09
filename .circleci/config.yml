@@ -78,25 +78,14 @@ aliases:
   #         ANDROID
   # -------------------------
 
-  - &android-create-avd
-    name: Create AVD
-    command: |
-      mkdir -p ~/.android
-      touch ~/.android/repositories.cfg
-      sdkmanager "$AVD_PACKAGE"
-      echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis --abi "$AVD_ABI"
-      echo "hw.lcd.height=1920" >> /root/.android/avd/$AVD_NAME.avd/config.ini
-      echo "hw.lcd.width=1080" >> /root/.android/avd/$AVD_NAME.avd/config.ini
-
   - &android-launch-avd
     name: Launch AVD
     background: true
-    command: |
-      "$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -no-audio -no-window
+    command: avd-launch
 
   - &android-wait-avd
     name: Wait for AVD to be ready
-    command: ./.circleci/scripts/wait-for-avd.sh
+    command: avd-wait-ready
 
 
   # -------------------------
@@ -138,17 +127,9 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: reactnativecommunity/react-native-android
+    - image: invertase/react-native-firebase-android:standard
   resource_class: "large"
   working_directory: ~/react-native-firebase
-  environment:
-    - ADB_INSTALL_TIMEOUT: 10
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx750m"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx750m"'
-    - BUILD_THREADS: 1
-    - AVD_ABI: "armeabi-v7a"
-    - AVD_NAME: "TestingAVD"
-    - AVD_PACKAGE: "system-images;android-26;google_apis_playstore;armeabi-v7a"
 
 # IOS
 macos_defaults: &macos_defaults
@@ -184,9 +165,6 @@ jobs:
       - run: *validate-ts-declarations
 
 
-
-
-
   android-test-e2e:
     <<: *android_defaults
     steps:
@@ -201,7 +179,6 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
-      - run: *android-create-avd
       - run: *android-launch-avd
 
       - run:
