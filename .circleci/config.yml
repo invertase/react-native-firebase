@@ -204,6 +204,7 @@ jobs:
             [ -d ~/gradle-build-caches ] &&
               [ -n "$(ls -A ~/gradle-build-caches)" ] &&
               rm -rf ~/.gradle/caches/build-cache-* &&
+              mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
 
       # download and cache dependencies and Gradle
@@ -232,6 +233,7 @@ jobs:
             mkdir -p ~/gradle-build-caches
             [ -d ~/.gradle/caches ] &&
               [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
+              rm -rf ~/gradle-build-caches/* &&
               mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
           when: always
 

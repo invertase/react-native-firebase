@@ -1,7 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.google.firebase.firebase-perf"
 apply plugin: 'io.fabric'
-apply plugin: 'net.idlestate.download-dependencies'
 
 import com.android.build.OutputFile
 
