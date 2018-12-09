@@ -183,7 +183,7 @@ jobs:
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+            - gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
@@ -209,17 +209,17 @@ jobs:
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
-          command: ./gradlew --max-workers 2 downloadDependencies
+          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
 
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+          key: gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-cache-{{ checksum "build.gradle" }}
+          key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
