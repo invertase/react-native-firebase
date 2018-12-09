@@ -67,7 +67,7 @@ public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void enableCrashlyticsCollection() {
-    Fabric.with(this, new Crashlytics());
+    Fabric.with(getReactApplicationContext(), new Crashlytics());
   }
 
 }

@@ -1,38 +1,47 @@
 buildscript {
   repositories {
     google()
-    jcenter()
     maven {
       url 'https://maven.fabric.io/public'
     }
+    jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.0'
+    classpath 'com.android.tools.build:gradle:3.2.1'
     classpath 'com.google.gms:google-services:4.0.1'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
 }
 
-subprojects {
-  task listAllDependencies(type: DependencyReportTask) {}
-}
-
 allprojects {
+  task downloadDependencies() {
+    description 'Download all dependencies to the Gradle cache'
+    doLast {
+      configurations.findAll().each { config ->
+        if (config.name.contains("minReactNative") && config.canBeResolved) {
+          print config.name
+          print '\n'
+          config.files
+        }
+      }
+    }
+  }
   repositories {
     mavenLocal()
     google()
-    jcenter()
     maven {
       url "$rootDir/../node_modules/react-native/android"
     }
+    jcenter()
   }
 }
 
 subprojects {
+  task listAllDependencies(type: DependencyReportTask) {}
   ext {
     compileSdk = 27
-    buildTools = "28.0.2"
+    buildTools = "28.0.3"
     minSdk = 18
     targetSdk = 26
   }
