@@ -190,7 +190,7 @@ jobs:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-cache-{{ checksum "build.gradle" }}
+            - gradle-cache-{{ checksum "tests/android/build.gradle" }}
             - gradle-cache
 
       - restore_cache:
