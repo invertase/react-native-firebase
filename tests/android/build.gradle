@@ -18,7 +18,13 @@ allprojects {
   task downloadDependencies() {
     description 'Download all dependencies to the Gradle cache'
     doLast {
-      configurations.findAll { it.canBeResolved }.files
+      configurations.findAll().each { config ->
+        if (config.name.contains("minReactNative") && config.canBeResolved) {
+          print config.name
+          print '\n'
+          config.files
+        }
+      }
     }
   }
   repositories {
@@ -35,7 +41,7 @@ subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
   ext {
     compileSdk = 27
-    buildTools = "28.0.2"
+    buildTools = "28.0.3"
     minSdk = 18
     targetSdk = 26
   }
