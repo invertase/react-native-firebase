@@ -78,14 +78,14 @@ aliases:
   #         ANDROID
   # -------------------------
 
-#  - &android-launch-avd
-#    name: Launch AVD
-#    background: true
-#    command: avd-launch
-#
-#  - &android-wait-avd
-#    name: Wait for AVD to be ready
-#    command: timeout 300 avd-wait-ready
+  #  - &android-launch-avd
+  #    name: Launch AVD
+  #    background: true
+  #    command: avd-launch
+  #
+  #  - &android-wait-avd
+  #    name: Wait for AVD to be ready
+  #    command: timeout 300 avd-wait-ready
 
 
   # -------------------------
@@ -130,6 +130,9 @@ android_defaults: &android_defaults
     - image: invertase/react-native-firebase-android:standard
   resource_class: "large"
   working_directory: ~/react-native-firebase
+  environment:
+    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2048m"
+    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx2048m"'
 
 # IOS
 macos_defaults: &macos_defaults
@@ -165,7 +168,7 @@ jobs:
       - run: *validate-ts-declarations
 
 
-  android-test-e2e:
+  android-build-debug:
     <<: *android_defaults
     steps:
       - attach_workspace:
@@ -175,10 +178,10 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-#      # must always be after environment config job but before android build
-#      - run: *packager-jet
-#      - run: *packager-warmup#
-#      - run: *android-launch-avd
+      #      # must always be after environment config job but before android build
+      #      - run: *packager-jet
+      #      - run: *packager-warmup#
+      #      - run: *android-launch-avd
 
       # restore saved caches
       - restore_cache:
@@ -243,22 +246,22 @@ jobs:
           key: gradle-build-caches-{{ .Revision }}
           when: always
 
-#      - run: *android-wait-avd
-#
-#      # Now Test \o/
-#      - run:
-#          name: Run Jet Tests
-#          command: cd tests && yarn run test-android-cover
-#
-#      # TODO merge coverage output from android and iOS
-#      - run:
-#          name: Submit Coverage
-#          command: yarn run codecov
-#
-#      - store_artifacts:
-#          path: ~/detox-artifacts
-#      - store_artifacts:
-#          path: ~/react-native-firebase/coverage
+  #      - run: *android-wait-avd
+  #
+  #      # Now Test \o/
+  #      - run:
+  #          name: Run Jet Tests
+  #          command: cd tests && yarn run test-android-cover
+  #
+  #      # TODO merge coverage output from android and iOS
+  #      - run:
+  #          name: Submit Coverage
+  #          command: yarn run codecov
+  #
+  #      - store_artifacts:
+  #          path: ~/detox-artifacts
+  #      - store_artifacts:
+  #          path: ~/react-native-firebase/coverage
 
   android-build-release:
     <<: *android_defaults
@@ -410,17 +413,17 @@ workflows:
           requires:
             - checkout-code
 
-      - android-test-e2e:
+      - android-build-debug:
           requires:
             - checkout-code
             - analyse
 
-#      - android-build-release:
-#          requires:
-#            - checkout-code
-#            - analyse
+      - android-build-release:
+          requires:
+            - checkout-code
+            - analyse
 
-#    - ios-test-e2e:
-#        requires:
-#        - checkout-code
-#        - analyse
+      - ios-test-e2e:
+          requires:
+            - checkout-code
+            - analyse
