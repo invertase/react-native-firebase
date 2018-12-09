@@ -11,17 +11,20 @@ buildscript {
     classpath 'com.google.gms:google-services:4.0.1'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
-    classpath 'net.idlestate:gradle-download-dependencies-plugin:1.+'
   }
 }
-
-apply plugin: 'net.idlestate.download-dependencies'
 
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
 }
 
 allprojects {
+  task downloadDependencies() {
+    description 'Download all dependencies to the Gradle cache'
+    doLast {
+      configurations.findAll { it.canBeResolved }.files
+    }
+  }
   repositories {
     mavenLocal()
     google()
