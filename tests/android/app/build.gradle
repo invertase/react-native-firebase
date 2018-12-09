@@ -88,7 +88,7 @@ dependencies {
    * ---------------------------- */
 
   // Library as defined in settings.gradle
-  implementation project(':react-native-firebase')
+  implementation project(path: ':react-native-firebase', configuration: 'default')
   // Required dependencies
   //noinspection GradleCompatible
   implementation "com.google.firebase:firebase-core:16.0.4"
@@ -144,7 +144,7 @@ dependencies {
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-  implementation(project(':jet')) {
+  implementation(project(path: ':jet', configuration: 'default')) {
     transitive = false
   }
   androidTestImplementation(project(path: ":detox"))

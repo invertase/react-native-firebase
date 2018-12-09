@@ -7,9 +7,10 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 ## Requirements
 
 - Make sure you have Xcode installed (tested with Xcode 9.2+).
- - With Xcode 10+ ensure build mode is set to `Legacy Build`
+- With Xcode 10+ ensure build mode is set to `Legacy Build`
 - Make sure you have NodeJS installed (Node 8.4.0 and up is required).
 - Make sure you have all required dependencies installed:
+
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):
 
     ```bash
