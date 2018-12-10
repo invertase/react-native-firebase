@@ -21,33 +21,15 @@
   },
   "dependencies": {
     "detox": "^9.0.4",
-    "fbjs": "^0.8.16",
-    "firebase-admin": "^5.12.0",
     "jet": "^0.2.0",
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
-    "prop-types": "^15.6.1",
-    "react": "16.6.3",
-    "react-native": "0.58.0-rc.1",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-plugin-istanbul": "^5.1.0",
-    "babel-plugin-module-resolver": "^3.1.1",
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-flowtype": "^2.46.3",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.78.0",
-    "nyc": "^13.1.0",
-    "rimraf": "^2.6.2"
+    "nyc": "^13.1.0"
   },
   "nyc": {
     "check-coverage": false,

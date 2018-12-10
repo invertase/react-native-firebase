@@ -5,7 +5,13 @@
     "prepare": "yarn run link:packages",
     "link:packages": "lerna link && lerna exec -- yarn link"
   },
+  "dependencies": {
+    "prop-types": "^15.6.1",
+    "react": "16.6.3",
+    "react-native": "0.58.0-rc.1"
+  },
   "devDependencies": {
+    "rimraf": "^2.6.2",
     "lerna": "^3.6.0",
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",

@@ -6,7 +6,8 @@
   "packages": [
     "packages/library/*",
     "packages/tooling/*",
-    "packages/types/*"
+    "packages/types/*",
+    "tests"
   ],
   "useWorkspaces": true,
   "command": {
