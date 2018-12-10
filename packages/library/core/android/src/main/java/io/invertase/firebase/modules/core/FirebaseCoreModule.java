@@ -165,7 +165,6 @@ public class FirebaseCoreModule extends ReactContextBaseJavaModule {
       appProps.put("apiKey", appOptions.getApiKey());
       appProps.put("appId", appOptions.getApplicationId());
       appProps.put("projectId", appOptions.getProjectId());
-      appProps.put("projectId", appOptions.getProjectId());
       appProps.put("databaseURL", appOptions.getDatabaseUrl());
       appProps.put("messagingSenderId", appOptions.getGcmSenderId());
       appProps.put("storageBucket", appOptions.getStorageBucket());
