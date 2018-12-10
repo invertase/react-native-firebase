@@ -1,6 +1,15 @@
-/* eslint-disable import/extensions,import/no-unresolved */
+/* eslint-disable import/extensions,import/no-unresolved,import/first */
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, Image, StyleSheet } from 'react-native';
+import {
+  AppRegistry,
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  YellowBox,
+} from 'react-native';
+
+YellowBox.ignoreWarnings(['Require cycle:']);
 
 import firebase from 'react-native-firebase';
 import jet from 'jet/platform/react-native';

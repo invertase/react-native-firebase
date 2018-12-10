@@ -9,6 +9,10 @@ exemptLabels:
   - await-maintainer-feedback
   - await-google-feedback
   - await-react-native-pr
+  - good-first-issue
+  - android-help-wanted
+  - ios-help-wanted
+  - incorrect-web-sdk-implementation
 # Label to use when marking an issue as stale
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable

@@ -75,4 +75,10 @@ describe('crashlytics()', () => {
       await firebase.crashlytics().setUserIdentifier(123456);
     });
   });
+
+  describe('enableCrashlyticsCollection()', () => {
+    it('should not throw', async () => {
+      await firebase.crashlytics().enableCrashlyticsCollection();
+    });
+  });
 });
