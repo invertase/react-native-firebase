@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/node,xcode,gradle,android,webstorm,firebase,reactnative,androidstudio,visualstudiocode
 
 ### Android ###
@@ -541,3 +540,6 @@ Pods/*
 
 
 # End of https://www.gitignore.io/api/node,xcode,gradle,android,webstorm,firebase,reactnative,androidstudio,visualstudiocode
+
+.idea/**/*
+**/Pods/**

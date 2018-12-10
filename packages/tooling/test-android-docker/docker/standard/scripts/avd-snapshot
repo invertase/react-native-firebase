@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Creating AVD Snapshot:"
+export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+adb emu avd snapshot save standard
+pkill qemu*
