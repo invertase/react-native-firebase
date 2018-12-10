@@ -7,7 +7,7 @@ const {
 
 describe('firestore()', () => {
   describe('FieldValue', () => {
-    before(async () => {
+    beforeEach(async () => {
       await resetTestCollectionDoc(DOC_2_PATH, DOC_2);
     });
 
@@ -44,6 +44,43 @@ describe('firestore()', () => {
         dataAfterUpdate().creationDate.should.be.instanceof(
           jet.context.window.Date
         );
+      });
+    });
+    describe('arrayUnion()', () => {
+      it('should add new values to array field', async () => {
+        const { data } = await testCollectionDoc(DOC_2_PATH).get();
+        should.equal(data().elements, undefined);
+
+        await testCollectionDoc(DOC_2_PATH).update({
+          elements: firebase.firestore.FieldValue.arrayUnion('element 1'),
+          elements2: firebase.firestore.FieldValue.arrayUnion('element 2'),
+        });
+
+        const { data: dataAfterUpdate } = await testCollectionDoc(
+          DOC_2_PATH
+        ).get();
+
+        dataAfterUpdate().elements.should.containDeep(['element 1']);
+        dataAfterUpdate().elements2.should.containDeep(['element 2']);
+      });
+    });
+    describe('arrayRemove()', () => {
+      it('should remove value from array', async () => {
+        await testCollectionDoc(DOC_2_PATH).set({
+          elements: ['element 1', 'element 2'],
+        });
+        const { data } = await testCollectionDoc(DOC_2_PATH).get();
+        data().elements.should.containDeep(['element 1', 'element 2']);
+
+        await testCollectionDoc(DOC_2_PATH).update({
+          elements: firebase.firestore.FieldValue.arrayRemove('element 2'),
+        });
+
+        const { data: dataAfterUpdate } = await testCollectionDoc(
+          DOC_2_PATH
+        ).get();
+
+        dataAfterUpdate().elements.should.not.containDeep(['element 2']);
       });
     });
   });

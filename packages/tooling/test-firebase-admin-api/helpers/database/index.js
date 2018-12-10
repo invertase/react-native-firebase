@@ -13,6 +13,7 @@ module.exports = {
         666
       ),
       database.ref('tests/query').set(CONTENTS.QUERY),
+      database.ref('tests/issues').set(CONTENTS.ISSUES),
     ]);
   },
 };

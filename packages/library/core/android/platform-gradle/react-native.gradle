@@ -1,5 +1,6 @@
 rootProject.gradle.buildFinished { buildResult ->
   if (buildResult.getFailure() != null) {
+    //noinspection GroovyUnusedCatchParameter
     try {
       String message = buildResult.getFailure().properties.get("reportableCauses").toString()
       if (message.contains("com.android.dex.DexException: Multiple dex files define Lcom/google/") ||
@@ -34,38 +35,119 @@ rootProject.gradle.buildFinished { buildResult ->
 }
 
 repositories {
+  google()
+  jcenter()
+
   def found = false
   def parentDir = rootProject.projectDir
-  def reactNativeAndroidName = 'React Native (Node Modules)'
+  def androidSourcesName = 'React Native sources'
+  def androidPrebuiltBinaryName = 'React Native prebuilt binary'
 
   1.upto(4, {
     if (found) return true
     parentDir = parentDir.parentFile
-    def reactNativeAndroid = new File(
+
+    // Running React Native from sources locally or for ExpoKit
+    def androidSourcesDir = new File(
+      parentDir,
+      'node_modules/react-native'
+    )
+
+    // Official releases of React Native come with a prebuilt version of Android sources
+    // in ./android, e.g. react-native/android/**/react-native-0.57.1.aar
+    def androidPrebuiltBinaryDir = new File(
       parentDir,
       'node_modules/react-native/android'
     )
 
-    if (reactNativeAndroid.exists()) {
+    if (androidPrebuiltBinaryDir.exists()) {
       maven {
-        url reactNativeAndroid.toString()
-        name reactNativeAndroidName
+        url androidPrebuiltBinaryDir.toString()
+        name androidPrebuiltBinaryName
       }
 
-      println "${project.name}: using React Native sources from ${reactNativeAndroid.toString()}"
+      println "${project.name}: using ${androidPrebuiltBinaryName} from ${androidPrebuiltBinaryDir.toString()}"
+      found = true
+    } else if (androidSourcesDir.exists()) {
+      maven {
+        url androidSourcesDir.toString()
+        name androidSourcesName
+      }
+
+      println "${project.name}: using ${androidSourcesName} from ${androidSourcesDir.toString()}"
       found = true
     }
   })
 
   if (!found) {
     throw new GradleException(
-      "${project.name}: unable to locate React Native Android sources, " +
-        "ensure you have you installed React Native as a dependency and try again."
+      "${project.name}: unable to locate React Native android sources or prebuilt binary. " +
+        "Ensure you have you installed React Native as a dependency in your project and try again."
     )
   }
 }
 
+def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
+
 dependencies {
   //noinspection GradleDynamicVersion
-  compileOnly "com.facebook.react:react-native:+"  // From node_modules
+  api "com.facebook.react:react-native:+"
+
+  /* ----------------------------
+   *    REACT NATIVE FIREBASE
+   * ---------------------------- */
+
+  // Required dependencies
+  //noinspection GradleCompatible
+  compileOnly "com.google.firebase:firebase-core:16.0.4"
+  compileOnly "com.google.android.gms:play-services-base:16.0.1"
+
+  /* -------------------------
+   *   OPTIONAL FIREBASE SDKS
+   * ------------------------- */
+
+  // Ads
+  compileOnly('com.google.firebase:firebase-ads:15.0.1') {
+    // exclude `customtabs` as the support lib version is out of date
+    // we manually add it as a dependency below with a custom version
+    exclude group: 'com.android.support', module: 'customtabs'
+  }
+  // Authentication
+  compileOnly "com.google.firebase:firebase-auth:16.0.5"
+  // Analytics
+  compileOnly "com.google.firebase:firebase-analytics:16.0.4"
+  // Performance Monitoring
+  compileOnly "com.google.firebase:firebase-perf:16.2.0"
+  // Remote Config
+  compileOnly "com.google.firebase:firebase-config:16.1.0"
+  // Cloud Storage
+  compileOnly "com.google.firebase:firebase-storage:16.0.4"
+  // Invites
+  compileOnly "com.google.firebase:firebase-invites:16.0.4"
+  // Dynamic Links
+  compileOnly "com.google.firebase:firebase-dynamic-links:16.1.2"
+  // Real-time Database
+  compileOnly "com.google.firebase:firebase-database:16.0.4"
+  // Cloud Functions
+  compileOnly "com.google.firebase:firebase-functions:16.1.2"
+  // Cloud Firestore
+  compileOnly "com.google.firebase:firebase-firestore:17.1.2"
+  // Cloud Messaging / FCM
+  compileOnly "com.google.firebase:firebase-messaging:17.3.4"
+  // Crashlytics
+  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+    transitive = true
+  }
+  /* --------------------------------
+   *  OPTIONAL SUPPORT LIBS
+   * -------------------------------- */
+
+  // For Firebase Ads
+  compileOnly "com.android.support:customtabs:$supportVersion"
+
+  // For React Native Firebase Notifications
+  api "com.android.support:support-v4:$supportVersion"
+
+  // For React Native Firebase Notifications
+  compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
 }

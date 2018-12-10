@@ -5,7 +5,7 @@ import { NativeModules } from 'react-native';
 
 import App from '../modules/core/app';
 import INTERNALS from './internals';
-import { isAndroid, isObject, isString } from '.';
+import { isAndroid, isObject, isString } from './';
 
 import type {
   FirebaseModule,
@@ -110,15 +110,10 @@ export default {
    * @param name
    * @returns {*}
    */
-  deleteApp(name: string): Promise<boolean> {
+  deleteApp(name: string) {
     const app = APPS[name];
-    if (!app) return Promise.resolve(true);
-
-    // https://firebase.google.com/docs/reference/js/firebase.app.App#delete
-    return app.delete().then(() => {
-      delete APPS[name];
-      return true;
-    });
+    if (!app) return;
+    delete APPS[name];
   },
 
   /**
