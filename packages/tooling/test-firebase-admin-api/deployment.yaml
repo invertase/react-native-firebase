@@ -1,0 +1,96 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: api-react-native-firebase
+  name: api-react-native-firebase
+  namespace: react-native-firebase
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: api-react-native-firebase
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: api-react-native-firebase
+    spec:
+      containers:
+        - image: gcr.io/project/example:1234
+          imagePullPolicy: IfNotPresent
+          name: api-react-native-firebase
+          env:
+            - name: NODE_ENV
+              value: production
+          ports:
+            - name: "http"
+              containerPort: 8080
+            - name: "https"
+              containerPort: 443
+          resources:
+            requests:
+              memory: "128mi"
+              cpu: "150m"
+            limits:
+              memory: "128mi"
+              cpu: "150m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: api-react-native-firebase
+  name: api-react-native-firebase
+  namespace: react-native-firebase
+spec:
+  ports:
+    - name: "http"
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    - name: "https"
+      port: 443
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    run: api-react-native-firebase
+  sessionAffinity: ClientIP
+  type: LoadBalancer
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-react-native-firebase
+  namespace: react-native-firebase
+spec:
+  targetCPUUtilizationPercentage: 65
+  maxReplicas: 10
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-react-native-firebase
