@@ -178,9 +178,8 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      #      # must always be after environment config job but before android build
       - run: *packager-jet
-      - run: *packager-warmup#
+      - run: *packager-warmup
       - run: *android-launch-avd
 
       # restore saved caches
