@@ -108,9 +108,7 @@ didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
 
 // ** Start React Module methods **
 RCT_EXPORT_METHOD(getToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    if (initialToken) {
-        resolve(initialToken);
-    } else if ([[FIRInstanceID instanceID] token]) {
+    if ([[FIRInstanceID instanceID] token]) {
         resolve([[FIRInstanceID instanceID] token]);
     } else {
         NSString * senderId = [[FIRApp defaultApp] options].GCMSenderID;
