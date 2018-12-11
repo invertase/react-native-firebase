@@ -78,14 +78,14 @@ aliases:
   #         ANDROID
   # -------------------------
 
-  #  - &android-launch-avd
-  #    name: Launch AVD
-  #    background: true
-  #    command: avd-launch
+  - &android-launch-avd
+    name: Launch AVD
+    background: true
+    command: avd-launch
   #
-  #  - &android-wait-avd
-  #    name: Wait for AVD to be ready
-  #    command: timeout 300 avd-wait-ready
+  - &android-wait-avd
+    name: Wait for AVD to be ready
+    command: timeout 300 avd-wait-ready
 
 
   # -------------------------
@@ -179,9 +179,9 @@ jobs:
       - save-cache: *save-yarn-cache
 
       #      # must always be after environment config job but before android build
-      #      - run: *packager-jet
-      #      - run: *packager-warmup#
-      #      - run: *android-launch-avd
+      - run: *packager-jet
+      - run: *packager-warmup#
+      - run: *android-launch-avd
 
       # restore saved caches
       - restore_cache:
@@ -246,22 +246,22 @@ jobs:
           key: gradle-build-caches-{{ .Revision }}
           when: always
 
-  #      - run: *android-wait-avd
+      - run: *android-wait-avd
   #
   #      # Now Test \o/
-  #      - run:
-  #          name: Run Jet Tests
-  #          command: cd tests && yarn run test-android-cover
+      - run:
+          name: Run Jet Tests
+          command: cd tests && yarn run test-android-cover
   #
   #      # TODO merge coverage output from android and iOS
-  #      - run:
-  #          name: Submit Coverage
-  #          command: yarn run codecov
+      - run:
+          name: Submit Coverage
+          command: yarn run codecov
   #
-  #      - store_artifacts:
-  #          path: ~/detox-artifacts
-  #      - store_artifacts:
-  #          path: ~/react-native-firebase/coverage
+      - store_artifacts:
+          path: ~/detox-artifacts
+      - store_artifacts:
+          path: ~/react-native-firebase/coverage
 
   android-build-release:
     <<: *android_defaults
