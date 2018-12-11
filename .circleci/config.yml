@@ -213,7 +213,7 @@ jobs:
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
-          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
+          command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
       - save_cache:
           paths:
@@ -227,7 +227,7 @@ jobs:
 
       - run:
           name: Build Android Testing App
-          command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
+          command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 6 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
       # cache gradle build caches
       - run:
@@ -303,7 +303,7 @@ jobs:
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
-          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
+          command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
       - save_cache:
           paths:
