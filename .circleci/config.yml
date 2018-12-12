@@ -78,11 +78,15 @@ aliases:
   #         ANDROID
   # -------------------------
 
+  - &android-create-avd
+    name: Create AVD
+    command: avd-create
+    
   - &android-launch-avd
     name: Launch AVD
     background: true
     command: avd-launch
-  #
+ 
   - &android-wait-avd
     name: Wait for AVD to be ready
     command: timeout 300 avd-wait-ready
@@ -180,6 +184,7 @@ jobs:
 
       - run: *packager-jet
       - run: *packager-warmup
+      - run: *android-create-avd
       - run: *android-launch-avd
 
       # restore saved caches
