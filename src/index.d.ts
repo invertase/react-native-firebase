@@ -18,26 +18,45 @@ declare module 'react-native-firebase' {
 
   // type AdmobModule = FirebaseModuleAndStatics<RNFirebase.admob.AdMob>;
   type AnalyticsModule = FirebaseModuleAndStatics<RNFirebase.Analytics>;
-  type AuthModule = FirebaseModuleAndStatics<RNFirebase.auth.Auth,
-    RNFirebase.auth.AuthStatics>;
+  type AuthModule = FirebaseModuleAndStatics<
+    RNFirebase.auth.Auth,
+    RNFirebase.auth.AuthStatics
+  >;
   type ConfigModule = FirebaseModuleAndStatics<RNFirebase.config.Config>;
-  type CrashlyticsModule = FirebaseModuleAndStatics<RNFirebase.crashlytics.Crashlytics>;
-  type DatabaseModule = FirebaseModuleAndStatics<RNFirebase.database.Database,
-    RNFirebase.database.DatabaseStatics>;
-  type FirestoreModule = FirebaseModuleAndStatics<RNFirebase.firestore.Firestore,
-    RNFirebase.firestore.FirestoreStatics>;
-  type FunctionsModule = FirebaseModuleAndStatics<RNFirebase.functions.Functions,
-    RNFirebase.functions.FunctionsStatics>;
+  type CrashlyticsModule = FirebaseModuleAndStatics<
+    RNFirebase.crashlytics.Crashlytics
+  >;
+  type DatabaseModule = FirebaseModuleAndStatics<
+    RNFirebase.database.Database,
+    RNFirebase.database.DatabaseStatics
+  >;
+  type FirestoreModule = FirebaseModuleAndStatics<
+    RNFirebase.firestore.Firestore,
+    RNFirebase.firestore.FirestoreStatics
+  >;
+  type FunctionsModule = FirebaseModuleAndStatics<
+    RNFirebase.functions.Functions,
+    RNFirebase.functions.FunctionsStatics
+  >;
   type IidModule = FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
   // type InvitesModule = FirebaseModuleAndStatics<RNFirebase.invites.Invites>;
-  type LinksModule = FirebaseModuleAndStatics<RNFirebase.links.Links,
-    RNFirebase.links.LinksStatics>;
-  type MessagingModule = FirebaseModuleAndStatics<RNFirebase.messaging.Messaging,
-    RNFirebase.messaging.MessagingStatics>;
-  type NotificationsModule = FirebaseModuleAndStatics<RNFirebase.notifications.Notifications,
-    RNFirebase.notifications.NotificationsStatics>;
+  type LinksModule = FirebaseModuleAndStatics<
+    RNFirebase.links.Links,
+    RNFirebase.links.LinksStatics
+  >;
+  type MessagingModule = FirebaseModuleAndStatics<
+    RNFirebase.messaging.Messaging,
+    RNFirebase.messaging.MessagingStatics
+  >;
+  type NotificationsModule = FirebaseModuleAndStatics<
+    RNFirebase.notifications.Notifications,
+    RNFirebase.notifications.NotificationsStatics
+  >;
   type PerfModule = FirebaseModuleAndStatics<RNFirebase.perf.Perf>;
-  type StorageModule = FirebaseModuleAndStatics<RNFirebase.storage.Storage>;
+  type StorageModule = FirebaseModuleAndStatics<
+    RNFirebase.storage.Storage,
+    RNFirebase.storage.StorageStatics
+  >;
   // type UtilsModule: FirebaseModuleAndStatics<RNFirebase.utils.Utils>;
 
   // Modules commented-out do not currently have type definitions
@@ -220,15 +239,10 @@ declare module 'react-native-firebase' {
     }
 
     namespace storage {
-      /**
-       * The Firebase Storage service interface.
-       *
-       * An instance can be accessed using `firebase.storage()`.
-       */
-      class Storage {
-        static TaskState: TaskState;
-        static TaskEvent: TaskState;
-        static Native?: {
+      interface StorageStatics {
+        TaskState: TaskState;
+        TaskEvent: TaskState;
+        Native?: {
           MAIN_BUNDLE_PATH: string;
           CACHES_DIRECTORY_PATH: string;
           DOCUMENT_DIRECTORY_PATH: string;
@@ -239,7 +253,14 @@ declare module 'react-native-firebase' {
           FILETYPE_REGULAR: string;
           FILETYPE_DIRECTORY: string;
         };
+      }
 
+      /**
+       * The Firebase Storage service interface.
+       *
+       * An instance can be accessed using `firebase.storage()`.
+       */
+      class Storage {
         /**
          * The app associated with the Storage service instance.
          */
@@ -561,8 +582,8 @@ declare module 'react-native-firebase' {
         exists(): boolean;
 
         exportVal(): {
-          '.value': any,
-          '.priority': string | number | null,
+          '.value': any;
+          '.priority': string | number | null;
         };
 
         forEach(action: (a: database.DataSnapshot) => boolean): boolean;
@@ -584,11 +605,9 @@ declare module 'react-native-firebase' {
         val(): any;
       }
 
-      interface ThenableReference<T> extends Promise<T> {
-      }
+      interface ThenableReference<T> extends Promise<T> {}
 
-      interface ThenableReference<T> extends Reference {
-      }
+      interface ThenableReference<T> extends Reference {}
 
       interface Reference extends database.Query {
         child(path: string): database.Reference;
@@ -693,6 +712,11 @@ declare module 'react-native-firebase' {
        * Sets a key/value pair of data on the current user.
        */
       setUserProperty(name: string, value: string | null): void;
+
+      /**
+       * Sets multiple user properties to the supplied values.
+       */
+      setUserProperties(fieldMapping: { [key: string]: string | null }): void;
 
       [key: string]: any;
     }
@@ -823,7 +847,9 @@ declare module 'react-native-firebase' {
       /**
        * Re-authenticate a user with a third-party authentication provider
        */
-      reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
+      reauthenticateWithCredential(
+        credential: AuthCredential
+      ): Promise<UserCredential>;
 
       /**
        * Refreshes the current user.
@@ -888,7 +914,12 @@ declare module 'react-native-firebase' {
         email?: string;
         fromEmail?: string;
       };
-      operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL' | 'EMAIL_SIGNIN' | 'ERROR';
+      operation:
+        | 'PASSWORD_RESET'
+        | 'VERIFY_EMAIL'
+        | 'RECOVER_EMAIL'
+        | 'EMAIL_SIGNIN'
+        | 'ERROR';
     }
 
     interface ConfirmationResult {
@@ -972,22 +1003,23 @@ declare module 'react-native-firebase' {
           smsCode: string
         ): Promise<null>;
       }
-
+      type OrNull<T> = T | null;
+      type AuthListenerCallback = (user: OrNull<User>) => void;
       interface Auth {
         readonly app: App;
         /**
          * Returns the current Firebase authentication state.
          */
-        authResult: AuthResult | null;
+        authResult: OrNull<AuthResult>;
         /**
          * Returns the currently signed-in user (or null). See the User class documentation for further usage.
          */
-        currentUser: User | null;
+        currentUser: OrNull<User>;
 
         /**
          * Gets/Sets the language for the app instance
          */
-        languageCode: string | null;
+        languageCode: OrNull<string>;
 
         settings: AuthSettings;
 
@@ -996,21 +1028,21 @@ declare module 'react-native-firebase' {
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onAuthStateChanged(listener: Function): () => void;
+        onAuthStateChanged(listener: AuthListenerCallback): () => void;
 
         /**
          * Listen for changes in id token.
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onIdTokenChanged(listener: Function): () => void;
+        onIdTokenChanged(listener: AuthListenerCallback): () => void;
 
         /**
          * Listen for changes in the user.
          * This method returns a unsubscribe function to stop listening to events.
          * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
          */
-        onUserChanged(listener: Function): () => void;
+        onUserChanged(listener: AuthListenerCallback): () => void;
 
         signOut(): Promise<void>;
 
@@ -1098,7 +1130,9 @@ declare module 'react-native-firebase' {
          * Sign in the user with a 3rd party credential provider.
          * credential requires the following properties:
          */
-        signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
+        signInWithCredential(
+          credential: AuthCredential
+        ): Promise<UserCredential>;
 
         /**
          * Asynchronously signs in using a phone number.
@@ -1976,6 +2010,11 @@ declare module 'react-native-firebase' {
          * Set the user ID to show alongside any subsequent crash reports.
          */
         setUserIdentifier(userId: string): void;
+
+        /**
+         * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
+         */
+        enableCrashlyticsCollection(): void;
       }
     }
 
@@ -1985,7 +2024,10 @@ declare module 'react-native-firebase' {
         createDynamicLink(dynamicLink: DynamicLink): Promise<string>;
 
         /** Creates a short dynamic link. */
-        createShortDynamicLink(dynamicLink: DynamicLink, type: 'SHORT' | 'UNGUESSABLE'): Promise<string>;
+        createShortDynamicLink(
+          dynamicLink: DynamicLink,
+          type: 'SHORT' | 'UNGUESSABLE'
+        ): Promise<string>;
 
         /**
          * Returns the URL that the app has been launched from. If the app was
@@ -2383,7 +2425,7 @@ declare module 'react-native-firebase' {
 
       namespace DocumentReference {
         type ObserverOnNext = (documentSnapshot: DocumentSnapshot) => void;
-        type ObserverOnError = (err: object) => void;
+        type ObserverOnError = (err: Query.SnapshotError) => void;
 
         interface Observer {
           next: ObserverOnNext;
@@ -2411,7 +2453,7 @@ declare module 'react-native-firebase' {
 
         toBase64(): string;
 
-        toUint8Array: Uint8Array;
+        toUint8Array(): Uint8Array;
       }
 
       class FieldPath {
@@ -2539,8 +2581,20 @@ declare module 'react-native-firebase' {
           startAt?: any[];
         }
 
+        interface NativeError extends Error {
+          code: string;
+          message: string;
+          nativeErrorCode?: string;
+          nativeErrorMessage?: string;
+        }
+
+        interface SnapshotError extends NativeError {
+          path: string;
+          appName: string;
+        }
+
         type ObserverOnNext = (querySnapshot: QuerySnapshot) => void;
-        type ObserverOnError = (err: object) => void;
+        type ObserverOnError = (err: SnapshotError) => void;
 
         interface Observer {
           next: ObserverOnNext;
@@ -2726,7 +2780,14 @@ declare module 'react-native-firebase' {
         }
 
         type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
-        type QueryOperator = '=' | '==' | '>' | '>=' | '<' | '<=' | 'array-contains';
+        type QueryOperator =
+          | '='
+          | '=='
+          | '>'
+          | '>='
+          | '<'
+          | '<='
+          | 'array-contains';
 
         interface TypeMap {
           type:
@@ -2760,7 +2821,7 @@ declare module 'react-native-firebase' {
 }
 
 declare module 'react-native-firebase/storage' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Storage = RNFirebase.storage.Storage;
   export type Reference = RNFirebase.storage.Reference;
   export type FullMetadata = RNFirebase.storage.FullMetadata;
@@ -2773,7 +2834,7 @@ declare module 'react-native-firebase/storage' {
 }
 
 declare module 'react-native-firebase/database' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Database = RNFirebase.database.Database;
   export type RnReference = RNFirebase.database.RnReference;
   export type QueryEventType = RNFirebase.database.QueryEventType;
@@ -2784,15 +2845,13 @@ declare module 'react-native-firebase/database' {
   export type Reference = RNFirebase.database.Reference;
   export type DatabaseStatics = RNFirebase.database.DatabaseStatics;
 
-  interface ThenableReference<T> extends Promise<T> {
-  }
+  interface ThenableReference<T> extends Promise<T> {}
 
-  interface ThenableReference<T> extends RNFirebase.database.Reference {
-  }
+  interface ThenableReference<T> extends RNFirebase.database.Reference {}
 }
 
 declare module 'react-native-firebase/auth' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type AuthResult = RNFirebase.auth.AuthResult;
   export type AuthProvider = RNFirebase.auth.AuthProvider;
   export type Auth = RNFirebase.auth.Auth;
@@ -2800,18 +2859,18 @@ declare module 'react-native-firebase/auth' {
 }
 
 declare module 'react-native-firebase/messaging' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Messaging = RNFirebase.messaging.Messaging;
   export type RemoteMessage = RNFirebase.messaging.RemoteMessage;
 }
 
 declare module 'react-native-firebase/iid' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type InstanceId = RNFirebase.iid.InstanceId;
 }
 
 declare module 'react-native-firebase/notifications' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type AndroidNotifications = RNFirebase.notifications.AndroidNotifications;
   export type Notifications = RNFirebase.notifications.Notifications;
   export type Notification = RNFirebase.notifications.Notification;
@@ -2823,18 +2882,18 @@ declare module 'react-native-firebase/notifications' {
 }
 
 declare module 'react-native-firebase/config' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type ConfigSnapshot = RNFirebase.config.ConfigSnapshot;
   export type Config = RNFirebase.config.Config;
 }
 
 declare module 'react-native-firebase/crashlytics' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Crashlytics = RNFirebase.crashlytics.Crashlytics;
 }
 
 declare module 'react-native-firebase/links' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Links = RNFirebase.links.Links;
   export type DynamicLink = RNFirebase.links.DynamicLink;
   export type AnalyticsParameters = RNFirebase.links.AnalyticsParameters;
@@ -2846,7 +2905,7 @@ declare module 'react-native-firebase/links' {
 }
 
 declare module 'react-native-firebase/functions' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type HttpsErrorCode = RNFirebase.functions.HttpsErrorCode;
   export type FunctionsErrorCode = RNFirebase.functions.FunctionsErrorCode;
   export type HttpsCallableResult = RNFirebase.functions.HttpsCallableResult;
@@ -2855,7 +2914,7 @@ declare module 'react-native-firebase/functions' {
 }
 
 declare module 'react-native-firebase/firestore' {
-  import {RNFirebase} from 'react-native-firebase';
+  import { RNFirebase } from 'react-native-firebase';
   export type Firestore = RNFirebase.firestore.Firestore;
   export type FirestoreStatics = RNFirebase.firestore.FirestoreStatics;
   export type CollectionReference = RNFirebase.firestore.CollectionReference;
@@ -2867,6 +2926,7 @@ declare module 'react-native-firebase/firestore' {
   export type GeoPoint = RNFirebase.firestore.GeoPoint;
   export type Path = RNFirebase.firestore.Path;
   export type Query = RNFirebase.firestore.Query;
+  export type SnapshotError = RNFirebase.firestore.Query.SnapshotError;
   export type QuerySnapshot = RNFirebase.firestore.QuerySnapshot;
   export type WriteBatch = RNFirebase.firestore.WriteBatch;
 }
