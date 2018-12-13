@@ -25,10 +25,7 @@ steps:
     args: [
       'build',
       '--build-arg', 'PROJECT_ID=$PROJECT_ID',
-      '--build-arg', 'REDIS_HOST=${_REDIS_HOST}',
-      '--build-arg', 'REDIS_PORT=${_REDIS_PORT}',
-      '--build-arg', 'REDIS_PASSWORD=${_REDIS_PASSWORD}',
-      '--cache-from', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:prod-latest',
+      '--cache-from', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:latest',
       '-t', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:$COMMIT_SHA',
       '-t', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:prod-latest',
       '${_ROOT_DIR}'
@@ -68,4 +65,4 @@ steps:
         fi
 
 images:
-  - 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:prod-latest'
+  - 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:latest'
