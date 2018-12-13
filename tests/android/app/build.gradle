@@ -5,7 +5,9 @@ apply plugin: 'io.fabric'
 import com.android.build.OutputFile
 
 project.ext.react = [
-  entryFile: "index.js"
+  entryFile: "index.js",
+  bundleInDebug: false,
+  nodeExecutableAndArgs: ["echo"]
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"

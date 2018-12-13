@@ -81,12 +81,12 @@ aliases:
   - &android-create-avd
     name: Create AVD
     command: avd-create
-    
+
   - &android-launch-avd
     name: Launch AVD
     background: true
     command: avd-launch
- 
+
   - &android-wait-avd
     name: Wait for AVD to be ready
     command: timeout 300 avd-wait-ready
@@ -131,12 +131,9 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: invertase/react-native-firebase-android:standard
+    - image: invertase/react-native-firebase-android:debug
   resource_class: "xlarge"
   working_directory: ~/react-native-firebase
-  environment:
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2048m"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx2048m"'
 
 # IOS
 macos_defaults: &macos_defaults
@@ -178,15 +175,6 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
-
-      - run: *packager-jet
-      - run: *packager-warmup
-      - run: *android-create-avd
-      - run: *android-launch-avd
-
       # restore saved caches
       - restore_cache:
           keys:
@@ -214,7 +202,6 @@ jobs:
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
 
-      # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
           command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
@@ -230,7 +217,7 @@ jobs:
           key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
-          name: Build Android Testing App
+          name: Build Android Debug APK
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 6 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
       # cache gradle build caches
@@ -250,25 +237,17 @@ jobs:
           key: gradle-build-caches-{{ .Revision }}
           when: always
 
-      - run: *android-wait-avd
-  #
-  #      # Now Test \o/
-      - run:
-          name: Run Jet Tests
-          command: cd tests && yarn run test-android-cover
-  #
-  #      # TODO merge coverage output from android and iOS
-      - run:
-          name: Submit Coverage
-          command: yarn run codecov
-
+      - persist_to_workspace:
+          root: ~/react-native-firebase
+          paths:
+            - tests/app/build/outputs/apk/app-debug.apk
       - store_artifacts:
-          path: ~/detox-artifacts
-      - store_artifacts:
-          path: ~/react-native-firebase/coverage
+          path: ~/react-native-firebase/tests/app/build/outputs/apk/app-debug.apk
 
   android-build-release:
     <<: *android_defaults
+    docker:
+      - image: invertase/react-native-firebase-android:debug
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
@@ -320,7 +299,7 @@ jobs:
           key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
-          name: Build Android Testing App
+          name: Build Android Release APK
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleRelease
 
       # cache gradle build caches
@@ -339,6 +318,12 @@ jobs:
             - ~/gradle-build-caches
           key: gradle-release-build-caches-{{ .Revision }}
           when: always
+      - persist_to_workspace:
+          root: ~/react-native-firebase
+          paths:
+            - tests/app/build/outputs/apk/app-release.apk
+      - store_artifacts:
+          path: ~/react-native-firebase/tests/app/build/outputs/apk/app-release.apk
 
 
   ios-test-e2e:
