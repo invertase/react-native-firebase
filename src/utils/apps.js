@@ -180,7 +180,11 @@ export default {
       const app = FirebaseCoreModule.apps[i];
       const options = Object.assign({}, app);
       delete options.name;
-      APPS[app.name] = new App(app.name, options, true);
+      APPS[app.name.toUpperCase()] = new App(
+        app.name.toUpperCase(),
+        options,
+        true
+      );
     }
   },
 
