@@ -21,7 +21,7 @@ export default class IOSNotifications {
     this._backgroundFetchResult = {
       noData: nativeModule.backgroundFetchResultNoData,
       newData: nativeModule.backgroundFetchResultNewData,
-      failure: nativeModule.backgroundFetchResultFailure,
+      failure: nativeModule.backgroundFetchResultFailed,
     };
   }
 
