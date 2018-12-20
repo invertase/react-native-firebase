@@ -5,12 +5,12 @@
 import DocumentChange from './DocumentChange';
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   NativeDocumentChange,
   NativeDocumentSnapshot,
   SnapshotMetadata,
-} from './types';
+} from './firestoreTypes.flow';
 import type Query from './Query';
 
 type NativeQuerySnapshot = {

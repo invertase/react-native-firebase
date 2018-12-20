@@ -5,6 +5,11 @@
 import { isObject, deepGet, deepExists } from '../../utils';
 import type Reference from './Reference';
 
+type ExportedValue = {
+  '.value': any,
+  '.priority': string | number | null,
+};
+
 /**
  * @class DataSnapshot
  * @link https://firebase.google.com/docs/reference/js/firebase.database.DataSnapshot
@@ -42,9 +47,32 @@ export default class DataSnapshot {
    */
   val(): any {
     // clone via JSON stringify/parse - prevent modification of this._value
-    if (isObject(this._value) || Array.isArray(this._value))
+    if (isObject(this._value) || Array.isArray(this._value)) {
       return JSON.parse(JSON.stringify(this._value));
+    }
+
     return this._value;
+  }
+
+  /**
+   * Exports the entire contents of the DataSnapshot as a JavaScript object.
+   *
+   * The exportVal() method is similar to val(), except priority information is
+   * included (if available), making it suitable for backing up your data.
+   *
+   * @return {{'.value': *, '.priority': *}}
+   */
+  exportVal(): ExportedValue {
+    let value = this._value;
+
+    if (isObject(this._value) || Array.isArray(this._value)) {
+      value = JSON.parse(JSON.stringify(this._value));
+    }
+
+    return {
+      '.value': value,
+      '.priority': this._priority,
+    };
   }
 
   /**

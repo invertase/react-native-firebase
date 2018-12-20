@@ -4,7 +4,7 @@
  */
 import { typeOf } from '../../utils';
 import { getNativeModule } from '../../utils/native';
-import type Database from '.';
+import type Database from './';
 import type Reference from './Reference';
 
 /**

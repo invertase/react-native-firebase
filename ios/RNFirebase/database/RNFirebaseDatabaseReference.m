@@ -38,7 +38,7 @@
             [self handleDatabaseEvent:eventType registration:registration dataSnapshot:snapshot previousChildName:previousChildName];
         };
         id errorBlock = ^(NSError *_Nonnull error) {
-            NSLog(@"Error onDBEvent: %@", [error debugDescription]);
+            DLog(@"Error onDBEvent: %@", [error debugDescription]);
             [self removeEventListener:eventRegistrationKey];
             [self handleDatabaseError:registration error:error];
         };
@@ -56,7 +56,7 @@
         NSDictionary *data = [RNFirebaseDatabaseReference snapshotToDictionary:snapshot previousChildName:previousChildName];
         resolve(data);
     } withCancelBlock:^(NSError *_Nonnull error) {
-        NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
+        DLog(@"Error onDBEventOnce: %@", [error debugDescription]);
         [RNFirebaseDatabase handlePromise:resolve rejecter:reject databaseError:error];
     }];
 }

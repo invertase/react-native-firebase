@@ -5,7 +5,7 @@
 import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 import { getLogger } from '../../utils/log';
 import { getNativeModule } from '../../utils/native';
-import type Database from '.';
+import type Database from './';
 
 let transactionId = 0;
 

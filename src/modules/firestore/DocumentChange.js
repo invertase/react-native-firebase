@@ -4,8 +4,8 @@
  */
 import DocumentSnapshot from './DocumentSnapshot';
 
-import type Firestore from '.';
-import type { NativeDocumentChange } from './types';
+import type Firestore from './';
+import type { NativeDocumentChange } from './firestoreTypes.flow';
 
 /**
  * @class DocumentChange

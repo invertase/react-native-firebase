@@ -2,25 +2,26 @@
  * @flow
  * DocumentReference representation wrapper
  */
-import CollectionReference from './CollectionReference';
+import SnapshotError from './SnapshotError';
 import DocumentSnapshot from './DocumentSnapshot';
+import CollectionReference from './CollectionReference';
 import { parseUpdateArgs } from './utils';
 import { buildNativeMap } from './utils/serialize';
-import { getAppEventName, SharedEventEmitter } from '../../utils/events';
-import { getLogger } from '../../utils/log';
-import { firestoreAutoId, isFunction, isObject } from '../../utils';
 import { getNativeModule } from '../../utils/native';
+import { firestoreAutoId, isFunction, isObject } from '../../utils';
+import { getAppEventName, SharedEventEmitter } from '../../utils/events';
 
-import type Firestore from '.';
+import type Firestore from './';
 import type {
   GetOptions,
   MetadataChanges,
   NativeDocumentSnapshot,
   SetOptions,
-} from './types';
+} from './firestoreTypes.flow';
 import type Path from './Path';
+import type { NativeErrorResponse } from '../../common/commonTypes.flow';
 
-type ObserverOnError = Object => void;
+type ObserverOnError = SnapshotError => void;
 type ObserverOnNext = DocumentSnapshot => void;
 
 type Observer = {
@@ -212,21 +213,23 @@ export default class DocumentReference {
     };
 
     // Listen to snapshot events
-    SharedEventEmitter.addListener(
+    const snapshotSubscription = SharedEventEmitter.addListener(
       getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
       listener
     );
 
-    // Listen for snapshot error events
-    if (observer.error) {
-      SharedEventEmitter.addListener(
-        getAppEventName(
-          this._firestore,
-          `onDocumentSnapshotError:${listenerId}`
-        ),
-        observer.error
-      );
-    }
+    let unsubscribe: () => void;
+
+    // listen for snapshot error events
+    const errorSubscription = SharedEventEmitter.addListener(
+      getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
+      (e: NativeErrorResponse) => {
+        if (unsubscribe) unsubscribe();
+        const error = new SnapshotError(e);
+        if (observer.error) observer.error(error);
+        else this.firestore.log.error(error);
+      }
+    );
 
     // Add the native listener
     getNativeModule(this._firestore).documentOnSnapshot(
@@ -235,8 +238,18 @@ export default class DocumentReference {
       docListenOptions
     );
 
-    // Return an unsubscribe method
-    return this._offDocumentSnapshot.bind(this, listenerId, listener);
+    // return an unsubscribe method
+    unsubscribe = () => {
+      snapshotSubscription.remove();
+      errorSubscription.remove();
+      // cancel native listener
+      getNativeModule(this._firestore).documentOffSnapshot(
+        this.path,
+        listenerId
+      );
+    };
+
+    return unsubscribe;
   }
 
   set(data: Object, options?: SetOptions): Promise<void> {
@@ -255,26 +268,5 @@ export default class DocumentReference {
       this.path,
       nativeData
     );
-  }
-
-  /**
-   * INTERNALS
-   */
-
-  /**
-   * Remove document snapshot listener
-   * @param listener
-   */
-  _offDocumentSnapshot(listenerId: string, listener: Function) {
-    getLogger(this._firestore).info('Removing onDocumentSnapshot listener');
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshot:${listenerId}`),
-      listener
-    );
-    SharedEventEmitter.removeListener(
-      getAppEventName(this._firestore, `onDocumentSnapshotError:${listenerId}`),
-      listener
-    );
-    getNativeModule(this._firestore).documentOffSnapshot(this.path, listenerId);
   }
 }

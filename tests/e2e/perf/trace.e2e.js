@@ -83,6 +83,5 @@ describe('perf()', () => {
       metric.should.equal(3);
       await trace.stop();
     });
-
   });
 });

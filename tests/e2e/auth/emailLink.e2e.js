@@ -1,4 +1,11 @@
 describe('auth() -> emailLink Provider', () => {
+  beforeEach(async () => {
+    if (firebase.auth().currentUser) {
+      await firebase.auth().signOut();
+      await sleep(50);
+    }
+  });
+
   describe('sendSignInLinkToEmail', () => {
     it('should send email', async () => {
       const random = randomString(12, '#aA');

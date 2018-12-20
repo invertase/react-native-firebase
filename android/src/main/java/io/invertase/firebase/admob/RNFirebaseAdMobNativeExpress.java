@@ -1,7 +1,5 @@
 package io.invertase.firebase.admob;
 
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -21,10 +19,12 @@ import com.google.android.gms.ads.VideoOptions;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGroup> {
 
-  public static final String REACT_CLASS = "RNFirebaseAdMobNativeExpress";
-  public static final String BANNER_EVENT = "onBannerEvent";
+  private static final String REACT_CLASS = "RNFirebaseAdMobNativeExpress";
+  private static final String BANNER_EVENT = "onBannerEvent";
   private ThemedReactContext context;
   private ReactViewGroup viewGroup;
   private RCTEventEmitter emitter;
@@ -59,7 +59,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
     return viewGroup;
   }
 
-  NativeExpressAdView getAdView() {
+  private NativeExpressAdView getAdView() {
     return (NativeExpressAdView) viewGroup.getChildAt(0);
   }
 
@@ -157,7 +157,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
   /**
    * Loads a new ad into a viewGroup
    */
-  void requestAd() {
+  private void requestAd() {
     if (size == null || unitId == null || request == null || videoOptions == null) {
       return;
     }
@@ -179,7 +179,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
   /**
    * Listen to Ad events
    */
-  void setAdListener() {
+  private void setAdListener() {
     final NativeExpressAdView adView = getAdView();
 
     adView.setAdListener(new AdListener() {
@@ -263,7 +263,7 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
    * @param type
    * @param payload
    */
-  void sendEvent(String type, final @Nullable WritableMap payload) {
+  private void sendEvent(String type, final @Nullable WritableMap payload) {
     WritableMap event = Arguments.createMap();
     event.putString("type", type);
 
@@ -271,7 +271,6 @@ public class RNFirebaseAdMobNativeExpress extends SimpleViewManager<ReactViewGro
       event.putMap("payload", payload);
     }
 
-    int id = viewGroup.getId();
     emitter.receiveEvent(viewGroup.getId(), BANNER_EVENT, event);
   }
 

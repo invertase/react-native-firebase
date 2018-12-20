@@ -4,6 +4,7 @@ import INTERNALS from '../../utils/internals';
 import { isIOS } from '../../utils';
 import ModuleBase from '../../utils/ModuleBase';
 import type App from '../core/app';
+import DatabaseUtils from './database';
 
 const FirebaseCoreModule = NativeModules.RNFirebase;
 
@@ -26,6 +27,10 @@ export default class RNFirebaseUtils extends ModuleBase {
       hasCustomUrlSupport: false,
       namespace: NAMESPACE,
     });
+  }
+
+  get database(): DatabaseUtils {
+    return DatabaseUtils;
   }
 
   /**

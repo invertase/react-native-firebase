@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -27,6 +26,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import io.invertase.firebase.Utils;
 import io.invertase.firebase.messaging.RNFirebaseMessagingService;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -42,7 +43,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
 
   private RNFirebaseNotificationManager notificationManager;
 
-  public RNFirebaseNotifications(ReactApplicationContext context) {
+  RNFirebaseNotifications(ReactApplicationContext context) {
     super(context);
     context.addActivityEventListener(this);
 
@@ -152,37 +153,64 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
   //////////////////////////////////////////////////////////////////////
   @ReactMethod
   public void createChannel(ReadableMap channelMap, Promise promise) {
-    notificationManager.createChannel(channelMap);
+    try {
+      notificationManager.createChannel(channelMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void createChannelGroup(ReadableMap channelGroupMap, Promise promise) {
-    notificationManager.createChannelGroup(channelGroupMap);
+    try {
+      notificationManager.createChannelGroup(channelGroupMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void createChannelGroup(ReadableArray channelGroupsArray, Promise promise) {
-    notificationManager.createChannelGroups(channelGroupsArray);
+  public void createChannelGroups(ReadableArray channelGroupsArray, Promise promise) {
+    try {
+      notificationManager.createChannelGroups(channelGroupsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void createChannels(ReadableArray channelsArray, Promise promise) {
-    notificationManager.createChannels(channelsArray);
+    try {
+      notificationManager.createChannels(channelsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void deleteChannelGroup(String channelId, Promise promise) {
-    notificationManager.deleteChannelGroup(channelId);
-    promise.resolve(null);
+    try {
+      notificationManager.deleteChannelGroup(channelId);
+      promise.resolve(null);
+    } catch (NullPointerException e) {
+      promise.reject(
+        "notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?"
+      );
+    }
   }
 
   @ReactMethod
   public void deleteChannel(String channelId, Promise promise) {
-    notificationManager.deleteChannel(channelId);
+    try {
+      notificationManager.deleteChannel(channelId);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
     promise.resolve(null);
   }
   //////////////////////////////////////////////////////////////////////

@@ -3,12 +3,13 @@ package com.testing;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import io.salakar.bridge.RNBridgePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.devsupport.DevInternalSettings;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import io.invertase.jet.JetPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
@@ -41,7 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new RNBridgePackage(),
+        new JetPackage(),
         new RNFirebasePackage(),
         new RNFirebaseAdMobPackage(),
         new RNFirebaseAnalyticsPackage(),
@@ -70,6 +71,13 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    // TODO move to jet
+    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost().getReactInstanceManager().getDevSupportManager().getDevSettings();
+    if (settings != null) {
+      settings.setBundleDeltasEnabled(false);
+    }
+
     SoLoader.init(this, /* native exopackage */ false);
   }
 

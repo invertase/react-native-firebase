@@ -2,7 +2,7 @@
  * @flow
  */
 import { NativeEventEmitter, NativeModules } from 'react-native';
-import EventEmitter from './emitter/EventEmitter';
+import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import type ModuleBase from './ModuleBase';
 import type { FirebaseModuleConfig, FirebaseModuleName } from '../types';

@@ -1,4 +1,11 @@
 describe('auth() -> Providers', () => {
+  beforeEach(async () => {
+    if (firebase.auth().currentUser) {
+      await firebase.auth().signOut();
+      await sleep(50);
+    }
+  });
+
   describe('EmailAuthProvider', () => {
     describe('constructor', () => {
       it('should throw an unsupported error', () => {

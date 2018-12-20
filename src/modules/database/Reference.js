@@ -21,7 +21,7 @@ import {
 
 import SyncTree from '../../utils/SyncTree';
 
-import type Database from '.';
+import type Database from './';
 import type { DatabaseModifier, FirebaseError } from '../../types';
 
 // track all event registrations by path
@@ -77,11 +77,13 @@ type DatabaseListener = {
 export default class Reference extends ReferenceBase {
   _database: Database;
 
-  _promise: ?Promise<*>;
-
   _query: Query;
 
   _refListeners: { [listenerId: number]: DatabaseListener };
+
+  then: (a?: any) => Promise<any>;
+
+  catch: (a?: any) => Promise<any>;
 
   constructor(
     database: Database,
@@ -89,7 +91,6 @@ export default class Reference extends ReferenceBase {
     existingModifiers?: Array<DatabaseModifier>
   ) {
     super(path);
-    this._promise = null;
     this._refListeners = {};
     this._database = database;
     this._query = new Query(this, existingModifiers);
@@ -303,34 +304,26 @@ export default class Reference extends ReferenceBase {
    * @returns {*}
    */
   push(value: any, onComplete?: Function): Reference | Promise<void> {
-    if (value === null || value === undefined) {
-      return new Reference(
-        this._database,
-        `${this.path}/${generatePushID(this._database._serverTimeOffset)}`
-      );
+    const name = generatePushID(this._database._serverTimeOffset);
+
+    const pushRef = this.child(name);
+    const thennablePushRef = this.child(name);
+
+    let promise;
+    if (value != null) {
+      promise = thennablePushRef.set(value, onComplete).then(() => pushRef);
+    } else {
+      promise = Promise.resolve(pushRef);
     }
 
-    const newRef = new Reference(
-      this._database,
-      `${this.path}/${generatePushID(this._database._serverTimeOffset)}`
-    );
-    const promise = newRef.set(value);
+    thennablePushRef.then = promise.then.bind(promise);
+    thennablePushRef.catch = promise.catch.bind(promise);
 
-    // if callback provided then internally call the set promise with value
     if (isFunction(onComplete)) {
-      return (
-        promise
-          // $FlowExpectedError: Reports that onComplete can change to null despite the null check: https://github.com/facebook/flow/issues/1655
-          .then(() => onComplete(null, newRef))
-          // $FlowExpectedError: Reports that onComplete can change to null despite the null check: https://github.com/facebook/flow/issues/1655
-          .catch(error => onComplete(error, null))
-      );
+      promise.catch(() => {});
     }
 
-    // otherwise attach promise to 'thenable' reference and return the
-    // new reference
-    newRef._setThenable(promise);
-    return newRef;
+    return thennablePushRef;
   }
 
   /**
@@ -500,7 +493,15 @@ export default class Reference extends ReferenceBase {
    * @returns {string}
    */
   toString(): string {
-    return `${this._database.databaseUrl}/${this.path}`;
+    return `${this._database.databaseUrl}${this.path}`;
+  }
+
+  /**
+   * Return a JSON-serializable representation of this object.
+   * @returns {string}
+   */
+  toJSON(): string {
+    return this.toString();
   }
 
   /**
@@ -559,47 +560,6 @@ export default class Reference extends ReferenceBase {
   }
 
   /**
-   * Access then method of promise if set
-   * @return {*}
-   */
-  then(fnResolve: any => any, fnReject: any => any) {
-    if (isFunction(fnResolve) && this._promise && this._promise.then) {
-      return this._promise.then.bind(this._promise)(
-        result => {
-          this._promise = null;
-          return fnResolve(result);
-        },
-        possibleErr => {
-          this._promise = null;
-
-          if (isFunction(fnReject)) {
-            return fnReject(possibleErr);
-          }
-
-          throw possibleErr;
-        }
-      );
-    }
-
-    throw new Error("Cannot read property 'then' of undefined.");
-  }
-
-  /**
-   * Access catch method of promise if set
-   * @return {*}
-   */
-  catch(fnReject: any => any) {
-    if (isFunction(fnReject) && this._promise && this._promise.catch) {
-      return this._promise.catch.bind(this._promise)(possibleErr => {
-        this._promise = null;
-        return fnReject(possibleErr);
-      });
-    }
-
-    throw new Error("Cannot read property 'catch' of undefined.");
-  }
-
-  /**
    * INTERNALS
    */
 
@@ -625,15 +585,6 @@ export default class Reference extends ReferenceBase {
     return `$${this._database.databaseUrl}$/${
       this.path
     }$${this._query.queryIdentifier()}`;
-  }
-
-  /**
-   * Set the promise this 'thenable' reference relates to
-   * @param promise
-   * @private
-   */
-  _setThenable(promise: Promise<*>) {
-    this._promise = promise;
   }
 
   /**
@@ -804,7 +755,7 @@ export default class Reference extends ReferenceBase {
       },
     });
 
-    // increment number of listeners - just s short way of making
+    // increment number of listeners - just a short way of making
     // every registration unique per .on() call
     listeners += 1;
 
@@ -895,12 +846,3 @@ export default class Reference extends ReferenceBase {
     return SyncTree.removeListenersForRegistrations(registrations);
   }
 }
-
-// eslint-disable-next-line no-unused-vars
-// class ThenableReference<+R> extends Reference {
-//   then<U>(
-//     onFulfill?: (value: R) => Promise<U> | U,
-//     onReject?: (error: any) => Promise<U> | U
-//   ): Promise<U>;
-//   catch<U>(onReject?: (error: any) => Promise<U> | U): Promise<R | U>;
-// }

@@ -1,6 +1,6 @@
 import { getNativeModule } from '../../utils/native';
 
-import type Notifications from '.';
+import type Notifications from './';
 
 export type BackgroundFetchResultValue = string;
 type BackgroundFetchResult = {
@@ -21,7 +21,7 @@ export default class IOSNotifications {
     this._backgroundFetchResult = {
       noData: nativeModule.backgroundFetchResultNoData,
       newData: nativeModule.backgroundFetchResultNewData,
-      failure: nativeModule.backgroundFetchResultFailure,
+      failure: nativeModule.backgroundFetchResultFailed,
     };
   }
 

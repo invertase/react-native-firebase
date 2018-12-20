@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -18,16 +17,19 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
 
-  public RNFirebaseMessaging(ReactApplicationContext context) {
+  RNFirebaseMessaging(ReactApplicationContext context) {
     super(context);
     LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
 
@@ -44,6 +46,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     );
   }
 
+
   @Override
   public String getName() {
     return "RNFirebaseMessaging";
@@ -51,11 +54,17 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getToken(Promise promise) {
-    String token = FirebaseInstanceId
-      .getInstance()
-      .getToken();
-    Log.d(TAG, "Firebase token: " + token);
-    promise.resolve(token);
+    try {
+      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+      String token = FirebaseInstanceId
+              .getInstance()
+              .getToken(senderId, "FCM");
+      Log.d(TAG, "Firebase token: " + token);
+      promise.resolve(token);
+    } catch (Throwable e) {
+       e.printStackTrace();
+       promise.reject(null,e.getMessage());
+    }
   }
 
   @ReactMethod
@@ -117,7 +126,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
       .subscribeToTopic(topic)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "subscribeToTopic:onComplete:success");
             promise.resolve(null);
@@ -137,7 +146,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
       .unsubscribeFromTopic(topic)
       .addOnCompleteListener(new OnCompleteListener<Void>() {
         @Override
-        public void onComplete(@NonNull Task<Void> task) {
+        public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "unsubscribeFromTopic:onComplete:success");
             promise.resolve(null);

@@ -78,6 +78,13 @@ export default class Crashlytics extends ModuleBase {
   setUserIdentifier(userId: string): void {
     getNativeModule(this).setUserIdentifier(userId);
   }
+
+  /**
+   * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
+   */
+  enableCrashlyticsCollection(): void {
+    getNativeModule(this).enableCrashlyticsCollection();
+  }
 }
 
 export const statics = {};
