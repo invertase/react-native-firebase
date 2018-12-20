@@ -3,13 +3,15 @@
  * IOSNotification representation wrapper
  */
 import type Notification from './Notification';
-import type Notifications from '.';
+import type Notifications from './';
 import { type BackgroundFetchResultValue } from './IOSNotifications';
 import type {
   IOSAttachment,
   IOSAttachmentOptions,
   NativeIOSNotification,
 } from './types';
+
+import { isIOS } from '../../utils';
 import { getLogger } from '../../utils/log';
 import { getNativeModule } from '../../utils/native';
 
@@ -56,18 +58,22 @@ export default class IOSNotification {
       this._threadIdentifier = data.threadIdentifier;
     }
 
-    const complete = (fetchResult: BackgroundFetchResultValue) => {
-      const { notificationId } = notification;
-      getLogger(notifications).debug(
-        `Completion handler called for notificationId=${notificationId}`
-      );
-      getNativeModule(notifications).complete(notificationId, fetchResult);
-    };
+    if (isIOS && notifications && notifications.ios) {
+      const complete = (fetchResult: BackgroundFetchResultValue) => {
+        const { notificationId } = notification;
+        if (notificationId) {
+          getLogger(notifications).debug(
+            `Completion handler called for notificationId=${notificationId}`
+          );
+          getNativeModule(notifications).complete(notificationId, fetchResult);
+        }
+      };
 
-    if (notifications.ios.shouldAutoComplete) {
-      complete(notifications.ios.backgroundFetchResult.noData);
-    } else {
-      this._complete = complete;
+      if (notifications.ios.shouldAutoComplete) {
+        complete(notifications.ios.backgroundFetchResult.noData);
+      } else {
+        this._complete = complete;
+      }
     }
 
     // Defaults

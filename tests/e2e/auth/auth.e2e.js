@@ -2,7 +2,7 @@ describe('auth()', () => {
   beforeEach(async () => {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
-      await sleep(25);
+      await sleep(50);
     }
   });
 
@@ -45,7 +45,7 @@ describe('auth()', () => {
       }
     });
 
-    xit('accepts a valid code', async () => {
+   xit('accepts a valid code', async () => {
       // todo not sure how to generate a code yet - maybe via admin sdk?
     });
   });
@@ -71,11 +71,12 @@ describe('auth()', () => {
     it('signs in with a admin sdk created custom auth token', async () => {
       const customUID = `custom${randomString(12, '#aA')}`;
       const token = await firebaseAdmin.auth().createCustomToken(customUID);
-      const user = await firebase.auth().signInWithCustomToken(token);
+      const { user } = await firebase.auth().signInWithCustomToken(token);
       user.uid.should.equal(customUID);
       firebase.auth().currentUser.uid.should.equal(customUID);
 
       await firebase.auth().signOut();
+
       const {
         user: user2,
       } = await firebase.auth().signInAndRetrieveDataWithCustomToken(token);
@@ -87,7 +88,7 @@ describe('auth()', () => {
 
   describe('onAuthStateChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       await sleep(50);
 
@@ -122,7 +123,7 @@ describe('auth()', () => {
     });
 
     it('stops listening when unsubscribed', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       // Test
       const callback = sinon.spy();
@@ -169,7 +170,7 @@ describe('auth()', () => {
 
   describe('onIdTokenChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       // Test
       const callback = sinon.spy();
@@ -201,7 +202,7 @@ describe('auth()', () => {
     });
 
     it('stops listening when unsubscribed', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       // Test
       const callback = sinon.spy();
@@ -247,7 +248,7 @@ describe('auth()', () => {
 
   describe('onUserChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       // Test
       const callback = sinon.spy();
@@ -283,7 +284,7 @@ describe('auth()', () => {
     });
 
     it('stops listening when unsubscribed', async () => {
-      await firebase.auth().signInAnonymouslyAndRetrieveData();
+      await firebase.auth().signInAnonymously();
 
       // Test
       const callback = sinon.spy();
@@ -332,15 +333,18 @@ describe('auth()', () => {
 
   describe('signInAnonymously()', () => {
     it('it should sign in anonymously', () => {
-      const successCb = currentUser => {
+      const successCb = currentUserCredential => {
+        const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
         should.equal(currentUser.toJSON().email, null);
         currentUser.isAnonymous.should.equal(true);
         currentUser.providerId.should.equal('firebase');
-
         currentUser.should.equal(firebase.auth().currentUser);
+
+        const { additionalUserInfo } = currentUserCredential;
+        additionalUserInfo.should.be.an.Object();
 
         return firebase.auth().signOut();
       };
@@ -382,14 +386,19 @@ describe('auth()', () => {
       const email = 'test@test.com';
       const pass = 'test1234';
 
-      const successCb = currentUser => {
+      const successCb = currentUserCredential => {
+        const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
-        currentUser.toJSON().email.should.eql('test@test.com');
+        currentUser.toJSON().email.should.eql(email);
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
         currentUser.should.equal(firebase.auth().currentUser);
+
+        const { additionalUserInfo } = currentUserCredential;
+        additionalUserInfo.should.be.an.Object();
+        additionalUserInfo.isNewUser.should.equal(false);
 
         return firebase.auth().signOut();
       };
@@ -563,7 +572,8 @@ describe('auth()', () => {
         'test1234'
       );
 
-      const successCb = currentUser => {
+      const successCb = currentUserCredential => {
+        const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
@@ -571,6 +581,10 @@ describe('auth()', () => {
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
         currentUser.should.equal(firebase.auth().currentUser);
+
+        const { additionalUserInfo } = currentUserCredential;
+        additionalUserInfo.should.be.an.Object();
+        additionalUserInfo.isNewUser.should.equal(false);
 
         return firebase.auth().signOut();
       };
@@ -757,15 +771,17 @@ describe('auth()', () => {
       const email = `${random}@${random}.com`;
       const pass = random;
 
-      const successCb = newUser => {
+      const successCb = newUserCredential => {
+        const newUser = newUserCredential.user;
         newUser.uid.should.be.a.String();
         newUser.email.should.equal(email.toLowerCase());
         newUser.emailVerified.should.equal(false);
         newUser.isAnonymous.should.equal(false);
         newUser.providerId.should.equal('firebase');
         newUser.should.equal(firebase.auth().currentUser);
-        newUser.metadata.should.be.an.Object();
-        should.equal(newUser.phoneNumber, null);
+        const { additionalUserInfo } = newUserCredential;
+        additionalUserInfo.should.be.an.Object();
+        additionalUserInfo.isNewUser.should.equal(true);
 
         return newUser.delete();
       };
@@ -927,7 +943,7 @@ describe('auth()', () => {
     });
   });
 
-  describe('fetchProvidersForEmail/fetchSignInMethodsForEmail()', () => {
+  describe('fetchSignInMethodsForEmail()', () => {
     it('it should return password provider for an email address', () =>
       new Promise((resolve, reject) => {
         const successCb = providers => {
@@ -942,7 +958,7 @@ describe('auth()', () => {
 
         return firebase
           .auth()
-          .fetchProvidersForEmail('test@test.com')
+          .fetchSignInMethodsForEmail('test@test.com')
           .then(successCb)
           .catch(failureCb);
       }));
@@ -1023,7 +1039,8 @@ describe('auth()', () => {
       const email = `${random}@${random}.com`;
       const pass = random;
 
-      const successCb = newUser => {
+      const successCb = authResult => {
+        const newUser = authResult.user;
         newUser.uid.should.be.a.String();
         newUser.email.should.equal(email.toLowerCase());
         newUser.emailVerified.should.equal(false);
@@ -1094,7 +1111,7 @@ describe('auth()', () => {
 
       await firebase
         .auth()
-        .createUserAndRetrieveDataWithEmailAndPassword(email, pass);
+        .createUserWithEmailAndPassword(email, pass);
 
       try {
         await firebase.auth().sendPasswordResetEmail(email);

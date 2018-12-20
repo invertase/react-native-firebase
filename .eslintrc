@@ -31,7 +31,8 @@
     "no-undef": 0,
     "no-underscore-dangle": "off",
     "no-use-before-define": 0,
-    "import/no-cycle": 0
+    "import/no-cycle": 0,
+    "import/no-useless-path-segments": 0
   },
   "globals": {
     "__DEV__": true,

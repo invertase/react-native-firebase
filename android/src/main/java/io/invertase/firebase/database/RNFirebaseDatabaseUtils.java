@@ -1,6 +1,5 @@
 package io.invertase.firebase.database;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -9,6 +8,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
+
+import javax.annotation.Nullable;
 
 import io.invertase.firebase.Utils;
 

@@ -1,6 +1,5 @@
 const { setDatabaseContents } = TestHelpers.database;
 
-// TODO use testRunId in refs to prevent multiple test instances interfering with each other
 describe('database()', () => {
   describe('Snapshot', () => {
     before(() => setDatabaseContents());
@@ -12,7 +11,7 @@ describe('database()', () => {
         .once('value');
 
       snapshot.val.should.be.a.Function();
-      snapshot.val().should.eql(bridge.Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]));
+      snapshot.val().should.eql(jet.Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]));
     });
 
     it('should provide a functioning child() method', async () => {
@@ -71,7 +70,7 @@ describe('database()', () => {
       const snapshot = await ref.once('value');
       snapshot.getPriority.should.be.a.Function();
       snapshot.getPriority().should.equal(666);
-      snapshot.val().should.eql(bridge.Object({ foo: 'bar' }));
+      snapshot.val().should.eql(jet.Object({ foo: 'bar' }));
     });
 
     it('should provide a functioning forEach() method', async () => {

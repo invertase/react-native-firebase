@@ -62,15 +62,11 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule {
   public void deleteApp(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
-    if (firebaseApp == null) {
-      promise.resolve(null);
-    } else {
-      // todo ? not implemented on firebase sdk
-      promise.reject(
-        "app/delete-app-failed",
-        "Failed to delete app. The android Firebase SDK currently does not support this functionality"
-      );
+    if (firebaseApp != null) {
+      firebaseApp.delete();
     }
+
+    promise.resolve(null);
   }
 
   @ReactMethod
@@ -157,8 +153,6 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule {
 
   @Override
   public Map<String, Object> getConstants() {
-    FirebaseApp firebaseApp;
-
     Map<String, Object> constants = new HashMap<>();
     List<Map<String, Object>> appMapsList = new ArrayList<>();
     List<FirebaseApp> firebaseAppList = FirebaseApp.getApps(getReactApplicationContext());
@@ -172,6 +166,7 @@ public class RNFirebaseModule extends ReactContextBaseJavaModule {
       appProps.put("name", appName);
       appProps.put("apiKey", appOptions.getApiKey());
       appProps.put("appId", appOptions.getApplicationId());
+      appProps.put("projectId", appOptions.getProjectId());
       appProps.put("projectId", appOptions.getProjectId());
       appProps.put("databaseURL", appOptions.getDatabaseUrl());
       appProps.put("messagingSenderId", appOptions.getGcmSenderId());

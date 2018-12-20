@@ -1,43 +1,41 @@
 package io.invertase.firebase.storage;
 
 import android.content.ContentResolver;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.StreamDownloadTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.webkit.MimeTypeMap;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.storage.UploadTask;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageException;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.OnPausedListener;
-import com.google.firebase.storage.StreamDownloadTask;
-import com.google.firebase.storage.OnProgressListener;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import io.invertase.firebase.Utils;
 
@@ -120,7 +118,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           promiseRejectStorageException(promise, exception);
         }
       });
@@ -148,7 +146,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           promiseRejectStorageException(promise, exception);
         }
       });
@@ -174,7 +172,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           promiseRejectStorageException(promise, exception);
         }
       });
@@ -209,7 +207,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           promiseRejectStorageException(promise, exception);
         }
       });
@@ -301,7 +299,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception exception) {
+        public void onFailure(@Nonnull Exception exception) {
           Log.e(TAG, "downloadFile failure " + exception.getMessage());
           // TODO sendJS error event
           promiseRejectStorageException(promise, exception);
@@ -381,7 +379,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       uploadTask
         .addOnFailureListener(new OnFailureListener() {
           @Override
-          public void onFailure(@NonNull Exception exception) {
+          public void onFailure(@Nonnull Exception exception) {
             // handle unsuccessful uploads
             Log.e(TAG, "putFile failure " + exception.getMessage());
             // TODO sendJS error event
@@ -566,29 +564,20 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
       taskSnapshot
         .getStorage()
         .getDownloadUrl()
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@Nonnull Exception e) {
+            int errorCode = ((StorageException) e).getErrorCode();
+            if (errorCode == StorageException.ERROR_NOT_AUTHORIZED) {
+              WritableMap resp = getRespAsMap(taskSnapshot, null);
+              listener.onSuccess(resp);
+            }
+          }
+        })
         .addOnSuccessListener(new OnSuccessListener<Uri>() {
           @Override
           public void onSuccess(Uri downloadUrl) {
-            WritableMap resp = Arguments.createMap();
-
-            resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-            resp.putString("downloadURL", downloadUrl.toString());
-
-            StorageMetadata d = taskSnapshot.getMetadata();
-            if (d != null) {
-              WritableMap metadata = getMetadataAsMap(d);
-              resp.putMap("metadata", metadata);
-            }
-
-            resp.putString(
-              "ref",
-              taskSnapshot
-                .getStorage()
-                .getPath()
-            );
-            resp.putString("state", RNFirebaseStorage.this.getTaskStatus(taskSnapshot.getTask()));
-            resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
-
+            WritableMap resp = getRespAsMap(taskSnapshot, downloadUrl.toString());
             listener.onSuccess(resp);
           }
         });
@@ -597,6 +586,29 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
     }
   }
 
+
+  private WritableMap getRespAsMap(final UploadTask.TaskSnapshot taskSnapshot, final String downloadUrl) {
+    WritableMap resp = Arguments.createMap();
+
+    resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
+    resp.putString("downloadURL", downloadUrl);
+
+    StorageMetadata d = taskSnapshot.getMetadata();
+    if (d != null) {
+      WritableMap metadata = getMetadataAsMap(d);
+      resp.putMap("metadata", metadata);
+    }
+
+    resp.putString(
+      "ref",
+      taskSnapshot
+        .getStorage()
+        .getPath()
+    );
+    resp.putString("state", RNFirebaseStorage.this.getTaskStatus(taskSnapshot.getTask()));
+    resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
+    return resp;
+  }
   /**
    * Converts storageMetadata into a map
    *

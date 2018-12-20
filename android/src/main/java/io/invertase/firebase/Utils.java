@@ -9,10 +9,16 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
@@ -20,6 +26,14 @@ import javax.annotation.Nullable;
 @SuppressWarnings("WeakerAccess")
 public class Utils {
   private static final String TAG = "Utils";
+
+  public static String timestampToUTC(long timestamp) {
+    Calendar calendar = Calendar.getInstance();
+    Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    format.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return format.format(date);
+  }
 
   /**
    * send a JS event
@@ -151,7 +165,16 @@ public class Utils {
         appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
           && appProcess.processName.equals(packageName)
         ) {
-        return true;
+        ReactContext reactContext;
+
+        try {
+          reactContext = (ReactContext) context;
+        } catch (ClassCastException exception) {
+          // Not react context so default to true
+          return true;
+        }
+
+        return reactContext.getLifecycleState() == LifecycleState.RESUMED;
       }
     }
 

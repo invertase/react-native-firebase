@@ -5,7 +5,7 @@
 import ReferenceBase from '../../utils/ReferenceBase';
 import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './task';
 import { getNativeModule } from '../../utils/native';
-import type Storage from '.';
+import type Storage from './';
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference

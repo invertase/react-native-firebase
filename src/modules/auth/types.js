@@ -3,12 +3,28 @@
  */
 import type User from './User';
 
+export type IdTokenResult = {
+  token: string,
+  authTime: string,
+  issuedAtTime: string,
+  expirationTime: string,
+  signInProvider: null | string,
+  claims: {
+    [key: string]: any,
+  },
+};
+
 export type ActionCodeInfo = {
   data: {
     email?: string,
     fromEmail?: string,
   },
-  operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL',
+  operation:
+    | 'PASSWORD_RESET'
+    | 'VERIFY_EMAIL'
+    | 'RECOVER_EMAIL'
+    | 'EMAIL_SIGNIN'
+    | 'ERROR',
 };
 
 export type ActionCodeSettings = {

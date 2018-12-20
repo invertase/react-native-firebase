@@ -1,6 +1,7 @@
 /*
  * @flow
  */
+import type { NativeErrorInterface } from '../../common/commonTypes.flow';
 
 export type MetadataChanges = {|
   includeMetadataChanges: boolean,
@@ -8,7 +9,14 @@ export type MetadataChanges = {|
 
 export type QueryDirection = 'DESC' | 'desc' | 'ASC' | 'asc';
 
-export type QueryOperator = '<' | '<=' | '=' | '==' | '>' | '>=';
+export type QueryOperator =
+  | '<'
+  | '<='
+  | '='
+  | '=='
+  | '>'
+  | '>='
+  | 'array-contains';
 
 export type GetOptions = {
   source: 'default' | 'server' | 'cache',
@@ -38,6 +46,8 @@ export type NativeDocumentSnapshot = {
 
 export type NativeTypeMap = {
   type:
+    | 'nan'
+    | 'infinity'
     | 'array'
     | 'boolean'
     | 'date'
@@ -52,3 +62,8 @@ export type NativeTypeMap = {
     | 'string',
   value: any,
 };
+
+export interface SnapshotErrorInterface extends NativeErrorInterface {
+  +path: string;
+  +appName: string;
+}

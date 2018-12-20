@@ -25,8 +25,11 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.ErrorUtils;
 import io.invertase.firebase.Utils;
@@ -34,18 +37,18 @@ import io.invertase.firebase.Utils;
 public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseDatabase";
   private static boolean enableLogging = false;
+  private static ReactApplicationContext reactApplicationContext = null;
   private static HashMap<String, Boolean> loggingLevelSet = new HashMap<>();
-  private HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
-  private SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
+  private static HashMap<String, RNFirebaseDatabaseReference> references = new HashMap<>();
+  private static SparseArray<RNFirebaseTransactionHandler> transactionHandlers = new SparseArray<>();
 
   RNFirebaseDatabase(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
-
-  /*
-   * REACT NATIVE METHODS
-   */
+  static ReactApplicationContext getReactApplicationContextInstance() {
+    return reactApplicationContext;
+  }
 
   /**
    * Resolve null or reject with a js like error if databaseError exists
@@ -66,6 +69,11 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     }
   }
 
+
+  /*
+   * REACT NATIVE METHODS
+   */
+
   /**
    * Get a database instance for a specific firebase app instance
    *
@@ -73,7 +81,7 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
    * @param dbURL
    * @return
    */
-  public static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
+  static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
     if (dbURL != null && dbURL.length() > 0) {
       if (appName != null && appName.length() > 0) {
@@ -251,6 +259,26 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     return errorMap;
   }
 
+  @Override
+  public void initialize() {
+    super.initialize();
+    Log.d(TAG, "RNFirebaseDatabase:initialized");
+    reactApplicationContext = getReactApplicationContext();
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    Iterator refIterator = references.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      RNFirebaseDatabaseReference nativeRef = (RNFirebaseDatabaseReference) pair.getValue();
+      nativeRef.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
+  }
+
   /**
    * @param appName
    */
@@ -386,8 +414,9 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
         DatabaseReference reference = getReferenceForAppPath(appName, dbURL, path);
 
         reference.runTransaction(new Transaction.Handler() {
+          @Nonnull
           @Override
-          public Transaction.Result doTransaction(MutableData mutableData) {
+          public Transaction.Result doTransaction(@Nonnull MutableData mutableData) {
             final RNFirebaseTransactionHandler transactionHandler = new RNFirebaseTransactionHandler(
               transactionId,
               appName,
@@ -418,6 +447,10 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
             }
 
             if (transactionHandler.abort) {
+              return Transaction.abort();
+            }
+
+            if (transactionHandler.timeout) {
               return Transaction.abort();
             }
 
@@ -785,7 +818,6 @@ public class RNFirebaseDatabase extends ReactContextBaseJavaModule {
     ReadableArray modifiers
   ) {
     return new RNFirebaseDatabaseReference(
-      getReactApplicationContext(),
       appName,
       dbURL,
       key,

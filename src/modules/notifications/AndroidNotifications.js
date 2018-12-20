@@ -7,7 +7,7 @@ import AndroidChannel from './AndroidChannel';
 import AndroidChannelGroup from './AndroidChannelGroup';
 import { getNativeModule } from '../../utils/native';
 
-import type Notifications from '.';
+import type Notifications from './';
 
 export default class AndroidNotifications {
   _notifications: Notifications;

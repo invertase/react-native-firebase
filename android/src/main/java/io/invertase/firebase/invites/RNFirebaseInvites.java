@@ -3,7 +3,6 @@ package io.invertase.firebase.invites;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -27,11 +26,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseInvites extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
   private static final String TAG = "RNFirebaseInvites";
-  private static final int REQUEST_INVITE = 81283;
+  private static final int REQUEST_INVITE = 17517;
   private boolean mInitialInvitationInitialized = false;
   private String mInitialDeepLink = null;
   private String mInitialInvitationId = null;
@@ -87,7 +88,7 @@ public class RNFirebaseInvites extends ReactContextBaseJavaModule implements Act
           })
           .addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
+            public void onFailure(@Nonnull Exception e) {
               Log.e(TAG, "getInitialInvitation: failed to resolve invitation", e);
               promise.reject(
                 "invites/initial-invitation-error",

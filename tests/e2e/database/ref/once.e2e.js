@@ -16,7 +16,7 @@ describe('database()', () => {
           const dataTypeValue = CONTENTS.DEFAULT[dataRef];
           const ref = firebase.database().ref(`tests/types/${dataRef}`);
           return ref.once('value').then(snapshot => {
-            snapshot.val().should.eql(bridge.contextify(dataTypeValue));
+            snapshot.val().should.eql(jet.contextify(dataTypeValue));
           });
         })
       );

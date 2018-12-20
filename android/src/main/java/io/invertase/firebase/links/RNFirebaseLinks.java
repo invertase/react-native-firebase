@@ -3,7 +3,6 @@ package io.invertase.firebase.links;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -22,6 +21,8 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
+
+import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
@@ -76,7 +77,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
 
       shortLinkTask.addOnCompleteListener(new OnCompleteListener<ShortDynamicLink>() {
         @Override
-        public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+        public void onComplete(@Nonnull Task<ShortDynamicLink> task) {
           if (task.isSuccessful()) {
             String shortLink = task
               .getResult()
@@ -133,7 +134,7 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
           })
           .addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
+            public void onFailure(@Nonnull Exception e) {
               Log.e(TAG, "getInitialLink: failed to resolve link", e);
               promise.reject("link/initial-link-error", e.getMessage(), e);
             }

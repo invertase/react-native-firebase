@@ -24,7 +24,6 @@
 - (void)onSnapshot:(NSString *)listenerId docListenOptions:(NSDictionary *) docListenOptions;
 - (void)set:(NSDictionary *)data options:(NSDictionary *)options resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
 - (void)update:(NSDictionary *)data resolver:(RCTPromiseResolveBlock) resolve rejecter:(RCTPromiseRejectBlock) reject;
-- (BOOL)hasListeners;
 + (NSDictionary *)snapshotToDictionary:(FIRDocumentSnapshot *)documentSnapshot;
 + (NSDictionary *)parseJSMap:(FIRFirestore *) firestore jsMap:(NSDictionary *) jsMap;
 + (NSArray *)parseJSArray:(FIRFirestore *) firestore jsArray:(NSArray *) jsArray;
