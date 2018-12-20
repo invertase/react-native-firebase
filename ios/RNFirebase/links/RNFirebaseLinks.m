@@ -55,7 +55,7 @@ RCT_EXPORT_MODULE();
 
 - (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler {
+ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler {
     if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         return [[FIRDynamicLinks dynamicLinks]
                 handleUniversalLink:userActivity.webpageURL
