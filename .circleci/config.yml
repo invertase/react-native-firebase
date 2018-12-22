@@ -128,7 +128,7 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: invertase/react-native-firebase-android:standard
-  resource_class: "large"
+  resource_class: "xlarge"
   working_directory: ~/react-native-firebase
   environment:
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2048m"
@@ -137,7 +137,7 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: "medium"
+  resource_class: "large"
   macos:
     xcode: "10.1.0"
 
@@ -213,7 +213,7 @@ jobs:
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
-          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
+          command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
       - save_cache:
           paths:
@@ -227,7 +227,7 @@ jobs:
 
       - run:
           name: Build Android Testing App
-          command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
+          command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 6 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
       # cache gradle build caches
       - run:
@@ -303,7 +303,7 @@ jobs:
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
-          command: cd tests/android && ./gradlew --max-workers 2 downloadDependencies
+          command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
       - save_cache:
           paths:
