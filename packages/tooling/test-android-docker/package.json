@@ -10,8 +10,9 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "build:standard": "docker build -t invertase/react-native-firebase-android:standard docker/standard/",
-    "publish:standard": "docker push invertase/react-native-firebase-android:standard",
-    "build:publish": "npm run build:standard && npm run publish:standard"
+    "build:debug": "docker build -t invertase/react-native-firebase-android:debug docker/debug/",
+    "build:release": "docker build -t invertase/react-native-firebase-android:release docker/release/",
+    "publish:debug": "docker push invertase/react-native-firebase-android:debug",
+    "publish:release": "docker push invertase/react-native-firebase-android:release"
   }
 }

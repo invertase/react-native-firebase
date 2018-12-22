@@ -53,7 +53,7 @@ spec:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             timeoutSeconds: 3
             periodSeconds: 10
             successThreshold: 1
@@ -87,7 +87,7 @@ metadata:
   name: api-react-native-firebase
   namespace: react-native-firebase
 spec:
-  targetCPUUtilizationPercentage: 65
+  targetCPUUtilizationPercentage: 75
   maxReplicas: 10
   minReplicas: 3
   scaleTargetRef:

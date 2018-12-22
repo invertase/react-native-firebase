@@ -10,7 +10,7 @@ steps:
     args:
       - '-c'
       - |
-        docker pull gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:prod-latest || exit 0
+        docker pull gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:latest || exit 0
 
   - name: 'gcr.io/cloud-builders/kubectl'
     entrypoint: 'bash'
@@ -27,7 +27,7 @@ steps:
       '--build-arg', 'PROJECT_ID=$PROJECT_ID',
       '--cache-from', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:latest',
       '-t', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:$COMMIT_SHA',
-      '-t', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:prod-latest',
+      '-t', 'gcr.io/$PROJECT_ID/${_DEPLOYMENT_NAME}:latest',
       '${_ROOT_DIR}'
     ]
 

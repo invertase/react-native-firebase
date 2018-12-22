@@ -1,3 +1,0 @@
-#!/bin/bash
-echo "Starting emulator '$AVD_NAME'"
-"$ANDROID_HOME/emulator/emulator" -avd "$AVD_NAME" -gpu auto -no-boot-anim -no-audio -no-window -snapshot standard -no-snapshot-save
