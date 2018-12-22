@@ -1,1 +1,2 @@
-*.pbxproj binary
+*.xcodeproj binary
+*.xcworkspace binary
