@@ -3,7 +3,12 @@
   "private": true,
   "scripts": {
     "prepare": "yarn run link:packages",
-    "link:packages": "lerna link && lerna exec -- yarn link"
+    "link:packages": "lerna link && lerna exec -- yarn link",
+    "tooling:start-test-api": "node packages/tooling/test-api",
+    "tooling:build-docker-image:debug": "cd packages/tooling/test-android-docker && npm run build:debug",
+    "tooling:build-docker-image:release": "cd packages/tooling/test-android-docker && npm run build:release",
+    "tooling:publish-docker-image:debug": "cd packages/tooling/test-android-docker && npm run publish:debug",
+    "tooling:publish-docker-image:release": "cd packages/tooling/test-android-docker && npm run publish:release"
   },
   "dependencies": {
     "prop-types": "^15.6.1",

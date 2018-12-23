@@ -1,7 +1,8 @@
 {
-  "name": "@invertase/test-firebase-admin-api",
+  "name": "@invertase/test-api",
   "private": true,
   "version": "0.0.0",
+  "main": "src/index.js",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "repository": {
     "type": "git",
