@@ -538,7 +538,7 @@
 					"${SRCROOT}/../../../ios/Firebase/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = staticlib;
 				ONLY_ACTIVE_ARCH = YES;
@@ -582,7 +582,7 @@
 					"${SRCROOT}/../../../ios/Firebase/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = staticlib;
 				OTHER_LDFLAGS = "$(inherited)";
