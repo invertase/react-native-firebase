@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="180px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">Android Docker Image</h2>
+  <h2 align="center">Testing API</h2>
 </p>
 
 <p align="center">
@@ -15,8 +15,6 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
-### Images
+Provides APIs that expose some Firebase Admin SDK functionality. 
 
-#### Debug
-
-#### Release
+Created as an API rather than a NodeJS service to allow running tests in environments that are Application only such as Firebase Test Lab.

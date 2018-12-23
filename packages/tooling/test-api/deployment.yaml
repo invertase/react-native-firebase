@@ -42,7 +42,7 @@ spec:
               cpu: "150m"
           readinessProbe:
             httpGet:
-              path: /
+              path: /status
               port: 8080
             initialDelaySeconds: 5
             timeoutSeconds: 2
@@ -51,7 +51,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /
+              path: /status
               port: 8080
             initialDelaySeconds: 10
             timeoutSeconds: 3

@@ -4,10 +4,6 @@
   "version": "0.0.0",
   "main": "src/index.js",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/infra/docker-android"
-  },
   "license": "Apache-2.0",
   "description": "Testing API for React Native Firebase",
   "dependencies": {
@@ -21,6 +17,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "redibox": "^2.3.0",
-    "redibox-hook-cache": "^1.0.4"
+    "redibox-hook-cache": "^1.0.4",
+    "winston": "^3.1.0"
   }
 }
