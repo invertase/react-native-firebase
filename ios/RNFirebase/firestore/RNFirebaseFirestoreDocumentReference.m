@@ -232,7 +232,7 @@ static NSString *const typeFieldValueElements = @"elements";
   NSMutableDictionary *typeMap = [[NSMutableDictionary alloc] init];
 
   // null
-  if (value == nil) {
+  if (value == nil || [value isKindOfClass:[NSNull class]]) {
     typeMap[typeKey] = typeNull;
     return typeMap;
   }
