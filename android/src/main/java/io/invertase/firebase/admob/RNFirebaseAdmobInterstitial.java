@@ -24,7 +24,7 @@ class RNFirebaseAdmobInterstitial {
   RNFirebaseAdmobInterstitial(final String adUnitString, final RNFirebaseAdMob adMobInstance) {
     adUnit = adUnitString;
     adMob = adMobInstance;
-    interstitialAd = new InterstitialAd(adMob.getContext());
+    interstitialAd = new InterstitialAd(adMob.getActivity());
     interstitialAd.setAdUnitId(adUnit);
 
     adListener = new AdListener() {
