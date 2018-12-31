@@ -1213,6 +1213,12 @@ declare module 'react-native-firebase' {
     namespace messaging {
       interface Messaging {
         /**
+        * Returns firebase.messaging.IOSMessaging that gets the
+        *  iOS specific methods and properties of messaging.
+        */
+        ios: IOSMessaging;
+
+        /**
          * Returns the devices FCM token.
          */
         getToken(): Promise<string>;
@@ -1297,7 +1303,6 @@ declare module 'react-native-firebase' {
 
       interface MessagingStatics {
         RemoteMessage: typeof RemoteMessage;
-        ios: IOSMessaging;
       }
     }
 
