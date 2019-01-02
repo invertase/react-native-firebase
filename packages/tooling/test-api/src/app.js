@@ -1,5 +1,5 @@
-global.__DEV__ = process.env.NODE_ENV !== 'production';
 global.A2A = require('a2a');
+global.__DEV__ = process.env.NODE_ENV !== 'production';
 
 const app = require('express')();
 const server = require('http').Server(app);
@@ -11,11 +11,10 @@ const services = require('./services');
 process.once('SIGINT', services.destroy);
 process.once('SIGTERM', services.destroy);
 process.on('unhandledRejection', error => {
-  services.destroy();
   if (global.log) Log.error(error);
   // eslint-disable-next-line no-console
   else console.error(error);
-  process.exit();
+  services.destroy();
 });
 
 (async () => {
