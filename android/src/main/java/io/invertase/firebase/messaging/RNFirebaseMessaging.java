@@ -28,6 +28,8 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
+  // https://firebase.google.com/docs/reference/android/com/google/firebase/iid/FirebaseInstanceId.html#getToken(java.lang.String,%20java.lang.String)
+  private static final String MESSAGING_TOKEN_SCOPE = "FCM";
 
   RNFirebaseMessaging(ReactApplicationContext context) {
     super(context);
@@ -46,7 +48,6 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     );
   }
 
-
   @Override
   public String getName() {
     return "RNFirebaseMessaging";
@@ -56,14 +57,23 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   public void getToken(Promise promise) {
     try {
       String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
-      String token = FirebaseInstanceId
-              .getInstance()
-              .getToken(senderId, "FCM");
-      Log.d(TAG, "Firebase token: " + token);
+      String token = FirebaseInstanceId.getInstance().getToken(senderId, MESSAGING_TOKEN_SCOPE);
       promise.resolve(token);
     } catch (Throwable e) {
-       e.printStackTrace();
-       promise.reject(null,e.getMessage());
+      e.printStackTrace();
+      promise.reject("messaging/fcm-token-error", e.getMessage());
+    }
+  }
+
+  @ReactMethod
+  public void deleteToken(Promise promise) {
+    try {
+      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+      FirebaseInstanceId.getInstance().deleteToken(senderId, MESSAGING_TOKEN_SCOPE);
+      promise.resolve(null);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      promise.reject("messaging/fcm-token-error", e.getMessage());
     }
   }
 
@@ -111,9 +121,7 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
       }
     }
 
-    FirebaseMessaging
-      .getInstance()
-      .send(mb.build());
+    FirebaseMessaging.getInstance().send(mb.build());
 
     // TODO: Listen to onMessageSent and onSendError for better feedback?
     promise.resolve(null);
