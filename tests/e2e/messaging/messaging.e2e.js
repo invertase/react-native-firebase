@@ -1,4 +1,4 @@
-describe('messaging()', () => {
+describe.only('messaging()', () => {
   describe('requestPermission()', () => {
     it('returns fcm token', async () => {
       if (device.getPlatform() === 'android') {
@@ -77,6 +77,47 @@ describe('messaging()', () => {
     });
   });
 
+  describe('onTokenRefresh()', () => {
+    it('triggers when token changes', async () => {
+      let refreshedToken = null;
+      let unsubscribe = null;
+
+      const tokenBefore = await firebase.messaging().getToken();
+      tokenBefore.should.be.a.String();
+
+      const { promise, resolve, reject } = Promise.defer();
+      unsubscribe = firebase.messaging().onTokenRefresh(newToken => {
+        unsubscribe();
+
+        try {
+          newToken.should.be.a.String();
+          tokenBefore.should.not.equal(newToken);
+        } catch (e) {
+          return reject(e);
+        }
+
+        refreshedToken = newToken;
+        return resolve();
+      });
+
+      await firebase.messaging().deleteToken();
+      await sleep(250);
+      await firebase.iid().delete();
+      await sleep(250);
+      await firebase.iid().get();
+      await sleep(250);
+
+      const tokenAfter = await firebase.messaging().getToken();
+      tokenAfter.should.be.a.String();
+      tokenBefore.should.not.equal(tokenAfter);
+      tokenAfter.should.equal(refreshedToken);
+
+      await promise;
+
+      await sleep(500);
+    });
+  });
+
   describe('deleteToken()', () => {
     it('deletes the current fcm token', async () => {
       const tokenBefore = await firebase.messaging().getToken();
@@ -86,7 +127,7 @@ describe('messaging()', () => {
       const tokenAfter = await firebase.messaging().getToken();
       tokenAfter.should.be.a.String();
       tokenBefore.should.not.equal(tokenAfter);
-      await sleep(4000);
+      await sleep(500);
     });
   });
 });
