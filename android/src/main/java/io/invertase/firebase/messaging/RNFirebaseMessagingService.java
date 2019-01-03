@@ -11,9 +11,21 @@ import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessagingService extends FirebaseMessagingService {
-  public static final String MESSAGE_EVENT = "messaging-message";
-  public static final String REMOTE_NOTIFICATION_EVENT = "notifications-remote-notification";
   private static final String TAG = "RNFMessagingService";
+
+  public static final String MESSAGE_EVENT = "messaging-message";
+  public static final String NEW_TOKEN_EVENT = "messaging-token-refresh";
+  public static final String REMOTE_NOTIFICATION_EVENT = "notifications-remote-notification";
+
+  @Override
+  public void onNewToken(String token) {
+    Log.d(TAG, "onNewToken event received");
+
+    Intent newTokenEvent = new Intent(NEW_TOKEN_EVENT);
+    LocalBroadcastManager
+      .getInstance(this)
+      .sendBroadcast(newTokenEvent);
+  }
 
   @Override
   public void onMessageReceived(RemoteMessage message) {
