@@ -1,4 +1,4 @@
-describe.only('messaging()', () => {
+describe('messaging()', () => {
   describe('requestPermission()', () => {
     it('returns fcm token', async () => {
       if (device.getPlatform() === 'android') {
