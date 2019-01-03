@@ -106,8 +106,7 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchR
         if (fetchCompletionHandler != nil) {
             fetchCompletionHandlers[handlerKey] = nil;
             fetchCompletionHandler(fetchResult);
-        }
-        else {
+        } else {
             void(^completionHandler)(void) = completionHandlers[handlerKey];
             if (completionHandler != nil) {
                 completionHandlers[handlerKey] = nil;
@@ -229,8 +228,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
      [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
      if (handlerKey != nil) {
          completionHandlers[handlerKey] = completionHandler;
-     }
-     else {
+     } else {
          completionHandler();
      }
 }
