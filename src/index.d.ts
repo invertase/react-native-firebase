@@ -1241,7 +1241,7 @@ declare module 'react-native-firebase' {
         /**
          * Requests app notification permissions in an Alert dialog.
          */
-        requestPermission(): Promise<boolean>;
+        requestPermission(): Promise<void>;
 
         /**
          * Checks if the app has notification permissions.
