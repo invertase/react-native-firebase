@@ -554,7 +554,7 @@ declare module 'react-native-firebase' {
           successCallback?: QuerySuccessCallback,
           failureCallbackOrContext?: QueryErrorCallback,
           context?: Object
-        ): Promise<DataSnapshot>;
+        ): Promise<database.DataSnapshot>;
 
         orderByChild(path: string): database.Query;
 
