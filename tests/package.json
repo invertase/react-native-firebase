@@ -62,7 +62,6 @@
       "node_modules",
       "src/modules/admob**",
       "src/modules/auth/phone**",
-      "src/modules/messaging**",
       "src/modules/notifications**",
       "src/types**",
       "**/types.js"
