@@ -1333,6 +1333,14 @@ declare module 'react-native-firebase' {
         deleteChannelGroup(groupId: string): Promise<void>;
 
         deleteChannel(channelId: string): Promise<void>;
+
+        getChannel(channelId: string): Promise<Android.Channel | null>
+
+        getChannels(channelId: string): Promise<Android.Channel[]>
+
+        getChannelGroup(channelId: string): Promise<Android.ChannelGroup | null>
+
+        getChannelGroups(channelId: string): Promise<Android.ChannelGroup[]>
       }
 
       type BackgroundFetchResultValue = string;

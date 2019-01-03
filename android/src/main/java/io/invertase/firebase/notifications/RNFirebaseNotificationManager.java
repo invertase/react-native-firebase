@@ -204,6 +204,34 @@ class RNFirebaseNotificationManager {
     }
   }
 
+  NotificationChannel getChannel(String channelId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return notificationManager.getNotificationChannel(channelId);
+    }
+    return null;
+  }
+
+  List<NotificationChannel> getChannels() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return notificationManager.getNotificationChannels();
+    }
+    return null;
+  }
+
+  NotificationChannelGroup getChannelGroup(String channelGroupId) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return notificationManager.getNotificationChannelGroup(channelGroupId);
+    }
+    return null;
+  }
+
+  List<NotificationChannelGroup> getChannelGroups() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return notificationManager.getNotificationChannelGroups();
+    }
+    return null;
+  }
+
   ArrayList<Bundle> getScheduledNotifications() {
     ArrayList<Bundle> array = new ArrayList<>();
 
