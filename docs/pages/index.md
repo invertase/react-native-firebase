@@ -83,7 +83,9 @@ layout: overview
           </List.Item>
           <List.Item
               to="https://discordapp.com/invite/XsKpw4"
+              icon="chat_bubble"
               title="Community Chat"
+              color="#7289DA"
           >
               Our active and helpful community chat can be found on our Discord server.
               <Discord />
