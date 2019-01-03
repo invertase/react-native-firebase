@@ -48,7 +48,7 @@ export default class DocumentSnapshot {
     return this._data !== undefined;
   }
 
-  get id(): string | null {
+  get id(): string {
     return this._ref.id;
   }
 
