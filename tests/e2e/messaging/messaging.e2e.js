@@ -10,8 +10,11 @@ describe('messaging()', () => {
   describe('hasPermission()', () => {
     it('returns fcm token', async () => {
       const bool = await firebase.messaging().hasPermission();
+      bool.should.be.Boolean();
       if (device.getPlatform() === 'android') {
         should.equal(bool, true);
+      } else {
+        should.equal(bool, false);
       }
     });
   });
