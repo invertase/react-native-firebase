@@ -62,7 +62,8 @@ export default class IOSNotification {
     // IOS + Native Notification Only
     const complete = (fetchResult: BackgroundFetchResultValue) => {
       const { notificationId } = notification;
-      if (notificationId) {
+      // && notifications check for Flow
+      if (notificationId && notifications) {
         getLogger(notifications).debug(
           `Completion handler called for notificationId=${notificationId}`
         );
