@@ -63,6 +63,8 @@
       "src/modules/admob**",
       "src/modules/auth/phone**",
       "src/modules/notifications**",
+      "src/utils**",
+      "src/modules/utils**",
       "src/types**",
       "**/types.js"
     ],
