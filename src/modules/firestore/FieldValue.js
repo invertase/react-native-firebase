@@ -3,6 +3,7 @@
  * FieldValue representation wrapper
  */
 import AnyJs from './utils/any';
+import { buildNativeArray } from './utils/serialize';
 
 // TODO: Salakar: Refactor in v6
 export default class FieldValue {
@@ -32,11 +33,17 @@ export default class FieldValue {
   }
 
   static arrayUnion(...elements: AnyJs[]) {
-    return new FieldValue(TypeFieldValueUnion, elements);
+    // TODO Salakar: v6: validate elements, any primitive or FirestoreReference allowed
+    // TODO Salakar: v6: explicitly deny use of serverTimestamp - only allowed on set/update
+    // TODO Salakar: v6: explicitly deny use of nested arrays - not supported on sdk
+    return new FieldValue(TypeFieldValueUnion, buildNativeArray(elements));
   }
 
   static arrayRemove(...elements: AnyJs[]) {
-    return new FieldValue(TypeFieldValueRemove, elements);
+    // TODO Salakar: v6: validate elements, any primitive or FirestoreReference allowed
+    // TODO Salakar: v6: explicitly deny use of serverTimestamp - only allowed on set/update
+    // TODO Salakar: v6: explicitly deny use of nested arrays - not supported on sdk
+    return new FieldValue(TypeFieldValueRemove, buildNativeArray(elements));
   }
 }
 
