@@ -20,64 +20,61 @@ type CompletionHandler = BackgroundFetchResultValue => void;
 export default class IOSNotification {
   _alertAction: string | void;
 
-  // alertAction | N/A
   _attachments: IOSAttachment[];
 
-  // N/A | attachments
   _badge: number | void;
 
-  // applicationIconBadgeNumber | badge
   _category: string | void;
 
   _hasAction: boolean | void;
 
-  // hasAction | N/A
   _launchImage: string | void;
 
-  // alertLaunchImage | launchImageName
   _notification: Notification;
 
-  _threadIdentifier: string | void; // N/A | threadIdentifier
+  _threadIdentifier: string | void;
 
   _complete: CompletionHandler;
 
   constructor(
     notification: Notification,
-    notifications: Notifications,
+    notifications?: Notifications,
     data?: NativeIOSNotification
   ) {
     this._notification = notification;
 
     if (data) {
       this._alertAction = data.alertAction;
-      this._attachments = data.attachments;
+      this._attachments = data.attachments || [];
       this._badge = data.badge;
       this._category = data.category;
       this._hasAction = data.hasAction;
       this._launchImage = data.launchImage;
       this._threadIdentifier = data.threadIdentifier;
+    } else {
+      this._attachments = [];
     }
 
-    if (isIOS && notifications && notifications.ios) {
-      const complete = (fetchResult: BackgroundFetchResultValue) => {
-        const { notificationId } = notification;
-        if (notificationId) {
-          getLogger(notifications).debug(
-            `Completion handler called for notificationId=${notificationId}`
-          );
-          getNativeModule(notifications).complete(notificationId, fetchResult);
-        }
-      };
+    if (!isIOS || !notifications || !notifications.ios) {
+      return this;
+    }
 
-      if (notifications.ios.shouldAutoComplete) {
-        complete(notifications.ios.backgroundFetchResult.noData);
-      } else {
-        this._complete = complete;
+    // IOS + Native Notification Only
+    const complete = (fetchResult: BackgroundFetchResultValue) => {
+      const { notificationId } = notification;
+      if (notificationId) {
+        getLogger(notifications).debug(
+          `Completion handler called for notificationId=${notificationId}`
+        );
+        getNativeModule(notifications).complete(notificationId, fetchResult);
       }
-    }
+    };
 
-    // Defaults
-    this._attachments = this._attachments || [];
+    if (notifications.ios.shouldAutoComplete) {
+      complete(notifications.ios.backgroundFetchResult.noData);
+    } else {
+      this._complete = complete;
+    }
   }
 
   get alertAction(): ?string {
