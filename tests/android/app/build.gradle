@@ -8,7 +8,8 @@ project.ext.react = [
   entryFile: "index.js"
 ]
 
-apply from: "../../node_modules/react-native/react.gradle"
+// up to mono root
+apply from: "../../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
 
