@@ -1,3 +1,0 @@
-throw new GradleException(
-  "Flutter is currently not supported."
-)

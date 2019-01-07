@@ -8,7 +8,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:3.2.1'
-    classpath 'com.google.gms:google-services:4.0.1'
+    classpath 'com.google.gms:google-services:4.2.0'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
@@ -31,7 +31,7 @@ allprojects {
     mavenLocal()
     google()
     maven {
-      url "$rootDir/../node_modules/react-native/android"
+      url "$rootDir/../../node_modules/react-native/android"
     }
     jcenter()
   }

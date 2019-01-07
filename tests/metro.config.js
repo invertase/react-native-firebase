@@ -14,16 +14,21 @@ const config = {
       {},
       {
         get: (target, name) => {
-          if (name === 'react-native-firebase') {
+          if (name.startsWith('@react-native-firebase')) {
+            // TODO
             return join(__dirname, `../src`);
           }
+
           return join(__dirname, `node_modules/${name}`);
         },
-      }
+      },
     ),
     platforms: ['android', 'ios'],
   },
-  watchFolders: [resolve(__dirname, '../src')],
+  watchFolders: [
+    resolve(__dirname, '../packages/firebase/app/src'),
+    resolve(__dirname, '../packages/firebase/analytics/src'),
+  ],
 };
 
 module.exports = mergeConfig(DEFAULT, config);

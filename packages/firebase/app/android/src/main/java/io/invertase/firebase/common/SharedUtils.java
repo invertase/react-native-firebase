@@ -1,14 +1,27 @@
 package io.invertase.firebase.common;
 
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -17,14 +30,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
-
-import javax.annotation.Nullable;
 
 
 @SuppressWarnings("WeakerAccess")
-public class Utils {
+public class SharedUtils {
   private static final String TAG = "Utils";
   private static final String RN_DEVSUPPORT_CLASS = "DevSupportManagerImpl";
   private static final String RN_DEVSUPPORT_PACKAGE = "com.facebook.react.devsupport";
@@ -89,9 +99,9 @@ public class Utils {
     // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
     // confuse it.
     String fullName = new StringBuilder(packageName)
-      .append(".")
-      .append(className)
-      .toString();
+        .append(".")
+        .append(className)
+        .toString();
 
     try {
       Class.forName(fullName);
@@ -116,108 +126,11 @@ public class Utils {
   public static void sendEvent(final ReactContext context, final String eventName, Object body) {
     if (context != null) {
       context
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, body);
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit(eventName, body);
     } else {
       Log.d(TAG, "Missing context - cannot send event!");
     }
-  }
-
-  /**
-   * Takes a value and calls the appropriate setter for its type on the target map + key
-   *
-   * @param key   String key to set on target map
-   * @param value Object value to set on target map
-   * @param map   WritableMap target map to write the value to
-   */
-  @SuppressWarnings("unchecked")
-  public static void mapPutValue(String key, @Nullable Object value, WritableMap map) {
-    if (value == null) {
-      map.putNull(key);
-    } else {
-      String type = value
-        .getClass()
-        .getName();
-      switch (type) {
-        case "java.lang.Boolean":
-          map.putBoolean(key, (Boolean) value);
-          break;
-        case "java.lang.Long":
-          Long longVal = (Long) value;
-          map.putDouble(key, (double) longVal);
-          break;
-        case "java.lang.Float":
-          float floatVal = (float) value;
-          map.putDouble(key, (double) floatVal);
-          break;
-        case "java.lang.Double":
-          map.putDouble(key, (Double) value);
-          break;
-        case "java.lang.Integer":
-          map.putInt(key, (int) value);
-          break;
-        case "java.lang.String":
-          map.putString(key, (String) value);
-          break;
-        case "org.json.JSONObject$1":
-          map.putString(key, value.toString());
-          break;
-        default:
-          if (List.class.isAssignableFrom(value.getClass())) {
-            map.putArray(key, Arguments.makeNativeArray((List<Object>) value));
-          } else if (Map.class.isAssignableFrom(value.getClass())) {
-            WritableMap childMap = Arguments.createMap();
-            Map<String, Object> valueMap = (Map<String, Object>) value;
-
-            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
-              mapPutValue(entry.getKey(), entry.getValue(), childMap);
-            }
-
-            map.putMap(key, childMap);
-          } else {
-            Log.d(TAG, "utils:mapPutValue:unknownType:" + type);
-            map.putNull(key);
-          }
-      }
-    }
-  }
-
-  /**
-   * Convert a ReadableMap to a WritableMap for the purposes of re-sending back to JS
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param map ReadableMap
-   * @return WritableMap
-   */
-  public static WritableMap readableMapToWritableMap(ReadableMap map) {
-    WritableMap writableMap = Arguments.createMap();
-    // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/WritableNativeMap.java#L54
-    writableMap.merge(map);
-    return writableMap;
-  }
-
-  /**
-   * Convert a ReadableMap into a native Java Map
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param readableMap ReadableMap
-   * @return Map
-   */
-  public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
-    // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java#L216
-    return readableMap.toHashMap();
-  }
-
-  /**
-   * Convert a ReadableArray into a native Java Map
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param readableArray ReadableArray
-   * @return List<Object>
-   */
-  public static List<Object> recursivelyDeconstructReadableArray(ReadableArray readableArray) {
-    // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeArray.java#L175
-    return readableArray.toArrayList();
   }
 
   /**
@@ -237,9 +150,9 @@ public class Utils {
     final String packageName = context.getPackageName();
     for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
       if (
-        appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-          && appProcess.processName.equals(packageName)
-        ) {
+          appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+              && appProcess.processName.equals(packageName)
+      ) {
         ReactContext reactContext;
 
         try {
@@ -258,8 +171,8 @@ public class Utils {
 
   public static int getResId(Context ctx, String resName) {
     int resourceId = ctx
-      .getResources()
-      .getIdentifier(resName, "string", ctx.getPackageName());
+        .getResources()
+        .getIdentifier(resName, "string", ctx.getPackageName());
 
     if (resourceId == 0) {
       Log.e(TAG, "resource " + resName + " could not be found");

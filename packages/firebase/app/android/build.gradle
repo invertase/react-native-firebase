@@ -30,13 +30,8 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.0'
+    classpath 'com.android.tools.build:gradle:3.2.1'
   }
-}
-
-dependencies {
-  implementation "com.google.firebase:firebase-core:16.0.4"
-  implementation "com.google.android.gms:play-services-base:16.0.1"
 }
 
 repositories {
@@ -44,16 +39,25 @@ repositories {
   jcenter()
 }
 
-// Flutter - Non Expo
+dependencies {
+  /* -----------------
+   *     FIREBASE
+   * ----------------- */
+  // Required dependencies
+  // noinspection GradleCompatible
+  implementation "com.google.firebase:firebase-core:16.0.6"
+  implementation "com.google.android.gms:play-services-base:16.0.1"
+}
+
+// Flutter
 if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists() && findProject(':expo-core') == null) {
-  apply from: file("./platform-gradle/flutter.gradle")
+  throw new GradleException("Support for Flutter has not been implemented.")
 // Expo
 } else if (findProject(':expo-core') != null) {
-  apply from: file("./platform-gradle/expo.gradle")
+  apply from: file("./expo.gradle")
 // React Native
 } else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: file("./platform-gradle/react-native.gradle")
+  apply from: file("./react-native.gradle")
 } else {
-  // TODO: Mike: Proper error - unknown project type
-  throw new GradleException("TODO")
+  throw new GradleException("Unknown Project Configuration, please report this issue on GitHub.")
 }
