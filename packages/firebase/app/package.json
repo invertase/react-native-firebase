@@ -1,8 +1,8 @@
 {
-  "name": "@react-native-firebase/-template-",
+  "name": "react-native-firebase",
   "version": "6.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase -template-",
+  "description": "React Native Firebase Core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,53 +13,42 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/modules/-template-"
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/modules/core"
   },
   "license": "Apache-2.0",
   "keywords": [
     "react",
     "react-native",
     "firebase",
-    "-template-"
+    "core"
   ],
   "peerDependencies": {
     "react": ">= 16.5.0",
-    "react-native": ">= 0.57.0"
+    "react-native": ">= 0.58.x"
+  },
+  "dependencies": {
+    "opencollective-postinstall": "^2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.3",
-    "react": "^16.5.0",
-    "react-dom": "^16.5.0",
-    "react-native": "^0.57.0",
-    "rimraf": "^2.6.2",
-    "typescript": "^3.0.3"
-  },
-  "dependencies": {
-    "opencollective-postinstall": "^2.0.0",
-    "prop-types": "^15.6.2"
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-native": "^0.58.0-rc.2",
+    "rimraf": "^2.6.3",
+    "typescript": "^3.2.2"
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
-      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
-      "packageInstance": "new RNFirebasePackage()"
+      "buildPatch": "    implementation project(':react-native-firebase-core')",
+      "packageImportPath": "import io.invertase.firebase.modules.core.ReactNativeCorePackage;",
+      "packageInstance": "new ReactNativeCorePackage()"
     }
   },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
-  },
-  "lint-staged": {
-    "src/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{json,md,scss}": [
-      "prettier --write",
-      "git add"
-    ]
   }
 }

@@ -26,7 +26,9 @@
     "mocha": "^5.2.0",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0"
+    "sinon": "^6.2.0",
+    "react-native-firebase": "*",
+    "@react-native-firebase/analytics": "*"
   },
   "devDependencies": {
     "nyc": "^13.1.0"

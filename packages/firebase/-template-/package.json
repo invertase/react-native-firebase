@@ -1,8 +1,8 @@
 {
-  "name": "@react-native-firebase/core",
+  "name": "@react-native-firebase/-template-",
   "version": "6.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase Core",
+  "description": "React Native Firebase -template-",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,31 +13,42 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/modules/core"
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/modules/-template-"
   },
   "license": "Apache-2.0",
   "keywords": [
     "react",
     "react-native",
     "firebase",
-    "core"
+    "-template-"
   ],
   "peerDependencies": {
     "react": ">= 16.5.0",
     "react-native": ">= 0.57.0"
   },
   "dependencies": {
-    "opencollective-postinstall": "^2.0.0"
+    "opencollective-postinstall": "^2.0.0",
+    "prop-types": "^15.6.2"
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    implementation project(':react-native-firebase-core')",
-      "packageImportPath": "import io.invertase.firebase.modules.core.ReactNativeCorePackage;",
-      "packageInstance": "new ReactNativeCorePackage()"
+      "buildPatch": "    implementation project(':react-native-firebase')",
+      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
+      "packageInstance": "new RNFirebasePackage()"
     }
   },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md,scss}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

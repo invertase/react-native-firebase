@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "prepare": "yarn run link:packages",
+    "prepare": "yarn run lerna:boostrap",
+    "lerna:boostrap": "lerna bootstrap",
     "link:packages": "lerna link && lerna exec -- yarn link",
     "tooling:start-test-api": "node packages/tooling/test-api",
     "tooling:build-docker-image:debug": "cd packages/tooling/test-android-docker && npm run build:debug",
@@ -13,7 +14,7 @@
   "dependencies": {
     "prop-types": "^15.6.1",
     "react": "16.6.3",
-    "react-native": "0.58.0-rc.1"
+    "react-native": "0.58.0-rc.2"
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
@@ -54,8 +55,8 @@
     ]
   },
   "workspaces": [
-    "packages/library/*",
+    "packages/firebase/*",
     "packages/tooling/*",
-    "packages/types/*"
+    "tests"
   ]
 }
