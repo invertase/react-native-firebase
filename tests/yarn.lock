@@ -773,6 +773,11 @@
     through2 "^2.0.0"
     xdg-basedir "^3.0.0"
 
+"@invertase/tests-firebase-functions@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@invertase/tests-firebase-functions/-/tests-firebase-functions-0.0.1.tgz#13286db7243ef2b68385730366fad7e9d7e4916d"
+  integrity sha512-1Ej1mZZFE2b3mHXlwTlsSTPJKdU3XIeX1q/m10zoPt9C07Fl8d05yKOuGoovdJQHREUI9FKSX+JYeRB0FczxsQ==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
