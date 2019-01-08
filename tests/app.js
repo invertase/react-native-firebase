@@ -1,11 +1,12 @@
 /* eslint-disable import/extensions,import/no-unresolved,import/first */
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, Image, StyleSheet, YellowBox } from 'react-native';
+import { AppRegistry, NativeModules, Text, View, Image, StyleSheet, YellowBox } from 'react-native';
 
 YellowBox.ignoreWarnings(['Require cycle:']);
 
 import firebase from 'react-native-firebase';
-import jet from 'jet/platform/react-native';
+
+// import jet from 'jet/platform/react-native';
 
 class Root extends Component {
   constructor(props) {
@@ -14,8 +15,11 @@ class Root extends Component {
       currentTest: null,
     };
 
-    jet.exposeContextProperty('root', this);
-    jet.exposeContextProperty('module', firebase);
+    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseAnalytics)));
+    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseApp)));
+    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseUtils)));
+    // jet.exposeContextProperty('root', this);
+    // jet.exposeContextProperty('module', firebase);
   }
 
   render() {
@@ -37,7 +41,7 @@ class Root extends Component {
             {'N/A'}
           </Text>
           <Text style={styles.item} testID="title">
-            {"Ensure you're running the Jet Packager together with the Detox test command."}
+            {'Ensure you\'re running the Jet Packager together with the Detox test command.'}
           </Text>
         </View>
       );

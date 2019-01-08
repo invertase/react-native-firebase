@@ -35,10 +35,10 @@ import java.util.Map;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
-public class ReactNativeFirebaseUtilModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Util";
+public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
+  private static final String TAG = "Utils";
 
-  ReactNativeFirebaseUtilModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG, false);
   }
 
