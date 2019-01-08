@@ -1,5 +1,7 @@
 ---
+paginate: faqs
 title: Frequently Asked Questions
+description: Running into an issue or have a question? It may be something which we have added to our Frequently Asked Questions
 ---
 
-TODO FAQ list
+<Paginate limit={0} />
