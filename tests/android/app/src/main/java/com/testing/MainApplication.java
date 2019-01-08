@@ -14,7 +14,8 @@ import java.util.List;
 
 import io.invertase.jet.JetPackage;
 
-//import io.invertase.firebase.storage.RNFirebaseStoragePackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -27,8 +28,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new JetPackage()
-//        new RNFirebasePackage(),
+        new JetPackage(),
+        new ReactNativeFirebaseAppPackage(),
+        new ReactNativeFirebaseAnalyticsPackage()
       );
     }
   };

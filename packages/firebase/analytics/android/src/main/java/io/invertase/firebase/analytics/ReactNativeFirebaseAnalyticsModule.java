@@ -17,27 +17,100 @@ package io.invertase.firebase.analytics;
  *
  */
 
+import android.app.Activity;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.FirebaseApp;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
 
-import io.invertase.firebase.common.RCTConvertFirebaseCommon;
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Analytics";
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG, false);
+  }
+
+  @ReactMethod
+  public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).logEvent(name, Arguments.toBundle(params));
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setCurrentScreen(String screenName, String screenClassOverride, Promise promise) {
+    Activity activity = getActivity();
+    if (activity != null) {
+      // needs to be run on ui thread
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          FirebaseAnalytics
+            .getInstance(getContext())
+            .setCurrentScreen(activity, screenName, screenClassOverride);
+
+          promise.resolve(null);
+        }
+      });
+    } else {
+      promise.resolve(null);
+    }
+  }
+
+  @ReactMethod
+  public void setMinimumSessionDuration(double milliseconds, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration((long) milliseconds);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration((long) milliseconds);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setUserId(String id, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).setUserId(id);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setUserProperty(String name, String value, Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void setUserProperties(ReadableMap properties, Promise promise) {
+    ReadableMapKeySetIterator iterator = properties.keySetIterator();
+    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
+    while (iterator.hasNextKey()) {
+      String name = iterator.nextKey();
+      String value = properties.getString(name);
+      firebaseAnalytics.setUserProperty(name, value);
+    }
+
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void resetAnalyticsData(Promise promise) {
+    FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
+    promise.resolve(null);
   }
 }

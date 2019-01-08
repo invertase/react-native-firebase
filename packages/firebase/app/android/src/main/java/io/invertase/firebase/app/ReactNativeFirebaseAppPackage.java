@@ -1,4 +1,4 @@
-package io.invertase.firebase.modules.app;
+package io.invertase.firebase.app;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
