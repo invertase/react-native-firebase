@@ -42,10 +42,10 @@ allprojects {
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
   ext {
-    compileSdk = 27
+    compileSdk = 28
     buildTools = "28.0.3"
     minSdk = 18
-    targetSdk = 26
+    targetSdk = 28
   }
 
   afterEvaluate { project ->

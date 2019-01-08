@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  * Utilities to convert to and from React Native bridge formats.
  */
 public class RCTConvertFirebaseCommon {
-  private static String TAG = "Firebase -> RCTConvertFirebaseCommon";
+  private static String TAG = "RCTConvertFirebase";
 
   public static Map<String, Object> firebaseAppToMap(FirebaseApp firebaseApp) {
     String name = firebaseApp.getName();
@@ -154,13 +154,6 @@ public class RCTConvertFirebaseCommon {
     }
   }
 
-  /**
-   * Convert a ReadableMap to a WritableMap for the purposes of re-sending back to JS
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param map ReadableMap
-   * @return WritableMap
-   */
   public static WritableMap readableMapToWritableMap(ReadableMap map) {
     WritableMap writableMap = Arguments.createMap();
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/WritableNativeMap.java#L54
@@ -168,25 +161,11 @@ public class RCTConvertFirebaseCommon {
     return writableMap;
   }
 
-  /**
-   * Convert a ReadableMap into a native Java Map
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param readableMap ReadableMap
-   * @return Map
-   */
   public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java#L216
     return readableMap.toHashMap();
   }
 
-  /**
-   * Convert a ReadableArray into a native Java Map
-   * TODO This is now a legacy util - internally uses RN functionality
-   *
-   * @param readableArray ReadableArray
-   * @return List<Object>
-   */
   public static List<Object> recursivelyDeconstructReadableArray(ReadableArray readableArray) {
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeArray.java#L175
     return readableArray.toArrayList();

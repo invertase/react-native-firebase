@@ -1,13 +1,13 @@
-rootProject.name = 'RNFirebaseMonoTests'
+rootProject.name = '@react-native-firebase/tests'
 
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../../node_modules/jet/android')
 
 include ':@react-native-firebase/app'
-project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../node_modules/react-native-firebase/android')
+project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../packages/firebase/app/android')
 
 include ':@react-native-firebase/analytics'
-project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../node_modules/@react-native-firebase/analytics/android')
+project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../packages/firebase/analytics/android')
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../../node_modules/detox/android/detox')

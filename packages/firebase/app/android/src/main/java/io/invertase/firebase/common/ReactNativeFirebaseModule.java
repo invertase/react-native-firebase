@@ -39,7 +39,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     String moduleName,
     Boolean withEventEmitter
   ) {
-    super((ReactApplicationContext) reactContext);
+    super(reactContext);
     this.moduleName = moduleName;
     this.withEventEmitter = withEventEmitter;
     if (withEventEmitter) {
@@ -69,7 +69,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   @Override
   public String getName() {
-    return "ReactNativeFirebase" + moduleName;
+    return "RNFB" + moduleName;
   }
 
   @Override
