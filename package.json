@@ -73,8 +73,7 @@
     ]
   },
   "workspaces": [
-    "packages/firebase/*",
-    "packages/tooling/*",
+    "packages/*",
     "tests"
   ]
 }

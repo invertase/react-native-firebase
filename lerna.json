@@ -4,8 +4,7 @@
     "--no-lockfile"
   ],
   "packages": [
-    "packages/firebase/*",
-    "packages/tooling/*",
+    "packages/*",
     "tests"
   ],
   "useWorkspaces": true,

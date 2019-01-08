@@ -2,7 +2,7 @@ const detox = require('detox');
 const config = require('../package.json').detox;
 
 // TODO require all
-require('./../../packages/firebase/app/e2e/app.e2e');
+require('../../packages/app/e2e/app.e2e');
 
 before(async () => {
   await detox.init(config);

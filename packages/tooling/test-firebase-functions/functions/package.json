@@ -1,9 +1,0 @@
-{
-  "name": "functions",
-  "private": true,
-  "version": "0.0.0",
-  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "dependencies": {
-    "firebase-functions": "^2.1.0"
-  }
-}

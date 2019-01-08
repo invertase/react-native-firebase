@@ -4,10 +4,10 @@ include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../../node_modules/jet/android')
 
 include ':@react-native-firebase/app'
-project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../packages/firebase/app/android')
+project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../packages/app/android')
 
 include ':@react-native-firebase/analytics'
-project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../packages/firebase/analytics/android')
+project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../packages/analytics/android')
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../../node_modules/detox/android/detox')
