@@ -2,23 +2,6 @@
   "name": "react-native-firebase-tests",
   "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "packager-chrome": "react-native start --platforms ios,android",
-    "packager-jet": "REACT_DEBUGGER='echo nope' react-native start",
-    "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
-    "build-ios": "detox build --configuration ios.sim.debug",
-    "build-ios-release": "detox build --configuration ios.sim.release",
-    "build-android": "detox build --configuration android.emu.debug",
-    "test-android": "detox test --configuration android.emu.debug",
-    "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
-    "test-android-cover": "nyc detox test --configuration android.emu.debug",
-    "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
-    "test-ios": "detox test --configuration ios.sim.debug --loglevel warn",
-    "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
-    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
-  },
   "dependencies": {
     "detox": "^9.0.4",
     "jet": "^0.2.0",
@@ -26,9 +9,7 @@
     "mocha": "^5.2.0",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0",
-    "react-native-firebase": "*",
-    "@react-native-firebase/analytics": "*"
+    "sinon": "^6.2.0"
   },
   "devDependencies": {
     "nyc": "^13.1.0"

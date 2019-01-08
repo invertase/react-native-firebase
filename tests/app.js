@@ -1,13 +1,6 @@
 /* eslint-disable import/extensions,import/no-unresolved,import/first */
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  YellowBox,
-} from 'react-native';
+import { AppRegistry, Text, View, Image, StyleSheet, YellowBox } from 'react-native';
 
 YellowBox.ignoreWarnings(['Require cycle:']);
 
@@ -27,7 +20,28 @@ class Root extends Component {
 
   render() {
     const { currentTest } = this.state;
-    if (!currentTest) return null;
+    if (!currentTest) {
+      return (
+        <View style={[styles.container, styles.horizontal]}>
+          <Image
+            source={{
+              uri:
+                'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
+            }}
+            style={[styles.logo]}
+          />
+          <Text style={[styles.item, styles.module]} testID="module">
+            {'No Tests Started'}
+          </Text>
+          <Text style={styles.item} testID="group">
+            {'N/A'}
+          </Text>
+          <Text style={styles.item} testID="title">
+            {"Ensure you're running the Jet Packager together with the Detox test command."}
+          </Text>
+        </View>
+      );
+    }
 
     const module = (() => {
       if (currentTest.parent && currentTest.parent.parent) {
@@ -110,7 +124,7 @@ const styles = StyleSheet.create({
   logo: {
     height: 120,
     marginBottom: 16,
-    width: 120,
+    width: 135,
   },
 });
 
