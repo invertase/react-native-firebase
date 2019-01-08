@@ -6,8 +6,8 @@ project(':jet').projectDir = new File(rootProject.projectDir, './../../node_modu
 include ':@react-native-firebase/app'
 project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../node_modules/react-native-firebase/android')
 
-//include ':@react-native-firebase/analytics'
-//project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../node_modules/@react-native-firebase/analytics/android')
+include ':@react-native-firebase/analytics'
+project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../node_modules/@react-native-firebase/analytics')
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../../node_modules/detox/android/detox')

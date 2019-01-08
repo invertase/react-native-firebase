@@ -90,8 +90,9 @@ dependencies {
    *    REACT NATIVE FIREBASE
    * ---------------------------- */
 
-  // Library as defined in settings.gradle
+  // Libraries as defined in settings.gradle
   implementation project(path: ':@react-native-firebase/app')
+  implementation project(path: ':@react-native-firebase/analytics')
 
   /* ------------------------
    *  TESTING SDKS/LIBRARIES

@@ -1,0 +1,54 @@
+repositories {
+  def found = false
+  def parentDir = rootProject.projectDir
+  def androidSourcesName = 'React Native sources'
+  def androidPrebuiltBinaryName = 'React Native prebuilt binary'
+
+  1.upto(4, {
+    if (found) return true
+    parentDir = parentDir.parentFile
+
+    // Running React Native from sources locally or for ExpoKit
+    def androidSourcesDir = new File(
+      parentDir,
+      'node_modules/react-native'
+    )
+
+    // Official releases of React Native come with a prebuilt version of Android sources
+    // in ./android, e.g. react-native/android/**/react-native-0.57.1.aar
+    def androidPrebuiltBinaryDir = new File(
+      parentDir,
+      'node_modules/react-native/android'
+    )
+
+    if (androidPrebuiltBinaryDir.exists()) {
+      maven {
+        url androidPrebuiltBinaryDir.toString()
+        name androidPrebuiltBinaryName
+      }
+
+      println "${project.name}: using ${androidPrebuiltBinaryName} from ${androidPrebuiltBinaryDir.toString()}"
+      found = true
+    } else if (androidSourcesDir.exists()) {
+      maven {
+        url androidSourcesDir.toString()
+        name androidSourcesName
+      }
+
+      println "${project.name}: using ${androidSourcesName} from ${androidSourcesDir.toString()}"
+      found = true
+    }
+  })
+
+  if (!found) {
+    throw new GradleException(
+      "${project.name}: unable to locate React Native android sources or prebuilt binary. " +
+        "Ensure you have you installed React Native as a dependency in your project and try again."
+    )
+  }
+}
+
+dependencies {
+  //noinspection GradleDynamicVersion
+  api "com.facebook.react:react-native:+"
+}

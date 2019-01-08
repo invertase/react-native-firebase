@@ -5,6 +5,7 @@
   "description": "React Native Firebase analytics",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "testsMain": "src/index.js",
   "scripts": {
     "build": "genversion src/version.js & npm run build:src & npm run build:flow & wait",
     "build:src": "BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",

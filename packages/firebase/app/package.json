@@ -9,6 +9,7 @@
   "files": [
     "dist",
     "android",
+    "build.gradle",
     "ios"
   ],
   "scripts": {
