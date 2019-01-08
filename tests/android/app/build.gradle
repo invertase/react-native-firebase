@@ -14,12 +14,12 @@ apply from: "../../../node_modules/react-native/react.gradle"
 def enableSeparateBuildPerCPUArchitecture = false
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   defaultConfig {
     applicationId "com.testing"
     minSdkVersion 18
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
     ndk {
@@ -73,6 +73,7 @@ android {
   }
 
   packagingOptions {
+    exclude 'META-INF/-no-jdk.kotlin_module'
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/NOTICE'
     exclude 'META-INF/LICENSE'
