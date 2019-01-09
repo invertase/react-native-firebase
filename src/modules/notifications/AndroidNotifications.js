@@ -130,7 +130,7 @@ export default class AndroidNotifications {
     return Promise.resolve();
   }
 
-  getChannel(channelId: string): Promise<AndroidChannel> {
+  getChannel(channelId: string): Promise<?AndroidChannel> {
     if (Platform.OS === 'android') {
       if (typeof channelId !== 'string') {
         throw new Error(
@@ -150,10 +150,10 @@ export default class AndroidNotifications {
         getNativeModule(this._notifications).getChannels()
       );
     }
-    return Promise.resolve(null);
+    return Promise.resolve([]);
   }
 
-  getChannelGroup(channelGroupId: string): Promise<AndroidChannelGroup> {
+  getChannelGroup(channelGroupId: string): Promise<?AndroidChannelGroup> {
     if (Platform.OS === 'android') {
       if (typeof channelGroupId !== 'string') {
         throw new Error(
@@ -167,12 +167,12 @@ export default class AndroidNotifications {
     return Promise.resolve(null);
   }
 
-  getChannelGroups(): Promise<AndroidChannel> {
+  getChannelGroups(): Promise<AndroidChannelGroup[]> {
     if (Platform.OS === 'android') {
       return Promise.resolve(
         getNativeModule(this._notifications).getChannelGroups()
       );
     }
-    return Promise.resolve(null);
+    return Promise.resolve([]);
   }
 }
