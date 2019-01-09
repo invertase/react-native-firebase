@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -219,6 +220,7 @@ class RNFirebaseNotificationManager {
     return Collections.emptyList();
   }
 
+  @RequiresApi(28)
   NotificationChannelGroup getChannelGroup(String channelGroupId) {
     if (Build.VERSION.SDK_INT >= 28) {
       return notificationManager.getNotificationChannelGroup(channelGroupId);
