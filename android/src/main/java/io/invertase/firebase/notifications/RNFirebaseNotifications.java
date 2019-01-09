@@ -24,6 +24,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -233,7 +234,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     } catch (Throwable t) {
       // do nothing - most likely a NoSuchMethodError for < v4 support lib
     }
-    promise.resolve(null);
+    promise.resolve(Collections.emptyList());
   }
 
   @ReactMethod
@@ -255,7 +256,7 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
     } catch (Throwable t) {
       // do nothing - most likely a NoSuchMethodError for < v4 support lib
     }
-    promise.resolve(null);
+    promise.resolve(Collections.emptyList());
   }
   //////////////////////////////////////////////////////////////////////
   // End Android specific methods

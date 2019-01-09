@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -215,11 +216,11 @@ class RNFirebaseNotificationManager {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       return notificationManager.getNotificationChannels();
     }
-    return null;
+    return Collections.emptyList();
   }
 
   NotificationChannelGroup getChannelGroup(String channelGroupId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= 28) {
       return notificationManager.getNotificationChannelGroup(channelGroupId);
     }
     return null;
@@ -229,7 +230,7 @@ class RNFirebaseNotificationManager {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       return notificationManager.getNotificationChannelGroups();
     }
-    return null;
+    return Collections.emptyList();
   }
 
   ArrayList<Bundle> getScheduledNotifications() {
