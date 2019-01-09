@@ -38,11 +38,11 @@ aliases:
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v4-brew-cache-{{ arch }}
+    key: v5-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-      - v4-brew-cache-{{ arch }}
+      - v5-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
