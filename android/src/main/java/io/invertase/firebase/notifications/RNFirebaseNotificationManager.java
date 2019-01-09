@@ -220,9 +220,8 @@ class RNFirebaseNotificationManager {
     return Collections.emptyList();
   }
 
-  @RequiresApi(28)
   NotificationChannelGroup getChannelGroup(String channelGroupId) {
-    if (Build.VERSION.SDK_INT >= 28) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       return notificationManager.getNotificationChannelGroup(channelGroupId);
     }
     return null;
