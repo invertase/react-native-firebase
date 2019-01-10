@@ -25,6 +25,8 @@ static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
 // static NSMutableArray *pendingEvents = nil;
 static NSDictionary *initialNotification = nil;
+static NSDictionary *launchedRemoteNotification = nil;
+static UILocalNotification *launchedLocalNotification = nil;
 static bool jsReady = FALSE;
 static NSString *const DEFAULT_ACTION = @"com.apple.UNNotificationDefaultActionIdentifier";
 
@@ -306,21 +308,22 @@ RCT_EXPORT_METHOD(getInitialNotification:(RCTPromiseResolveBlock)resolve rejecte
     // Check if we've cached an initial notification as this will contain the accurate action
     if (initialNotification) {
         resolve(initialNotification);
-    } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey]) {
-        UILocalNotification *localNotification = self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+    } else if (launchedLocalNotification) {
         resolve(@{
                   @"action": DEFAULT_ACTION,
-                  @"notification": [self parseUILocalNotification:localNotification]
+                  @"notification": [self parseUILocalNotification:launchedLocalNotification]
                   });
-    } else if (self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-        NSDictionary *remoteNotification = [self bridge].launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    } else if (launchedRemoteNotification) {
         resolve(@{
                   @"action": DEFAULT_ACTION,
-                  @"notification": [self parseUserInfo:remoteNotification]
+                  @"notification": [self parseUserInfo:launchedRemoteNotification]
                   });
     } else {
         resolve(nil);
     }
+    initialNotification = nil;
+    launchedLocalNotification = nil;
+    launchedRemoteNotification = nil;
 }
 
 RCT_EXPORT_METHOD(getScheduledNotifications:(RCTPromiseResolveBlock)resolve
@@ -426,6 +429,8 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
         }
         // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
         // [pendingEvents addObject:@{@"name":name, @"body":body}];
+        launchedLocalNotification = self.bridge.launchOptions[UIApplicationLaunchOptionsLocalNotificationKey];
+        launchedRemoteNotification = self.bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     }
 }
 
