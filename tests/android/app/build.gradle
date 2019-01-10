@@ -135,6 +135,7 @@ dependencies {
    * -------------------------------- */
 
   // For Firebase Ads
+  //noinspection GradleCompatible
   implementation "com.android.support:customtabs:27.1.1"
 
   // For React Native Firebase Notifications
