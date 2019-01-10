@@ -8,7 +8,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:3.2.1'
-    classpath 'com.google.gms:google-services:4.0.1'
+    classpath 'com.google.gms:google-services:4.2.0'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
@@ -27,11 +27,16 @@ allprojects {
       }
     }
   }
+
   repositories {
     mavenLocal()
     google()
     maven {
       url "$rootDir/../node_modules/react-native/android"
+    }
+    maven {
+      url 'https://maven.google.com/'
+      name 'Google'
     }
     jcenter()
   }
@@ -39,24 +44,6 @@ allprojects {
 
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
-  ext {
-    compileSdk = 28
-    minSdk = 18
-    targetSdk = 26
-  }
-
-  afterEvaluate { project ->
-    if (!project.name.equalsIgnoreCase("app")
-      && project.hasProperty("android")) {
-      android {
-        compileSdkVersion compileSdk
-        defaultConfig {
-          minSdkVersion minSdk
-          targetSdkVersion targetSdk
-        }
-      }
-    }
-  }
 }
 
 task wrapper(type: Wrapper) {
