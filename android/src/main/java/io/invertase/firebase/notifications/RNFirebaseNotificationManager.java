@@ -219,34 +219,27 @@ class RNFirebaseNotificationManager {
   }
 
   WritableArray getChannels() {
-    WritableArray channelsArray = Arguments.createArray();
-
     if (Build.VERSION.SDK_INT >= 26) {
-      // TODO
-      // return notificationManager.getNotificationChannels();
+      return createChannelsArray(notificationManager.getNotificationChannels());
     }
 
-    return channelsArray;
+    return Arguments.createArray();
   }
 
   WritableMap getChannelGroup(String channelGroupId) {
     if (Build.VERSION.SDK_INT >= 28) {
-      // TODO
-      // return notificationManager.getNotificationChannelGroup(channelGroupId);
+      return createChannelGroupMap(notificationManager.getNotificationChannelGroup(channelGroupId));
     }
 
     return Arguments.createMap();
   }
 
   WritableArray getChannelGroups() {
-    WritableArray channelsArray = Arguments.createArray();
-
-    if (Build.VERSION.SDK_INT >= 26) {
-      // TODO
-      // return notificationManager.getNotificationChannelGroups();
+     if (Build.VERSION.SDK_INT >= 26) {
+      return createChannelGroupsArray(notificationManager.getNotificationChannelGroups());
     }
 
-    return channelsArray;
+    return Arguments.createArray();
   }
 
   ArrayList<Bundle> getScheduledNotifications() {
@@ -328,8 +321,16 @@ class RNFirebaseNotificationManager {
       String groupId = channelGroupMap.getString("groupId");
       String name = channelGroupMap.getString("name");
 
-      return new NotificationChannelGroup(groupId, name);
+      NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup(groupId, name);
+
+      if (Build.VERSION.SDK_INT >= 28 && channelGroupMap.hasKey("description")) {
+        String description = channelGroupMap.getString("description");
+        notificationChannelGroup.setDescription(description);
+      }
+
+      return notificationChannelGroup;
     }
+
     return null;
   }
 
@@ -354,6 +355,49 @@ class RNFirebaseNotificationManager {
     }
 
     return result == null ? "" : result;
+  }
+
+  @RequiresApi(api = 26)
+  private WritableArray createChannelsArray(List<NotificationChannel> notificationChannels) {
+    WritableArray writableArray = Arguments.createArray();
+
+    if (Build.VERSION.SDK_INT >= 26) {
+      int size = notificationChannels.size();
+      for (int i = 0; i < size; i++) {
+        writableArray.pushMap(createChannelMap(notificationChannels.get(i)));
+      }
+    }
+
+    return writableArray;
+  }
+
+  @RequiresApi(api = 26)
+  private WritableArray createChannelGroupsArray(List<NotificationChannelGroup> notificationChannelGroups) {
+    WritableArray writableArray = Arguments.createArray();
+
+    if (Build.VERSION.SDK_INT >= 26) {
+      int size = notificationChannelGroups.size();
+      for (int i = 0; i < size; i++) {
+        writableArray.pushMap(createChannelGroupMap(notificationChannelGroups.get(i)));
+      }
+    }
+
+    return writableArray;
+  }
+
+  @RequiresApi(api = 26)
+  private WritableMap createChannelGroupMap(NotificationChannelGroup notificationChannelGroup) {
+    WritableMap writableMap = Arguments.createMap();
+
+    if (Build.VERSION.SDK_INT >= 26) {
+      writableMap.putString("groupId", notificationChannelGroup.getId());
+      writableMap.putString("name", notificationChannelGroup.getName().toString());
+      if (Build.VERSION.SDK_INT >= 28) {
+        writableMap.putString("description", notificationChannelGroup.getDescription());
+      }
+    }
+
+    return writableMap;
   }
 
   @RequiresApi(api = 26)
