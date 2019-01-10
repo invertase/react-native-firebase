@@ -29,13 +29,13 @@
       </intent-filter>
     </service>
 
-    <service
-      android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-      </intent-filter>
-    </service>
+    <!--<service-->
+      <!--android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"-->
+      <!--android:exported="false">-->
+      <!--<intent-filter>-->
+        <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
+      <!--</intent-filter>-->
+    <!--</service>-->
 
     <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
 

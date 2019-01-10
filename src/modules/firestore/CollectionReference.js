@@ -38,7 +38,7 @@ export default class CollectionReference {
     return this._firestore;
   }
 
-  get id(): string | null {
+  get id(): string {
     return this._collectionPath.id;
   }
 

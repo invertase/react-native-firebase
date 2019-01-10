@@ -83,8 +83,8 @@ export default class Messaging extends ModuleBase {
     return getNativeModule(this).getToken();
   }
 
-  deleteToken(authorizedEntity?: string, scope?: string): Promise<void> {
-    return this.app.iid().deleteToken(authorizedEntity, scope);
+  deleteToken(): Promise<void> {
+    return getNativeModule(this).deleteToken();
   }
 
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {
