@@ -14,11 +14,10 @@ def enableSeparateBuildPerCPUArchitecture = false
 
 android {
   compileSdkVersion 28
-
   defaultConfig {
     applicationId "com.testing"
     minSdkVersion 18
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
     ndk {

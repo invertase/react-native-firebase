@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.service.notification.StatusBarNotification;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -33,7 +34,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -129,21 +129,21 @@ class RNFirebaseNotificationManager {
   }
 
   void createChannel(ReadableMap channelMap) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       NotificationChannel channel = parseChannelMap(channelMap);
       notificationManager.createNotificationChannel(channel);
     }
   }
 
   void createChannelGroup(ReadableMap channelGroupMap) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       NotificationChannelGroup channelGroup = parseChannelGroupMap(channelGroupMap);
       notificationManager.createNotificationChannelGroup(channelGroup);
     }
   }
 
   void createChannelGroups(ReadableArray channelGroupsArray) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       List<NotificationChannelGroup> channelGroups = new ArrayList<>();
       for (int i = 0; i < channelGroupsArray.size(); i++) {
         NotificationChannelGroup channelGroup = parseChannelGroupMap(channelGroupsArray.getMap(i));
@@ -154,7 +154,7 @@ class RNFirebaseNotificationManager {
   }
 
   void createChannels(ReadableArray channelsArray) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       List<NotificationChannel> channels = new ArrayList<>();
       for (int i = 0; i < channelsArray.size(); i++) {
         NotificationChannel channel = parseChannelMap(channelsArray.getMap(i));
@@ -165,13 +165,13 @@ class RNFirebaseNotificationManager {
   }
 
   void deleteChannelGroup(String groupId) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       notificationManager.deleteNotificationChannelGroup(groupId);
     }
   }
 
   void deleteChannel(String channelId) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       notificationManager.deleteNotificationChannel(channelId);
     }
   }
@@ -210,32 +210,43 @@ class RNFirebaseNotificationManager {
     }
   }
 
-  NotificationChannel getChannel(String channelId) {
-    if (Build.VERSION.SDK_INT >= 27) {
-      return notificationManager.getNotificationChannel(channelId);
+  WritableMap getChannel(String channelId) {
+    if (Build.VERSION.SDK_INT >= 26) {
+      return createChannelMap(notificationManager.getNotificationChannel(channelId));
     }
-    return null;
+
+    return Arguments.createMap();
   }
 
-  List<NotificationChannel> getChannels() {
-    if (Build.VERSION.SDK_INT >= 27) {
-      return notificationManager.getNotificationChannels();
+  WritableArray getChannels() {
+    WritableArray channelsArray = Arguments.createArray();
+
+    if (Build.VERSION.SDK_INT >= 26) {
+      // TODO
+      // return notificationManager.getNotificationChannels();
     }
-    return Collections.emptyList();
+
+    return channelsArray;
   }
 
-  NotificationChannelGroup getChannelGroup(String channelGroupId) {
+  WritableMap getChannelGroup(String channelGroupId) {
     if (Build.VERSION.SDK_INT >= 28) {
-      return notificationManager.getNotificationChannelGroup(channelGroupId);
+      // TODO
+      // return notificationManager.getNotificationChannelGroup(channelGroupId);
     }
-    return null;
+
+    return Arguments.createMap();
   }
 
-  List<NotificationChannelGroup> getChannelGroups() {
-    if (Build.VERSION.SDK_INT >= 27) {
-      return notificationManager.getNotificationChannelGroups();
+  WritableArray getChannelGroups() {
+    WritableArray channelsArray = Arguments.createArray();
+
+    if (Build.VERSION.SDK_INT >= 26) {
+      // TODO
+      // return notificationManager.getNotificationChannelGroups();
     }
-    return Collections.emptyList();
+
+    return channelsArray;
   }
 
   ArrayList<Bundle> getScheduledNotifications() {
@@ -313,7 +324,7 @@ class RNFirebaseNotificationManager {
   }
 
   private NotificationChannelGroup parseChannelGroupMap(ReadableMap channelGroupMap) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       String groupId = channelGroupMap.getString("groupId");
       String name = channelGroupMap.getString("name");
 
@@ -322,7 +333,7 @@ class RNFirebaseNotificationManager {
     return null;
   }
 
-  public String getFileName(Uri uri) {
+  private String getFileName(Uri uri) {
     String result = null;
     if (uri.getScheme() != null && uri.getScheme().equals("content")) {
       try (Cursor cursor = reactContext.getContentResolver().query(uri, null, null, null, null)) {
@@ -345,10 +356,11 @@ class RNFirebaseNotificationManager {
     return result == null ? "" : result;
   }
 
+  @RequiresApi(api = 26)
   private WritableMap createChannelMap(NotificationChannel notificationChannel) {
     WritableMap writableMap = Arguments.createMap();
 
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       writableMap.putString("channelId", notificationChannel.getId());
       writableMap.putString("name", notificationChannel.getName().toString());
       writableMap.putInt("importance", notificationChannel.getImportance());
@@ -376,8 +388,9 @@ class RNFirebaseNotificationManager {
     return writableMap;
   }
 
+  @RequiresApi(api = 26)
   private NotificationChannel parseChannelMap(ReadableMap channelMap) {
-    if (Build.VERSION.SDK_INT >= 27) {
+    if (Build.VERSION.SDK_INT >= 26) {
       String channelId = channelMap.getString("channelId");
       String name = channelMap.getString("name");
       int importance = channelMap.getInt("importance");

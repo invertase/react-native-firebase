@@ -41,7 +41,6 @@ subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
   ext {
     compileSdk = 28
-    buildTools = "28.0.3"
     minSdk = 18
     targetSdk = 26
   }
@@ -51,7 +50,6 @@ subprojects {
       && project.hasProperty("android")) {
       android {
         compileSdkVersion compileSdk
-        buildToolsVersion buildTools
         defaultConfig {
           minSdkVersion minSdk
           targetSdkVersion targetSdk
