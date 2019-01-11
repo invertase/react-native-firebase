@@ -19,7 +19,8 @@ layout: overview
     color="#4CAF50"
     to="/guides"
   >
-    Our guides cover development use-cases from setup to advanced topics.
+    Getting started with React Native Firebase, or looking for 
+    advanced topics? Our guides are a great place to start.
   </Card>
   <Card
     icon="layers"
@@ -27,8 +28,8 @@ layout: overview
     color="#00BCD4"
     to="/{{ latest_version }}/reference"
   >
-    Start your next project
-    with our full API reference documentation.
+    Start your next project with full module API reference,
+    descriptions and examples.
   </Card>
 </Grid>
 
