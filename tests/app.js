@@ -15,9 +15,9 @@ class Root extends Component {
       currentTest: null,
     };
 
-    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseAnalytics)));
-    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseApp)));
-    console.warn(JSON.stringify(Object.keys(NativeModules.ReactNativeFirebaseUtils)));
+    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBAnalytics)));
+    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBApp)));
+    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBUtils)));
     // jet.exposeContextProperty('root', this);
     // jet.exposeContextProperty('module', firebase);
   }
