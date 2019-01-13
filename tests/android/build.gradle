@@ -5,12 +5,17 @@ buildscript {
     maven {
       url 'https://maven.fabric.io/public'
     }
+    maven {
+      url uri('/Volumes/Projects/Projects/react-native-gradle-plugin/repo')
+    }
+    gradlePluginPortal()
     jcenter()
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:3.2.1'
     classpath 'com.google.gms:google-services:4.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath 'io.invertase.gradle:react-native:1.1.1'
 //    classpath 'com.google.firebase:firebase-plugins:1.1.5'
 //    classpath 'io.fabric.tools:gradle:1.25.4'
   }

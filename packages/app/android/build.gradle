@@ -1,21 +1,44 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+project.ext {
+  set('react-native', [
+    versions: [
+      android           : [
+        minSdk    : 16,
+        targetSdk : 28,
+        compileSdk: 28,
+        // optional as gradle.buildTools comes with one by default
+        // overriding here though to match the version RN uses
+        buildTools: "28.0.3"
+      ],
 
-def DEFAULT_TARGET_SDK_VERSION = 28
-def DEFAULT_COMPILE_SDK_VERSION = 28
-def DEFAULT_KOTLIN_VERSION = "1.3.11"
-def DEFAULT_BUILD_TOOLS_VERSION = "28.0.2"
-def KOTLIN_VERSION = rootProject.hasProperty('kotlinVersion') ? rootProject.kotlinVersion : DEFAULT_KOTLIN_VERSION
+      googlePlayServices: [
+        base: "16.0.1",
+      ],
+
+      firebase          : [
+        core: "16.0.6"
+      ],
+    ],
+  ])
+}
+
+buildscript {
+  repositories {
+    google()
+    jcenter()
+    maven {
+      url uri('/Volumes/Projects/Projects/react-native-gradle-plugin/repo')
+    }
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'io.invertase.gradle:react-native:1.1.1'
+  }
+}
+
+apply plugin: "io.invertase.gradle.build"
 
 android {
-  compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
-  buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
   defaultConfig {
-    minSdkVersion 16
-    targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
-    versionCode 1
-    versionName "1.0"
     multiDexEnabled true
   }
   lintOptions {
@@ -26,19 +49,6 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
-  packagingOptions {
-    exclude 'META-INF/-no-jdk.kotlin_module'
-  }
-}
-
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
 }
 
 repositories {
@@ -47,25 +57,15 @@ repositories {
 }
 
 dependencies {
-  /* -----------------
-   *     FIREBASE
-   * ----------------- */
-  // Required dependencies
-  // noinspection GradleCompatible
-  implementation "com.google.firebase:firebase-core:16.0.6"
-  implementation "com.google.android.gms:play-services-base:16.0.1"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$KOTLIN_VERSION"
+  implementation "com.google.firebase:firebase-core:${ReactNative.ext.getVersion("firebase", "core")}"
+  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 
-// Flutter
-if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists() && findProject(':expo-core') == null) {
-  throw new GradleException("Support for Flutter has not been implemented.")
-// Expo
-} else if (findProject(':expo-core') != null) {
+if (ReactNative.util.isExpo(project)) {
   apply from: file("./expo.gradle")
-// React Native
-} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: file("./react-native.gradle")
-} else {
-  throw new GradleException("Unknown Project Configuration, please report this issue on GitHub.")
 }
+
+ReactNative.shared.applyPackageVersion()
+ReactNative.shared.applyDefaultExcludes()
+ReactNative.module.applyAndroidVersions()
+ReactNative.module.applyReactNativeDependency("api")
