@@ -423,7 +423,7 @@ declare module 'react-native-firebase' {
         bytesTransferred: number;
         downloadURL: string | null;
         metadata: FullMetadata;
-        ref: Reference;
+        ref: string;
         state: TaskState;
         task: StorageTask<UploadTaskSnapshot>;
         totalBytes: number;
