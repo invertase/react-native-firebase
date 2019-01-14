@@ -1,4 +1,4 @@
-import type { FirebaseModule } from 'react-native-firebase';
+import type { FirebaseModule, FirebaseApp } from 'react-native-firebase';
 
 declare module '@react-native-firebase/analytics' {
   declare class FirebaseAnalytics extends FirebaseModule {
@@ -14,5 +14,5 @@ declare module '@react-native-firebase/analytics' {
 }
 
 interface FirebaseApp {
-  analytics: FirebaseAnalytics
+  analytics(): FirebaseAnalytics
 }
