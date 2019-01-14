@@ -2,9 +2,6 @@ import { registerModule } from 'react-native-firebase/common/registry';
 import { isString, isObject } from 'react-native-firebase/common/validate';
 import FirebaseModule from 'react-native-firebase/common/FirebaseModule';
 
-import type { FirebaseApp } from 'react-native-firebase/common/types';
-import type { FirebaseModuleConfig } from 'react-native-firebase/src/common/types';
-
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 const ReservedEventNames = [
   'app_clear_data',
@@ -29,7 +26,7 @@ class FirebaseAnalytics extends FirebaseModule {
 
   static statics = {};
 
-  constructor(app: FirebaseApp, config: FirebaseModuleConfig): this {
+  constructor(app) {
     super(app, {
       namespace: FirebaseAnalytics.namespace,
       moduleName: FirebaseAnalytics.nativeModuleName,
@@ -44,7 +41,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param params
    * @return {Promise}
    */
-  logEvent(name: string, params: Object = {}): Promise<void> {
+  logEvent(name, params = {}) {
     if (!isString(name)) {
       throw new Error(
         `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
@@ -86,7 +83,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * Sets whether analytics collection is enabled for this app on this device.
    * @param enabled
    */
-  setAnalyticsCollectionEnabled(enabled: boolean): Promise<void> {
+  setAnalyticsCollectionEnabled(enabled) {
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
@@ -95,7 +92,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void> {
+  setCurrentScreen(screenName, screenClassOverride) {
     return this.native.setCurrentScreen(screenName, screenClassOverride);
   }
 
@@ -103,7 +100,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
    * @param milliseconds
    */
-  setMinimumSessionDuration(milliseconds: number = 10000): Promise<void> {
+  setMinimumSessionDuration(milliseconds = 10000) {
     return this.native.setMinimumSessionDuration(milliseconds);
   }
 
@@ -111,7 +108,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
    * @param milliseconds
    */
-  setSessionTimeoutDuration(milliseconds: number = 1800000): Promise<void> {
+  setSessionTimeoutDuration(milliseconds = 1800000) {
     return this.native.setSessionTimeoutDuration(milliseconds);
   }
 
@@ -119,7 +116,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * Sets the user ID property.
    * @param id
    */
-  setUserId(id: string | null): Promise<void> {
+  setUserId(id) {
     if (id !== null && !isString(id)) {
       throw new Error(
         'analytics.setUserId(): The supplied userId must be a string value or null.');
@@ -133,7 +130,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param name
    * @param value
    */
-  setUserProperty(name: string, value: string | null): Promise<void> {
+  setUserProperty(name, value){
     if (value !== null && !isString(value)) {
       throw new Error(
         'analytics.setUserProperty(): The supplied property must be a string value or null.',
@@ -149,7 +146,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @RNFirebaseSpecific
    * @param object
    */
-  setUserProperties(object: { [string]: string | null }): Promise<void> {
+  setUserProperties(object) {
     return this.native.setUserProperty(property, object[property]);
   }
 }

@@ -1,5 +1,5 @@
 declare module 'react-native-firebase' {
-  export type FirebaseNativeModuleName =
+  declare type FirebaseNativeModuleName =
     | 'RNFBAdMob'
     | 'RNFBAnalytics'
     | 'RNFBAuth'
@@ -19,7 +19,7 @@ declare module 'react-native-firebase' {
     | 'RNFBStorage'
     | 'RNFBUtils';
 
-  export type FirebaseNamespace =
+  declare type FirebaseNamespace =
     | 'admob'
     | 'analytics'
     | 'auth'
@@ -39,7 +39,7 @@ declare module 'react-native-firebase' {
     | 'storage'
     | 'utils';
 
-  export interface FirebaseOptions {
+  declare interface FirebaseOptions {
     apiKey: string;
     appId: string;
     databaseURL: string;
@@ -48,20 +48,18 @@ declare module 'react-native-firebase' {
     storageBucket: string;
   }
 
-  export class FirebaseApp {
-
-    readonly name: string;
-    readonly options: FirebaseOptions;
+  declare class FirebaseApp {
+    +name: string;
+    +options: FirebaseOptions;
     onReady: () => Promise<FirebaseApp>;
 
     // TODO
-    [key: string]: Object;
+    [FirebaseNamespace]: Object;
   }
 
-  export class FirebaseModule {
-    app: FirebaseApp;
-
+  declare class FirebaseModule {
+    +app: FirebaseApp;
     // TODO
-    [key: string]: Object;
+    [FirebaseNamespace]: Object;
   }
 }
