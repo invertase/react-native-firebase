@@ -46,7 +46,7 @@ Rebuild your Android project.
 1. Open your projects `ios/[project].xcworkspace`.
 2. Within the `didFinishLaunchingWithOptions` method, add the following line after `[FIRApp configure]`:
 
-```objective-c{5}
+```objectivec{5}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     ...
