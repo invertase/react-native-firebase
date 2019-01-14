@@ -51,7 +51,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   public void initialize() {
     super.initialize();
     if (withEventEmitter) {
-      this.eventEmitter.attachContext(getContext());
+      this.eventEmitter.attachReactContext(getContext());
     }
   }
 

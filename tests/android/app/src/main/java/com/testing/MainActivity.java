@@ -9,6 +9,8 @@ import android.provider.Settings;
 
 import com.facebook.react.ReactActivity;
 
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+
 public class MainActivity extends ReactActivity {
 
   public static final int PERMISSION_REQ_CODE = 1234;

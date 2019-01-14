@@ -34,6 +34,7 @@ import java.util.Map;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+import io.invertase.firebase.common.SharedUtils;
 
 public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Utils";
@@ -141,6 +142,7 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
     constants.put("androidPlayServices", getPlayServicesStatusMap());
+    constants.put("isFirebaseTestLab", SharedUtils.isFirebaseTestLab());
     return constants;
   }
 

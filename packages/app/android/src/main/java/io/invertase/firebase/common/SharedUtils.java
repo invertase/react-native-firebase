@@ -19,6 +19,7 @@ package io.invertase.firebase.common;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
@@ -31,6 +32,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 
 @SuppressWarnings("WeakerAccess")
@@ -48,69 +51,8 @@ public class SharedUtils {
   private static final String REACT_NATIVE_REGISTRY_CLASS = "NativeModuleRegistry";
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
-  /**
-   * Checks for dev support availability - so we can ignore in release builds for example.
-   *
-   * @return Boolean
-   */
-  public Boolean reactNativeHasDevSupport() {
-    return hasPackageClass(RN_DEVSUPPORT_PACKAGE, RN_DEVSUPPORT_CLASS);
-  }
 
-  /**
-   * Is the build platform Expo?
-   *
-   * @return Boolean
-   */
-  public Boolean isExpo() {
-    return hasPackageClass(EXPO_CORE_PACKAGE, EXPO_REGISTRY_CLASS);
-  }
-
-  /**
-   * Is the build platform Flutter?
-   *
-   * @return Boolean
-   */
-  public Boolean isFlutter() {
-    return hasPackageClass(FLUTTER_CORE_PACKAGE, FLUTTER_REGISTRY_CLASS);
-  }
-
-
-  /**
-   * Is the build platform React Native?
-   *
-   * @return Boolean
-   */
-  public Boolean isReactNative() {
-    return !isExpo() && hasPackageClass(REACT_NATIVE_CORE_PACKAGE, REACT_NATIVE_REGISTRY_CLASS);
-  }
-
-
-  /**
-   * Returns true/false if a class for a package exists in the app class bundle
-   *
-   * @param packageName
-   * @param className
-   * @return
-   */
-  @SuppressWarnings("StringBufferReplaceableByString")
-  public Boolean hasPackageClass(String packageName, String className) {
-    // ProGuard is surprisingly smart in this case and will keep a class if it detects a call to
-    // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
-    // confuse it.
-    String fullName = new StringBuilder(packageName)
-        .append(".")
-        .append(className)
-        .toString();
-
-    try {
-      Class.forName(fullName);
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
+  private static final String FIREBASE_TEST_LAB = "firebase.test.lab";
 
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
@@ -126,8 +68,8 @@ public class SharedUtils {
   public static void sendEvent(final ReactContext context, final String eventName, Object body) {
     if (context != null) {
       context
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(eventName, body);
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, body);
     } else {
       Log.d(TAG, "Missing context - cannot send event!");
     }
@@ -150,8 +92,8 @@ public class SharedUtils {
     final String packageName = context.getPackageName();
     for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
       if (
-          appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-              && appProcess.processName.equals(packageName)
+        appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+          && appProcess.processName.equals(packageName)
       ) {
         ReactContext reactContext;
 
@@ -171,13 +113,89 @@ public class SharedUtils {
 
   public static int getResId(Context ctx, String resName) {
     int resourceId = ctx
-        .getResources()
-        .getIdentifier(resName, "string", ctx.getPackageName());
+      .getResources()
+      .getIdentifier(resName, "string", ctx.getPackageName());
 
     if (resourceId == 0) {
       Log.e(TAG, "resource " + resName + " could not be found");
     }
 
     return resourceId;
+  }
+
+  /**
+   * Is this app running in Firebase Test Lab
+   *
+   * @return Boolean
+   */
+  public static Boolean isFirebaseTestLab() {
+    String testLabSetting =
+      Settings.System.getString(
+        ReactNativeFirebaseApp.getApplicationContext().getContentResolver(),
+        FIREBASE_TEST_LAB
+      );
+
+    return "true".equals(testLabSetting);
+  }
+
+  /**
+   * Checks for dev support availability - so we can ignore in release builds for example.
+   *
+   * @return Boolean
+   */
+  public static Boolean reactNativeHasDevSupport() {
+    return hasPackageClass(RN_DEVSUPPORT_PACKAGE, RN_DEVSUPPORT_CLASS);
+  }
+
+  /**
+   * Is the build platform Expo?
+   *
+   * @return Boolean
+   */
+  public static Boolean isExpo() {
+    return hasPackageClass(EXPO_CORE_PACKAGE, EXPO_REGISTRY_CLASS);
+  }
+
+  /**
+   * Is the build platform Flutter?
+   *
+   * @return Boolean
+   */
+  public static Boolean isFlutter() {
+    return hasPackageClass(FLUTTER_CORE_PACKAGE, FLUTTER_REGISTRY_CLASS);
+  }
+
+  /**
+   * Is the build platform React Native?
+   *
+   * @return Boolean
+   */
+  public static Boolean isReactNative() {
+    return !isExpo() && hasPackageClass(REACT_NATIVE_CORE_PACKAGE, REACT_NATIVE_REGISTRY_CLASS);
+  }
+
+  /**
+   * Returns true/false if a class for a package exists in the app class bundle
+   *
+   * @param packageName
+   * @param className
+   * @return
+   */
+  @SuppressWarnings("StringBufferReplaceableByString")
+  public static Boolean hasPackageClass(String packageName, String className) {
+    // ProGuard is surprisingly smart in this case and will keep a class if it detects a call to
+    // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
+    // confuse it.
+    String fullName = new StringBuilder(packageName)
+      .append(".")
+      .append(className)
+      .toString();
+
+    try {
+      Class.forName(fullName);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

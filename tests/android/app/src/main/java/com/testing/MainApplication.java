@@ -12,10 +12,10 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
-import io.invertase.jet.JetPackage;
-
-import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.jet.JetPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -26,7 +26,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
+      return Arrays.asList(
         new MainReactPackage(),
         new JetPackage(),
         new ReactNativeFirebaseAppPackage(),
@@ -43,17 +43,18 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative");
 
     // TODO move to jet
     DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()
       .getReactInstanceManager()
       .getDevSupportManager()
       .getDevSettings();
+
     if (settings != null) {
       settings.setBundleDeltasEnabled(false);
     }
 
-    SoLoader.init(this, /* native exopackage */ false);
+    SoLoader.init(this, false);
   }
-
 }

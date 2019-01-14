@@ -1,8 +1,23 @@
 const detox = require('detox');
-const config = require('../package.json').detox;
+const { requirePackageTests } = require('./helpers');
+const { detox: config } = require('../package.json');
 
-// TODO require all
-require('../../packages/app/e2e/app.e2e');
+const PACKAGES = [
+  'app',
+  'analytics',
+  // 'auth',
+  // 'config',
+  // 'crashlytics',
+  // 'firestore',
+  // 'fiam',
+  // 'links',
+  // 'messaging',
+  // 'storage',
+];
+
+for (let i = 0; i < PACKAGES.length; i++) {
+  requirePackageTests(PACKAGES[i]);
+}
 
 before(async () => {
   await detox.init(config);

@@ -43,7 +43,7 @@ public class ReactNativeFirebaseEventEmitter {
     return sharedInstance;
   }
 
-  public void attachContext(final ReactContext reactContext) {
+  public void attachReactContext(final ReactContext reactContext) {
     handler.post(new Runnable() {
       @Override
       public void run() {

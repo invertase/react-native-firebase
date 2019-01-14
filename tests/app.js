@@ -1,12 +1,10 @@
-/* eslint-disable import/extensions,import/no-unresolved,import/first */
+/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies */
 import React, { Component } from 'react';
 import { AppRegistry, NativeModules, Text, View, Image, StyleSheet, YellowBox } from 'react-native';
 
-YellowBox.ignoreWarnings(['Require cycle:']);
-
 import firebase from 'react-native-firebase';
 
-// import jet from 'jet/platform/react-native';
+import jet from 'jet/platform/react-native';
 
 class Root extends Component {
   constructor(props) {
@@ -18,8 +16,9 @@ class Root extends Component {
     console.warn(JSON.stringify(Object.keys(NativeModules.RNFBAnalytics)));
     console.warn(JSON.stringify(Object.keys(NativeModules.RNFBApp)));
     console.warn(JSON.stringify(Object.keys(NativeModules.RNFBUtils)));
-    // jet.exposeContextProperty('root', this);
-    // jet.exposeContextProperty('module', firebase);
+    jet.exposeContextProperty('root', this);
+    jet.exposeContextProperty('module', firebase);
+    jet.exposeContextProperty('NativeModules', NativeModules);
   }
 
   render() {
@@ -41,7 +40,7 @@ class Root extends Component {
             {'N/A'}
           </Text>
           <Text style={styles.item} testID="title">
-            {'Ensure you\'re running the Jet Packager together with the Detox test command.'}
+            {"Ensure you're running the Jet Packager together with the Detox test command."}
           </Text>
         </View>
       );

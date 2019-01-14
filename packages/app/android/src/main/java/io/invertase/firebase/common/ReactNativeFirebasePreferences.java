@@ -21,21 +21,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 public class ReactNativeFirebasePreferences {
   private static final String PREFERENCES_FILE = "io.invertase.firebase";
   private static ReactNativeFirebasePreferences sharedInstance = new ReactNativeFirebasePreferences();
-  private ReactContext reactContext;
   private SharedPreferences preferences;
 
   public static ReactNativeFirebasePreferences getSharedInstance() {
     return sharedInstance;
-  }
-
-  public void attachContext(final ReactContext reactContext) {
-    ReactNativeFirebasePreferences.this.reactContext = reactContext;
   }
 
   public void setBooleanValue(String key, boolean value) {
@@ -57,9 +53,10 @@ public class ReactNativeFirebasePreferences {
 
   private SharedPreferences getPreferences() {
     if (preferences == null) {
-      preferences = reactContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+      preferences = ReactNativeFirebaseApp
+        .getApplicationContext()
+        .getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
-
     return preferences;
   }
 }

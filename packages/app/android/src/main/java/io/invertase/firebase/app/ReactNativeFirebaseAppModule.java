@@ -32,7 +32,6 @@ import java.util.Map;
 import io.invertase.firebase.common.RCTConvertFirebaseCommon;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   private static final String TAG = "App";
@@ -44,8 +43,7 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   @Override
   public void initialize() {
     super.initialize();
-    ReactNativeFirebaseEventEmitter.getSharedInstance().attachContext(getContext());
-    ReactNativeFirebasePreferences.getSharedInstance().attachContext(getContext());
+    ReactNativeFirebaseEventEmitter.getSharedInstance().attachReactContext(getContext());
   }
 
   @ReactMethod

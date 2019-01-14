@@ -1,4 +1,4 @@
-describe('firebase', () => {
+xdescribe('firebase', () => {
   it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app()._nativeInitialized, true);
     return Promise.resolve();
@@ -49,7 +49,7 @@ describe('firebase', () => {
   });
 });
 
-describe('firebase -> X', () => {
+xdescribe('firebase -> X', () => {
   it('apps should provide an array of apps', () => {
     should.equal(!!firebase.apps.length, true);
     should.equal(firebase.apps.includes(firebase.app('[DEFAULT]')), true);
