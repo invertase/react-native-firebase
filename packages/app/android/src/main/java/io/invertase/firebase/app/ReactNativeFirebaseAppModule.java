@@ -37,7 +37,7 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   private static final String TAG = "App";
 
   ReactNativeFirebaseAppModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG, false);
+    super(reactContext, TAG);
   }
 
   @Override

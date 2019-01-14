@@ -2,7 +2,13 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "prepare": "yarn run lerna:boostrap",
+    "prepare": "yarn run lerna:link && lerna run prepare",
+    "build:all:clean": "lerna run build:clean",
+    "build:all:build": "lerna run build",
+    "build:all:src": "lerna run build:src",
+    "build:all:flow": "lerna run build:flow",
+    "validate:all:ts": "tsc --project ./",
+    "validate:all:flow": "flow",
     "lerna:boostrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
     "tests:packager:chrome": "react-native start --platforms ios,android",
@@ -24,7 +30,10 @@
     "tooling:build-docker-image:debug": "cd packages/tooling/test-android-docker && npm run build:debug",
     "tooling:build-docker-image:release": "cd packages/tooling/test-android-docker && npm run build:release",
     "tooling:publish-docker-image:debug": "cd packages/tooling/test-android-docker && npm run publish:debug",
-    "tooling:publish-docker-image:release": "cd packages/tooling/test-android-docker && npm run publish:release"
+    "tooling:publish-docker-image:release": "cd packages/tooling/test-android-docker && npm run publish:release",
+    "publish:alpha:patch":"lerna version prepatch --preid alpha --no-push --force-publish=*",
+    "publish:alpha:minor":"lerna version preminor --preid alpha --no-push --force-publish=*",
+    "publish:alpha:major":"lerna version premajor --preid alpha --no-push --force-publish=*"
   },
   "dependencies": {
     "prop-types": "^15.6.1",

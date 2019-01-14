@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import firebase from 'react-native-firebase';
+import '@react-native-firebase/analytics';
 
 import jet from 'jet/platform/react-native';
 

@@ -1,5 +1,8 @@
 {
-  "files": ["packages/types/**/*.ts"],
+  "include": ["packages/**/*.d.ts"],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",

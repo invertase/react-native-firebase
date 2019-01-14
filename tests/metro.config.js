@@ -3,7 +3,6 @@ const { createBlacklist } = require('metro');
 const { mergeConfig } = require('metro-config');
 const { DEFAULT } = require('react-native/local-cli/util/Config');
 
-
 const config = {
   projectRoot: __dirname,
   resolver: {
@@ -22,19 +21,17 @@ const config = {
       {
         get: (target, name) => {
           if (name === 'react-native-firebase') {
-            return join(__dirname, `../packages/app/src`);
+            return join(__dirname, `../packages/app`);
           }
 
           if (name.startsWith('@react-native-firebase')) {
-            // TODO
-            return join(__dirname, `../src`);
+            const packageName = name.replace('@react-native-firebase/', '');
+            return join(__dirname, `../packages/${packageName}`);
           }
-
-          // console.log(name, join(__dirname, '..', `node_modules/${name}`));
 
           return join(__dirname, '..', `node_modules/${name}`);
         },
-      }
+      },
     ),
     platforms: ['android', 'ios'],
   },

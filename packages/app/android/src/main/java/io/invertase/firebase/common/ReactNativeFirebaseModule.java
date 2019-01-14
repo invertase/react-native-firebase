@@ -31,28 +31,18 @@ import io.invertase.firebase.interfaces.ContextProvider;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
   private String moduleName;
-  private Boolean withEventEmitter;
-  private ReactNativeFirebaseEventEmitter eventEmitter;
 
   public ReactNativeFirebaseModule(
     ReactApplicationContext reactContext,
-    String moduleName,
-    Boolean withEventEmitter
+    String moduleName
   ) {
     super(reactContext);
     this.moduleName = moduleName;
-    this.withEventEmitter = withEventEmitter;
-    if (withEventEmitter) {
-      this.eventEmitter = new ReactNativeFirebaseEventEmitter();
-    }
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    if (withEventEmitter) {
-      this.eventEmitter.attachReactContext(getContext());
-    }
   }
 
   public ReactContext getContext() {

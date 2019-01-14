@@ -44,7 +44,7 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Utils";
 
   ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG, false);
+    super(reactContext, TAG);
   }
 
   @ReactMethod
@@ -183,5 +183,4 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
     constants.put("isFirebaseTestLab", SharedUtils.isFirebaseTestLab());
     return constants;
   }
-
 }

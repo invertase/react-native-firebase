@@ -35,7 +35,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   private static final String TAG = "Analytics";
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG, false);
+    super(reactContext, TAG);
   }
 
   @ReactMethod
