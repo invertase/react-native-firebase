@@ -1,21 +1,17 @@
 buildscript {
-  ext.kotlin_version = '1.3.11'
+  ext.kotlinVersion = '1.3.11'
   repositories {
     google()
+    jcenter()
+    mavenCentral()
     maven {
       url 'https://maven.fabric.io/public'
     }
-    maven {
-      url uri('/Volumes/Projects/Projects/react-native-gradle-plugin/repo')
-    }
-    gradlePluginPortal()
-    jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.3.0'
     classpath 'com.google.gms:google-services:4.2.0'
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath 'io.invertase.gradle:react-native:1.1.1'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 //    classpath 'com.google.firebase:firebase-plugins:1.1.5'
 //    classpath 'io.fabric.tools:gradle:1.25.4'
   }
@@ -34,13 +30,14 @@ allprojects {
       }
     }
   }
+
   repositories {
-    mavenLocal()
+    mavenCentral()
+    jcenter()
     google()
     maven {
       url "$rootDir/../../node_modules/react-native/android"
     }
-    jcenter()
   }
 }
 
@@ -63,12 +60,18 @@ subprojects {
           minSdkVersion minSdk
           targetSdkVersion targetSdk
         }
+        variantFilter { variant ->
+          def names = variant.flavors*.name
+          if (names.contains("minReactNative44")) {
+            setIgnore(true)
+          }
+        }
       }
     }
   }
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '4.6'
+  gradleVersion = '4.10.2'
   distributionUrl = distributionUrl.replace("bin", "all")
 }

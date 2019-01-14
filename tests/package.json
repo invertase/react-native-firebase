@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "detox": "^9.0.4",
+    "detox": "^10.0.2",
     "jet": "^0.2.0",
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",

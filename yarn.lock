@@ -2772,7 +2772,29 @@ detect-libc@^1.0.2:
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
   integrity sha1-+hN8S9aY7fVc1c0CrFWfkaTEups=
 
-detox@^9.0.1, detox@^9.0.4:
+detox@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-10.0.2.tgz#a14f931f723a6482a04d0b7dda658cf6ecf64979"
+  integrity sha512-F3CYajiLVwxcvOhrgLUgh4ML7rS+3Je/4N2tZnpGFkMj8IyATVArUkTUEnfIXvVhJLE1LByu7XawfMxVh6MjEg==
+  dependencies:
+    bunyan "^1.8.12"
+    bunyan-debug-stream "^1.1.0"
+    child-process-promise "^2.2.0"
+    commander "^2.15.1"
+    fs-extra "^4.0.2"
+    get-port "^2.1.0"
+    ini "^1.3.4"
+    lodash "^4.17.5"
+    minimist "^1.2.0"
+    proper-lockfile "^3.0.2"
+    sanitize-filename "^1.6.1"
+    shell-utils "^1.0.9"
+    tail "^1.2.3"
+    telnet-client "0.15.3"
+    tempfile "^2.0.0"
+    ws "^1.1.1"
+
+detox@^9.0.1:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/detox/-/detox-9.1.2.tgz#f71b9dafcf006ef9a4a456528726b38a107205cf"
   integrity sha512-pVyyDHPekYxzQK+sComeYXau5oNG1ZyMGjhEB8ecSbg5EaK1MhIyaLDxri4eDXVnOgLizFP9gqHZSgPcpdITRg==

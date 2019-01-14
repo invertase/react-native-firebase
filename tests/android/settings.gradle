@@ -1,22 +1,5 @@
 rootProject.name = '@react-native-firebase/tests'
 
-//buildscript {
-//  repositories { gradlePluginPortal() }
-//  dependencies { classpath 'io.invertase.gradle:react-native:1.0' }
-//}
-//
-//apply plugin: "io.invertase.gradle.settings"
-
-//buildscript {
-//  repositories { maven { url uri('/Volumes/Projects/Projects/react-native-gradle-plugin/repo') }}
-//  dependencies { classpath 'io.invertase.gradle:react-native:+' }
-//}
-//
-//apply plugin: "io.invertase.gradle.settings"
-//
-//def ReactNative =  getPlugins().getPlugin("io.invertase.gradle.settings").getExtensions()
-//println ReactNative.settings.getName()
-
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../../node_modules/jet/android')
 

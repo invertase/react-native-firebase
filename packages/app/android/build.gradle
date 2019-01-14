@@ -1,3 +1,17 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.3.0'
+  }
+}
+
+plugins {
+  id "io.invertase.gradle.build" version "1.1"
+}
+
 project.ext {
   set('react-native', [
     versions: [
@@ -20,22 +34,6 @@ project.ext {
     ],
   ])
 }
-
-buildscript {
-  repositories {
-    google()
-    jcenter()
-    maven {
-      url uri('/Volumes/Projects/Projects/react-native-gradle-plugin/repo')
-    }
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-    classpath 'io.invertase.gradle:react-native:1.1.1'
-  }
-}
-
-apply plugin: "io.invertase.gradle.build"
 
 android {
   defaultConfig {
