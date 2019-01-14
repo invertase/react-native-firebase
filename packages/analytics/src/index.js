@@ -2,7 +2,8 @@ import { registerModule } from 'react-native-firebase/common/registry';
 import { isString, isObject } from 'react-native-firebase/common/validate';
 import FirebaseModule from 'react-native-firebase/common/FirebaseModule';
 
-import type { App } from 'react-native-firebase/common/types';
+import type { FirebaseApp } from 'react-native-firebase/common/types';
+import type { FirebaseModuleConfig } from 'react-native-firebase/src/common/types';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 const ReservedEventNames = [
@@ -28,7 +29,7 @@ class FirebaseAnalytics extends FirebaseModule {
 
   static statics = {};
 
-  constructor(app: App) {
+  constructor(app: FirebaseApp, config: FirebaseModuleConfig): this {
     super(app, {
       namespace: FirebaseAnalytics.namespace,
       moduleName: FirebaseAnalytics.nativeModuleName,
@@ -43,7 +44,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param params
    * @return {Promise}
    */
-  logEvent(name: string, params: Object = {}): void {
+  logEvent(name: string, params: Object = {}): Promise<void> {
     if (!isString(name)) {
       throw new Error(
         `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
@@ -78,16 +79,15 @@ class FirebaseAnalytics extends FirebaseModule {
     // and contain only alphanumeric characters and underscores. Only String, long and double param
     // types are supported. String parameter values can be up to 36 characters long. The "firebase_"
     // prefix is reserved and should not be used for parameter names.
-
-    this.native.logEvent(name, params);
+    return this.native.logEvent(name, params);
   }
 
   /**
    * Sets whether analytics collection is enabled for this app on this device.
    * @param enabled
    */
-  setAnalyticsCollectionEnabled(enabled: boolean): void {
-    this.native.setAnalyticsCollectionEnabled(enabled);
+  setAnalyticsCollectionEnabled(enabled: boolean): Promise<void> {
+    return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
   /**
@@ -95,35 +95,37 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride: string): void {
-    this.native.setCurrentScreen(screenName, screenClassOverride);
+  setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void> {
+    return this.native.setCurrentScreen(screenName, screenClassOverride);
   }
 
   /**
    * Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
    * @param milliseconds
    */
-  setMinimumSessionDuration(milliseconds: number = 10000): void {
-    this.native.setMinimumSessionDuration(milliseconds);
+  setMinimumSessionDuration(milliseconds: number = 10000): Promise<void> {
+    return this.native.setMinimumSessionDuration(milliseconds);
   }
 
   /**
    * Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
    * @param milliseconds
    */
-  setSessionTimeoutDuration(milliseconds: number = 1800000): void {
-    this.native.setSessionTimeoutDuration(milliseconds);
+  setSessionTimeoutDuration(milliseconds: number = 1800000): Promise<void> {
+    return this.native.setSessionTimeoutDuration(milliseconds);
   }
 
   /**
    * Sets the user ID property.
    * @param id
    */
-  setUserId(id: string | null): void {
+  setUserId(id: string | null): Promise<void> {
     if (id !== null && !isString(id)) {
-      throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
+      throw new Error(
+        'analytics.setUserId(): The supplied userId must be a string value or null.');
     }
-    this.native.setUserId(id);
+
+    return this.native.setUserId(id);
   }
 
   /**
@@ -131,30 +133,24 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param name
    * @param value
    */
-  setUserProperty(name: string, value: string | null): void {
+  setUserProperty(name: string, value: string | null): Promise<void> {
     if (value !== null && !isString(value)) {
       throw new Error(
         'analytics.setUserProperty(): The supplied property must be a string value or null.',
       );
     }
-    this.native.setUserProperty(name, value);
+
+    return this.native.setUserProperty(name, value);
   }
 
   /**
    * Sets multiple user properties to the supplied values.
+   *
    * @RNFirebaseSpecific
    * @param object
    */
-  setUserProperties(object: Object): void {
-    Object.keys(object).forEach(property => {
-      const value = object[property];
-      if (value !== null && !isString(value)) {
-        throw new Error(
-          `analytics.setUserProperties(): The property with name '${property}' must be a string value or null.`,
-        );
-      }
-      this.native.setUserProperty(property, object[property]);
-    });
+  setUserProperties(object: { [string]: string | null }): Promise<void> {
+    return this.native.setUserProperty(property, object[property]);
   }
 }
 

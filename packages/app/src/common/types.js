@@ -48,5 +48,5 @@ export type FirebaseModuleConfig = {
 };
 
 export interface FirebaseModule {
-  constructor(app: FirebaseApp, config: FirebaseModuleConfig): this;
+  constructor(app: FirebaseApp, config?: FirebaseModuleConfig): this;
 }
