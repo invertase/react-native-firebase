@@ -147,7 +147,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param object
    */
   setUserProperties(object) {
-    return this.native.setUserProperty(property, object[property]);
+    return this.native.setUserProperties(object);
   }
 }
 
