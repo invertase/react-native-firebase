@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.invertase.firebase.common.RCTConvertFirebaseCommon;
+import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -48,12 +48,12 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void initializeApp(ReadableMap firebaseAppRaw, Promise promise) {
-    FirebaseApp firebaseApp = RCTConvertFirebaseCommon.readableMapToFirebaseApp(
+    FirebaseApp firebaseApp = RCTConvertFirebase.readableMapToFirebaseApp(
       firebaseAppRaw,
       getContext()
     );
 
-    WritableMap firebaseAppMap = RCTConvertFirebaseCommon.firebaseAppToWritableMap(firebaseApp);
+    WritableMap firebaseAppMap = RCTConvertFirebase.firebaseAppToWritableMap(firebaseApp);
     promise.resolve(firebaseAppMap);
   }
 
@@ -75,11 +75,10 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
     List<FirebaseApp> firebaseApps = FirebaseApp.getApps(getReactApplicationContext());
 
     for (FirebaseApp app : firebaseApps) {
-      appsList.add(RCTConvertFirebaseCommon.firebaseAppToMap(app));
+      appsList.add(RCTConvertFirebase.firebaseAppToMap(app));
     }
 
     constants.put("apps", appsList);
     return constants;
   }
-
 }

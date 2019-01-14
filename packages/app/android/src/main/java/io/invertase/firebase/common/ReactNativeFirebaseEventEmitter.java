@@ -21,13 +21,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import io.invertase.firebase.interfaces.NativeEvent;
 
@@ -35,9 +36,10 @@ public class ReactNativeFirebaseEventEmitter {
   private static ReactNativeFirebaseEventEmitter sharedInstance = new ReactNativeFirebaseEventEmitter();
   private final List<NativeEvent> queuedEvents = new ArrayList<>();
   private final Handler handler = new Handler(Looper.getMainLooper());
-  private final Set<String> jsListeners = new HashSet<>();
+  private final HashMap<String, Integer> jsListeners = new HashMap<>();
   private ReactContext reactContext;
-  private long jsListenerCount;
+  private Boolean jsReady = false;
+  private int jsListenerCount;
 
   public static ReactNativeFirebaseEventEmitter getSharedInstance() {
     return sharedInstance;
@@ -53,12 +55,22 @@ public class ReactNativeFirebaseEventEmitter {
     });
   }
 
+  public void notifyJsReady(Boolean ready) {
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        jsReady = ready;
+        sendQueuedEvents();
+      }
+    });
+  }
+
   public void sendEvent(final NativeEvent event) {
     handler.post(new Runnable() {
       @Override
       public void run() {
         synchronized (jsListeners) {
-          if (!jsListeners.contains(event.getEventName()) || !emit(event)) {
+          if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
             queuedEvents.add(event);
           }
         }
@@ -69,7 +81,12 @@ public class ReactNativeFirebaseEventEmitter {
   public void addAndroidListener(String eventName) {
     synchronized (jsListeners) {
       jsListenerCount++;
-      jsListeners.add(eventName);
+      if (!jsListeners.containsKey(eventName)) {
+        jsListeners.put(eventName, 1);
+      } else {
+        int listenersForEvent = jsListeners.get(eventName);
+        jsListeners.put(eventName, listenersForEvent + 1);
+      }
     }
 
     handler.post(new Runnable() {
@@ -80,21 +97,45 @@ public class ReactNativeFirebaseEventEmitter {
     });
   }
 
-  public void removeAndroidListeners(int count) {
+  public void removeAndroidListener(String eventName, Boolean all) {
     synchronized (jsListeners) {
-      jsListenerCount -= count;
-      if (jsListenerCount <= 0) {
-        jsListenerCount = 0;
-        jsListeners.clear();
+      if (jsListeners.containsKey(eventName)) {
+        int listenersForEvent = jsListeners.get(eventName);
+
+        if (listenersForEvent <= 1 || all) {
+          jsListeners.remove(eventName);
+        } else {
+          jsListeners.put(eventName, listenersForEvent - 1);
+        }
+
+        jsListenerCount -= all ? listenersForEvent : 1;
       }
     }
+  }
+
+  public WritableMap getListenersMap() {
+    WritableMap writableMap = Arguments.createMap();
+    WritableMap events = Arguments.createMap();
+
+    writableMap.putInt("listeners", jsListenerCount);
+    writableMap.putInt("queued", queuedEvents.size());
+
+    synchronized (jsListeners) {
+      for (HashMap.Entry<String, Integer> entry : jsListeners.entrySet()) {
+        events.putInt(entry.getKey(), entry.getValue());
+      }
+    }
+
+    writableMap.putMap("events", events);
+
+    return writableMap;
   }
 
   @MainThread
   private void sendQueuedEvents() {
     synchronized (jsListeners) {
       for (NativeEvent event : new ArrayList<>(queuedEvents)) {
-        if (jsListeners.contains(event.getEventName())) {
+        if (jsListeners.containsKey(event.getEventName())) {
           queuedEvents.remove(event);
           sendEvent(event);
         }
@@ -104,7 +145,7 @@ public class ReactNativeFirebaseEventEmitter {
 
   @MainThread
   private boolean emit(final NativeEvent event) {
-    if (reactContext == null || !reactContext.hasActiveCatalystInstance()) {
+    if (!jsReady || reactContext == null || !reactContext.hasActiveCatalystInstance()) {
       return false;
     }
 

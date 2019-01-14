@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 /**
  * Utilities to convert to and from React Native bridge formats.
  */
-public class RCTConvertFirebaseCommon {
+public class RCTConvertFirebase {
   private static String TAG = "RCTConvertFirebase";
 
   public static Map<String, Object> firebaseAppToMap(FirebaseApp firebaseApp) {

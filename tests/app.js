@@ -1,6 +1,14 @@
 /* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies */
 import React, { Component } from 'react';
-import { AppRegistry, NativeModules, Text, View, Image, StyleSheet, YellowBox } from 'react-native';
+import {
+  AppRegistry,
+  NativeModules,
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  NativeEventEmitter,
+} from 'react-native';
 
 import firebase from 'react-native-firebase';
 
@@ -19,6 +27,7 @@ class Root extends Component {
     jet.exposeContextProperty('root', this);
     jet.exposeContextProperty('module', firebase);
     jet.exposeContextProperty('NativeModules', NativeModules);
+    jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
   }
 
   render() {
