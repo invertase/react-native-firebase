@@ -543,3 +543,5 @@ Pods/*
 
 .idea/**/*
 **/Pods/**
+**/dist/
+**/version.js
