@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "testsMain": "src/index.js",
   "scripts": {
-    "build": "genversion src/version.js && npm run build:src && npm run build:flow",
+    "build": "genversion --semi src/version.js && npm run build:src && npm run build:flow",
     "build:src": "BABEL_ENV=publish babel --root-mode upward src -d dist --copy-files",
     "build:flow": "flow-copy-source src dist",
     "build:clean": "rimraf dist && rimraf android/build",
