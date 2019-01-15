@@ -1,11 +1,10 @@
 {
   "include": ["packages/**/*.d.ts"],
-  "exclude": [
-    "node_modules"
-  ],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    "declaration": true,
+    "importHelpers": true,
     "jsx": "react",
     "sourceMap": true,
     "strict": true,
@@ -16,6 +15,9 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["es2015", "es2016", "esnext", "dom"]
+    "lib": ["es2015", "es2016", "esnext", "dom"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   }
 }

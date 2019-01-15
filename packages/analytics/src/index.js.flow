@@ -1,18 +1,16 @@
 import type { FirebaseModule, FirebaseApp } from 'react-native-firebase';
 
-declare module '@react-native-firebase/analytics' {
-  declare class FirebaseAnalytics extends FirebaseModule {
-    logEvent(name: string, params: Object): Promise<void>;
-    setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
-    setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void>;
-    setMinimumSessionDuration(milliseconds: number): Promise<void>;
-    setSessionTimeoutDuration(milliseconds: number): Promise<void>;
-    setUserId(id: string | null): Promise<void>;
-    setUserProperty(name: string, value: string | null): Promise<void>;
-    setUserProperties(object: { [string]: string | null }): Promise<void>;
-  }
+export interface FirebaseAnalytics extends FirebaseModule {
+  logEvent(name: string, params: Object): Promise<void>;
+  setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
+  setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void>;
+  setMinimumSessionDuration(milliseconds: number): Promise<void>;
+  setSessionTimeoutDuration(milliseconds: number): Promise<void>;
+  setUserId(id: string | null): Promise<void>;
+  setUserProperty(name: string, value: string | null): Promise<void>;
+  setUserProperties(object: { [string]: string | null }): Promise<void>;
 }
 
 interface FirebaseApp {
-  analytics(): FirebaseAnalytics
+  analytics(): FirebaseAnalytics;
 }
