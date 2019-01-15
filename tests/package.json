@@ -10,7 +10,10 @@
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0",
-    "require-all": "3.0.0"
+    "require-all": "3.0.0",
+    "react-native-firebase": "6.0.0",
+    "@react-native-firebase/app-types": "6.0.0",
+    "@react-native-firebase/analytics": "6.0.0"
   },
   "devDependencies": {
     "nyc": "^13.1.0"

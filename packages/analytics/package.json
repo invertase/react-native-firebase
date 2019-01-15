@@ -32,7 +32,8 @@
     "react-native-firebase": "6.0.0"
   },
   "dependencies": {
-    "opencollective-postinstall": "^2.0.0"
+    "opencollective-postinstall": "^2.0.0",
+    "@react-native-firebase/app-types": "6.0.0"
   },
   "rnpm": {
     "android": {

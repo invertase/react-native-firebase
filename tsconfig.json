@@ -1,5 +1,5 @@
 {
-  "include": ["packages/**/*.d.ts"],
+  "include": ["packages/**/src/*.d.ts", "packages/app-types/index.d.ts"],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
@@ -15,9 +15,6 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["es2015", "es2016", "esnext", "dom"],
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "lib": ["es2015", "es2016", "esnext", "dom"]
   }
 }

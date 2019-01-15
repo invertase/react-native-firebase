@@ -1,6 +1,6 @@
-import { registerModule } from 'react-native-firebase/common/registry';
-import { isString, isObject } from 'react-native-firebase/common/validate';
-import FirebaseModule from 'react-native-firebase/common/FirebaseModule';
+import { INTERNAL } from 'react-native-firebase';
+
+const { registerModule, FirebaseModule } = INTERNAL;
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 const ReservedEventNames = [
@@ -20,11 +20,11 @@ const ReservedEventNames = [
 ];
 
 class FirebaseAnalytics extends FirebaseModule {
+  static statics = {};
+
   static namespace = 'analytics';
 
   static nativeModuleName = 'RNFBAnalytics';
-
-  static statics = {};
 
   constructor(app) {
     super(app, {

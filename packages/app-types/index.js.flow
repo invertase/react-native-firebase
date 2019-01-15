@@ -16,14 +16,14 @@
  */
 
 export type FirebaseOptions = {
-  apiKey?: string;
-  authDomain?: string;
-  databaseURL?: string;
-  projectId?: string;
-  gaTrackingId?: string;
-  storageBucket?: string;
-  messagingSenderId?: string;
-  [name: string]: any;
+  apiKey?: string,
+  authDomain?: string,
+  databaseURL?: string,
+  projectId?: string,
+  gaTrackingId?: string,
+  storageBucket?: string,
+  messagingSenderId?: string,
+  [name: string]: any,
 };
 
 export interface FirebaseAppConfig {
@@ -31,10 +31,10 @@ export interface FirebaseAppConfig {
   automaticDataCollectionEnabled?: boolean;
 }
 
-export class FirebaseApp {
-  readonly name: string;
+export interface FirebaseApp {
+  +name: string;
 
-  readonly options: FirebaseOptions;
+  +options: FirebaseOptions;
 
   delete(): Promise<void>;
 }
@@ -45,14 +45,14 @@ export interface ReactNativeFirebaseNamespace {
   initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
 
   app: {
-    (name?: string): FirebaseApp;
+    (name?: string): FirebaseApp,
   };
 
   apps: FirebaseApp[];
 
-  readonly SDK_VERSION: string;
+  +SDK_VERSION: string;
 }
 
-export class ReactNativeFirebaseModule {
+export interface ReactNativeFirebaseModule {
   app: FirebaseApp;
 }
