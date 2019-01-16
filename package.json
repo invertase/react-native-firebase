@@ -11,6 +11,7 @@
     "validate:all:flow": "flow",
     "lerna:boostrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
+    "gen:reference": "typedoc --json docs/dist/docs.json --mode file --includeDeclarations --excludeExternals",
     "tests:packager:chrome": "react-native start --platforms ios,android",
     "tests:packager:jet": "REACT_DEBUGGER='echo nope' react-native start",
     "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
@@ -69,6 +70,7 @@
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.17.0",
     "tslint-plugin-prettier": "^2.0.1",
+    "typedoc": "^0.14.1",
     "typescript": "^3.2.2"
   },
   "lint-staged": {
@@ -85,8 +87,11 @@
       "git add"
     ]
   },
-  "workspaces": [
-    "packages/*",
-    "tests"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "tests"
+    ],
+    "nohoist": ["detox"]
+  }
 }

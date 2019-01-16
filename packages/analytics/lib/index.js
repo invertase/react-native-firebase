@@ -1,6 +1,4 @@
-import { INTERNAL } from 'react-native-firebase';
-
-const { registerModule, FirebaseModule } = INTERNAL;
+import { registerModule, FirebaseModule } from '@react-native-firebase/common';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 const ReservedEventNames = [

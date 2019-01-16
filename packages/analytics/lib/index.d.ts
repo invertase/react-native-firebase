@@ -1,9 +1,19 @@
 import { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
 
-export class FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
+/**
+ * Analytics integrates across Firebase features and provides
+ * you with unlimited reporting for up to 500 distinct events
+ * that you can define using the Firebase SDK. Analytics reports
+ * help you understand clearly how your users behave, which enables
+ * you to make informed decisions regarding app marketing and
+ * performance optimizations.
+ *
+ * @firebase analytics
+ */
+interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Log a custom event with optional params.
-   * Note: 100 characters is the maximum length for param names.
+   * @note 100 characters is the maximum length for param key names.
    *
    * @param name
    * @param params
@@ -21,7 +31,7 @@ export class FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Sets the current screen name.
    *
-   * NOTE: Whilst screenClassOverride is optional, it is recommended it is
+   * @note Whilst screenClassOverride is optional, it is recommended it is
    * always sent as your current class name. For example on Android it will always
    * show as 'MainActivity' if you do not specify it.
    *
@@ -47,7 +57,8 @@ export class FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Gives a user a unique identification.
    *
-   * @param id Set to null to remove a previously assigned id from analytics events.
+   *
+   * @param id Set to null to remove a previously assigned id from analytics events
    */
   setUserId(id: string | null): Promise<void>;
 
@@ -62,7 +73,7 @@ export class FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Sets multiple key/value pair of data on the current user.
    *
-   * @ReactNativeFirebase
+   * @react-native-firebase
    * @param properties Set a property value to null to remove it.
    */
   setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
@@ -70,28 +81,12 @@ export class FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
 
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    /**
-     * Analytics integrates across Firebase features and provides
-     * you with unlimited reporting for up to 500 distinct events
-     * that you can define using the Firebase SDK. Analytics reports
-     * help you understand clearly how your users behave, which enables
-     * you to make informed decisions regarding app marketing and
-     * performance optimizations.
-     */
     analytics?: {
       (): FirebaseAnalyticsModule;
     };
   }
 
   interface FirebaseApp {
-    /**
-     * Analytics integrates across Firebase features and provides
-     * you with unlimited reporting for up to 500 distinct events
-     * that you can define using the Firebase SDK. Analytics reports
-     * help you understand clearly how your users behave, which enables
-     * you to make informed decisions regarding app marketing and
-     * performance optimizations.
-     */
     analytics?(): FirebaseAnalyticsModule;
   }
 }

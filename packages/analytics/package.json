@@ -2,22 +2,20 @@
   "name": "@react-native-firebase/analytics",
   "version": "6.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase analytics",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "testsMain": "src/index.js",
+  "description": "React Native Firebase - Analytics",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "testsMain": "lib/index.js",
   "scripts": {
-    "build": "genversion --semi src/version.js && npm run build:src && npm run build:flow",
-    "build:src": "BABEL_ENV=publish babel --root-mode upward src -d dist --copy-files",
-    "build:flow": "flow-copy-source src dist",
-    "build:clean": "rimraf dist && rimraf android/build",
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
     "format": "npm run format:assets && npm run lint -- --fix",
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
     "prepare": "npm run build:clean && npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/firebase/analytics"
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/analytics"
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -27,19 +25,17 @@
     "analytics"
   ],
   "peerDependencies": {
-    "react": ">= 16.5.0",
-    "react-native": ">= 0.58.x",
     "react-native-firebase": "6.0.0"
   },
   "dependencies": {
-    "opencollective-postinstall": "^2.0.0",
+    "@react-native-firebase/common": "6.0.0",
     "@react-native-firebase/app-types": "6.0.0"
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
-      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
-      "packageInstance": "new RNFirebasePackage()"
+      "buildPatch": "implementation project(':@react-native-firebase_analytics')",
+      "packageImportPath": "import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;",
+      "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
     }
   },
   "collective": {
