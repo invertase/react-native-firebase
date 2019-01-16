@@ -1,21 +1,42 @@
 # Contributing
 
-First, thank you for considering contributing to react-native-firebase! It's people like you that make the open source community such a great community! 😊
+Thank you for considering to contribute to React Native Firebase! With your help we can ensure the library is maintained and supported. It's people like you that make the open source community such a great community! 😊
 
-We welcome any type of contribution, not just code. You can help with;
 
-- **QA**: file bug reports, the more details you can give the better (e.g. platform versions, screenshots sdk versions & logs)
-- **Docs**: improve reference coverage, add more examples, fix typos or anything else you can spot. At the top of every page on our docs site you can click the `Edit` pencil to go to that pages markdown file, or view the [Docs Repo](https://github.com/invertase/react-native-firebase-docs) directly
-- **Marketing**: writing blog posts, howto's, ...
-- **Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
-- **Code**: take a look at the [open issues](https://github.com/invertase/react-native-firebase/issues). Even if you can't write code, commenting on them, showing that you care about a given issue matters.
-- **Donations**: we welcome financial contributions in full transparency on our [open collective](https://opencollective.com/react-native-firebase).
+We welcome any type of contribution, not just code contributions:
 
-## Project Guidelines
-
-As the creators and maintainers of this project, we want to ensure that the project lives and continues to grow. Not blocked by any singular person's time.
-
-One of the simplest ways of doing this is by encouraging a larger set of shallow contributors. Through this we hope to mitigate the problems of a project that needs updates but there is no-one who has the power to do so.
+<Grid columns={2} gap={20}>
+  <Block 
+    color="blue"
+    title="Issues & Pull Requests"
+  >
+    A great place to start contributing is helping other users with issues or reviewing pull requests. Ensuring users have provided enough details (platform versions, screenshots, SDK versions etc) or highlighting duplicate issues ensures users quickly find a solution to their issue/questions.
+  </Block>
+  <Block 
+    color="blue"
+    title="Documentation"
+  >
+    Our documentation includes guides, FAQs, release change logs, full API reference, examples and more. Contributions to documentation can include fixing spelling mistakes, providing more examples, writing your own guides and ensuring any pull requests have full documentation coverage for any changes.
+  </Block>
+  <Block 
+    color="blue"
+    title="Publishing"
+  >
+    Writing your own blog posts or tutorials about React Native Firebase? We'd love to promote it. Reach out on our Discord server to an admin and we'll add it to our collection.
+  </Block>
+  <Block 
+    color="blue"
+    title="Community"
+  >
+    We love getting involved with the community! Are you hosting or presenting at a meetup about React Native Firebase? Let us know, we may be able to provide sponsorship or attend ourselves.
+  </Block>
+  <Block 
+    color="blue"
+    title="Donations"
+  >
+    Donating is a simple way of ensuring the future maintenance and upkeep of the library is continued. Any amount is greatly appriciated. All contributions are made via <Anchor href="https://opencollective.com/react-native-firebase">Open Collective</Anchor> with full transparency.
+  </Block>
+</Grid>
 
 ### Ownership
 
@@ -49,15 +70,13 @@ We aim to keep all project discussion inside GitHub issues. This is to make sure
 
 This is normal don't worry - not everyone can develop native code for Obj-C and Java, we understand that.
 
-Although we won't merge Pull Requests unless they support all applicable platforms, we do however recommend that you still submit a PR
-for the Platform that you do know and then label it as either `ios-help-wanted` or `android-help-wanted` (or post a comment requesting it to be labelled).
+Although we won't merge Pull Requests unless they support all applicable platforms, we do however recommend that you still submit a PR for the Platform that you do know and then label it as either `ios-help-wanted` or `android-help-wanted` (or post a comment requesting it to be labelled).
+
 This will allow other contributors to help add the missing platform support by making changes to your existing PR.
 
 ### Our expectations on you as a contributor
 
-To quote [@alloy](https://github.com/alloy) from [this issue](https://github.com/Moya/Moya/issues/135):
-
-> Do not ever feel bad for not contributing to open source.
+To quote [@alloy](https://github.com/alloy) from [this issue](https://github.com/Moya/Moya/issues/135); "Do not ever feel bad for not contributing to open source".
 
 We want contributors to provide ideas, keep the ship shipping and to take some of the load from others. It is non-obligatory; we’re here to get things done in an enjoyable way. :trophy:
 
@@ -106,14 +125,13 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
 
 ### Testing
 
-<Card
+<Block
     title="Testing"
     to="/contributing/testing"
-    icon="done_all"
 >
     Our library is fully tested using our own Jet library. To find out more, read our
     documentation on how to test the React Native Firebase module.
-</Card>
+</Block>
 
 ### Submitting code for review
 
@@ -143,7 +161,5 @@ When reviewing a Pull Request please check the following:
 - Does the PR provide docs (e.g. links to a separate docs PR on the docs repo)
 - Have `e2e` tests been updated or new tests been added to test newly implemented or changed functionality.
 - Does the PR provide valid change log entries
-
-### [No Brown M&M's](http://en.wikipedia.org/wiki/Van_Halen#Contract_riders)
 
 If you made it all the way to the end, bravo dear user, we love you. You can include the 🔥 emoji at the bottom of your ticket to signal to us that you did in fact read this file and are trying to conform to it as best as possible: `:fire:`.
