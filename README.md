@@ -43,11 +43,11 @@ The main module that you interface with is `App` (`react-native-firebase`)
 
 React Native Firebase also publishes several other packages, some only used internally, others for public consumption such as Hooks.
 
-| Name                             | Description                                     |                                                                                 Downloads                                                                                   |
-| -------------------------------- | :---------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| [app-types](/packages/app-types) | Common Firebase types used by and all modules.  | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app-types.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app-types) |
-| [common](/packages/common)       | Common utilities used by all modules.           | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/common.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/common)       |
-| [hooks](/packages/hooks)         | React Hooks for React Native Firebase.          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/hooks.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/hooks)       |
+| Name                             | Description                                     |
+| -------------------------------- | :---------------------------------------------: |
+| [app-types](/packages/app-types) | Common Firebase types used by and all modules.  |
+| [common](/packages/common)       | Common utilities used by all modules.           |
+| [hooks](/packages/hooks)         | React Hooks for React Native Firebase.          |
 
 > TODO
 
