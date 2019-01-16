@@ -21,10 +21,15 @@
 
 React Native Firebase is built with four key principals in mind;
 
- - 🧪 **Well tested** - every module is extensively tested to >95% coverage.
- - 👁 **Well typed** - first class support for Flow & Typescript typings included.
- - 📄 **Well documented** - full reference docs for every module alongside extensive installation and guides docs.
- - 🔥 **Mirrors the official Firebase Web SDK** - maximise cross-platform code re-usability and familiarity.
+ - 🧪 **Well tested**
+   - every module is extensively tested to >95% coverage
+ - 👁 **Well typed**
+   - first class support for both Flow & Typescript included
+ - 📄 **Well documented**
+   - full reference & installation documentation alongside detailed guides and FAQs
+ - 🔥 **Mirrors official Firebase Web SDK**
+   - maximises cross-platform code re-usability (e.g sharing logic & components with other JavaScript platforms; such as web)
+   - provides familiarity when switching between / using multiple Firebase JavaScript SDKs
 
 ## Firebase Modules
 
