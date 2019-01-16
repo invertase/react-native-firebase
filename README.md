@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Mono Repo</h2>
+  <h4 align="center">React Native Firebase</h2>
 </p>
 
 <p align="center">
@@ -15,18 +15,61 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
-----
+---
 
-This in the root of the mono repo for React Native Firebase, if you're looking for a specific package please click the package link from below.
+React Native Firebase is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight javascript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
-## Packages
+React Native Firebase is built with four key principals in mind;
 
-| Name                                      	|                                                                             Downloads                                                                            	|                                       Coverage                                      	|
-|-------------------------------------------	|:----------------------------------------------------------------------------------------------------------------------------------------------------------------:	|:-----------------------------------------------------------------------------------:	|
-| [React Native Firebase (App)](/packages/app)             	|       [![badge](https://img.shields.io/npm/dm/react-native-firebase.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/react-native-firebase)      	| ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) 	|
-| [Analytics](/packages/analytics) 	| [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) 	| ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) 	|
-|                                           	|                                                                                                                                                                  	|                                                                                     	|
+ - 🧪 Well tested - every module is extensively tested to >95% coverage.
+ - 👁 Well typed - first class support for Flow & Typescript typings included.
+ - 📄 Well documented - full SDK reference documentation for every module alongside extensive installation and guides documentation.
+ - 🔥 Mirror the official Firebase Web SDK - maximises cross-platform code re-usability and familiarity.
+
+## Firebase Modules
+
+This in the root of the mono repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
+
+The main module that you interface with is `App` (`react-native-firebase`)
+
+| Name                             |                                                                                  Downloads                                                                                  |                                      Coverage                                       |
+| -------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+| [App](/packages/app)             | [![badge](https://img.shields.io/npm/dm/react-native-firebase.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/react-native-firebase)                       | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Analytics](/packages/analytics) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+
+> TODO
+
+## Other Packages
+
+React Native Firebase also publishes several other packages, some only used internally, others for public consumption such as Hooks.
+
+| Name                             | Description                                     |                                                                                 Downloads                                                                                   |
+| -------------------------------- | :---------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| [app-types](/packages/app-types) | Common Firebase types used by and all modules.  | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app-types.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app-types) |
+| [common](/packages/common)       | Common utilities used by all modules.           | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/common.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/common)       |
+| [hooks](/packages/hooks)         | React Hooks for React Native Firebase.          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/hooks.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/hooks)       |
+
+> TODO
+
+## Documentation
+
+- [Guides](#TODO)
+- [Installation](#TODO)
+
+## Contributing
+
+- [Contributing](/CONTRIBUTING.md)
+- [Code of Conduct](/CODE_OF_CONDUCT.md)
+- [Testing](/tests/README.md)
 
 ## License
 
 - See [LICENSE](/LICENSE)
+
+---
+
+Built and maintained with 💛 by [Invertase](https://invertase.io).
+
+- [💼 Hire Us](https://invertase.io/hire-us)
+- [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
+- [👩‍💻 Work With Us](https://invertase.io/jobs)
