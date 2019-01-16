@@ -34,7 +34,7 @@ We welcome any type of contribution, not just code contributions:
     color="blue"
     title="Donations"
   >
-    Donating is a simple way of ensuring the future maintenance and upkeep of the library is continued. Any amount is greatly appriciated. All contributions are made via <a href="https://opencollective.com/react-native-firebase">[Open Collective</a> with full transparency.
+    Donating is a simple way of ensuring the future maintenance and upkeep of the library is continued. Any amount is greatly appriciated. All contributions are made via <a href="https://opencollective.com/react-native-firebase">Open Collective</a> with full transparency.
   </Block>
 </Grid>
 
