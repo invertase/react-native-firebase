@@ -5,7 +5,7 @@ Thank you for considering to contribute to React Native Firebase! With your help
 
 We welcome any type of contribution, not just code contributions:
 
-<Grid columns={3} gap={20}>
+<Grid columns={2} gap={20}>
   <Block 
     color="blue"
     title="Issues & Pull Requests"
@@ -34,7 +34,7 @@ We welcome any type of contribution, not just code contributions:
     color="blue"
     title="Donations"
   >
-    Donating is a simple way of ensuring the future maintenance and upkeep of the library is continued. Any amount is greatly appriciated. All contributions are made via [Open Collective](https://opencollective.com/react-native-firebase) with full transparency.
+    Donating is a simple way of ensuring the future maintenance and upkeep of the library is continued. Any amount is greatly appriciated. All contributions are made via <a href="https://opencollective.com/react-native-firebase">[Open Collective</a> with full transparency.
   </Block>
 </Grid>
 
