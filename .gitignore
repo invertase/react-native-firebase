@@ -545,3 +545,4 @@ Pods/*
 **/Pods/**
 **/dist/
 **/version.js
+typedoc.raw.json
