@@ -46,7 +46,7 @@ export default class DocumentReference {
     return this._firestore;
   }
 
-  get id(): string | null {
+  get id(): string {
     return this._documentPath.id;
   }
 

@@ -13,8 +13,9 @@ export default class Path {
     this._parts = pathComponents;
   }
 
-  get id(): string | null {
-    return this._parts.length ? this._parts[this._parts.length - 1] : null;
+  get id(): string {
+    // TODO is length check required?
+    return this._parts.length ? this._parts[this._parts.length - 1] : '';
   }
 
   get isDocument(): boolean {

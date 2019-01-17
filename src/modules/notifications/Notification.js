@@ -40,7 +40,7 @@ export default class Notification {
 
   constructor(
     nativeNotification?: NativeNotification,
-    notifications: Notifications
+    notifications?: Notifications
   ) {
     if (nativeNotification) {
       this._body = nativeNotification.body;
