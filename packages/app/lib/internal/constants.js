@@ -17,7 +17,7 @@
 
 export const appNativeModuleName = 'RNFBApp';
 
-export const knownFirebaseNameSpaces = [
+export const knownFirebaseNamespaces = [
   'admob',
   'auth',
   'config',

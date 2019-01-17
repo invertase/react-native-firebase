@@ -20,13 +20,18 @@ import FirebaseApp from '../FirebaseApp';
 const APP_REGISTRY = {};
 const DEFAULT_APP_NAME = '[DEFAULT]';
 
+export function initializeNativeApps() {
+
+}
+
 /**
  *
  * @param name
  */
 export function getApp(name = DEFAULT_APP_NAME) {
   // TODO
-  return new FirebaseApp({}, { name });
+  const app = new FirebaseApp(name, {}, false, deleteApp.bind(null, name));
+  return app;
 }
 
 /**
@@ -45,6 +50,9 @@ export function initializeApp(options = {}, configOrName) {
   // TODO
 }
 
+/**
+ *
+ */
 export function deleteApp() {
   // TODO
 }

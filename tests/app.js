@@ -22,6 +22,7 @@ jet.exposeContextProperty('module', firebase);
 
 console.log('---> analytics', analytics());
 console.log('---> firebase.analytics', firebase.analytics());
+console.log('---> firebase.app', firebase.app);
 
 class Root extends Component {
   constructor(props) {

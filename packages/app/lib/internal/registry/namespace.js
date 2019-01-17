@@ -15,11 +15,12 @@
  *
  */
 
-import { noop, isUndefined, Proxy } from '@react-native-firebase/common';
+import { noop, isUndefined, Proxy, isOneOf } from '@react-native-firebase/common';
 
 import SDK_VERSION from '../../version';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp } from './app';
+import { knownFirebaseNamespaces } from '../constants';
 
 let ROOT_NAMESPACE = null;
 let ROOT_NAMESPACE_PROXY = null;
@@ -79,8 +80,10 @@ function firebaseModuleProxy(firebaseNamespace, property) {
     return getOrCreateModuleWithStatics(property);
   }
 
-  // TODO redbox attempting to use a module that's not been imported
-  // TODO if it's a namespace
+  if (isOneOf(property, knownFirebaseNamespaces)) {
+    // TODO redbox attempting to use a module that's not been imported
+    throw 'foo bar';
+  }
 
   return undefined;
 }
