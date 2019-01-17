@@ -10,10 +10,18 @@ import {
   NativeEventEmitter,
 } from 'react-native';
 
-import firebase from 'react-native-firebase';
-import '@react-native-firebase/analytics';
-
 import jet from 'jet/platform/react-native';
+
+jet.exposeContextProperty('NativeModules', NativeModules);
+jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
+
+import { analytics } from 'react-native-firebase';
+import { firebase } from '@react-native-firebase/analytics';
+
+jet.exposeContextProperty('module', firebase);
+
+console.log('---> analytics', analytics());
+console.log('---> firebase.analytics', firebase.analytics());
 
 class Root extends Component {
   constructor(props) {
@@ -23,9 +31,6 @@ class Root extends Component {
     };
 
     jet.exposeContextProperty('root', this);
-    jet.exposeContextProperty('module', firebase);
-    jet.exposeContextProperty('NativeModules', NativeModules);
-    jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
   }
 
   render() {

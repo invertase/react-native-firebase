@@ -21,15 +21,62 @@ import SDK_VERSION from '../../version';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp } from './app';
 
-let ROOT_NAMESPACE = {};
-const NAMESPACE_REGISTRY = {};
+let ROOT_NAMESPACE = null;
+let ROOT_NAMESPACE_PROXY = null;
 
+const NAMESPACE_REGISTRY = {};
+const MODULE_WITH_STATICS = {};
+const APP_NAMESPACE_INSTANCE = {};
+
+/**
+ *
+ * @param namespaceRegistration
+ * @returns {*}
+ */
+function getOrCreateModuleWithStatics(namespaceRegistration) {
+  const { namespace, statics, hasMultiAppSupport, ModuleClass } = namespaceRegistration;
+
+  if (MODULE_WITH_STATICS[namespace]) return MODULE_WITH_STATICS[namespace];
+
+  const moduleGetterFn = function firebaseModuleWithApp(app) {
+    let _app = app || getApp();
+    // modules such as analytics only run on the default app
+    if (!hasMultiAppSupport) _app = getApp();
+
+    if (!APP_NAMESPACE_INSTANCE[_app.name]) {
+      APP_NAMESPACE_INSTANCE[_app.name] = {};
+    }
+
+    if (!APP_NAMESPACE_INSTANCE[_app.name][namespace]) {
+      APP_NAMESPACE_INSTANCE[_app.name][namespace] = new ModuleClass(_app, namespaceRegistration);
+    }
+
+    return APP_NAMESPACE_INSTANCE[_app.name][namespace];
+  };
+
+  Object.assign(moduleGetterFn, statics || {});
+  Object.seal(moduleGetterFn);
+
+  MODULE_WITH_STATICS[namespace] = moduleGetterFn;
+  return MODULE_WITH_STATICS[namespace];
+}
+
+/**
+ *
+ * @param firebaseNamespace
+ * @param property
+ * @returns {*}
+ */
 function firebaseModuleProxy(firebaseNamespace, property) {
   if (!isUndefined(firebaseNamespace[property])) {
     return firebaseNamespace[property];
   }
 
-  // TODO get namespace
+  if (NAMESPACE_REGISTRY[property]) {
+    return getOrCreateModuleWithStatics(NAMESPACE_REGISTRY[property]);
+  }
+
+  return undefined;
 }
 
 /**
@@ -48,7 +95,17 @@ export function createFirebaseNamespace() {
     SDK_VERSION,
   };
 
-  return new Proxy(ROOT_NAMESPACE, { set: noop, get: firebaseModuleProxy });
+  ROOT_NAMESPACE_PROXY = new Proxy(ROOT_NAMESPACE, { set: noop, get: firebaseModuleProxy });
+  return ROOT_NAMESPACE_PROXY;
+}
+
+/**
+ *
+ * @returns {*}
+ */
+export function getFirebaseNamespace() {
+  if (ROOT_NAMESPACE_PROXY) return ROOT_NAMESPACE_PROXY;
+  return createFirebaseNamespace();
 }
 
 /**
@@ -58,15 +115,15 @@ export function createFirebaseNamespace() {
  */
 export function createModuleNamespace(options = {}) {
   const { namespace, ModuleClass } = options;
-  console.warn(options)
+
   if (!NAMESPACE_REGISTRY[namespace]) {
-    // new registration so validate it only once
-    if (!(ModuleClass instanceof FirebaseModule)) {
+    // hacky inheritance check - instanceof not working once bundled
+    // only for internal / module dev use
+    if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
       throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
     }
 
     NAMESPACE_REGISTRY[namespace] = Object.assign({}, options);
-    if (namespace !== ROOT_NAMESPACE) attachNamespace();
   }
 
   return getFirebaseNamespace()[namespace];

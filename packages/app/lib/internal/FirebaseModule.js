@@ -30,3 +30,6 @@ export default class FirebaseModule {
     return null;
   }
 }
+
+// Instance of checks don't work once compiled
+FirebaseModule.__extended__ = {};

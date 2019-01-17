@@ -15,10 +15,15 @@
  *
  */
 
-import { createModuleNamespace, FirebaseModule } from 'react-native-firebase/lib/internal';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseNamespace,
+} from 'react-native-firebase/lib/internal';
 
 import {
   isNull,
+  isObject,
   isUndefined,
   isString,
   isOneOf,
@@ -163,6 +168,8 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 }
 
+// import analytics from '@react-native-firebase/analytics';
+// analytics().logEvent(...);
 export default createModuleNamespace({
   statics,
   namespace,
@@ -171,3 +178,8 @@ export default createModuleNamespace({
   hasCustomUrlSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
 });
+
+// import analytics, { firebase } from '@react-native-firebase/analytics';
+// analytics().logEvent(...);
+// firebase.analytics().logEvent(...);
+export const firebase = getFirebaseNamespace();

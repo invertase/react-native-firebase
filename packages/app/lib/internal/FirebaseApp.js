@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { deleteApp } from './registry/app';
 
 import { isObject } from '@react-native-firebase/common';
 
@@ -16,7 +17,7 @@ export default class FirebaseApp {
    *
    * @return {*}
    */
-  get name(): string {
+  get name() {
     return this._name;
   }
 
@@ -28,52 +29,29 @@ export default class FirebaseApp {
     return Object.assign({}, this._options);
   }
 
-  /**
-   * Undocumented firebase web sdk method that allows adding additional properties onto
-   * a firebase app instance.
-   *
-   * See: https://github.com/firebase/firebase-js-sdk/blob/master/tests/app/firebase_app.test.ts#L328
-   *
-   * @param props
-   */
-  extendApp(props: Object) {
-    if (!isObject(props)) {
-      throw new Error(INTERNALS.STRINGS.ERROR_MISSING_ARG('Object', 'extendApp'));
-    }
-
-    const keys = Object.keys(props);
-
-    for (let i = 0, len = keys.length; i < len; i++) {
-      const key = keys[i];
-
-      if (!this._extendedProps[key] && Object.hasOwnProperty.call(this, key)) {
-        throw new Error(INTERNALS.STRINGS.ERROR_PROTECTED_PROP(key));
-      }
-
-      this[key] = props[key];
-      this._extendedProps[key] = true;
-    }
+  extendApp(props) {
+    // TODO
   }
 
   /**
    *
    * @return {Promise}
    */
-  delete(): Promise<void> {
+  delete() {
     if (this._name === APPS.DEFAULT_APP_NAME && this._nativeInitialized) {
       return Promise.reject(
         new Error('Unable to delete the default native firebase app instance.'),
       );
     }
 
-    return FirebaseCoreModule.deleteApp(this._name).then(() => APPS.deleteApp(this._name));
+    return FirebaseCoreModule.deleteApp(this.name).then(() => deleteApp(this.name));
   }
 
   /**
    *
    * @return {*}
    */
-  onReady(): Promise<App> {
+  onReady() {
     if (this._initialized) return Promise.resolve(this);
 
     return new Promise((resolve, reject) => {
@@ -90,6 +68,6 @@ export default class FirebaseApp {
    * @return {string}
    */
   toString() {
-    return this._name;
+    return this.name;
   }
 }
