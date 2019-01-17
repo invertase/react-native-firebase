@@ -30,11 +30,11 @@ const APP_NAMESPACE_INSTANCE = {};
 
 /**
  *
- * @param namespaceRegistration
  * @returns {*}
+ * @param namespace
  */
-function getOrCreateModuleWithStatics(namespaceRegistration) {
-  const { namespace, statics, hasMultiAppSupport, ModuleClass } = namespaceRegistration;
+function getOrCreateModuleWithStatics(namespace) {
+  const { statics, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[namespace];
 
   if (MODULE_WITH_STATICS[namespace]) return MODULE_WITH_STATICS[namespace];
 
@@ -48,7 +48,10 @@ function getOrCreateModuleWithStatics(namespaceRegistration) {
     }
 
     if (!APP_NAMESPACE_INSTANCE[_app.name][namespace]) {
-      APP_NAMESPACE_INSTANCE[_app.name][namespace] = new ModuleClass(_app, namespaceRegistration);
+      APP_NAMESPACE_INSTANCE[_app.name][namespace] = new ModuleClass(
+        _app,
+        NAMESPACE_REGISTRY[namespace],
+      );
     }
 
     return APP_NAMESPACE_INSTANCE[_app.name][namespace];
@@ -73,8 +76,11 @@ function firebaseModuleProxy(firebaseNamespace, property) {
   }
 
   if (NAMESPACE_REGISTRY[property]) {
-    return getOrCreateModuleWithStatics(NAMESPACE_REGISTRY[property]);
+    return getOrCreateModuleWithStatics(property);
   }
+
+  // TODO redbox attempting to use a module that's not been imported
+  // TODO if it's a namespace
 
   return undefined;
 }

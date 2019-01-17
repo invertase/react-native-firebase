@@ -15,12 +15,25 @@
  *
  */
 
-import { getFirebaseNamespace } from './internal/registry/namespace';
+export const appNativeModuleName = 'RNFBApp';
 
-export const firebase = getFirebaseNamespace();
-
-// keep for destructuring support
-// e.g. import { analytics } from 'react-native-firebase';
-module.exports = firebase;
-
-export default firebase;
+export const knownFirebaseNameSpaces = [
+  'admob',
+  'auth',
+  'config',
+  'crashlytics',
+  'database',
+  'fiam',
+  'firestore',
+  'functions',
+  'iid',
+  'indexing',
+  'storage',
+  'links',
+  'messaging',
+  'mlcustom',
+  'mlvision',
+  'notifications',
+  'perf',
+  'utils',
+];

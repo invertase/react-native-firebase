@@ -1,12 +1,13 @@
 import { NativeModules } from 'react-native';
-import { deleteApp } from './registry/app';
 
 import { isObject } from '@react-native-firebase/common';
 
 export default class FirebaseApp {
-  constructor(name, options = {}, fromNative = false) {
+  constructor(name, options = {}, fromNative = false, deleteApp) {
     this._name = name;
+    this._deleted = false;
     this._options = Object.assign({}, options);
+    this._deleteApp = deleteApp;
     if (fromNative) {
       this._initialized = true;
       this._nativeInitialized = true;
@@ -29,7 +30,7 @@ export default class FirebaseApp {
     return Object.assign({}, this._options);
   }
 
-  extendApp(props) {
+  extendApp(extendedProps = {}) {
     // TODO
   }
 
@@ -44,7 +45,7 @@ export default class FirebaseApp {
       );
     }
 
-    return FirebaseCoreModule.deleteApp(this.name).then(() => deleteApp(this.name));
+    return FirebaseCoreModule.deleteApp(this.name).then(() => this._deleteApp(this.name));
   }
 
   /**

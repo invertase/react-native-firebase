@@ -1,3 +1,6 @@
+
+
+
 export default class FirebaseModule {
   constructor(app, config, customUrlOrRegion) {
     this._app = app;
