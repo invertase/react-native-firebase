@@ -5,13 +5,10 @@
   "description": "React Native Firebase - Analytics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "testsMain": "lib/index.js",
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "format": "npm run format:assets && npm run lint -- --fix",
-    "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "prepare": "npm run build:clean && npm run build"
+    "prepare": "yarn run build"
   },
   "repository": {
     "type": "git",
@@ -37,19 +34,5 @@
       "packageImportPath": "import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;",
       "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
     }
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-native-firebase"
-  },
-  "lint-staged": {
-    "src/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{json,md,scss}": [
-      "prettier --write",
-      "git add"
-    ]
   }
 }

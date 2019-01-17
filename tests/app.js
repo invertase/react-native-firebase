@@ -22,9 +22,6 @@ class Root extends Component {
       currentTest: null,
     };
 
-    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBAnalytics)));
-    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBApp)));
-    console.warn(JSON.stringify(Object.keys(NativeModules.RNFBUtils)));
     jet.exposeContextProperty('root', this);
     jet.exposeContextProperty('module', firebase);
     jet.exposeContextProperty('NativeModules', NativeModules);

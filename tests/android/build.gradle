@@ -32,11 +32,11 @@ allprojects {
   }
 
   repositories {
-    google()
     jcenter()
-    maven {
-      url "$rootDir/../../node_modules/react-native/android"
-    }
+    google()
+//    maven {
+//      url "$rootDir/../../node_modules/react-native/android"
+//    }
   }
 }
 

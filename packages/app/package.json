@@ -3,9 +3,9 @@
   "version": "6.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "testsMain": "src/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "testsMain": "lib/index.js",
   "files": [
     "dist",
     "android",
@@ -13,13 +13,9 @@
     "ios"
   ],
   "scripts": {
-    "build": "genversion src/version.js && npm run build:src && npm run build:flow",
-    "build:src": "BABEL_ENV=publish babel --root-mode upward src -d dist --copy-files",
-    "build:flow": "flow-copy-source src dist",
+    "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf dist && rimraf android/build",
-    "format": "npm run format:assets && npm run lint -- --fix",
-    "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "prepare": "npm run build:clean && npm run build"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -65,7 +61,8 @@
   },
   "dependencies": {
     "opencollective-postinstall": "^2.0.1",
-    "@react-native-firebase/app-types": "6.0.0"
+    "@react-native-firebase/app-types": "6.0.0",
+    "@react-native-firebase/common": "6.0.0"
   },
   "rnpm": {
     "android": {

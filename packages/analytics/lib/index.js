@@ -1,6 +1,30 @@
-import { registerModule, FirebaseModule } from '@react-native-firebase/common';
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
+import { createModuleNamespace, FirebaseModule } from 'react-native-firebase/lib/internal';
+
+import {
+  isNull,
+  isUndefined,
+  isString,
+  isOneOf,
+  isAlphaNumericUnderscore,
+} from '@react-native-firebase/common';
+
 const ReservedEventNames = [
   'app_clear_data',
   'app_uninstall',
@@ -17,22 +41,13 @@ const ReservedEventNames = [
   'user_engagement',
 ];
 
-class FirebaseAnalytics extends FirebaseModule {
-  static statics = {};
+const statics = {};
 
-  static namespace = 'analytics';
+const namespace = 'analytics';
 
-  static nativeModuleName = 'RNFBAnalytics';
+const nativeModuleName = 'RNFBAnalytics';
 
-  constructor(app) {
-    super(app, {
-      namespace: FirebaseAnalytics.namespace,
-      moduleName: FirebaseAnalytics.nativeModuleName,
-      hasMultiAppSupport: false,
-      hasCustomUrlSupport: false,
-    });
-  }
-
+class FirebaseAnalyticsModule extends FirebaseModule {
   /**
    * Logs an app event.
    * @param  {string} name
@@ -46,21 +61,21 @@ class FirebaseAnalytics extends FirebaseModule {
       );
     }
 
-    if (typeof params !== 'undefined' && !isObject(params)) {
+    if (!isUndefined(params) && !isObject(params)) {
       throw new Error(
         `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
       );
     }
 
     // check name is not a reserved event name
-    if (ReservedEventNames.includes(name)) {
+    if (isOneOf(name, ReservedEventNames)) {
       throw new Error(
         `analytics.logEvent(): event name '${name}' is a reserved event name and can not be used.`,
       );
     }
 
     // name format validation
-    if (!AlphaNumericUnderscore.test(name)) {
+    if (!isAlphaNumericUnderscore(name)) {
       throw new Error(
         `analytics.logEvent(): Event name '${name}' is invalid. Names should contain 1 to 32 alphanumeric characters or underscores.`,
       );
@@ -115,9 +130,8 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param id
    */
   setUserId(id) {
-    if (id !== null && !isString(id)) {
-      throw new Error(
-        'analytics.setUserId(): The supplied userId must be a string value or null.');
+    if (!isNull(id) && !isString(id)) {
+      throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
     }
 
     return this.native.setUserId(id);
@@ -128,7 +142,7 @@ class FirebaseAnalytics extends FirebaseModule {
    * @param name
    * @param value
    */
-  setUserProperty(name, value){
+  setUserProperty(name, value) {
     if (value !== null && !isString(value)) {
       throw new Error(
         'analytics.setUserProperty(): The supplied property must be a string value or null.',
@@ -149,4 +163,11 @@ class FirebaseAnalytics extends FirebaseModule {
   }
 }
 
-registerModule(FirebaseAnalytics);
+export default createModuleNamespace({
+  statics,
+  namespace,
+  nativeModuleName,
+  hasMultiAppSupport: false,
+  hasCustomUrlSupport: false,
+  ModuleClass: FirebaseAnalyticsModule,
+});

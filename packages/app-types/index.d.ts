@@ -31,7 +31,7 @@ export interface FirebaseAppConfig {
   automaticDataCollectionEnabled?: boolean;
 }
 
-export class FirebaseApp {
+export interface FirebaseApp {
   readonly name: string;
 
   readonly options: FirebaseOptions;
@@ -41,7 +41,6 @@ export class FirebaseApp {
 
 export interface ReactNativeFirebaseNamespace {
   initializeApp(options: FirebaseOptions, config?: FirebaseAppConfig): FirebaseApp;
-
   initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
 
   app: {
@@ -53,6 +52,6 @@ export interface ReactNativeFirebaseNamespace {
   readonly SDK_VERSION: string;
 }
 
-export class ReactNativeFirebaseModule {
+export interface ReactNativeFirebaseModule {
   app: FirebaseApp;
 }
