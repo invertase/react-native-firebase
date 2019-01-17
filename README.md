@@ -17,6 +17,10 @@
 
 ---
 
+> **WARNING**: This branch is a work in progress re-write of React Native Firebase, you're probably looking for the [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead. You can [learn more about this here](https://blog.invertase.io/react-native-firebase-2019-7e334ca9bcc6). 
+
+---
+
 **React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight javascript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
 React Native Firebase is built with four key principals in mind;
