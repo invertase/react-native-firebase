@@ -17,7 +17,8 @@
 @end
 
 @implementation RNFirebaseNotifications {
-    NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *completionHandlers;
+    NSMutableDictionary<NSString *, void (^)(UIBackgroundFetchResult)> *fetchCompletionHandlers;
+    NSMutableDictionary<NSString *, void(^)(void)> *completionHandlers;
 }
 
 static RNFirebaseNotifications *theRNFirebaseNotifications = nil;
@@ -57,6 +58,7 @@ RCT_EXPORT_MODULE();
     // Set static instance for use from AppDelegate
     theRNFirebaseNotifications = self;
     completionHandlers = [[NSMutableDictionary alloc] init];
+    fetchCompletionHandlers = [[NSMutableDictionary alloc] init];
 }
 
 // PRE-BRIDGE-EVENTS: Consider enabling this to allow events built up before the bridge is built to be sent to the JS side
@@ -100,10 +102,16 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchResult)fetchResult) {
     if (handlerKey != nil) {
-        void (^completionHandler)(UIBackgroundFetchResult) = completionHandlers[handlerKey];
-        if(completionHandler != nil) {
-            completionHandlers[handlerKey] = nil;
-            completionHandler(fetchResult);
+        void (^fetchCompletionHandler)(UIBackgroundFetchResult) = fetchCompletionHandlers[handlerKey];
+        if (fetchCompletionHandler != nil) {
+            fetchCompletionHandlers[handlerKey] = nil;
+            fetchCompletionHandler(fetchResult);
+        } else {
+            void(^completionHandler)(void) = completionHandlers[handlerKey];
+            if (completionHandler != nil) {
+                completionHandlers[handlerKey] = nil;
+                completionHandler();
+            }
         }
     }
 }
@@ -149,7 +157,7 @@ RCT_EXPORT_METHOD(complete:(NSString*)handlerKey fetchResult:(UIBackgroundFetchR
     }
 
     if (handlerKey != nil) {
-        completionHandlers[handlerKey] = completionHandler;
+        fetchCompletionHandlers[handlerKey] = completionHandler;
     } else {
         completionHandler(UIBackgroundFetchResultNoData);
     }
@@ -214,9 +222,15 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)())completionHandler NS_AVAILABLE_IOS(10_0) {
 #endif
      NSDictionary *message = [self parseUNNotificationResponse:response];
+           
+     NSString *handlerKey = message[@"notification"][@"notificationId"];
 
      [self sendJSEvent:self name:NOTIFICATIONS_NOTIFICATION_OPENED body:message];
-     completionHandler();
+     if (handlerKey != nil) {
+         completionHandlers[handlerKey] = completionHandler;
+     } else {
+         completionHandler();
+     }
 }
 
 #endif

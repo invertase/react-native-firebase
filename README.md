@@ -17,7 +17,7 @@
 
 ## Introduction
 
-**React Native Firebase** is a _light-weight_ javascript layer connecting you to the native Firebase SDKs for both iOS and Android which aimes to mirror the offical Firebase Web SDK as closely as possible.
+**React Native Firebase** is a _light-weight_ javascript layer connecting you to the native Firebase SDKs for both iOS and Android which aims to mirror the official Firebase Web SDK as closely as possible.
 
 Although the official [Firebase JS SDK](https://www.npmjs.com/package/firebase) will work with React Native; it is mainly built for the web and has a limited feature-set compared to native.
 
@@ -59,11 +59,11 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`.
 
-|                           |  3.3.x   |  4.3.x  |      5.x.x      |
-| ------------------------- | :------: | :-----: | :-------------: |
-| React Native              | 0.50-52  | 0.52-55 |  ^0.56 - ^0.57  |
-| Play Services Android SDK | 11.8.0 + | 15.0.1  |     ^16.0.1     |
-| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  | ^5.10.0 - ^5.11.0 |
+|                           |  3.3.x   |  4.3.x  |       5.x.x       |
+| ------------------------- | :------: | :-----: | :---------------: |
+| React Native              | 0.50-52  | 0.52-55 |   ^0.56 - ^0.58   |
+| Play Services Android SDK | 11.8.0 + | 15.0.1  |      ^16.0.1      |
+| Firebase iOS SDK          | 4.7.0 +  |  5.3.0  | ^5.10.0 - ^5.15.0 |
 
 
 ---

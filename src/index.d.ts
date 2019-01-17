@@ -554,7 +554,7 @@ declare module 'react-native-firebase' {
           successCallback?: QuerySuccessCallback,
           failureCallbackOrContext?: QueryErrorCallback,
           context?: Object
-        ): Promise<DataSnapshot>;
+        ): Promise<database.DataSnapshot>;
 
         orderByChild(path: string): database.Query;
 
@@ -1213,6 +1213,12 @@ declare module 'react-native-firebase' {
     namespace messaging {
       interface Messaging {
         /**
+        * Returns firebase.messaging.IOSMessaging that gets the
+        *  iOS specific methods and properties of messaging.
+        */
+        ios: IOSMessaging;
+
+        /**
          * Returns the devices FCM token.
          */
         getToken(): Promise<string>;
@@ -1235,7 +1241,7 @@ declare module 'react-native-firebase' {
         /**
          * Requests app notification permissions in an Alert dialog.
          */
-        requestPermission(): Promise<boolean>;
+        requestPermission(): Promise<void>;
 
         /**
          * Checks if the app has notification permissions.
@@ -1297,7 +1303,6 @@ declare module 'react-native-firebase' {
 
       interface MessagingStatics {
         RemoteMessage: typeof RemoteMessage;
-        ios: IOSMessaging;
       }
     }
 

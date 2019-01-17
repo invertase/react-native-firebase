@@ -8,11 +8,11 @@ describe('firestore()', () => {
         path.id.should.be.equal('documentId');
       });
 
-      it('returns null if no path', async () => {
+      it('returns empty string if no path', async () => {
         const Path = jet.require('src/modules/firestore/Path');
 
         const path = Path.fromName('');
-        should.equal(path.id, null);
+        should.equal(path.id, '');
       });
     });
 

@@ -116,7 +116,7 @@ const iosTestConfig = {
 
 global.TestHelpers = {
   functions: {
-    data: require('./../functions/test-data'),
+    data: require('@invertase/tests-firebase-functions').TEST_DATA,
   },
   firestore: require('./firestore'),
   database: require('./database'),
