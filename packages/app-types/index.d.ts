@@ -15,6 +15,11 @@
  *
  */
 
+export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
+  (): M;
+  readonly SDK_VERSION: string;
+} & S;
+
 export type FirebaseOptions = {
   apiKey?: string;
   authDomain?: string;
