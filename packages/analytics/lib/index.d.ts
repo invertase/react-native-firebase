@@ -22,6 +22,13 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
+ * Analytics integrates across Firebase features and provides
+ * you with unlimited reporting for up to 500 distinct events
+ * that you can define using the Firebase SDK. Analytics reports
+ * help you understand clearly how your users behave, which enables
+ * you to make informed decisions regarding app marketing and
+ * performance optimizations.
+ *
  * @firebase - For Documentation Generation
  */
 namespace ReactNativeFirebaseAnalytics {
