@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,11 +16,11 @@
  *
  */
 
-import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
+import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types/index.js.flow';
 
-interface Statics {}
+export interface Statics {}
 
-interface Module extends ReactNativeFirebaseModule {
+export interface Module extends ReactNativeFirebaseModule {
   /**
    * Log a custom event with optional params.
    * @note 100 characters is the maximum length for param key names.
@@ -92,7 +93,7 @@ declare module '@react-native-firebase/analytics' {
   import type {
     ReactNativeFirebaseNamespace,
     ReactNativeFirebaseModuleAndStatics,
-  } from '@react-native-firebase/app-types';
+  } from '@react-native-firebase/app-types/index.js.flow';
   /**
    * @example
    * ```js
@@ -116,6 +117,8 @@ declare module '@react-native-firebase/analytics' {
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app-types' {
+  import type { ReactNativeFirebaseModuleAndStatics } from '@react-native-firebase/app-types/index.js.flow';
+
   declare interface ReactNativeFirebaseNamespace {
     /**
      * Analytics integrates across Firebase features and provides

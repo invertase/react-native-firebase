@@ -55,12 +55,6 @@ const namespace = 'analytics';
 const nativeModuleName = 'RNFBAnalytics';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
-  /**
-   * Logs an app event.
-   * @param  {string} name
-   * @param params
-   * @return {Promise}
-   */
   logEvent(name, params = {}) {
     if (!isString(name)) {
       throw new Error(
@@ -99,43 +93,22 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.logEvent(name, params);
   }
 
-  /**
-   * Sets whether analytics collection is enabled for this app on this device.
-   * @param enabled
-   */
   setAnalyticsCollectionEnabled(enabled) {
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
-  /**
-   * Sets the current screen name, which specifies the current visual context in your app.
-   * @param screenName
-   * @param screenClassOverride
-   */
   setCurrentScreen(screenName, screenClassOverride) {
     return this.native.setCurrentScreen(screenName, screenClassOverride);
   }
 
-  /**
-   * Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
-   * @param milliseconds
-   */
   setMinimumSessionDuration(milliseconds = 10000) {
     return this.native.setMinimumSessionDuration(milliseconds);
   }
 
-  /**
-   * Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
-   * @param milliseconds
-   */
   setSessionTimeoutDuration(milliseconds = 1800000) {
     return this.native.setSessionTimeoutDuration(milliseconds);
   }
 
-  /**
-   * Sets the user ID property.
-   * @param id
-   */
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
       throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
@@ -144,11 +117,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setUserId(id);
   }
 
-  /**
-   * Sets a user property to a given value.
-   * @param name
-   * @param value
-   */
   setUserProperty(name, value) {
     if (value !== null && !isString(value)) {
       throw new Error(
@@ -159,12 +127,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setUserProperty(name, value);
   }
 
-  /**
-   * Sets multiple user properties to the supplied values.
-   *
-   * @RNFirebaseSpecific
-   * @param object
-   */
   setUserProperties(object) {
     return this.native.setUserProperties(object);
   }
