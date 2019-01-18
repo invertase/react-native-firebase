@@ -29,7 +29,7 @@ import {
  * you to make informed decisions regarding app marketing and
  * performance optimizations.
  *
- * @firebase - For Documentation Generation
+ * @firebase analytics
  */
 namespace ReactNativeFirebaseAnalytics {
   interface Statics {}
