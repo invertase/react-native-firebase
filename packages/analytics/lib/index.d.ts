@@ -15,18 +15,11 @@
  *
  */
 
-import { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
+import {
+  ReactNativeFirebaseModule,
+  ReactNativeFirebaseNamespace,
+} from '@react-native-firebase/app-types';
 
-/**
- * Analytics integrates across Firebase features and provides
- * you with unlimited reporting for up to 500 distinct events
- * that you can define using the Firebase SDK. Analytics reports
- * help you understand clearly how your users behave, which enables
- * you to make informed decisions regarding app marketing and
- * performance optimizations.
- *
- * @firebase analytics
- */
 interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Log a custom event with optional params.
@@ -35,7 +28,7 @@ interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
    * @param name
    * @param params
    */
-  logEvent(name: string, params: Object): Promise<void>;
+  logEvent(name: string, params: { [key: string]: string }): Promise<void>;
 
   /**
    * If true, allows the device to collect analytical data and send it to Firebase.
@@ -96,6 +89,40 @@ interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
 }
 
+/**
+ * Analytics integrates across Firebase features and provides
+ * you with unlimited reporting for up to 500 distinct events
+ * that you can define using the Firebase SDK. Analytics reports
+ * help you understand clearly how your users behave, which enables
+ * you to make informed decisions regarding app marketing and
+ * performance optimizations.
+ *
+ * @namespace analytics
+ */
+declare module '@react-native-firebase/analytics' {
+  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  /**
+   * @example
+   * ```js
+   * import { firebase } from '@react-native-firebase/analytics';
+   * firebase.analytics().logEvent(...);
+   * ```
+   */
+  export const firebase = {} as ReactNativeFirebaseNamespace;
+
+  /**
+   * @example
+   * ```js
+   * import analytics from '@react-native-firebase/analytics';
+   * analytics().logEvent(...);
+   * ```
+   */
+  export default {} as FirebaseAnalyticsModule;
+}
+
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     analytics?: {
