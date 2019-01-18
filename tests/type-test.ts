@@ -3,4 +3,4 @@ import analytics from '@react-native-firebase/analytics';
 
 firebase.app().options.projectId;
 
-analytics().setAnalyticsCollectionEnabled();
+analytics.SDK_VERSION

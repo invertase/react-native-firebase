@@ -96,18 +96,11 @@ namespace ReactNativeFirebaseAnalytics {
   }
 }
 
-/**
- * Analytics integrates across Firebase features and provides
- * you with unlimited reporting for up to 500 distinct events
- * that you can define using the Firebase SDK. Analytics reports
- * help you understand clearly how your users behave, which enables
- * you to make informed decisions regarding app marketing and
- * performance optimizations.
- *
- * @namespace analytics
- */
 declare module '@react-native-firebase/analytics' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+
+  const FirebaseNamespaceExport: ReactNativeFirebaseNamespace;
+
   /**
    * @example
    * ```js
@@ -115,9 +108,12 @@ declare module '@react-native-firebase/analytics' {
    * firebase.analytics().logEvent(...);
    * ```
    */
-  const FirebaseNamespaceExport: ReactNativeFirebaseNamespace;
   export const firebase = FirebaseNamespaceExport;
 
+  const AnalyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
+    ReactNativeFirebaseAnalytics.Module,
+    ReactNativeFirebaseAnalytics.Statics
+  >;
   /**
    * @example
    * ```js
@@ -125,10 +121,6 @@ declare module '@react-native-firebase/analytics' {
    * analytics().logEvent(...);
    * ```
    */
-  const AnalyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    ReactNativeFirebaseAnalytics.Module,
-    ReactNativeFirebaseAnalytics.Statics
-  >;
   export default AnalyticsDefaultExport;
 }
 
@@ -137,13 +129,29 @@ declare module '@react-native-firebase/analytics' {
  */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    analytics?: ReactNativeFirebaseModuleAndStatics<
+    /**
+     * Analytics integrates across Firebase features and provides
+     * you with unlimited reporting for up to 500 distinct events
+     * that you can define using the Firebase SDK. Analytics reports
+     * help you understand clearly how your users behave, which enables
+     * you to make informed decisions regarding app marketing and
+     * performance optimizations.
+     */
+    analytics: ReactNativeFirebaseModuleAndStatics<
       ReactNativeFirebaseAnalytics.Module,
       ReactNativeFirebaseAnalytics.Statics
     >;
   }
 
   interface FirebaseApp {
-    analytics?(): ReactNativeFirebaseAnalytics.Module;
+    /**
+     * Analytics integrates across Firebase features and provides
+     * you with unlimited reporting for up to 500 distinct events
+     * that you can define using the Firebase SDK. Analytics reports
+     * help you understand clearly how your users behave, which enables
+     * you to make informed decisions regarding app marketing and
+     * performance optimizations.
+     */
+    analytics(): ReactNativeFirebaseAnalytics.Module;
   }
 }

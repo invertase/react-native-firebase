@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+// TODO code comments
 
 export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
   (): M;
@@ -38,9 +39,7 @@ export interface FirebaseAppConfig {
 
 export interface FirebaseApp {
   readonly name: string;
-
   readonly options: FirebaseOptions;
-
   delete(): Promise<void>;
 }
 

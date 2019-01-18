@@ -30,6 +30,8 @@ import {
   isAlphaNumericUnderscore,
 } from '@react-native-firebase/common';
 
+import version from './version';
+
 const ReservedEventNames = [
   'app_clear_data',
   'app_uninstall',
@@ -168,10 +170,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 }
 
+// import { SDK_VERSION } from '@react-native-firebase/analytics';
+export const SDK_VERSION = version;
+
 // import analytics from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 export default createModuleNamespace({
   statics,
+  version,
   namespace,
   nativeModuleName,
   hasMultiAppSupport: false,

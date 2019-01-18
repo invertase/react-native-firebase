@@ -15,18 +15,19 @@
  *
  */
 
+import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
 
-import { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
+interface Statics {}
 
-export interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
+interface Module extends ReactNativeFirebaseModule {
   /**
    * Log a custom event with optional params.
-   * Note: 100 characters is the maximum length for param names.
+   * @note 100 characters is the maximum length for param key names.
    *
    * @param name
    * @param params
    */
-  logEvent(name: string, params: Object): Promise<void>;
+  logEvent(name: string, params: { [key: string]: string }): Promise<void>;
 
   /**
    * If true, allows the device to collect analytical data and send it to Firebase.
@@ -39,7 +40,7 @@ export interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Sets the current screen name.
    *
-   * NOTE: Whilst screenClassOverride is optional, it is recommended it is
+   * @note Whilst screenClassOverride is optional, it is recommended it is
    * always sent as your current class name. For example on Android it will always
    * show as 'MainActivity' if you do not specify it.
    *
@@ -65,7 +66,8 @@ export interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Gives a user a unique identification.
    *
-   * @param id Set to null to remove a previously assigned id from analytics events.
+   *
+   * @param id Set to null to remove a previously assigned id from analytics events
    */
   setUserId(id: string | null): Promise<void>;
 
@@ -80,12 +82,39 @@ export interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   /**
    * Sets multiple key/value pair of data on the current user.
    *
-   * @ReactNativeFirebase
+   * @react-native-firebase
    * @param properties Set a property value to null to remove it.
    */
   setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
 }
 
+declare module '@react-native-firebase/analytics' {
+  import type {
+    ReactNativeFirebaseNamespace,
+    ReactNativeFirebaseModuleAndStatics,
+  } from '@react-native-firebase/app-types';
+  /**
+   * @example
+   * ```js
+   * import { firebase } from '@react-native-firebase/analytics';
+   * firebase.analytics().logEvent(...);
+   * ```
+   */
+  declare export var firebase: ReactNativeFirebaseNamespace;
+
+  /**
+   * @example
+   * ```js
+   * import analytics from '@react-native-firebase/analytics';
+   * analytics().logEvent(...);
+   * ```
+   */
+  declare export default ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+}
+
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
 declare module '@react-native-firebase/app-types' {
   declare interface ReactNativeFirebaseNamespace {
     /**
@@ -96,9 +125,7 @@ declare module '@react-native-firebase/app-types' {
      * you to make informed decisions regarding app marketing and
      * performance optimizations.
      */
-    analytics?: {
-      (): FirebaseAnalyticsModule;
-    };
+    analytics: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
   }
 
   declare interface FirebaseApp {
@@ -110,6 +137,6 @@ declare module '@react-native-firebase/app-types' {
      * you to make informed decisions regarding app marketing and
      * performance optimizations.
      */
-    analytics(): FirebaseAnalyticsModule;
+    analytics(): Module;
   }
 }
