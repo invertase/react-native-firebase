@@ -1,4 +1,8 @@
-describe('analytics()', () => {
+describe.only('analytics()', () => {
+  it('dev-test', () => {
+      // firebase.analytics().logEvent('session_start');
+  });
+
   describe('logEvent()', () => {
     it('errors on using a reserved name', () => {
       try {

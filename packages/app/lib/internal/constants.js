@@ -18,8 +18,10 @@
 export const appNativeModuleName = 'RNFBApp';
 
 export const knownFirebaseNamespaces = [
+  // with APIs
   'admob',
   'auth',
+  'analytics',
   'config',
   'crashlytics',
   'database',
@@ -27,13 +29,16 @@ export const knownFirebaseNamespaces = [
   'firestore',
   'functions',
   'iid',
+  'invites',
   'indexing',
   'storage',
   'links',
   'messaging',
-  'mlcustom',
-  'mlvision',
+  'mlkit',
   'notifications',
   'perf',
   'utils',
+  // documentation only
+  'predictions',
+  'ab-testing'
 ];

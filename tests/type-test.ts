@@ -1,4 +1,6 @@
 import firebase from 'react-native-firebase';
-import '@react-native-firebase/analytics';
+import analytics from '@react-native-firebase/analytics';
 
-firebase.analytics().setUserProperties({ test: 'foo' });
+firebase.app().options.projectId;
+
+analytics().setAnalyticsCollectionEnabled();

@@ -89,6 +89,11 @@ interface FirebaseAnalyticsModule extends ReactNativeFirebaseModule {
   setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
 }
 
+// analytics()
+interface FirebaseAnalyticsNamespaceExport {
+  (): FirebaseAnalyticsModule;
+}
+
 /**
  * Analytics integrates across Firebase features and provides
  * you with unlimited reporting for up to 500 distinct events
@@ -108,7 +113,8 @@ declare module '@react-native-firebase/analytics' {
    * firebase.analytics().logEvent(...);
    * ```
    */
-  export const firebase = {} as ReactNativeFirebaseNamespace;
+  const FirebaseNamespaceExport: ReactNativeFirebaseNamespace;
+  export const firebase = FirebaseNamespaceExport;
 
   /**
    * @example
@@ -117,7 +123,8 @@ declare module '@react-native-firebase/analytics' {
    * analytics().logEvent(...);
    * ```
    */
-  export default {} as FirebaseAnalyticsModule;
+  const AnalyticsDefaultExport: FirebaseAnalyticsNamespaceExport;
+  export default AnalyticsDefaultExport;
 }
 
 /**
@@ -125,9 +132,7 @@ declare module '@react-native-firebase/analytics' {
  */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    analytics?: {
-      (): FirebaseAnalyticsModule;
-    };
+    analytics?: FirebaseAnalyticsNamespaceExport;
   }
 
   interface FirebaseApp {
