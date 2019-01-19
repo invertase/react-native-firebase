@@ -15,15 +15,26 @@
  *
  */
 
+import { promiseDefer } from '@react-native-firebase/common';
+import { getAppModule } from './internal/registry/nativeModule';
+
 export default class FirebaseApp {
-  constructor(options, name, fromNative, deleteApp) {
+  constructor(options, appConfig, fromNative, deleteApp) {
+    const { name, automaticDataCollectionEnabled } = appConfig;
+
     this._name = name;
     this._deleted = false;
-    this._options = Object.assign({}, options);
     this._deleteApp = deleteApp;
+    this._deferredPromise = promiseDefer();
+    this._options = Object.assign({}, options);
+    this._automaticDataCollectionEnabled = automaticDataCollectionEnabled;
+
     if (fromNative) {
       this._initialized = true;
       this._nativeInitialized = true;
+      this._deferredPromise.resolve(this);
+    } else {
+      getAppModule().setAutomaticDataCollectionEnabled(name, automaticDataCollectionEnabled);
     }
   }
 
@@ -33,60 +44,50 @@ export default class FirebaseApp {
     }
   }
 
-  /**
-   *
-   * @return {*}
-   */
   get name() {
     this._checkDestroyed();
     return this._name;
   }
 
-  /**
-   *
-   * @return {*}
-   */
   get options() {
     this._checkDestroyed();
     return Object.assign({}, this._options);
   }
 
-  extendApp(extendedProps = {}) {
-    this._checkDestroyed();
-
-    // TODO
+  get automaticDataColletionEnabled() {
+    this._checkDestroyed_();
+    return this._automaticDataCollectionEnabled;
   }
 
-  /**
-   *
-   * @return {Promise}
-   */
+  // TODO assert ow.boolean
+  set automaticDataCollectionEnabled(enabled) {
+    this._checkDestroyed();
+    getAppModule().setAutomaticDataCollectionEnabled(this.name, enabled);
+    this._automaticDataCollectionEnabled = enabled;
+  }
+
+  // TODO assert ow.object
+  extendApp(extendedProps) {
+    this._checkDestroyed();
+    Object.assign(this, extendedProps || {});
+  }
+
   delete() {
     this._checkDestroyed();
     return this._deleteApp();
   }
 
-  /**
-   *
-   * @return {*}
-   */
-  onReady() {
-    this._checkDestroyed();
-    if (this._initialized) return Promise.resolve(this);
-
-    return new Promise((resolve, reject) => {
-      SharedEventEmitter.once(`AppReady:${this._name}`, ({ error }) => {
-        if (error) return reject(new Error(error)); // error is a string as it's from native
-        return resolve(this); // return app
-      });
-    });
+  get then() {
+    if (this._initialized) return Promise.resolve(this).then;
+    const { promise } = this._deferredPromise;
+    return promise.then.bind(promise);
   }
 
-  /**
-   * toString returns the name of the app.
-   *
-   * @return {string}
-   */
+  get catch() {
+    const { promise } = this._deferredPromise;
+    return promise.catch.bind(promise);
+  }
+
   toString() {
     return this.name;
   }

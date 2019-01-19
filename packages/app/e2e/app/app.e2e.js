@@ -1,7 +1,6 @@
 describe('firebase', () => {
   it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app()._nativeInitialized, true);
-    console.dir(firebase.app().name)
     should.equal(firebase.app().name, '[DEFAULT]');
     // should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
     // should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
@@ -11,14 +10,16 @@ describe('firebase', () => {
     const platformAppConfig = TestHelpers.core.config();
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
-    console.dir(firebase.app().options);
     should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
     should.equal(firebase.app().options.messagingSenderId, platformAppConfig.messagingSenderId);
     should.equal(firebase.app().options.projectId, platformAppConfig.projectId);
     should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
   });
 
-  it('it should resolve onReady for natively initialized apps', () => firebase.app().onReady());
+  it('it should resolve for natively initialized apps', async () => {
+    const app = await firebase.app();
+    should.equal(app.name, firebase.app())
+  });
 
   xit('it should initialize dynamic apps', () => {
     const name = `testscoreapp${global.testRunId}`;
@@ -49,9 +50,7 @@ describe('firebase -> X', () => {
   it('can be deleted', async () => {
     const name = `testscoreapp${global.testRunId}`;
     const platformAppConfig = TestHelpers.core.config();
-    const newApp = firebase.initializeApp(platformAppConfig, name);
-
-    await newApp.onReady();
+    const newApp = await firebase.initializeApp(platformAppConfig, name);
 
     newApp.name.should.equal(name.toUpperCase());
     newApp.toString().should.equal(name.toUpperCase());

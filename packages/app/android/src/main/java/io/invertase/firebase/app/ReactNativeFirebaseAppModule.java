@@ -58,6 +58,12 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void setAutomaticDataCollectionEnabled(String appName, Boolean enabled) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    firebaseApp.setAutomaticResourceManagementEnabled(enabled);
+  }
+
+  @ReactMethod
   public void deleteApp(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 

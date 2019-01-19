@@ -31,9 +31,13 @@ export function initializeNativeApps() {
 
   if (apps && apps.length) {
     for (let i = 0; i < apps.length; i++) {
-      const { name, options } = apps[i];
-      // TODO app.state is unused currently.
-      APP_REGISTRY[name] = new FirebaseApp(options, name, true, deleteApp.bind(null, name, true));
+      const { name, state, options } = apps[i];
+      APP_REGISTRY[name] = new FirebaseApp(
+        options,
+        { name, ...state },
+        true,
+        deleteApp.bind(null, name, true),
+      );
     }
   }
 

@@ -47,7 +47,7 @@ public class RCTConvertFirebase {
     Map<String, Object> state = new HashMap<>();
     Map<String, Object> options = new HashMap<>();
 
-    state.put("dataCollectionDefault", firebaseApp.isDataCollectionDefaultEnabled());
+    state.put("automaticDataCollectionEnabled", firebaseApp.isDataCollectionDefaultEnabled());
 
     // TODO: Salakar: Firebase SDK does not support reading this value
     // state.put("automaticResourceManagement", false);
@@ -88,7 +88,7 @@ public class RCTConvertFirebase {
 
     FirebaseApp firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
 
-    firebaseApp.setDataCollectionDefaultEnabled(state.getBoolean("dataCollectionDefault"));
+    firebaseApp.setDataCollectionDefaultEnabled(state.getBoolean("automaticDataCollectionEnabled"));
     // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
     firebaseApp.setAutomaticResourceManagementEnabled(state.getBoolean("automaticResourceManagement"));
 
