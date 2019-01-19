@@ -25,7 +25,7 @@ const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
 
 function nativeModuleKey(module) {
-  return `${module._customUrlOrRegion || module.app.name}:${module.namespace}`;
+  return `${module._customUrlOrRegion || ''}:${module.app.name}:${module.namespace}`;
 }
 
 /**
@@ -75,6 +75,12 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   return native;
 }
 
+/**
+ * Initialises and wraps all the native module methods.
+ *
+ * @param module
+ * @returns {*}
+ */
 function initialiseNativeModule(module) {
   const config = module._config;
   const key = nativeModuleKey(module);
@@ -139,6 +145,13 @@ function subscribeToNativeModuleEvent(eventName) {
   }
 }
 
+/**
+ * Gets a wrapped native module instance for the provided firebase module.
+ * Will attempt to create a new instance if non previously created.
+ *
+ * @param module
+ * @returns {*}
+ */
 export function getNativeModule(module) {
   const key = nativeModuleKey(module);
 

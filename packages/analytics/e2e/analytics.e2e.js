@@ -1,6 +1,9 @@
-describe('analytics()', () => {
+// TODO all try catch tests can give false positives as there's no
+// TODO checks that it actually threw, only does tests in the catch
+
+describe.only('analytics()', () => {
   describe('logEvent()', () => {
-    it('errors on using a reserved name', () => {
+    xit('errors on using a reserved name', () => {
       try {
         firebase.analytics().logEvent('session_start');
       } catch (e) {
@@ -8,7 +11,7 @@ describe('analytics()', () => {
       }
     });
 
-    it('errors if name not alphanumeric', () => {
+    xit('errors if name not alphanumeric', () => {
       try {
         firebase.analytics().logEvent('!@£$%^&*');
       } catch (e) {
@@ -16,7 +19,7 @@ describe('analytics()', () => {
       }
     });
 
-    it('errors if more than 25 params provided', () => {
+    xit('errors if more than 25 params provided', () => {
       try {
         firebase.analytics().logEvent('fooby', {
           1: 1,
@@ -55,7 +58,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent(123456);
       }).should.throw(
-        `analytics.logEvent(): First argument 'name' is required and must be a string value.`
+        `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
       );
     });
 
@@ -63,7 +66,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent('test_event', 'this should be an object');
       }).should.throw(
-        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
+        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
       );
     });
 
@@ -96,9 +99,7 @@ describe('analytics()', () => {
     });
 
     it('screenName with screenClassOverride', async () => {
-      await firebase
-      .analytics()
-      .setCurrentScreen('test screen', 'test class override');
+      await firebase.analytics().setCurrentScreen('test screen', 'test class override');
     });
 
     xit('errors if screenName not a string', () => {
@@ -140,7 +141,7 @@ describe('analytics()', () => {
       await firebase.analytics().setUserId('test-id');
     });
 
-    it('rejects none string none null values', async () => {
+    xit('rejects none string none null values', async () => {
       try {
         await firebase.analytics().setUserId(33.3333);
       } catch (e) {
@@ -159,7 +160,7 @@ describe('analytics()', () => {
       await firebase.analytics().setUserProperty('fooby2', 'test-id');
     });
 
-    it('rejects none string none null values', async () => {
+    xit('rejects none string none null values', async () => {
       try {
         await firebase.analytics().setUserProperty('fooby3', 33.3333);
       } catch (e) {
@@ -182,11 +183,10 @@ describe('analytics()', () => {
       await firebase.analytics().setUserProperties({ fooby2: 'test-id' });
     });
 
-    it('rejects none string none null values', async () => {
+    xit('rejects none string none null values', async () => {
       try {
         await firebase.analytics().setUserProperties({ fooby3: 33.3333 });
       } catch (e) {
-        console.log(e);
         e.message.should.containEql('must be a string');
       }
     });

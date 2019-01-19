@@ -127,13 +127,25 @@ export function getFirebaseNamespace() {
  * @returns {*}
  */
 export function createModuleNamespace(options = {}) {
-  const { namespace, ModuleClass } = options;
+  const { namespace, ModuleClass, version } = options;
 
   if (!NAMESPACE_REGISTRY[namespace]) {
-    // hacky inheritance check - instanceof not working once bundled
-    // only for internal / module dev use
+    // validation only for internal / module dev usage
+    // instanceof does not work in build
     if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
       throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
+    }
+
+    if (version !== SDK_VERSION) {
+      throw new Error(
+        [
+          `You've attempted to require '@react-native-firebase/${namespace}' version '${version}', ` +
+            `however, 'react-native-firebase' core module is of a different version (${SDK_VERSION}).`,
+          '',
+          `All React Native Firebase modules must be of the same version. Please ensure they match up ` +
+          `in your package.json file and re-run yarn/npm install.`,
+        ].join('\n'),
+      );
     }
 
     NAMESPACE_REGISTRY[namespace] = Object.assign({}, options);

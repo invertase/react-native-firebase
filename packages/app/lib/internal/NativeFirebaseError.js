@@ -45,9 +45,11 @@ export default class NativeFirebaseError extends Error {
     if (nativeStackAndroid && nativeStackAndroid.length) {
       for (let i = 0; i < 5; i++) {
         const { methodName, lineNumber, file } = nativeStackAndroid[i];
-        combinedStack.push(`    at native.android.*.${methodName} (${file} ${lineNumber}:0)`);
+        combinedStack.push(`    at native.android.*.${methodName} (${file}:${lineNumber}:0)`);
       }
     }
+
+    // TODO IOS stack frames
 
     return combinedStack.join('\n');
   }

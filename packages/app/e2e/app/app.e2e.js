@@ -1,7 +1,6 @@
-xdescribe('firebase', () => {
+describe('firebase', () => {
   it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app()._nativeInitialized, true);
-    return Promise.resolve();
   });
 
   it('natively initialized apps should have options available in js', () => {
@@ -24,7 +23,6 @@ xdescribe('firebase', () => {
       firebase.app().options.storageBucket,
       platformAppConfig.storageBucket
     );
-    return Promise.resolve();
   });
 
   it('it should resolve onReady for natively initialized apps', () =>
