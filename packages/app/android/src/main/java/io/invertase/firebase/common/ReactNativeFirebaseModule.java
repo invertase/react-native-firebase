@@ -20,9 +20,12 @@ package io.invertase.firebase.common;
 import android.app.Activity;
 import android.content.Context;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.WritableMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +58,21 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   public Activity getActivity() {
     return getCurrentActivity();
+  }
+
+  public WritableMap getExceptionMap(Exception exception) {
+    WritableMap exceptionMap = Arguments.createMap();
+    String code = "unknown";
+    String message = exception.getMessage();
+    exceptionMap.putString("code", code);
+    exceptionMap.putString("nativeErrorCode", code);
+    exceptionMap.putString("message", message);
+    exceptionMap.putString("nativeErrorMessage", message);
+    return exceptionMap;
+  }
+
+  public void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
+    promise.reject(exception, getExceptionMap(exception));
   }
 
   @Override

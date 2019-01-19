@@ -186,6 +186,7 @@ describe('analytics()', () => {
       try {
         await firebase.analytics().setUserProperties({ fooby3: 33.3333 });
       } catch (e) {
+        console.log(e);
         e.message.should.containEql('must be a string');
       }
     });

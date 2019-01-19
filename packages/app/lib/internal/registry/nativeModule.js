@@ -16,6 +16,8 @@
  */
 
 import { NativeModules } from 'react-native';
+
+import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 
@@ -27,18 +29,44 @@ function nativeModuleKey(module) {
 }
 
 /**
+ * Wraps a native module method to provide
+ * auto prepended args and custom Error classes.
+ *
+ * @param namespace
+ * @param method
+ * @param argToPrepend
+ * @returns {Function}
+ */
+function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
+  return (...args) => {
+    const possiblePromise = method(...[...argToPrepend, ...args]);
+
+    if (possiblePromise && possiblePromise.then) {
+      const jsStack = new Error().stack;
+      return possiblePromise.catch(nativeError =>
+        Promise.reject(new NativeFirebaseError(nativeError, jsStack, namespace)),
+      );
+    }
+
+    return possiblePromise;
+  };
+}
+
+/**
  * Prepends all arguments in prependArgs to all native method calls
+ *
+ * @param namespace
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeWithArgs(NativeModule, argToPrepend) {
+function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   const native = {};
   const properties = Object.keys(NativeModule);
 
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
     if (typeof NativeModule[property] === 'function') {
-      native[property] = (...args) => NativeModule[property](...[...argToPrepend, ...args]);
+      native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
     } else {
       native[property] = NativeModule[property];
     }
@@ -75,11 +103,7 @@ function initialiseNativeModule(module) {
     argToPrepend.push(customUrlOrRegion);
   }
 
-  if (argToPrepend.length) {
-    NATIVE_MODULE_REGISTRY[key] = nativeWithArgs(nativeModule, argToPrepend);
-  } else {
-    NATIVE_MODULE_REGISTRY[key] = nativeModule;
-  }
+  NATIVE_MODULE_REGISTRY[key] = nativeModuleWrapped(namespace, nativeModule, argToPrepend);
 
   if (nativeEvents && nativeEvents.length) {
     for (let i = 0, len = nativeEvents.length; i < len; i++) {

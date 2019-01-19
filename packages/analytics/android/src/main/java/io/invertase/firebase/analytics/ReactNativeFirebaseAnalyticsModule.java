@@ -44,7 +44,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).logEvent(name, Arguments.toBundle(params));
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -54,7 +54,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -62,7 +62,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   public void setCurrentScreen(String screenName, String screenClassOverride, Promise promise) {
     Activity activity = getActivity();
     if (activity != null) {
-      // needs to be run on ui thread
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
@@ -73,7 +72,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
             promise.resolve(null);
           } catch (Exception exception) {
-            promise.reject(exception);
+            rejectPromiseWithExceptionMap(promise, exception);
           }
         }
       });
@@ -88,7 +87,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration((long) milliseconds);
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -98,7 +97,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration((long) milliseconds);
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -108,7 +107,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).setUserId(id);
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -118,7 +117,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -136,7 +135,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 
@@ -146,7 +145,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
       promise.resolve(null);
     } catch (Exception exception) {
-      promise.reject(exception);
+      rejectPromiseWithExceptionMap(promise, exception);
     }
   }
 }
