@@ -15,20 +15,27 @@
  *
  */
 
-import { NativeModules } from 'react-native';
-
 import FirebaseApp from '../../FirebaseApp';
+import { getAppModule } from './nativeModule';
 
 const APP_REGISTRY = {};
 const DEFAULT_APP_NAME = '[DEFAULT]';
-
 let initializedNativeApps = false;
 
 /**
  *
  */
 export function initializeNativeApps() {
+  const nativeModule = getAppModule();
+  const { apps } = nativeModule;
 
+  if (apps && apps.length) {
+    for (let i = 0; i < apps.length; i++) {
+      const { name, options } = apps[i];
+      // TODO app.state is unused currently.
+      APP_REGISTRY[name] = new FirebaseApp(options, name, true, deleteApp.bind(null, name, true));
+    }
+  }
 
   initializedNativeApps = true;
 }
@@ -39,8 +46,12 @@ export function initializeNativeApps() {
  */
 export function getApp(name = DEFAULT_APP_NAME) {
   if (!initializedNativeApps) initializeNativeApps();
-  // TODO
-  const app = new FirebaseApp(name, {}, false, deleteApp.bind(null, name));
+  const app = APP_REGISTRY[name];
+
+  if (!app) {
+    throw new Error(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
+  }
+
   return app;
 }
 
@@ -48,7 +59,7 @@ export function getApp(name = DEFAULT_APP_NAME) {
  *
  */
 export function getApps() {
-  // TODO
+  return Object.values(APP_REGISTRY);
 }
 
 /**
@@ -63,6 +74,16 @@ export function initializeApp(options = {}, configOrName) {
 /**
  *
  */
-export function deleteApp() {
-  // TODO
+export function deleteApp(name, nativeInitialized) {
+  if (name === DEFAULT_APP_NAME && nativeInitialized) {
+    throw new Error('Unable to delete the default native firebase app instance.');
+  }
+
+  const app = APP_REGISTRY[name];
+  const nativeModule = getAppModule();
+
+  return nativeModule.deleteApp(name).then(() => {
+    app._deleted = true;
+    delete APP_REGISTRY[name];
+  });
 }

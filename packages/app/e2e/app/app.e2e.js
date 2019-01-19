@@ -1,45 +1,37 @@
 describe('firebase', () => {
   it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app()._nativeInitialized, true);
+    console.dir(firebase.app().name)
+    should.equal(firebase.app().name, '[DEFAULT]');
+    // should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
+    // should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
   });
 
   it('natively initialized apps should have options available in js', () => {
     const platformAppConfig = TestHelpers.core.config();
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
-    should.equal(
-      firebase.app().options.databaseURL,
-      platformAppConfig.databaseURL
-    );
-    should.equal(
-      firebase.app().options.messagingSenderId,
-      platformAppConfig.messagingSenderId
-    );
-    should.equal(
-      firebase.app().options.projectId,
-      platformAppConfig.projectId
-    );
-    should.equal(
-      firebase.app().options.storageBucket,
-      platformAppConfig.storageBucket
-    );
+    console.dir(firebase.app().options);
+    should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
+    should.equal(firebase.app().options.messagingSenderId, platformAppConfig.messagingSenderId);
+    should.equal(firebase.app().options.projectId, platformAppConfig.projectId);
+    should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
   });
 
-  it('it should resolve onReady for natively initialized apps', () =>
-    firebase.app().onReady());
+  it('it should resolve onReady for natively initialized apps', () => firebase.app().onReady());
 
-  it('it should initialize dynamic apps', () => {
+  xit('it should initialize dynamic apps', () => {
     const name = `testscoreapp${global.testRunId}`;
     const platformAppConfig = TestHelpers.core.config();
     return firebase
-    .initializeApp(platformAppConfig, name)
-    .onReady()
-    .then(newApp => {
-      newApp.name.should.equal(name.toUpperCase());
-      newApp.toString().should.equal(name.toUpperCase());
-      newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
-      return newApp.delete();
-    });
+      .initializeApp(platformAppConfig, name)
+      .onReady()
+      .then(newApp => {
+        newApp.name.should.equal(name.toUpperCase());
+        newApp.toString().should.equal(name.toUpperCase());
+        newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
+        return newApp.delete();
+      });
   });
 
   it('SDK_VERSION should return a string version', () => {
@@ -47,7 +39,7 @@ describe('firebase', () => {
   });
 });
 
-xdescribe('firebase -> X', () => {
+describe('firebase -> X', () => {
   it('apps should provide an array of apps', () => {
     should.equal(!!firebase.apps.length, true);
     should.equal(firebase.apps.includes(firebase.app('[DEFAULT]')), true);
@@ -69,26 +61,20 @@ xdescribe('firebase -> X', () => {
 
     (() => {
       firebase.app(name);
-    }).should.throw(
-      `The [${name.toUpperCase()}] firebase app has not been initialized!`
-    );
+    }).should.throw(`The [${name.toUpperCase()}] firebase app has not been initialized!`);
   });
 
   it('prevents the default app from being deleted', async () => {
     firebase
-    .app()
-    .delete()
-    .should.be.rejectedWith(
-      'Unable to delete the default native firebase app instance.'
-    );
+      .app()
+      .delete()
+      .should.be.rejectedWith('Unable to delete the default native firebase app instance.');
   });
 
   it('extendApp should error if an object is not supplied', () => {
     (() => {
       firebase.app().extendApp('string');
-    }).should.throw(
-      'Missing required argument of type \'Object\' for method \'extendApp()\'.'
-    );
+    }).should.throw("Missing required argument of type 'Object' for method 'extendApp()'.");
   });
 
   it('extendApp should error if a protected property is supplied', () => {
@@ -96,9 +82,7 @@ xdescribe('firebase -> X', () => {
       firebase.app().extendApp({
         database: {},
       });
-    }).should.throw(
-      'Property \'database\' is protected and can not be overridden by extendApp.'
-    );
+    }).should.throw("Property 'database' is protected and can not be overridden by extendApp.");
   });
 
   it('extendApp should provide additional functionality', () => {

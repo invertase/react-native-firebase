@@ -15,12 +15,8 @@
  *
  */
 
-import { NativeModules } from 'react-native';
-
-import { isObject } from '@react-native-firebase/common';
-
 export default class FirebaseApp {
-  constructor(options = {}, name, fromNative = false, deleteApp) {
+  constructor(options, name, fromNative, deleteApp) {
     this._name = name;
     this._deleted = false;
     this._options = Object.assign({}, options);
@@ -31,11 +27,18 @@ export default class FirebaseApp {
     }
   }
 
+  _checkDestroyed() {
+    if (this._deleted) {
+      throw new Error(`Firebase App named '${this._name}' already deleted`);
+    }
+  }
+
   /**
    *
    * @return {*}
    */
   get name() {
+    this._checkDestroyed();
     return this._name;
   }
 
@@ -44,10 +47,13 @@ export default class FirebaseApp {
    * @return {*}
    */
   get options() {
+    this._checkDestroyed();
     return Object.assign({}, this._options);
   }
 
   extendApp(extendedProps = {}) {
+    this._checkDestroyed();
+
     // TODO
   }
 
@@ -56,13 +62,8 @@ export default class FirebaseApp {
    * @return {Promise}
    */
   delete() {
-    if (this._name === APPS.DEFAULT_APP_NAME && this._nativeInitialized) {
-      return Promise.reject(
-        new Error('Unable to delete the default native firebase app instance.'),
-      );
-    }
-
-    return FirebaseCoreModule.deleteApp(this.name).then(() => this._deleteApp(this.name));
+    this._checkDestroyed();
+    return this._deleteApp();
   }
 
   /**
@@ -70,6 +71,7 @@ export default class FirebaseApp {
    * @return {*}
    */
   onReady() {
+    this._checkDestroyed();
     if (this._initialized) return Promise.resolve(this);
 
     return new Promise((resolve, reject) => {

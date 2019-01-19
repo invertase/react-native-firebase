@@ -55,7 +55,7 @@ public class RCTConvertFirebase {
     options.put("apiKey", appOptions.getApiKey());
     options.put("appId", appOptions.getApplicationId());
     options.put("projectId", appOptions.getProjectId());
-    options.put("databaseUrl", appOptions.getDatabaseUrl());
+    options.put("databaseURL", appOptions.getDatabaseUrl());
     options.put("gaTrackingId", appOptions.getGaTrackingId());
     options.put("messagingSenderId", appOptions.getGcmSenderId());
     options.put("storageBucket", appOptions.getStorageBucket());
@@ -81,7 +81,7 @@ public class RCTConvertFirebase {
     builder.setApiKey(options.getString("apiKey"));
     builder.setApplicationId(options.getString("appId"));
     builder.setProjectId(options.getString("projectId"));
-    builder.setDatabaseUrl(options.getString("databaseUrl"));
+    builder.setDatabaseUrl(options.getString("databaseURL"));
     builder.setGaTrackingId(options.getString("gaTrackingId"));
     builder.setStorageBucket(options.getString("storageBucket"));
     builder.setGcmSenderId(options.getString("messagingSenderId"));

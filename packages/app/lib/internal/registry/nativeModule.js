@@ -15,12 +15,13 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 
+const APP_MODULE = 'RNFBApp';
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
 
@@ -96,7 +97,7 @@ function initialiseNativeModule(module) {
   const nativeModule = NativeModules[nativeModuleName];
 
   if (!nativeModule) {
-    throw new Error(INTERNALS.STRINGS.ERROR_MISSING_MODULE(namespace, nativeModuleName));
+    throw new Error(getMissingModuleHelpText(namespace));
   }
 
   const argToPrepend = [];
@@ -146,6 +147,35 @@ function subscribeToNativeModuleEvent(eventName) {
 }
 
 /**
+ * Help text for integrating the native counter parts for each firebase module.
+ *
+ * @param namespace
+ * @returns {string}
+ */
+function getMissingModuleHelpText(namespace) {
+  const snippet = `firebase.${namespace}()`;
+  const nativeModule = namespace.charAt(0).toUpperCase() + namespace.slice(1);
+
+  if (Platform.OS === 'ios') {
+    return (
+      `You attempted to use a firebase module that's not installed natively on your iOS project by calling ${snippet}.` +
+      '\r\n\r\nEnsure you have either linked the module or added it to your projects Podfile.' +
+      '\r\n\r\nSee http://invertase.link/ios for full setup instructions.'
+    );
+  }
+
+  const rnFirebasePackage = `'io.invertase.firebase.${namespace}.ReactNativeFirebase${nativeModule}Package'`;
+  const newInstance = `'new ReactNativeFirebase${nativeModule}Package()'`;
+
+  return (
+    `You attempted to use a firebase module that's not installed on your Android project by calling ${snippet}.` +
+    `\r\n\r\nEnsure you have:\r\n\r\n1) imported the ${rnFirebasePackage} module in your 'MainApplication.java' file.\r\n\r\n2) Added the ` +
+    `${newInstance} line inside of the RN 'getPackages()' method list.` +
+    '\r\n\r\nSee http://invertase.link/android for full setup instructions.'
+  );
+}
+
+/**
  * Gets a wrapped native module instance for the provided firebase module.
  * Will attempt to create a new instance if non previously created.
  *
@@ -160,4 +190,26 @@ export function getNativeModule(module) {
   }
 
   return initialiseNativeModule(module);
+}
+
+/**
+ * Custom wrapped app module as it does not have it's own FirebaseModule based class.
+ *
+ * @returns {*}
+ */
+export function getAppModule() {
+  if (NATIVE_MODULE_REGISTRY[APP_MODULE]) {
+    return NATIVE_MODULE_REGISTRY[APP_MODULE];
+  }
+
+  const namespace = 'app';
+  const nativeModule = NativeModules[APP_MODULE];
+
+  if (!nativeModule) {
+    throw new Error(getMissingModuleHelpText(namespace));
+  }
+
+  NATIVE_MODULE_REGISTRY[APP_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
+
+  return NATIVE_MODULE_REGISTRY[APP_MODULE];
 }

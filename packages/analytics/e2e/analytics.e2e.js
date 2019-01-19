@@ -1,7 +1,7 @@
 // TODO all try catch tests can give false positives as there's no
 // TODO checks that it actually threw, only does tests in the catch
 
-describe.only('analytics()', () => {
+describe('analytics()', () => {
   describe('logEvent()', () => {
     xit('errors on using a reserved name', () => {
       try {
