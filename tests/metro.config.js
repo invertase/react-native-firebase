@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { resolve, join } = require('path');
 const { createBlacklist } = require('metro');
 const { mergeConfig } = require('metro-config');
@@ -10,7 +11,6 @@ const config = {
     blackListRE: createBlacklist([
       new RegExp(`^${escape(resolve(__dirname, '..', 'docs'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/node_modules'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'packages/tooling'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/ios'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/e2e'))}\\/.*$`),
@@ -37,8 +37,10 @@ const config = {
   },
   watchFolders: [
     resolve(__dirname, '..'),
-    resolve(__dirname, '../packages/app/src'),
-    // resolve(__dirname, '../packages/firebase/analytics/src'),
+    resolve(__dirname, '../packages/app/lib'),
+    resolve(__dirname, '../packages/app-types'),
+    resolve(__dirname, '../packages/common/lib'),
+    resolve(__dirname, '../packages/analytics/lib'),
   ],
 };
 

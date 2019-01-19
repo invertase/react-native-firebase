@@ -142,6 +142,8 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
+  nativeEvents: false,
+  hasRegionsSupport: false,
   hasMultiAppSupport: false,
   hasCustomUrlSupport: false,
   ModuleClass: FirebaseAnalyticsModule,

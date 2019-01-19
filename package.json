@@ -34,7 +34,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-native": "^0.58.0-rc.2"
+    "react-native": "^0.58.0-rc.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",

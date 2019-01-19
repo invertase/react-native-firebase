@@ -40,14 +40,22 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).logEvent(name, Arguments.toBundle(params));
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).logEvent(name, Arguments.toBundle(params));
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
@@ -58,11 +66,15 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          FirebaseAnalytics
-            .getInstance(getContext())
-            .setCurrentScreen(activity, screenName, screenClassOverride);
+          try {
+            FirebaseAnalytics
+              .getInstance(getContext())
+              .setCurrentScreen(activity, screenName, screenClassOverride);
 
-          promise.resolve(null);
+            promise.resolve(null);
+          } catch (Exception exception) {
+            promise.reject(exception);
+          }
         }
       });
     } else {
@@ -72,45 +84,69 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setMinimumSessionDuration(double milliseconds, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration((long) milliseconds);
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration((long) milliseconds);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration((long) milliseconds);
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration((long) milliseconds);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
   public void setUserId(String id, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).setUserId(id);
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).setUserId(id);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
   public void setUserProperty(String name, String value, Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 
   @ReactMethod
   public void setUserProperties(ReadableMap properties, Promise promise) {
-    ReadableMapKeySetIterator iterator = properties.keySetIterator();
-    FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+    try {
+      ReadableMapKeySetIterator iterator = properties.keySetIterator();
+      FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
-    while (iterator.hasNextKey()) {
-      String name = iterator.nextKey();
-      String value = properties.getString(name);
-      firebaseAnalytics.setUserProperty(name, value);
+      while (iterator.hasNextKey()) {
+        String name = iterator.nextKey();
+        String value = properties.getString(name);
+        firebaseAnalytics.setUserProperty(name, value);
+      }
+
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
     }
-
-    promise.resolve(null);
   }
 
   @ReactMethod
   public void resetAnalyticsData(Promise promise) {
-    FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
-    promise.resolve(null);
+    try {
+      FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
+      promise.resolve(null);
+    } catch (Exception exception) {
+      promise.reject(exception);
+    }
   }
 }

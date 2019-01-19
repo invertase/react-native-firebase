@@ -15,8 +15,6 @@
  *
  */
 
-import { getFirebaseNamespace } from './internal/registry/namespace';
+import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-export const firebase = getFirebaseNamespace();
-
-export default firebase;
+export default new EventEmitter();

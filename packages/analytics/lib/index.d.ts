@@ -61,7 +61,7 @@ namespace ReactNativeFirebaseAnalytics {
      * @param screenName
      * @param screenClassOverride
      */
-    setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void>;
+    setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
 
     /**
      * Sets the minimum engagement time required before starting a session.
@@ -96,7 +96,6 @@ namespace ReactNativeFirebaseAnalytics {
     /**
      * Sets multiple key/value pair of data on the current user.
      *
-     * @react-native-firebase
      * @param properties Set a property value to null to remove it.
      */
     setUserProperties(properties: { [key: string]: string | null }): Promise<void>;

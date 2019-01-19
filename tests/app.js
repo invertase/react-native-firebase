@@ -15,14 +15,10 @@ import jet from 'jet/platform/react-native';
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 
-import { firebase } from '@react-native-firebase/analytics';
-import { analytics } from 'react-native-firebase';
+import analytics, { firebase as firebaseAnalytics } from '@react-native-firebase/analytics';
+import firebase from 'react-native-firebase';
 
 jet.exposeContextProperty('module', firebase);
-
-console.log('---> analytics', analytics());
-console.log('---> firebase.analytics', firebase.analytics());
-console.log('---> firebase.app', firebase.app);
 
 class Root extends Component {
   constructor(props) {

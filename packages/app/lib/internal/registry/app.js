@@ -15,13 +15,22 @@
  *
  */
 
-import FirebaseApp from '../FirebaseApp';
+import { NativeModules } from 'react-native';
+
+import FirebaseApp from '../../FirebaseApp';
 
 const APP_REGISTRY = {};
 const DEFAULT_APP_NAME = '[DEFAULT]';
 
+let initializedNativeApps = false;
+
+/**
+ *
+ */
 export function initializeNativeApps() {
 
+
+  initializedNativeApps = true;
 }
 
 /**
@@ -29,6 +38,7 @@ export function initializeNativeApps() {
  * @param name
  */
 export function getApp(name = DEFAULT_APP_NAME) {
+  if (!initializedNativeApps) initializeNativeApps();
   // TODO
   const app = new FirebaseApp(name, {}, false, deleteApp.bind(null, name));
   return app;

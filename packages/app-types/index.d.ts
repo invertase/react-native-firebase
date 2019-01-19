@@ -46,13 +46,8 @@ export interface FirebaseApp {
 export interface ReactNativeFirebaseNamespace {
   initializeApp(options: FirebaseOptions, config?: FirebaseAppConfig): FirebaseApp;
   initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
-
-  app: {
-    (name?: string): FirebaseApp;
-  };
-
+  app(name?: string): FirebaseApp;
   apps: FirebaseApp[];
-
   readonly SDK_VERSION: string;
 }
 

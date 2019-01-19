@@ -7307,10 +7307,10 @@ react-dom@^16.6.3:
     prop-types "^15.6.2"
     scheduler "^0.12.0"
 
-react-native@^0.58.0-rc.2:
-  version "0.58.0-rc.2"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.58.0-rc.2.tgz#a35e17ef5b0d6c4b19175fa71cafd483a87b01c0"
-  integrity sha512-2DIUk4uyDpr332nLctFNXnWu4BZD2Blwi8g+bBlccRS46m4aCMKNMdYO8qubv+HkwEz2rbwXx7lPc4go6BPXMA==
+react-native@^0.58.0-rc.3:
+  version "0.58.0-rc.3"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.58.0-rc.3.tgz#318914a114670777a61ec81671367bcd88178c1d"
+  integrity sha512-EXc+riQiakPriDBHN0S54GzYc7DU9MvUsV/FO//YDhAuB3Q76eJNt3Yi1Mv9gJ3DQ4/NtwNUfAJYis7gGxWETQ==
   dependencies:
     "@babel/runtime" "^7.0.0"
     absolute-path "^0.0.0"

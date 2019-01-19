@@ -24,7 +24,6 @@ import { knownFirebaseNamespaces } from '../constants';
 
 let ROOT_NAMESPACE = null;
 let ROOT_NAMESPACE_PROXY = null;
-
 const NAMESPACE_REGISTRY = {};
 const MODULE_WITH_STATICS = {};
 const APP_NAMESPACE_INSTANCE = {};
@@ -81,8 +80,13 @@ function firebaseModuleProxy(firebaseNamespace, property) {
   }
 
   if (isOneOf(property, knownFirebaseNamespaces)) {
-    // TODO redbox attempting to use a module that's not been imported
-    throw 'foo bar';
+    throw new Error(
+      [
+        `You attempted to use 'firebase.${property}' but this module could not be found.`,
+        '',
+        `Ensure you have installed and imported the '@react-native-firebase/${property}' package.`,
+      ].join('\r\n'),
+    );
   }
 
   return undefined;
@@ -96,7 +100,7 @@ export function createFirebaseNamespace() {
   ROOT_NAMESPACE = {
     initializeApp,
     get app() {
-      return getApp();
+      return getApp;
     },
     get apps() {
       return getApps();
@@ -136,13 +140,4 @@ export function createModuleNamespace(options = {}) {
   }
 
   return getFirebaseNamespace()[namespace];
-}
-
-/**
- *
- * @param namespace
- * @returns {*}
- */
-export function getModuleNamespace(namespace = ROOT_NAMESPACE) {
-  return NAMESPACE_REGISTRY[namespace];
 }
