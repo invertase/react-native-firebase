@@ -16,12 +16,7 @@ describe('firebase', () => {
     should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
   });
 
-  it('it should resolve for natively initialized apps', async () => {
-    const app = await firebase.app();
-    should.equal(app.name, firebase.app())
-  });
-
-  xit('it should initialize dynamic apps', () => {
+  it('it should initialize dynamic apps', () => {
     const name = `testscoreapp${global.testRunId}`;
     const platformAppConfig = TestHelpers.core.config();
     return firebase

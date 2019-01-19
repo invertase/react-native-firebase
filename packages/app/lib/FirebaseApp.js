@@ -15,7 +15,6 @@
  *
  */
 
-import { promiseDefer } from '@react-native-firebase/common';
 import { getAppModule } from './internal/registry/nativeModule';
 
 export default class FirebaseApp {
@@ -25,22 +24,15 @@ export default class FirebaseApp {
     this._name = name;
     this._deleted = false;
     this._deleteApp = deleteApp;
-    this._deferredPromise = promiseDefer();
     this._options = Object.assign({}, options);
-    this._automaticDataCollectionEnabled = automaticDataCollectionEnabled;
+    this._automaticDataCollectionEnabled = !!automaticDataCollectionEnabled;
 
     if (fromNative) {
       this._initialized = true;
       this._nativeInitialized = true;
-      this._deferredPromise.resolve(this);
     } else {
-      getAppModule().setAutomaticDataCollectionEnabled(name, automaticDataCollectionEnabled);
-    }
-  }
-
-  _checkDestroyed() {
-    if (this._deleted) {
-      throw new Error(`Firebase App named '${this._name}' already deleted`);
+      this._initialized = false;
+      getAppModule().setAutomaticDataCollectionEnabled(name, !!automaticDataCollectionEnabled);
     }
   }
 
@@ -66,6 +58,12 @@ export default class FirebaseApp {
     this._automaticDataCollectionEnabled = enabled;
   }
 
+  _checkDestroyed() {
+    if (this._deleted) {
+      throw new Error(`Firebase App named '${this._name}' already deleted`);
+    }
+  }
+
   // TODO assert ow.object
   extendApp(extendedProps) {
     this._checkDestroyed();
@@ -75,17 +73,6 @@ export default class FirebaseApp {
   delete() {
     this._checkDestroyed();
     return this._deleteApp();
-  }
-
-  get then() {
-    if (this._initialized) return Promise.resolve(this).then;
-    const { promise } = this._deferredPromise;
-    return promise.then.bind(promise);
-  }
-
-  get catch() {
-    const { promise } = this._deferredPromise;
-    return promise.catch.bind(promise);
   }
 
   toString() {

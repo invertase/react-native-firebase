@@ -31,10 +31,12 @@ export function initializeNativeApps() {
 
   if (apps && apps.length) {
     for (let i = 0; i < apps.length; i++) {
-      const { name, state, options } = apps[i];
+      const { appConfig, options } = apps[i];
+      const { name } = appConfig;
+
       APP_REGISTRY[name] = new FirebaseApp(
         options,
-        { name, ...state },
+        appConfig,
         true,
         deleteApp.bind(null, name, true),
       );
@@ -71,8 +73,20 @@ export function getApps() {
  * @param options
  * @param configOrName
  */
-export function initializeApp(options = {}, configOrName) {
-  // TODO
+export function initializeApp(options = {}, name) {
+  // TODO validate args - can be appConfig obj or name string
+  // TODO default appConfig for automaticDataCollectionEnabled & automaticResourceManagement
+  // TODO fail if app already initialized
+  // TODO required options to init an app
+
+  const newApp = new FirebaseApp(options, { name }, true, deleteApp.bind(null, name, true));
+
+  return getAppModule()
+    .initializeApp(options, { name })
+    .then(() => {
+      newApp._intialized = true;
+      return newApp;
+    });
 }
 
 /**

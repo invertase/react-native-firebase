@@ -16,9 +16,9 @@ describe('App -> NativeModules -> Constants', () => {
 
       for (let i = 0; i < apps.length; i++) {
         const app = apps[i];
-        app.name.should.be.a.String();
+        app.appConfig.should.be.a.Object();
+        app.appConfig.name.should.be.a.String();
         app.options.should.be.a.Object();
-        app.state.should.be.a.Object();
       }
     });
   });

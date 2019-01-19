@@ -47,9 +47,9 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void initializeApp(ReadableMap firebaseAppRaw, Promise promise) {
+  public void initializeApp(ReadableMap options, ReadableMap appConfig, Promise promise) {
     FirebaseApp firebaseApp = RCTConvertFirebase.readableMapToFirebaseApp(
-      firebaseAppRaw,
+      options, appConfig,
       getContext()
     );
 
