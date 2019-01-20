@@ -19,14 +19,12 @@ describe('firebase', () => {
   it('it should initialize dynamic apps', () => {
     const name = `testscoreapp${global.testRunId}`;
     const platformAppConfig = TestHelpers.core.config();
-    return firebase
-      .initializeApp(platformAppConfig, name)
-      .then(newApp => {
-        newApp.name.should.equal(name);
-        newApp.toString().should.equal(name);
-        newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
-        return newApp.delete();
-      });
+    return firebase.initializeApp(platformAppConfig, name).then(newApp => {
+      newApp.name.should.equal(name);
+      newApp.toString().should.equal(name);
+      newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
+      return newApp.delete();
+    });
   });
 
   it('SDK_VERSION should return a string version', () => {
@@ -62,20 +60,6 @@ describe('firebase -> X', () => {
       .app()
       .delete()
       .should.be.rejectedWith('Unable to delete the default native firebase app instance.');
-  });
-
-  it('extendApp should error if an object is not supplied', () => {
-    (() => {
-      firebase.app().extendApp('string');
-    }).should.throw("Missing required argument of type 'Object' for method 'extendApp()'.");
-  });
-
-  it('extendApp should error if a protected property is supplied', () => {
-    (() => {
-      firebase.app().extendApp({
-        database: {},
-      });
-    }).should.throw("Property 'database' is protected and can not be overridden by extendApp.");
   });
 
   it('extendApp should provide additional functionality', () => {
