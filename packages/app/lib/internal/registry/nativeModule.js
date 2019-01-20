@@ -21,7 +21,7 @@ import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 
-const APP_MODULE = 'RNFBApp';
+const APP_MODULE = 'RNFBAppModule';
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
 

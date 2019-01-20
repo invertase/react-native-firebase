@@ -77,7 +77,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   @Override
   public String getName() {
-    return "RNFB" + moduleName;
+    return "RNFB" + moduleName + "Module";
   }
 
   @Override

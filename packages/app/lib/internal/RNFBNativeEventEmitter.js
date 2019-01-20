@@ -17,12 +17,16 @@
 
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
-const { RNFBApp } = NativeModules;
-
+const { RNFBAppModule } = NativeModules;
+console.dir(RNFBAppModule);
 class RNFBNativeEventEmitter extends NativeEventEmitter {
+  constructor() {
+    super(RNFBAppModule);
+  }
+
   addListener(eventType, listener, context) {
     if (Platform.OS === 'android') {
-      RNFBApp.eventsAddListener(eventType);
+      RNFBAppModule.eventsAddListener(eventType);
     }
 
     return super.addListener(eventType, listener, context);
@@ -30,7 +34,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
   removeAllListeners(eventType) {
     if (Platform.OS === 'android') {
-      RNFBApp.eventsRemoveListener(eventType, true);
+      RNFBAppModule.eventsRemoveListener(eventType, true);
     }
 
     super.removeAllListeners(eventType);
@@ -38,7 +42,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
   removeSubscription(subscription) {
     if (Platform.OS === 'android') {
-      RNFBApp.eventsRemoveListener(subscription.eventType);
+      RNFBAppModule.eventsRemoveListener(subscription.eventType);
     }
 
     super.removeSubscription(subscription);
