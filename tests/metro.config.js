@@ -35,11 +35,11 @@ const config = {
     platforms: ['android', 'ios'],
   },
   watchFolders: [
-    resolve(__dirname, '..'),
-    resolve(__dirname, '../packages/app/lib'),
+    resolve(__dirname, '.'),
+    resolve(__dirname, '../packages/app'),
     resolve(__dirname, '../packages/app-types'),
-    resolve(__dirname, '../packages/common/lib'),
-    resolve(__dirname, '../packages/analytics/lib'),
+    resolve(__dirname, '../packages/common'),
+    resolve(__dirname, '../packages/analytics'),
   ],
 };
 
