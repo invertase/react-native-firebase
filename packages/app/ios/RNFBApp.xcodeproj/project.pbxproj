@@ -10,6 +10,7 @@
 		2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppModule.m */; };
 		2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */; };
 		2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */; };
+		3323F830D70BC3D6CE563E6F /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3323F15CDA76AEC3C1E62FA2 /* RNFBSharedUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,8 @@
 		2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRCTEventEmitter.m; sourceTree = "<group>"; };
 		2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+FIROptions.h"; sourceTree = "<group>"; };
 		2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIROptions.m"; sourceTree = "<group>"; };
+		3323F15CDA76AEC3C1E62FA2 /* RNFBSharedUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtils.m; sourceTree = "<group>"; };
+		3323FD6DBE5081E1B568374B /* RNFBSharedUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFBSharedUtils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,8 @@
 			children = (
 				2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */,
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
+				3323F15CDA76AEC3C1E62FA2 /* RNFBSharedUtils.m */,
+				3323FD6DBE5081E1B568374B /* RNFBSharedUtils.h */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -151,6 +156,7 @@
 				2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
+				3323F830D70BC3D6CE563E6F /* RNFBSharedUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,12 +15,20 @@
  *
  */
 
+#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
 
 #import "RNFBAppModule.h"
 #import "RNFBRCTEventEmitter.h"
 
+
 @implementation RNFBAppModule
+
+#pragma mark -
+#pragma mark Statics
+
+  static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
+  static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
 #pragma mark -
 #pragma mark Module Setup
@@ -63,7 +71,23 @@
         (RCTPromiseResolveBlock) resolve
         rejecter:
         (RCTPromiseRejectBlock) reject) {
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      FIRApp *firApp;
+      NSString *appName = [appConfig valueForKey:@"name"];
 
+      if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
+        [FIRApp configureWithOptions:firOptions];
+        firApp = [FIRApp defaultApp];
+
+      } else {
+        [FIRApp configureWithName:appName options:firOptions];
+        firApp = [FIRApp appNamed:appName];
+      }
+
+      firApp.dataCollectionDefaultEnabled = (BOOL) [appConfig valueForKey:@"automaticDataCollectionEnabled"];
+
+      resolve([NSNull null]);
+    });
 
   }
 

@@ -20,10 +20,7 @@
 @implementation RCTConvert (FIROptions)
 
   + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-    FIROptions *firOptions = [
-        [FIROptions alloc] init
-    ];
-
+    FIROptions *firOptions = [[FIROptions alloc] init];
     firOptions.googleAppID = [rawOptions valueForKey:@"appId"];
     firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
     firOptions.projectID = [rawOptions valueForKey:@"projectId"];
@@ -35,7 +32,6 @@
     firOptions.androidClientID = [rawOptions valueForKey:@"androidClientId"];
     firOptions.deepLinkURLScheme = [rawOptions valueForKey:@"deepLinkURLScheme"];
     firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-
     return firOptions;
   }
 
