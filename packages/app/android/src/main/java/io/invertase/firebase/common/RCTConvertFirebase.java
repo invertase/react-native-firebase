@@ -71,7 +71,11 @@ public class RCTConvertFirebase {
     return Arguments.makeNativeMap(firebaseAppToMap(firebaseApp));
   }
 
-  public static FirebaseApp readableMapToFirebaseApp(ReadableMap options, ReadableMap appConfig,  Context context) {
+  public static FirebaseApp readableMapToFirebaseApp(
+    ReadableMap options,
+    ReadableMap appConfig,
+    Context context
+  ) {
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
     String name = appConfig.getString("name");
@@ -80,19 +84,28 @@ public class RCTConvertFirebase {
     builder.setApplicationId(options.getString("appId"));
     builder.setProjectId(options.getString("projectId"));
     builder.setDatabaseUrl(options.getString("databaseURL"));
+
     if (options.hasKey("gaTrackingId")) {
       builder.setGaTrackingId(options.getString("gaTrackingId"));
     }
+
     builder.setStorageBucket(options.getString("storageBucket"));
     builder.setGcmSenderId(options.getString("messagingSenderId"));
 
     FirebaseApp firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
 
-    firebaseApp.setDataCollectionDefaultEnabled(appConfig.getBoolean(
-      "automaticDataCollectionEnabled"));
-    // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
-    firebaseApp.setAutomaticResourceManagementEnabled(appConfig.getBoolean(
-      "automaticResourceManagement"));
+    if (appConfig.hasKey("automaticDataCollectionEnabled")) {
+      firebaseApp.setDataCollectionDefaultEnabled(
+        appConfig.getBoolean("automaticDataCollectionEnabled")
+      );
+    }
+
+    if (appConfig.hasKey("automaticResourceManagement")) {
+      // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
+      firebaseApp.setAutomaticResourceManagementEnabled(
+        appConfig.getBoolean("automaticResourceManagement")
+      );
+    }
 
     return firebaseApp;
   }

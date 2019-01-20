@@ -15,6 +15,8 @@
  *
  */
 
+import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/common';
+
 import FirebaseApp from '../../FirebaseApp';
 import { getAppModule } from './nativeModule';
 
@@ -73,20 +75,42 @@ export function getApps() {
  * @param options
  * @param configOrName
  */
-export function initializeApp(options = {}, name) {
-  // TODO validate args - can be appConfig obj or name string
-  // TODO default appConfig for automaticDataCollectionEnabled & automaticResourceManagement
-  // TODO fail if app already initialized
+export function initializeApp(options = {}, configOrName) {
+  let appConfig = configOrName;
+
+  if (!isObject(configOrName) || isNull(configOrName)) {
+    appConfig = {
+      name: configOrName,
+      automaticResourceManagement: false,
+      automaticDataCollectionEnabled: true,
+    };
+  }
+
+  if (isUndefined(appConfig.name)) {
+    appConfig.name = DEFAULT_APP_NAME;
+  }
+
+  const { name } = appConfig;
+
+  if (!name || !isString(name)) {
+    return Promise.reject(new Error(`Illegal App name: '${name}'`));
+  }
+
+  if (APP_REGISTRY[name]) {
+    return Promise.reject(new Error(`Firebase App named '${name}' already exists`));
+  }
+
   // TODO required options to init an app
 
   const newApp = new FirebaseApp(options, { name }, true, deleteApp.bind(null, name, true));
+  APP_REGISTRY[name] = newApp;
 
   return getAppModule()
-    .initializeApp(options, { name })
-    .then(() => {
-      newApp._intialized = true;
-      return newApp;
-    });
+  .initializeApp(options, { name })
+  .then(() => {
+    newApp._intialized = true;
+    return newApp;
+  });
 }
 
 /**
@@ -94,10 +118,12 @@ export function initializeApp(options = {}, name) {
  */
 export function deleteApp(name, nativeInitialized) {
   if (name === DEFAULT_APP_NAME && nativeInitialized) {
-    throw new Error('Unable to delete the default native firebase app instance.');
+    return Promise.reject(new Error('Unable to delete the default native firebase app instance.'));
   }
 
   const app = APP_REGISTRY[name];
+  // if (!app) return Promise.resolve();
+
   const nativeModule = getAppModule();
 
   return nativeModule.deleteApp(name).then(() => {

@@ -66,9 +66,8 @@ public class ReactNativeFirebaseInitProvider extends ContentProvider {
     }
 
     ReactNativeFirebaseApp.setApplicationContext(applicationContext);
-
     // TODO config firebase settings
-    // TODO have access to context here via getContext()
+
     return false;
   }
 

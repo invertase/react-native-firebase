@@ -2,8 +2,8 @@ describe('firebase', () => {
   it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app()._nativeInitialized, true);
     should.equal(firebase.app().name, '[DEFAULT]');
-    // should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
-    // should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
+    should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
+    should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
   });
 
   it('natively initialized apps should have options available in js', () => {
@@ -21,10 +21,9 @@ describe('firebase', () => {
     const platformAppConfig = TestHelpers.core.config();
     return firebase
       .initializeApp(platformAppConfig, name)
-      .onReady()
       .then(newApp => {
-        newApp.name.should.equal(name.toUpperCase());
-        newApp.toString().should.equal(name.toUpperCase());
+        newApp.name.should.equal(name);
+        newApp.toString().should.equal(name);
         newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
         return newApp.delete();
       });
@@ -47,15 +46,15 @@ describe('firebase -> X', () => {
     const platformAppConfig = TestHelpers.core.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
 
-    newApp.name.should.equal(name.toUpperCase());
-    newApp.toString().should.equal(name.toUpperCase());
+    newApp.name.should.equal(name);
+    newApp.toString().should.equal(name);
     newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
 
     await newApp.delete();
 
     (() => {
       firebase.app(name);
-    }).should.throw(`The [${name.toUpperCase()}] firebase app has not been initialized!`);
+    }).should.throw(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
   });
 
   it('prevents the default app from being deleted', async () => {

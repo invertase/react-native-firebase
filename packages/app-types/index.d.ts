@@ -63,8 +63,21 @@ export type FirebaseOptions = {
 };
 
 export interface FirebaseAppConfig {
+  /**
+   * The Firebase App name, defaults to [DEFAULT] if none provided.
+   */
   name?: string;
+
+  /**
+   *
+   */
   automaticDataCollectionEnabled?: boolean;
+
+  /**
+   * If set to true it indicates that Firebase should close database connections
+   * automatically when the app is in the background. Disabled by default.
+   */
+  automaticResourceManagement?: boolean;
 }
 
 export interface FirebaseApp {
