@@ -15,6 +15,8 @@
  *
  */
 
+#import <Firebase/Firebase.h>
+
 #import "RNFBAppModule.h"
 #import "RNFBRCTEventEmitter.h"
 
@@ -48,6 +50,21 @@
   RCT_EXPORT_METHOD(removeListeners:
     (NSInteger) count) {
     [[RNFBRCTEventEmitter shared] removeListeners:count];
+  }
+
+#pragma mark -
+#pragma mark Firebase App Methods
+
+  RCT_EXPORT_METHOD(initializeApp:
+    (FIROptions *) firOptions
+        appConfig:
+        (NSDictionary *) appConfig
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+
+
   }
 
 @end

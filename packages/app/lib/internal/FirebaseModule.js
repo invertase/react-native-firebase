@@ -39,11 +39,6 @@ export default class FirebaseModule {
     this._nativeModule = getNativeModule(this);
     return this._nativeModule;
   }
-
-  get log() {
-    // TODO logger;
-    return null;
-  }
 }
 
 // Instance of checks don't work once compiled

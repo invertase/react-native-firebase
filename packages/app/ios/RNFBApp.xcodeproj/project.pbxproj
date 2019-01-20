@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppModule.m */; };
 		2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */; };
+		2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +30,8 @@
 		2744B98521F45429004F8E3F /* RNFBAppModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModule.m; path = RNFBApp/RNFBAppModule.m; sourceTree = SOURCE_ROOT; };
 		2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBRCTEventEmitter.h; sourceTree = "<group>"; };
 		2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRCTEventEmitter.m; sourceTree = "<group>"; };
+		2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+FIROptions.h"; sourceTree = "<group>"; };
+		2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIROptions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,19 +56,12 @@
 		2744B98321F45429004F8E3F /* RNFBApp */ = {
 			isa = PBXGroup;
 			children = (
+				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
-				2744B98B21F45C44004F8E3F /* convertors */,
 				2744B98421F45429004F8E3F /* RNFBAppModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAppModule.m */,
 			);
 			path = RNFBApp;
-			sourceTree = "<group>";
-		};
-		2744B98B21F45C44004F8E3F /* convertors */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = convertors;
 			sourceTree = "<group>";
 		};
 		2744B98C21F45C64004F8E3F /* common */ = {
@@ -75,6 +71,15 @@
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
 			);
 			path = common;
+			sourceTree = "<group>";
+		};
+		2744B9A121F48736004F8E3F /* converters */ = {
+			isa = PBXGroup;
+			children = (
+				2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */,
+				2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */,
+			);
+			path = converters;
 			sourceTree = "<group>";
 		};
 		3323F52AAFE26B7384BE4DE3 = {
@@ -145,6 +150,7 @@
 			files = (
 				2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
+				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
