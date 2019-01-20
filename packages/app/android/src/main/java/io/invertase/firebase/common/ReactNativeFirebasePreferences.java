@@ -43,8 +43,8 @@ public class ReactNativeFirebasePreferences {
   }
 
   public WritableMap getAllAsWritableMap() {
+    // TODO: Salakar: convert to writableMap
     return Arguments.createMap();
-    // TODO: Salakar: convert getPreferences().getAll() to writableMap
   }
 
   public void clearAll() {

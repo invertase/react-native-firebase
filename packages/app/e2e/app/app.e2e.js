@@ -1,7 +1,11 @@
 describe('firebase', () => {
-  it('it should create js apps for natively initialized apps', () => {
-    should.equal(firebase.app()._nativeInitialized, true);
+  it('it should allow creating the default app in JS', () => {
+    // app is created in tests app before all hook
+    should.equal(firebase.app()._nativeInitialized, false);
     should.equal(firebase.app().name, '[DEFAULT]');
+  });
+
+  it('it should create js apps for natively initialized apps', () => {
     should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
     should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
   });

@@ -92,7 +92,12 @@ public class RCTConvertFirebase {
     builder.setStorageBucket(options.getString("storageBucket"));
     builder.setGcmSenderId(options.getString("messagingSenderId"));
 
-    FirebaseApp firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
+    FirebaseApp firebaseApp;
+    if (name.equals("[DEFAULT]")) {
+      firebaseApp = FirebaseApp.initializeApp(context, builder.build());
+    } else {
+      firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
+    }
 
     if (appConfig.hasKey("automaticDataCollectionEnabled")) {
       firebaseApp.setDataCollectionDefaultEnabled(

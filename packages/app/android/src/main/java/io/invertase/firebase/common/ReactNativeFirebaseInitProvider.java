@@ -66,7 +66,6 @@ public class ReactNativeFirebaseInitProvider extends ContentProvider {
     }
 
     ReactNativeFirebaseApp.setApplicationContext(applicationContext);
-    // TODO config firebase settings
 
     return false;
   }

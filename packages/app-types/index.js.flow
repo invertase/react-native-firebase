@@ -14,8 +14,6 @@
  * limitations under the License.
  *
  */
-// TODO code comments
-
 export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
   (): M;
   +SDK_VERSION: string;

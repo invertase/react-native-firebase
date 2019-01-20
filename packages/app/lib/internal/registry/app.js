@@ -100,17 +100,47 @@ export function initializeApp(options = {}, configOrName) {
     return Promise.reject(new Error(`Firebase App named '${name}' already exists`));
   }
 
-  // TODO required options to init an app
+  // VALIDATE OPTIONS
+  if (!isObject(options)) {
+    return Promise.reject(
+      new Error(`firebase.initializeApp(options, <- expects an Object but got '${typeof options}'`),
+    );
+  }
 
-  const newApp = new FirebaseApp(options, { name }, true, deleteApp.bind(null, name, true));
-  APP_REGISTRY[name] = newApp;
+  if (!isString(options.apiKey)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'apiKey'.`));
+  }
+
+  if (!isString(options.appId)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'appId'.`));
+  }
+
+  if (!isString(options.databaseURL)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'databaseURL'.`));
+  }
+
+  if (!isString(options.messagingSenderId)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'messagingSenderId'.`));
+  }
+
+  if (!isString(options.projectId)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'projectId'.`));
+  }
+
+  if (!isString(options.storageBucket)) {
+    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'storageBucket'.`));
+  }
+
+  const app = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
+
+  APP_REGISTRY[name] = app;
 
   return getAppModule()
-  .initializeApp(options, { name })
-  .then(() => {
-    newApp._intialized = true;
-    return newApp;
-  });
+    .initializeApp(options, { name })
+    .then(() => {
+      app._intialized = true;
+      return app;
+    });
 }
 
 /**
@@ -122,7 +152,6 @@ export function deleteApp(name, nativeInitialized) {
   }
 
   const app = APP_REGISTRY[name];
-  // if (!app) return Promise.resolve();
 
   const nativeModule = getAppModule();
 

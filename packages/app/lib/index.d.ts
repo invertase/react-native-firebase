@@ -15,17 +15,6 @@
  *
  */
 
-import { ReactNativeFirebaseModule } from '@react-native-firebase/app-types';
-
-/**
- * Provides various helpers for using Firebase in React Native.
- *
- * @firebase utils
- */
-interface FirebaseUtilsModule extends ReactNativeFirebaseModule {
-  // TODO
-}
-
 /**
  * @firebase firebase
  */

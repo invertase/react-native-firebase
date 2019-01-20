@@ -32,7 +32,7 @@ export default class FirebaseApp {
       this._nativeInitialized = true;
     } else {
       this._initialized = false;
-      getAppModule().setAutomaticDataCollectionEnabled(name, !!automaticDataCollectionEnabled);
+      this._nativeInitialized = false;
     }
   }
 
