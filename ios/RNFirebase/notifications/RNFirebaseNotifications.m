@@ -639,7 +639,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
      notificationResponse[@"notification"] = notification;
      notificationResponse[@"action"] = response.actionIdentifier;
      if ([response isKindOfClass:[UNTextInputNotificationResponse class]]) {
-         notificationResponse[@"results"] = ((UNTextInputNotificationResponse *)response).userText;
+         notificationResponse[@"results"] = @{@"resultKey": ((UNTextInputNotificationResponse *)response).userText};
      }
 
      return notificationResponse;
