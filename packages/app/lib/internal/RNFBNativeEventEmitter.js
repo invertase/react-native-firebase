@@ -20,10 +20,6 @@ import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 const { RNFBApp } = NativeModules;
 
 class RNFBNativeEventEmitter extends NativeEventEmitter {
-  constructor() {
-    super(RNFBApp);
-  }
-
   addListener(eventType, listener, context) {
     if (Platform.OS === 'android') {
       RNFBApp.eventsAddListener(eventType);

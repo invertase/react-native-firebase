@@ -11,8 +11,8 @@
     "lerna:boostrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
     "gen:reference": "typedoc --json docs/$(node scripts/docs-version-name)/typedoc.raw.json --mode file --includeDeclarations --excludeExternals && node scripts/docs-parse-typedoc docs/$(node scripts/docs-version-name)/typedoc.raw.json",
-    "tests:packager:chrome": "react-native start --platforms ios,android",
-    "tests:packager:jet": "REACT_DEBUGGER='echo nope' react-native start",
+    "tests:packager:chrome": "cd tests && react-native start --platforms ios,android",
+    "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
     "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
     "tests:android:build": "cd tests && detox build --configuration android.emu.debug",
     "tests:android:test": "cd tests && detox test --configuration android.emu.debug",
@@ -29,12 +29,6 @@
     "publish:alpha:patch": "lerna version prepatch --preid alpha --no-push --force-publish=*",
     "publish:alpha:minor": "lerna version preminor --preid alpha --no-push --force-publish=*",
     "publish:alpha:major": "lerna version premajor --preid alpha --no-push --force-publish=*"
-  },
-  "dependencies": {
-    "prop-types": "^15.6.1",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-native": "^0.58.0-rc.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
@@ -85,6 +79,14 @@
       "packages/*",
       "tests"
     ],
-    "nohoist": ["detox"]
+    "nohoist": [
+      "detox",
+      "**/jet",
+      "**/jet/**",
+      "**/react",
+      "**/react/**",
+      "**/react-native",
+      "**/react-native/**"
+    ]
   }
 }

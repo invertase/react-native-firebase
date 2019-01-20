@@ -2,17 +2,17 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import <RNFirebaseNotifications.h>
-#import <RNFirebaseLinks.h>
-@import Firebase;
-@import GoogleSignIn;
+#import <Firebase/Firebase.h>
+//#import <RNFirebaseNotifications.h>
+//#import <RNFirebaseLinks.h>
+//@import GoogleSignIn;
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [FIRApp configure];
-  [GIDSignIn sharedInstance].clientID = [FIRApp defaultApp].options.clientID;
+//  [GIDSignIn sharedInstance].clientID = [FIRApp defaultApp].options.clientID;
   
   NSURL *jsCodeLocation;
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
@@ -31,16 +31,16 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
-
-- (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler {
-  return [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
+//
+//- (BOOL)application:(UIApplication *)application
+//continueUserActivity:(NSUserActivity *)userActivity
+// restorationHandler:(void (^)(NSArray *))restorationHandler {
+//  return [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+//}
+//
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+//fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+//  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+//}
 
 @end

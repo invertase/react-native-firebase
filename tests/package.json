@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "prop-types": "^15.6.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-native": "^0.58.0-rc.3",
     "detox": "^9.1.2",
     "jet": "^0.2.0",
     "jsonwebtoken": "^8.2.1",

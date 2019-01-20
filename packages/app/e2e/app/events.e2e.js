@@ -4,8 +4,8 @@ const eventBody = {
   foo: 'bar',
 };
 
-describe('Core -> EventEmitter', () => {
-  android.describe('ReactNativeFirebaseEventEmitter', () => {
+describe.only('Core -> EventEmitter', () => {
+  describe('ReactNativeFirebaseEventEmitter', () => {
     it('queues events before app is ready', async () => {
       const {
         eventsPing,

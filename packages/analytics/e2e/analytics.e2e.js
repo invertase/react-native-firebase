@@ -2,6 +2,20 @@
 // TODO checks that it actually threw, only does tests in the catch
 
 describe('analytics()', () => {
+  xdescribe('namespace', () => {
+    xit('accessible from firebase.app()', () => {
+      const app = firebase.app();
+      should.exist(app.analytics);
+      app.analytics().logEvent.should.be.a.Function();
+    });
+
+    xit('throws if app arg provided to firebase.analytics(APP)', {
+
+    });
+
+    xit('throws if args provided to firebase.app().analytics(ARGS)', {});
+  });
+
   describe('logEvent()', () => {
     xit('errors on using a reserved name', () => {
       try {

@@ -10,7 +10,6 @@ const config = {
     resolverMainFields: ['testsMain', 'browser', 'main'],
     blackListRE: createBlacklist([
       new RegExp(`^${escape(resolve(__dirname, '..', 'docs'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'tests/node_modules'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/ios'))}\\/.*$`),
       new RegExp(`^${escape(resolve(__dirname, '..', 'tests/e2e'))}\\/.*$`),
@@ -29,7 +28,7 @@ const config = {
             return join(__dirname, `../packages/${packageName}`);
           }
 
-          return join(__dirname, '..', `node_modules/${name}`);
+          return join(__dirname, `node_modules/${name}`);
         },
       },
     ),
