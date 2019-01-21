@@ -124,7 +124,11 @@ NSString *const RNFBRCTEventBodyKey = @"body";
   }
 
   - (NSDictionary *)getListenersDictionary {
-    return nil;
+    NSMutableDictionary *listenersDictionary = [NSMutableDictionary new];
+    listenersDictionary[@"listeners"] = @(self.jsListenerCount);
+    listenersDictionary[@"queued"] = @([self.queuedEvents count]);
+    listenersDictionary[@"events"] = [self.jsListeners copy];
+    return listenersDictionary;
   }
 
 
