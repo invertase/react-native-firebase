@@ -20,6 +20,7 @@
 
 #import "RNFBAppModule.h"
 #import "RNFBRCTEventEmitter.h"
+#import "RNFBSharedUtils.h"
 
 
 @implementation RNFBAppModule
@@ -86,9 +87,8 @@
 
       firApp.dataCollectionDefaultEnabled = (BOOL) [appConfig valueForKey:@"automaticDataCollectionEnabled"];
 
-      resolve([NSNull null]);
+      resolve([RNFBSharedUtils firAppToDictionary:firApp]);
     });
-
   }
 
 @end

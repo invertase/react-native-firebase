@@ -24,5 +24,8 @@
 #endif
 
 @interface RNFBSharedUtils : NSObject
+extern static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
+extern static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
+
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp;
 @end

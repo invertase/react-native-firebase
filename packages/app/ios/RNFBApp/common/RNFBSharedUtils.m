@@ -17,14 +17,37 @@
 
 #import "RNFBSharedUtils.h"
 
-
 @implementation RNFBSharedUtils
-  static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
-  static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
   + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
+    FIROptions *firOptions = [firApp options];
+    NSMutableDictionary *firAppDictionary = [NSMutableDictionary new];
+    NSMutableDictionary *firAppOptions = [NSMutableDictionary new];
+    NSMutableDictionary *firAppConfig = [NSMutableDictionary new];
 
+    NSString *name = [firApp name];
+    if ([name isEqualToString:DEFAULT_APP_NAME]) {
+      name = DEFAULT_APP_DISPLAY_NAME;
+    }
+
+    firAppConfig[@"name"] = name;
+    firAppConfig[@"automaticDataCollectionEnabled"] = @([firApp isDataCollectionDefaultEnabled]);
+
+    firAppOptions[@"apiKey"] = firOptions.APIKey;
+    firAppOptions[@"appId"] = firOptions.googleAppID;
+    firAppOptions[@"projectId"] = firOptions.projectID;
+    firAppOptions[@"databaseURL"] = firOptions.databaseURL;
+    firAppOptions[@"gaTrackingId"] = firOptions.trackingID;
+    firAppOptions[@"storageBucket"] = firOptions.storageBucket;
+    firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
+    // missing from android sdk - ios only:
+    firAppOptions[@"clientId"] = firOptions.clientID;
+    firAppOptions[@"androidClientID"] = firOptions.androidClientID;
+    firAppOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
+
+    firAppDictionary[@"options"] = firAppOptions;
+    firAppDictionary[@"appConfig"] = firAppConfig;
+
+    return firAppDictionary;
   }
-
-
 @end
