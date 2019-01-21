@@ -45,14 +45,53 @@
 #pragma mark -
 #pragma mark Event Methods
 
-  RCT_EXPORT_METHOD(addListener:
+  RCT_EXPORT_METHOD(eventsNotifyReady:
+    (BOOL *) ready) {
+    [[RNFBRCTEventEmitter shared] notifyJsReady:ready];
+  }
+
+  RCT_EXPORT_METHOD(eventsGetListeners:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([[RNFBRCTEventEmitter shared] getListenersDictionary]);
+  }
+
+  RCT_EXPORT_METHOD(eventsPing:
+    (NSString *) eventName
+        eventBody:
+        (NSDictionary *) eventBody
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:eventName body:eventBody];
+    resolve(eventBody);
+  }
+
+  RCT_EXPORT_METHOD(eventsAddListener:
     (NSString *) eventName) {
     [[RNFBRCTEventEmitter shared] addListener:eventName];
   }
 
+  RCT_EXPORT_METHOD(eventsRemoveListener:
+    (NSString *) eventName
+        all:
+        (BOOL *) all) {
+    [[RNFBRCTEventEmitter shared] removeListeners:eventName all:all];
+  }
+
+#pragma mark -
+#pragma mark Events Unused
+
+  RCT_EXPORT_METHOD(addListener:
+    (NSString *) eventName) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
+
   RCT_EXPORT_METHOD(removeListeners:
     (NSInteger) count) {
-    [[RNFBRCTEventEmitter shared] removeListeners:count];
+    // Keep: Required for RN built in Event Emitter Calls.
   }
 
 #pragma mark -

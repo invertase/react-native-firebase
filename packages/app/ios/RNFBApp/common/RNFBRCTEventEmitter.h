@@ -48,6 +48,27 @@
  *
  * @param count The count of event listeners being removed.
  */
-- (void)removeListeners:(NSInteger)count;
+- (void)removeListeners:(NSString *)eventName all:(BOOL *)all;
 
+/**
+ * Send an event to JS with the specified name and body
+ *
+ * @param eventName
+ * @param body
+ */
+- (void)sendEventWithName:(NSString *)eventName body:(id)body;
+
+/**
+ * Notify the event emitter that JS has loaded and is ready to receive events.
+ *
+ * @param ready
+ */
+- (void)notifyJsReady:(BOOL *)ready;
+
+/**
+ * Returns a dictionary of all registered events & counts. Mainly for testing.
+ *
+ * @return NSDictionary
+ */
+- (NSDictionary *)getListenersDictionary;
 @end

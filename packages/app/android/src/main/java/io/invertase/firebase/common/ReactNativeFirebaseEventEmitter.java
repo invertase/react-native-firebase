@@ -152,7 +152,7 @@ public class ReactNativeFirebaseEventEmitter {
     try {
       reactContext.getJSModule(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class
-      ).emit(event.getEventName(), event.getEventBody());
+      ).emit("rnfb_" + event.getEventName(), event.getEventBody());
     } catch (Exception e) {
       return false;
     }
