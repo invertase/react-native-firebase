@@ -7,10 +7,10 @@ import {
   View,
   Image,
   StyleSheet,
-  NativeEventEmitter,
 } from 'react-native';
 
 import jet from 'jet/platform/react-native';
+import NativeEventEmitter from 'react-native-firebase/lib/internal/RNFBNativeEventEmitter';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);

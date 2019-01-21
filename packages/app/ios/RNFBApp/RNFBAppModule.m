@@ -46,7 +46,7 @@
 #pragma mark Event Methods
 
   RCT_EXPORT_METHOD(eventsNotifyReady:
-    (BOOL *) ready) {
+    (BOOL) ready) {
     [[RNFBRCTEventEmitter shared] notifyJsReady:ready];
   }
 

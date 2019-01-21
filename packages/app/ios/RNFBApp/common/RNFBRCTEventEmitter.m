@@ -18,7 +18,7 @@
 #import "RNFBRCTEventEmitter.h"
 
 @interface RNFBRCTEventEmitter ()
-@property(atomic, assign) BOOL *jsReady;
+@property(atomic, assign) bool jsReady;
 @property(atomic, assign) NSInteger jsListenerCount;
 @property(nonatomic, strong) NSMutableDictionary *jsListeners;
 @property(nonatomic, strong) NSMutableArray *queuedEvents;
@@ -44,7 +44,7 @@ NSString *const RNFBRCTEventBodyKey = @"body";
     self = [super init];
 
     if (self) {
-      self.jsReady = NO;
+      self.jsReady = FALSE;
       self.queuedEvents = [NSMutableArray array];
       self.jsListeners = [NSMutableDictionary dictionary];
     }
@@ -52,7 +52,7 @@ NSString *const RNFBRCTEventBodyKey = @"body";
     return self;
   }
 
-  - (void)notifyJsReady:(BOOL *)jsReady {
+  - (void)notifyJsReady:(bool)jsReady {
     @synchronized (self.jsListeners) {
       self.jsReady = jsReady;
       if (jsReady) {
@@ -87,9 +87,9 @@ NSString *const RNFBRCTEventBodyKey = @"body";
       self.jsListenerCount++;
 
       if (self.jsListeners[eventName] == nil) {
-        self.jsListeners[eventName] = @1;
+        self.jsListeners[eventName] = @([@1 integerValue]);
       } else {
-        self.jsListeners[eventName] = @(((NSInteger) self.jsListeners[eventName])++);
+        self.jsListeners[eventName] = @([self.jsListeners[eventName] integerValue] + [@1 integerValue]);
       }
 
       for (id event in [self.queuedEvents copy]) {
@@ -106,7 +106,7 @@ NSString *const RNFBRCTEventBodyKey = @"body";
   - (void)removeListeners:(NSString *)eventName all:(BOOL *)all {
     @synchronized (self.jsListeners) {
       if (self.jsListeners[eventName] != nil) {
-        NSInteger listenersForEvent = (NSInteger) self.jsListeners[eventName];
+        NSInteger listenersForEvent = [self.jsListeners[eventName] integerValue];
 
         if (listenersForEvent <= 1 || all) {
           @synchronized (self.jsListeners) {
@@ -114,11 +114,15 @@ NSString *const RNFBRCTEventBodyKey = @"body";
           }
         } else {
           @synchronized (self.jsListeners) {
-            self.jsListeners[eventName] = @(((NSInteger) self.jsListeners[eventName])--);
+            self.jsListeners[eventName] = @([self.jsListeners[eventName] integerValue] - [@1 integerValue]);
           }
         }
 
-        self.jsListenerCount -= all ? listenersForEvent : 1;
+        if (all) {
+          self.jsListenerCount = self.jsListenerCount - listenersForEvent;
+        } else {
+          self.jsListenerCount = self.jsListenerCount - [@1 integerValue];
+        }
       }
     }
   }

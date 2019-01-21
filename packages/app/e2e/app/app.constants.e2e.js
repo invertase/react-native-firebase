@@ -1,7 +1,7 @@
-describe('App -> NativeModules -> Constants', () => {
+describe.only('App -> NativeModules -> Constants', () => {
   describe('.apps', () => {
     it('should be an array', () => {
-      const { apps } = NativeModules.RNFBApp;
+      const { apps } = NativeModules.RNFBAppModule;
 
       apps.should.be.an.Array();
       // secondaryFromNative
@@ -9,7 +9,7 @@ describe('App -> NativeModules -> Constants', () => {
     });
 
     it('array items contain name, options & state properties', () => {
-      const { apps } = NativeModules.RNFBApp;
+      const { apps } = NativeModules.RNFBAppModule;
 
       apps.should.be.an.Array();
       apps.length.should.equal(1);

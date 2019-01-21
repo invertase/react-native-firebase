@@ -4,23 +4,20 @@ const eventBody = {
   foo: 'bar',
 };
 
-describe('Core -> EventEmitter', () => {
+describe.only('Core -> EventEmitter', () => {
   describe('ReactNativeFirebaseEventEmitter', () => {
     it('queues events before app is ready', async () => {
       const {
         eventsPing,
         eventsNotifyReady,
         eventsGetListeners,
-        eventsAddListener,
-        eventsRemoveListener,
-      } = NativeModules.RNFBApp;
+      } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(false);
 
       let readyToResolve = false;
       const { resolve, reject, promise } = Promise.defer();
-      const emitter = new NativeEventEmitter(NativeModules.RNFBApp);
+      const emitter = NativeEventEmitter;
 
-      eventsAddListener(eventName);
       emitter.addListener(eventName, event => {
         event.foo.should.equal(eventBody.foo);
         if (!readyToResolve) {
@@ -41,7 +38,6 @@ describe('Core -> EventEmitter', () => {
       await promise;
       emitter.removeAllListeners(eventName);
 
-      await eventsRemoveListener(eventName, true);
       const nativeListenersAfter = await eventsGetListeners();
 
       should.equal(nativeListenersAfter.events.pong, undefined);
@@ -52,30 +48,21 @@ describe('Core -> EventEmitter', () => {
         eventsPing,
         eventsNotifyReady,
         eventsGetListeners,
-        eventsAddListener,
         eventsRemoveListener,
-      } = NativeModules.RNFBApp;
+      } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(true);
-      let readyToResolve = false;
-      const { resolve, reject, promise } = Promise.defer();
-      const emitter = new NativeEventEmitter(NativeModules.RNFBApp);
-
-      emitter.addListener(eventName2, event => {
-        event.foo.should.equal(eventBody.foo);
-        if (!readyToResolve) {
-          return reject(new Error('Event was received before being ready!'));
-        }
-
-        return resolve();
-      });
+      const { resolve, promise } = Promise.defer();
+      const emitter = NativeEventEmitter;
 
       await eventsPing(eventName2, eventBody);
-      await sleep(100);
+      await sleep(500);
       const nativeListenersBefore = await eventsGetListeners();
       should.equal(nativeListenersBefore.events.ping, undefined);
 
-      readyToResolve = true;
-      eventsAddListener(eventName2);
+      emitter.addListener(eventName2, event => {
+        event.foo.should.equal(eventBody.foo);
+        return resolve();
+      });
 
       await promise;
       emitter.removeAllListeners(eventName2);
