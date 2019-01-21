@@ -1,4 +1,4 @@
-describe('firebase', () => {
+describe.only('firebase', () => {
   it('it should allow creating the default app in JS', () => {
     // app is created in tests app before all hook
     should.equal(firebase.app()._nativeInitialized, false);

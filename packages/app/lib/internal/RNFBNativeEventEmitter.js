@@ -18,7 +18,7 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 const { RNFBAppModule } = NativeModules;
-console.dir(RNFBAppModule);
+
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   constructor() {
     super(RNFBAppModule);

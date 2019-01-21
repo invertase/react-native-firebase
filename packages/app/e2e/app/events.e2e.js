@@ -4,7 +4,7 @@ const eventBody = {
   foo: 'bar',
 };
 
-describe.only('Core -> EventEmitter', () => {
+describe('Core -> EventEmitter', () => {
   describe('ReactNativeFirebaseEventEmitter', () => {
     it('queues events before app is ready', async () => {
       const {

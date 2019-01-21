@@ -2,14 +2,15 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-//#import <Firebase/Firebase.h>
+#import <Firebase/Firebase.h>
+
 //#import <RNFirebaseNotifications.h>
 //#import <RNFirebaseLinks.h>
 //@import GoogleSignIn;
 
 @implementation AppDelegate
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-//  [FIRApp configure];
+    [FIRApp configureWithName:@"secondaryFromNative" options:[FIROptions defaultOptions]];
 //  [GIDSignIn sharedInstance].clientID = [FIRApp defaultApp].options.clientID;
 
     NSURL *jsCodeLocation;

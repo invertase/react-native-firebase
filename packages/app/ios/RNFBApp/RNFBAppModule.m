@@ -89,4 +89,45 @@
     });
   }
 
+  RCT_EXPORT_METHOD(deleteApp:
+    (FIRApp *) firApp
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    if (!firApp) {
+      return resolve([NSNull null]);
+    }
+
+    [firApp deleteApp:^(BOOL success) {
+      if (success) {
+        resolve([NSNull null]);
+      } else {
+        // try again once more
+        [firApp deleteApp:^(BOOL success2) {
+          if (success2) {
+            resolve([NSNull null]);
+          } else {
+            // TODO js error builder
+            reject(@"app/delete-app-failed", @"Failed to delete the specified app.", nil);
+          }
+        }];
+      }
+    }];
+  }
+
+  - (NSDictionary *)constantsToExport {
+    NSDictionary *firApps = [FIRApp allApps];
+    NSMutableArray *appsArray = [NSMutableArray new];
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    for (id key in firApps) {
+      [appsArray addObject:[RNFBSharedUtils firAppToDictionary:firApps[key]]];
+    }
+    constants[@"apps"] = appsArray;
+    return constants;
+  }
+
+  + (BOOL)requiresMainQueueSetup {
+    return YES;
+  }
 @end
