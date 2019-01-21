@@ -1,4 +1,4 @@
-describe.only('App -> NativeModules -> Constants', () => {
+describe('App -> NativeModules -> Constants', () => {
   describe('.apps', () => {
     it('should be an array', () => {
       const { apps } = NativeModules.RNFBAppModule;
