@@ -37,7 +37,8 @@
       "packages/**"
     ],
     "exclude": [
-      "node_modules"
+      "node_modules",
+      "**/common/lib/**"
     ],
     "cwd": "..",
     "all": true,
@@ -45,6 +46,7 @@
     "instrument": false,
     "reporter": [
       "lcov",
+      "html",
       "text-summary"
     ]
   },
