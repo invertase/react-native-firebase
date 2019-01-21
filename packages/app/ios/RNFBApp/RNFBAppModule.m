@@ -26,12 +26,6 @@
 @implementation RNFBAppModule
 
 #pragma mark -
-#pragma mark Statics
-
-  static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
-  static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
-
-#pragma mark -
 #pragma mark Module Setup
 
   RCT_EXPORT_MODULE();
@@ -76,13 +70,17 @@
       FIRApp *firApp;
       NSString *appName = [appConfig valueForKey:@"name"];
 
-      if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
-        [FIRApp configureWithOptions:firOptions];
-        firApp = [FIRApp defaultApp];
-
-      } else {
-        [FIRApp configureWithName:appName options:firOptions];
-        firApp = [FIRApp appNamed:appName];
+      @try {
+        if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
+          [FIRApp configureWithOptions:firOptions];
+          firApp = [FIRApp defaultApp];
+        } else {
+          [FIRApp configureWithName:appName options:firOptions];
+          firApp = [FIRApp appNamed:appName];
+        }
+      } @catch (NSException *exception) {
+        // TODO js error builder
+        // reject(@"code",@"message",[exception ]);
       }
 
       firApp.dataCollectionDefaultEnabled = (BOOL) [appConfig valueForKey:@"automaticDataCollectionEnabled"];

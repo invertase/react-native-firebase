@@ -61,8 +61,8 @@ public class RCTConvertFirebase {
     options.put("messagingSenderId", appOptions.getGcmSenderId());
     options.put("storageBucket", appOptions.getStorageBucket());
 
-    root.put("appConfig", appConfig);
     root.put("options", options);
+    root.put("appConfig", appConfig);
 
     return root;
   }

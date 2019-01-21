@@ -2,6 +2,9 @@
   "name": "react-native-firebase-tests",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "build:clean": "rimraf dist && rimraf android/build && rimraf ios/build"
+  },
   "dependencies": {
     "prop-types": "^15.6.1",
     "react": "^16.6.3",

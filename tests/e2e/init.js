@@ -21,6 +21,8 @@ for (let i = 0; i < PACKAGES.length; i++) {
 
 before(async () => {
   await detox.init(config);
+  console.log('!!!DEBUG NOW!!!');
+  await sleep(10000)
   await firebase.initializeApp(TestHelpers.core.config());
 });
 

@@ -115,20 +115,27 @@ export function initializeApp(options = {}, configOrName) {
     return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'appId'.`));
   }
 
+  // TODO - make required only if database module exists - init app on native ios&android needs changing also
   if (!isString(options.databaseURL)) {
     return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'databaseURL'.`));
   }
 
+  // TODO - make required only if messaging/notifications module exists - init app on native ios&android needs changing also
   if (!isString(options.messagingSenderId)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'messagingSenderId'.`));
+    return Promise.reject(
+      new Error(`Missing or invalid FirebaseOptions property 'messagingSenderId'.`),
+    );
   }
 
   if (!isString(options.projectId)) {
     return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'projectId'.`));
   }
 
+  // TODO - make required only if database module exists - init app on native ios&android needs changing also
   if (!isString(options.storageBucket)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'storageBucket'.`));
+    return Promise.reject(
+      new Error(`Missing or invalid FirebaseOptions property 'storageBucket'.`),
+    );
   }
 
   const app = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));

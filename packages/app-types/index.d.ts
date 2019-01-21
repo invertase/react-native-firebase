@@ -52,27 +52,58 @@ export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
 } & S;
 
 export type FirebaseOptions = {
+  /**
+   * The Google App ID that is used to uniquely identify an instance of an app.
+   */
   appId: string;
-  apiKey?: string;
-  authDomain?: string;
-  databaseURL: string;
-  projectId: string;
-  gaTrackingId?: string;
-  storageBucket: string;
-  messagingSenderId: string;
 
   /**
-   * iOS only
+   * An API key used for authenticating requests from your app, e.g.
+   * "AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk", used to identify your app to Google servers.
+   */
+  apiKey?: string;
+
+  /**
+   * The database root URL, e.g. "http://abc-xyz-123.firebaseio.com".
+   */
+  databaseURL?: string;
+
+  /**
+   * The Project ID from the Firebase console, for example "abc-xyz-123".
+   */
+  projectId: string;
+
+  /**
+   * The tracking ID for Google Analytics, e.g. "UA-12345678-1", used to configure Google Analytics.
+   */
+  gaTrackingId?: string;
+
+  /**
+   * The Google Cloud Storage bucket name, e.g. "abc-xyz-123.storage.firebase.com".
+   */
+  storageBucket?: string;
+
+
+  /**
+   * The Project Number from the Google Developer's console, for example "012345678901", used to
+   * configure Google Cloud Messaging.
+   */
+  messagingSenderId?: string;
+
+  /**
+   * iOS only - The OAuth2 client ID for iOS application used to authenticate Google users, for example
+   * "12345.apps.googleusercontent.com", used for signing in with Google.
    */
   clientId?: string;
 
   /**
-   * iOS only
+   * iOS only - The Android client ID used in Google AppInvite when an iOS app has its Android version, for
+   * example "12345.apps.googleusercontent.com".
    */
   androidClientId?: string;
 
   /**
-   * iOS only
+   * iOS only - The URL scheme used to set up Durable Deep Link service.
    */
   deepLinkURLScheme?: string;
   [name: string]: any;

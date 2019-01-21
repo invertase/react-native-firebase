@@ -15,6 +15,9 @@
  *
  */
 
+#ifndef RNFBSharedUtils_h
+#define RNFBSharedUtils_h
+
 #import <Firebase/Firebase.h>
 
 #ifdef DEBUG
@@ -23,9 +26,21 @@
 #define DLog(...)
 #endif
 
+#define ELog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+
+#pragma mark -
+#pragma mark Constants
+
+extern NSString *const DEFAULT_APP_DISPLAY_NAME;
+extern NSString *const DEFAULT_APP_NAME;
+
 @interface RNFBSharedUtils : NSObject
-extern static NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
-extern static NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
+
+#pragma mark -
+#pragma mark Methods
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp;
+
 @end
+
+#endif

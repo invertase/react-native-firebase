@@ -17,7 +17,16 @@
 
 #import "RNFBSharedUtils.h"
 
+#pragma mark -
+#pragma mark Constants
+
+NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
+NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
+
 @implementation RNFBSharedUtils
+
+#pragma mark -
+#pragma mark Methods
 
   + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
     FIROptions *firOptions = [firApp options];
