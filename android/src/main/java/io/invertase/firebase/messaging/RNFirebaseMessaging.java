@@ -54,9 +54,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getToken(Promise promise) {
+  public void getToken(String senderId, Promise promise) {
     try {
-      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+      senderId = (senderId != null) ? senderId : FirebaseApp.getInstance().getOptions().getGcmSenderId();
       String token = FirebaseInstanceId
         .getInstance()
         .getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
@@ -68,9 +68,9 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void deleteToken(Promise promise) {
+  public void deleteToken(String senderId, Promise promise) {
     try {
-      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+      senderId = (senderId != null) ? senderId : FirebaseApp.getInstance().getOptions().getGcmSenderId();
       FirebaseInstanceId.getInstance().deleteToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
       promise.resolve(null);
     } catch (Throwable e) {
