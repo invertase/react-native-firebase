@@ -182,28 +182,23 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      #      # must always be after environment config job but before android build
-      #      - run: *packager-jet
-      #      - run: *packager-warmup#
-      #      - run: *android-launch-avd
-
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-cache
+            - v1-gradle-cache-{{ checksum "tests/android/build.gradle" }}
+            - v1-gradle-cache
 
       - restore_cache:
           keys:
-            - gradle-build-caches-{{ .Revision }}
-            - gradle-build-caches
+            - v1-gradle-build-caches-{{ .Revision }}
+            - v1-gradle-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -222,12 +217,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v1-gradle-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
