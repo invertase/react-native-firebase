@@ -242,7 +242,7 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-build-caches-{{ .Revision }}
+          key: v1-gradle-build-caches-{{ .Revision }}
           when: always
 
   #      - run: *android-wait-avd
@@ -275,20 +275,20 @@ jobs:
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v1-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-release-cache
+            - v1-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+            - v1-gradle-release-cache
 
       - restore_cache:
           keys:
-            - gradle-release-build-caches-{{ .Revision }}
-            - gradle-release-build-caches
+            - v1-gradle-release-build-caches-{{ .Revision }}
+            - v1-gradle-release-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -307,12 +307,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v1-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -332,7 +332,7 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-release-build-caches-{{ .Revision }}
+          key: v1-gradle-release-build-caches-{{ .Revision }}
           when: always
 
 
