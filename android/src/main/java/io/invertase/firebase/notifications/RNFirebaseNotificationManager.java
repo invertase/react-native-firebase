@@ -392,6 +392,7 @@ class RNFirebaseNotificationManager {
     if (Build.VERSION.SDK_INT >= 26) {
       writableMap.putString("groupId", notificationChannelGroup.getId());
       writableMap.putString("name", notificationChannelGroup.getName().toString());
+      writableMap.putArray("channels", createChannelsArray(notificationChannelGroup.getChannels()));
       if (Build.VERSION.SDK_INT >= 28) {
         writableMap.putString("description", notificationChannelGroup.getDescription());
       }
