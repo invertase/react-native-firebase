@@ -9,7 +9,7 @@ project.ext.react = [
 ]
 
 // up to mono root
-apply from: "../../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
 

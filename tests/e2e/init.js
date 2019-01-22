@@ -21,6 +21,7 @@ for (let i = 0; i < PACKAGES.length; i++) {
 
 before(async () => {
   await detox.init(config);
+  await firebase.initializeApp(TestHelpers.core.config());
 });
 
 beforeEach(async function beforeEach() {

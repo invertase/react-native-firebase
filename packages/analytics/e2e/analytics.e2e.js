@@ -1,10 +1,23 @@
-describe.only('analytics()', () => {
-  it('dev-test', () => {
-      // firebase.analytics().logEvent('session_start');
+// TODO all try catch tests can give false positives as there's no
+// TODO checks that it actually threw, only does tests in the catch
+
+describe('analytics()', () => {
+  xdescribe('namespace', () => {
+    xit('accessible from firebase.app()', () => {
+      const app = firebase.app();
+      should.exist(app.analytics);
+      app.analytics().logEvent.should.be.a.Function();
+    });
+
+    xit('throws if app arg provided to firebase.analytics(APP)', {
+
+    });
+
+    xit('throws if args provided to firebase.app().analytics(ARGS)', {});
   });
 
   describe('logEvent()', () => {
-    it('errors on using a reserved name', () => {
+    xit('errors on using a reserved name', () => {
       try {
         firebase.analytics().logEvent('session_start');
       } catch (e) {
@@ -12,7 +25,7 @@ describe.only('analytics()', () => {
       }
     });
 
-    it('errors if name not alphanumeric', () => {
+    xit('errors if name not alphanumeric', () => {
       try {
         firebase.analytics().logEvent('!@£$%^&*');
       } catch (e) {
@@ -20,7 +33,7 @@ describe.only('analytics()', () => {
       }
     });
 
-    it('errors if more than 25 params provided', () => {
+    xit('errors if more than 25 params provided', () => {
       try {
         firebase.analytics().logEvent('fooby', {
           1: 1,
@@ -59,7 +72,7 @@ describe.only('analytics()', () => {
       (() => {
         firebase.analytics().logEvent(123456);
       }).should.throw(
-        `analytics.logEvent(): First argument 'name' is required and must be a string value.`
+        `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
       );
     });
 
@@ -67,16 +80,16 @@ describe.only('analytics()', () => {
       (() => {
         firebase.analytics().logEvent('test_event', 'this should be an object');
       }).should.throw(
-        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
+        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
       );
     });
 
-    it('log an event without parameters', () => {
-      firebase.analytics().logEvent('test_event');
+    it('log an event without parameters', async () => {
+      await firebase.analytics().logEvent('test_event');
     });
 
-    it('log an event with parameters', () => {
-      firebase.analytics().logEvent('test_event', {
+    it('log an event with parameters', async () => {
+      await firebase.analytics().logEvent('test_event', {
         boolean: true,
         number: 1,
         string: 'string',
@@ -85,24 +98,22 @@ describe.only('analytics()', () => {
   });
 
   describe('setAnalyticsCollectionEnabled()', () => {
-    it('true', () => {
-      firebase.analytics().setAnalyticsCollectionEnabled(true);
+    it('true', async () => {
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
     });
 
-    it('false', () => {
-      firebase.analytics().setAnalyticsCollectionEnabled(false);
+    it('false', async () => {
+      await firebase.analytics().setAnalyticsCollectionEnabled(false);
     });
   });
 
   describe('setCurrentScreen()', () => {
-    it('screenName only', () => {
-      firebase.analytics().setCurrentScreen('test screen');
+    it('screenName only', async () => {
+      await firebase.analytics().setCurrentScreen('test screen');
     });
 
-    it('screenName with screenClassOverride', () => {
-      firebase
-      .analytics()
-      .setCurrentScreen('test screen', 'test class override');
+    it('screenName with screenClassOverride', async () => {
+      await firebase.analytics().setCurrentScreen('test screen', 'test class override');
     });
 
     xit('errors if screenName not a string', () => {
@@ -115,38 +126,38 @@ describe.only('analytics()', () => {
   });
 
   describe('setMinimumSessionDuration()', () => {
-    it('default duration', () => {
-      firebase.analytics().setMinimumSessionDuration();
+    it('default duration', async () => {
+      await firebase.analytics().setMinimumSessionDuration();
     });
 
-    it('custom duration', () => {
-      firebase.analytics().setMinimumSessionDuration(10001);
+    it('custom duration', async () => {
+      await firebase.analytics().setMinimumSessionDuration(10001);
     });
   });
 
   describe('setSessionTimeoutDuration()', () => {
-    it('default duration', () => {
-      firebase.analytics().setSessionTimeoutDuration();
+    it('default duration', async () => {
+      await firebase.analytics().setSessionTimeoutDuration();
     });
 
-    it('custom duration', () => {
-      firebase.analytics().setSessionTimeoutDuration(1800001);
+    it('custom duration', async () => {
+      await firebase.analytics().setSessionTimeoutDuration(1800001);
     });
   });
 
   describe('setUserId()', () => {
     // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserId(null);
+    it('allows a null values to be set', async () => {
+      await firebase.analytics().setUserId(null);
     });
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserId('test-id');
+    it('accepts string values', async () => {
+      await firebase.analytics().setUserId('test-id');
     });
 
-    it('rejects none string none null values', () => {
+    xit('rejects none string none null values', async () => {
       try {
-        firebase.analytics().setUserId(33.3333);
+        await firebase.analytics().setUserId(33.3333);
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -155,17 +166,17 @@ describe.only('analytics()', () => {
 
   describe('setUserProperty()', () => {
     // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserProperty('fooby', null);
+    it('allows a null values to be set', async () => {
+      await firebase.analytics().setUserProperty('fooby', null);
     });
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserProperty('fooby2', 'test-id');
+    it('accepts string values', async () => {
+      await firebase.analytics().setUserProperty('fooby2', 'test-id');
     });
 
-    it('rejects none string none null values', () => {
+    xit('rejects none string none null values', async () => {
       try {
-        firebase.analytics().setUserProperty('fooby3', 33.3333);
+        await firebase.analytics().setUserProperty('fooby3', 33.3333);
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -178,17 +189,17 @@ describe.only('analytics()', () => {
 
   describe('setUserProperties()', () => {
     // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserProperties({ fooby: null });
+    it('allows a null values to be set', async () => {
+      await firebase.analytics().setUserProperties({ fooby: null });
     });
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserProperties({ fooby2: 'test-id' });
+    it('accepts string values', async () => {
+      await firebase.analytics().setUserProperties({ fooby2: 'test-id' });
     });
 
-    it('rejects none string none null values', () => {
+    xit('rejects none string none null values', async () => {
       try {
-        firebase.analytics().setUserProperties({ fooby3: 33.3333 });
+        await firebase.analytics().setUserProperties({ fooby3: 33.3333 });
       } catch (e) {
         e.message.should.containEql('must be a string');
       }

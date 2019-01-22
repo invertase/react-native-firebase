@@ -52,7 +52,7 @@ const statics = {};
 
 const namespace = 'analytics';
 
-const nativeModuleName = 'RNFBAnalytics';
+const nativeModuleName = 'RNFBAnalyticsModule';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}) {
@@ -142,6 +142,8 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
+  nativeEvents: false,
+  hasRegionsSupport: false,
   hasMultiAppSupport: false,
   hasCustomUrlSupport: false,
   ModuleClass: FirebaseAnalyticsModule,

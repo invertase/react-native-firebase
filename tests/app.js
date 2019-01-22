@@ -7,22 +7,18 @@ import {
   View,
   Image,
   StyleSheet,
-  NativeEventEmitter,
 } from 'react-native';
 
 import jet from 'jet/platform/react-native';
+import NativeEventEmitter from 'react-native-firebase/lib/internal/RNFBNativeEventEmitter';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 
-import { firebase } from '@react-native-firebase/analytics';
-import { analytics } from 'react-native-firebase';
+import '@react-native-firebase/analytics';
+import firebase from 'react-native-firebase';
 
 jet.exposeContextProperty('module', firebase);
-
-console.log('---> analytics', analytics());
-console.log('---> firebase.analytics', firebase.analytics());
-console.log('---> firebase.app', firebase.app);
 
 class Root extends Component {
   constructor(props) {

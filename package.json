@@ -11,8 +11,8 @@
     "lerna:boostrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
     "gen:reference": "typedoc --json docs/$(node scripts/docs-version-name)/typedoc.raw.json --mode file --includeDeclarations --excludeExternals && node scripts/docs-parse-typedoc docs/$(node scripts/docs-version-name)/typedoc.raw.json",
-    "tests:packager:chrome": "react-native start --platforms ios,android",
-    "tests:packager:jet": "REACT_DEBUGGER='echo nope' react-native start",
+    "tests:packager:chrome": "cd tests && react-native start --platforms ios,android",
+    "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
     "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
     "tests:android:build": "cd tests && detox build --configuration android.emu.debug",
     "tests:android:test": "cd tests && detox test --configuration android.emu.debug",
@@ -30,41 +30,34 @@
     "publish:alpha:minor": "lerna version preminor --preid alpha --no-push --force-publish=*",
     "publish:alpha:major": "lerna version premajor --preid alpha --no-push --force-publish=*"
   },
-  "dependencies": {
-    "prop-types": "^15.6.1",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-native": "^0.58.0-rc.2"
-  },
   "devDependencies": {
-    "@babel/cli": "^7.2.0",
-    "@babel/core": "^7.2.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/runtime": "^7.2.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.3",
     "babel-eslint": "^10.0.1",
-    "babel-plugin-istanbul": "^5.1.0",
-    "eslint": "^5.10.0",
+    "eslint": "^5.12.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-plugin-flowtype": "^3.2.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-flowtype": "^3.2.1",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.11.1",
     "flow-bin": "^0.89.0",
-    "genversion": "^2.1.0",
-    "husky": "^1.2.0",
+    "genversion": "^2.1.1",
+    "husky": "^1.2.1",
     "lerna": "^3.6.0",
     "lint-staged": "^8.1.0",
-    "prettier": "^1.15.1",
-    "rimraf": "^2.6.2",
+    "prettier": "^1.15.3",
+    "rimraf": "^2.6.3",
     "tslint": "^5.12.1",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-config-prettier": "^1.17.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typedoc": "^0.14.1",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.4"
   },
   "lint-staged": {
     "packages/**/*.js": [
@@ -85,6 +78,20 @@
       "packages/*",
       "tests"
     ],
-    "nohoist": ["detox"]
+    "nohoist": [
+      "detox",
+      "**/babel-plugin-istanbul",
+      "**/babel-plugin-istanbul/**",
+      "**/patch-package",
+      "**/patch-package/**",
+      "**/jet",
+      "**/jet/**",
+      "**/nyc",
+      "**/nyc/**",
+      "**/react",
+      "**/react/**",
+      "**/react-native",
+      "**/react-native/**"
+    ]
   }
 }

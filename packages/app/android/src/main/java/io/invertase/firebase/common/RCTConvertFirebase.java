@@ -44,25 +44,25 @@ public class RCTConvertFirebase {
     FirebaseOptions appOptions = firebaseApp.getOptions();
 
     Map<String, Object> root = new HashMap<>();
-    Map<String, Object> state = new HashMap<>();
+    Map<String, Object> appConfig = new HashMap<>();
     Map<String, Object> options = new HashMap<>();
 
-    state.put("dataCollectionDefault", firebaseApp.isDataCollectionDefaultEnabled());
+    appConfig.put("name", name);
+    appConfig.put("automaticDataCollectionEnabled", firebaseApp.isDataCollectionDefaultEnabled());
 
     // TODO: Salakar: Firebase SDK does not support reading this value
-    // state.put("automaticResourceManagement", false);
+    // appConfig.put("automaticResourceManagement", false);
 
     options.put("apiKey", appOptions.getApiKey());
     options.put("appId", appOptions.getApplicationId());
     options.put("projectId", appOptions.getProjectId());
-    options.put("databaseUrl", appOptions.getDatabaseUrl());
+    options.put("databaseURL", appOptions.getDatabaseUrl());
     options.put("gaTrackingId", appOptions.getGaTrackingId());
     options.put("messagingSenderId", appOptions.getGcmSenderId());
     options.put("storageBucket", appOptions.getStorageBucket());
 
-    root.put("name", name);
-    root.put("state", state);
     root.put("options", options);
+    root.put("appConfig", appConfig);
 
     return root;
   }
@@ -71,26 +71,46 @@ public class RCTConvertFirebase {
     return Arguments.makeNativeMap(firebaseAppToMap(firebaseApp));
   }
 
-  public static FirebaseApp readableMapToFirebaseApp(ReadableMap root, Context context) {
+  public static FirebaseApp readableMapToFirebaseApp(
+    ReadableMap options,
+    ReadableMap appConfig,
+    Context context
+  ) {
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
-    String name = root.getString("name");
-    ReadableMap state = root.getMap("state");
-    ReadableMap options = root.getMap("options");
+    String name = appConfig.getString("name");
 
     builder.setApiKey(options.getString("apiKey"));
     builder.setApplicationId(options.getString("appId"));
     builder.setProjectId(options.getString("projectId"));
-    builder.setDatabaseUrl(options.getString("databaseUrl"));
-    builder.setGaTrackingId(options.getString("gaTrackingId"));
+    builder.setDatabaseUrl(options.getString("databaseURL"));
+
+    if (options.hasKey("gaTrackingId")) {
+      builder.setGaTrackingId(options.getString("gaTrackingId"));
+    }
+
     builder.setStorageBucket(options.getString("storageBucket"));
     builder.setGcmSenderId(options.getString("messagingSenderId"));
 
-    FirebaseApp firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
+    FirebaseApp firebaseApp;
+    if (name.equals("[DEFAULT]")) {
+      firebaseApp = FirebaseApp.initializeApp(context, builder.build());
+    } else {
+      firebaseApp = FirebaseApp.initializeApp(context, builder.build(), name);
+    }
 
-    firebaseApp.setDataCollectionDefaultEnabled(state.getBoolean("dataCollectionDefault"));
-    // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
-    firebaseApp.setAutomaticResourceManagementEnabled(state.getBoolean("automaticResourceManagement"));
+    if (appConfig.hasKey("automaticDataCollectionEnabled")) {
+      firebaseApp.setDataCollectionDefaultEnabled(
+        appConfig.getBoolean("automaticDataCollectionEnabled")
+      );
+    }
+
+    if (appConfig.hasKey("automaticResourceManagement")) {
+      // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
+      firebaseApp.setAutomaticResourceManagementEnabled(
+        appConfig.getBoolean("automaticResourceManagement")
+      );
+    }
 
     return firebaseApp;
   }

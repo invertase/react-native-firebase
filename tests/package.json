@@ -2,12 +2,19 @@
   "name": "react-native-firebase-tests",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "build:clean": "rimraf dist && rimraf android/build && rimraf ios/build",
+    "prepare": "patch-package"
+  },
   "dependencies": {
-    "detox": "^9.1.2",
+    "prop-types": "^15.6.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-native": "^0.58.0-rc.3",
+    "detox": "9.1.2",
     "jet": "^0.2.0",
-    "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
-    "should": "^13.2.1",
+    "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0",
     "require-all": "3.0.0",
@@ -16,7 +23,9 @@
     "@react-native-firebase/analytics": "6.0.0"
   },
   "devDependencies": {
-    "nyc": "^13.1.0"
+    "babel-plugin-istanbul": "^5.1.1",
+    "nyc": "^13.1.0",
+    "patch-package": "^5.1.2"
   },
   "nyc": {
     "check-coverage": false,
@@ -25,16 +34,11 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "src/**"
+      "packages/**"
     ],
     "exclude": [
       "node_modules",
-      "src/modules/admob**",
-      "src/modules/auth/phone**",
-      "src/modules/messaging**",
-      "src/modules/notifications**",
-      "src/types**",
-      "**/types.js"
+      "**/common/lib/**"
     ],
     "cwd": "..",
     "all": true,
@@ -42,6 +46,7 @@
     "instrument": false,
     "reporter": [
       "lcov",
+      "html",
       "text-summary"
     ]
   },

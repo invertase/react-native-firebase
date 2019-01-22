@@ -1,0 +1,33 @@
+patch-package
+--- a/node_modules/detox/android/detox/build.gradle
++++ b/node_modules/detox/android/detox/build.gradle
+@@ -19,10 +19,6 @@
+
+     productFlavors {
+         flavorDimensions "minReactNative"
+-        minReactNative44 {
+-            dimension "minReactNative"
+-
+-        }
+         minReactNative46 {
+             dimension "minReactNative"
+         }
+@@ -64,9 +60,6 @@
+ }
+
+ dependencies {
+-    minReactNative44Implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+-    minReactNative44Implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+-
+     minReactNative46Implementation 'com.squareup.okhttp3:okhttp:3.6.0'
+     minReactNative46Implementation 'com.squareup.okio:okio:1.13.0'
+
+@@ -75,7 +68,7 @@
+     })
+     implementation 'com.android.support.test:runner:1.0.2'
+     implementation 'com.android.support.test:rules:1.0.2'
+-    compileOnly "com.facebook.react:react-native:+"
++    api "com.facebook.react:react-native:+"
+
+     implementation 'org.apache.commons:commons-lang3:3.4'
+     implementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'

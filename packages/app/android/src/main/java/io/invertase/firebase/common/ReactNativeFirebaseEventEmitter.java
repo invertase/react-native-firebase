@@ -78,7 +78,7 @@ public class ReactNativeFirebaseEventEmitter {
     });
   }
 
-  public void addAndroidListener(String eventName) {
+  public void addListener(String eventName) {
     synchronized (jsListeners) {
       jsListenerCount++;
       if (!jsListeners.containsKey(eventName)) {
@@ -97,7 +97,7 @@ public class ReactNativeFirebaseEventEmitter {
     });
   }
 
-  public void removeAndroidListener(String eventName, Boolean all) {
+  public void removeListener(String eventName, Boolean all) {
     synchronized (jsListeners) {
       if (jsListeners.containsKey(eventName)) {
         int listenersForEvent = jsListeners.get(eventName);
@@ -152,7 +152,7 @@ public class ReactNativeFirebaseEventEmitter {
     try {
       reactContext.getJSModule(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class
-      ).emit(event.getEventName(), event.getEventBody());
+      ).emit("rnfb_" + event.getEventName(), event.getEventBody());
     } catch (Exception e) {
       return false;
     }

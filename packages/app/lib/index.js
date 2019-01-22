@@ -19,8 +19,4 @@ import { getFirebaseNamespace } from './internal/registry/namespace';
 
 export const firebase = getFirebaseNamespace();
 
-// keep for destructuring support
-// e.g. import { analytics } from 'react-native-firebase';
-module.exports = firebase;
-
 export default firebase;

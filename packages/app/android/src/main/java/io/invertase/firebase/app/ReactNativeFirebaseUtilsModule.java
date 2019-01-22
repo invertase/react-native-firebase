@@ -33,11 +33,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.invertase.firebase.common.RCTConvertFirebase;
-import io.invertase.firebase.common.ReactNativeFirebaseEvent;
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 import io.invertase.firebase.common.SharedUtils;
 
 public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
@@ -45,51 +41,6 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
 
   ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
-  }
-
-  @ReactMethod
-  public void eventsNotifyReady(Boolean ready) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.notifyJsReady(ready);
-  }
-
-  @ReactMethod
-  public void eventsGetListeners(Promise promise) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    promise.resolve(emitter.getListenersMap());
-  }
-
-  @ReactMethod
-  public void eventsPing(String eventName, ReadableMap eventBody, Promise promise) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.sendEvent(new ReactNativeFirebaseEvent(
-      eventName,
-      RCTConvertFirebase.readableMapToWritableMap(eventBody)
-    ));
-    promise.resolve(RCTConvertFirebase.readableMapToWritableMap(eventBody));
-  }
-
-  @ReactMethod
-  public void eventsAddAndroidListener(String eventName) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.addAndroidListener(eventName);
-  }
-
-  @ReactMethod
-  public void eventsRemoveAndroidListener(String eventName, Boolean all) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.removeAndroidListener(eventName, all);
-  }
-
-  @ReactMethod
-  public void getSavedPreferences(Promise promise) {
-    promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAllAsWritableMap());
-  }
-
-  @ReactMethod
-  public void clearSavedPreferences(Promise promise) {
-    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
-    promise.resolve(null);
   }
 
   @ReactMethod

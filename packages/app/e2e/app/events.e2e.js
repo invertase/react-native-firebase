@@ -4,23 +4,20 @@ const eventBody = {
   foo: 'bar',
 };
 
-describe('Utils -> EventEmitter', () => {
-  android.describe('ReactNativeFirebaseEventEmitter', () => {
+describe('Core -> EventEmitter', () => {
+  describe('ReactNativeFirebaseEventEmitter', () => {
     it('queues events before app is ready', async () => {
       const {
         eventsPing,
         eventsNotifyReady,
         eventsGetListeners,
-        eventsAddAndroidListener,
-        eventsRemoveAndroidListener,
-      } = NativeModules.RNFBUtils;
+      } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(false);
 
       let readyToResolve = false;
       const { resolve, reject, promise } = Promise.defer();
-      const emitter = new NativeEventEmitter(NativeModules.RNFBUtils);
+      const emitter = NativeEventEmitter;
 
-      eventsAddAndroidListener(eventName);
       emitter.addListener(eventName, event => {
         event.foo.should.equal(eventBody.foo);
         if (!readyToResolve) {
@@ -41,7 +38,6 @@ describe('Utils -> EventEmitter', () => {
       await promise;
       emitter.removeAllListeners(eventName);
 
-      await eventsRemoveAndroidListener(eventName, true);
       const nativeListenersAfter = await eventsGetListeners();
 
       should.equal(nativeListenersAfter.events.pong, undefined);
@@ -52,35 +48,26 @@ describe('Utils -> EventEmitter', () => {
         eventsPing,
         eventsNotifyReady,
         eventsGetListeners,
-        eventsAddAndroidListener,
-        eventsRemoveAndroidListener,
-      } = NativeModules.RNFBUtils;
+        eventsRemoveListener,
+      } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(true);
-      let readyToResolve = false;
-      const { resolve, reject, promise } = Promise.defer();
-      const emitter = new NativeEventEmitter(NativeModules.RNFBUtils);
-
-      emitter.addListener(eventName2, event => {
-        event.foo.should.equal(eventBody.foo);
-        if (!readyToResolve) {
-          return reject(new Error('Event was received before being ready!'));
-        }
-
-        return resolve();
-      });
+      const { resolve, promise } = Promise.defer();
+      const emitter = NativeEventEmitter;
 
       await eventsPing(eventName2, eventBody);
-      await sleep(100);
+      await sleep(500);
       const nativeListenersBefore = await eventsGetListeners();
       should.equal(nativeListenersBefore.events.ping, undefined);
 
-      readyToResolve = true;
-      eventsAddAndroidListener(eventName2);
+      emitter.addListener(eventName2, event => {
+        event.foo.should.equal(eventBody.foo);
+        return resolve();
+      });
 
       await promise;
       emitter.removeAllListeners(eventName2);
 
-      await eventsRemoveAndroidListener(eventName2, true);
+      await eventsRemoveListener(eventName2, true);
       const nativeListenersAfter = await eventsGetListeners();
 
       should.equal(nativeListenersAfter.events.ping, undefined);

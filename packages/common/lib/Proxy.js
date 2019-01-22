@@ -33,8 +33,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Source: https://github.com/GoogleChrome/proxy-polyfill
- *
  */
 
 let ProxyPoly = global.Proxy;

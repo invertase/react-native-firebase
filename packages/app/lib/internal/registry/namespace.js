@@ -24,7 +24,6 @@ import { knownFirebaseNamespaces } from '../constants';
 
 let ROOT_NAMESPACE = null;
 let ROOT_NAMESPACE_PROXY = null;
-
 const NAMESPACE_REGISTRY = {};
 const MODULE_WITH_STATICS = {};
 const APP_NAMESPACE_INSTANCE = {};
@@ -81,8 +80,13 @@ function firebaseModuleProxy(firebaseNamespace, property) {
   }
 
   if (isOneOf(property, knownFirebaseNamespaces)) {
-    // TODO redbox attempting to use a module that's not been imported
-    throw 'foo bar';
+    throw new Error(
+      [
+        `You attempted to use 'firebase.${property}' but this module could not be found.`,
+        '',
+        `Ensure you have installed and imported the '@react-native-firebase/${property}' package.`,
+      ].join('\r\n'),
+    );
   }
 
   return undefined;
@@ -96,7 +100,7 @@ export function createFirebaseNamespace() {
   ROOT_NAMESPACE = {
     initializeApp,
     get app() {
-      return getApp();
+      return getApp;
     },
     get apps() {
       return getApps();
@@ -123,26 +127,29 @@ export function getFirebaseNamespace() {
  * @returns {*}
  */
 export function createModuleNamespace(options = {}) {
-  const { namespace, ModuleClass } = options;
+  const { namespace, ModuleClass, version } = options;
 
   if (!NAMESPACE_REGISTRY[namespace]) {
-    // hacky inheritance check - instanceof not working once bundled
-    // only for internal / module dev use
+    // validation only for internal / module dev usage
+    // instanceof does not work in build
     if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
       throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
+    }
+
+    if (version !== SDK_VERSION) {
+      throw new Error(
+        [
+          `You've attempted to require '@react-native-firebase/${namespace}' version '${version}', ` +
+            `however, 'react-native-firebase' core module is of a different version (${SDK_VERSION}).`,
+          '',
+          `All React Native Firebase modules must be of the same version. Please ensure they match up ` +
+          `in your package.json file and re-run yarn/npm install.`,
+        ].join('\n'),
+      );
     }
 
     NAMESPACE_REGISTRY[namespace] = Object.assign({}, options);
   }
 
   return getFirebaseNamespace()[namespace];
-}
-
-/**
- *
- * @param namespace
- * @returns {*}
- */
-export function getModuleNamespace(namespace = ROOT_NAMESPACE) {
-  return NAMESPACE_REGISTRY[namespace];
 }

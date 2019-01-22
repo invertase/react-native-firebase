@@ -14,21 +14,35 @@
  * limitations under the License.
  *
  */
-// TODO code comments
-
 export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
   (): M;
   +SDK_VERSION: string;
 } & S;
 
 export type FirebaseOptions = {
+  appId: string;
   apiKey?: string;
   authDomain?: string;
-  databaseURL?: string;
-  projectId?: string;
+  databaseURL: string;
+  projectId: string;
   gaTrackingId?: string;
-  storageBucket?: string;
-  messagingSenderId?: string;
+  storageBucket: string;
+  messagingSenderId: string;
+
+  /**
+   * iOS only
+   */
+  clientId?: string;
+
+  /**
+   * iOS only
+   */
+  androidClientId?: string;
+
+  /**
+   * iOS only
+   */
+  deepLinkURLScheme?: string;
   [name: string]: any;
 };
 

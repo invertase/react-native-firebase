@@ -1,36 +1,43 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-
+import { getNativeModule } from './registry/nativeModule';
+import SharedEventEmitter from './SharedEventEmitter';
 
 export default class FirebaseModule {
   constructor(app, config, customUrlOrRegion) {
     this._app = app;
     this._nativeModule = null;
-    this._namespace = config.namespace;
     this._customUrlOrRegion = customUrlOrRegion;
+    this._config = Object.assign({}, config);
   }
 
-  /**
-   * Returns the App instance for current module
-   * @public
-   * @return {*}
-   */
-  get app(): App {
+  get app() {
     return this._app;
   }
 
-  /**
-   * @private
-   * @returns {null}
-   */
-  get native() {
-    if (this._nativeModule) return this._nativeModule;
-    // TODO bootstrap native module and wrap multi-app helpers
-    return null;
+  get emitter() {
+    return SharedEventEmitter
   }
 
-  get log() {
-    // TODO logger;
-    return null;
+  get native() {
+    if (this._nativeModule) return this._nativeModule;
+    this._nativeModule = getNativeModule(this);
+    return this._nativeModule;
   }
 }
 
