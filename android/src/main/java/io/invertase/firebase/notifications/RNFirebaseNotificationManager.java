@@ -215,7 +215,7 @@ class RNFirebaseNotificationManager {
       return createChannelMap(notificationManager.getNotificationChannel(channelId));
     }
 
-    return Arguments.createMap();
+    return null;
   }
 
   WritableArray getChannels() {
@@ -223,7 +223,7 @@ class RNFirebaseNotificationManager {
       return createChannelsArray(notificationManager.getNotificationChannels());
     }
 
-    return Arguments.createArray();
+    return null;
   }
 
   WritableMap getChannelGroup(String channelGroupId) {
@@ -231,7 +231,7 @@ class RNFirebaseNotificationManager {
       return createChannelGroupMap(notificationManager.getNotificationChannelGroup(channelGroupId));
     }
 
-    return Arguments.createMap();
+    return null;
   }
 
   WritableArray getChannelGroups() {
@@ -239,7 +239,7 @@ class RNFirebaseNotificationManager {
       return createChannelGroupsArray(notificationManager.getNotificationChannelGroups());
     }
 
-    return Arguments.createArray();
+    return null;
   }
 
   ArrayList<Bundle> getScheduledNotifications() {
