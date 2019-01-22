@@ -8,41 +8,41 @@ aliases:
   # -------------------------
   - &restore-yarn-cache
     keys:
-      - v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+      - v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
       - ~/Library/Detox/ios
-    key: v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+    key: v6-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-pods-cache
     paths:
       - ~/react-native-firebase/tests/ios/Pods
-    key: v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v6-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
-      - v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v6-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-ios-build-cache
     paths:
       - ~/react-native-firebase/tests/ios/build/Build
-    key: v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v6-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-ios-build-cache
     keys:
-      - v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v6-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-brew-cache
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v4-brew-cache-{{ arch }}
+    key: v6-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-      - v4-brew-cache-{{ arch }}
+      - v6-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
@@ -57,7 +57,7 @@ aliases:
   - &packager-jet
     name: Start React Native Pacakager (background)
     background: true
-    command: cd tests && yarn run packager-jet || true
+    command: yarn run tests:packager:jet || true
 
   - &packager-warmup
     name: Warming up Packager
@@ -69,24 +69,9 @@ aliases:
   #       INSTALLATION
   # -------------------------
   - &yarn
-    name: Yarn Install ./ and ./tests
+    name: Yarn Install
     command: |
       yarn install --non-interactive --cache-folder ~/.cache/yarn
-      cd tests && yarn install --non-interactive
-
-  # -------------------------
-  #         ANDROID
-  # -------------------------
-
-  #  - &android-launch-avd
-  #    name: Launch AVD
-  #    background: true
-  #    command: avd-launch
-  #
-  #  - &android-wait-avd
-  #    name: Wait for AVD to be ready
-  #    command: timeout 300 avd-wait-ready
-
 
   # -------------------------
   #         ANALYSE
@@ -94,18 +79,18 @@ aliases:
 
   # eslint
   - &eslint
-    name: Lint Code
-    command: yarn run lint
-
-  # flow
-  - &validate-flow-declarations
-    name: Validate Flow Declarations
-    command: yarn run validate-flow-declarations
+    name: Lint JS Code (ESLint)
+    command: yarn run validate:all:js
 
   # typescript
   - &validate-ts-declarations
     name: Validate TypeScript Declarations
-    command: yarn run validate-ts-declarations
+    command: yarn run validate:all:ts
+
+  # flow
+  - &validate-flow-declarations
+    name: Validate Flow Declarations
+    command: yarn run validate:all:flow
 
 # -------------------------
 #        DEFAULTS
@@ -174,32 +159,27 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
-
-      #      # must always be after environment config job but before android build
-      #      - run: *packager-jet
-      #      - run: *packager-warmup#
-      #      - run: *android-launch-avd
+#      - restore-cache: *restore-yarn-cache
+#      - run: *yarn
+#      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v6-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-cache
+            - v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}
+            - v6-gradle-cache
 
       - restore_cache:
           keys:
-            - gradle-build-caches-{{ .Revision }}
-            - gradle-build-caches
+            - v6-gradle-build-caches-{{ .Revision }}
+            - v6-gradle-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -218,12 +198,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v6-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -243,25 +223,13 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-build-caches-{{ .Revision }}
+          key: v6-gradle-build-caches-{{ .Revision }}
           when: always
 
-  #      - run: *android-wait-avd
-  #
-  #      # Now Test \o/
-  #      - run:
-  #          name: Run Jet Tests
-  #          command: cd tests && yarn run test-android-cover
-  #
-  #      # TODO merge coverage output from android and iOS
-  #      - run:
-  #          name: Submit Coverage
-  #          command: yarn run codecov
-  #
-  #      - store_artifacts:
-  #          path: ~/detox-artifacts
-  #      - store_artifacts:
-  #          path: ~/react-native-firebase/coverage
+      - persist_to_workspace:
+          root: ~/react-native-firebase
+          paths:
+            - tests/android/build/outputs/apk
 
   android-build-release:
     <<: *android_defaults
@@ -269,27 +237,27 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+#      - restore-cache: *restore-yarn-cache
+#      - run: *yarn
+#      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v6-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-release-cache
+            - v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+            - v6-gradle-release-cache
 
       - restore_cache:
           keys:
-            - gradle-release-build-caches-{{ .Revision }}
-            - gradle-release-build-caches
+            - v6-gradle-release-build-caches-{{ .Revision }}
+            - v6-gradle-release-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -308,12 +276,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v6-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -333,8 +301,13 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-release-build-caches-{{ .Revision }}
+          key: v6-gradle-release-build-caches-{{ .Revision }}
           when: always
+
+      - persist_to_workspace:
+          root: ~/react-native-firebase
+          paths:
+            - tests/android/build/outputs/apk
 
 
   ios-test-e2e:
@@ -379,7 +352,7 @@ jobs:
       - restore-cache: *restore-ios-build-cache
       - run:
           name: Build iOS Testing App
-          command: cd tests && yarn run build-ios
+          command: yarn run tests:ios:build
       - save-cache: *save-ios-build-cache
 
       - run: mkdir ~/detox-artifacts
@@ -387,9 +360,8 @@ jobs:
       # Now Test \o/
       - run:
           name: Run Jet Tests
-          command: cd tests && yarn run test-ios-cover
+          command: yarn run tests:ios:test-cover
 
-      # TODO merge coverage output from android and iOS
       - run:
           name: Submit Coverage
           command: yarn run codecov

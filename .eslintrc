@@ -21,7 +21,8 @@
     "no-use-before-define": 0,
     "react/forbid-prop-types": "warn",
     "react/jsx-filename-extension": ["off", { "extensions": [".js", ".jsx"] }],
-    "import/no-cycle": 1
+    "import/no-cycle": 1,
+    "import/no-unresolved": 0
   },
   "overrides": [
     {
