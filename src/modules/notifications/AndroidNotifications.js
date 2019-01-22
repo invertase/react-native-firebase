@@ -8,6 +8,8 @@ import AndroidChannelGroup from './AndroidChannelGroup';
 import { getNativeModule } from '../../utils/native';
 
 import type Notifications from './';
+import type { NativeAndroidChannel } from './AndroidChannel';
+import type { NativeAndroidChannelGroup } from './AndroidChannelGroup';
 
 export default class AndroidNotifications {
   _notifications: Notifications;
@@ -130,7 +132,7 @@ export default class AndroidNotifications {
     return Promise.resolve();
   }
 
-  getChannel(channelId: string): Promise<?AndroidChannel> {
+  getChannel(channelId: string): Promise<?NativeAndroidChannel> {
     if (Platform.OS === 'android') {
       if (typeof channelId !== 'string') {
         throw new Error(
@@ -144,7 +146,7 @@ export default class AndroidNotifications {
     return Promise.resolve(null);
   }
 
-  getChannels(): Promise<AndroidChannel[]> {
+  getChannels(): Promise<NativeAndroidChannel[]> {
     if (Platform.OS === 'android') {
       return Promise.resolve(
         getNativeModule(this._notifications).getChannels()
@@ -153,7 +155,7 @@ export default class AndroidNotifications {
     return Promise.resolve([]);
   }
 
-  getChannelGroup(channelGroupId: string): Promise<?AndroidChannelGroup> {
+  getChannelGroup(channelGroupId: string): Promise<?NativeAndroidChannelGroup> {
     if (Platform.OS === 'android') {
       if (typeof channelGroupId !== 'string') {
         throw new Error(
@@ -167,7 +169,7 @@ export default class AndroidNotifications {
     return Promise.resolve(null);
   }
 
-  getChannelGroups(): Promise<AndroidChannelGroup[]> {
+  getChannelGroups(): Promise<NativeAndroidChannelGroup[]> {
     if (Platform.OS === 'android') {
       return Promise.resolve(
         getNativeModule(this._notifications).getChannelGroups()
