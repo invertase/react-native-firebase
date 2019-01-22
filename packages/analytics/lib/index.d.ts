@@ -33,6 +33,14 @@ import {
  */
 namespace ReactNativeFirebaseAnalytics {
   interface Statics {}
+
+  /**
+   * Testy Description
+   */
+  class Testy {
+    val(): any;
+  }
+
   interface Module extends ReactNativeFirebaseModule {
     /**
      * Log a custom event with optional params.
@@ -41,7 +49,7 @@ namespace ReactNativeFirebaseAnalytics {
      * @param name
      * @param params
      */
-    logEvent(name: string, params: { [key: string]: string }): Promise<void>;
+    logEvent(name: string, params: { [key: string]: string }): Promise<Testy>;
 
     /**
      * If true, allows the device to collect analytical data and send it to Firebase.
