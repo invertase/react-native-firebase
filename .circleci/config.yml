@@ -129,6 +129,9 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: invertase/react-native-firebase-android:standard
+      args:
+        ANDROID_COMPILE_SDK_VERSION: "28"
+        ANDROID_BUILD_TOOLS_VERSION: "28.0.3"
   resource_class: "xlarge"
   working_directory: ~/react-native-firebase
   environment:
