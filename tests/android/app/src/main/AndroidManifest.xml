@@ -18,6 +18,7 @@
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
     android:launchMode="singleTask"
+    android:usesCleartextTraffic="true"
     android:theme="@style/AppTheme">
     <service
       android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"
