@@ -1003,8 +1003,10 @@ declare module 'react-native-firebase' {
           smsCode: string
         ): Promise<null>;
       }
+
       type OrNull<T> = T | null;
       type AuthListenerCallback = (user: OrNull<User>) => void;
+
       interface Auth {
         readonly app: App;
         /**
@@ -1213,9 +1215,9 @@ declare module 'react-native-firebase' {
     namespace messaging {
       interface Messaging {
         /**
-        * Returns firebase.messaging.IOSMessaging that gets the
-        *  iOS specific methods and properties of messaging.
-        */
+         * Returns firebase.messaging.IOSMessaging that gets the
+         *  iOS specific methods and properties of messaging.
+         */
         ios: IOSMessaging;
 
         /**
@@ -1319,6 +1321,31 @@ declare module 'react-native-firebase' {
     }
 
     namespace notifications {
+      interface NativeAndroidChannel {
+        bypassDnd?: boolean;
+        channelId: string;
+        description?: string;
+        group?: string;
+        importance: number;
+        lightColor?: string;
+        lightsEnabled?: boolean;
+        lockScreenVisibility?: number;
+        name: string;
+        showBadge?: boolean;
+        sound?: string;
+        vibrationEnabled?: boolean;
+        vibrationPattern?: number[];
+      }
+
+      interface NativeAndroidChannelGroup {
+        name: string;
+        groupId: string;
+        // Android API >= 28
+        description: string | void;
+        // Android API >= 28
+        channels: void | NativeAndroidChannel[];
+      }
+
       interface AndroidNotifications {
         createChannel(channel: Android.Channel): Promise<void>;
 
@@ -1334,13 +1361,17 @@ declare module 'react-native-firebase' {
 
         deleteChannel(channelId: string): Promise<void>;
 
-        getChannel(channelId: string): Promise<Android.Channel | null>
+        getChannel(channelId: string): Promise<NativeAndroidChannel | null>;
 
-        getChannels(channelId: string): Promise<Android.Channel[]>
+        getChannels(channelId: string): Promise<NativeAndroidChannel[]>;
 
-        getChannelGroup(channelId: string): Promise<Android.ChannelGroup | null>
+        getChannelGroup(
+          channelId: string
+        ): Promise<NativeAndroidChannelGroup | null>;
 
-        getChannelGroups(channelId: string): Promise<Android.ChannelGroup[]>
+        getChannelGroups(
+          channelId: string
+        ): Promise<NativeAndroidChannelGroup[]>;
       }
 
       type BackgroundFetchResultValue = string;
