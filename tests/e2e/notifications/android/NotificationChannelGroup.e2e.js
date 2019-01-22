@@ -4,7 +4,7 @@ function createChannelForGroup(groupId) {
   const AndroidChannel = firebase.notifications.Android.Channel;
   const name = 'shooby';
   const importance = 5; // MAX
-  const channelId = `fooby${global.testRunId}`;
+  const channelId = `fooby${groupId}`;
   const description = 'shooby description';
   const channel = new AndroidChannel(channelId, name, importance);
   channel.setDescription(description);
@@ -14,11 +14,11 @@ function createChannelForGroup(groupId) {
   return channel;
 }
 
-describe.only('notifications() - Android Only', () => {
+describe('notifications() - Android Only', () => {
   describe('NotificationChannelGroup', () => {
     it('should create, read & delete a channel group', async () => {
       if (device.getPlatform() === 'android') {
-        const groupId = `foobyGroup${global.testRunId}`;
+        const groupId = `foobyGroup`;
         const groupName = 'Shooby Group';
         const groupDescription = 'A shooby group description';
         const channelForGroup = createChannelForGroup(groupId);
@@ -72,69 +72,94 @@ describe.only('notifications() - Android Only', () => {
       }
     });
 
-    xit('should create & read multiple channel groups', async () => {
+    it('should create & read multiple channel groups', async () => {
       if (device.getPlatform() === 'android') {
-        const AndroidChannel = firebase.notifications.Android.Channel;
+        const groupId0 = `0foobyGroup0`;
+        const groupId1 = `1foobyGroup1`;
+        const groupName0 = '0Shooby Group0';
+        const groupName1 = '1Shooby Group1';
+        const groupDescription0 = 'A shooby group description0';
+        const groupDescription1 = 'A shooby group description1';
+        const channelForGroup0 = createChannelForGroup(groupId0);
+        const channelForGroup1 = createChannelForGroup(groupId1);
 
-        const name = 'shooby';
-        const importance = 5; // MAX
-        const channelId = 'fooby';
-        const description = 'shooby description';
-        const channel0 = new AndroidChannel(
-          `${channelId}0`,
-          `${name}0`,
-          importance
-        );
-        const channel1 = new AndroidChannel(
-          `${channelId}1`,
-          `${name}1`,
-          importance
-        );
-        const channel2 = new AndroidChannel(
-          `${channelId}2`,
-          `${name}2`,
-          importance
-        );
-        channel0.setDescription(description + 0);
-        channel1.setDescription(description + 1);
-        channel2.setDescription(description + 2);
-        channel0.setLightColor('#e2e2e2');
-        channel1.setLightColor('#e2e2e2');
-        channel2.setLightColor('#e2e2e2');
+        const AndroidChannelGroup = firebase.notifications.Android.ChannelGroup;
 
-        // create multiple
+        // ensure they don't already exist
+        // TODO add a multi delete method?
+        await firebase.notifications().android.deleteChannelGroup(groupId0);
+        await firebase.notifications().android.deleteChannelGroup(groupId1);
+
+        const group0 = new AndroidChannelGroup(
+          groupId0,
+          groupName0,
+          groupDescription0
+        );
+
+        const group1 = new AndroidChannelGroup(
+          groupId1,
+          groupName1,
+          groupDescription1
+        );
+
+        // create groups
         await firebase
           .notifications()
-          .android.createChannels([channel0, channel1, channel2]);
+          .android.createChannelGroups([group0, group1]);
 
-        // read multiple
+        // create channels for groups
+        await firebase
+          .notifications()
+          .android.createChannels([channelForGroup0, channelForGroup1]);
+
+        // read groups
         const beforeDelete = await firebase
           .notifications()
-          .android.getChannels();
+          .android.getChannelGroups();
 
-        beforeDelete.should.be.an.Array();
-        beforeDelete.length.should.equal(3);
+        beforeDelete.should.be.a.Array();
+        beforeDelete.length.should.be.equal(2);
 
-        for (let i = 0; i < beforeDelete.length; i++) {
-          const channel = beforeDelete[i];
-          channel.name.should.equal(name + i);
-          channel.sound.should.equal('default');
-          channel.channelId.should.equal(channelId + i);
-          channel.description.should.equal(description + i);
-          channel.importance.should.equal(importance);
-          channel.lightColor.should.equal('#E2E2E2');
+        beforeDelete[0].name.should.equal(groupName0);
+        beforeDelete[0].groupId.should.equal(groupId0);
+        beforeDelete[0].description.should.equal(groupDescription0);
+        beforeDelete[1].name.should.equal(groupName1);
+        beforeDelete[1].groupId.should.equal(groupId1);
+        beforeDelete[1].description.should.equal(groupDescription1);
 
-          await firebase
-            .notifications()
-            .android.deleteChannel(channel.channelId);
-        }
+        // validate group.channels exists
+        beforeDelete[0].channels.should.be.an.Array();
+        beforeDelete[0].channels.length.should.equal(1);
+        beforeDelete[0].channels[0].sound.should.equal('default');
+        beforeDelete[0].channels[0].description.should.equal(
+          channelForGroup0.description
+        );
+        beforeDelete[0].channels[0].importance.should.equal(
+          channelForGroup0.importance
+        );
+        beforeDelete[0].channels[0].lightColor.should.equal('#E2E2E2');
 
-        // confirm deletion
+        beforeDelete[1].channels.should.be.an.Array();
+        beforeDelete[1].channels.length.should.equal(1);
+        beforeDelete[1].channels[0].sound.should.equal('default');
+        beforeDelete[1].channels[0].description.should.equal(
+          channelForGroup1.description
+        );
+        beforeDelete[1].channels[0].importance.should.equal(
+          channelForGroup1.importance
+        );
+        beforeDelete[1].channels[0].lightColor.should.equal('#E2E2E2');
+
+        // delete group
+        // TODO add a multi delete method?
+        await firebase.notifications().android.deleteChannelGroup(groupId0);
+        await firebase.notifications().android.deleteChannelGroup(groupId1);
+
+        // confirm deletion of groups
         const afterDelete = await firebase
           .notifications()
-          .android.getChannels();
+          .android.getChannelGroups();
 
-        afterDelete.should.be.an.Array();
         afterDelete.length.should.equal(0);
       }
     });

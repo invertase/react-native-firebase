@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-describe.only('notifications() - Android Only', () => {
+describe('notifications() - Android Only', () => {
   describe('NotificationChannel', () => {
     it('should create, read & delete a channel', async () => {
       if (device.getPlatform() === 'android') {
