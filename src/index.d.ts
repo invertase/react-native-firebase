@@ -1221,9 +1221,9 @@ declare module 'react-native-firebase' {
         /**
          * Returns the devices FCM token.
          */
-        getToken(): Promise<string>;
+        getToken(senderId?: string): Promise<string>;
 
-        deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
+        deleteToken(senderId?: string): Promise<void>;
 
         /**
          * On a new message,

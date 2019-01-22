@@ -79,12 +79,12 @@ export default class Messaging extends ModuleBase {
     return this._ios;
   }
 
-  getToken(): Promise<string> {
-    return getNativeModule(this).getToken();
+  getToken(senderId?: string) {
+    return getNativeModule(this).getToken(senderId);
   }
 
-  deleteToken(): Promise<void> {
-    return getNativeModule(this).deleteToken();
+  deleteToken(senderId?: string) {
+    return getNativeModule(this).deleteToken(senderId);
   }
 
   onMessage(nextOrObserver: OnMessage | OnMessageObserver): () => any {

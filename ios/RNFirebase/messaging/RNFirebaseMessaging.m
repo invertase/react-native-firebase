@@ -134,8 +134,8 @@ RCT_EXPORT_METHOD(getToken:(NSString *)senderId resolver:(RCTPromiseResolveBlock
   }];
 }
 
-RCT_EXPORT_METHOD(deleteToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-  NSString * senderId = [[FIRApp defaultApp] options].GCMSenderID;
+RCT_EXPORT_METHOD(deleteToken:(NSString *)senderId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+  senderId = (senderId) ? senderId : [[FIRApp defaultApp] options].GCMSenderID;
   [[FIRMessaging messaging] deleteFCMTokenForSenderID:senderId completion:^(NSError * _Nullable error) {
     if (error) {
       reject(@"messaging/fcm-token-error", @"Failed to delete FCM token.", error);
@@ -144,7 +144,6 @@ RCT_EXPORT_METHOD(deleteToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromi
     }
   }];
 }
-
 
 RCT_EXPORT_METHOD(getAPNSToken:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSData *apnsToken = [FIRMessaging messaging].APNSToken;
