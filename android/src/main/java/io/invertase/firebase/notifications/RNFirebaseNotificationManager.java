@@ -235,7 +235,7 @@ class RNFirebaseNotificationManager {
   }
 
   WritableArray getChannelGroups() {
-     if (Build.VERSION.SDK_INT >= 26) {
+    if (Build.VERSION.SDK_INT >= 26) {
       return createChannelGroupsArray(notificationManager.getNotificationChannelGroups());
     }
 
@@ -321,7 +321,10 @@ class RNFirebaseNotificationManager {
       String groupId = channelGroupMap.getString("groupId");
       String name = channelGroupMap.getString("name");
 
-      NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup(groupId, name);
+      NotificationChannelGroup notificationChannelGroup = new NotificationChannelGroup(
+        groupId,
+        name
+      );
 
       if (Build.VERSION.SDK_INT >= 28 && channelGroupMap.hasKey("description")) {
         String description = channelGroupMap.getString("description");
@@ -336,11 +339,14 @@ class RNFirebaseNotificationManager {
 
   private String getFileName(Uri uri) {
     String result = null;
-    if (uri.getScheme() != null && uri.getScheme().equals("content")) {
-      try (Cursor cursor = reactContext.getContentResolver().query(uri, null, null, null, null)) {
+    if (uri.getScheme() == "content") {
+      Cursor cursor = reactContext.getContentResolver().query(uri, null, null, null, null);
+      try {
         if (cursor != null && cursor.moveToFirst()) {
-          result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+          result = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
         }
+      } finally {
+        if (cursor != null) cursor.close();
       }
     }
 
@@ -350,11 +356,15 @@ class RNFirebaseNotificationManager {
         int cut = result.lastIndexOf('/');
         if (cut != -1) {
           result = result.substring(cut + 1);
+        } else {
+          result = "default";
         }
       }
     }
 
-    return result == null ? "" : result;
+    if (result.equals("notification_sound")) result = "default";
+
+    return result;
   }
 
   @RequiresApi(api = 26)
@@ -403,6 +413,7 @@ class RNFirebaseNotificationManager {
 
   @RequiresApi(api = 26)
   private WritableMap createChannelMap(NotificationChannel notificationChannel) {
+    if (notificationChannel == null) return null;
     WritableMap writableMap = Arguments.createMap();
 
     if (Build.VERSION.SDK_INT >= 26) {
@@ -418,14 +429,24 @@ class RNFirebaseNotificationManager {
         String.format("#%06X", (0xFFFFFF & notificationChannel.getLightColor()))
       );
       writableMap.putBoolean("lightsEnabled", notificationChannel.shouldShowLights());
-      writableMap.putInt("lockScreenVisibility", notificationChannel.getLockscreenVisibility());
+
+      int visibility = notificationChannel.getLockscreenVisibility();
+      if (visibility == -1000) { // -1000 = not set
+        writableMap.putNull("lockScreenVisibility");
+      } else {
+        writableMap.putInt("lockScreenVisibility", visibility);
+      }
+
       writableMap.putBoolean("showBadge", notificationChannel.canShowBadge());
       writableMap.putString("sound", getFileName(notificationChannel.getSound()));
+      writableMap.putBoolean("vibrationEnabled", notificationChannel.shouldVibrate());
 
       long[] vibration = notificationChannel.getVibrationPattern();
       WritableArray vibrationArray = Arguments.createArray();
-      for (int i = 0; i < vibration.length; i++) {
-        vibrationArray.pushDouble(vibration[i]);
+      if (vibration != null) {
+        for (long aVibration : vibration) {
+          vibrationArray.pushDouble(aVibration);
+        }
       }
       writableMap.putArray("vibrationPattern", vibrationArray);
     }
