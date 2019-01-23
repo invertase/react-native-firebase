@@ -242,7 +242,7 @@ jobs:
       - persist_to_workspace:
           root: ~/react-native-firebase
           paths:
-            - tests/android/build/outputs/apk
+            - tests/android/app/build/outputs/apk
 
   android-build-release:
     <<: *android_defaults
@@ -321,7 +321,7 @@ jobs:
       - persist_to_workspace:
           root: ~/react-native-firebase
           paths:
-            - tests/android/build/outputs/apk
+            - tests/android/app/build/outputs/apk
 
 
   ios-test-e2e:
