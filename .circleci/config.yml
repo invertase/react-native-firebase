@@ -372,22 +372,19 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
-
-
-      - restore-cache:
-          keys:
-            - v7-android28-sdk-cache-{{ arch }}
+#      - restore-cache:
+#          keys:
+#            - v7-android28-sdk-cache-{{ arch }}
       - run:
           name: Install Android Emulators
           shell: /bin/bash -e
           command: |
-            yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
-            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86" --verbose
+            yes | sdkmanager "platform-tools"  "tools"
+            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86"
             yes | sdkmanager "emulator" --channel=3
             yes | sdkmanager --licenses
             yes | sdkmanager --update
             yes | sdkmanager --list
-
       - run:
           name: ADB Start Stop
           command: |
@@ -395,12 +392,12 @@ jobs:
             adb devices
             adb kill-server
             ls -la ~/.android
-      - save-cache:
-          paths:
-            - /usr/local/share/android-sdk
-            - ~/.android/
-          key: v7-android28-sdk-cache-{{ arch }}
-          when: always
+#      - save-cache:
+#          paths:
+#            - /usr/local/share/android-sdk
+#            - ~/.android/
+#          key: v7-android28-sdk-cache-{{ arch }}
+#          when: always
 #            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86_64" --verbose
 
       - run:
@@ -410,7 +407,7 @@ jobs:
           name: Run Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version -skin 1080x2066 -cores 3 -force-32bit -gpu on -memory 2048 -no-audio -no-snapshot -no-window
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -cores 2 -force-32bit -gpu on -accel on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
