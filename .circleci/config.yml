@@ -358,6 +358,7 @@ jobs:
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install intel-haxm
             HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
             ls -la /usr/local/share/android-sdk
             echo $PATH
@@ -405,7 +406,7 @@ jobs:
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis_playstore -d "Nexus 5"
       - run:
           name: Run Android Emulator (API 28) in background
-          command: /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -gpu host -memory 2048 -noaudio
+          command: /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -gpu host -memory 2048 -noaudio -no-audio -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
