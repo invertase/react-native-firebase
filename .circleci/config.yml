@@ -409,7 +409,8 @@ jobs:
           background: true
       - run:
           name: Wait for AVD to be ready
-          command: timeout 300 ./.circleci/scripts/wait-for-avd
+          no_output_timeout: "3min"
+          command: ./.circleci/scripts/wait-for-avd
 
       # Now Test \o/
       - run:
