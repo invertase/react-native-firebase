@@ -351,9 +351,19 @@ jobs:
             echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
             source $BASH_ENV
 
+      - run:
+          name: Install Brew Casks
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install node@8
+            node -v
+            yarn -v
+7
       # Yarn install - to ensure detox post install builds
       #      - restore-cache: *restore-yarn-cache
       - run: rm -rf node_modules && rm -rf tests/node_modules && rm -rf ~/Library/Detox
+      - run: ls -la
       - run: *yarn #-no-scripts # no-scripts to skip detox post-install build for ios
       #      - save-cache: *save-yarn-cache
 
@@ -361,11 +371,7 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
-      - run:
-          name: Install Android SDKs
-          command: |
-            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
+
       - run:
           name: Install Android Emulators
           shell: /bin/bash -e
