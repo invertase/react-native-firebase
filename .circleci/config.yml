@@ -345,7 +345,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin"' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
