@@ -355,6 +355,7 @@ jobs:
 
       # Yarn install - to ensure detox post install builds
 #      - restore-cache: *restore-yarn-cache
+      - run: rm -rf node_modules && rm -rf tests/node_modules
       - run: *yarn #-no-scripts # no-scripts to skip detox post-install build for ios
 #      - save-cache: *save-yarn-cache
 
