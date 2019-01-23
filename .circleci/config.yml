@@ -69,7 +69,7 @@ aliases:
   - &yarn
     name: Yarn Install
     command: |
-      yarn install --non-interactive --cache-folder ~/.cache/yarn
+      yarn install --non-interactive --cache-folder ~/.cache/yarn || true
 
   - &yarn-no-scripts
     name: Yarn Install
