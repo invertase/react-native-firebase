@@ -69,7 +69,7 @@ aliases:
   - &yarn
     name: Yarn Install
     command: |
-      yarn install --non-interactive --cache-folder ~/.cache/yarn || true
+      yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   - &yarn-no-scripts
     name: Yarn Install
@@ -352,27 +352,19 @@ jobs:
             source $BASH_ENV
 
       - run:
-          name: Install Brew Casks
+          name: Install Android SDKs
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8
-            xcodebuild -version
-            xcodebuild -runFirstLaunch
-            node --version
-            yarn -v
 
       # Yarn install - to ensure detox post install builds
-      #      - restore-cache: *restore-yarn-cache
-      - run: rm -rf node_modules && rm -rf tests/node_modules && rm -rf ~/Library/Detox
-      - run: ls -la
-      - run: *yarn #-no-scripts # no-scripts to skip detox post-install build for ios
-      #      - save-cache: *save-yarn-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
 
       # must always be after environment config job but before ios build
       - run: *packager-jet
       - run: *packager-warmup
-
 
       - run:
           name: Install Android Emulators

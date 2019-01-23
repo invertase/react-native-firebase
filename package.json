@@ -82,6 +82,8 @@
     ],
     "nohoist": [
       "detox",
+      "**/detox",
+      "**/detox/**",
       "**/babel-plugin-istanbul",
       "**/babel-plugin-istanbul/**",
       "**/patch-package",
