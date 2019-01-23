@@ -343,7 +343,7 @@ jobs:
           name: Configure Environment Variables
           command: |
             echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
-            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:${HOME}/.yarn/bin:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
@@ -356,8 +356,7 @@ jobs:
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install node@8
-            node -v
+            node --version
             yarn -v
 
       # Yarn install - to ensure detox post install builds
