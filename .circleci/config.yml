@@ -47,10 +47,10 @@ aliases:
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
     command: |
-      brew install node@8 >/dev/null
-      brew tap wix/brew >/dev/null
-      brew install applesimutils >/dev/null
-      brew install watchman >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
       touch .watchmanconfig
       node -v
 
@@ -346,10 +346,10 @@ jobs:
           name: Configure Environment Variables
           command: |
             echo 'export PATH="$PATH:/usr/local/opt/node@11/bin:${HOME}/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
-            echo 'export PATH="$PATH:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export PATH="$ANDROID_SDK/emulator:$ANDROID_SDK/tools:$PATH"' >> $BASH_ENV
             echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
             echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
             source $BASH_ENV
@@ -359,6 +359,7 @@ jobs:
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
 
       # Yarn install - to ensure detox post install builds
       - restore-cache: *restore-yarn-cache
@@ -376,9 +377,10 @@ jobs:
             yes | sdkmanager --licenses
             yes | sdkmanager --update
             yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
-            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86" --verbose
             yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis_playstore;x86" --verbose
             yes | sdkmanager "emulator" --verbose
+
+#            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86" --verbose
 
       - run:
           name: Create Android Emulator (API 28)
