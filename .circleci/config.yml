@@ -405,11 +405,11 @@ jobs:
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis_playstore -d "Nexus 5"
       - run:
           name: Run Android Emulator (API 28) in background
-          command: /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -memory 2048 -noaudio
+          command: /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -gpu host -memory 2048 -noaudio
           background: true
       - run:
           name: Wait for AVD to be ready
-          no_output_timeout: "3m"
+          no_output_timeout: "5m"
           command: sh ./.circleci/scripts/wait-for-avd.sh
 
       # Now Test \o/
