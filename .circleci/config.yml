@@ -107,6 +107,7 @@ aliases:
 # -------------------------
 #        DEFAULTS
 # -------------------------
+
 defaults: &defaults
   working_directory: ~/react-native-firebase
   environment:
@@ -164,6 +165,9 @@ jobs:
       - run: *validate-flow-declarations
       - run: *validate-ts-declarations
 
+# -------------------------
+#     ANDROID - BUILD
+# -------------------------
 
   android-build-debug:
     <<: *android_defaults
@@ -323,6 +327,81 @@ jobs:
           paths:
             - tests/android/app/build/outputs/apk
 
+# -------------------------
+#    ANDROID - TEST E2E
+# -------------------------
+
+  android-test-e2e:
+    <<: *macos_defaults
+    shell: /bin/bash --login -eo pipefail
+    environment:
+      TERM: dumb
+    steps:
+      - attach_workspace:
+          at: ~/react-native-firebase
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:${HOME}/.yarn/bin:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
+            echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
+            echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
+            source $BASH_ENV
+
+      # Yarn install - to ensure detox post install builds
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+
+      # must always be after environment config job but before ios build
+      - run: *packager-jet
+      - run: *packager-warmup
+
+      - run:
+          name: Install Android SDKs
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
+      - run:
+          name: Install Android Emulators
+          command: |
+            (yes | sdkmanager "platform-tools" \
+            "extras;intel;Hardware_Accelerated_Execution_Manager" \
+            "system-images;android-26;google_apis_playstore;x86"   \
+            "system-images;android-27;google_apis_playstore;x86"   \
+            "system-images;android-28;google_apis_playstore;x86" \
+            "emulator" --verbose) || true
+
+      - run:
+          name: Create Android Emulator (API 28)
+          command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis -d "Nexus 5"
+      - run:
+          name: Run Android Emulator (API 28) in background
+          command: /usr/local/share/android-sdk/tools/emulator @Pixel_2_API_26 -skin 1080x2066 -memory 2048 -noaudio
+          background: true
+
+
+      # Now Test \o/
+      - run:
+          name: Run Jet Tests
+          command: yarn run tests:android:test-cover
+
+      - run:
+          name: Submit Coverage
+          command: yarn run codecov
+
+      - store_artifacts:
+          path: ~/detox-artifacts
+      - store_artifacts:
+          path: ~/react-native-firebase/coverage
+
+
+# -------------------------
+#      iOS - TEST E2E
+# -------------------------
 
   ios-test-e2e:
     <<: *macos_defaults
@@ -408,6 +487,10 @@ workflows:
           requires:
             - checkout-code
             - analyse
+
+      - android-test-e2e:
+          requires:
+            - android-build-debug
 
 #      - ios-test-e2e:
 #          requires:
