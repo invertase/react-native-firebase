@@ -384,7 +384,7 @@ jobs:
             yes | sdkmanager --licenses
             yes | sdkmanager --update
             yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
-            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis_playstore;x86" --verbose
+            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis_playstore;x86_64" --verbose
             yes | sdkmanager "emulator"           
             yes | sdkmanager --update
       - run:
