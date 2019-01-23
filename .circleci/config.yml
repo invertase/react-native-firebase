@@ -345,11 +345,11 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH="$PATH:/usr/local/opt/node@11/bin:${HOME}/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
-            echo 'export PATH="$ANDROID_SDK/emulator:$ANDROID_SDK/tools:$PATH"' >> $BASH_ENV
+            echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$PATH"' >> $BASH_ENV
             echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
             echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
             source $BASH_ENV
