@@ -159,9 +159,9 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-#      - restore-cache: *restore-yarn-cache
-#      - run: *yarn
-#      - save-cache: *save-yarn-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -237,9 +237,9 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-#      - restore-cache: *restore-yarn-cache
-#      - run: *yarn
-#      - save-cache: *save-yarn-cache
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -395,7 +395,7 @@ workflows:
             - checkout-code
             - analyse
 
-      - ios-test-e2e:
-          requires:
-            - checkout-code
-            - analyse
+#      - ios-test-e2e:
+#          requires:
+#            - checkout-code
+#            - analyse
