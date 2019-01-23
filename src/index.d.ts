@@ -2188,17 +2188,18 @@ declare module 'react-native-firebase' {
       /**
        * An HttpsCallableResult wraps a single result from a function call.
        */
-      interface HttpsCallableResult {
-        readonly data: any;
+      interface HttpsCallableResult<R = any> {
+        readonly data: R;
       }
 
       /**
        * An HttpsCallable is a reference to a "callable" http trigger in
        * Google Cloud Functions.
        */
-      interface HttpsCallable {
-        (data?: any): Promise<HttpsCallableResult>;
-      }
+      type HttpsCallable<Params, Result> =
+        Params extends void ?
+          () => Promise<HttpsCallableResult<Result>> :
+          (data: Params) => Promise<HttpsCallableResult<Result>>
 
       /**
        * `FirebaseFunctions` represents a Functions app, and is the entry point for
@@ -2212,7 +2213,7 @@ declare module 'react-native-firebase' {
          * @param name The name of the https callable function.
          * @return The `HttpsCallable` instance.
          */
-        httpsCallable(name: string): HttpsCallable;
+        httpsCallable<Params = any, Result = any>(name: string): HttpsCallable<Params, Result>;
 
         /**
          * Changes this instance to point to a Cloud Functions emulator running
