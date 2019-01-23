@@ -19,7 +19,7 @@
     "tests:android:build-release": "cd tests && detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && detox test --configuration android.emu.debug",
     "tests:android:test-reuse": "cd tests && detox test --configuration android.emu.debug --reuse",
-    "tests:android:test-cover": "cd tests && nyc detox test --configuration android.emu.debug",
+    "tests:android:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration android.emu.debug",
     "tests:android:test-cover-reuse": "cd tests && nyc detox test --configuration android.emu.debug --reuse",
     "tests:ios:build": "cd tests && detox build --configuration ios.sim.debug",
     "tests:ios:build-release": "cd tests && detox build --configuration ios.sim.release",

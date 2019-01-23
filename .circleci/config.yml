@@ -139,7 +139,7 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: 'large'
+  resource_class: 'medium'
   macos:
     xcode: '10.0.0'
 
@@ -345,7 +345,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
@@ -485,9 +485,9 @@ workflows:
     jobs:
       - checkout-code
 
-      - android-build-debug:
-          requires:
-            - checkout-code
+#      - android-build-debug:
+#          requires:
+#            - checkout-code
 
 #      - android-build-release:
 #          requires:
@@ -495,7 +495,8 @@ workflows:
 
       - android-test-e2e:
           requires:
-            - android-build-debug
+            - checkout-code
+#            - android-build-debug
 
 #  iOS:
 #    jobs:
