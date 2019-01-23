@@ -371,13 +371,14 @@ jobs:
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
       - run:
           name: Install Android Emulators
+          shell: /bin/bash -e
           command: |
-            (yes | sdkmanager "platform-tools" \
-            "extras;intel;Hardware_Accelerated_Execution_Manager" \
-            "system-images;android-26;google_apis_playstore;x86"   \
-            "system-images;android-27;google_apis_playstore;x86"   \
-            "system-images;android-28;google_apis_playstore;x86" \
-            "emulator" --verbose) || true
+            yes | sdkmanager --licenses
+            yes | sdkmanager --update
+            yes | sdkmanager "platform-tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
+            yes | sdkmanager "system-images;android-26;google_apis_playstore;x86" --verbose
+            yes | sdkmanager "system-images;android-28;google_apis_playstore;x86" --verbose
+            yes | sdkmanager "emulator" --verbose
 
       - run:
           name: Create Android Emulator (API 28)

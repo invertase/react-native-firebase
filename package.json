@@ -95,5 +95,8 @@
       "**/react-native",
       "**/react-native/**"
     ]
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }
