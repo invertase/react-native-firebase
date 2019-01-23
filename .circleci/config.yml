@@ -338,9 +338,6 @@ jobs:
 
   android-test-e2e:
     <<: *macos_defaults
-    shell: /bin/bash --login -eo pipefail
-    environment:
-      TERM: dumb
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
