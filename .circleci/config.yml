@@ -359,7 +359,7 @@ jobs:
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install node@8
             node -v
             yarn -v
-7
+
       # Yarn install - to ensure detox post install builds
       #      - restore-cache: *restore-yarn-cache
       - run: rm -rf node_modules && rm -rf tests/node_modules && rm -rf ~/Library/Detox
@@ -475,30 +475,33 @@ jobs:
 # -------------------------
 workflows:
   version: 2
-  Test:
+  #  JS:
+  #    jobs:
+  #      - checkout-code
+  #
+  #      - analyse:
+  #          requires:
+  #            - checkout-code
+  Android:
     jobs:
       - checkout-code
-
-      - analyse:
-          requires:
-            - checkout-code
 
       #      - android-build-debug:
       #          requires:
       #            - checkout-code
-      #            - analyse
       #
       #      - android-build-release:
       #          requires:
       #            - checkout-code
-      #            - analyse
 
       - android-test-e2e:
           requires:
             #            - android-build-debug
             - checkout-code
-            - analyse
+
+#  iOS:
+#    jobs:
+#      - checkout-code
 #      - ios-test-e2e:
 #          requires:
 #            - checkout-code
-#            - analyse
