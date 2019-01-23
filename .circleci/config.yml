@@ -357,9 +357,9 @@ jobs:
             source $BASH_ENV
 
       # Yarn install - to ensure detox post install builds
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn-no-scripts # no-scripts to skip detox post-install build for ios
-      - save-cache: *save-yarn-cache
+#      - restore-cache: *restore-yarn-cache
+      - run: *yarn #-no-scripts # no-scripts to skip detox post-install build for ios
+#      - save-cache: *save-yarn-cache
 
       # must always be after environment config job but before ios build
       - run: *packager-jet
@@ -376,7 +376,7 @@ jobs:
           command: |
             yes | sdkmanager --licenses
             yes | sdkmanager --update
-            yes | sdkmanager "platform-tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
+            yes | sdkmanager "platform-tools" "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
             yes | sdkmanager "system-images;android-26;google_apis_playstore;x86" --verbose
             yes | sdkmanager "system-images;android-28;google_apis_playstore;x86" --verbose
             yes | sdkmanager "emulator" --verbose
