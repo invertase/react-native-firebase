@@ -10,6 +10,6 @@ until [[ "$bootanim" =~ "stopped" ]]; do
   bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
 done
 
-sleep 5
+sleep 15
 
 echo "Android Virtual Device is now ready."

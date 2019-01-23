@@ -407,7 +407,7 @@ jobs:
           name: Run Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -cores 2 -force-32bit -gpu on -accel on -memory 2048 -no-audio -no-snapshot -no-window
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 600x800 -dpi-device=65 -cores 2 -force-32bit -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
