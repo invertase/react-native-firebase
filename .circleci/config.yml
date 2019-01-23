@@ -386,7 +386,7 @@ jobs:
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis_playstore -d "Nexus 5"
       - run:
           name: Run Android Emulator (API 28) in background
-          command: /usr/local/share/android-sdk/tools/emulator @Pixel_2_API_26 -skin 1080x2066 -memory 2048 -noaudio
+          command: /usr/local/share/android-sdk/tools/emulator @TestingAVD -skin 1080x2066 -memory 2048 -noaudio
           background: true
 
 
