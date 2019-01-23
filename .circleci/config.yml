@@ -381,12 +381,13 @@ jobs:
           name: Install Android Emulators
           shell: /bin/bash -e
           command: |
-            yes | sdkmanager --licenses
-            yes | sdkmanager --update
             yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
             yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86" --verbose
-            yes | sdkmanager "emulator"           
+            yes | sdkmanager "emulator" --channel=3
+            yes | sdkmanager --licenses
             yes | sdkmanager --update
+            yes | sdkmanager --list
+
       - run:
           name: ADB Start Stop
           command: |
@@ -407,7 +408,9 @@ jobs:
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 5"
       - run:
           name: Run Android Emulator (API 28) in background
-          command: /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 1080x2066 -gpu on -memory 2048 -noaudio -no-audio -no-window
+          command: |
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version -skin 1080x2066 -cores 3 -force-32bit -gpu on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
