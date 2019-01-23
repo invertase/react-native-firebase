@@ -92,6 +92,13 @@ aliases:
     name: Validate Flow Declarations
     command: yarn run validate:all:flow
 
+
+  - &android-accept-licenses
+    name: Accept Android Licenses
+    shell: /bin/bash -e
+    command: |
+      yes | sdkmanager --licenses
+
 # -------------------------
 #        DEFAULTS
 # -------------------------
@@ -159,9 +166,9 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+#      - restore-cache: *restore-yarn-cache
+#      - run: *yarn
+#      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -189,6 +196,8 @@ jobs:
               rm -rf ~/.gradle/caches/build-cache-* &&
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
@@ -237,9 +246,9 @@ jobs:
       - attach_workspace:
           at: ~/react-native-firebase
 
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
+#      - restore-cache: *restore-yarn-cache
+#      - run: *yarn
+#      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -267,6 +276,8 @@ jobs:
               rm -rf ~/.gradle/caches/build-cache-* &&
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
