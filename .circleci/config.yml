@@ -93,11 +93,16 @@ aliases:
     command: yarn run validate:all:flow
 
 
+# -------------------------
+#        ANDROID
+# -------------------------
+
   - &android-accept-licenses
     name: Accept Android Licenses
     shell: /bin/bash -e
     command: |
       yes | sdkmanager --licenses
+      yes | sdkmanager --update
 
 # -------------------------
 #        DEFAULTS
