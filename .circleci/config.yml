@@ -8,12 +8,13 @@ aliases:
   # -------------------------
   - &restore-yarn-cache
     keys:
-      - v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - v6-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
-    key: v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - ~/Library/Detox
+    key: v6-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-pods-cache
     paths:
@@ -180,6 +181,7 @@ jobs:
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
+      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -259,6 +261,7 @@ jobs:
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
+      - save-cache: *save-yarn-cache
 
       # restore saved caches
       - restore_cache:
@@ -342,7 +345,7 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@11/bin:${HOME}/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
             echo 'export PATH="$PATH:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
@@ -372,9 +375,9 @@ jobs:
           command: |
             yes | sdkmanager --licenses
             yes | sdkmanager --update
-            yes | sdkmanager "platform-tools" "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
-            yes | sdkmanager "system-images;android-26;google_apis_playstore;x86" --verbose
-            yes | sdkmanager "system-images;android-28;google_apis_playstore;x86" --verbose
+            yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
+            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86" --verbose
+            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis_playstore;x86" --verbose
             yes | sdkmanager "emulator" --verbose
 
       - run:
@@ -480,18 +483,17 @@ workflows:
     jobs:
       - checkout-code
 
-      #      - android-build-debug:
-      #          requires:
-      #            - checkout-code
-      #
-      #      - android-build-release:
-      #          requires:
-      #            - checkout-code
+      - android-build-debug:
+          requires:
+            - checkout-code
+
+#      - android-build-release:
+#          requires:
+#            - checkout-code
 
       - android-test-e2e:
           requires:
-            #            - android-build-debug
-            - checkout-code
+            - android-build-debug
 
 #  iOS:
 #    jobs:
