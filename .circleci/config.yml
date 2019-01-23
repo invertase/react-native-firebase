@@ -371,6 +371,11 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
+
+
+      - restore-cache:
+          keys:
+            - v6-android28-sdk-cache-{{ arch }}
       - run:
           name: Install Android Emulators
           shell: /bin/bash -e
@@ -380,7 +385,18 @@ jobs:
             yes | sdkmanager "platform-tools"  "tools" "extras;intel;Hardware_Accelerated_Execution_Manager" --verbose
             yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis_playstore;x86" --verbose
             yes | sdkmanager "emulator" --verbose
-
+      - run:
+          name: ADB Start Stop
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+      - save-cache:
+          paths:
+            - /usr/local/share/android-sdk
+            - ~/.android/
+          key: v6-android28-sdk-cache-{{ arch }}
 #            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86" --verbose
 
       - run:
@@ -486,9 +502,9 @@ workflows:
     jobs:
       - checkout-code
 
-#      - android-build-debug:
-#          requires:
-#            - checkout-code
+      - android-build-debug:
+          requires:
+            - checkout-code
 
 #      - android-build-release:
 #          requires:
@@ -496,8 +512,8 @@ workflows:
 
       - android-test-e2e:
           requires:
-            - checkout-code
-#            - android-build-debug
+#            - checkout-code
+            - android-build-debug
 
 #  iOS:
 #    jobs:
