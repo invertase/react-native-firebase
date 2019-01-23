@@ -1,15 +1,15 @@
 #!/bin/bash
 
-bootanim=""
+#bootanim=""
 
 echo "Waiting for AVD to finish booting"
-export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+#export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
 
-until [[ "$bootanim" =~ "stopped" ]]; do
-  sleep 5
-  bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
-done
+#until [[ "$bootanim" =~ "stopped" ]]; do
+#  sleep 5
+#  bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
+#done
 
-sleep 5
+sleep 75
 
-echo "Android Virtual Device is now ready."
+#echo "Android Virtual Device is now ready."
