@@ -72,6 +72,11 @@ aliases:
     command: |
       yarn install --non-interactive --cache-folder ~/.cache/yarn
 
+  - &yarn-no-scripts
+    name: Yarn Install
+    command: |
+      yarn install --non-interactive --ignore-scripts --cache-folder ~/.cache/yarn
+
   # -------------------------
   #         ANALYSE
   # -------------------------
@@ -352,7 +357,7 @@ jobs:
 
       # Yarn install - to ensure detox post install builds
       - restore-cache: *restore-yarn-cache
-      - run: *yarn
+      - run: *yarn-no-scripts # no-scripts to skip detox post-install build for ios
       - save-cache: *save-yarn-cache
 
       # must always be after environment config job but before ios build
