@@ -76,6 +76,7 @@ aliases:
     name: Yarn Install
     command: |
       yarn install --non-interactive --ignore-scripts --cache-folder ~/.cache/yarn
+      yarn run prepare
 
   # -------------------------
   #         ANALYSE
@@ -382,7 +383,7 @@ jobs:
 
       - run:
           name: Create Android Emulator (API 28)
-          command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis -d "Nexus 5"
+          command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis_playstore;x86" -g google_apis_playstore -d "Nexus 5"
       - run:
           name: Run Android Emulator (API 28) in background
           command: /usr/local/share/android-sdk/tools/emulator @Pixel_2_API_26 -skin 1080x2066 -memory 2048 -noaudio
@@ -391,7 +392,7 @@ jobs:
 
       # Now Test \o/
       - run:
-          name: Run Jet Tests
+          name: Run Jet Tests (API 28)
           command: yarn run tests:android:test-cover
 
       - run:
