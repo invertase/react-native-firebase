@@ -91,6 +91,9 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNFBAnalytics (6.0.0):
+    - Firebase/Core (~> 5.15.0)
+    - React
   - RNFBApp (6.0.0):
     - Firebase/Core (~> 5.15.0)
     - React
@@ -107,6 +110,7 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - RNFBAnalytics (from `../../packages/analytics/ios/RNFBAnalytics.podspec`)
   - RNFBApp (from `../../packages/app/ios/RNFBApp.podspec`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -130,6 +134,9 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
+  RNFBAnalytics:
+    :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
+    :version: "~> "
   RNFBApp:
     :path: "../../packages/app/ios/RNFBApp.podspec"
     :version: "~> "
@@ -149,9 +156,10 @@ SPEC CHECKSUMS:
   GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
+  RNFBAnalytics: ca21f3fa12a77a9aa251dee9b82ceed29108f7e0
   RNFBApp: ce2acae9bc6112364743a22c5020886ab66d75d2
   yoga: 0885622311729a02c2bc02dca97167787a51488b
 
-PODFILE CHECKSUM: 5c6ed212aeab925249ca61eef05815e02710ccce
+PODFILE CHECKSUM: 21147b8d72c8be829b2963842d67e0afe2c52ccb
 
 COCOAPODS: 1.5.3

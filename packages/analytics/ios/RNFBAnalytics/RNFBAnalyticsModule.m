@@ -62,7 +62,7 @@
   }
 
   RCT_EXPORT_METHOD(setUserProperties:(NSDictionary *)properties) {
-    [FIRAnalytics setUserPropertyString:value forName:name];
+//    [FIRAnalytics setUserPropertyString:value forName:name];
   }
 
   // TODO setMinimumSessionDuration
