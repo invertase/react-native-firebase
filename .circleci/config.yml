@@ -492,12 +492,14 @@ jobs:
 # -------------------------
 workflows:
   version: 2
-  #  JS:
-  #    jobs:
-  #      - checkout-code
-  #      - analyse:
-  #          requires:
-  #            - checkout-code
+
+  JS:
+    jobs:
+      - checkout-code
+      - analyse:
+          requires:
+            - checkout-code
+
   Android:
     jobs:
       - checkout-code
@@ -506,18 +508,17 @@ workflows:
           requires:
             - checkout-code
 
-#      - android-build-release:
-#          requires:
-#            - checkout-code
+      - android-build-release:
+          requires:
+            - checkout-code
 
       - android-test-e2e:
           requires:
-#            - checkout-code
             - android-build-debug
 
-#  iOS:
-#    jobs:
-#      - checkout-code
-#      - ios-test-e2e:
-#          requires:
-#            - checkout-code
+  iOS:
+    jobs:
+      - checkout-code
+      - ios-test-e2e:
+          requires:
+            - checkout-code
