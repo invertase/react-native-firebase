@@ -8,41 +8,41 @@ aliases:
   # -------------------------
   - &restore-yarn-cache
     keys:
-      - v6-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
       - ~/Library/Detox
-    key: v6-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+    key: v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-pods-cache
     paths:
       - ~/react-native-firebase/tests/ios/Pods
-    key: v6-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v7-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-pods-cache
     keys:
-      - v6-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v7-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-ios-build-cache
     paths:
       - ~/react-native-firebase/tests/ios/build/Build
-    key: v6-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v7-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &restore-ios-build-cache
     keys:
-      - v6-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v7-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-brew-cache
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v6-brew-cache-{{ arch }}
+    key: v7-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-      - v6-brew-cache-{{ arch }}
+      - v7-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
@@ -139,9 +139,9 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: 'medium+'
+  resource_class: 'medium'
   macos:
-    xcode: '10.0.0'
+    xcode: '10.1.0'
 
 # -------------------------
 #          JOBS
