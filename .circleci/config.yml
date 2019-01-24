@@ -372,19 +372,18 @@ jobs:
       - run: *packager-jet
       - run: *packager-warmup
 
-#      - restore-cache:
-#          keys:
-#            - v7-android28-sdk-cache-{{ arch }}
       - run:
-          name: Install Android Emulators
+          name: Install Android Emulator
           shell: /bin/bash -e
           command: |
             yes | sdkmanager "platform-tools"  "tools"
             yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86"
             yes | sdkmanager "emulator" --channel=3
+            yes | sdkmanager "build-tools;28.0.1" "build-tools;28.0.2" "build-tools;28.0.3"
             yes | sdkmanager --licenses
             yes | sdkmanager --update
             yes | sdkmanager --list
+
       - run:
           name: ADB Start Stop
           command: |
@@ -392,23 +391,18 @@ jobs:
             adb devices
             adb kill-server
             ls -la ~/.android
-#      - save-cache:
-#          paths:
-#            - /usr/local/share/android-sdk
-#            - ~/.android/
-#          key: v7-android28-sdk-cache-{{ arch }}
-#          when: always
-#            yes | sdkmanager "platforms;android-26" "system-images;android-26;google_apis_playstore;x86_64" --verbose
 
       - run:
           name: Create Android Emulator (API 28)
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 4"
+
       - run:
           name: Run Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
+
       - run:
           name: Wait for AVD to be ready
           no_output_timeout: "5m"
