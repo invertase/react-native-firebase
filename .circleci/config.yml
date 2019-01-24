@@ -19,20 +19,22 @@ aliases:
   - &save-pods-cache
     paths:
       - ~/react-native-firebase/tests/ios/Pods
-    key: v7-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v7-pods-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    when: always
 
   - &restore-pods-cache
     keys:
-      - v7-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v7-pods-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-ios-build-cache
     paths:
       - ~/react-native-firebase/tests/ios/build/Build
-    key: v7-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v7-ios-build-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    when: always
 
   - &restore-ios-build-cache
     keys:
-      - v7-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v7-ios-build-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-brew-cache
     paths:
@@ -44,7 +46,7 @@ aliases:
     keys:
       - v7-brew-cache-{{ arch }}
 
-  - &configure-jet-detox-environment
+  - &configure-ios-detox-environment
     name: Configure Jet + Detox Environment
     command: |
       HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
@@ -63,6 +65,15 @@ aliases:
     name: Warming up Packager
     background: true
     command: node .circleci/scripts/packager-warmup.js
+
+  - &make-cache-check-files
+    name: Make Cache Checksum Files
+    command: |
+      mkdir -p ~/.checksumfiles
+      find . -type f -name 'build.gradle' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/build.gradle
+      find . -type f -name 'settings.gradle' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/settings.gradle
+      find . -type f -name '*.podspec' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/combined.podspec
+      find . -type f -name 'package.json' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/package.json
 
   # -------------------------
   #       INSTALLATION
@@ -162,6 +173,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -178,6 +191,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
@@ -193,7 +207,7 @@ jobs:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}
+            - v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
             - v6-gradle-cache
 
       - restore_cache:
@@ -225,7 +239,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -258,6 +272,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
@@ -273,7 +288,7 @@ jobs:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+            - v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
             - v6-gradle-release-cache
 
       - restore_cache:
@@ -305,7 +320,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -342,6 +357,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
       - run:
           name: Configure Environment Variables
           command: |
@@ -354,14 +371,12 @@ jobs:
             source $BASH_ENV
 
       - run:
-          name: Install Android SDKs
+          name: Install Android SDK Tools
           command: |
-            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk
-            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install intel-haxm
-            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
-            ls -la /usr/local/share/android-sdk
-            echo $PATH
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install intel-haxm >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null >/dev/null
 
       # Yarn install - to ensure detox post install builds
       - restore-cache: *restore-yarn-cache
@@ -376,12 +391,11 @@ jobs:
           name: Install Android Emulator
           shell: /bin/bash -e
           command: |
-            yes | sdkmanager "platform-tools"  "tools"
-            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86"
-            yes | sdkmanager "emulator" --channel=3
-            yes | sdkmanager "build-tools;28.0.1" "build-tools;28.0.2" "build-tools;28.0.3"
-            yes | sdkmanager --licenses
-            yes | sdkmanager --update
+            yes | sdkmanager "platform-tools"  "tools" >/dev/null
+            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86" >/dev/null
+            yes | sdkmanager "emulator" --channel=3 >/dev/null
+            yes | sdkmanager "build-tools;28.0.3" >/dev/null
+            yes | sdkmanager --licenses >/dev/null
             yes | sdkmanager --list
 
       - run:
@@ -397,10 +411,10 @@ jobs:
           command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 4"
 
       - run:
-          name: Run Android Emulator (API 28) in background
+          name: Start Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
           background: true
 
       - run:
@@ -431,6 +445,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
       - run:
           name: Start iPhone X simulator (background)
           background: true
@@ -438,11 +454,13 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin"' >> $BASH_ENV
             source $BASH_ENV
+
+
       # Brew
       - restore-cache: *restore-brew-cache
-      - run: *configure-jet-detox-environment
+      - run: *configure-ios-detox-environment
       - save-cache: *save-brew-cache
 
       # Yarn install - to ensure detox post install builds
