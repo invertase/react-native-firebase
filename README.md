@@ -45,6 +45,7 @@ The main module that you interface with is `App` (`react-native-firebase`)
 | -------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
 | [App](/packages/app)             |            [![badge](https://img.shields.io/npm/dm/react-native-firebase.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/react-native-firebase)            | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 | [Analytics](/packages/analytics) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Functions](/packages/functions) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 
 > TODO
 
