@@ -107,6 +107,11 @@ namespace ReactNativeFirebaseAnalytics {
      * @param properties Set a property value to null to remove it.
      */
     setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
+
+    /**
+     * Clears all analytics data for this instance from the device and resets the app instance ID.
+     */
+    resetAnalyticsData(): Promise<void>;
   }
 }
 

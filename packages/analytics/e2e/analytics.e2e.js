@@ -1,17 +1,16 @@
 // TODO all try catch tests can give false positives as there's no
 // TODO checks that it actually threw, only does tests in the catch
 
-android.describe('analytics()', () => {
-  xdescribe('namespace', () => {
+describe('analytics()', () => {
+  describe('namespace', () => {
+    // TODO app namespaces not yet implemented
     xit('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.analytics);
       app.analytics().logEvent.should.be.a.Function();
     });
 
-    xit('throws if app arg provided to firebase.analytics(APP)', {
-
-    });
+    xit('throws if app arg provided to firebase.analytics(APP)', {});
 
     xit('throws if args provided to firebase.app().analytics(ARGS)', {});
   });

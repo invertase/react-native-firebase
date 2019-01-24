@@ -19,6 +19,7 @@
 #define RNFBSharedUtils_h
 
 #import <Firebase/Firebase.h>
+#import "RCTBridgeModule.h"
 
 #ifdef DEBUG
 #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
@@ -36,10 +37,13 @@ extern NSString *const DEFAULT_APP_NAME;
 
 @interface RNFBSharedUtils : NSObject
 
+
 #pragma mark -
 #pragma mark Methods
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp;
+
++ (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;
 
 @end
 

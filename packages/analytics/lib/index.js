@@ -130,6 +130,10 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   setUserProperties(object) {
     return this.native.setUserProperties(object);
   }
+
+  resetAnalyticsData() {
+    return this.native.resetAnalyticsData();
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/analytics';

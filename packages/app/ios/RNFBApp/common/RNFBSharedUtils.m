@@ -24,6 +24,7 @@ NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
 @implementation RNFBSharedUtils
+  static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
@@ -58,5 +59,21 @@ NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
     firAppDictionary[@"appConfig"] = firAppConfig;
 
     return firAppDictionary;
+  }
+
+  + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;{
+      NSMutableDictionary * userInfo = [NSMutableDictionary dictionary];
+
+      [userInfo setValue:@(YES) forKey:@"fatal"];
+      [userInfo setValue:@"unknown" forKey:@"code"];
+      [userInfo setValue:exception.reason forKey:@"message"];
+      [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
+      [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
+
+      NSError *error = [[NSError alloc] initWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+
+      // TODO hook into crashlytics - report as handled exception?
+
+      reject(exception.name, exception.reason, error);
   }
 @end

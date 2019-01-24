@@ -19,12 +19,10 @@
 #import <Firebase/Firebase.h>
 
 #import "RNFBAnalyticsModule.h"
-#import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 
 
 @implementation RNFBAnalyticsModule
-
 #pragma mark -
 #pragma mark Module Setup
 
@@ -37,35 +35,132 @@
 #pragma mark -
 #pragma mark Firebase Analytics Methods
 
-  // TODO Promises
+  RCT_EXPORT_METHOD(logEvent:
+    (NSString *) name
+        params:
+        (NSDictionary *) params
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [FIRAnalytics logEventWithName:name parameters:params];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
 
-  RCT_EXPORT_METHOD(logEvent:(NSString *)name props:(NSDictionary *)props) {
-    [FIRAnalytics logEventWithName:name parameters:props];
+    return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled:(BOOL) enabled) {
-    [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+  RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled:
+    (BOOL) enabled
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+
+    return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setCurrentScreen:(NSString *) screenName screenClass:(NSString *) screenClassOverview) {
+  RCT_EXPORT_METHOD(setCurrentScreen:
+    (NSString *) screenName
+        screenClass:
+        (NSString *) screenClassOverview
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
     RCTUnsafeExecuteOnMainQueueSync(^{
-      [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
+      @try {
+        [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
+      } @catch (NSException *exception) {
+        return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+      }
+      return resolve([NSNull null]);
     });
   }
 
-  RCT_EXPORT_METHOD(setUserId: (NSString *) id) {
-    [FIRAnalytics setUserID:id];
+  RCT_EXPORT_METHOD(setUserId:
+    (NSString *) id
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [FIRAnalytics setUserID:id];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+    return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setUserProperty: (NSString *) name value:(NSString *) value) {
-    [FIRAnalytics setUserPropertyString:value forName:name];
+  RCT_EXPORT_METHOD(setUserProperty:
+    (NSString *) name
+        value:
+        (NSString *) value
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [FIRAnalytics setUserPropertyString:value forName:name];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+    return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setUserProperties:(NSDictionary *)properties) {
-//    [FIRAnalytics setUserPropertyString:value forName:name];
+  RCT_EXPORT_METHOD(setUserProperties:
+    (NSDictionary *) properties
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+        [FIRAnalytics setUserPropertyString:value forName:key];
+      }];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+    return resolve([NSNull null]);
   }
 
-  // TODO setMinimumSessionDuration
-  // TODO setSessionTimeoutDuration
+  RCT_EXPORT_METHOD(resetAnalyticsData:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [FIRAnalytics resetAnalyticsData];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+    return resolve([NSNull null]);
+  }
+
+  RCT_EXPORT_METHOD(setMinimumSessionDuration:
+    (double) milliseconds
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    // Do nothing - this only exists in android
+    return resolve([NSNull null]);
+  }
+
+  RCT_EXPORT_METHOD(setSessionTimeoutDuration:
+    (double) milliseconds
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    // Do nothing - this only exists in android
+    return resolve([NSNull null]);
+  }
 
 @end
