@@ -134,12 +134,12 @@ aliases:
       node -v
 
   - &packager-jet
-    name: Start React Native Pacakager (background)
+    name: Start React Native Packager (background)
     background: true
     command: yarn run tests:packager:jet || true
 
   - &packager-warmup
-    name: Warming up Packager
+    name: Warm up Packager
     background: true
     command: node .circleci/scripts/packager-warmup.js
 
@@ -183,12 +183,12 @@ aliases:
   #        ANDROID
   # -------------------------
 
-  - &android-accept-licenses
-    name: Accept Android Licenses
-    shell: /bin/bash -e
-    command: |
-      yes | sdkmanager --licenses
-      yes | sdkmanager --update
+#  - &android-accept-licenses
+#    name: Accept Android Licenses
+#    shell: /bin/bash -e
+#    command: |
+#      yes | sdkmanager --licenses
+#      yes | sdkmanager --update
 
 # -------------------------
 #        DEFAULTS
@@ -211,7 +211,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: invertase/react-native-firebase-android:standard
+    - image: invertase/react-native-firebase-android:debug
   resource_class: 'xlarge'
   working_directory: ~/react-native-firebase
   environment:
@@ -274,7 +274,7 @@ jobs:
       - restore-cache: *restore-gradle-debug-build-cache
       - run: *disperse-gradle-build-caches
 
-      - run: *android-accept-licenses
+#      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
@@ -313,7 +313,7 @@ jobs:
       - restore-cache: *restore-gradle-release-build-cache
       - run: *disperse-gradle-build-caches
 
-      - run: *android-accept-licenses
+#      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
