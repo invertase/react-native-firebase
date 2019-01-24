@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#bootanim=""
+bootanim=""
 
 echo "Waiting for AVD to finish booting"
 export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
@@ -11,6 +11,6 @@ until [[ "$bootanim" =~ "stopped" ]]; do
 done
 
 # extra time to let the OS settle
-sleep 20
+sleep 25
 
 echo "Android Virtual Device is now ready."
