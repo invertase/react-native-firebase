@@ -46,7 +46,7 @@ export default class FirebaseApp {
     return Object.assign({}, this._options);
   }
 
-  get automaticDataColletionEnabled() {
+  get automaticDataCollectionEnabled() {
     this._checkDestroyed_();
     return this._automaticDataCollectionEnabled;
   }

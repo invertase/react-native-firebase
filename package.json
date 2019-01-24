@@ -6,6 +6,7 @@
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
     "build:all:src": "lerna run build:src",
+    "validate:all:js": "eslint ./",
     "validate:all:ts": "tsc --project ./",
     "validate:all:flow": "flow",
     "lerna:boostrap": "lerna bootstrap",
@@ -15,15 +16,16 @@
     "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
     "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
     "tests:android:build": "cd tests && detox build --configuration android.emu.debug",
+    "tests:android:build-release": "cd tests && detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && detox test --configuration android.emu.debug",
     "tests:android:test-reuse": "cd tests && detox test --configuration android.emu.debug --reuse",
-    "tests:android:test-cover": "cd tests && nyc detox test --configuration android.emu.debug",
+    "tests:android:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration android.emu.debug",
     "tests:android:test-cover-reuse": "cd tests && nyc detox test --configuration android.emu.debug --reuse",
     "tests:ios:build": "cd tests && detox build --configuration ios.sim.debug",
     "tests:ios:build-release": "cd tests && detox build --configuration ios.sim.release",
     "tests:ios:test": "cd tests && detox test --configuration ios.sim.debug --loglevel warn",
     "tests:ios:test-reuse": "cd tests && detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "tests:ios:test-cover": "cd tests && nyc detox test --configuration ios.sim.debug",
+    "tests:ios:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "tests:ios:test-cover-reuse": "cd tests && nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
     "publish:alpha:patch": "lerna version prepatch --preid alpha --no-push --force-publish=*",
@@ -33,6 +35,7 @@
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
+    "codecov": "^3.1.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/runtime": "^7.2.0",
     "@invertase/babel-preset-react-native-syntax": "^0.1.3",
@@ -80,6 +83,8 @@
     ],
     "nohoist": [
       "detox",
+      "**/detox",
+      "**/detox/**",
       "**/babel-plugin-istanbul",
       "**/babel-plugin-istanbul/**",
       "**/patch-package",
@@ -93,5 +98,8 @@
       "**/react-native",
       "**/react-native/**"
     ]
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }

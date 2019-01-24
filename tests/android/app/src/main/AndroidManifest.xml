@@ -16,6 +16,7 @@
     android:name="com.testing.MainApplication"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
+    android:usesCleartextTraffic="true"
     android:label="@string/app_name"
     android:launchMode="singleTask"
     android:theme="@style/AppTheme">

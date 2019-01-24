@@ -1,5 +1,5 @@
 --recursive
---timeout 120000
+--timeout 240000
 --reporter spec
 --slow 1000
 --retries 0

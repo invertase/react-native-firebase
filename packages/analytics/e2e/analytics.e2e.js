@@ -1,7 +1,7 @@
 // TODO all try catch tests can give false positives as there's no
 // TODO checks that it actually threw, only does tests in the catch
 
-describe('analytics()', () => {
+android.describe('analytics()', () => {
   xdescribe('namespace', () => {
     xit('accessible from firebase.app()', () => {
       const app = firebase.app();

@@ -16,7 +16,6 @@ def enableSeparateBuildPerCPUArchitecture = false
 android {
   compileSdkVersion 28
 
-
   defaultConfig {
     applicationId "com.testing"
     minSdkVersion 18
