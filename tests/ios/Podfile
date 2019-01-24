@@ -29,6 +29,7 @@ target 'testing' do
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
 
   pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec', :version => "~> #{rnfb_version}"
+  pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec', :version => "~> #{rnfb_version}"
 
   # Pods for ReactNativeFirebaseDemo
   # pod 'Firebase/Core', '~> 5.15.0'
