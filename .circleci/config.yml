@@ -1,40 +1,102 @@
---- # -------------------------
-
-# -------------------------
-#         ALIASES
+---
 aliases:
   # -------------------------
   #          CACHE
   # -------------------------
   - &restore-yarn-cache
     keys:
-      - v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+      - v1-yarn-cache-{{ arch }}-{{ checksum "~/.checksumfiles/package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
       - ~/Library/Detox
-    key: v7-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "~/.checksumfiles/package.json" }}-{{ checksum "yarn.lock" }}
+
+  # -------------------------
+  #            iOS
+  # -------------------------
 
   - &save-pods-cache
     paths:
       - ~/react-native-firebase/tests/ios/Pods
-    key: v7-pods-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-pods-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
     when: always
 
   - &restore-pods-cache
     keys:
-      - v7-pods-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v1-pods-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-ios-build-cache
     paths:
       - ~/react-native-firebase/tests/ios/build/Build
-    key: v7-ios-build-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-ios-pods-build-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
     when: always
 
   - &restore-ios-build-cache
     keys:
-      - v7-ios-build-cache-{{ arch }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v1-ios-pods-build-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+  # -------------------------
+  #         Android
+  # -------------------------
+  - &save-gradle-home-caches
+    name: Saving Gradle home cache
+    paths:
+      - ~/.gradle/caches/
+    key: v1-gradle-home-cache-{{ checksum "~/.checksumfiles/build.gradle" }}-{{ checksum "~/.checksumfiles/settings.gradle" }}
+
+  - &restore-gradle-home-caches
+    keys:
+      - v1-gradle-home-cache-{{ checksum "~/.checksumfiles/build.gradle" }}-{{ checksum "~/.checksumfiles/settings.gradle" }}
+      - v1-gradle-home-cache
+
+  - &save-gradle-wrapper-cache
+    name: Saving Gradle wrapper cache
+    paths:
+      - ~/.gradle/wrapper/
+    key: v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+  - &restore-gradle-wrapper-cache
+    keys:
+      - v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+  - &collect-gradle-build-caches
+    name: Collecting Gradle Build caches for saving
+    command: |
+      mkdir -p ~/gradle-build-caches
+      [ -d ~/.gradle/caches ] &&
+        [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
+        rm -rf ~/gradle-build-caches/* &&
+        mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
+    when: always
+
+  - &save-gradle-build-cache
+    name: Saving Gradle Build caches
+    paths:
+      - ~/gradle-build-caches
+    key: v1-gradle-build-cache-{{ .Revision }}
+    when: always
+
+  - &disperse-gradle-build-caches
+    name: Dispersing Gradle Build caches for restoring
+    command: |
+      [ -d ~/gradle-build-caches ] &&
+        [ -n "$(ls -A ~/gradle-build-caches)" ] &&
+        rm -rf ~/.gradle/caches/build-cache-* &&
+        mkdir -p ~/.gradle/caches/ &&
+        mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+  - &restore-gradle-build-cache
+    name: Restoring Gradle Build caches
+    keys:
+      - v1-gradle-build-cache-{{ .Revision }}
+      - v1-gradle-build-cache
+
+
+  # -------------------------
+  #          DETOX
+  # -------------------------
 
   - &save-brew-cache
     paths:
@@ -45,6 +107,11 @@ aliases:
   - &restore-brew-cache
     keys:
       - v7-brew-cache-{{ arch }}
+
+
+  # -------------------------
+  #    SHARED RUN COMMANDS
+  # -------------------------
 
   - &configure-ios-detox-environment
     name: Configure Jet + Detox Environment
@@ -82,12 +149,6 @@ aliases:
     name: Yarn Install
     command: |
       yarn install --non-interactive --cache-folder ~/.cache/yarn
-
-  - &yarn-no-scripts
-    name: Yarn Install
-    command: |
-      yarn install --non-interactive --ignore-scripts --cache-folder ~/.cache/yarn
-      yarn run prepare
 
   # -------------------------
   #         ANALYSE
@@ -197,70 +258,28 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      # restore saved caches
-      - restore_cache:
-          keys:
-            - v6-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+      - restore-cache: *restore-gradle-wrapper-cache
+      - restore_cache: *restore-gradle-home-caches
 
-      - restore_cache:
-          keys:
-            # for multi-project builds where dependencies are not defined in one central file,
-            # an additional run step before is necessary that concatenates affected files
-            # into one file that can be checksummed
-            - v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
-            - v6-gradle-cache
-
-      - restore_cache:
-          keys:
-            - v6-gradle-build-caches-{{ .Revision }}
-            - v6-gradle-build-caches
-
-      - run:
-          name: Restoring Gradle Build Caches
-          command: |
-            [ -d ~/gradle-build-caches ] &&
-              [ -n "$(ls -A ~/gradle-build-caches)" ] &&
-              rm -rf ~/.gradle/caches/build-cache-* &&
-              mkdir -p ~/.gradle/caches/ &&
-              mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+      - restore-cache: *restore-gradle-build-cache
+      - run: *disperse-gradle-build-caches
 
       - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
-          name: Downloading Dependencies
+          name: Downloading Gradle Dependencies
           command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper/
-          key: v6-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-          key: v6-gradle-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
+      - save-cache: *save-gradle-wrapper-cache
+      - save-cache: *save-gradle-home-caches
 
       - run:
           name: Build Android Testing App
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 6 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
-      # cache gradle build caches
-      - run:
-          name: Collecting Gradle Build Caches
-          command: |
-            mkdir -p ~/gradle-build-caches
-            [ -d ~/.gradle/caches ] &&
-              [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
-              rm -rf ~/gradle-build-caches/* &&
-              mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
-          when: always
-
-      - save_cache:
-          paths:
-            - ~/gradle-build-caches
-          key: v6-gradle-build-caches-{{ .Revision }}
-          when: always
+      - run: *collect-gradle-build-caches
+      - save-cache: *save-gradle-build-cache
 
       - persist_to_workspace:
           root: ~/react-native-firebase
@@ -278,32 +297,11 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      # restore saved caches
-      - restore_cache:
-          keys:
-            - v6-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+      - restore-cache: *restore-gradle-wrapper-cache
+      - restore_cache: *restore-gradle-home-caches
 
-      - restore_cache:
-          keys:
-            # for multi-project builds where dependencies are not defined in one central file,
-            # an additional run step before is necessary that concatenates affected files
-            # into one file that can be checksummed
-            - v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
-            - v6-gradle-release-cache
-
-      - restore_cache:
-          keys:
-            - v6-gradle-release-build-caches-{{ .Revision }}
-            - v6-gradle-release-build-caches
-
-      - run:
-          name: Restoring Gradle Build Caches
-          command: |
-            [ -d ~/gradle-build-caches ] &&
-              [ -n "$(ls -A ~/gradle-build-caches)" ] &&
-              rm -rf ~/.gradle/caches/build-cache-* &&
-              mkdir -p ~/.gradle/caches/ &&
-              mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+      - restore-cache: *restore-gradle-build-cache
+      - run: *disperse-gradle-build-caches
 
       - run: *android-accept-licenses
 
@@ -312,36 +310,15 @@ jobs:
           name: Downloading Dependencies
           command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper/
-          key: v6-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-          key: v6-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}-{{ checksum "tests/android/settings.gradle" }}
+      - save-cache: *save-gradle-wrapper-cache
+      - save-cache: *save-gradle-home-caches
 
       - run:
           name: Build Android Testing App
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleRelease
 
-      # cache gradle build caches
-      - run:
-          name: Collecting Gradle Build Caches
-          command: |
-            mkdir -p ~/gradle-build-caches
-            [ -d ~/.gradle/caches ] &&
-              [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
-              rm -rf ~/gradle-build-caches/* &&
-              mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
-          when: always
-
-      - save_cache:
-          paths:
-            - ~/gradle-build-caches
-          key: v6-gradle-release-build-caches-{{ .Revision }}
-          when: always
+      - run: *collect-gradle-build-caches
+      - save-cache: *save-gradle-build-cache
 
       - persist_to_workspace:
           root: ~/react-native-firebase
@@ -398,6 +375,7 @@ jobs:
             yes | sdkmanager --licenses >/dev/null
             yes | sdkmanager --list
 
+      # to force ssh key generation for emulators
       - run:
           name: ADB Start Stop
           command: |
