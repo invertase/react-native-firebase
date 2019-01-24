@@ -139,7 +139,7 @@ android_defaults: &android_defaults
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: 'medium'
+  resource_class: 'medium+'
   macos:
     xcode: '10.0.0'
 
@@ -407,7 +407,7 @@ jobs:
           name: Run Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin nexus_4 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
@@ -501,7 +501,6 @@ workflows:
   #  JS:
   #    jobs:
   #      - checkout-code
-  #
   #      - analyse:
   #          requires:
   #            - checkout-code
