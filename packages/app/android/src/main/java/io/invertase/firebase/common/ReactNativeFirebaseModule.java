@@ -72,6 +72,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
+    // TODO hook into crashlytics - report as handled exception?
     promise.reject(exception, getExceptionMap(exception));
   }
 

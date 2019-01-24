@@ -1,4 +1,4 @@
-package io.invertase.firebase.analytics;
+package io.invertase.firebase.functions;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -27,11 +27,11 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ReactNativeFirebaseAnalyticsPackage implements ReactPackage {
+public class ReactNativeFirebaseFunctionsPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAnalyticsModule(reactContext));
+    modules.add(new ReactNativeFirebaseFunctionsModule(reactContext));
     return modules;
   }
 
