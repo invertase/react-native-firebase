@@ -211,7 +211,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: invertase/react-native-firebase-android:debug
+    - image: invertase/react-native-firebase-android:release
   resource_class: 'xlarge'
   working_directory: ~/react-native-firebase
   environment:
