@@ -31,17 +31,10 @@ import {
  *
  * @firebase analytics
  */
-namespace ReactNativeFirebaseAnalytics {
-  interface Statics {}
+export namespace Analytics {
+  export interface Statics {}
 
-  /**
-   * Testy Description
-   */
-  class Testy {
-    val(): any;
-  }
-
-  interface Module extends ReactNativeFirebaseModule {
+  export interface Module extends ReactNativeFirebaseModule {
     /**
      * Log a custom event with optional params.
      * @note 100 characters is the maximum length for param key names.
@@ -118,7 +111,7 @@ namespace ReactNativeFirebaseAnalytics {
 declare module '@react-native-firebase/analytics' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
 
-  const FirebaseNamespaceExport: ReactNativeFirebaseNamespace;
+  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
   /**
    * @example
@@ -130,8 +123,8 @@ declare module '@react-native-firebase/analytics' {
   export const firebase = FirebaseNamespaceExport;
 
   const AnalyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    ReactNativeFirebaseAnalytics.Module,
-    ReactNativeFirebaseAnalytics.Statics
+    Analytics.Module,
+    Analytics.Statics
   >;
   /**
    * @example
@@ -157,8 +150,8 @@ declare module '@react-native-firebase/app-types' {
      * performance optimizations.
      */
     analytics: ReactNativeFirebaseModuleAndStatics<
-      ReactNativeFirebaseAnalytics.Module,
-      ReactNativeFirebaseAnalytics.Statics
+      Analytics.Module,
+      Analytics.Statics
     >;
   }
 
@@ -171,6 +164,6 @@ declare module '@react-native-firebase/app-types' {
      * you to make informed decisions regarding app marketing and
      * performance optimizations.
      */
-    analytics(): ReactNativeFirebaseAnalytics.Module;
+    analytics(): Analytics.Module;
   }
 }

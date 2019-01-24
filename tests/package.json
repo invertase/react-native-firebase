@@ -20,7 +20,8 @@
     "require-all": "3.0.0",
     "react-native-firebase": "6.0.0",
     "@react-native-firebase/app-types": "6.0.0",
-    "@react-native-firebase/analytics": "6.0.0"
+    "@react-native-firebase/analytics": "6.0.0",
+    "@react-native-firebase/functions": "6.0.0"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "^5.1.1",

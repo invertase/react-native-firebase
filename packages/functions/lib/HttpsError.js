@@ -15,17 +15,11 @@
  *
  */
 
-/**
- * @firebase firebase
- */
-declare module 'react-native-firebase' {
-  import type { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types/index.js.flow';
-
-  declare export default {} & ReactNativeFirebaseNamespace;
-}
-
-declare module '@react-native-firebase/app-types' {
-  declare interface ReactNativeFirebaseNamespace {}
-
-  declare interface FirebaseApp {}
+export default class HttpsError extends Error {
+  constructor(code, message, details) {
+    super(message);
+    this.code = code;
+    this.details = details;
+    this.message = message;
+  }
 }

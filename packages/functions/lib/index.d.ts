@@ -18,7 +18,6 @@
 import {
   ReactNativeFirebaseModule,
   ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -29,7 +28,7 @@ import {
  *
  * @firebase functions
  */
-namespace ReactNativeFirebaseFunctions {
+export namespace Functions {
   /**
    * The set of Firebase Functions status codes. The codes are the same at the
    * ones exposed by gRPC here:
@@ -69,7 +68,7 @@ namespace ReactNativeFirebaseFunctions {
    * - 'unauthenticated': The request does not have valid authentication
    *   credentials for the operation.
    */
-  type FunctionsErrorCode =
+  export type FunctionsErrorCode =
     | 'ok'
     | 'cancelled'
     | 'unknown'
@@ -91,21 +90,19 @@ namespace ReactNativeFirebaseFunctions {
   /**
    * An HttpsCallableResult wraps a single result from a function call.
    */
-  interface HttpsCallableResult<R = any> {
-    readonly data: R;
+  export interface HttpsCallableResult {
+    readonly data: any;
   }
 
   /**
    * An HttpsCallable is a reference to a "callable" http trigger in
    * Google Cloud Functions.
    */
-  type HttpsCallable<Params, Result> =
-    Params extends void ?
-      () => Promise<HttpsCallableResult<Result>> :
-      (data: Params) => Promise<HttpsCallableResult<Result>>
+  export interface HttpsCallable {
+    (data?: any): Promise<HttpsCallableResult>;
+  }
 
-
-  interface HttpsError extends Error {
+  export interface HttpsError extends Error {
     /**
      * A standard error code that will be returned to the client. This also
      * determines the HTTP status code of the response, as defined in code.proto.
@@ -117,20 +114,40 @@ namespace ReactNativeFirebaseFunctions {
     readonly details?: any;
   }
 
+  export interface HttpsErrorCode {
+    OK: 'ok';
+    CANCELLED: 'cancelled';
+    UNKNOWN: 'unknown';
+    INVALID_ARGUMENT: 'invalid-argument';
+    DEADLINE_EXCEEDED: 'deadline-exceeded';
+    NOT_FOUND: 'not-found';
+    ALREADY_EXISTS: 'already-exists';
+    PERMISSION_DENIED: 'permission-denied';
+    UNAUTHENTICATED: 'unauthenticated';
+    RESOURCE_EXHAUSTED: 'resource-exhausted';
+    FAILED_PRECONDITION: 'failed-precondition';
+    ABORTED: 'aborted';
+    OUT_OF_RANGE: 'out-of-range';
+    UNIMPLEMENTED: 'unimplemented';
+    INTERNAL: 'internal';
+    UNAVAILABLE: 'unavailable';
+    DATA_LOSS: 'data-loss';
+  }
+
   /**
    * firebase.functions.X
    */
-  interface Statics {
+  export interface Statics {
     /**
-     * Uppercase + underscored variables of @ReactNativeFirebaseFunctions.FunctionsErrorCode
+     * Uppercase + underscored variables of @Functions.FunctionsErrorCode
      */
-    HttpsErrorCode: { [name: string]: FunctionsErrorCode };
+    HttpsErrorCode: {} & HttpsErrorCode,
   }
 
   /**
    * firebase.functions().X
    */
-  interface Module extends ReactNativeFirebaseModule {
+  export interface Module extends ReactNativeFirebaseModule {
     /**
      * Gets an `HttpsCallable` instance that refers to the function with the given
      * name.
@@ -138,7 +155,7 @@ namespace ReactNativeFirebaseFunctions {
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
-    httpsCallable<Params = any, Result = any>(name: string): HttpsCallable<Params, Result>;
+    httpsCallable(name: string): HttpsCallable;
 
     /**
      * Changes this instance to point to a Cloud Functions emulator running
@@ -149,14 +166,15 @@ namespace ReactNativeFirebaseFunctions {
      * @param origin the origin string of the local emulator started via firebase tools
      * "http://10.0.0.8:1337".
      */
-    useFunctionsEmulator(origin: string): Promise<null>;
+    useFunctionsEmulator(origin: string): Promise<void>;
   }
 }
 
 declare module '@react-native-firebase/functions' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import { FirebaseApp, ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
 
-  const FirebaseNamespaceExport: ReactNativeFirebaseNamespace;
+  // export statics
+  export const HttpsErrorCode: {} & Functions.HttpsErrorCode;
 
   /**
    * @example
@@ -165,12 +183,15 @@ declare module '@react-native-firebase/functions' {
    * firebase.functions().httpsCallable(...);
    * ```
    */
-  export const firebase = FirebaseNamespaceExport;
+  export const firebase: {} & ReactNativeFirebaseNamespace;
 
-  const FunctionsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    ReactNativeFirebaseFunctions.Module,
-    ReactNativeFirebaseFunctions.Statics
-  >;
+  const FunctionsDefaultExport: {
+    (app?: FirebaseApp): Functions.Module;
+    /**
+     * This React Native Firebase Functions module version.
+     */
+    readonly SDK_VERSION: string;
+  } & Functions.Statics;
   /**
    * @example
    * ```js
@@ -192,10 +213,13 @@ declare module '@react-native-firebase/app-types' {
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
      */
-    functions: ReactNativeFirebaseModuleAndStatics<
-      ReactNativeFirebaseFunctions.Module,
-      ReactNativeFirebaseFunctions.Statics
-    >;
+    functions: {
+      (app?: FirebaseApp): Functions.Module;
+      /**
+       * This React Native Firebase Functions module version.
+       */
+      readonly SDK_VERSION: string;
+    } & Functions.Statics;
   }
 
   interface FirebaseApp {
@@ -205,6 +229,6 @@ declare module '@react-native-firebase/app-types' {
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
      */
-    functions(): ReactNativeFirebaseFunctions.Module;
+    functions?(region?: string): Functions.Module;
   }
 }

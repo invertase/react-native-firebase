@@ -106,7 +106,7 @@ declare module '@react-native-firebase/analytics' {
    * firebase.analytics().logEvent(...);
    * ```
    */
-  declare export var firebase: ReactNativeFirebaseNamespace;
+  declare export var firebase: {} & ReactNativeFirebaseNamespace;
 
   /**
    * @example
