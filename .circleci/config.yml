@@ -402,12 +402,12 @@ jobs:
 
       - run:
           name: Create Android Emulator (API 28)
-          command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 5"
+          command: avdmanager create avd -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 4"
       - run:
           name: Run Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 600x800 -dpi-device=65 -cores 2 -force-32bit -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin nexus_4 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window
           background: true
       - run:
           name: Wait for AVD to be ready
