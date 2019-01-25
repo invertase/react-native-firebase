@@ -43,7 +43,6 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
   private static final String DATA_KEY = "data";
   private static final String CODE_KEY = "code";
   private static final String MSG_KEY = "message";
-  private static final String ERROR_KEY = "__error";
   private static final String DETAILS_KEY = "details";
 
   ReactNativeFirebaseFunctionsModule(ReactApplicationContext reactContext) {
@@ -91,30 +90,28 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
       .addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@Nonnull Exception exception) {
-          // TODO use new promise reject userInfo api
           Log.d(TAG, "function:call:onFailure:" + name, exception);
 
           String message;
           Object details = null;
           String code = "UNKNOWN";
-          WritableMap map = Arguments.createMap();
+          WritableMap userInfo = Arguments.createMap();
 
           if (exception instanceof FirebaseFunctionsException) {
-            FirebaseFunctionsException ffe = (FirebaseFunctionsException) exception;
-            details = ffe.getDetails();
-            code = ffe
+            FirebaseFunctionsException functionsException = (FirebaseFunctionsException) exception;
+            details = functionsException.getDetails();
+            code = functionsException
               .getCode()
               .name();
-            message = ffe.getMessage();
+            message = functionsException.getMessage();
           } else {
             message = exception.getMessage();
           }
 
-          RCTConvertFirebase.mapPutValue(CODE_KEY, code, map);
-          RCTConvertFirebase.mapPutValue(MSG_KEY, message, map);
-          RCTConvertFirebase.mapPutValue(ERROR_KEY, true, map);
-          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, map);
-          promise.resolve(map);
+          RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
+          RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
+          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
+          promise.reject(code, message, exception, userInfo);
         }
       });
   }

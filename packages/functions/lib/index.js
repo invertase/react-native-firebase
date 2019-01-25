@@ -65,9 +65,10 @@ function nativeErrorToHttpsError(nativeError) {
   const { code, message, details } = nativeError.userInfo || {};
   return Promise.reject(
     new HttpsError(
-      statics.HttpsErrorCode[code] || statics.HttpsErrorCode.UNKNOWN,
+      HttpsErrorCode[code] || HttpsErrorCode.UNKNOWN,
       message || nativeError.message,
       details || null,
+      nativeError.stack,
     ),
   );
 }

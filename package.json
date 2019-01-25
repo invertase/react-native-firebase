@@ -14,7 +14,7 @@
     "gen:reference": "typedoc --json typedoc.json --mode file --includeDeclarations --excludeExternals",
     "tests:packager:chrome": "cd tests && react-native start --platforms ios,android",
     "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
-    "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
+    "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' cd tests && react-native start --reset-cache",
     "tests:android:build": "cd tests && detox build --configuration android.emu.debug",
     "tests:android:build-release": "cd tests && detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && detox test --configuration android.emu.debug",

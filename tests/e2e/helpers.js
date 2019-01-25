@@ -34,6 +34,7 @@ Object.defineProperty(global, 'NativeModules', {
     return jet.NativeModules;
   },
 });
+
 Object.defineProperty(global, 'NativeEventEmitter', {
   get() {
     return jet.NativeEventEmitter;
@@ -46,11 +47,15 @@ global.android = {
   describe(name, ctx) {
     if (isAndroid) {
       describe(name, ctx);
+    } else {
+      xdescribe('SKIP: ANDROID ONLY - ' + name, ctx);
     }
   },
   it(name, ctx) {
     if (isAndroid) {
       it(name, ctx);
+    } else {
+      xit('SKIP: ANDROID ONLY - ' + name, ctx);
     }
   },
 };
@@ -58,11 +63,15 @@ global.ios = {
   describe(name, ctx) {
     if (isIOS) {
       describe(name, ctx);
+    } else {
+      xdescribe('SKIP: IOS ONLY - ' + name, ctx);
     }
   },
   it(name, ctx) {
     if (isIOS) {
       it(name, ctx);
+    } else {
+      xit('SKIP: IOS ONLY - ' + name, ctx);
     }
   },
 };
@@ -90,8 +99,7 @@ module.exports.requirePackageTests = requirePackageTests;
 
 const androidTestConfig = {
   // firebase android sdk completely ignores client id
-  clientId:
-    '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
+  clientId: '305229645282-j8ij0jev9ut24odmlk9i215pas808ugn.apps.googleusercontent.com',
   appId: '1:305229645282:android:af36d4d29a83e04c',
   apiKey: 'AIzaSyCzbBYFyX8d6VdSu7T4s10IWYbPc-dguwM',
   databaseURL: 'https://rnfirebase-b9ad4.firebaseio.com',
@@ -101,8 +109,7 @@ const androidTestConfig = {
 };
 
 const iosTestConfig = {
-  clientId:
-    '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
+  clientId: '305229645282-22imndi01abc2p6esgtu1i1m9mqrd0ib.apps.googleusercontent.com',
   androidClientId: androidTestConfig.clientId,
   appId: '1:305229645282:ios:af36d4d29a83e04c',
   apiKey: 'AIzaSyAcdVLG5dRzA1ck_fa_xd4Z0cY7cga7S5A',
@@ -130,8 +137,7 @@ global.testRunId = randomString(4, 'aA#');
 global.TestHelpers = {
   core: {
     config() {
-      const config =
-        device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig;
+      const config = device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig;
       return { ...config };
     },
   },

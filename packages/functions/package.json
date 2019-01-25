@@ -28,6 +28,9 @@
     "@react-native-firebase/common": "6.0.0",
     "@react-native-firebase/app-types": "6.0.0"
   },
+  "devDependencies": {
+    "@react-native-firebase/tests-firebase-functions": "^0.0.5"
+  },
   "rnpm": {
     "android": {
       "buildPatch": "implementation project(':@react-native-firebase_functions')",

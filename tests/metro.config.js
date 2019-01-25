@@ -40,6 +40,7 @@ const config = {
     resolve(__dirname, '../packages/app-types'),
     resolve(__dirname, '../packages/common'),
     resolve(__dirname, '../packages/analytics'),
+    resolve(__dirname, '../packages/functions'),
   ],
 };
 

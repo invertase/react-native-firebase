@@ -24,10 +24,13 @@ export default class NativeFirebaseError extends Error {
     this.code = `${this.namespace}/${userInfo.code || 'unknown'}`;
     this.message = `[${this.code}] ${userInfo.message || nativeError.message}`;
 
+    this.userInfo = userInfo;
     this.nativeErrorCode = userInfo.nativeErrorCode;
     this.nativeErrorMessage = userInfo.nativeErrorMessage;
     this.stack = this.getCombinedStack(jsStack, nativeStackAndroid);
   }
+
+
 
   /**
    * Build a combined stack trace that includes JS & Native Stack Frames.

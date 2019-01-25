@@ -5,6 +5,7 @@ const { detox: config } = require('../package.json');
 const PACKAGES = [
   'app',
   'analytics',
+  'functions',
   // 'auth',
   // 'config',
   // 'crashlytics',

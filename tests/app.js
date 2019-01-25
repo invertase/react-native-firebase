@@ -16,6 +16,7 @@ jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 
 import '@react-native-firebase/analytics';
+import '@react-native-firebase/functions';
 import firebase from 'react-native-firebase';
 
 jet.exposeContextProperty('module', firebase);
