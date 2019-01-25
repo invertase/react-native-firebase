@@ -61,18 +61,6 @@ const statics = {
   HttpsErrorCode,
 };
 
-function nativeErrorToHttpsError(nativeError) {
-  const { code, message, details } = nativeError.userInfo || {};
-  return Promise.reject(
-    new HttpsError(
-      HttpsErrorCode[code] || HttpsErrorCode.UNKNOWN,
-      message || nativeError.message,
-      details || null,
-      nativeError.stack,
-    ),
-  );
-}
-
 class FirebaseFunctionsModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
@@ -82,7 +70,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
   httpsCallable(name) {
     return data => {
       const nativePromise = this.native.httpsCallable(name, { data });
-      return nativePromise.catch(nativeErrorToHttpsError);
+      return nativePromise.catch(nativeError => {
+        const { code, message, details } = nativeError.userInfo || {};
+        return Promise.reject(
+          new HttpsError(
+            HttpsErrorCode[code] || HttpsErrorCode.UNKNOWN,
+            message || nativeError.message,
+            details || null,
+            nativeError,
+          ),
+        );
+      });
     };
   }
 

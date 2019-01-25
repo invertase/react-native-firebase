@@ -16,11 +16,11 @@
  */
 
 export default class HttpsError extends Error {
-  constructor(code, message, details, nativeErrorStack) {
+  constructor(code, message, details, nativeErrorInstance) {
     super(message);
     this.code = code;
     this.details = details;
     this.message = message;
-    this.nativeErrorStack = nativeErrorStack;
+    this.stack = nativeErrorInstance.getStackWithMessage(`Error: ${this.message}`);
   }
 }

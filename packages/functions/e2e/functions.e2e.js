@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const { SAMPLE_DATA } = require('@react-native-firebase/tests-firebase-functions');
 
-describe('functions()', () => {
+android.describe('functions()', () => {
   xit('accepts passing in an FirebaseApp instance as first arg', async () => {
     const appName = `functionsApp${global.testRunId}1`;
     const platformAppConfig = TestHelpers.core.config();
@@ -45,7 +45,7 @@ describe('functions()', () => {
   });
 
   // TODO app and region test both args
-  // TODO app passed to existing app instance - should error?
+  // TODO app passed to existing app instance - should error
 
   describe('httpsCallable(fnName)(args)', () => {
     it('accepts primitive args: undefined', async () => {
@@ -118,7 +118,7 @@ describe('functions()', () => {
     });
   });
 
-  describe.only('HttpsError', () => {
+  describe('HttpsError', () => {
     it('errors return instance of HttpsError', async () => {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
 
@@ -127,7 +127,6 @@ describe('functions()', () => {
         return Promise.reject(new Error('Function did not reject with error.'));
       } catch (e) {
         should.equal(e.details, null);
-        console.dir(e);
         e.code.should.equal('invalid-argument');
         e.message.should.equal('Invalid test requested.');
       }

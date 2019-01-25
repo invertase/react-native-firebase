@@ -24,36 +24,20 @@ export default class NativeFirebaseError extends Error {
     this.code = `${this.namespace}/${userInfo.code || 'unknown'}`;
     this.message = `[${this.code}] ${userInfo.message || nativeError.message}`;
 
+    this.jsStack = jsStack;
     this.userInfo = userInfo;
+    this.nativeStackAndroid = nativeStackAndroid;
     this.nativeErrorCode = userInfo.nativeErrorCode;
     this.nativeErrorMessage = userInfo.nativeErrorMessage;
-    this.stack = this.getCombinedStack(jsStack, nativeStackAndroid);
+    this.stack = this.getStackWithMessage(`NativeFirebaseError: ${this.message}`);
   }
 
-
-
   /**
-   * Build a combined stack trace that includes JS & Native Stack Frames.
+   * Build a stack trace that includes JS stack prior to calling the native method.
    *
-   * @param jsStack
-   * @param nativeStackAndroid
    * @returns {string}
    */
-  getCombinedStack(jsStack, nativeStackAndroid) {
-    const combinedStack = [
-      `NativeFirebaseError: ${this.message}`,
-      ...jsStack.split('\n').slice(2, 8),
-    ];
-
-    if (nativeStackAndroid && nativeStackAndroid.length) {
-      for (let i = 0; i < 5; i++) {
-        const { methodName, lineNumber, file } = nativeStackAndroid[i];
-        combinedStack.push(`    at native.android.*.${methodName} (${file}:${lineNumber}:0)`);
-      }
-    }
-
-    // TODO IOS stack frames
-
-    return combinedStack.join('\n');
+  getStackWithMessage(message) {
+    return [message, ...this.jsStack.split('\n').slice(2, 13)].join('\n');
   }
 }
