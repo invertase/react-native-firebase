@@ -18,9 +18,22 @@
 export default class HttpsError extends Error {
   constructor(code, message, details, nativeErrorInstance) {
     super(message);
-    this.code = code;
-    this.details = details;
-    this.message = message;
+
+    Object.defineProperty(this, 'code', {
+      enumerable: false,
+      value: code,
+    });
+
+    Object.defineProperty(this, 'details', {
+      enumerable: false,
+      value: details,
+    });
+
+    Object.defineProperty(this, 'message', {
+      enumerable: false,
+      value: message,
+    });
+
     this.stack = nativeErrorInstance.getStackWithMessage(`Error: ${this.message}`);
   }
 }

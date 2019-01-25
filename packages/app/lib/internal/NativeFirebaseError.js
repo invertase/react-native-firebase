@@ -18,18 +18,48 @@
 export default class NativeFirebaseError extends Error {
   constructor(nativeError, jsStack, namespace) {
     super();
-    const { userInfo, nativeStackAndroid } = nativeError;
+    const { userInfo } = nativeError;
 
-    this.namespace = namespace;
-    this.code = `${this.namespace}/${userInfo.code || 'unknown'}`;
-    this.message = `[${this.code}] ${userInfo.message || nativeError.message}`;
+    Object.defineProperty(this, 'namespace', {
+      enumerable: false,
+      value: namespace,
+    });
 
-    this.jsStack = jsStack;
-    this.userInfo = userInfo;
-    this.nativeStackAndroid = nativeStackAndroid;
-    this.nativeErrorCode = userInfo.nativeErrorCode;
-    this.nativeErrorMessage = userInfo.nativeErrorMessage;
+    Object.defineProperty(this, 'code', {
+      enumerable: false,
+      value: `${this.namespace}/${userInfo.code || 'unknown'}`,
+    });
+
+    Object.defineProperty(this, 'message', {
+      enumerable: false,
+      value: `[${this.code}] ${userInfo.message || nativeError.message}`,
+    });
+
+    Object.defineProperty(this, 'jsStack', {
+      enumerable: false,
+      value: jsStack,
+    });
+
+    Object.defineProperty(this, 'userInfo', {
+      enumerable: false,
+      value: userInfo,
+    });
+
+    Object.defineProperty(this, 'nativeErrorCode', {
+      enumerable: false,
+      value: userInfo.nativeErrorCode || null,
+    });
+
+    Object.defineProperty(this, 'nativeErrorMessage', {
+      enumerable: false,
+      value: userInfo.nativeErrorMessage || null,
+    });
+
     this.stack = this.getStackWithMessage(`NativeFirebaseError: ${this.message}`);
+
+    // Unused
+    // this.nativeStackIOS = nativeError.nativeStackIOS;
+    // this.nativeStackAndroid = nativeError.nativeStackAndroid;
   }
 
   /**
