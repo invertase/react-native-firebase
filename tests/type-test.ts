@@ -12,11 +12,14 @@ analytics.SDK_VERSION;
 functions.SDK_VERSION;
 const httpsCallable = firebase.functions(firebase.app()).httpsCallable('foo');
 functions;
+
 httpsCallable({ foo: 1 })
   .then(result => {
     result.data;
   })
   .catch((error: Functions.HttpsError) => {
-    const foo = {} as Functions.Module;
+    const foo = {} as Analytics.Module;
+    error.details;
+    foo.logEvent('shoopy', {});
     HttpsErrorCode.NOT_FOUND;
   });
