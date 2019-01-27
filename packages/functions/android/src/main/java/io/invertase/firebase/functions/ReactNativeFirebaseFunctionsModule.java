@@ -66,9 +66,9 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
   public void httpsCallable(
     String appName,
     String region,
-    final String name,
+    String name,
     ReadableMap wrapper,
-    final Promise promise
+    Promise promise
   ) {
     Object input = wrapper.toHashMap().get(DATA_KEY);
 

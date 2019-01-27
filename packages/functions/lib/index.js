@@ -18,7 +18,7 @@
 import {
   createModuleNamespace,
   FirebaseModule,
-  getFirebaseNamespace,
+  getFirebaseRoot,
 } from 'react-native-firebase/lib/internal';
 
 // import {
@@ -100,13 +100,12 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasRegionsSupport: true,
   hasMultiAppSupport: true,
-  hasCustomUrlSupport: false,
+  hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
 });
 
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().logEvent(...);
 // firebase.functions().logEvent(...);
-export const firebase = getFirebaseNamespace();
+export const firebase = getFirebaseRoot();

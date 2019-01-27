@@ -3,16 +3,19 @@
 
 describe('analytics()', () => {
   describe('namespace', () => {
-    // TODO app namespaces not yet implemented
-    xit('accessible from firebase.app()', () => {
+    it('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.analytics);
       app.analytics().logEvent.should.be.a.Function();
     });
 
-    xit('throws if app arg provided to firebase.analytics(APP)', {});
+    xit('throws if app arg provided to firebase.analytics(APP)', {
+      // TODO
+    });
 
-    xit('throws if args provided to firebase.app().analytics(ARGS)', {});
+    xit('throws if args provided to firebase.app().analytics(ARGS)', {
+      // TODO
+    });
   });
 
   describe('logEvent()', () => {

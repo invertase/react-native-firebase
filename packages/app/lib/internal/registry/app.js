@@ -19,13 +19,32 @@ import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/
 
 import FirebaseApp from '../../FirebaseApp';
 import { getAppModule } from './nativeModule';
+import { DEFAULT_APP_NAME } from '../constants';
 
 const APP_REGISTRY = {};
-const DEFAULT_APP_NAME = '[DEFAULT]';
+let onAppCreateFn = null;
+let onAppDestroyFn = null;
 let initializedNativeApps = false;
 
 /**
- *
+ * This was needed to avoid metro require cycles...
+ * @param fn
+ */
+export function setOnAppCreate(fn) {
+  onAppCreateFn = fn;
+}
+
+/**
+ * This was needed to avoid metro require cycles...
+ * @param fn
+ */
+export function setOnAppDestroy(fn) {
+  onAppDestroyFn = fn;
+}
+
+/**
+ * Initializes all apps that were created natively (android/ios),
+ * e.g. the Default firebase app from plist/json google services file.
  */
 export function initializeNativeApps() {
   const nativeModule = getAppModule();
@@ -35,13 +54,13 @@ export function initializeNativeApps() {
     for (let i = 0; i < apps.length; i++) {
       const { appConfig, options } = apps[i];
       const { name } = appConfig;
-
       APP_REGISTRY[name] = new FirebaseApp(
         options,
         appConfig,
         true,
         deleteApp.bind(null, name, true),
       );
+      onAppCreateFn(APP_REGISTRY[name]);
     }
   }
 
@@ -49,6 +68,10 @@ export function initializeNativeApps() {
 }
 
 /**
+ * Get an app by name; or the default app.
+ *
+ * On first call of this method it will initialize any
+ * natively created apps in JS. This makes this 'lazy load'.
  *
  * @param name
  */
@@ -64,7 +87,7 @@ export function getApp(name = DEFAULT_APP_NAME) {
 }
 
 /**
- *
+ * Gets all app instances, used for `firebase.apps`
  */
 export function getApps() {
   return Object.values(APP_REGISTRY);
@@ -141,6 +164,7 @@ export function initializeApp(options = {}, configOrName) {
   const app = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
 
   APP_REGISTRY[name] = app;
+  onAppCreateFn(APP_REGISTRY[name]);
 
   return getAppModule()
     .initializeApp(options, { name })
@@ -164,6 +188,7 @@ export function deleteApp(name, nativeInitialized) {
 
   return nativeModule.deleteApp(name).then(() => {
     app._deleted = true;
+    onAppDestroyFn(app);
     delete APP_REGISTRY[name];
   });
 }

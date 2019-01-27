@@ -57,7 +57,7 @@
   ],
   "peerDependencies": {
     "react": ">= 16.6.3",
-    "react-native": ">= 0.58.x"
+    "react-native": ">= 0.58.1"
   },
   "dependencies": {
     "opencollective-postinstall": "^2.0.1",

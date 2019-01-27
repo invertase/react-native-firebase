@@ -7416,10 +7416,10 @@ react-dom@^16.6.3:
     prop-types "^15.6.2"
     scheduler "^0.12.0"
 
-react-native@^0.58.0-rc.3:
-  version "0.58.0-rc.3"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.58.0-rc.3.tgz#318914a114670777a61ec81671367bcd88178c1d"
-  integrity sha512-EXc+riQiakPriDBHN0S54GzYc7DU9MvUsV/FO//YDhAuB3Q76eJNt3Yi1Mv9gJ3DQ4/NtwNUfAJYis7gGxWETQ==
+react-native@^0.58.1:
+  version "0.58.1"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.58.1.tgz#3cc0563d315d0fc605f6bae341fb952e119d31c3"
+  integrity sha512-8aD0PBTney5dKQ4MBOfBEcHmdm2OBCx/9gSbeT4OUXE54fNNmDfbkVnx7EZ1iwvEdOiAl+pEpWqgAb/tvhRwBA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     absolute-path "^0.0.0"

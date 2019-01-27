@@ -17,11 +17,11 @@
 
 import { NativeModules, Platform } from 'react-native';
 
+import { APP_NATIVE_MODULE } from '../constants';
+import SharedEventEmitter from '../SharedEventEmitter';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
-import SharedEventEmitter from '../SharedEventEmitter';
 
-const APP_MODULE = 'RNFBAppModule';
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
 
@@ -85,14 +85,12 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
 function initialiseNativeModule(module) {
   const config = module._config;
   const key = nativeModuleKey(module);
-  const customUrlOrRegion = module._customUrlOrRegion;
   const {
     namespace,
     nativeEvents,
     nativeModuleName,
-    hasRegionsSupport,
     hasMultiAppSupport,
-    hasCustomUrlSupport,
+    hasCustomUrlOrRegionSupport,
   } = config;
   const nativeModule = NativeModules[nativeModuleName];
 
@@ -106,8 +104,8 @@ function initialiseNativeModule(module) {
     argToPrepend.push(module.app.name);
   }
 
-  if (hasCustomUrlSupport || hasRegionsSupport) {
-    argToPrepend.push(customUrlOrRegion);
+  if (hasCustomUrlOrRegionSupport) {
+    argToPrepend.push(module._customUrlOrRegion);
   }
 
   NATIVE_MODULE_REGISTRY[key] = nativeModuleWrapped(namespace, nativeModule, argToPrepend);
@@ -198,18 +196,18 @@ export function getNativeModule(module) {
  * @returns {*}
  */
 export function getAppModule() {
-  if (NATIVE_MODULE_REGISTRY[APP_MODULE]) {
-    return NATIVE_MODULE_REGISTRY[APP_MODULE];
+  if (NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE]) {
+    return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
   }
 
   const namespace = 'app';
-  const nativeModule = NativeModules[APP_MODULE];
+  const nativeModule = NativeModules[APP_NATIVE_MODULE];
 
   if (!nativeModule) {
     throw new Error(getMissingModuleHelpText(namespace));
   }
 
-  NATIVE_MODULE_REGISTRY[APP_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
+  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
 
-  return NATIVE_MODULE_REGISTRY[APP_MODULE];
+  return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
 }

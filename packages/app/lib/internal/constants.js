@@ -15,9 +15,11 @@
  *
  */
 
-export const appNativeModuleName = 'RNFBApp';
+export const APP_NATIVE_MODULE = 'RNFBAppModule';
 
-export const knownFirebaseNamespaces = [
+export const DEFAULT_APP_NAME = '[DEFAULT]';
+
+export const KNOWN_NAMESPACES = [
   // with APIs
   'admob',
   'auth',
@@ -39,6 +41,6 @@ export const knownFirebaseNamespaces = [
   'perf',
   'utils',
   // documentation only
-  'predictions',
-  'ab-testing'
+  // 'predictions',
+  // 'ab-testing'
 ];

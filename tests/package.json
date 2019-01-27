@@ -10,7 +10,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-native": "^0.58.0-rc.3",
+    "react-native": "^0.58.1",
     "detox": "9.1.2",
     "jet": "^0.2.0",
     "mocha": "^5.2.0",

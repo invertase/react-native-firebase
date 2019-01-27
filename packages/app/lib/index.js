@@ -15,8 +15,8 @@
  *
  */
 
-import { getFirebaseNamespace } from './internal/registry/namespace';
+import { getFirebaseRoot } from './internal/registry/namespace';
 
-export const firebase = getFirebaseNamespace();
+export const firebase = getFirebaseRoot();
 
 export default firebase;

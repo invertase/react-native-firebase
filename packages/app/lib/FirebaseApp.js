@@ -37,12 +37,10 @@ export default class FirebaseApp {
   }
 
   get name() {
-    this._checkDestroyed();
     return this._name;
   }
 
   get options() {
-    this._checkDestroyed();
     return Object.assign({}, this._options);
   }
 
