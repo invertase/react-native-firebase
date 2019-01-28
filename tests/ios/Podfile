@@ -46,15 +46,14 @@ target 'testing' do
   # pod 'Firebase/Performance', '~> 5.15.0'
   # pod 'Fabric', '~> 1.7.11'
   # pod 'Crashlytics', '~> 3.10.7'
+end
 
-  post_install do |installer|
+post_install do |installer|
     installer.pods_project.targets.each do |target|
-      if target.name == 'yoga'
         target.build_configurations.each do |config|
-          config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
-          config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = 'NO'
+            config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = "YES"
+            config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = "NO"
+            config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = "NO"
         end
-      end
     end
-  end
 end
