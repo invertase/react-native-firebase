@@ -13,7 +13,6 @@ target 'testing' do
   react_native_path = "../node_modules/react-native"
   pod 'React', :path => "#{react_native_path}", :subspecs => [
     'Core',
-    'RCTAnimation', # Needed for FlatList and animations running on native UI thread
     'CxxBridge', # Include this for RN >= 0.47
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'RCTText',
@@ -49,7 +48,15 @@ target 'testing' do
 end
 
 post_install do |installer|
+    puts installer.pods_project.pods.each do |pod|
+      puts pod
+    end
     installer.pods_project.targets.each do |target|
+
+        if target.name == 'double-conversion-tvOS'
+          puts "deleting double conv tvOS"
+          target.delete
+        end
         target.build_configurations.each do |config|
             config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = "YES"
             config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = "NO"
