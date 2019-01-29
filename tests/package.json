@@ -12,7 +12,7 @@
     "react-dom": "^16.6.3",
     "react-native": "^0.58.1",
     "detox": "9.1.2",
-    "jet": "^0.2.0",
+    "jet": "^0.2.1",
     "mocha": "^5.2.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",

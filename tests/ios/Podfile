@@ -17,6 +17,7 @@ target 'testing' do
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'RCTText',
     'RCTNetwork',
+    'RCTImage',
     'RCTWebSocket', # Needed for debugging
   ]
 

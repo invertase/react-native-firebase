@@ -50,7 +50,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (5.3.7):
     - GoogleUtilities/Logger
-  - Jet (0.2.0):
+  - Jet (0.2.1):
     - React
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
@@ -83,6 +83,9 @@ PODS:
   - React/jsinspector (0.58.1)
   - React/RCTBlob (0.58.1):
     - React/Core
+  - React/RCTImage (0.58.1):
+    - React/Core
+    - React/RCTNetwork
   - React/RCTNetwork (0.58.1):
     - React/Core
   - React/RCTText (0.58.1):
@@ -107,6 +110,7 @@ DEPENDENCIES:
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
+  - React/RCTImage (from `../node_modules/react-native`)
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
@@ -156,13 +160,13 @@ SPEC CHECKSUMS:
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
-  Jet: 77786bd855be86ca4505e26cc11bdaed06026c80
+  Jet: 5748d9e6ccc47b646859282fc25d1b063540e981
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
   RNFBAnalytics: ca21f3fa12a77a9aa251dee9b82ceed29108f7e0
   RNFBApp: ce2acae9bc6112364743a22c5020886ab66d75d2
   yoga: 0885622311729a02c2bc02dca97167787a51488b
 
-PODFILE CHECKSUM: f080161ec6b47c650759df8295777c5c1b31d554
+PODFILE CHECKSUM: da80e88f54029ea7d9c0c5556ba87b0c9bca6021
 
 COCOAPODS: 1.5.3
