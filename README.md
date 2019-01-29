@@ -39,13 +39,15 @@ React Native Firebase is built with four key principals in mind;
 
 This in the root of the mono repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
 
-The main module that you interface with is `App` (`react-native-firebase`)
+The main module that you interface with is `App` (`@react-native-firebase/app`)
 
-| Name                             |                                                                                  Downloads                                                                                  |                                      Coverage                                       |
-| -------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
-| [App](/packages/app)             |            [![badge](https://img.shields.io/npm/dm/react-native-firebase.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/react-native-firebase)            | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
-| [Analytics](/packages/analytics) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
-| [Functions](/packages/functions) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| Name                                      | Downloads                                                                                                                                                                   | Coverage                                                                            |
+| ----------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+| [App](/packages/app)                      | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Analytics](/packages/analytics)          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Functions](/packages/functions)          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Instance ID](/packages/iid)              | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Performance Monitoring](/packages/perf)  | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 
 > TODO
 
