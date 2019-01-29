@@ -521,9 +521,9 @@ jobs:
 # -------------------------
 workflows:
   version: 2
-  filters:
-    branches:
-      only: master
+#  filters:
+#    branches:
+#      only: master
 
   JS:
     jobs:
