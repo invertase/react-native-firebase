@@ -394,29 +394,29 @@ jobs:
             adb kill-server
             ls -la ~/.android
 
-      - run:
-          name: Create Android Emulator (API 27)
-          command: avdmanager create avd -n TestingAVD -k "system-images;android-27;google_apis;x86" -g google_apis -d "Nexus 4"
-
-      - run:
-          name: Start Android Emulator (API 27) in background
-          command: |
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
-          background: true
-
-      - run:
-          name: Wait for AVD to be ready (API 27)
-          no_output_timeout: "5m"
-          command: sh ./.circleci/scripts/wait-for-avd.sh
-
-      - run:
-          name: Run Tests (API 27)
-          command: yarn run tests:android:test-cover
-
-      - run:
-          name: Stop Emulators (API 27)
-          command: adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+#      - run:
+#          name: Create Android Emulator (API 27)
+#          command: avdmanager create avd -n TestingAVD -k "system-images;android-27;google_apis;x86" -g google_apis -d "Nexus 4"
+#
+#      - run:
+#          name: Start Android Emulator (API 27) in background
+#          command: |
+#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
+#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
+#          background: true
+#
+#      - run:
+#          name: Wait for AVD to be ready (API 27)
+#          no_output_timeout: "5m"
+#          command: sh ./.circleci/scripts/wait-for-avd.sh
+#
+#      - run:
+#          name: Run Tests (API 27)
+#          command: yarn run tests:android:test-cover
+#
+#      - run:
+#          name: Stop Emulators (API 27)
+#          command: adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
 
       - run:
           name: Create Android Emulator (API 28)
@@ -479,6 +479,10 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
+      # must always be after environment config job but before ios build
+      - run: *packager-jet
+      - run: *packager-warmup
+
       # Pods
       - restore-cache: *restore-pods-cache
       - run:
@@ -488,10 +492,6 @@ jobs:
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
             pod install
       - save-cache: *save-pods-cache
-
-      # must always be after environment config job but before ios build
-      - run: *packager-jet
-      - run: *packager-warmup
 
       # XCode Build
       - restore-cache: *restore-ios-build-cache
