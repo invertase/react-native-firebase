@@ -34,5 +34,6 @@
       "packageImportPath": "import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;",
       "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
     }
-  }
+  },
+  "gitHead": "76363ad2ac65bded0f88611b7fb1160e2d92f14c"
 }
