@@ -1,27 +1,27 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha.0",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
+    "@react-native-firebase/analytics": "0.0.1-alpha.0",
+    "@react-native-firebase/app": "0.0.1-alpha.0",
+    "@react-native-firebase/app-types": "0.0.1-alpha.0",
+    "@react-native-firebase/functions": "0.0.1-alpha.0",
+    "detox": "9.1.2",
+    "jet": "^0.2.1",
+    "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-native": "^0.58.1",
-    "detox": "9.1.2",
-    "jet": "^0.2.1",
-    "mocha": "^5.2.0",
+    "require-all": "3.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0",
-    "require-all": "3.0.0",
-    "react-native-firebase": "6.0.0",
-    "@react-native-firebase/app-types": "6.0.0",
-    "@react-native-firebase/analytics": "6.0.0",
-    "@react-native-firebase/functions": "6.0.0"
+    "sinon": "^6.2.0"
   },
   "devDependencies": {
     "babel-plugin-istanbul": "^5.1.1",

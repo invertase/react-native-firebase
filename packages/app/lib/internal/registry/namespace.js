@@ -277,7 +277,7 @@ export function createModuleNamespace(options = {}) {
       throw new Error(
         [
           `You've attempted to require '@react-native-firebase/${namespace}' version '${version}', ` +
-            `however, 'react-native-firebase' core module is of a different version (${SDK_VERSION}).`,
+            `however, the '@react-native-firebase/app' module is of a different version (${SDK_VERSION}).`,
           '',
           `All React Native Firebase modules must be of the same version. Please ensure they match up ` +
             `in your package.json file and re-run yarn/npm install.`,

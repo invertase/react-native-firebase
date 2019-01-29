@@ -19,7 +19,7 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from 'react-native-firebase/lib/internal';
+} from '@react-native-firebase/app/lib/internal';
 
 import {
   isNull,

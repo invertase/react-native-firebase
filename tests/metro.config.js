@@ -19,15 +19,10 @@ const config = {
       {},
       {
         get: (target, name) => {
-          if (name === 'react-native-firebase') {
-            return join(__dirname, `../packages/app`);
-          }
-
           if (name.startsWith('@react-native-firebase')) {
             const packageName = name.replace('@react-native-firebase/', '');
             return join(__dirname, `../packages/${packageName}`);
           }
-
           return join(__dirname, `node_modules/${name}`);
         },
       },
@@ -37,8 +32,8 @@ const config = {
   watchFolders: [
     resolve(__dirname, '.'),
     resolve(__dirname, '../packages/app'),
-    resolve(__dirname, '../packages/app-types'),
     resolve(__dirname, '../packages/common'),
+    resolve(__dirname, '../packages/app-types'),
     resolve(__dirname, '../packages/analytics'),
     resolve(__dirname, '../packages/functions'),
   ],

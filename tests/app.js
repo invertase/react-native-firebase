@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 
 import jet from 'jet/platform/react-native';
-import NativeEventEmitter from 'react-native-firebase/lib/internal/RNFBNativeEventEmitter';
+import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/functions';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 jet.exposeContextProperty('module', firebase);
 
