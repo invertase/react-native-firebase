@@ -115,8 +115,11 @@ This issue list of this repo is exclusively for bug reports.
   - [ ] Crashlytics
   - [ ] Dynamic **Links**
   - [ ] **Functions** Callable
+  - [ ] In App Messaging
+  - [ ] Indexing
   - [ ] Invites
   - [ ] Instance ID
+  - [ ] ML Kit
   - [ ] Notifications
   - [ ] Performance Monitoring
   - [ ] Realtime **Database**
