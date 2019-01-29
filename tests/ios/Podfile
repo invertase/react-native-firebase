@@ -33,7 +33,7 @@ target 'testing' do
   rnfb_version = "0.0.1" # package["version"]
   pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec', :version => "~> #{rnfb_version}"
   pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec', :version => "~> #{rnfb_version}"
-  pod 'RNFBFunctions', :path => '../../packages/analytics/ios/RNFBFunctions.podspec', :version => "~> #{rnfb_version}"
+  pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec', :version => "~> #{rnfb_version}"
 
   # Pods for ReactNativeFirebaseDemo
   # pod 'Firebase/Core', '~> 5.15.0'

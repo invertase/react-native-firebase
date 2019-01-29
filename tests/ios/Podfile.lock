@@ -6,6 +6,9 @@ PODS:
     - FirebaseAnalytics (= 5.4.0)
   - Firebase/CoreOnly (5.15.0):
     - FirebaseCore (= 5.1.10)
+  - Firebase/Functions (5.15.0):
+    - Firebase/CoreOnly
+    - FirebaseFunctions (= 2.1.2)
   - FirebaseAnalytics (5.4.0):
     - FirebaseCore (~> 5.1)
     - FirebaseInstanceID (~> 3.3)
@@ -15,8 +18,13 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
+  - FirebaseAuthInterop (1.0.0)
   - FirebaseCore (5.1.10):
     - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseFunctions (2.1.2):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.1)
+    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseInstanceID (3.3.0):
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
@@ -50,6 +58,7 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (5.3.7):
     - GoogleUtilities/Logger
+  - GTMSessionFetcher/Core (1.2.1)
   - Jet (0.2.1):
     - React
   - nanopb (0.3.901):
@@ -94,11 +103,14 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0):
+  - RNFBAnalytics (6.0.0-alpha.1):
     - Firebase/Core (~> 5.15.0)
     - React
-  - RNFBApp (6.0.0):
+  - RNFBApp (6.0.0-alpha.1):
     - Firebase/Core (~> 5.15.0)
+    - React
+  - RNFBFunctions (6.0.0-alpha.1):
+    - Firebase/Functions (~> 5.15.0)
     - React
   - yoga (0.58.1.React)
 
@@ -116,6 +128,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - RNFBAnalytics (from `../../packages/analytics/ios/RNFBAnalytics.podspec`)
   - RNFBApp (from `../../packages/app/ios/RNFBApp.podspec`)
+  - RNFBFunctions (from `../../packages/functions/ios/RNFBFunctions.podspec`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -123,10 +136,13 @@ SPEC REPOS:
     - boost-for-react-native
     - Firebase
     - FirebaseAnalytics
+    - FirebaseAuthInterop
     - FirebaseCore
+    - FirebaseFunctions
     - FirebaseInstanceID
     - GoogleAppMeasurement
     - GoogleUtilities
+    - GTMSessionFetcher
     - nanopb
 
 EXTERNAL SOURCES:
@@ -142,10 +158,13 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFBAnalytics:
     :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
-    :version: "~> "
+    :version: "~> 0.0.1"
   RNFBApp:
     :path: "../../packages/app/ios/RNFBApp.podspec"
-    :version: "~> "
+    :version: "~> 0.0.1"
+  RNFBFunctions:
+    :path: "../../packages/functions/ios/RNFBFunctions.podspec"
+    :version: "~> 0.0.1"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -154,19 +173,23 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
+  FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
+  FirebaseFunctions: e37c7d4d2dec63972ca4642afeb8dae8ff8ab52e
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
+  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   Jet: 5748d9e6ccc47b646859282fc25d1b063540e981
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
   RNFBAnalytics: ca21f3fa12a77a9aa251dee9b82ceed29108f7e0
   RNFBApp: ce2acae9bc6112364743a22c5020886ab66d75d2
+  RNFBFunctions: 2b2247e7222349b9b277baa12ed1b82bff4bf1dd
   yoga: 0885622311729a02c2bc02dca97167787a51488b
 
-PODFILE CHECKSUM: da80e88f54029ea7d9c0c5556ba87b0c9bca6021
+PODFILE CHECKSUM: 52d32e66cb03c3fdecd1c115a0d87fbc6afef291
 
 COCOAPODS: 1.5.3
