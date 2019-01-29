@@ -35,7 +35,7 @@
       "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
     }
   },
-  "gitHead": "a380dd1fd3994a37723b7b18c575320710e16d94",
+  "gitHead": "5024081214e6cebd3a918274d502d56522f6b3e7",
   "publishConfig": {
     "access": "public"
   }
