@@ -28,12 +28,15 @@
     "tests:ios:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "tests:ios:test-cover-reuse": "cd tests && nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
-    "version:alpha:patch": "lerna version prepatch --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
-    "version:alpha:minor": "lerna version preminor --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
-    "version:alpha:major": "lerna version premajor --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
-    "publish:release": "lerna publish from-package",
+    "version:release:patch": "echo '!!\uD83D\uDD34!! RELEASE !!\uD83D\uDD34!!' && lerna version patch --exact --force-publish=*",
+    "version:release:minor": "echo '!!\uD83D\uDD34!! RELEASE !!\uD83D\uDD34!!' && lerna version minor --exact --force-publish=*",
+    "version:release:major": "echo '!!\uD83D\uDD34!! RELEASE !!\uD83D\uDD34!!' && lerna version major --exact --force-publish=*",
+    "version:6:alpha": "lerna version 6.0.0 --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
+    "version:6:beta": "lerna version 6.0.0 --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
+    "version:6:rc": "lerna version 6.0.0 --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
     "publish:alpha": "lerna publish from-package --dist-tag alpha --no-git-reset",
-    "publish:alpha:nightly": "lerna publish from-package --canary --preid alpha --dist-tag alpha --no-git-reset"
+    "publish:alpha:nightly": "lerna publish from-package --canary --preid alpha --dist-tag alpha --no-git-reset",
+    "publish:release": "echo '!!\uD83D\uDD34!! RELEASE !!\uD83D\uDD34!!' && echo '!!!!! RELEASE !!!!!!' && lerna publish from-package"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
