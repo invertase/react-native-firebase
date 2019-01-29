@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/common",
-  "version": "0.0.3",
+  "version": "0.0.4-alpha.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase internal common utilities & helpers.",
   "main": "lib/index.js",
@@ -15,7 +15,7 @@
     "react-native",
     "firebase"
   ],
-  "gitHead": "533cbd3a447e200922c0474f742110ad9799d60d",
+  "gitHead": "8d04d0f13a7fdd4711e7582b0b75518b85297d67",
   "publishConfig": {
     "access": "public"
   }

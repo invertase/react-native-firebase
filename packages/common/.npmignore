@@ -36,8 +36,7 @@ android/*.iml
 *.xcuserstate
 ios/Pods
 ios/build
-project.xcworkspace/
-xcuserdata/
+*project.xcworkspace*
 
 # OS-specific files
 .DS_Store
