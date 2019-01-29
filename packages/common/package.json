@@ -15,7 +15,7 @@
     "react-native",
     "firebase"
   ],
-  "gitHead": "81a7b3981d2246b15ad8d5780b7e111c0cdb7a6f",
+  "gitHead": "533cbd3a447e200922c0474f742110ad9799d60d",
   "publishConfig": {
     "access": "public"
   }

@@ -5,6 +5,7 @@
   "description": "@react-native-firebase/app-types",
   "files": [
     "index.d.ts",
+    "index.js.flow",
     "private.d.ts"
   ],
   "repository": {
@@ -12,7 +13,7 @@
     "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app-types"
   },
   "license": "Apache-2.0",
-  "gitHead": "81a7b3981d2246b15ad8d5780b7e111c0cdb7a6f",
+  "gitHead": "533cbd3a447e200922c0474f742110ad9799d60d",
   "publishConfig": {
     "access": "public"
   }

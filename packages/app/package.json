@@ -5,13 +5,6 @@
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "testsMain": "lib/index.js",
-  "files": [
-    "dist",
-    "android",
-    "build.gradle",
-    "ios"
-  ],
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -75,7 +68,7 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
   },
-  "gitHead": "81a7b3981d2246b15ad8d5780b7e111c0cdb7a6f",
+  "gitHead": "533cbd3a447e200922c0474f742110ad9799d60d",
   "publishConfig": {
     "access": "public"
   }

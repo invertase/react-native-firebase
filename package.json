@@ -31,8 +31,9 @@
     "version:alpha:patch": "lerna version prepatch --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
     "version:alpha:minor": "lerna version preminor --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
     "version:alpha:major": "lerna version premajor --exact --preid alpha --no-git-tag-version --no-push --force-publish=*",
-    "publish:alpha": "lerna publish --dist-tag alpha --no-git-reset",
-    "publish:alpha:nightly": "lerna publish --canary --preid alpha --dist-tag alpha --no-git-reset"
+    "publish:alpha": "lerna publish from-package --dist-tag alpha --no-git-reset",
+    "publish:release": "lerna publish --no-git-reset",
+    "publish:alpha:nightly": "lerna publish from-package --canary --preid alpha --dist-tag alpha --no-git-reset"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
