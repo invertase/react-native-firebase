@@ -877,7 +877,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
-									"line": 189,
+									"line": 191,
 									"character": 5
 								}
 							],
@@ -1614,10 +1614,423 @@
 					}
 				]
 			},
+			"children": [
+				{
+					"id": 171,
+					"name": "FirebaseApp",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 172,
+							"name": "name",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The name (identifier) for this App. '[DEFAULT]' is the default App."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 203,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 173,
+							"name": "options",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The (read-only) configuration options from the app initialization."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 208,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseOptions",
+								"id": 156
+							}
+						},
+						{
+							"id": 174,
+							"name": "delete",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 175,
+									"name": "delete",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Make this app unusable and free up resources."
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 213,
+									"character": 10
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								172,
+								173
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								174
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 199,
+							"character": 30
+						}
+					]
+				},
+				{
+					"id": 176,
+					"name": "ReactNativeFirebaseNamespace",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 188,
+							"name": "SDK_VERSION",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The current React Native Firebase version."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 254,
+									"character": 24
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 187,
+							"name": "apps",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "A (read-only) array of all the initialized Apps."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 249,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"name": "FirebaseApp",
+									"id": 171
+								}
+							}
+						},
+						{
+							"id": 184,
+							"name": "app",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 185,
+									"name": "app",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Retrieve an instance of a FirebaseApp.",
+										"tags": [
+											{
+												"tag": "example",
+												"text": "\n```js\nconst app = firebase.app('foo');\n```\n"
+											}
+										]
+									},
+									"parameters": [
+										{
+											"id": 186,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional name of the app to return ('[DEFAULT]' if omitted)\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 171
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 244,
+									"character": 7
+								}
+							]
+						},
+						{
+							"id": 177,
+							"name": "initializeApp",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 178,
+									"name": "initializeApp",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Create (and initialize) a FirebaseApp."
+									},
+									"parameters": [
+										{
+											"id": 179,
+											"name": "options",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Options to configure the services used in the App."
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseOptions",
+												"id": 156
+											}
+										},
+										{
+											"id": 180,
+											"name": "config",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional config for your firebase app\n"
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseAppConfig",
+												"id": 126
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 171
+									}
+								},
+								{
+									"id": 181,
+									"name": "initializeApp",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Create (and initialize) a FirebaseApp."
+									},
+									"parameters": [
+										{
+											"id": 182,
+											"name": "options",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Options to configure the services used in the App."
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseOptions",
+												"id": 156
+											}
+										},
+										{
+											"id": 183,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional name of the app to initialize ('[DEFAULT]' if\nomitted)\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 171
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 223,
+									"character": 17
+								},
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 232,
+									"character": 17
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								188,
+								187
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								184,
+								177
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 216,
+							"character": 47
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						171,
+						176
+					]
+				}
+			],
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 196,
+					"line": 198,
 					"character": 20
 				}
 			]
@@ -2345,7 +2758,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
-									"line": 189,
+									"line": 191,
 									"character": 5
 								}
 							],
@@ -2704,7 +3117,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 134,
+							"line": 136,
 							"character": 15
 						}
 					],
@@ -2727,7 +3140,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 139,
+							"line": 141,
 							"character": 18
 						}
 					],
@@ -2770,7 +3183,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 144,
+							"line": 146,
 							"character": 8
 						}
 					]
@@ -2796,7 +3209,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 130,
+					"line": 132,
 					"character": 28
 				}
 			]
@@ -2823,7 +3236,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 121,
+							"line": 123,
 							"character": 32
 						}
 					],
@@ -2860,7 +3273,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 127,
+							"line": 129,
 							"character": 29
 						}
 					],
@@ -2897,7 +3310,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 116,
+							"line": 118,
 							"character": 6
 						}
 					],
@@ -2930,7 +3343,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 112,
+					"line": 114,
 					"character": 34
 				}
 			]
@@ -2978,7 +3391,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 22,
+							"line": 24,
 							"character": 15
 						}
 					],
@@ -3001,7 +3414,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 27,
+							"line": 29,
 							"character": 18
 						}
 					],
@@ -3052,7 +3465,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 32,
+							"line": 34,
 							"character": 20
 						}
 					],
@@ -3075,7 +3488,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 37,
+							"line": 39,
 							"character": 26
 						}
 					],
@@ -3107,7 +3520,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 42,
+							"line": 44,
 							"character": 29
 						}
 					],
@@ -3174,7 +3587,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 18,
+					"line": 20,
 					"character": 36
 				}
 			],
@@ -3205,7 +3618,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 189,
+							"line": 191,
 							"character": 5
 						}
 					],
@@ -3228,7 +3641,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 188,
+					"line": 190,
 					"character": 42
 				}
 			]
@@ -3256,7 +3669,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 185,
+							"line": 187,
 							"character": 22
 						}
 					],
@@ -3279,7 +3692,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 180,
+							"line": 182,
 							"character": 6
 						}
 					],
@@ -3353,7 +3766,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 175,
+							"line": 177,
 							"character": 5
 						}
 					]
@@ -3477,12 +3890,12 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 154,
+							"line": 156,
 							"character": 15
 						},
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 163,
+							"line": 165,
 							"character": 15
 						}
 					]
@@ -3509,7 +3922,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 147,
+					"line": 149,
 					"character": 45
 				}
 			]
@@ -3525,7 +3938,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 54,
+					"line": 56,
 					"character": 27
 				}
 			],
@@ -3578,7 +3991,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 103,
+									"line": 105,
 									"character": 17
 								}
 							],
@@ -3610,7 +4023,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 64,
+									"line": 66,
 									"character": 8
 								}
 							],
@@ -3640,7 +4053,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 58,
+									"line": 60,
 									"character": 7
 								}
 							],
@@ -3663,7 +4076,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 97,
+									"line": 99,
 									"character": 10
 								}
 							],
@@ -3695,7 +4108,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 69,
+									"line": 71,
 									"character": 13
 								}
 							],
@@ -3727,7 +4140,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 108,
+									"line": 110,
 									"character": 19
 								}
 							],
@@ -3759,7 +4172,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 79,
+									"line": 81,
 									"character": 14
 								}
 							],
@@ -3791,7 +4204,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 91,
+									"line": 93,
 									"character": 19
 								}
 							],
@@ -3821,7 +4234,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 74,
+									"line": 76,
 									"character": 11
 								}
 							],
@@ -3844,7 +4257,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 84,
+									"line": 86,
 									"character": 15
 								}
 							],
@@ -3884,7 +4297,7 @@
 					"sources": [
 						{
 							"fileName": "app-types/index.d.ts",
-							"line": 54,
+							"line": 56,
 							"character": 29
 						}
 					]
@@ -3918,7 +4331,7 @@
 			"sources": [
 				{
 					"fileName": "app-types/index.d.ts",
-					"line": 45,
+					"line": 47,
 					"character": 47
 				}
 			],
@@ -3959,7 +4372,7 @@
 									"sources": [
 										{
 											"fileName": "app-types/index.d.ts",
-											"line": 51,
+											"line": 53,
 											"character": 22
 										}
 									],
@@ -3981,7 +4394,7 @@
 							"sources": [
 								{
 									"fileName": "app-types/index.d.ts",
-									"line": 45,
+									"line": 47,
 									"character": 60
 								}
 							]

@@ -15,6 +15,8 @@
  *
  */
 
+import {FirebaseApp} from "./index";
+
 export interface NativeFirebaseError extends Error {
   /**
    * Firebase error code, e.g. `auth/invalid-email`
@@ -194,7 +196,61 @@ export interface ReactNativeFirebaseModule {
  * @firebase app
  */
 export namespace App {
-  FirebaseApp;
-  ReactNativeFirebaseModule;
-  ReactNativeFirebaseNamespace
+  export interface FirebaseApp {
+    /**
+     * The name (identifier) for this App. '[DEFAULT]' is the default App.
+     */
+    readonly name: string;
+
+    /**
+     * The (read-only) configuration options from the app initialization.
+     */
+    readonly options: FirebaseOptions;
+
+    /**
+     * Make this app unusable and free up resources.
+     */
+    delete(): Promise<void>;
+  }
+
+  export interface ReactNativeFirebaseNamespace {
+    /**
+     * Create (and initialize) a FirebaseApp.
+     *
+     * @param options Options to configure the services used in the App.
+     * @param config The optional config for your firebase app
+     */
+    initializeApp(options: FirebaseOptions, config?: FirebaseAppConfig): FirebaseApp;
+
+    /**
+     * Create (and initialize) a FirebaseApp.
+     *
+     * @param options Options to configure the services used in the App.
+     * @param name The optional name of the app to initialize ('[DEFAULT]' if
+     * omitted)
+     */
+    initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
+
+    /**
+     * Retrieve an instance of a FirebaseApp.
+     *
+     * @example
+     * ```js
+     * const app = firebase.app('foo');
+     * ```
+     *
+     * @param name The optional name of the app to return ('[DEFAULT]' if omitted)
+     */
+    app(name?: string): FirebaseApp;
+
+    /**
+     * A (read-only) array of all the initialized Apps.
+     */
+    apps: FirebaseApp[];
+
+    /**
+     * The current React Native Firebase version.
+     */
+    readonly SDK_VERSION: string;
+  }
 }
