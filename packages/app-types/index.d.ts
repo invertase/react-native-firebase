@@ -188,3 +188,13 @@ export interface ReactNativeFirebaseNamespace {
 export interface ReactNativeFirebaseModule {
   app: FirebaseApp;
 }
+
+/**
+ *
+ * @firebase app
+ */
+export namespace App {
+  FirebaseApp;
+  ReactNativeFirebaseModule;
+  ReactNativeFirebaseNamespace
+}

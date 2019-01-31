@@ -1599,6 +1599,30 @@
 			]
 		},
 		{
+			"id": 170,
+			"name": "App",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "app\n"
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 196,
+					"character": 20
+				}
+			]
+		},
+		{
 			"id": 59,
 			"name": "Functions",
 			"kind": 2,
@@ -1742,7 +1766,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 19
 								}
@@ -1810,7 +1834,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 964,
 									"character": 11
 								}
@@ -1834,7 +1858,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 963,
 									"character": 8
 								}
@@ -1859,7 +1883,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 965,
 									"character": 9
 								}
@@ -2930,7 +2954,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 974,
 							"character": 19
 						}
@@ -3000,7 +3024,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 963,
 							"character": 8
 						}
@@ -3103,7 +3127,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 965,
 							"character": 9
 						}
@@ -3981,6 +4005,7 @@
 				101,
 				50,
 				1,
+				170,
 				59
 			]
 		},
