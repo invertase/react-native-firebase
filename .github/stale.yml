@@ -4,6 +4,7 @@ daysUntilStale: 28
 daysUntilClose: 14
 # Issues with these labels will never be considered stale
 exemptLabels:
+  - 📌 pin
   - await-invertase-feedback
   - await-firebase-sdk-fix
   - await-maintainer-feedback
@@ -17,8 +18,8 @@ exemptLabels:
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  Hello 👋, this issue has been automatically marked as stale because it has not had activity for quite some time. 
-  Has the issue been fixed, or does it still require the community's attention? This issue may be closed if no 
+  Hello 👋, this issue has been automatically marked as stale because it has not had activity for quite some time.
+  Has the issue been fixed, or does it still require the community's attention? This issue may be closed if no
   further activity occurs. Thank you for your contributions.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >
