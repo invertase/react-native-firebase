@@ -16,18 +16,25 @@
     android:name="com.testing.MainApplication"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
+    android:usesCleartextTraffic="true"
     android:label="@string/app_name"
     android:launchMode="singleTask"
     android:theme="@style/AppTheme">
-    <service
-      android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"
-      android:enabled="true"
-      android:exported="true"
-      tools:ignore="ExportedService">
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
+    <provider
+      android:name="com.google.firebase.provider.FirebaseInitProvider"
+      android:authorities="${applicationId}.firebaseinitprovider"
+      tools:node="remove"
+    />
+
+    <!--<service-->
+      <!--android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"-->
+      <!--android:enabled="true"-->
+      <!--android:exported="true"-->
+      <!--tools:ignore="ExportedService">-->
+      <!--<intent-filter>-->
+        <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+      <!--</intent-filter>-->
+    <!--</service>-->
 
     <!--<service-->
       <!--android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"-->
@@ -37,21 +44,21 @@
       <!--</intent-filter>-->
     <!--</service>-->
 
-    <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
+    <!--<service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />-->
 
-    <receiver android:name="io.invertase.firebase.notifications.RNFirebaseNotificationReceiver" />
-    <receiver
-      android:name="io.invertase.firebase.notifications.RNFirebaseNotificationsRebootReceiver"
-      android:enabled="true"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+    <!--<receiver android:name="io.invertase.firebase.notifications.RNFirebaseNotificationReceiver" />-->
+    <!--<receiver-->
+      <!--android:name="io.invertase.firebase.notifications.RNFirebaseNotificationsRebootReceiver"-->
+      <!--android:enabled="true"-->
+      <!--android:exported="true">-->
+      <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+        <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+        <!--<action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />-->
 
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </receiver>
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
+      <!--</intent-filter>-->
+    <!--</receiver>-->
 
 
     <activity

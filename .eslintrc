@@ -1,41 +1,41 @@
 {
-  "extends": [
-    "airbnb",
-    "prettier",
-    "prettier/flowtype",
-    "prettier/react"
-  ],
+  "root": true,
+  "extends": ["airbnb", "prettier", "prettier/flowtype", "prettier/react"],
   "parser": "babel-eslint",
-  "plugins": [
-    "flowtype",
-    "prettier"
-  ],
+  "plugins": ["flowtype", "prettier"],
   "env": {
     "es6": true,
-    "jasmine": true
+    "node": true,
+    "shelljs": true,
+    "jest": true
   },
   "rules": {
-    "prettier/prettier": ["error", {
-      "trailingComma": "es5",
-      "singleQuote": true
-    }],
-
-    "react/forbid-prop-types": "warn",
-    "react/jsx-filename-extension": [
-      "off", { "extensions": [".js", ".jsx"] }
-    ],
-
+    "no-extend-native": 0,
+    "import/no-dynamic-require": 0,
+    "global-require": "off",
     "class-methods-use-this": 0,
-    "no-console": 0,
+    "no-console": 1,
     "no-plusplus": 0,
     "no-undef": 0,
     "no-underscore-dangle": "off",
     "no-use-before-define": 0,
-    "import/no-cycle": 0,
-    "import/no-useless-path-segments": 0
+    "react/forbid-prop-types": "warn",
+    "react/jsx-filename-extension": ["off", { "extensions": [".js", ".jsx"] }],
+    "import/no-cycle": 1,
+    "import/no-unresolved": 0
   },
+  "overrides": [
+    {
+      "files": ["packages/*/test/**/*.js", "test/**/*.js"],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
   "globals": {
     "__DEV__": true,
+    "__RNFB__": true,
     "window": true
+
   }
 }

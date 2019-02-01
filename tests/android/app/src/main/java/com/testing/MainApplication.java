@@ -9,27 +9,14 @@ import com.facebook.react.devsupport.DevInternalSettings;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import io.invertase.jet.JetPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.admob.RNFirebaseAdMobPackage;
-import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
-import io.invertase.firebase.auth.RNFirebaseAuthPackage;
-import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage;
-import io.invertase.firebase.database.RNFirebaseDatabasePackage;
-import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
-import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
-import io.invertase.firebase.functions.RNFirebaseFunctionsPackage;
-import io.invertase.firebase.instanceid.RNFirebaseInstanceIdPackage;
-import io.invertase.firebase.invites.RNFirebaseInvitesPackage;
-//import io.invertase.firebase.links.RNFirebaseLinksPackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import io.invertase.firebase.perf.RNFirebasePerformancePackage;
-import io.invertase.firebase.storage.RNFirebaseStoragePackage;
-
-
 import java.util.Arrays;
 import java.util.List;
+
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
+import io.invertase.jet.JetPackage;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -40,25 +27,12 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
+      return Arrays.asList(
         new MainReactPackage(),
         new JetPackage(),
-        new RNFirebasePackage(),
-        new RNFirebaseAdMobPackage(),
-        new RNFirebaseAnalyticsPackage(),
-        new RNFirebaseAuthPackage(),
-        new RNFirebaseRemoteConfigPackage(),
-        new RNFirebaseCrashlyticsPackage(),
-        new RNFirebaseDatabasePackage(),
-        new RNFirebaseFirestorePackage(),
-        new RNFirebaseFunctionsPackage(),
-        new RNFirebaseInstanceIdPackage(),
-        new RNFirebaseInvitesPackage(),
-//        new RNFirebaseLinksPackage(),
-        new RNFirebaseMessagingPackage(),
-        new RNFirebaseNotificationsPackage(),
-        new RNFirebasePerformancePackage(),
-        new RNFirebaseStoragePackage()
+        new ReactNativeFirebaseAppPackage(),
+        new ReactNativeFirebaseAnalyticsPackage(),
+        new ReactNativeFirebaseFunctionsPackage()
       );
     }
   };
@@ -71,14 +45,18 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative");
 
     // TODO move to jet
-    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost().getReactInstanceManager().getDevSupportManager().getDevSettings();
+    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()
+      .getReactInstanceManager()
+      .getDevSupportManager()
+      .getDevSettings();
+
     if (settings != null) {
       settings.setBundleDeltasEnabled(false);
     }
 
-    SoLoader.init(this, /* native exopackage */ false);
+    SoLoader.init(this, false);
   }
-
 }

@@ -1,0 +1,42 @@
+{
+  "name": "@react-native-firebase/analytics",
+  "version": "6.0.0-alpha.1",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Analytics",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/analytics"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "analytics"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "0.0.5-alpha.0"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "^6.0.0-alpha.1",
+    "@react-native-firebase/common": "^6.0.0-alpha.1"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "implementation project(':@react-native-firebase_analytics')",
+      "packageImportPath": "import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;",
+      "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
+    }
+  },
+  "gitHead": "5024081214e6cebd3a918274d502d56522f6b3e7",
+  "publishConfig": {
+    "access": "public"
+  }
+}

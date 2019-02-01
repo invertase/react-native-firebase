@@ -4,7 +4,6 @@ daysUntilStale: 28
 daysUntilClose: 14
 # Issues with these labels will never be considered stale
 exemptLabels:
-  - 📌 pin
   - await-invertase-feedback
   - await-firebase-sdk-fix
   - await-maintainer-feedback

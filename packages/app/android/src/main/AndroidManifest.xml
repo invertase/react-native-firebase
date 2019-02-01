@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="io.invertase.firebase">
+
+  <application>
+    <provider
+      android:name="io.invertase.firebase.common.ReactNativeFirebaseInitProvider"
+      android:authorities="${applicationId}.reactnativefirebaseinitprovider"
+      android:exported="false"
+      android:initOrder="101" /> <!-- Firebase = 100, using 101 to run after Firebase initialises -->
+  </application>
+</manifest>

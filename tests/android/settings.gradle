@@ -1,11 +1,18 @@
-rootProject.name = 'RNFTests'
+rootProject.name = '@react-native-firebase/tests'
+
 include ':jet'
-project(':jet').projectDir = new File(rootProject.projectDir, '../node_modules/jet/android')
+project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
 
-include ':react-native-firebase'
-project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')
+include ':@react-native-firebase/app'
+project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../packages/app/android')
 
-include ':app'
+include ':@react-native-firebase/analytics'
+project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../packages/analytics/android')
+
+include ':@react-native-firebase/functions'
+project(':@react-native-firebase/functions').projectDir = new File(rootProject.projectDir, './../../packages/functions/android')
 
 include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
+project(':detox').projectDir = new File(rootProject.projectDir, './../node_modules/detox/android/detox')
+
+include ':app'

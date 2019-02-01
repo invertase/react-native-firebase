@@ -1,0 +1,14 @@
+---
+name: React Native Firebase
+npm: react-native-firebase
+repository: invertase/react-native-firebase
+description: React Native Firebase is a light-weight javascript layer connecting you
+  to the native Firebase SDKs for both iOS and Android which mirrors the official
+  Firebase Web SDK as closely as possible.
+theme:
+  logo: "//static.invertase.io/assets/React-Native-Firebase.svg"
+  primary: "#E57A2E"
+  secondary: '#F8C449'
+social:
+  twitter: 'https://twitter.com/rnfirebase'
+  discord: 'https://discordapp.com/invite/XsKpw4'

@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
-apply plugin: "com.google.firebase.firebase-perf"
-apply plugin: 'io.fabric'
+//apply plugin: "com.google.firebase.firebase-perf"
+//apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
@@ -8,17 +8,18 @@ project.ext.react = [
   entryFile: "index.js"
 ]
 
+// up to mono root
 apply from: "../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   defaultConfig {
     applicationId "com.testing"
     minSdkVersion 18
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
     ndk {
@@ -26,8 +27,8 @@ android {
     }
 
     testBuildType System.getProperty('testBuildType', 'debug')
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     missingDimensionStrategy "minReactNative", "minReactNative46"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     multiDexEnabled true
   }
   splits {
@@ -51,6 +52,10 @@ android {
       minifyEnabled false
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
       signingConfig signingConfigs.release
+      matchingFallbacks = ['release']
+    }
+    debug {
+      matchingFallbacks = ['debug']
     }
   }
   // applicationVariants are e.g. debug, release
@@ -68,6 +73,7 @@ android {
   }
 
   packagingOptions {
+    exclude 'META-INF/-no-jdk.kotlin_module'
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/NOTICE'
     exclude 'META-INF/LICENSE'
@@ -81,73 +87,23 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation fileTree(dir: "libs", include: ["*.jar"])
 
-
-
   /* ----------------------------
    *    REACT NATIVE FIREBASE
    * ---------------------------- */
 
-  // Library as defined in settings.gradle
-  implementation project(path: ':react-native-firebase', configuration: 'default')
-  // Required dependencies
-  //noinspection GradleCompatible
-  implementation "com.google.firebase:firebase-core:16.0.6"
-  implementation "com.google.android.gms:play-services-base:16.0.1"
-
-  /* -------------------------
-   *   OPTIONAL FIREBASE SDKS
-   * ------------------------- */
-
-  implementation('com.google.firebase:firebase-ads:15.0.1') {
-    // exclude `customtabs` as the support lib version is out of date
-    // we manually add it as a dependency below with a custom version
-    exclude group: 'com.android.support', module: 'customtabs'
-  }
-
-  // Authentication
-  implementation "com.google.firebase:firebase-auth:16.1.0"
-  // Analytics
-  implementation "com.google.firebase:firebase-analytics:16.0.6"
-  // Performance Monitoring
-  implementation "com.google.firebase:firebase-perf:16.2.3"
-  // Remote Config
-  implementation "com.google.firebase:firebase-config:16.1.2"
-  // Cloud Storage
-  implementation "com.google.firebase:firebase-storage:16.0.5"
-  // Invites
-  implementation "com.google.firebase:firebase-invites:16.0.6"
-  // Dynamic Links
-  implementation "com.google.firebase:firebase-dynamic-links:16.1.5"
-  // Real-time Database
-  implementation "com.google.firebase:firebase-database:16.0.5"
-  // Cloud Functions
-  implementation "com.google.firebase:firebase-functions:16.1.3"
-  // Cloud Firestore
-  implementation "com.google.firebase:firebase-firestore:17.1.5"
-  // Cloud Messaging / FCM
-  implementation "com.google.firebase:firebase-messaging:17.3.4"
-  // Crashlytics
-  implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
-    transitive = true
-  }
-
-  /* --------------------------------
-   *  OPTIONAL SUPPORT LIBS
-   * -------------------------------- */
-
-  // For Firebase Ads
-  implementation "com.android.support:customtabs:27.1.1"
-
-  // For React Native Firebase Notifications
-  implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
+  // Libraries as defined in settings.gradle
+  implementation project(path: ':@react-native-firebase/app')
+  implementation project(path: ':@react-native-firebase/analytics')
+  implementation project(path: ':@react-native-firebase/functions')
 
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-  implementation(project(path: ':jet', configuration: 'default')) {
+  implementation(project(path: ':jet')) {
     transitive = false
   }
-  androidTestImplementation(project(path: ":detox"))
+
+  androidTestImplementation project(path: ":detox")
   androidTestImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test:rules:1.0.2'

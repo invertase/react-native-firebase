@@ -1,0 +1,45 @@
+{
+  "name": "@react-native-firebase/functions",
+  "version": "6.0.0-alpha.1",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Functions",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/functions"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "functions"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "0.0.5-alpha.0"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "^6.0.0-alpha.1",
+    "@react-native-firebase/common": "^6.0.0-alpha.1"
+  },
+  "devDependencies": {
+    "@react-native-firebase/tests-firebase-functions": "^0.0.5"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "implementation project(':@react-native-firebase_functions')",
+      "packageImportPath": "import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;",
+      "packageInstance": "new ReactNativeFirebaseFunctionsPackage()"
+    }
+  },
+  "gitHead": "5024081214e6cebd3a918274d502d56522f6b3e7",
+  "publishConfig": {
+    "access": "public"
+  }
+}
