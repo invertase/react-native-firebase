@@ -37,31 +37,31 @@ React Native Firebase is built with four key principals in mind;
 
 ## Firebase Modules
 
-This in the root of the mono repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
+This is the root of the monorepo for React Native Firebase, if you're looking for a specific package please select the package link from below.
 
-The main module that you interface with is `App` (`@react-native-firebase/app`)
+The main package that you interface with is `App` (`@react-native-firebase/app`)
 
-| Name                                      | Downloads                                                                                                                                                                   | Coverage                                                                            |
+| Name                                      | Downloads                                                                                                                                                                   | Coverage (TODO)                                                                     |
 | ----------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
 | [App](/packages/app)                      | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 | [Analytics](/packages/analytics)          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 | [Functions](/packages/functions)          | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions) | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 | [Instance ID](/packages/iid)              | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
-| [Performance Monitoring](/packages/perf)  | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)             | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
+| [Performance Monitoring](/packages/perf)  | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)           | ![badge](https://img.shields.io/badge/0%25-coverage-yellow.svg?style=for-the-badge) |
 
-> TODO
+> TODO other modules
 
 ## Other Packages
 
 React Native Firebase also publishes several other packages, some only used internally, others for public consumption such as Hooks.
 
-| Name                             |                  Description                   |
-| -------------------------------- | :--------------------------------------------: |
-| [app-types](/packages/app-types) | Common Firebase types used by and all modules. |
-| [common](/packages/common)       |     Common utilities used by all modules.      |
-| [hooks](/packages/hooks)         |     React Hooks for React Native Firebase.     |
+| Name                             |                  Description                    |
+| -------------------------------- | :---------------------------------------------: |
+| [app-types](/packages/app-types) | Common Firebase types used by and all modules.  |
+| [common](/packages/common)       |     Common utilities used by all modules.       |
+| [hooks](/packages/hooks) (WIP)   | Official React Hooks for React Native Firebase. |
 
-> TODO
+> TODO other packages
 
 ## Documentation
 
