@@ -270,7 +270,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (5.1.1):
+  - RNFirebase (5.2.1):
     - Firebase/Core
     - React
   - yoga (0.58.0-rc.1.React)
@@ -351,7 +351,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
-    :version: "~> 5.1.1"
+    :version: "~> 5.2.1"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
