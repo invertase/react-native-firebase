@@ -52,10 +52,5 @@ beforeEach(async function beforeEach() {
 
 after(async () => {
   console.log('Cleaning up...');
-  // await TestHelpers.firestore.cleanup();
-  console.log('Firestore cleaned up...');
-  // await detox.cleanup(); // TODO hangs - most likely jet internals interfering
-  console.log('Detox cleaned up...');
-
   await device.terminateApp();
 });
