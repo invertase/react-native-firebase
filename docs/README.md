@@ -1,2 +1,0 @@
-# React Native Firebase Documentation
-
