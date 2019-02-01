@@ -1,6 +1,6 @@
 ---
 name: 🎁 Feature request
-about: For feature requests please visit our feature request board: https://boards.invertase.io/react-native-firebase
+about: "For feature requests please visit our feature request board: https://boards.invertase.io/react-native-firebase"
 
 ---
 
