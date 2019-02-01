@@ -1,54 +1,32 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "0.0.1",
+  "version": "6.0.0-alpha.1",
   "private": true,
   "scripts": {
-    "packager-chrome": "react-native start --platforms ios,android",
-    "packager-jet": "REACT_DEBUGGER='echo nope' react-native start",
-    "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
-    "build-ios": "detox build --configuration ios.sim.debug",
-    "build-ios-release": "detox build --configuration ios.sim.release",
-    "build-android": "detox build --configuration android.emu.debug",
-    "test-android": "detox test --configuration android.emu.debug",
-    "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
-    "test-android-cover": "nyc detox test --configuration android.emu.debug",
-    "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
-    "test-ios": "detox test --configuration ios.sim.debug --loglevel warn",
-    "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
-    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
+    "build:clean": "rimraf dist && rimraf android/build && rimraf ios/build",
+    "prepare": "patch-package"
   },
   "dependencies": {
-    "detox": "^9.0.4",
-    "fbjs": "^0.8.16",
-    "firebase-admin": "^5.12.0",
-    "jet": "^0.2.0",
-    "jsonwebtoken": "^8.2.1",
+    "@react-native-firebase/analytics": "^6.0.0-alpha.1",
+    "@react-native-firebase/app": "^6.0.0-alpha.1",
+    "@react-native-firebase/app-types": "^6.0.0-alpha.1",
+    "@react-native-firebase/functions": "^6.0.0-alpha.1",
+    "detox": "9.1.2",
+    "jet": "^0.2.1",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "16.6.3",
-    "react-native": "0.58.0-rc.1",
-    "should": "^13.2.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-native": "^0.58.1",
+    "require-all": "3.0.0",
+    "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0",
-    "@invertase/tests-firebase-functions": "^0.0.1"
+    "sinon": "^6.2.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-plugin-istanbul": "^5.1.0",
-    "babel-plugin-module-resolver": "^3.1.1",
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-flowtype": "^2.46.3",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.78.0",
+    "babel-plugin-istanbul": "^5.1.1",
     "nyc": "^13.1.0",
-    "rimraf": "^2.6.2"
+    "patch-package": "^5.1.2"
   },
   "nyc": {
     "check-coverage": false,
@@ -57,17 +35,11 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "src/**"
+      "packages/**"
     ],
     "exclude": [
       "node_modules",
-      "src/modules/admob**",
-      "src/modules/auth/phone**",
-      "src/modules/notifications**",
-      "src/utils**",
-      "src/modules/utils**",
-      "src/types**",
-      "**/types.js"
+      "**/common/lib/**"
     ],
     "cwd": "..",
     "all": true,
@@ -75,6 +47,7 @@
     "instrument": false,
     "reporter": [
       "lcov",
+      "html",
       "text-summary"
     ]
   },
@@ -85,7 +58,7 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X",
         "logLevel": "error"
@@ -98,7 +71,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
         "type": "ios.simulator",
         "name": "iPhone X"
       },

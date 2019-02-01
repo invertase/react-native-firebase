@@ -1,1 +1,8 @@
 src/version.js
+packages/**/node_modules/**
+**/*.ts
+node_modules
+tests/
+scripts/
+coverage
+docs

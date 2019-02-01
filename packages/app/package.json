@@ -1,0 +1,75 @@
+{
+  "name": "@react-native-firebase/app",
+  "version": "6.0.0-alpha.1",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "admob",
+    "auth",
+    "config",
+    "digits",
+    "fabric",
+    "functions",
+    "phone-auth",
+    "sms",
+    "firestore",
+    "cloud-firestore",
+    "datastore",
+    "remote-config",
+    "transactions",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "fcm",
+    "apn",
+    "gcm",
+    "analytics",
+    "messaging",
+    "database",
+    "android",
+    "ios",
+    "crash",
+    "firestack",
+    "performance",
+    "firestore",
+    "dynamic-links",
+    "crashlytics"
+  ],
+  "peerDependencies": {
+    "react": ">= 16.6.3",
+    "react-native": ">= 0.58.1"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "^6.0.0-alpha.1",
+    "@react-native-firebase/common": "^6.0.0-alpha.1",
+    "opencollective-postinstall": "^2.0.1"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "    implementation project(':react-native-firebase')",
+      "packageImportPath": "import io.invertase.firebase.modules.app.ReactNativeFirebaseAppPackage;",
+      "packageInstance": "new ReactNativeFirebaseAppPackage()"
+    }
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-native-firebase"
+  },
+  "gitHead": "5024081214e6cebd3a918274d502d56522f6b3e7",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,92 +1,164 @@
-# -------------------------
-#         ALIASES
-# -------------------------
-
+---
 aliases:
   # -------------------------
   #          CACHE
   # -------------------------
   - &restore-yarn-cache
-    keys:
-      - v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "~/.checksumfiles/package.json" }}-{{ checksum "yarn.lock" }}
 
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
-      - ~/Library/Detox/ios
-    key: v4-yarn-cache-{{ arch }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum "tests/package.json" }}-{{ checksum "tests/yarn.lock" }}
+      - ~/Library/Detox
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "~/.checksumfiles/package.json" }}-{{ checksum "yarn.lock" }}
+
+  # -------------------------
+  #            iOS
+  # -------------------------
 
   - &save-pods-cache
     paths:
       - ~/react-native-firebase/tests/ios/Pods
-    key: v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-pods-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    when: always
 
   - &restore-pods-cache
-    keys:
-      - v4-pods-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-pods-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
 
   - &save-ios-build-cache
     paths:
       - ~/react-native-firebase/tests/ios/build/Build
-    key: v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    key: v1-ios-pods-build-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+    when: always
 
   - &restore-ios-build-cache
+    key: v1-ios-pods-build-cache-{{ arch }}-{{ checksum "~/.checksumfiles/combined.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+
+  # -------------------------
+  #         Android
+  # -------------------------
+  - &save-gradle-home-caches
+    name: Saving Gradle home cache
+    paths:
+      - ~/.gradle/caches/
+    key: v1-gradle-home-cache-{{ checksum "~/.checksumfiles/build.gradle" }}-{{ checksum "~/.checksumfiles/settings.gradle" }}
+
+  - &restore-gradle-home-caches
     keys:
-      - v4-ios-build-cache-{{ arch }}-{{ checksum "ios/RNFirebase.podspec" }}-{{ checksum "tests/ios/Podfile" }}-{{ checksum "tests/ios/Podfile.lock" }}
+      - v1-gradle-home-cache-{{ checksum "~/.checksumfiles/build.gradle" }}-{{ checksum "~/.checksumfiles/settings.gradle" }}
+      - v1-gradle-home-cache
+
+  - &save-gradle-wrapper-cache
+    name: Saving Gradle wrapper cache
+    paths:
+      - ~/.gradle/wrapper/
+    key: v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+  - &restore-gradle-wrapper-cache
+    keys:
+      - v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+
+  - &collect-gradle-build-caches
+    name: Collecting Gradle Build caches for saving
+    command: |
+      mkdir -p ~/gradle-build-caches
+      [ -d ~/.gradle/caches ] &&
+        [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
+        rm -rf ~/gradle-build-caches/* &&
+        mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
+    when: always
+
+  - &save-gradle-debug-build-cache
+    name: Saving Gradle Build caches
+    paths:
+      - ~/gradle-build-caches
+    key: v1-gradle-debug-build-cache-{{ .Revision }}
+    when: always
+
+  - &save-gradle-release-build-cache
+    name: Saving Gradle Build caches
+    paths:
+      - ~/gradle-build-caches
+    key: v1-gradle-release-build-cache-{{ .Revision }}
+    when: always
+
+  - &disperse-gradle-build-caches
+    name: Dispersing Gradle Build caches for restoring
+    command: |
+      [ -d ~/gradle-build-caches ] &&
+        [ -n "$(ls -A ~/gradle-build-caches)" ] &&
+        rm -rf ~/.gradle/caches/build-cache-* &&
+        mkdir -p ~/.gradle/caches/ &&
+        mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+  - &restore-gradle-debug-build-cache
+    name: Restoring Gradle Build caches
+    keys:
+      - v1-gradle-debug-build-cache-{{ .Revision }}
+      - v1-gradle-debug-build-cache
+
+  - &restore-gradle-release-build-cache
+    name: Restoring Gradle Build caches
+    keys:
+      - v1-gradle-release-build-cache-{{ .Revision }}
+      - v1-gradle-release-build-cache
+
+
+  # -------------------------
+  #          DETOX
+  # -------------------------
 
   - &save-brew-cache
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v4-brew-cache-{{ arch }}
+    key: v7-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-      - v4-brew-cache-{{ arch }}
+      - v7-brew-cache-{{ arch }}
 
-  - &configure-jet-detox-environment
+
+  # -------------------------
+  #    SHARED RUN COMMANDS
+  # -------------------------
+
+  - &configure-ios-detox-environment
     name: Configure Jet + Detox Environment
     command: |
-      brew install node@8 >/dev/null
-      brew tap wix/brew >/dev/null
-      brew install applesimutils >/dev/null
-      brew install watchman >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
       touch .watchmanconfig
       node -v
 
   - &packager-jet
-    name: Start React Native Pacakager (background)
+    name: Start React Native Packager (background)
     background: true
-    command: cd tests && yarn run packager-jet || true
+    command: yarn run tests:packager:jet || true
 
   - &packager-warmup
-    name: Warming up Packager
+    name: Warm up Packager
     background: true
     command: node .circleci/scripts/packager-warmup.js
 
+  - &make-cache-check-files
+    name: Make Cache Checksum Files
+    command: |
+      mkdir -p ~/.checksumfiles
+      find . -type f -name 'build.gradle' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/build.gradle
+      find . -type f -name 'settings.gradle' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/settings.gradle
+      find . -type f -name '*.podspec' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/combined.podspec
+      find . -type f -name 'package.json' -not -path "*node_modules*" -exec cat {} + >> ~/.checksumfiles/package.json
 
   # -------------------------
   #       INSTALLATION
   # -------------------------
   - &yarn
-    name: Yarn Install ./ and ./tests
+    name: Yarn Install
     command: |
       yarn install --non-interactive --cache-folder ~/.cache/yarn
-      cd tests && yarn install --non-interactive
-
-  # -------------------------
-  #         ANDROID
-  # -------------------------
-
-  #  - &android-launch-avd
-  #    name: Launch AVD
-  #    background: true
-  #    command: avd-launch
-  #
-  #  - &android-wait-avd
-  #    name: Wait for AVD to be ready
-  #    command: timeout 300 avd-wait-ready
-
 
   # -------------------------
   #         ANALYSE
@@ -94,22 +166,34 @@ aliases:
 
   # eslint
   - &eslint
-    name: Lint Code
-    command: yarn run lint
-
-  # flow
-  - &validate-flow-declarations
-    name: Validate Flow Declarations
-    command: yarn run validate-flow-declarations
+    name: Lint JS Code (ESLint)
+    command: yarn run validate:all:js
 
   # typescript
   - &validate-ts-declarations
     name: Validate TypeScript Declarations
-    command: yarn run validate-ts-declarations
+    command: yarn run validate:all:ts
+
+  # flow
+  - &validate-flow-declarations
+    name: Validate Flow Declarations
+    command: yarn run validate:all:flow
+
+  # -------------------------
+  #        ANDROID
+  # -------------------------
+
+#  - &android-accept-licenses
+#    name: Accept Android Licenses
+#    shell: /bin/bash -e
+#    command: |
+#      yes | sdkmanager --licenses
+#      yes | sdkmanager --update
 
 # -------------------------
 #        DEFAULTS
 # -------------------------
+
 defaults: &defaults
   working_directory: ~/react-native-firebase
   environment:
@@ -121,25 +205,25 @@ js_defaults: &js_defaults
   docker:
     - image: circleci/node:8
   environment:
-    - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    - PATH: '/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 # ANDROID
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: invertase/react-native-firebase-android:standard
-  resource_class: "xlarge"
+    - image: invertase/react-native-firebase-android:release
+  resource_class: 'xlarge'
   working_directory: ~/react-native-firebase
   environment:
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2048m"
+    - _JAVA_OPTIONS: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Xmx2048m'
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -Xmx2048m"'
 
 # IOS
 macos_defaults: &macos_defaults
   <<: *defaults
-  resource_class: "large"
+  resource_class: 'medium'
   macos:
-    xcode: "10.1.0"
+    xcode: '10.1.0'
 
 # -------------------------
 #          JOBS
@@ -160,6 +244,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -167,181 +253,211 @@ jobs:
       - run: *validate-flow-declarations
       - run: *validate-ts-declarations
 
+  # -------------------------
+  #     ANDROID - BUILD
+  # -------------------------
 
   android-build-debug:
     <<: *android_defaults
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      #      # must always be after environment config job but before android build
-      #      - run: *packager-jet
-      #      - run: *packager-warmup#
-      #      - run: *android-launch-avd
+      - restore-cache: *restore-gradle-wrapper-cache
+      - restore_cache: *restore-gradle-home-caches
 
-      # restore saved caches
-      - restore_cache:
-          keys:
-            - gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+      - restore-cache: *restore-gradle-debug-build-cache
+      - run: *disperse-gradle-build-caches
 
-      - restore_cache:
-          keys:
-            # for multi-project builds where dependencies are not defined in one central file,
-            # an additional run step before is necessary that concatenates affected files
-            # into one file that can be checksummed
-            - gradle-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-cache
-
-      - restore_cache:
-          keys:
-            - gradle-build-caches-{{ .Revision }}
-            - gradle-build-caches
-
-      - run:
-          name: Restoring Gradle Build Caches
-          command: |
-            [ -d ~/gradle-build-caches ] &&
-              [ -n "$(ls -A ~/gradle-build-caches)" ] &&
-              rm -rf ~/.gradle/caches/build-cache-* &&
-              mkdir -p ~/.gradle/caches/ &&
-              mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+#      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
-          name: Downloading Dependencies
+          name: Downloading Gradle Dependencies
           command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-          key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
+      - save-cache: *save-gradle-wrapper-cache
+      - save-cache: *save-gradle-home-caches
 
       - run:
           name: Build Android Testing App
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 6 --continue assembleDebug assembleAndroidTest -DtestBuildType=debug --stacktrace
 
-      # cache gradle build caches
-      - run:
-          name: Collecting Gradle Build Caches
-          command: |
-            mkdir -p ~/gradle-build-caches
-            [ -d ~/.gradle/caches ] &&
-              [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
-              rm -rf ~/gradle-build-caches/* &&
-              mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
-          when: always
+      - run: *collect-gradle-build-caches
+      - save-cache: *save-gradle-debug-build-cache
 
-      - save_cache:
+      - persist_to_workspace:
+          root: ~/react-native-firebase
           paths:
-            - ~/gradle-build-caches
-          key: gradle-build-caches-{{ .Revision }}
-          when: always
-
-  #      - run: *android-wait-avd
-  #
-  #      # Now Test \o/
-  #      - run:
-  #          name: Run Jet Tests
-  #          command: cd tests && yarn run test-android-cover
-  #
-  #      # TODO merge coverage output from android and iOS
-  #      - run:
-  #          name: Submit Coverage
-  #          command: yarn run codecov
-  #
-  #      - store_artifacts:
-  #          path: ~/detox-artifacts
-  #      - store_artifacts:
-  #          path: ~/react-native-firebase/coverage
+            - tests/android/app/build/outputs/apk
 
   android-build-release:
     <<: *android_defaults
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      # restore saved caches
-      - restore_cache:
-          keys:
-            - gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+      - restore-cache: *restore-gradle-wrapper-cache
+      - restore_cache: *restore-gradle-home-caches
 
-      - restore_cache:
-          keys:
-            # for multi-project builds where dependencies are not defined in one central file,
-            # an additional run step before is necessary that concatenates affected files
-            # into one file that can be checksummed
-            - gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-release-cache
+      - restore-cache: *restore-gradle-release-build-cache
+      - run: *disperse-gradle-build-caches
 
-      - restore_cache:
-          keys:
-            - gradle-release-build-caches-{{ .Revision }}
-            - gradle-release-build-caches
-
-      - run:
-          name: Restoring Gradle Build Caches
-          command: |
-            [ -d ~/gradle-build-caches ] &&
-              [ -n "$(ls -A ~/gradle-build-caches)" ] &&
-              rm -rf ~/.gradle/caches/build-cache-* &&
-              mkdir -p ~/.gradle/caches/ &&
-              mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+#      - run: *android-accept-licenses
 
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
           command: cd tests/android && ./gradlew --max-workers 6 downloadDependencies
 
-      - save_cache:
-          paths:
-            - ~/.gradle/wrapper/
-          key: gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-          key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+      - save-cache: *save-gradle-wrapper-cache
+      - save-cache: *save-gradle-home-caches
 
       - run:
           name: Build Android Testing App
           command: cd tests/android && chmod +x gradlew && ./gradlew --build-cache --max-workers 2 --continue assembleRelease
 
-      # cache gradle build caches
-      - run:
-          name: Collecting Gradle Build Caches
-          command: |
-            mkdir -p ~/gradle-build-caches
-            [ -d ~/.gradle/caches ] &&
-              [ -n "$(ls -Ad ~/.gradle/caches/build-cache-* 2>/dev/null)" ] &&
-              rm -rf ~/gradle-build-caches/* &&
-              mv ~/.gradle/caches/build-cache-* ~/gradle-build-caches || true
-          when: always
+      - run: *collect-gradle-build-caches
+      - save-cache: *save-gradle-release-build-cache
 
-      - save_cache:
+      - persist_to_workspace:
+          root: ~/react-native-firebase
           paths:
-            - ~/gradle-build-caches
-          key: gradle-release-build-caches-{{ .Revision }}
-          when: always
+            - tests/android/app/build/outputs/apk
 
+  # -------------------------
+  #    ANDROID - TEST E2E
+  # -------------------------
+
+  android-test-e2e:
+    <<: *macos_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin"' >> $BASH_ENV
+            echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
+            echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
+            echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
+            echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: Install Android SDK Tools
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install intel-haxm >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null >/dev/null
+
+      # Yarn install - to ensure detox post install builds
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - save-cache: *save-yarn-cache
+
+      # must always be after environment config job but before ios build
+      - run: *packager-jet
+      - run: *packager-warmup
+
+      - run:
+          name: Install Android Emulator
+          shell: /bin/bash -e
+          command: |
+            yes | sdkmanager "platform-tools"  "tools" >/dev/null
+            yes | sdkmanager "platforms;android-28" "system-images;android-27;google_apis;x86" "system-images;android-28;google_apis;x86" >/dev/null
+            yes | sdkmanager "emulator" --channel=3 >/dev/null
+            yes | sdkmanager "build-tools;28.0.3" >/dev/null
+            yes | sdkmanager --licenses >/dev/null
+            yes | sdkmanager --list
+
+      # to force ssh key generation for emulators
+      - run:
+          name: ADB Start Stop
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+
+#      - run:
+#          name: Create Android Emulator (API 27)
+#          command: avdmanager create avd -n TestingAVD -k "system-images;android-27;google_apis;x86" -g google_apis -d "Nexus 4"
+#
+#      - run:
+#          name: Start Android Emulator (API 27) in background
+#          command: |
+#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
+#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
+#          background: true
+#
+#      - run:
+#          name: Wait for AVD to be ready (API 27)
+#          no_output_timeout: "5m"
+#          command: sh ./.circleci/scripts/wait-for-avd.sh
+#
+#      - run:
+#          name: Run Tests (API 27)
+#          command: yarn run tests:android:test-cover
+#
+#      - run:
+#          name: Stop Emulators (API 27)
+#          command: adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+
+      - run:
+          name: Create Android Emulator (API 28)
+          command: avdmanager create avd --force -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 4"
+
+      - run:
+          name: Start Android Emulator (API 28) in background
+          command: |
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
+          background: true
+
+      - run:
+          name: Wait for AVD to be ready (API 28)
+          no_output_timeout: "5m"
+          command: sh ./.circleci/scripts/wait-for-avd.sh
+
+      - run:
+          name: Run Tests (API 28)
+          command: yarn run tests:android:test-cover
+
+      - run:
+          name: Submit Coverage
+          command: yarn run codecov
+
+      - store_artifacts:
+          path: ~/detox-artifacts
+      - store_artifacts:
+          path: ~/react-native-firebase/coverage
+
+  # -------------------------
+  #      iOS - TEST E2E
+  # -------------------------
 
   ios-test-e2e:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native-firebase
+      - run: *make-cache-check-files
+
       - run:
           name: Start iPhone X simulator (background)
           background: true
@@ -349,17 +465,23 @@ jobs:
       - run:
           name: Configure Environment Variables
           command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/react-native-firebase/node_modules/.bin:~/react-native-firebase/tests/node_modules/.bin"' >> $BASH_ENV
             source $BASH_ENV
+
+
       # Brew
       - restore-cache: *restore-brew-cache
-      - run: *configure-jet-detox-environment
+      - run: *configure-ios-detox-environment
       - save-cache: *save-brew-cache
 
       # Yarn install - to ensure detox post install builds
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
+
+      # must always be after environment config job but before ios build
+      - run: *packager-jet
+      - run: *packager-warmup
 
       # Pods
       - restore-cache: *restore-pods-cache
@@ -371,15 +493,11 @@ jobs:
             pod install
       - save-cache: *save-pods-cache
 
-      # must always be after environment config job but before ios build
-      - run: *packager-jet
-      - run: *packager-warmup
-
       # XCode Build
       - restore-cache: *restore-ios-build-cache
       - run:
           name: Build iOS Testing App
-          command: cd tests && yarn run build-ios
+          command: yarn run tests:ios:build
       - save-cache: *save-ios-build-cache
 
       - run: mkdir ~/detox-artifacts
@@ -387,9 +505,8 @@ jobs:
       # Now Test \o/
       - run:
           name: Run Jet Tests
-          command: cd tests && yarn run test-ios-cover
+          command: yarn run tests:ios:test-cover
 
-      # TODO merge coverage output from android and iOS
       - run:
           name: Submit Coverage
           command: yarn run codecov
@@ -399,31 +516,41 @@ jobs:
       - store_artifacts:
           path: ~/react-native-firebase/coverage
 
-
 # -------------------------
 #        WORK FLOWS
 # -------------------------
 workflows:
   version: 2
-  Test:
+#  filters:
+#    branches:
+#      only: master
+
+  JS:
     jobs:
       - checkout-code
-
       - analyse:
           requires:
             - checkout-code
 
+  Android:
+    jobs:
+      - checkout-code
+
       - android-build-debug:
           requires:
             - checkout-code
-            - analyse
 
       - android-build-release:
           requires:
             - checkout-code
-            - analyse
 
+      - android-test-e2e:
+          requires:
+            - android-build-debug
+
+  iOS:
+    jobs:
+      - checkout-code
       - ios-test-e2e:
           requires:
             - checkout-code
-            - analyse
