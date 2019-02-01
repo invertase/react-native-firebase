@@ -17,7 +17,7 @@
 
 ---
 
-> **WARNING**: This branch is a work in progress re-write of React Native Firebase, you're probably looking for the [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead. You can [learn more about this here](https://blog.invertase.io/react-native-firebase-2019-7e334ca9bcc6). 
+> **WARNING**: Master branch is the work in progress v6.0.0 version of React Native Firebase, you're probably looking for the current [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead, please send all PRs for the live version to that branch. You can [learn more about this here](https://blog.invertase.io/react-native-firebase-2019-7e334ca9bcc6). 
 
 ---
 
