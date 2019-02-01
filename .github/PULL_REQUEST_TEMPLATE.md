@@ -1,6 +1,8 @@
 <!-- Thanks for submitting a pull request! Please provide enough information so that others can review your pull request properly. -->
 <!-- If this PR fixes an issue, type "Fixes #issueNumber" to automatically close the issue when the PR is merged. -->
-<!-- Please esure you've also read the `/CONTRIBUTING.md` guide. -->
+
+
+<!-- 🚨 PLEASE SEND PRs TO THE v5.x.x BRANCH AND NOT MASTER - THANKS 🚨 -->
 
 ### Summary
 
