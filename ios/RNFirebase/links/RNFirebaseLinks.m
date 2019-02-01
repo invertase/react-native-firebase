@@ -63,6 +63,22 @@ continueUserActivity:(NSUserActivity *)userActivity
                     if (dynamicLink && dynamicLink.url && error == nil) {
                         NSURL* url = dynamicLink.url;
                         [self sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
+                    } else if (error != nil && [NSPOSIXErrorDomain isEqualToString:error.domain] && error.code == 53) {
+                        DLog(@"Failed to handle universal link on first attempt, retrying: %@", userActivity.webpageURL);
+                        
+                        // Per Apple Tech Support, this could occur when returning from background on iOS 12.
+                        // https://github.com/AFNetworking/AFNetworking/issues/4279#issuecomment-447108981
+                        // Retry the request once
+                        [[FIRDynamicLinks dynamicLinks]
+                         handleUniversalLink:userActivity.webpageURL
+                         completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+                             if (dynamicLink && dynamicLink.url && error == nil) {
+                                 NSURL* url = dynamicLink.url;
+                                 [self sendJSEvent:self name:LINKS_LINK_RECEIVED body:url.absoluteString];
+                             } else {
+                                 DLog(@"Failed to handle universal link during retry: %@", userActivity.webpageURL);
+                             }
+                         }];
                     } else {
                         DLog(@"Failed to handle universal link: %@", userActivity.webpageURL);
                     }
