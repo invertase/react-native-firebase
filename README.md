@@ -32,7 +32,7 @@ React Native Firebase is built with four key principals in mind;
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🔥 **Mirrors official Firebase Web SDK**
-  - functions as drop-in replacement for the Firebase Web SDK in React Native
+  - functions as a drop-in replacement for the Firebase Web SDK in React Native
   - maximises cross-platform code re-usability e.g. re-using code on web platforms
 
 ## Firebase Modules
