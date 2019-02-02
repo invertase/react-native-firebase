@@ -61,19 +61,27 @@ NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
     return firAppDictionary;
   }
 
-  + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;{
-      NSMutableDictionary * userInfo = [NSMutableDictionary dictionary];
+  + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception; {
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 
-      [userInfo setValue:@(YES) forKey:@"fatal"];
-      [userInfo setValue:@"unknown" forKey:@"code"];
-      [userInfo setValue:exception.reason forKey:@"message"];
-      [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
-      [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
+    [userInfo setValue:@(YES) forKey:@"fatal"];
+    [userInfo setValue:@"unknown" forKey:@"code"];
+    [userInfo setValue:exception.reason forKey:@"message"];
+    [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
+    [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
 
-      NSError *error = [[NSError alloc] initWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
 
-      // TODO hook into crashlytics - report as handled exception?
+    // TODO hook into crashlytics - report as handled exception?
 
-      reject(exception.name, exception.reason, error);
+    reject(exception.name, exception.reason, error);
+  }
+
+  + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo; {
+    NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+
+    // TODO hook into crashlytics - report as handled exception?
+
+    reject(userInfo[@"code"], userInfo[@"message"], error);
   }
 @end
