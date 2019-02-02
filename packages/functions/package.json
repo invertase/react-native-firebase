@@ -22,11 +22,11 @@
     "functions"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "0.0.5-alpha.0"
+    "@react-native-firebase/app": "6.0.0-alpha.2"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "^6.0.0-alpha.2",
-    "@react-native-firebase/common": "^6.0.0-alpha.2"
+    "@react-native-firebase/app-types": "6.0.0-alpha.2",
+    "@react-native-firebase/common": "6.0.0-alpha.2"
   },
   "devDependencies": {
     "@react-native-firebase/tests-firebase-functions": "^0.0.5"
