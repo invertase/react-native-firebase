@@ -45,6 +45,7 @@ extern NSString *const DEFAULT_APP_NAME;
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;
 
++ (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo;
 @end
 
 #endif
