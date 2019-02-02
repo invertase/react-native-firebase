@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const { SAMPLE_DATA } = require('@react-native-firebase/tests-firebase-functions');
 
-android.describe('functions()', () => {
+describe('functions()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
