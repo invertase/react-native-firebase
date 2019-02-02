@@ -28,13 +28,124 @@
 
   RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
-
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
+  RCT_EXPORT_METHOD(httpsCallable:
+    (FIRApp *) firebaseApp
+        region:
+        (NSString *) region
+        name:
+        (NSString *) name
+        wrapper:
+        (NSDictionary *) wrapper
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject
+  ) {
+    FIRFunctions *functions = [FIRFunctions functionsForApp:firebaseApp region:region];
+    FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
+
+    [callable callWithObject:[wrapper valueForKey:@"data"] completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
+      if (error) {
+        NSObject *details = [NSNull null];
+        NSString *message = error.localizedDescription;
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+        if (error.domain == FIRFunctionsErrorDomain) {
+          details = error.userInfo[FIRFunctionsErrorDetailsKey];
+          if (details == nil) {
+            details = [NSNull null];
+          }
+        }
+
+        userInfo[@"code"] = [self getErrorCodeName:error];
+        userInfo[@"message"] = message;
+        userInfo[@"details"] = details;
+
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+      } else {
+        resolve(@{@"data": [result data]});
+      }
+    }];
+  }
+
+  RCT_EXPORT_METHOD(useFunctionsEmulator:
+    (FIRApp *) firebaseApp
+        region:
+        (NSString *) region
+        origin:
+        (NSString *) origin
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject
+  ) {
+    FIRFunctions *functions = [FIRFunctions functionsForApp:firebaseApp region:region];
+    [functions useFunctionsEmulatorOrigin:origin];
+    resolve([NSNull null]);
+  }
+
+  - (NSString *)getErrorCodeName:(NSError *)error {
+    NSString *code = @"UNKNOWN";
+    switch (error.code) {
+      case FIRFunctionsErrorCodeOK:
+        code = @"OK";
+        break;
+      case FIRFunctionsErrorCodeCancelled:
+        code = @"CANCELLED";
+        break;
+      case FIRFunctionsErrorCodeUnknown:
+        code = @"UNKNOWN";
+        break;
+      case FIRFunctionsErrorCodeInvalidArgument:
+        code = @"INVALID_ARGUMENT";
+        break;
+      case FIRFunctionsErrorCodeDeadlineExceeded:
+        code = @"DEADLINE_EXCEEDED";
+        break;
+      case FIRFunctionsErrorCodeNotFound:
+        code = @"NOT_FOUND";
+        break;
+      case FIRFunctionsErrorCodeAlreadyExists:
+        code = @"ALREADY_EXISTS";
+        break;
+      case FIRFunctionsErrorCodePermissionDenied:
+        code = @"PERMISSION_DENIED";
+        break;
+      case FIRFunctionsErrorCodeResourceExhausted:
+        code = @"RESOURCE_EXHAUSTED";
+        break;
+      case FIRFunctionsErrorCodeFailedPrecondition:
+        code = @"FAILED_PRECONDITION";
+        break;
+      case FIRFunctionsErrorCodeAborted:
+        code = @"ABORTED";
+        break;
+      case FIRFunctionsErrorCodeOutOfRange:
+        code = @"OUT_OF_RANGE";
+        break;
+      case FIRFunctionsErrorCodeUnimplemented:
+        code = @"UNIMPLEMENTED";
+        break;
+      case FIRFunctionsErrorCodeInternal:
+        code = @"INTERNAL";
+        break;
+      case FIRFunctionsErrorCodeUnavailable:
+        code = @"UNAVAILABLE";
+        break;
+      case FIRFunctionsErrorCodeDataLoss:
+        code = @"DATA_LOSS";
+        break;
+      case FIRFunctionsErrorCodeUnauthenticated:
+        code = @"UNAUTHENTICATED";
+        break;
+      default:
+        break;
+    }
+
+    return code;
+  }
 
 
 @end
