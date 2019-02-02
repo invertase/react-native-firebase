@@ -53,8 +53,8 @@
     "react-native": ">= 0.58.1"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "^6.0.0-alpha.2",
-    "@react-native-firebase/common": "^6.0.0-alpha.2",
+    "@react-native-firebase/app-types": "6.0.0-alpha.2",
+    "@react-native-firebase/common": "6.0.0-alpha.2",
     "opencollective-postinstall": "^2.0.1"
   },
   "rnpm": {
