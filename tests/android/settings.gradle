@@ -1,6 +1,4 @@
 rootProject.name = '@react-native-firebase/tests'
-include ':@react-native-firebase_perf'
-project(':@react-native-firebase_perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
 
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
@@ -16,6 +14,9 @@ project(':@react-native-firebase/functions').projectDir = new File(rootProject.p
 
 include ':@react-native-firebase/iid'
 project(':@react-native-firebase/iid').projectDir = new File(rootProject.projectDir, './../../packages/iid/android')
+
+include ':@react-native-firebase/perf'
+project(':@react-native-firebase/perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../node_modules/detox/android/detox')

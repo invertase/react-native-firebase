@@ -96,7 +96,7 @@ dependencies {
   implementation project(path: ':@react-native-firebase/analytics')
   implementation project(path: ':@react-native-firebase/functions')
   implementation project(path: ':@react-native-firebase/iid')
-  implementation project(path: ':@react-native-firebase_perf')
+  implementation project(path: ':@react-native-firebase/perf')
 
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
