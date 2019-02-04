@@ -16,6 +16,7 @@ import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
+import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
 import io.invertase.jet.JetPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -32,7 +33,8 @@ public class MainApplication extends Application implements ReactApplication {
         new JetPackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAnalyticsPackage(),
-        new ReactNativeFirebaseFunctionsPackage()
+        new ReactNativeFirebaseFunctionsPackage(),
+        new ReactNativeFirebaseIidPackage()
       );
     }
   };

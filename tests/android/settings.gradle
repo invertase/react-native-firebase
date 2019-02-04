@@ -12,6 +12,9 @@ project(':@react-native-firebase/analytics').projectDir = new File(rootProject.p
 include ':@react-native-firebase/functions'
 project(':@react-native-firebase/functions').projectDir = new File(rootProject.projectDir, './../../packages/functions/android')
 
+include ':@react-native-firebase/iid'
+project(':@react-native-firebase/iid').projectDir = new File(rootProject.projectDir, './../../packages/iid/android')
+
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../node_modules/detox/android/detox')
 
