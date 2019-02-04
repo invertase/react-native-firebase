@@ -1,4 +1,6 @@
 rootProject.name = '@react-native-firebase/tests'
+include ':@react-native-firebase_perf'
+project(':@react-native-firebase_perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
 
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
