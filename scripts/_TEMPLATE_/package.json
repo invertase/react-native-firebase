@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/_template_",
-  "version": "6.0.0-alpha.2",
+  "version": "_VERSION_",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - _Template_",
   "main": "lib/index.js",
@@ -22,11 +22,11 @@
     "_template_"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.2"
+    "@react-native-firebase/app": "_VERSION_"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.2",
-    "@react-native-firebase/common": "6.0.0-alpha.2"
+    "@react-native-firebase/app-types": "_VERSION_",
+    "@react-native-firebase/common": "_VERSION_"
   },
   "rnpm": {
     "android": {
