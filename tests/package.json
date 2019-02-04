@@ -12,6 +12,7 @@
     "@react-native-firebase/app-types": "^6.0.0-alpha.2",
     "@react-native-firebase/functions": "^6.0.0-alpha.2",
     "@react-native-firebase/iid": "^6.0.0-alpha.2",
+    "@react-native-firebase/perf": "^6.0.0-alpha.2",
     "detox": "9.1.2",
     "jet": "^0.2.1",
     "mocha": "^5.2.0",
