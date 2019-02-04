@@ -13,9 +13,6 @@
       "ignoreChanges": [
         "*.md"
       ]
-    },
-    "bootstrap": {
-      "ignore": "*-template-*"
     }
   },
   "version": "6.0.0-alpha.2"

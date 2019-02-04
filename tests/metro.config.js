@@ -1,19 +1,30 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const { resolve, join } = require('path');
+const { readdirSync, statSync } = require('fs');
+
 const { createBlacklist } = require('metro');
 const { mergeConfig } = require('metro-config');
 const { DEFAULT } = require('react-native/local-cli/util/Config');
 
+const rootDir = resolve(__dirname, '..');
+const packagesDir = resolve(rootDir, 'packages');
+
+const isDirectory = source => statSync(source).isDirectory();
+const firebaseModules = readdirSync(packagesDir)
+  .map(name => join(packagesDir, name))
+  .filter(isDirectory);
+// .map(path => path.slice(path.lastIndexOf('/') + 1));
+
 const config = {
   projectRoot: __dirname,
   resolver: {
-    resolverMainFields: ['testsMain', 'browser', 'main'],
+    resolverMainFields: ['browser', 'main'],
     blackListRE: createBlacklist([
-      new RegExp(`^${escape(resolve(__dirname, '..', 'docs'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'tests/android'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'tests/ios'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'tests/e2e'))}\\/.*$`),
-      new RegExp(`^${escape(resolve(__dirname, '..', 'tests/functions'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'docs'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'tests/ios'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
     ]),
     extraNodeModules: new Proxy(
       {},
@@ -29,14 +40,7 @@ const config = {
     ),
     platforms: ['android', 'ios'],
   },
-  watchFolders: [
-    resolve(__dirname, '.'),
-    resolve(__dirname, '../packages/app'),
-    resolve(__dirname, '../packages/common'),
-    resolve(__dirname, '../packages/app-types'),
-    resolve(__dirname, '../packages/analytics'),
-    resolve(__dirname, '../packages/functions'),
-  ],
+  watchFolders: [resolve(__dirname, '.'), ...firebaseModules],
 };
 
 module.exports = mergeConfig(DEFAULT, config);
