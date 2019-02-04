@@ -25,7 +25,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.google.firebase._template_.Firebase_Template_;
 
 import javax.annotation.Nullable;
 
