@@ -29,6 +29,7 @@ describe('firebase', () => {
 
   it('natively initialized apps should have options available in js', () => {
     const platformAppConfig = TestHelpers.core.config();
+    should.equal(firebase.app().automaticDataCollectionEnabled, true);
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
     should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
@@ -60,7 +61,13 @@ describe('firebase -> X', () => {
     return Promise.resolve();
   });
 
-  it('can be deleted', async () => {
+  it('apps can get and set data collection', async () => {
+    should.equal(firebase.app().automaticDataCollectionEnabled, true);
+    firebase.app().automaticDataCollectionEnabled = false;
+    should.equal(firebase.app().automaticDataCollectionEnabled, false);
+  });
+
+  it('apps can be deleted', async () => {
     const name = `testscoreapp${global.testRunId}`;
     const platformAppConfig = TestHelpers.core.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
@@ -70,6 +77,10 @@ describe('firebase -> X', () => {
     newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
 
     await newApp.delete();
+
+    (() => {
+      newApp.delete();
+    }).should.throw(`Firebase App named '${name}' already deleted`);
 
     (() => {
       firebase.app(name);

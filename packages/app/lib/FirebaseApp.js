@@ -45,11 +45,9 @@ export default class FirebaseApp {
   }
 
   get automaticDataCollectionEnabled() {
-    this._checkDestroyed_();
     return this._automaticDataCollectionEnabled;
   }
 
-  // TODO assert ow.boolean
   set automaticDataCollectionEnabled(enabled) {
     this._checkDestroyed();
     getAppModule().setAutomaticDataCollectionEnabled(this.name, enabled);
@@ -62,10 +60,9 @@ export default class FirebaseApp {
     }
   }
 
-  // TODO assert ow.object
   extendApp(extendedProps) {
     this._checkDestroyed();
-    Object.assign(this, extendedProps || {});
+    Object.assign(this, extendedProps);
   }
 
   delete() {
