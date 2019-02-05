@@ -29,7 +29,6 @@ describe('firebase', () => {
 
   it('natively initialized apps should have options available in js', () => {
     const platformAppConfig = TestHelpers.core.config();
-    should.equal(firebase.app().automaticDataCollectionEnabled, true);
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
     should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
@@ -62,7 +61,6 @@ describe('firebase -> X', () => {
   });
 
   it('apps can get and set data collection', async () => {
-    should.equal(firebase.app().automaticDataCollectionEnabled, true);
     firebase.app().automaticDataCollectionEnabled = false;
     should.equal(firebase.app().automaticDataCollectionEnabled, false);
   });
