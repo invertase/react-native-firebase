@@ -35,7 +35,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
   }
 
   removeSubscription(subscription) {
-    RNFBAppModule.eventsRemoveListener(subscription.eventType.replace('rnfb_'));
+    RNFBAppModule.eventsRemoveListener(subscription.eventType.replace('rnfb_'), false);
     super.removeSubscription(subscription);
   }
 }
