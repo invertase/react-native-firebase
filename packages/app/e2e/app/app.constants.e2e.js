@@ -4,15 +4,15 @@ describe('App -> NativeModules -> Constants', () => {
       const { apps } = NativeModules.RNFBAppModule;
 
       apps.should.be.an.Array();
-      // secondaryFromNative
-      apps.length.should.equal(1);
+      // secondaryFromNative + default
+      apps.length.should.equal(2);
     });
 
     it('array items contain name, options & state properties', () => {
       const { apps } = NativeModules.RNFBAppModule;
 
       apps.should.be.an.Array();
-      apps.length.should.equal(1);
+      apps.length.should.equal(2);
 
       for (let i = 0; i < apps.length; i++) {
         const app = apps[i];
