@@ -17,16 +17,11 @@ package io.invertase.firebase.iid;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -37,4 +32,51 @@ public class ReactNativeFirebaseIidModule extends ReactNativeFirebaseModule {
     super(reactContext, TAG);
   }
 
+  @ReactMethod
+  public void get(String appName, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    try {
+      String id = FirebaseInstanceId.getInstance(firebaseApp).getId();
+      promise.resolve(id);
+    } catch (Exception exception) {
+      rejectPromiseWithExceptionMap(promise, exception);
+    }
+  }
+
+  @ReactMethod
+  public void getToken(String appName, String authorizedEntity, String scope, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    try {
+      String token = FirebaseInstanceId.getInstance(firebaseApp).getToken(authorizedEntity, scope);
+      promise.resolve(token);
+    } catch (Exception exception) {
+      rejectPromiseWithExceptionMap(promise, exception);
+    }
+  }
+
+  @ReactMethod
+  public void delete(String appName, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    try {
+      FirebaseInstanceId.getInstance(firebaseApp).deleteInstanceId();
+      promise.resolve(null);
+    } catch (Exception exception) {
+      rejectPromiseWithExceptionMap(promise, exception);
+    }
+  }
+
+  @ReactMethod
+  public void deleteToken(String appName, String authorizedEntity, String scope, Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    try {
+      FirebaseInstanceId.getInstance(firebaseApp).deleteToken(authorizedEntity, scope);
+      promise.resolve(null);
+    } catch (Exception exception) {
+      rejectPromiseWithExceptionMap(promise, exception);
+    }
+  }
 }
