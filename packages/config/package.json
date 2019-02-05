@@ -1,0 +1,42 @@
+{
+  "name": "@react-native-firebase/config",
+  "version": "6.0.0-alpha.2",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Config",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/config"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "config"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "6.0.0-alpha.2"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "6.0.0-alpha.2",
+    "@react-native-firebase/common": "6.0.0-alpha.2"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "implementation project(':@react-native-firebase_config')",
+      "packageImportPath": "import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;",
+      "packageInstance": "new ReactNativeFirebaseConfigPackage()"
+    }
+  },
+  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "publishConfig": {
+    "access": "public"
+  }
+}
