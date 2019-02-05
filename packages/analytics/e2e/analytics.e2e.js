@@ -24,6 +24,7 @@ describe('analytics()', () => {
       const app = firebase.app();
       should.exist(app.analytics);
       app.analytics().logEvent.should.be.a.Function();
+      app.analytics().emitter.should.be.a.Object();
     });
 
     xit('throws if app arg provided to firebase.analytics(APP)', {

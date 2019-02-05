@@ -31,7 +31,7 @@ export default class FirebaseModule {
   }
 
   get emitter() {
-    return SharedEventEmitter
+    return SharedEventEmitter;
   }
 
   get native() {
