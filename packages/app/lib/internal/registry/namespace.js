@@ -117,8 +117,8 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     return APP_MODULE_INSTANCE[app.name][key];
   }
 
-  MODULE_GETTER_FOR_APP[moduleNamespace] = firebaseModuleWithArgs;
-  return MODULE_GETTER_FOR_APP[moduleNamespace];
+  MODULE_GETTER_FOR_APP[app.name][moduleNamespace] = firebaseModuleWithArgs;
+  return MODULE_GETTER_FOR_APP[app.name][moduleNamespace];
 }
 
 /**
