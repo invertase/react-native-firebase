@@ -30,26 +30,46 @@ const namespace = 'iid';
 const nativeModuleName = 'RNFBIidModule';
 
 class FirebaseIidModule extends FirebaseModule {
+  get() {
+    return this.native.get();
+  }
 
+  getToken(authorizedEntity, scope) {
+    return this.native.getToken(
+      authorizedEntity || this.app.options.messagingSenderId,
+      scope || '*',
+    );
+  }
+
+  deleteToken(authorizedEntity, scope) {
+    return this.native.deleteToken(
+      authorizedEntity || this.app.options.messagingSenderId,
+      scope || '*',
+    );
+  }
+
+  delete() {
+    return this.native.delete();
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/iid';
 export const SDK_VERSION = version;
 
 // import iid from '@react-native-firebase/iid';
-// iid().X(...);
+// iid().get();
 export default createModuleNamespace({
   statics,
   version,
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseIidModule,
 });
 
 // import iid, { firebase } from '@react-native-firebase/iid';
-// iid().X(...);
-// firebase.iid().X(...);
+// iid().get();
+// firebase.iid().get();
 export const firebase = getFirebaseRoot();
