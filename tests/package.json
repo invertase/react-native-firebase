@@ -10,6 +10,7 @@
     "@react-native-firebase/analytics": "^6.0.0-alpha.2",
     "@react-native-firebase/app": "^6.0.0-alpha.2",
     "@react-native-firebase/app-types": "^6.0.0-alpha.2",
+    "@react-native-firebase/crashlytics": "^6.0.0-alpha.2",
     "@react-native-firebase/functions": "^6.0.0-alpha.2",
     "@react-native-firebase/iid": "^6.0.0-alpha.2",
     "@react-native-firebase/perf": "^6.0.0-alpha.2",
