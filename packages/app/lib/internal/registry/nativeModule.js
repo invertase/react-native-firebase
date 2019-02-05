@@ -26,7 +26,7 @@ const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
 
 function nativeModuleKey(module) {
-  return `${module._customUrlOrRegion || ''}:${module.app.name}:${module.namespace}`;
+  return `${module._customUrlOrRegion || ''}:${module.app.name}:${module._config.namespace}`;
 }
 
 /**
