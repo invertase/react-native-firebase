@@ -24,11 +24,7 @@ const eventBody = {
 describe('Core -> EventEmitter', () => {
   describe('ReactNativeFirebaseEventEmitter', () => {
     it('queues events before app is ready', async () => {
-      const {
-        eventsPing,
-        eventsNotifyReady,
-        eventsGetListeners,
-      } = NativeModules.RNFBAppModule;
+      const { eventsPing, eventsNotifyReady, eventsGetListeners } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(false);
 
       let readyToResolve = false;
@@ -76,13 +72,13 @@ describe('Core -> EventEmitter', () => {
       const nativeListenersBefore = await eventsGetListeners();
       should.equal(nativeListenersBefore.events.ping, undefined);
 
-      emitter.addListener(eventName2, event => {
+      const subscription = emitter.addListener(eventName2, event => {
         event.foo.should.equal(eventBody.foo);
         return resolve();
       });
 
       await promise;
-      emitter.removeAllListeners(eventName2);
+      emitter.removeSubscription(subscription);
 
       await eventsRemoveListener(eventName2, true);
       const nativeListenersAfter = await eventsGetListeners();
