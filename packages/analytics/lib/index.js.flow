@@ -48,7 +48,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride: string): Promise<void>;
+  setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
 
   /**
    * Sets the minimum engagement time required before starting a session.
