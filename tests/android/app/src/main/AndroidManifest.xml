@@ -20,11 +20,11 @@
     android:label="@string/app_name"
     android:launchMode="singleTask"
     android:theme="@style/AppTheme">
-    <provider
-      android:name="com.google.firebase.provider.FirebaseInitProvider"
-      android:authorities="${applicationId}.firebaseinitprovider"
-      tools:node="remove"
-    />
+    <!--<provider-->
+      <!--android:name="com.google.firebase.provider.FirebaseInitProvider"-->
+      <!--android:authorities="${applicationId}.firebaseinitprovider"-->
+      <!--tools:node="remove"-->
+    <!--/>-->
 
     <!--<service-->
       <!--android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"-->
