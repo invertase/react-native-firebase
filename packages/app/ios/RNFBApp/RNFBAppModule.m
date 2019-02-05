@@ -128,6 +128,15 @@
     });
   }
 
+  RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled:
+    (FIRApp *) firApp
+        enabled:
+        (BOOL) enabled) {
+    if (firApp) {
+      firApp.dataCollectionDefaultEnabled = enabled;
+    }
+  }
+
   RCT_EXPORT_METHOD(deleteApp:
     (FIRApp *) firApp
         resolver:
