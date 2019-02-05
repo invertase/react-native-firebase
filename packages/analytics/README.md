@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="https://api.rnfirebase.io/coverage/analytics/detail"><img src="https://api.rnfirebase.io/coverage/analytics/badge?style=flat-square" alt="Coverage"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/analytics"><img src="https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/analytics"><img src="https://img.shields.io/npm/v/@react-native-firebase/analytics.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>

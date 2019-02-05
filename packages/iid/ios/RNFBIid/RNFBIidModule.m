@@ -28,11 +28,56 @@
 
   RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
-
 #pragma mark -
 #pragma mark Firebase Iid Methods
+
+  RCT_EXPORT_METHOD(get:
+    (FIRApp *) firebaseApp // unused, iOS does not have multi-app support per instance
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[FIRInstanceID instanceID] getIDWithHandler:^(NSString *_Nullable identity, NSError *_Nullable error) {
+      if (error) {
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+        userInfo[@"code"] = [self getErrorCodeName:error];
+        userInfo[@"message"] = [error localizedDescription];
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+      } else {
+        resolve(identity);
+      }
+    }];
+  }
+
+  - (NSString *)getErrorCodeName:(NSError *)error {
+    NSString *code = @"UNKNOWN";
+    switch (error.code) {
+      case FIRInstanceIDErrorUnknown:
+        code = @"UNKNOWN";
+        break;
+      case FIRInstanceIDErrorAuthentication:
+        code = @"FAILED-GCM-AUTH";
+        break;
+      case FIRInstanceIDErrorNoAccess:
+        code = @"NO-ACCESS";
+        break;
+      case FIRInstanceIDErrorTimeout:
+        code = @"TIMEOUT";
+        break;
+      case FIRInstanceIDErrorNetwork:
+        code = @"NO-NETWORK";
+        break;
+      case FIRInstanceIDErrorOperationInProgress:
+        code = @"OPERATION-IN-PROGRESS";
+        break;
+      case FIRInstanceIDErrorInvalidRequest:
+        code = @"INVALID-REQUEST";
+        break;
+      default:
+        break;
+    }
+
+    return code;
+  }
 
 @end
