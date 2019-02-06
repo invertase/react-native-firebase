@@ -22,7 +22,11 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Iid
+ * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+ * and authorize actions for it (for example: sending FCM messages).
+ *
+ * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
+ * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
  *
  * @firebase iid
  */
@@ -30,7 +34,37 @@ export namespace Iid {
   export interface Statics {}
 
   export interface Module extends ReactNativeFirebaseModule {
+    /**
+     * Returns a identifier that uniquely identifies the app instance.
+     *
+     * Once an Instance ID is generated, Firebase periodically sends information about the application
+     * and the device it's running on to the Firebase backend. To stop this, see `delete()`.
+     */
+    get(): Promise<string>;
 
+    /**
+     * Delete the Instance ID and all data associated with it. This stops the periodic sending of data to the Firebase
+     * backend that was started when the Instance ID was generated.
+     *
+     * A new Instance ID is asynchronously generated unless auto initialisation is turned off.
+     */
+    delete(): Promise<void>;
+
+    /**
+     * Returns a token that authorizes an Entity to perform an action on behalf of the application.
+     *
+     * @param authorizedEntity Entity authorized by the token. Defaults to the apps `messagingSenderId` option.
+     * @param scope Action authorized for authorizedEntity. Defaults to '*'.
+     */
+    getToken(authorizedEntity?: string, scope?: string): Promise<string>;
+
+    /**
+     * Revokes access to a scope for an entity previously authorized by `getToken()`.
+     *
+     * @param authorizedEntity Entity authorized by the token. Defaults to the apps' `messagingSenderId` option.
+     * @param scope Action authorized for authorizedEntity. Defaults to '*'.
+     */
+    deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
   }
 }
 
@@ -48,10 +82,7 @@ declare module '@react-native-firebase/iid' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const IidDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Iid.Module,
-    Iid.Statics
-  >;
+  const IidDefaultExport: ReactNativeFirebaseModuleAndStatics<Iid.Module, Iid.Statics>;
   /**
    * @example
    * ```js
@@ -68,22 +99,23 @@ declare module '@react-native-firebase/iid' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Iid integrates across Firebase features and provides
-     * you with unlimited reporting for up to 500 distinct events
-     * that you can define using the Firebase SDK. Iid reports
-     * help you understand clearly how your users behave, which enables
-     * you to make informed decisions regarding app marketing and
-     * performance optimizations.
+     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+     * and authorize actions for it (for example: sending FCM messages).
+     *
+     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
+     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
      */
-    iid: ReactNativeFirebaseModuleAndStatics<
-      Iid.Module,
-      Iid.Statics
-    >;
+    iid: ReactNativeFirebaseModuleAndStatics<Iid.Module, Iid.Statics>;
   }
 
   interface FirebaseApp {
     /**
-     * Iid
+     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+     * and authorize actions for it (for example: sending FCM messages).
+     *
+     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
+     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
+     *
      */
     iid(): Iid.Module;
   }
