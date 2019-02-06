@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Iid</h2>
+  <h4 align="center">React Native Firebase - Instance ID</h2>
 </p>
 
 <p align="center">
@@ -16,11 +16,16 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
-----
+---
 
-Iid description.
+Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+and authorize actions for it (for example: sending FCM messages).
 
-[> Learn More](https://firebase.google.com/products/iid/)
+An Instance ID is long lived except in a few scenarios:
+ - when you call `delete()`
+ - the app is restored on a new device
+ - the user uninstalls/reinstall the app
+ - [android] the user clears the app data
 
 ## Installation
 
@@ -31,17 +36,17 @@ react-native link @react-native-firebase/iid
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+- [Guides](#TODO)
+- [Installation](#TODO)
+- [Reference](#TODO)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
-Built and maintained with 💛 by [Invertase](https://invertase.io). 
+Built and maintained with 💛 by [Invertase](https://invertase.io).
 
 - [💼 Hire Us](https://invertase.io/hire-us)
 - [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
