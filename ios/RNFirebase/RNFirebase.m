@@ -3,13 +3,22 @@
 #import <FirebaseCore/FirebaseCore.h>
 #import <React/RCTUtils.h>
 
+
+#if __has_include(<FirebaseCore/FIRAppInternal.h>)
+  #import <FirebaseCore/FIRAppInternal.h>
+  #define REGISTER_LIB
+#endif
+
 @implementation RNFirebase
 RCT_EXPORT_MODULE(RNFirebase);
 
 - (id)init {
     self = [super init];
     if (self != nil) {
-        DLog(@"Setting up RNFirebase instance");
+      DLog(@"Setting up RNFirebase instance");
+#ifdef REGISTER_LIB
+      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"5.2.2"];
+#endif
     }
     return self;
 }
