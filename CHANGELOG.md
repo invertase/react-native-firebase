@@ -30,3 +30,4 @@ WIP
 ## Instance Id (iid)
 
 - Instance Id now supports multiple Firebase apps, e.g. `firebase.app('fooApp').iid().get()`
+- Support preventing auto initialization via `setAutoInitEnabled(enabled: boolean)` this is useful for opt-in first analytics/data collection flows
