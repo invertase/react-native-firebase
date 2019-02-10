@@ -19,6 +19,11 @@ export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
   +SDK_VERSION: string;
 } & S;
 
+export type ReactNativeFirebaseModuleAndStaticsWithApp<M, S = {}> = {
+  (): M;
+  +SDK_VERSION: string;
+} & S;
+
 export type FirebaseOptions = {
   appId: string;
   apiKey?: string;

@@ -17,6 +17,7 @@
 
 import {
   ReactNativeFirebaseModule,
+  ReactNativeFirebaseModuleAndStaticsWithApp,
   ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
 
@@ -141,7 +142,7 @@ export namespace Functions {
     /**
      * Uppercase + underscored variables of @Functions.FunctionsErrorCode
      */
-    HttpsErrorCode: {} & HttpsErrorCode,
+    HttpsErrorCode: {} & HttpsErrorCode;
   }
 
   /**
@@ -185,13 +186,10 @@ declare module '@react-native-firebase/functions' {
    */
   export const firebase: {} & ReactNativeFirebaseNamespace;
 
-  const FunctionsDefaultExport: {
-    (app?: FirebaseApp): Functions.Module;
-    /**
-     * This React Native Firebase Functions module version.
-     */
-    readonly SDK_VERSION: string;
-  } & Functions.Statics;
+  const FunctionsDefaultExport: ReactNativeFirebaseModuleAndStaticsWithApp<
+    Functions.Module,
+    Functions.Statics
+  >;
   /**
    * @example
    * ```js
@@ -213,13 +211,7 @@ declare module '@react-native-firebase/app-types' {
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
      */
-    functions: {
-      (app?: FirebaseApp): Functions.Module;
-      /**
-       * This React Native Firebase Functions module version.
-       */
-      readonly SDK_VERSION: string;
-    } & Functions.Statics;
+    functions: ReactNativeFirebaseModuleAndStaticsWithApp<Functions.Module, Functions.Statics>;
   }
 
   interface FirebaseApp {
@@ -228,6 +220,8 @@ declare module '@react-native-firebase/app-types' {
      * directly from a Firebase app. To call a function from your app in this way,
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
+     *
+     * @param region The  region you deployed your functions to. Defaults to 'us-central1'.
      */
     functions?(region?: string): Functions.Module;
   }

@@ -18,7 +18,7 @@
 import {
   ReactNativeFirebaseModule,
   ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
+  ReactNativeFirebaseModuleAndStaticsWithApp,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -69,7 +69,10 @@ export namespace Iid {
 }
 
 declare module '@react-native-firebase/iid' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import {
+    ReactNativeFirebaseModuleAndStaticsWithApp,
+  ReactNativeFirebaseNamespace
+} from '@react-native-firebase/app-types';
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
@@ -82,7 +85,7 @@ declare module '@react-native-firebase/iid' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const IidDefaultExport: ReactNativeFirebaseModuleAndStatics<Iid.Module, Iid.Statics>;
+  const IidDefaultExport: ReactNativeFirebaseModuleAndStaticsWithApp<Iid.Module, Iid.Statics>;
   /**
    * @example
    * ```js
@@ -105,7 +108,7 @@ declare module '@react-native-firebase/app-types' {
      * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
      * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
      */
-    iid: ReactNativeFirebaseModuleAndStatics<Iid.Module, Iid.Statics>;
+    iid: ReactNativeFirebaseModuleAndStaticsWithApp<Iid.Module, Iid.Statics>;
   }
 
   interface FirebaseApp {
