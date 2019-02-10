@@ -65,11 +65,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
+    this._useFunctionsEmulatorOrigin = null;
   }
 
   httpsCallable(name) {
     return data => {
-      const nativePromise = this.native.httpsCallable(name, { data });
+      const nativePromise = this.native.httpsCallable(this._useFunctionsEmulatorOrigin, name, {
+        data,
+      });
       return nativePromise.catch(nativeError => {
         const { code, message, details } = nativeError.userInfo || {};
         return Promise.reject(
@@ -85,7 +88,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   useFunctionsEmulator(origin) {
-    return this.native.useFunctionsEmulator(origin);
+    this._useFunctionsEmulatorOrigin = origin || null;
   }
 }
 

@@ -35,6 +35,8 @@
     (FIRApp *) firebaseApp
         region:
         (NSString *) region
+        origin:
+        (NSString *) origin
         name:
         (NSString *) name
         wrapper:
@@ -45,6 +47,11 @@
         (RCTPromiseRejectBlock) reject
   ) {
     FIRFunctions *functions = [FIRFunctions functionsForApp:firebaseApp region:region];
+
+    if (origin != nil) {
+      [functions useFunctionsEmulatorOrigin:origin];
+    }
+
     FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
 
     [callable callWithObject:[wrapper valueForKey:@"data"] completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
@@ -68,22 +75,6 @@
         resolve(@{@"data": [result data]});
       }
     }];
-  }
-
-  RCT_EXPORT_METHOD(useFunctionsEmulator:
-    (FIRApp *) firebaseApp
-        region:
-        (NSString *) region
-        origin:
-        (NSString *) origin
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject
-  ) {
-    FIRFunctions *functions = [FIRFunctions functionsForApp:firebaseApp region:region];
-    [functions useFunctionsEmulatorOrigin:origin];
-    resolve([NSNull null]);
   }
 
   - (NSString *)getErrorCodeName:(NSError *)error {
