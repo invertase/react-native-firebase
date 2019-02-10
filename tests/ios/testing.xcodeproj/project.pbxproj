@@ -325,7 +325,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
@@ -352,7 +352,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				WARNING_CFLAGS = "-Wno-nullability-completeness";
 			};
