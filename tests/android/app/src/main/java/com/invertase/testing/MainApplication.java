@@ -1,4 +1,4 @@
-package com.testing;
+package com.invertase.testing;
 
 import android.app.Application;
 

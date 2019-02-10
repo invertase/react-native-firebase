@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  package="com.testing">
+  package="com.invertase.testing">
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.VIBRATE" />
@@ -13,7 +13,7 @@
 
 
   <application
-    android:name="com.testing.MainApplication"
+    android:name="com.invertase.testing.MainApplication"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
     android:usesCleartextTraffic="true"
@@ -62,7 +62,7 @@
 
 
     <activity
-      android:name="com.testing.MainActivity"
+      android:name="com.invertase.testing.MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:label="@string/app_name"
       android:launchMode="singleTop"
