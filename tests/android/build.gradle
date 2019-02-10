@@ -13,7 +13,7 @@ buildscript {
     classpath 'com.google.gms:google-services:4.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 //    classpath 'com.google.firebase:firebase-plugins:1.1.5'
-//    classpath 'io.fabric.tools:gradle:1.25.4'
+    classpath 'io.fabric.tools:gradle:1.26.1'
   }
 }
 
