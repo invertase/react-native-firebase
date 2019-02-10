@@ -25,11 +25,7 @@ project.ext {
       ],
 
       googlePlayServices: [
-        base: "16.0.1",
-      ],
-
-      firebase          : [
-        utils: "16.0.6"
+        base: "16.1.0",
       ],
     ],
   ])
@@ -56,7 +52,6 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase/app')
-  implementation "com.google.firebase:firebase-utils:${ReactNative.ext.getVersion("firebase", "utils")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 

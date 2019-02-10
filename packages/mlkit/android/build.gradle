@@ -25,11 +25,13 @@ project.ext {
       ],
 
       googlePlayServices: [
-        base: "16.0.1",
+        base: "16.1.0",
       ],
 
       firebase          : [
-        mlkit: "16.0.6"
+        mlkitVision: "19.0.2",
+        mlkitCommon: "16.2.1",
+        mlkitNaturalLanguage: "18.1.1",
       ],
     ],
   ])
@@ -56,7 +58,9 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase/app')
-  implementation "com.google.firebase:firebase-mlkit:${ReactNative.ext.getVersion("firebase", "mlkit")}"
+  implementation "com.google.firebase:firebase-ml-common:${ReactNative.ext.getVersion("firebase", "mlkitCommon")}"
+  implementation "com.google.firebase:firebase-ml-vision:${ReactNative.ext.getVersion("firebase", "mlkitVision")}"
+  implementation "com.google.firebase:firebase-ml-natural-language:${ReactNative.ext.getVersion("firebase", "mlkitNaturalLanguage")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 

@@ -12,12 +12,16 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
-import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
+import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
 import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
-import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
+import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
+import io.invertase.firebase.mlkit.ReactNativeFirebaseMlkitPackage;
+import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
+import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;
 import io.invertase.jet.JetPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -33,10 +37,14 @@ public class MainApplication extends Application implements ReactApplication {
         new MainReactPackage(),
         new JetPackage(),
         new ReactNativeFirebaseAppPackage(),
+        new ReactNativeFirebaseCrashlyticsPackage(),
+        new ReactNativeFirebaseConfigPackage(),
+        new ReactNativeFirebaseMlkitPackage(),
         new ReactNativeFirebaseAnalyticsPackage(),
         new ReactNativeFirebaseFunctionsPackage(),
         new ReactNativeFirebaseIidPackage(),
-        new ReactNativeFirebasePerfPackage()
+        new ReactNativeFirebasePerfPackage(),
+        new ReactNativeFirebaseUtilsPackage()
       );
     }
   };
