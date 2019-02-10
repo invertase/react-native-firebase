@@ -1,22 +1,24 @@
 rootProject.name = '@react-native-firebase/tests'
 
+def firebasePackages = [
+  'app',
+  'analytics',
+  'config',
+  'crashlytics',
+  'functions',
+  'iid',
+  'mlkit',
+  'perf',
+  'utils'
+]
+
+firebasePackages.each { firebasePackage ->
+  include ":@react-native-firebase/${firebasePackage}"
+  project(":@react-native-firebase/${firebasePackage}").projectDir = new File(rootProject.projectDir, "./../../packages/${firebasePackage}/android")
+}
+
 include ':jet'
 project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
-
-include ':@react-native-firebase/app'
-project(':@react-native-firebase/app').projectDir = new File(rootProject.projectDir, './../../packages/app/android')
-
-include ':@react-native-firebase/analytics'
-project(':@react-native-firebase/analytics').projectDir = new File(rootProject.projectDir, './../../packages/analytics/android')
-
-include ':@react-native-firebase/functions'
-project(':@react-native-firebase/functions').projectDir = new File(rootProject.projectDir, './../../packages/functions/android')
-
-include ':@react-native-firebase/iid'
-project(':@react-native-firebase/iid').projectDir = new File(rootProject.projectDir, './../../packages/iid/android')
-
-include ':@react-native-firebase/perf'
-project(':@react-native-firebase/perf').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/perf/android')
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, './../node_modules/detox/android/detox')

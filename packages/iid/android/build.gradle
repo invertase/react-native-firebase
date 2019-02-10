@@ -25,11 +25,11 @@ project.ext {
       ],
 
       googlePlayServices: [
-        base: "16.0.1",
+        base: "16.1.0",
       ],
 
       firebase          : [
-        iid: "16.0.6"
+        iid: "17.0.4"
       ],
     ],
   ])
