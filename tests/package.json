@@ -14,6 +14,7 @@
     "@react-native-firebase/crashlytics": "^6.0.0-alpha.2",
     "@react-native-firebase/functions": "^6.0.0-alpha.2",
     "@react-native-firebase/iid": "^6.0.0-alpha.2",
+    "@react-native-firebase/mlkit": "^6.0.0-alpha.2",
     "@react-native-firebase/perf": "^6.0.0-alpha.2",
     "@react-native-firebase/utils": "^6.0.0-alpha.2",
     "detox": "9.1.2",
@@ -23,15 +24,17 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-native": "^0.58.1",
+    "react-native-camera": "^1.10.1",
     "require-all": "3.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
   },
   "devDependencies": {
-    "babel-plugin-istanbul": "^5.1.1",
     "nyc": "^13.1.0",
-    "patch-package": "^5.1.2"
+    "patch-package": "^5.1.2",
+    "babel-plugin-istanbul": "^5.1.1",
+    "@react-native-firebase/private-tests-helpers": "^0.0.5"
   },
   "nyc": {
     "check-coverage": false,

@@ -548,3 +548,6 @@ Pods/*
 typedoc.raw.json
 tests/ios/Firebase
 .tmp
+
+google-services.json
+GoogleService-Info.plist
