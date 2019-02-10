@@ -32,7 +32,6 @@ public class ReactNativeFirebaseAppPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new ReactNativeFirebaseAppModule(reactContext));
-    modules.add(new ReactNativeFirebaseUtilsModule(reactContext));
     return modules;
   }
 
