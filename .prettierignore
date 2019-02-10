@@ -1,3 +1,0 @@
-package.json
-packages/**/node_modules/**
-tests/node_modules/**

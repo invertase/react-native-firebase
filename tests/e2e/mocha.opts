@@ -1,8 +1,0 @@
---recursive
---timeout 240000
---reporter spec
---slow 1000
---retries 0
---bail
---exit
---require jet/platform/node

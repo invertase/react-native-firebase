@@ -1,14 +1,16 @@
 {
-  "presets": ["module:metro-react-native-babel-preset"],
-  "plugins": [
-    [
-      "istanbul",
-      {
-        "instrument": true,
-        "relativePath": false,
-        "include": ["**/packages/**"],
-        "useInlineSourceMaps": false
-      }
-    ]
-  ]
+  "presets": [
+    "react-native"
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+        ["istanbul", {
+          "include": [
+            "**/firebase/**.js"
+          ]
+        }]
+      ]
+    }
+  }
 }

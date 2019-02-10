@@ -1,10 +1,7 @@
 {
-  "include": ["packages/**/lib/*.d.ts", "packages/app-types/index.d.ts"],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "declaration": true,
-    "importHelpers": true,
     "jsx": "react",
     "sourceMap": true,
     "strict": true,
@@ -13,13 +10,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "lib": ["es2015", "es2016", "esnext", "dom"]
   },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "files": ["./lib/index.d.ts"]
 }
