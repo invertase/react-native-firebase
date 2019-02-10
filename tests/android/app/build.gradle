@@ -1,6 +1,6 @@
 apply plugin: "com.android.application"
 //apply plugin: "com.google.firebase.firebase-perf"
-//apply plugin: 'io.fabric'
+apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
 
