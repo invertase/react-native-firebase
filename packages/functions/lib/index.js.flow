@@ -15,9 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-} from '@react-native-firebase/app-types/index.js.flow';
+import { ReactNativeFirebaseModule } from '@react-native-firebase/app-types/index.js.flow';
 
 /**
  * The set of Firebase Functions status codes. The codes are the same at the
@@ -160,7 +158,10 @@ interface Module extends ReactNativeFirebaseModule {
 }
 
 declare module '@react-native-firebase/functions' {
-  import type { FirebaseApp, ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import type {
+    ReactNativeFirebaseNamespace,
+    ReactNativeFirebaseModuleAndStaticsWithApp,
+  } from '@react-native-firebase/app-types/index.js.flow';
 
   declare export var HttpsErrorCode: {} & HttpsErrorCode;
 
@@ -173,13 +174,7 @@ declare module '@react-native-firebase/functions' {
    */
   declare export var firebase: {} & ReactNativeFirebaseNamespace;
 
-  declare var FunctionsDefaultExport: {
-    (app?: FirebaseApp): Module,
-    /**
-     * This React Native Firebase Functions module version.
-     */
-    SDK_VERSION: string,
-  } & Statics;
+  declare var FunctionsDefaultExport: ReactNativeFirebaseModuleAndStaticsWithApp<Module, Statics>;
   /**
    * @example
    * ```js
@@ -201,13 +196,7 @@ declare module '@react-native-firebase/app-types' {
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
      */
-    functions: {
-      (app?: FirebaseApp): Module,
-      /**
-       * This React Native Firebase Functions module version.
-       */
-      SDK_VERSION: string,
-    } & Statics;
+    functions: ReactNativeFirebaseModuleAndStaticsWithApp<Module, Statics>;
   }
 
   declare interface FirebaseApp {

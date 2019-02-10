@@ -1,4 +1,5 @@
 import firebase from 'react-native-firebase';
+import '@react-native-firebase/iid';
 import analytics, { Analytics } from '@react-native-firebase/analytics';
 import functions, {
   firebase as boopy,
@@ -6,12 +7,14 @@ import functions, {
   HttpsErrorCode,
 } from '@react-native-firebase/functions';
 
-firebase.app;
 boopy.apps[0].options.projectId;
 analytics.SDK_VERSION;
 functions.SDK_VERSION;
 const httpsCallable = firebase.functions(firebase.app()).httpsCallable('foo');
 functions;
+
+firebase.iid().get();
+firebase.analytics().resetAnalyticsData();
 
 httpsCallable({ foo: 1 })
   .then(result => {

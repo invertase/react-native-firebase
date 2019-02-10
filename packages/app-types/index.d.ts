@@ -15,8 +15,6 @@
  *
  */
 
-import {FirebaseApp} from "./index";
-
 export interface NativeFirebaseError extends Error {
   /**
    * Firebase error code, e.g. `auth/invalid-email`
@@ -43,15 +41,6 @@ export interface NativeFirebaseError extends Error {
    */
   readonly nativeErrorMessage: string;
 }
-
-export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
-  (): M;
-
-  /**
-   * This React Native Firebase module version.
-   */
-  readonly SDK_VERSION: string;
-} & S;
 
 export type FirebaseOptions = {
   /**
@@ -84,7 +73,6 @@ export type FirebaseOptions = {
    * The Google Cloud Storage bucket name, e.g. "abc-xyz-123.storage.firebase.com".
    */
   storageBucket?: string;
-
 
   /**
    * The Project Number from the Google Developer's console, for example "012345678901", used to
@@ -254,3 +242,21 @@ export namespace App {
     readonly SDK_VERSION: string;
   }
 }
+
+export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
+  (): M;
+
+  /**
+   * This React Native Firebase module version.
+   */
+  readonly SDK_VERSION: string;
+} & S;
+
+export type ReactNativeFirebaseModuleAndStaticsWithApp<M, S = {}> = {
+  (app?: FirebaseApp): M;
+
+  /**
+   * This React Native Firebase module version.
+   */
+  readonly SDK_VERSION: string;
+} & S;

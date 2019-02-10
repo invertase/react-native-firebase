@@ -21,13 +21,43 @@ import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types
 export interface Statics {}
 
 export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * Returns a identifier that uniquely identifies the app instance.
+   *
+   * Once an Instance ID is generated, Firebase periodically sends information about the application
+   * and the device it's running on to the Firebase backend. To stop this, see `delete()`.
+   */
+  get(): Promise<string>;
 
+  /**
+   * Delete the Instance ID and all data associated with it. This stops the periodic sending of data to the Firebase
+   * backend that was started when the Instance ID was generated.
+   *
+   * A new Instance ID is asynchronously generated unless auto initialisation is turned off.
+   */
+  delete(): Promise<void>;
+
+  /**
+   * Returns a token that authorizes an Entity to perform an action on behalf of the application.
+   *
+   * @param authorizedEntity Entity authorized by the token. Defaults to the apps `messagingSenderId` option.
+   * @param scope Action authorized for authorizedEntity. Defaults to '*'.
+   */
+  getToken(authorizedEntity?: string, scope?: string): Promise<string>;
+
+  /**
+   * Revokes access to a scope for an entity previously authorized by `getToken()`.
+   *
+   * @param authorizedEntity Entity authorized by the token. Defaults to the apps' `messagingSenderId` option.
+   * @param scope Action authorized for authorizedEntity. Defaults to '*'.
+   */
+  deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
 }
 
 declare module '@react-native-firebase/iid' {
   import type {
     ReactNativeFirebaseNamespace,
-    ReactNativeFirebaseModuleAndStatics,
+    ReactNativeFirebaseModuleAndStaticsWithApp,
   } from '@react-native-firebase/app-types/index.js.flow';
   /**
    * @example
@@ -45,25 +75,37 @@ declare module '@react-native-firebase/iid' {
    * iid().X(...);
    * ```
    */
-  declare export default ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+  declare export default ReactNativeFirebaseModuleAndStaticsWithApp<Module, Statics>;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app-types' {
-  import type { ReactNativeFirebaseModuleAndStatics } from '@react-native-firebase/app-types/index.js.flow';
+  import type { ReactNativeFirebaseModuleAndStaticsWithApp } from '@react-native-firebase/app-types/index.js.flow';
 
   declare interface ReactNativeFirebaseNamespace {
     /**
-     * Iid
+     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+     * and authorize actions for it (for example: sending FCM messages).
+     *
+     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
+     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
+     *
+     * @firebase iid
      */
-    iid: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+    iid: ReactNativeFirebaseModuleAndStaticsWithApp<Module, Statics>;
   }
 
   declare interface FirebaseApp {
     /**
-     * Iid
+     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
+     * and authorize actions for it (for example: sending FCM messages).
+     *
+     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
+     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
+     *
+     * @firebase iid
      */
     iid(): Module;
   }
