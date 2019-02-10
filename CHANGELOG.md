@@ -11,16 +11,16 @@ WIP
 
 ## App
 
-- Added `appConfig` & method support for `setAutomaticDataCollectionEnabled` & `automaticResourceManagement`
-- Added app `options` support for `gaTrackingId`
-- The `[DEFAULT]` Firebase app can now be safely initialised in JS, however this has some caveats;
+- [NEW] Added `appConfig` & method support for `setAutomaticDataCollectionEnabled` & `automaticResourceManagement`
+- [NEW] Added app `options` support for `gaTrackingId`
+- [NEW] The `[DEFAULT]` Firebase app can now be safely initialised in JS, however this has some caveats;
   - Firebase services such as Performance Monitoring & Remote Config require the default app to be initialised through the plist/json file.
-- Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
-- Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
+- [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
+- [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
 
 ## Analytics
 
-- Added support for `resetAnalyticsData()` - this is useful for opt-in first analytics/data collection flows
+- [NEW] Added support for `resetAnalyticsData()` - this is useful for opt-in first analytics/data collection flows
 - `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 
 ## Functions
@@ -29,5 +29,5 @@ WIP
 
 ## Instance Id (iid)
 
-- Instance Id now supports multiple Firebase apps, e.g. `firebase.app('fooApp').iid().get()`
-- Support preventing auto initialization via `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first analytics/data collection flows
+- [NEW] Instance Id now supports multiple Firebase apps, e.g. `firebase.app('fooApp').iid().get()`
+- [NEW] Support preventing auto initialization via `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first analytics/data collection flows
