@@ -16,7 +16,7 @@
  *
  */
 
-const { SAMPLE_DATA } = require('@react-native-firebase/tests-firebase-functions');
+const { SAMPLE_DATA } = require('@react-native-firebase/private-tests-firebase-functions');
 
 describe('functions()', () => {
   describe('namespace', () => {
