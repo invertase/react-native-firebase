@@ -26,7 +26,7 @@ const requireAll = require('require-all');
 function requirePackageTests(packageName) {
   const e2eDir = `./../packages/${packageName}/e2e`;
   if (existsSync(e2eDir)) {
-    console.log(`Loaded tests from ${e2eDir}/*`);
+    console.log(`Loaded tests from ${resolve(e2eDir)}/*`);
     requireAll({
       dirname: resolve(e2eDir),
       filter: /(.+e2e)\.js$/,
