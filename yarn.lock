@@ -1334,6 +1334,11 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@react-native-firebase/private-tests-firebase-functions@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-firebase-functions/-/private-tests-firebase-functions-0.0.1.tgz#bbee243641e92a3d50925cb95e95dbcd28f7fc27"
+  integrity sha512-hfz3J6tQlXG7PNfuJLbh486ulN8Q8o8tdiL5TJSXpnEdGZYTqYhka0DFOinU2sr4quxK5O4e6Rsh8tRRcUPrjA==
+
 "@react-native-firebase/private-tests-helpers@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-helpers/-/private-tests-helpers-0.0.5.tgz#48230d1dd9d1587d22cd087308629860e5cbda2c"
@@ -1341,11 +1346,6 @@
   dependencies:
     execa "^1.0.0"
     shelljs "^0.8.3"
-
-"@react-native-firebase/tests-firebase-functions@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/tests-firebase-functions/-/tests-firebase-functions-0.0.5.tgz#6cf417c1e981b014dfb353888fe1e184141ff49f"
-  integrity sha512-cISbuhGU0lLPsC7qnlAHgPkqPsNSPaG2SPplSYiokRDpt3PBxVEWGCc6/yNeDQzkT+cguzc4eXUqc777x9pzBQ==
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"

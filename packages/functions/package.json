@@ -29,7 +29,7 @@
     "@react-native-firebase/common": "6.0.0-alpha.2"
   },
   "devDependencies": {
-    "@react-native-firebase/tests-firebase-functions": "^0.0.5"
+    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
   },
   "rnpm": {
     "android": {
