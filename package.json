@@ -1,96 +1,115 @@
 {
-  "name": "react-native-firebase",
-  "version": "4.2.0",
-  "author": "Invertase <contact@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "root",
+  "private": true,
   "scripts": {
-    "build": "genversion lib/version.js && npm run validate-ts-declarations && npm run build-lib && npm run build-flow",
-    "build-flow": "flow-copy-source -i */__tests__* lib dist",
-    "build-lib": "BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files",
-    "build-lib-watch": "genversion lib/version.js && BABEL_ENV=publish babel lib -d dist --ignore __tests__ --copy-files --watch",
-    "clean": "rimraf dist/",
-    "flow": "flow",
-    "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "format": "npm run format:assets && npm run lint -- --fix",
-    "lint": "eslint ./lib ./tests/src ./tests/lib",
-    "precommit": "lint-staged",
-    "prepublish": "npm run clean && npm run build",
-    "postinstall": "postinstall-build dist && opencollective postinstall || exit 0",
-    "test-cli": "node ./bin/test.js",
-    "tests-packager": "cd tests && npm run start",
-    "tests-npm-install": "cd tests && npm install",
-    "tests-pod-install": "cd tests && npm run ios:pod:install",
-    "tests-watch-start": "npm run test-cli watch init start",
-    "tests-watch-stop": "npm run test-cli watch stop",
-    "validate-ts-declarations": "tsc --project ./"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase.git"
-  },
-  "jest": {
-    "preset": "jest-react-native",
-    "setupFiles": [],
-    "unmockedModulePathPatterns": ["./node_modules/react", "./node_modules/react-native", "./node_modules/react-native-mock", "./node_modules/react-addons-test-utils"]
-  },
-  "license": "APACHE-2.0",
-  "keywords": ["react", "admob", "auth", "config", "digits", "fabric", "functions", "phone-auth", "sms", "firestore", "cloud-firestore", "datastore", "remote-config", "transactions", "react-native", "react-native-firebase", "firebase", "fcm", "apn", "gcm", "analytics", "messaging", "database", "android", "ios", "crash", "firestack", "performance", "firestore", "dynamic-links", "crashlytics"],
-  "peerDependencies": {
-    "react": "*",
-    "react-native": ">= 0.48.0",
-    "fbjs": "*"
+    "prepare": "yarn run lerna:link && lerna run prepare",
+    "build:all:clean": "lerna run build:clean",
+    "build:all:build": "lerna run build",
+    "build:all:src": "lerna run build:src",
+    "validate:all:js": "eslint ./",
+    "validate:all:ts": "tsc --project ./",
+    "validate:all:flow": "flow",
+    "lerna:boostrap": "lerna bootstrap",
+    "lerna:link": "lerna link && lerna exec -- yarn link",
+    "gen:reference": "typedoc --json typedoc.json --mode file --includeDeclarations --excludeExternals",
+    "tests:packager:chrome": "cd tests && react-native start --platforms ios,android",
+    "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
+    "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' cd tests && react-native start --reset-cache",
+    "tests:android:build": "cd tests && detox build --configuration android.emu.debug",
+    "tests:android:build-release": "cd tests && detox build --configuration android.emu.release",
+    "tests:android:test": "cd tests && detox test --configuration android.emu.debug",
+    "tests:android:test-reuse": "cd tests && detox test --configuration android.emu.debug --reuse",
+    "tests:android:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration android.emu.debug",
+    "tests:android:test-cover-reuse": "cd tests && nyc detox test --configuration android.emu.debug --reuse",
+    "tests:ios:build": "cd tests && detox build --configuration ios.sim.debug",
+    "tests:ios:build-release": "cd tests && detox build --configuration ios.sim.release",
+    "tests:ios:test": "cd tests && detox test --configuration ios.sim.debug --loglevel warn",
+    "tests:ios:test-reuse": "cd tests && detox test --configuration ios.sim.debug --reuse --loglevel warn",
+    "tests:ios:test-cover": "cd tests && nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
+    "tests:ios:test-cover-reuse": "cd tests && nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
+    "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
+    "npm:version:release:patch": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version patch --exact --force-publish=*",
+    "npm:version:release:minor": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version minor --exact --force-publish=*",
+    "npm:version:release:major": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version major --exact --force-publish=*",
+    "npm:version:6:alpha": "lerna version prerelease --preid alpha --no-git-tag-version --no-push --exact --force-publish=*",
+    "npm:version:6:beta": "lerna version prerelease --exact --preid beta --no-git-tag-version --no-push --exact --force-publish=*",
+    "npm:version:6:rc": "lerna version prerelease --exact --preid rc --no-git-tag-version --no-push --exact --force-publish=*",
+    "npm:publish:6:alpha": "lerna publish from-package --dist-tag alpha --no-git-reset",
+    "npm:publish:6:beta": "lerna publish from-package --dist-tag beta --no-git-reset",
+    "npm:publish:6:rc": "lerna publish from-package --dist-tag rc --no-git-reset",
+    "npm:publish:alpha:nightly": "lerna publish from-package --canary --preid alpha --dist-tag alpha --no-git-reset",
+    "npm:publish:release": "echo '!!🔴!! RELEASE !!🔴!!' && echo '!!!!! RELEASE !!!!!!' && lerna publish from-package"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.2",
-    "babel-jest": "^14.1.0",
-    "babel-preset-react-native": "^1.9.0",
-    "babel-preset-react-native-syntax": "^1.0.0",
-    "debug": "^2.6.9",
-    "enzyme": "^2.4.1",
-    "eslint": "^4.18.1",
-    "eslint-config-airbnb": "^16.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-flowtype": "^2.46.1",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-prettier": "^2.6.0",
-    "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.65.0",
-    "flow-copy-source": "^1.3.0",
-    "genversion": "^2.0.1",
-    "husky": "^0.14.3",
-    "lint-staged": "^6.1.1",
-    "prettier": "1.10.2",
-    "react": "^16.3.0-alpha.1",
-    "react-dom": "^16.3.0-alpha.1",
-    "react-native": "^0.54.4",
-    "rimraf": "^2.6.2",
-    "shelljs": "^0.7.8",
-    "typescript": "^2.7.2",
-    "wml": "0.0.82"
-  },
-  "dependencies": {
-    "opencollective": "^1.0.3",
-    "postinstall-build": "^5.0.1",
-    "prop-types": "^15.6.1"
-  },
-  "rnpm": {
-    "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
-      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
-      "packageInstance": "new RNFirebasePackage()"
-    }
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-native-firebase"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/runtime": "^7.2.0",
+    "@invertase/babel-preset-react-native-syntax": "^0.1.3",
+    "babel-eslint": "^10.0.1",
+    "codecov": "^3.1.0",
+    "eslint": "^5.12.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-flowtype": "^3.2.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "flow-bin": "^0.89.0",
+    "genversion": "^2.1.1",
+    "husky": "^1.2.1",
+    "lerna": "^3.6.0",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.3",
+    "rimraf": "^2.6.3",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typedoc": "^0.14.1",
+    "typescript": "^3.2.4"
   },
   "lint-staged": {
-    "lib/**/*.js": ["eslint --fix", "git add"],
-    "tests/{src|lib}/**/*.js": ["eslint --fix", "git add"],
-    "*.{json,md,scss}": ["prettier --write", "git add"]
+    "packages/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "tests/**/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "tests"
+    ],
+    "nohoist": [
+      "detox",
+      "**/detox",
+      "**/detox/**",
+      "**/babel-plugin-istanbul",
+      "**/babel-plugin-istanbul/**",
+      "**/patch-package",
+      "**/patch-package/**",
+      "**/jet",
+      "**/jet/**",
+      "**/nyc",
+      "**/nyc/**",
+      "**/react",
+      "**/react/**",
+      "**/react-native",
+      "**/react-native/**"
+    ]
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "inquirer": "^6.2.2",
+    "shelljs": "^0.8.3"
   }
 }
