@@ -70,6 +70,19 @@ describe('functions()', () => {
     });
   });
 
+  it('useFunctionsEmulator', async () => {
+    const region = 'europe-west2';
+    const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+    const functions = firebase.app().functions(region);
+
+    functions.useFunctionsEmulator('http://api.rnfirebase.io');
+
+    const response = await functions.httpsCallable(fnName)();
+
+    response.data.region.should.equal(region);
+    response.data.fnName.should.equal(fnName);
+  });
+
   describe('httpsCallable(fnName)(args)', () => {
     it('accepts primitive args: undefined', async () => {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
