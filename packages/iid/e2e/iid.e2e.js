@@ -66,7 +66,7 @@ describe('iid()', () => {
       const iidAfter = await firebase.iid().get();
       iidAfter.should.be.a.String();
       iidBefore.should.not.equal(iidAfter);
-      await sleep(4000);
+      await Utils.sleep(3000);
     });
   });
 

@@ -31,8 +31,8 @@ describe('functions()', () => {
     });
 
     it('accepts passing in an FirebaseApp instance as first arg', async () => {
-      const appName = `functionsApp${global.testRunId}1`;
-      const platformAppConfig = TestHelpers.core.config();
+      const appName = `functionsApp${FirebaseHelpers.id}1`;
+      const platformAppConfig = FirebaseHelpers.app.config();
       const app = await firebase.initializeApp(platformAppConfig, appName);
 
       const functionsForApp = firebase.functions(app);

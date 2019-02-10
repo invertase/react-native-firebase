@@ -28,7 +28,7 @@ describe('firebase', () => {
   });
 
   it('natively initialized apps should have options available in js', () => {
-    const platformAppConfig = TestHelpers.core.config();
+    const platformAppConfig = FirebaseHelpers.app.config();
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
     should.equal(firebase.app().options.databaseURL, platformAppConfig.databaseURL);
@@ -38,8 +38,8 @@ describe('firebase', () => {
   });
 
   it('it should initialize dynamic apps', () => {
-    const name = `testscoreapp${global.testRunId}`;
-    const platformAppConfig = TestHelpers.core.config();
+    const name = `testscoreapp${FirebaseHelpers.id}`;
+    const platformAppConfig = FirebaseHelpers.app.config();
     return firebase.initializeApp(platformAppConfig, name).then(newApp => {
       newApp.name.should.equal(name);
       newApp.toString().should.equal(name);
@@ -66,8 +66,8 @@ describe('firebase -> X', () => {
   });
 
   it('apps can be deleted', async () => {
-    const name = `testscoreapp${global.testRunId}`;
-    const platformAppConfig = TestHelpers.core.config();
+    const name = `testscoreapp${FirebaseHelpers.id}`;
+    const platformAppConfig = FirebaseHelpers.app.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
 
     newApp.name.should.equal(name);

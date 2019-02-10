@@ -41,7 +41,7 @@ describe('Core -> EventEmitter', () => {
       });
 
       await eventsPing(eventName, eventBody);
-      await sleep(100);
+      await Utils.sleep(100);
       const nativeListenersBefore = await eventsGetListeners();
       nativeListenersBefore.events.pong.should.equal(1);
 
@@ -68,7 +68,7 @@ describe('Core -> EventEmitter', () => {
       const emitter = NativeEventEmitter;
 
       await eventsPing(eventName2, eventBody);
-      await sleep(500);
+      await Utils.sleep(500);
       const nativeListenersBefore = await eventsGetListeners();
       should.equal(nativeListenersBefore.events.ping, undefined);
 
