@@ -1334,6 +1334,14 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
+"@react-native-firebase/private-tests-helpers@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-helpers/-/private-tests-helpers-0.0.5.tgz#48230d1dd9d1587d22cd087308629860e5cbda2c"
+  integrity sha512-D2yf3hbSgg6TvKEo98kywxqHW1iVgPos3Lf6tLSjIgMbwsryjOeNoKsIX6+STpXz4nVq+3JW9JC0WDhV4W3gVQ==
+  dependencies:
+    execa "^1.0.0"
+    shelljs "^0.8.3"
+
 "@react-native-firebase/tests-firebase-functions@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/tests-firebase-functions/-/tests-firebase-functions-0.0.5.tgz#6cf417c1e981b014dfb353888fe1e184141ff49f"
@@ -7439,6 +7447,13 @@ react-dom@^16.6.3:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.12.0"
+
+react-native-camera@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-1.10.1.tgz#6a2e86e8b1e7d5872832d6bd154a2628c9599567"
+  integrity sha512-sIHeG2dfBlOEkE093QSfXzFvjWdPCEz+ffkonvvLm7kRKPtiS+4gZM2zuH2SP4g3MJyKt8ifB/VIAxfnvtZ6sQ==
+  dependencies:
+    prop-types "^15.6.2"
 
 react-native@^0.58.1:
   version "0.58.1"

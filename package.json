@@ -93,6 +93,8 @@
       "detox",
       "**/detox",
       "**/detox/**",
+      "**/@react-native-firebase/private-tests-helpers",
+      "**/@react-native-firebase/private-tests-helpers/**",
       "**/babel-plugin-istanbul",
       "**/babel-plugin-istanbul/**",
       "**/patch-package",
