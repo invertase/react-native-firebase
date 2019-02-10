@@ -18,9 +18,15 @@
 
 ----
 
-Mlkit description.
+Bring powerful machine learning features to your mobile app whether you're new or experienced in ML. Get started easily by using our ready-to-use APIs for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
 
-[> Learn More](https://firebase.google.com/products/mlkit/)
+**Supported APIs:**
+
+- Vision
+- Custom models
+- Natural Language
+
+[> Learn More](https://firebase.google.com/products/ml-kit/)
 
 ## Installation
 
