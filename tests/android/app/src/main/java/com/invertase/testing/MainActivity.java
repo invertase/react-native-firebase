@@ -1,4 +1,4 @@
-package com.testing;
+package com.invertase.testing;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 
 import com.facebook.react.ReactActivity;
-
-import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 public class MainActivity extends ReactActivity {
 
