@@ -50,22 +50,10 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void useFunctionsEmulator(
-    String appName,
-    String region,
-    String origin,
-    Promise promise
-  ) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
-    functionsInstance.useFunctionsEmulator(origin);
-    promise.resolve(null);
-  }
-
-  @ReactMethod
   public void httpsCallable(
     String appName,
     String region,
+    String origin,
     String name,
     ReadableMap wrapper,
     Promise promise
@@ -74,6 +62,11 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
+
+    if (origin != null) {
+      functionsInstance.useFunctionsEmulator(origin);
+    }
+
     HttpsCallableReference httpsCallableReference = functionsInstance.getHttpsCallable(name);
 
     httpsCallableReference

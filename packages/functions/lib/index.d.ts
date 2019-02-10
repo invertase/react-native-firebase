@@ -166,7 +166,7 @@ export namespace Functions {
      * @param origin the origin string of the local emulator started via firebase tools
      * "http://10.0.0.8:1337".
      */
-    useFunctionsEmulator(origin: string): Promise<void>;
+    useFunctionsEmulator(origin: string): void;
   }
 }
 
