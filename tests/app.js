@@ -17,20 +17,23 @@
  */
 
 import React, { Component } from 'react';
-import { AppRegistry, NativeModules, Text, View, Image, StyleSheet } from 'react-native';
+import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react-native';
 
 import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
-jet.exposeContextProperty('NativeModules', NativeModules);
-jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
-
 import '@react-native-firebase/analytics';
+import '@react-native-firebase/config';
+import '@react-native-firebase/utils';
+import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/functions';
+import '@react-native-firebase/mlkit';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 
+jet.exposeContextProperty('NativeModules', NativeModules);
+jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 
 class Root extends Component {
@@ -62,7 +65,7 @@ class Root extends Component {
             {'N/A'}
           </Text>
           <Text style={styles.item} testID="title">
-            {"Ensure you're running the Jet Packager together with the Detox test command."}
+            {'Ensure you\'re running the Jet Packager together with the Detox test command.'}
           </Text>
         </View>
       );
