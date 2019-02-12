@@ -117,6 +117,21 @@
         resolve(@(status));
     }
     
+    RCT_EXPORT_METHOD(getConfigSettings:
+                      (RCTPromiseResolveBlock) resolve
+                      rejecter:
+                      (RCTPromiseRejectBlock) reject) {
+        FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
+        BOOL isDeveloperModeEnabled = [remoteConfig configSettings].isDeveloperModeEnabled;
+        NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
+        NSDate *lastFetchTime = remoteConfig.lastFetchTime;
+        resolve(@{
+                  @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
+                  @"lastFetchTime": lastFetchTime,
+                  @"lastFetchStatus": lastFetchStatus
+                  });
+    }
+    
     RCT_EXPORT_METHOD(getValue:
                       (NSString *) key
                       resolver:

@@ -62,7 +62,9 @@ class FirebaseConfigModule extends FirebaseModule {
    *  isDeveloperModeEnabled
    * @returns {Object}
    */
-  getConfigSettings() {}
+  getConfigSettings() {
+    return this.native.getConfigSettings();
+  }
 
   /**
    * Gets the set of keys that start with the given prefix.
