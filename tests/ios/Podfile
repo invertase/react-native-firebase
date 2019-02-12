@@ -36,6 +36,7 @@ target 'testing' do
   pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec', :version => "~> #{rnfb_version}"
   pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec', :version => "~> #{rnfb_version}"
   pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec', :version => "~> #{rnfb_version}"
+  pod 'RNFBConfig', :path => '../../packages/config/ios/RNFBConfig.podspec', :version => "~> #{rnfb_version}"
 
 
   # Pods for ReactNativeFirebaseDemo
