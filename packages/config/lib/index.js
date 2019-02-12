@@ -20,8 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isUndefined } from '@react-native-firebase/common';
-import { isNumber } from 'util';
+import { isNumber, isUndefined } from '@react-native-firebase/common';
 import version from './version';
 
 const statics = {};
@@ -53,7 +52,7 @@ class FirebaseConfigModule extends FirebaseModule {
       return this.native.fetch(cacheExpirationSeconds);
     }
 
-    return this.native.fetch();
+    return this.native.fetch(null);
   }
 
   /**
