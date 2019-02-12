@@ -85,7 +85,7 @@
         [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
     }
     
-    RCT_EXPORT_METHOD(fetchWithExpirationDuration:
+    RCT_EXPORT_METHOD(fetch:
                       (nullable
                        NSNumber *)expirationDuration
                       resolver:(RCTPromiseResolveBlock)resolve
