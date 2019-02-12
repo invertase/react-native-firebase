@@ -16,6 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
 
 #import "RNFBConfigModule.h"
@@ -122,7 +123,7 @@
                       rejecter:
                       (RCTPromiseRejectBlock) reject) {
         FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
-        BOOL isDeveloperModeEnabled = [remoteConfig configSettings].isDeveloperModeEnabled;
+        BOOL isDeveloperModeEnabled = [RCTConvert BOOL:@([remoteConfig configSettings].isDeveloperModeEnabled)];
         NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
         NSDate *lastFetchTime = remoteConfig.lastFetchTime;
         resolve(@{
