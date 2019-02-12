@@ -20,6 +20,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { isUndefined } from '@react-native-firebase/common';
+import { isNumber } from 'util';
 import version from './version';
 
 const statics = {};
@@ -31,16 +33,28 @@ const nativeModuleName = 'RNFBConfigModule';
 class FirebaseConfigModule extends FirebaseModule {
   /**
    * Activates the Fetched Config, so that the fetched key-values take effect.
-   * @returns {boolean}
+   * @returns {Promise<boolean>}
    */
-  activateFetched() {}
+  activateFetched() {
+    return this.native.activateFetched();
+  }
 
   /**
    * Fetches parameter values for your app.
    * @param {number} cacheExpirationSeconds
    * @returns {Promise}
    */
-  async fetch(cacheExpirationSeconds = null) {}
+  fetch(cacheExpirationSeconds = undefined) {
+    if (!isUndefined(cacheExpirationSeconds) && !isNumber(cacheExpirationSeconds)) {
+      throw new Error(`config.fetch(): 'cacheExpirationSeconds' is must be a number value.`);
+    }
+
+    if (isNumber(cacheExpirationSeconds)) {
+      return this.native.fetch(cacheExpirationSeconds);
+    }
+
+    return this.native.fetch();
+  }
 
   /**
    * Returns FirebaseRemoteConfig singleton
@@ -49,7 +63,7 @@ class FirebaseConfigModule extends FirebaseModule {
    *  isDeveloperModeEnabled
    * @returns {Object}
    */
-  async getConfigSettings() {}
+  getConfigSettings() {}
 
   /**
    * Gets the set of keys that start with the given prefix.
@@ -58,7 +72,7 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {string} namespace
    * @returns {string[]}
    */
-  async getKeysByPrefix(prefix, namespace = null) {}
+  getKeysByPrefix(prefix, namespace = null) {}
 
   /**
    * Gets the FirebaseRemoteConfigValue corresponding to the specified key.
@@ -66,7 +80,7 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {string} key
    * @param {string} namespace
    */
-  async getValue(key, namespace = null) {}
+  getValue(key, namespace = null) {}
 
   /**
    * Gets the FirebaseRemoteConfigValue array corresponding to the specified keys.
@@ -74,7 +88,7 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {string[]} key
    * @param {string} namespace
    */
-  async getValues(keys, namespace = null) {}
+  getValues(keys, namespace = null) {}
 
   /**
    * Changes the settings for the FirebaseRemoteConfig object's operations,

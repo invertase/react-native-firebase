@@ -26,57 +26,57 @@
 #pragma mark -
 # pragma mark Converters
     
-NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value) {
-    switch (value) {
-        case FIRRemoteConfigFetchStatusNoFetchYet:
-        return @"config/no_fetch_yet";
-        case FIRRemoteConfigFetchStatusSuccess:
-        return @"config/success";
-        case FIRRemoteConfigFetchStatusThrottled:
-        return @"config/throttled";
-        case FIRRemoteConfigFetchStatusFailure:
-        return @"config/failure";
-        default:
-        return @"config/unknown";
+    NSString *convertFIRRemoteConfigFetchStatusToNSString(FIRRemoteConfigFetchStatus value) {
+        switch (value) {
+            case FIRRemoteConfigFetchStatusNoFetchYet:
+            return @"config/no_fetch_yet";
+            case FIRRemoteConfigFetchStatusSuccess:
+            return @"config/success";
+            case FIRRemoteConfigFetchStatusThrottled:
+            return @"config/throttled";
+            case FIRRemoteConfigFetchStatusFailure:
+            return @"config/failure";
+            default:
+            return @"config/unknown";
+        }
     }
-}
     
-NSString *convertFIRRemoteConfigFetchStatusToNSStringDescription(FIRRemoteConfigFetchStatus value) {
-    switch (value) {
-        case FIRRemoteConfigFetchStatusThrottled:
-        return @"fetch() operation cannot be completed successfully, due to throttling.";
-        case FIRRemoteConfigFetchStatusNoFetchYet:
-        default:
-        return @"fetch() operation cannot be completed successfully.";
+    NSString *convertFIRRemoteConfigFetchStatusToNSStringDescription(FIRRemoteConfigFetchStatus value) {
+        switch (value) {
+            case FIRRemoteConfigFetchStatusThrottled:
+            return @"fetch() operation cannot be completed successfully, due to throttling.";
+            case FIRRemoteConfigFetchStatusNoFetchYet:
+            default:
+            return @"fetch() operation cannot be completed successfully.";
+        }
     }
-}
-
-NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
-    switch (value) {
-        case FIRRemoteConfigSourceDefault:
-        return @"default";
-        case FIRRemoteConfigSourceRemote:
-        return @"remote";
-        case FIRRemoteConfigSourceStatic:
-        return @"static";
-        default:
-        return @"unknown";
+    
+    NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
+        switch (value) {
+            case FIRRemoteConfigSourceDefault:
+            return @"default";
+            case FIRRemoteConfigSourceRemote:
+            return @"remote";
+            case FIRRemoteConfigSourceStatic:
+            return @"static";
+            default:
+            return @"unknown";
+        }
     }
-}
-
-NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
-    return @{@"stringValue": value.stringValue ?: [NSNull null], @"numberValue": value.numberValue ?: [NSNull null], @"dataValue": value.dataValue ? [value.dataValue base64EncodedStringWithOptions:0] : [NSNull null], @"boolValue": @(value.boolValue), @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
-}
+    
+    NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
+        return @{@"stringValue": value.stringValue ?: [NSNull null], @"numberValue": value.numberValue ?: [NSNull null], @"dataValue": value.dataValue ? [value.dataValue base64EncodedStringWithOptions:0] : [NSNull null], @"boolValue": @(value.boolValue), @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
+    }
     
 #pragma mark -
 #pragma mark Module Setup
-
-  RCT_EXPORT_MODULE();
-
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
-
+    
+    RCT_EXPORT_MODULE();
+    
+    - (dispatch_queue_t)methodQueue {
+        return dispatch_get_main_queue();
+    }
+    
 #pragma mark -
 #pragma mark Firebase Config Methods
     
@@ -85,31 +85,28 @@ NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *va
         [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
     }
     
-    RCT_EXPORT_METHOD(fetch:
-                      (RCTPromiseResolveBlock) resolve
-                      rejecter:
-                      (RCTPromiseRejectBlock) reject) {
-        [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
-            if (error) {
-                reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
-            } else {
-                resolve([NSNull null]);
-            }
-        }];
-    }
-    
     RCT_EXPORT_METHOD(fetchWithExpirationDuration:
-                      (nonnull
+                      (nullable
                        NSNumber *)expirationDuration
                       resolver:(RCTPromiseResolveBlock)resolve
                       rejecter:(RCTPromiseRejectBlock)reject) {
-        [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
-            if (error) {
-                reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
-            } else {
-                resolve([NSNull null]);
-            }
-        }];
+        if (expirationDuration == nil) {
+            [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+                if (error) {
+                    reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
+                } else {
+                    resolve([NSNull null]);
+                }
+            }];
+        } else {
+            [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+                if (error) {
+                    reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
+                } else {
+                    resolve([NSNull null]);
+                }
+            }];
+        }
     }
     
     RCT_EXPORT_METHOD(activateFetched:
@@ -167,6 +164,6 @@ NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *va
                       (NSString *) fileName) {
         [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
     }
-
-
-@end
+    
+    
+    @end
