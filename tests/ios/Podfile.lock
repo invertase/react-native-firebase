@@ -67,47 +67,47 @@ PODS:
   - GoogleUtilities/UserDefaults (5.3.7):
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.2.1)
-  - Jet (0.2.1):
+  - Jet (0.3.0):
     - React
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - React (0.58.1):
-    - React/Core (= 0.58.1)
-  - React/Core (0.58.1):
-    - yoga (= 0.58.1.React)
-  - React/CxxBridge (0.58.1):
+  - React (0.58.4):
+    - React/Core (= 0.58.4)
+  - React/Core (0.58.4):
+    - yoga (= 0.58.4.React)
+  - React/CxxBridge (0.58.4):
     - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
     - React/jsiexecutor
-  - React/cxxreact (0.58.1):
+  - React/cxxreact (0.58.4):
     - boost-for-react-native (= 1.63.0)
     - Folly (= 2018.10.22.00)
     - React/jsinspector
-  - React/DevSupport (0.58.1):
+  - React/DevSupport (0.58.4):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.58.1)
-  - React/jsi (0.58.1):
+  - React/fishhook (0.58.4)
+  - React/jsi (0.58.4):
     - Folly (= 2018.10.22.00)
-  - React/jsiexecutor (0.58.1):
+  - React/jsiexecutor (0.58.4):
     - Folly (= 2018.10.22.00)
     - React/cxxreact
     - React/jsi
-  - React/jsinspector (0.58.1)
-  - React/RCTBlob (0.58.1):
+  - React/jsinspector (0.58.4)
+  - React/RCTBlob (0.58.4):
     - React/Core
-  - React/RCTImage (0.58.1):
+  - React/RCTImage (0.58.4):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.58.1):
+  - React/RCTNetwork (0.58.4):
     - React/Core
-  - React/RCTText (0.58.1):
+  - React/RCTText (0.58.4):
     - React/Core
-  - React/RCTWebSocket (0.58.1):
+  - React/RCTWebSocket (0.58.4):
     - React/Core
     - React/fishhook
     - React/RCTBlob
@@ -127,7 +127,7 @@ PODS:
   - RNFBPerf (6.0.0-alpha.2):
     - Firebase/Core (~> 5.15.0)
     - React
-  - yoga (0.58.1.React)
+  - yoga (0.58.4.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)

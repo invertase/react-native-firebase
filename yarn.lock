@@ -5119,10 +5119,10 @@ jest-worker@^24.0.0-alpha.6:
     merge-stream "^1.0.1"
     supports-color "^5.5.0"
 
-jet@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/jet/-/jet-0.2.1.tgz#65ddafa0f72df483e72923bae3f2934655971e78"
-  integrity sha512-muR97xGmv4xl3g2hK3O/2bdo20twh015uo8rjZm2OoaqnkCn46Xfx1ODZDOUXS7Tiygof4H2JPo/DmOTaMiIKw==
+jet@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/jet/-/jet-0.3.0.tgz#a94dbf48aacdbecdf5d3fd74733a3209118a025c"
+  integrity sha512-a6GOL8DRBqMjY+mu1uDKqjYrgfgT1LwYVoY7wc/yXqwYVQScl38Q3Wvr4qOGXYZc8yWTTAP1ivQI1b5Lg2+KOw==
   dependencies:
     chalk "^2.4.1"
     error-stack-parser "^2.0.2"
