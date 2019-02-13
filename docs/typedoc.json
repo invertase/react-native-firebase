@@ -1,0 +1,6503 @@
+{
+	"id": 0,
+	"name": "@react-native-firebase/analytics",
+	"kind": 0,
+	"flags": {},
+	"children": [
+		{
+			"id": 40,
+			"name": "\"@react-native-firebase/analytics\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 43,
+					"name": "AnalyticsDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 125,
+							"character": 30
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 3
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 2
+							}
+						]
+					}
+				},
+				{
+					"id": 41,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 114,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 42,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/analytics';\nfirebase.analytics().logEvent(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 123,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						43,
+						41,
+						42
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "analytics/lib/index.d.ts",
+					"line": 111,
+					"character": 49
+				}
+			]
+		},
+		{
+			"id": 44,
+			"name": "\"@react-native-firebase/app-types\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"comment": {
+				"shortText": "Attach namespace to `firebase.` and `FirebaseApp.`."
+			},
+			"children": [
+				{
+					"id": 47,
+					"name": "FirebaseApp",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {},
+					"children": [
+						{
+							"id": 48,
+							"name": "analytics",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 49,
+									"name": "analytics",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Analytics integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Analytics reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 3
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 167,
+									"character": 13
+								}
+							]
+						},
+						{
+							"id": 68,
+							"name": "config",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 69,
+									"name": "config",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Config"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 61
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 88,
+									"character": 10
+								}
+							]
+						},
+						{
+							"id": 79,
+							"name": "crashlytics",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 80,
+									"name": "crashlytics",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Crashlytics"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 72
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "crashlytics/lib/index.d.ts",
+									"line": 88,
+									"character": 15
+								}
+							]
+						},
+						{
+							"id": 128,
+							"name": "functions",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isOptional": true
+							},
+							"signatures": [
+								{
+									"id": 129,
+									"name": "functions",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "The Cloud Functions for Firebase client SDKs let you call functions\ndirectly from a Firebase app. To call a function from your app in this way,\nwrite and deploy an HTTPS Callable function in Cloud Functions,\nand then add client logic to call the function from your app."
+									},
+									"parameters": [
+										{
+											"id": 130,
+											"name": "region",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The  region you deployed your functions to. Defaults to 'us-central1'.\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 114
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 226,
+									"character": 13
+								}
+							]
+						},
+						{
+							"id": 152,
+							"name": "iid",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 153,
+									"name": "iid",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate\nand authorize actions for it (for example: sending FCM messages).",
+										"text": "An Instance ID is long lived except when you call delete, the app is restored on a new device, the user\nuninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).\n\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 133
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 123,
+									"character": 7
+								}
+							]
+						},
+						{
+							"id": 163,
+							"name": "mlkit",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 164,
+									"name": "mlkit",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Mlkit"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 156
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "mlkit/lib/index.d.ts",
+									"line": 83,
+									"character": 9
+								}
+							]
+						},
+						{
+							"id": 174,
+							"name": "perf",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 175,
+									"name": "perf",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Perf"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 167
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "perf/lib/index.d.ts",
+									"line": 88,
+									"character": 8
+								}
+							]
+						},
+						{
+							"id": 56,
+							"name": "utils",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isOptional": true
+							},
+							"signatures": [
+								{
+									"id": 57,
+									"name": "utils",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"parameters": [
+										{
+											"id": 58,
+											"name": "app",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseApp",
+												"id": 47
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseUtilsModule"
+									}
+								},
+								{
+									"id": 184,
+									"name": "utils",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Utils"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 178
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 37,
+									"character": 9
+								},
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 88,
+									"character": 9
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								48,
+								68,
+								79,
+								128,
+								152,
+								163,
+								174,
+								56
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 158,
+							"character": 23
+						},
+						{
+							"fileName": "app/lib/index.d.ts",
+							"line": 36,
+							"character": 23
+						},
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 84,
+							"character": 23
+						},
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 84,
+							"character": 23
+						},
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 217,
+							"character": 23
+						},
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 114,
+							"character": 23
+						},
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 79,
+							"character": 23
+						},
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 84,
+							"character": 23
+						},
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 84,
+							"character": 23
+						}
+					]
+				},
+				{
+					"id": 45,
+					"name": "ReactNativeFirebaseNamespace",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {},
+					"children": [
+						{
+							"id": 46,
+							"name": "analytics",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Analytics integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Analytics reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+							},
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 152,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 3
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 2
+									}
+								]
+							}
+						},
+						{
+							"id": 67,
+							"name": "config",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Config integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Config reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 78,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 61
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 60
+									}
+								]
+							}
+						},
+						{
+							"id": 78,
+							"name": "crashlytics",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Crashlytics integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Crashlytics reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+							},
+							"sources": [
+								{
+									"fileName": "crashlytics/lib/index.d.ts",
+									"line": 78,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 72
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 71
+									}
+								]
+							}
+						},
+						{
+							"id": 127,
+							"name": "functions",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "The Cloud Functions for Firebase client SDKs let you call functions\ndirectly from a Firebase app. To call a function from your app in this way,\nwrite and deploy an HTTPS Callable function in Cloud Functions,\nand then add client logic to call the function from your app."
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 214,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
+								"id": 257,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 114
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 112
+									}
+								]
+							}
+						},
+						{
+							"id": 151,
+							"name": "iid",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate\nand authorize actions for it (for example: sending FCM messages).",
+								"text": "An Instance ID is long lived except when you call delete, the app is restored on a new device, the user\nuninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).\n"
+							},
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 111,
+									"character": 7
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
+								"id": 257,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 133
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 132
+									}
+								]
+							}
+						},
+						{
+							"id": 162,
+							"name": "mlkit",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Mlkit"
+							},
+							"sources": [
+								{
+									"fileName": "mlkit/lib/index.d.ts",
+									"line": 73,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 156
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 155
+									}
+								]
+							}
+						},
+						{
+							"id": 173,
+							"name": "perf",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Perf integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Perf reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+							},
+							"sources": [
+								{
+									"fileName": "perf/lib/index.d.ts",
+									"line": 78,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 167
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 166
+									}
+								]
+							}
+						},
+						{
+							"id": 52,
+							"name": "utils",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "Utils integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Utils reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 31,
+									"character": 9
+								},
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 78,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 251,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 178
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 177
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								46,
+								67,
+								78,
+								127,
+								151,
+								162,
+								173,
+								52
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 143,
+							"character": 40
+						},
+						{
+							"fileName": "app/lib/index.d.ts",
+							"line": 30,
+							"character": 40
+						},
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 69,
+							"character": 40
+						},
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 69,
+							"character": 40
+						},
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 207,
+							"character": 40
+						},
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 103,
+							"character": 40
+						},
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 69,
+							"character": 40
+						},
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 69,
+							"character": 40
+						},
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 69,
+							"character": 40
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						47,
+						45
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "analytics/lib/index.d.ts",
+					"line": 142,
+					"character": 49
+				},
+				{
+					"fileName": "app/lib/index.d.ts",
+					"line": 29,
+					"character": 49
+				},
+				{
+					"fileName": "config/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				},
+				{
+					"fileName": "crashlytics/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				},
+				{
+					"fileName": "functions/lib/index.d.ts",
+					"line": 206,
+					"character": 49
+				},
+				{
+					"fileName": "iid/lib/index.d.ts",
+					"line": 102,
+					"character": 49
+				},
+				{
+					"fileName": "mlkit/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				},
+				{
+					"fileName": "perf/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				},
+				{
+					"fileName": "utils/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				}
+			]
+		},
+		{
+			"id": 63,
+			"name": "\"@react-native-firebase/config\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 66,
+					"name": "ConfigDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 51,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 61
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 60
+							}
+						]
+					}
+				},
+				{
+					"id": 64,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 65,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/config';\nfirebase.config().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						66,
+						64,
+						65
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "config/lib/index.d.ts",
+					"line": 37,
+					"character": 46
+				}
+			]
+		},
+		{
+			"id": 74,
+			"name": "\"@react-native-firebase/crashlytics\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 77,
+					"name": "CrashlyticsDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 51,
+							"character": 32
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 72
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 71
+							}
+						]
+					}
+				},
+				{
+					"id": 75,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 76,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/crashlytics';\nfirebase.crashlytics().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						77,
+						75,
+						76
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "crashlytics/lib/index.d.ts",
+					"line": 37,
+					"character": 51
+				}
+			]
+		},
+		{
+			"id": 123,
+			"name": "\"@react-native-firebase/functions\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 126,
+					"name": "FunctionsDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 189,
+							"character": 30
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
+						"id": 257,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 114
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 112
+							}
+						]
+					}
+				},
+				{
+					"id": 124,
+					"name": "HttpsErrorCode",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 178,
+							"character": 29
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "HttpsErrorCode",
+								"id": 94
+							}
+						]
+					}
+				},
+				{
+					"id": 125,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/functions';\nfirebase.functions().httpsCallable(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 187,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						126,
+						124,
+						125
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "functions/lib/index.d.ts",
+					"line": 174,
+					"character": 49
+				}
+			]
+		},
+		{
+			"id": 147,
+			"name": "\"@react-native-firebase/iid\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 148,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 77,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 150,
+					"name": "IidDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 88,
+							"character": 24
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
+						"id": 257,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 133
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 132
+							}
+						]
+					}
+				},
+				{
+					"id": 149,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/iid';\nfirebase.iid().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 86,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						148,
+						150,
+						149
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "iid/lib/index.d.ts",
+					"line": 71,
+					"character": 43
+				}
+			]
+		},
+		{
+			"id": 158,
+			"name": "\"@react-native-firebase/mlkit\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 159,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 161,
+					"name": "MlkitDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 51,
+							"character": 26
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 156
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 155
+							}
+						]
+					}
+				},
+				{
+					"id": 160,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/mlkit';\nfirebase.mlkit().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						159,
+						161,
+						160
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "mlkit/lib/index.d.ts",
+					"line": 37,
+					"character": 45
+				}
+			]
+		},
+		{
+			"id": 169,
+			"name": "\"@react-native-firebase/perf\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 170,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 172,
+					"name": "PerfDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 51,
+							"character": 25
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 167
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 166
+							}
+						]
+					}
+				},
+				{
+					"id": 171,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/perf';\nfirebase.perf().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						170,
+						172,
+						171
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "perf/lib/index.d.ts",
+					"line": 37,
+					"character": 44
+				}
+			]
+		},
+		{
+			"id": 180,
+			"name": "\"@react-native-firebase/utils\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 181,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 183,
+					"name": "UtilsDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 51,
+							"character": 26
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 251,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 178
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 177
+							}
+						]
+					}
+				},
+				{
+					"id": 182,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/utils';\nfirebase.utils().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						181,
+						183,
+						182
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "utils/lib/index.d.ts",
+					"line": 37,
+					"character": 45
+				}
+			]
+		},
+		{
+			"id": 50,
+			"name": "\"react-native-firebase\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"comment": {
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "firebase\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 51,
+					"name": "ReactNativeFirebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "app/lib/index.d.ts",
+							"line": 25,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						51
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/lib/index.d.ts",
+					"line": 23,
+					"character": 38
+				}
+			]
+		},
+		{
+			"id": 1,
+			"name": "Analytics",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Analytics integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Analytics reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations.",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "analytics\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 3,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 39,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						},
+						{
+							"id": 4,
+							"name": "logEvent",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 5,
+									"name": "logEvent",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Log a custom event with optional params.",
+										"tags": [
+											{
+												"tag": "note",
+												"text": "100 characters is the maximum length for param key names.\n"
+											}
+										]
+									},
+									"parameters": [
+										{
+											"id": 6,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										},
+										{
+											"id": 7,
+											"name": "params",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 8,
+													"name": "__type",
+													"kind": 65536,
+													"kindString": "Type literal",
+													"flags": {},
+													"indexSignature": [
+														{
+															"id": 9,
+															"name": "__index",
+															"kind": 8192,
+															"kindString": "Index signature",
+															"flags": {},
+															"parameters": [
+																{
+																	"id": 10,
+																	"name": "key",
+																	"kind": 32768,
+																	"kindString": "Parameter",
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "string"
+																	}
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "string"
+															}
+														}
+													],
+													"sources": [
+														{
+															"fileName": "analytics/lib/index.d.ts",
+															"line": 45,
+															"character": 34
+														}
+													]
+												}
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 45,
+									"character": 12
+								}
+							]
+						},
+						{
+							"id": 37,
+							"name": "resetAnalyticsData",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 38,
+									"name": "resetAnalyticsData",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Clears all analytics data for this instance from the device and resets the app instance ID."
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 107,
+									"character": 22
+								}
+							]
+						},
+						{
+							"id": 11,
+							"name": "setAnalyticsCollectionEnabled",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 12,
+									"name": "setAnalyticsCollectionEnabled",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR."
+									},
+									"parameters": [
+										{
+											"id": 13,
+											"name": "enabled",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 53,
+									"character": 33
+								}
+							]
+						},
+						{
+							"id": 14,
+							"name": "setCurrentScreen",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 15,
+									"name": "setCurrentScreen",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the current screen name.",
+										"tags": [
+											{
+												"tag": "note",
+												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n"
+											}
+										]
+									},
+									"parameters": [
+										{
+											"id": 16,
+											"name": "screenName",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										},
+										{
+											"id": 17,
+											"name": "screenClassOverride",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 65,
+									"character": 20
+								}
+							]
+						},
+						{
+							"id": 18,
+							"name": "setMinimumSessionDuration",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 19,
+									"name": "setMinimumSessionDuration",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the minimum engagement time required before starting a session."
+									},
+									"parameters": [
+										{
+											"id": 20,
+											"name": "milliseconds",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The default value is 10000 (10 seconds).\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "number"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 72,
+									"character": 29
+								}
+							]
+						},
+						{
+							"id": 21,
+							"name": "setSessionTimeoutDuration",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 22,
+									"name": "setSessionTimeoutDuration",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the duration of inactivity that terminates the current session."
+									},
+									"parameters": [
+										{
+											"id": 23,
+											"name": "milliseconds",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The default value is 1800000 (30 minutes).\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "number"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 79,
+									"character": 29
+								}
+							]
+						},
+						{
+							"id": 24,
+							"name": "setUserId",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 25,
+									"name": "setUserId",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Gives a user a unique identification."
+									},
+									"parameters": [
+										{
+											"id": 26,
+											"name": "id",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Set to null to remove a previously assigned id from analytics events\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 87,
+									"character": 13
+								}
+							]
+						},
+						{
+							"id": 31,
+							"name": "setUserProperties",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 32,
+									"name": "setUserProperties",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets multiple key/value pair of data on the current user."
+									},
+									"parameters": [
+										{
+											"id": 33,
+											"name": "properties",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Set a property value to null to remove it.\n"
+											},
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 34,
+													"name": "__type",
+													"kind": 65536,
+													"kindString": "Type literal",
+													"flags": {},
+													"indexSignature": [
+														{
+															"id": 35,
+															"name": "__index",
+															"kind": 8192,
+															"kindString": "Index signature",
+															"flags": {},
+															"parameters": [
+																{
+																	"id": 36,
+																	"name": "key",
+																	"kind": 32768,
+																	"kindString": "Parameter",
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "string"
+																	}
+																}
+															],
+															"type": {
+																"type": "union",
+																"types": [
+																	{
+																		"type": "intrinsic",
+																		"name": "string"
+																	},
+																	{
+																		"type": "intrinsic",
+																		"name": "null"
+																	}
+																]
+															}
+														}
+													],
+													"sources": [
+														{
+															"fileName": "analytics/lib/index.d.ts",
+															"line": 102,
+															"character": 33
+														}
+													]
+												}
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 102,
+									"character": 21
+								}
+							]
+						},
+						{
+							"id": 27,
+							"name": "setUserProperty",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 28,
+									"name": "setUserProperty",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets a key/value pair of data on the current user."
+									},
+									"parameters": [
+										{
+											"id": 29,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										},
+										{
+											"id": 30,
+											"name": "value",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Set to null to remove a previously assigned id from analytics events.\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 95,
+									"character": 19
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								39
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								4,
+								37,
+								11,
+								14,
+								18,
+								21,
+								24,
+								31,
+								27
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 37,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 2,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 35,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						3,
+						2
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "analytics/lib/index.d.ts",
+					"line": 34,
+					"character": 26
+				}
+			]
+		},
+		{
+			"id": 232,
+			"name": "App",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "app\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 233,
+					"name": "FirebaseApp",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 234,
+							"name": "name",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The name (identifier) for this App. '[DEFAULT]' is the default App."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 191,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 235,
+							"name": "options",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The (read-only) configuration options from the app initialization."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 196,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseOptions",
+								"id": 218
+							}
+						},
+						{
+							"id": 236,
+							"name": "delete",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 237,
+									"name": "delete",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Make this app unusable and free up resources."
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 201,
+									"character": 10
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								234,
+								235
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								236
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 187,
+							"character": 30
+						}
+					]
+				},
+				{
+					"id": 238,
+					"name": "ReactNativeFirebaseNamespace",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 250,
+							"name": "SDK_VERSION",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The current React Native Firebase version."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 242,
+									"character": 24
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 249,
+							"name": "apps",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "A (read-only) array of all the initialized Apps."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 237,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"name": "FirebaseApp",
+									"id": 233
+								}
+							}
+						},
+						{
+							"id": 246,
+							"name": "app",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 247,
+									"name": "app",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Retrieve an instance of a FirebaseApp.",
+										"tags": [
+											{
+												"tag": "example",
+												"text": "\n```js\nconst app = firebase.app('foo');\n```\n"
+											}
+										]
+									},
+									"parameters": [
+										{
+											"id": 248,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional name of the app to return ('[DEFAULT]' if omitted)\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 233
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 232,
+									"character": 7
+								}
+							]
+						},
+						{
+							"id": 239,
+							"name": "initializeApp",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 240,
+									"name": "initializeApp",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Create (and initialize) a FirebaseApp."
+									},
+									"parameters": [
+										{
+											"id": 241,
+											"name": "options",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Options to configure the services used in the App."
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseOptions",
+												"id": 218
+											}
+										},
+										{
+											"id": 242,
+											"name": "config",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional config for your firebase app\n"
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseAppConfig",
+												"id": 194
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 233
+									}
+								},
+								{
+									"id": 243,
+									"name": "initializeApp",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Create (and initialize) a FirebaseApp."
+									},
+									"parameters": [
+										{
+											"id": 244,
+											"name": "options",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Options to configure the services used in the App."
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseOptions",
+												"id": 218
+											}
+										},
+										{
+											"id": 245,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "The optional name of the app to initialize ('[DEFAULT]' if\nomitted)\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseApp",
+										"id": 233
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 211,
+									"character": 17
+								},
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 220,
+									"character": 17
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								250,
+								249
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								246,
+								239
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 204,
+							"character": 47
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						233,
+						238
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 186,
+					"character": 20
+				}
+			]
+		},
+		{
+			"id": 59,
+			"name": "Config",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Config",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "config\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 61,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 62,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								62
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 60,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						61,
+						60
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "config/lib/index.d.ts",
+					"line": 29,
+					"character": 23
+				}
+			]
+		},
+		{
+			"id": 70,
+			"name": "Crashlytics",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Crashlytics",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "crashlytics\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 72,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 73,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								73
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 71,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						72,
+						71
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "crashlytics/lib/index.d.ts",
+					"line": 29,
+					"character": 28
+				}
+			]
+		},
+		{
+			"id": 81,
+			"name": "Functions",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "The Cloud Functions for Firebase client SDKs let you call functions\ndirectly from a Firebase app. To call a function from your app in this way,\nwrite and deploy an HTTPS Callable function in Cloud Functions,\nand then add client logic to call the function from your app.",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "functions\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 84,
+					"name": "HttpsCallable",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions."
+					},
+					"signatures": [
+						{
+							"id": 85,
+							"name": "__call",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"comment": {
+								"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions."
+							},
+							"parameters": [
+								{
+									"id": 86,
+									"name": "data",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isOptional": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "Promise",
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "HttpsCallableResult",
+										"id": 82
+									}
+								]
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 102,
+							"character": 32
+						}
+					]
+				},
+				{
+					"id": 82,
+					"name": "HttpsCallableResult",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An HttpsCallableResult wraps a single result from a function call."
+					},
+					"children": [
+						{
+							"id": 83,
+							"name": "data",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 95,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								83
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 94,
+							"character": 38
+						}
+					]
+				},
+				{
+					"id": 87,
+					"name": "HttpsError",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 93,
+							"name": "Error",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"line": 974,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ErrorConstructor"
+							}
+						},
+						{
+							"id": 88,
+							"name": "code",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "A standard error code that will be returned to the client. This also\ndetermines the HTTP status code of the response, as defined in code.proto."
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 111,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FunctionsErrorCode",
+								"id": 122
+							}
+						},
+						{
+							"id": 89,
+							"name": "details",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "Extra data to be converted to JSON and included in the error response."
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 115,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						},
+						{
+							"id": 91,
+							"name": "message",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"line": 964,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "Error.message"
+							}
+						},
+						{
+							"id": 90,
+							"name": "name",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"line": 963,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "Error.name"
+							}
+						},
+						{
+							"id": 92,
+							"name": "stack",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"sources": [
+								{
+									"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"line": 965,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							},
+							"overwrites": {
+								"type": "reference",
+								"name": "Error.stack"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "Error.stack"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								93,
+								88,
+								89,
+								91,
+								90,
+								92
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 106,
+							"character": 29
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "Error"
+						}
+					]
+				},
+				{
+					"id": 94,
+					"name": "HttpsErrorCode",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 106,
+							"name": "ABORTED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 130,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "aborted"
+							}
+						},
+						{
+							"id": 101,
+							"name": "ALREADY_EXISTS",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 125,
+									"character": 18
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "already-exists"
+							}
+						},
+						{
+							"id": 96,
+							"name": "CANCELLED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 120,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "cancelled"
+							}
+						},
+						{
+							"id": 111,
+							"name": "DATA_LOSS",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 135,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "data-loss"
+							}
+						},
+						{
+							"id": 99,
+							"name": "DEADLINE_EXCEEDED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 123,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "deadline-exceeded"
+							}
+						},
+						{
+							"id": 105,
+							"name": "FAILED_PRECONDITION",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 129,
+									"character": 23
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "failed-precondition"
+							}
+						},
+						{
+							"id": 109,
+							"name": "INTERNAL",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 133,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "internal"
+							}
+						},
+						{
+							"id": 98,
+							"name": "INVALID_ARGUMENT",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 122,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "invalid-argument"
+							}
+						},
+						{
+							"id": 100,
+							"name": "NOT_FOUND",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 124,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "not-found"
+							}
+						},
+						{
+							"id": 95,
+							"name": "OK",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 119,
+									"character": 6
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "ok"
+							}
+						},
+						{
+							"id": 107,
+							"name": "OUT_OF_RANGE",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 131,
+									"character": 16
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "out-of-range"
+							}
+						},
+						{
+							"id": 102,
+							"name": "PERMISSION_DENIED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 126,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "permission-denied"
+							}
+						},
+						{
+							"id": 104,
+							"name": "RESOURCE_EXHAUSTED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 128,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "resource-exhausted"
+							}
+						},
+						{
+							"id": 103,
+							"name": "UNAUTHENTICATED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 127,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "unauthenticated"
+							}
+						},
+						{
+							"id": 110,
+							"name": "UNAVAILABLE",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 134,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "unavailable"
+							}
+						},
+						{
+							"id": 108,
+							"name": "UNIMPLEMENTED",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 132,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "unimplemented"
+							}
+						},
+						{
+							"id": 97,
+							"name": "UNKNOWN",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 121,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "stringLiteral",
+								"value": "unknown"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								106,
+								101,
+								96,
+								111,
+								99,
+								105,
+								109,
+								98,
+								100,
+								95,
+								107,
+								102,
+								104,
+								103,
+								110,
+								108,
+								97
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 118,
+							"character": 33
+						}
+					]
+				},
+				{
+					"id": 114,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "firebase.functions().X"
+					},
+					"children": [
+						{
+							"id": 121,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						},
+						{
+							"id": 115,
+							"name": "httpsCallable",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 116,
+									"name": "httpsCallable",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Gets an `HttpsCallable` instance that refers to the function with the given\nname.",
+										"returns": "The `HttpsCallable` instance.\n"
+									},
+									"parameters": [
+										{
+											"id": 117,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The name of the https callable function."
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "HttpsCallable",
+										"id": 84
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 159,
+									"character": 17
+								}
+							]
+						},
+						{
+							"id": 118,
+							"name": "useFunctionsEmulator",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 119,
+									"name": "useFunctionsEmulator",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Changes this instance to point to a Cloud Functions emulator running\nlocally.",
+										"text": "See https://firebase.google.com/docs/functions/local-emulator\n"
+									},
+									"parameters": [
+										{
+											"id": 120,
+											"name": "origin",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "the origin string of the local emulator started via firebase tools\n\"http://10.0.0.8:1337\".\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 170,
+									"character": 24
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								121
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								115,
+								118
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 151,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 112,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "firebase.functions.X"
+					},
+					"children": [
+						{
+							"id": 113,
+							"name": "HttpsErrorCode",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Uppercase + underscored variables of @Functions.FunctionsErrorCode"
+							},
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 145,
+									"character": 18
+								}
+							],
+							"type": {
+								"type": "intersection",
+								"types": [
+									{
+										"type": "reference",
+										"name": "__type"
+									},
+									{
+										"type": "reference",
+										"name": "HttpsErrorCode",
+										"id": 94
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								113
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 141,
+							"character": 26
+						}
+					]
+				},
+				{
+					"id": 122,
+					"name": "FunctionsErrorCode",
+					"kind": 4194304,
+					"kindString": "Type alias",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The set of Firebase Functions status codes. The codes are the same at the\nones exposed by gRPC here:\nhttps://github.com/grpc/grpc/blob/master/doc/statuscodes.md",
+						"text": "Possible values:\n- 'cancelled': The operation was cancelled (typically by the caller).\n- 'unknown': Unknown error or an error from a different error domain.\n- 'invalid-argument': Client specified an invalid argument. Note that this\n  differs from 'failed-precondition'. 'invalid-argument' indicates\n  arguments that are problematic regardless of the state of the system\n  (e.g. an invalid field name).\n- 'deadline-exceeded': Deadline expired before operation could complete.\n  For operations that change the state of the system, this error may be\n  returned even if the operation has completed successfully. For example,\n  a successful response from a server could have been delayed long enough\n  for the deadline to expire.\n- 'not-found': Some requested document was not found.\n- 'already-exists': Some document that we attempted to create already\n  exists.\n- 'permission-denied': The caller does not have permission to execute the\n  specified operation.\n- 'resource-exhausted': Some resource has been exhausted, perhaps a\n  per-user quota, or perhaps the entire file system is out of space.\n- 'failed-precondition': Operation was rejected because the system is not\n  in a state required for the operation's execution.\n- 'aborted': The operation was aborted, typically due to a concurrency\n  issue like transaction aborts, etc.\n- 'out-of-range': Operation was attempted past the valid range.\n- 'unimplemented': Operation is not implemented or not supported/enabled.\n- 'internal': Internal errors. Means some invariants expected by\n  underlying system has been broken. If you see one of these errors,\n  something is very broken.\n- 'unavailable': The service is currently unavailable. This is most likely\n  a transient condition and may be corrected by retrying with a backoff.\n- 'data-loss': Unrecoverable data loss or corruption.\n- 'unauthenticated': The request does not have valid authentication\n  credentials for the operation.\n"
+					},
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 72,
+							"character": 32
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "stringLiteral",
+								"value": "ok"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "cancelled"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "unknown"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "invalid-argument"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "deadline-exceeded"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "not-found"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "already-exists"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "permission-denied"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "resource-exhausted"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "failed-precondition"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "aborted"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "out-of-range"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "unimplemented"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "internal"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "unavailable"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "data-loss"
+							},
+							{
+								"type": "stringLiteral",
+								"value": "unauthenticated"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						84,
+						82,
+						87,
+						94,
+						114,
+						112
+					]
+				},
+				{
+					"title": "Type aliases",
+					"kind": 4194304,
+					"children": [
+						122
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "functions/lib/index.d.ts",
+					"line": 32,
+					"character": 26
+				}
+			]
+		},
+		{
+			"id": 131,
+			"name": "Iid",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate\nand authorize actions for it (for example: sending FCM messages).",
+				"text": "An Instance ID is long lived except when you call delete, the app is restored on a new device, the user\nuninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).\n",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "iid\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 133,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 146,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						},
+						{
+							"id": 136,
+							"name": "delete",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 137,
+									"name": "delete",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Delete the Instance ID and all data associated with it. This stops the periodic sending of data to the Firebase\nbackend that was started when the Instance ID was generated.",
+										"text": "A new Instance ID is asynchronously generated unless auto initialisation is turned off.\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 51,
+									"character": 10
+								}
+							]
+						},
+						{
+							"id": 142,
+							"name": "deleteToken",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 143,
+									"name": "deleteToken",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Revokes access to a scope for an entity previously authorized by `getToken()`."
+									},
+									"parameters": [
+										{
+											"id": 144,
+											"name": "authorizedEntity",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "Entity authorized by the token. Defaults to the apps' `messagingSenderId` option."
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										},
+										{
+											"id": 145,
+											"name": "scope",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "Action authorized for authorizedEntity. Defaults to '*'.\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 67,
+									"character": 15
+								}
+							]
+						},
+						{
+							"id": 134,
+							"name": "get",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 135,
+									"name": "get",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Returns a identifier that uniquely identifies the app instance.",
+										"text": "Once an Instance ID is generated, Firebase periodically sends information about the application\nand the device it's running on to the Firebase backend. To stop this, see `delete()`.\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 43,
+									"character": 7
+								}
+							]
+						},
+						{
+							"id": 138,
+							"name": "getToken",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 139,
+									"name": "getToken",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Returns a token that authorizes an Entity to perform an action on behalf of the application."
+									},
+									"parameters": [
+										{
+											"id": 140,
+											"name": "authorizedEntity",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "Entity authorized by the token. Defaults to the apps `messagingSenderId` option."
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										},
+										{
+											"id": 141,
+											"name": "scope",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "Action authorized for authorizedEntity. Defaults to '*'.\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "iid/lib/index.d.ts",
+									"line": 59,
+									"character": 12
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								146
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								136,
+								142,
+								134,
+								138
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 36,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 132,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 34,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						133,
+						132
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "iid/lib/index.d.ts",
+					"line": 33,
+					"character": 20
+				}
+			]
+		},
+		{
+			"id": 154,
+			"name": "Mlkit",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Mlkit",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "mlkit\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 156,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 157,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								157
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 155,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "mlkit/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						156,
+						155
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "mlkit/lib/index.d.ts",
+					"line": 29,
+					"character": 22
+				}
+			]
+		},
+		{
+			"id": 165,
+			"name": "Perf",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Perf",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "perf\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 167,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 168,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								168
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 166,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						167,
+						166
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "perf/lib/index.d.ts",
+					"line": 29,
+					"character": 21
+				}
+			]
+		},
+		{
+			"id": 176,
+			"name": "Utils",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Utils",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "utils\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 178,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 179,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								179
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 177,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						178,
+						177
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "utils/lib/index.d.ts",
+					"line": 29,
+					"character": 22
+				}
+			]
+		},
+		{
+			"id": 198,
+			"name": "FirebaseApp",
+			"kind": 256,
+			"kindString": "Interface",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 199,
+					"name": "name",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The name (identifier) for this App. '[DEFAULT]' is the default App."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 124,
+							"character": 15
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 200,
+					"name": "options",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The (read-only) configuration options from the app initialization."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 129,
+							"character": 18
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseOptions",
+						"id": 218
+					}
+				},
+				{
+					"id": 201,
+					"name": "delete",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 202,
+							"name": "delete",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"comment": {
+								"shortText": "Make this app unusable and free up resources."
+							},
+							"type": {
+								"type": "reference",
+								"name": "Promise",
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								]
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 134,
+							"character": 8
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						199,
+						200
+					]
+				},
+				{
+					"title": "Methods",
+					"kind": 2048,
+					"children": [
+						201
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 120,
+					"character": 28
+				}
+			]
+		},
+		{
+			"id": 194,
+			"name": "FirebaseAppConfig",
+			"kind": 256,
+			"kindString": "Interface",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 196,
+					"name": "automaticDataCollectionEnabled",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true,
+						"isOptional": true
+					},
+					"comment": {},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 111,
+							"character": 32
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							},
+							{
+								"type": "intrinsic",
+								"name": "false"
+							},
+							{
+								"type": "intrinsic",
+								"name": "true"
+							}
+						]
+					}
+				},
+				{
+					"id": 197,
+					"name": "automaticResourceManagement",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true,
+						"isOptional": true
+					},
+					"comment": {
+						"shortText": "If set to true it indicates that Firebase should close database connections\nautomatically when the app is in the background. Disabled by default."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 117,
+							"character": 29
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							},
+							{
+								"type": "intrinsic",
+								"name": "false"
+							},
+							{
+								"type": "intrinsic",
+								"name": "true"
+							}
+						]
+					}
+				},
+				{
+					"id": 195,
+					"name": "name",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true,
+						"isOptional": true
+					},
+					"comment": {
+						"shortText": "The Firebase App name, defaults to [DEFAULT] if none provided."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 106,
+							"character": 6
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							},
+							{
+								"type": "intrinsic",
+								"name": "string"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						196,
+						197,
+						195
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 102,
+					"character": 34
+				}
+			]
+		},
+		{
+			"id": 185,
+			"name": "NativeFirebaseError",
+			"kind": 256,
+			"kindString": "Interface",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 193,
+					"name": "Error",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"line": 974,
+							"character": 19
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ErrorConstructor"
+					}
+				},
+				{
+					"id": 186,
+					"name": "code",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "Firebase error code, e.g. `auth/invalid-email`"
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 22,
+							"character": 15
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 187,
+					"name": "message",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "Firebase error message"
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 27,
+							"character": 18
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"overwrites": {
+						"type": "reference",
+						"name": "Error.message"
+					}
+				},
+				{
+					"id": 191,
+					"name": "name",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"line": 963,
+							"character": 8
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"name": "Error.name"
+					}
+				},
+				{
+					"id": 188,
+					"name": "namespace",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The firebase module namespace that this error originated from, e.g. 'analytics'"
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 32,
+							"character": 20
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 189,
+					"name": "nativeErrorCode",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The native sdks returned error code, different per platform"
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 37,
+							"character": 26
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "number"
+							}
+						]
+					}
+				},
+				{
+					"id": 190,
+					"name": "nativeErrorMessage",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The native sdks returned error message, different per platform"
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 42,
+							"character": 29
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 192,
+					"name": "stack",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true,
+						"isOptional": true
+					},
+					"sources": [
+						{
+							"fileName": "/Users/elliothesp/Documents/Code/Invertase/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"line": 965,
+							"character": 9
+						}
+					],
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "undefined"
+							},
+							{
+								"type": "intrinsic",
+								"name": "string"
+							}
+						]
+					},
+					"overwrites": {
+						"type": "reference",
+						"name": "Error.stack"
+					},
+					"inheritedFrom": {
+						"type": "reference",
+						"name": "Error.stack"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						193,
+						186,
+						187,
+						191,
+						188,
+						189,
+						190,
+						192
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 18,
+					"character": 36
+				}
+			],
+			"extendedTypes": [
+				{
+					"type": "reference",
+					"name": "Error"
+				}
+			]
+		},
+		{
+			"id": 216,
+			"name": "ReactNativeFirebaseModule",
+			"kind": 256,
+			"kindString": "Interface",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 217,
+					"name": "app",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 179,
+							"character": 5
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseApp",
+						"id": 198
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						217
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 178,
+					"character": 42
+				}
+			]
+		},
+		{
+			"id": 203,
+			"name": "ReactNativeFirebaseNamespace",
+			"kind": 256,
+			"kindString": "Interface",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 215,
+					"name": "SDK_VERSION",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The current React Native Firebase version."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 175,
+							"character": 22
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 214,
+					"name": "apps",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "A (read-only) array of all the initialized Apps."
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 170,
+							"character": 6
+						}
+					],
+					"type": {
+						"type": "array",
+						"elementType": {
+							"type": "reference",
+							"name": "FirebaseApp",
+							"id": 198
+						}
+					}
+				},
+				{
+					"id": 211,
+					"name": "app",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 212,
+							"name": "app",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"comment": {
+								"shortText": "Retrieve an instance of a FirebaseApp.",
+								"tags": [
+									{
+										"tag": "example",
+										"text": "\n```js\nconst app = firebase.app('foo');\n```\n"
+									}
+								]
+							},
+							"parameters": [
+								{
+									"id": 213,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"text": "The optional name of the app to return ('[DEFAULT]' if omitted)\n"
+									},
+									"type": {
+										"type": "union",
+										"types": [
+											{
+												"type": "intrinsic",
+												"name": "undefined"
+											},
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										]
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp",
+								"id": 198
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 165,
+							"character": 5
+						}
+					]
+				},
+				{
+					"id": 204,
+					"name": "initializeApp",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 205,
+							"name": "initializeApp",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"comment": {
+								"shortText": "Create (and initialize) a FirebaseApp."
+							},
+							"parameters": [
+								{
+									"id": 206,
+									"name": "options",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"comment": {
+										"text": "Options to configure the services used in the App."
+									},
+									"type": {
+										"type": "reference",
+										"name": "FirebaseOptions",
+										"id": 218
+									}
+								},
+								{
+									"id": 207,
+									"name": "config",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"text": "The optional config for your firebase app\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "FirebaseAppConfig",
+										"id": 194
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp",
+								"id": 198
+							}
+						},
+						{
+							"id": 208,
+							"name": "initializeApp",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"comment": {
+								"shortText": "Create (and initialize) a FirebaseApp."
+							},
+							"parameters": [
+								{
+									"id": 209,
+									"name": "options",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"comment": {
+										"text": "Options to configure the services used in the App."
+									},
+									"type": {
+										"type": "reference",
+										"name": "FirebaseOptions",
+										"id": 218
+									}
+								},
+								{
+									"id": 210,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"text": "The optional name of the app to initialize ('[DEFAULT]' if\nomitted)\n"
+									},
+									"type": {
+										"type": "union",
+										"types": [
+											{
+												"type": "intrinsic",
+												"name": "undefined"
+											},
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										]
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp",
+								"id": 198
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 144,
+							"character": 15
+						},
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 153,
+							"character": 15
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						215,
+						214
+					]
+				},
+				{
+					"title": "Methods",
+					"kind": 2048,
+					"children": [
+						211,
+						204
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 137,
+					"character": 45
+				}
+			]
+		},
+		{
+			"id": 218,
+			"name": "FirebaseOptions",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {
+				"isExported": true
+			},
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 45,
+					"character": 27
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 219,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"indexSignature": [
+						{
+							"id": 230,
+							"name": "__index",
+							"kind": 8192,
+							"kindString": "Index signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 231,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"children": [
+						{
+							"id": 228,
+							"name": "androidClientId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The Android client ID used in Google AppInvite when an iOS app has its Android version, for\nexample \"12345.apps.googleusercontent.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 93,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 221,
+							"name": "apiKey",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An API key used for authenticating requests from your app, e.g.\n\"AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk\", used to identify your app to Google servers."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 55,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 220,
+							"name": "appId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {},
+							"comment": {
+								"shortText": "The Google App ID that is used to uniquely identify an instance of an app."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 49,
+									"character": 7
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 227,
+							"name": "clientId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The OAuth2 client ID for iOS application used to authenticate Google users, for example\n\"12345.apps.googleusercontent.com\", used for signing in with Google."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 87,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 222,
+							"name": "databaseURL",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The database root URL, e.g. \"http://abc-xyz-123.firebaseio.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 60,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 229,
+							"name": "deepLinkURLScheme",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The URL scheme used to set up Durable Deep Link service."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 98,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 224,
+							"name": "gaTrackingId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The tracking ID for Google Analytics, e.g. \"UA-12345678-1\", used to configure Google Analytics."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 70,
+									"character": 14
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 226,
+							"name": "messagingSenderId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The Project Number from the Google Developer's console, for example \"012345678901\", used to\nconfigure Google Cloud Messaging."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 81,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 223,
+							"name": "projectId",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {},
+							"comment": {
+								"shortText": "The Project ID from the Firebase console, for example \"abc-xyz-123\"."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 65,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 225,
+							"name": "storageBucket",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The Google Cloud Storage bucket name, e.g. \"abc-xyz-123.storage.firebase.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 75,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Variables",
+							"kind": 32,
+							"children": [
+								228,
+								221,
+								220,
+								227,
+								222,
+								229,
+								224,
+								226,
+								223,
+								225
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 45,
+							"character": 29
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 251,
+			"name": "ReactNativeFirebaseModuleAndStatics",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {
+				"isExported": true
+			},
+			"typeParameter": [
+				{
+					"id": 252,
+					"name": "M",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {}
+				},
+				{
+					"id": 253,
+					"name": "S",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {}
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 246,
+					"character": 47
+				}
+			],
+			"type": {
+				"type": "intersection",
+				"types": [
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 254,
+							"name": "__type",
+							"kind": 65536,
+							"kindString": "Type literal",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 255,
+									"name": "__call",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"type": {
+										"type": "typeParameter",
+										"name": "M"
+									}
+								}
+							],
+							"children": [
+								{
+									"id": 256,
+									"name": "SDK_VERSION",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {},
+									"comment": {
+										"shortText": "This React Native Firebase module version."
+									},
+									"sources": [
+										{
+											"fileName": "app-types/index.d.ts",
+											"line": 252,
+											"character": 22
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										256
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 246,
+									"character": 60
+								}
+							]
+						}
+					},
+					{
+						"type": "typeParameter",
+						"name": "S"
+					}
+				]
+			}
+		},
+		{
+			"id": 257,
+			"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {
+				"isExported": true
+			},
+			"typeParameter": [
+				{
+					"id": 258,
+					"name": "M",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {}
+				},
+				{
+					"id": 259,
+					"name": "S",
+					"kind": 131072,
+					"kindString": "Type parameter",
+					"flags": {}
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 255,
+					"character": 54
+				}
+			],
+			"type": {
+				"type": "intersection",
+				"types": [
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 260,
+							"name": "__type",
+							"kind": 65536,
+							"kindString": "Type literal",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 261,
+									"name": "__call",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"parameters": [
+										{
+											"id": 262,
+											"name": "app",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "reference",
+												"name": "FirebaseApp",
+												"id": 47
+											}
+										}
+									],
+									"type": {
+										"type": "typeParameter",
+										"name": "M"
+									}
+								}
+							],
+							"children": [
+								{
+									"id": 263,
+									"name": "SDK_VERSION",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {},
+									"comment": {
+										"shortText": "This React Native Firebase module version."
+									},
+									"sources": [
+										{
+											"fileName": "app-types/index.d.ts",
+											"line": 261,
+											"character": 22
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										263
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "app-types/index.d.ts",
+									"line": 255,
+									"character": 67
+								}
+							]
+						}
+					},
+					{
+						"type": "typeParameter",
+						"name": "S"
+					}
+				]
+			}
+		}
+	],
+	"groups": [
+		{
+			"title": "Modules",
+			"kind": 2,
+			"children": [
+				40,
+				44,
+				63,
+				74,
+				123,
+				147,
+				158,
+				169,
+				180,
+				50,
+				1,
+				232,
+				59,
+				70,
+				81,
+				131,
+				154,
+				165,
+				176
+			]
+		},
+		{
+			"title": "Interfaces",
+			"kind": 256,
+			"children": [
+				198,
+				194,
+				185,
+				216,
+				203
+			]
+		},
+		{
+			"title": "Type aliases",
+			"kind": 4194304,
+			"children": [
+				218,
+				251,
+				257
+			]
+		}
+	]
+}
