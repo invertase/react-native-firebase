@@ -3,7 +3,7 @@
   "version": "6.0.0-alpha.2",
   "private": true,
   "scripts": {
-    "build:clean": "rimraf dist && rimraf android/build && rimraf ios/build",
+    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
