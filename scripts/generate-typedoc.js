@@ -15,7 +15,19 @@
  *
  */
 
-const { version } = require('./../lerna.json');
+const path = require('path');
+const { Application } = require('typedoc');
 
-// eslint-disable-next-line no-console
-console.log(`v${version.substr(0, version.indexOf('.'))}.x.x`);
+const output = path.resolve(process.cwd(), 'docs', 'typedoc.json');
+
+const app = new Application();
+
+// https://github.com/TypeStrong/typedoc/issues/956
+const { inputFiles } = app.bootstrap({
+  mode: 'file',
+  includeDeclarations: true,
+  excludeExternals: true,
+  tsconfig: path.resolve(process.cwd(), 'tsconfig.json'),
+});
+
+app.generateJson(inputFiles, output);
