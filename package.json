@@ -11,7 +11,7 @@
     "validate:all:flow": "flow",
     "lerna:boostrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
-    "gen:reference": "typedoc --json typedoc.json --mode file --includeDeclarations --excludeExternals",
+    "gen:reference": "node scripts/generate-typedoc.js",
     "tests:packager:chrome": "cd tests && react-native start --platforms ios,android",
     "tests:packager:jet": "REACT_DEBUGGER='echo nope' cd tests && react-native start",
     "tests:packager:jet-reset-cache": "REACT_DEBUGGER='echo nope' cd tests && react-native start --reset-cache",
