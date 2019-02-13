@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-//apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: "com.google.firebase.firebase-perf"
 apply plugin: 'io.fabric'
 
 import com.android.build.OutputFile
@@ -84,6 +84,7 @@ android {
   }
 
   packagingOptions {
+    exclude 'META-INF/proguard/androidx-annotations.pro'
     exclude 'META-INF/-no-jdk.kotlin_module'
     exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/NOTICE'
