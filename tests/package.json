@@ -12,6 +12,7 @@
     "@react-native-firebase/app-types": "^6.0.0-alpha.2",
     "@react-native-firebase/config": "^6.0.0-alpha.2",
     "@react-native-firebase/crashlytics": "^6.0.0-alpha.2",
+    "@react-native-firebase/firestore": "^6.0.0-alpha.2",
     "@react-native-firebase/functions": "^6.0.0-alpha.2",
     "@react-native-firebase/iid": "^6.0.0-alpha.2",
     "@react-native-firebase/mlkit": "^6.0.0-alpha.2",
@@ -31,10 +32,10 @@
     "sinon": "^6.2.0"
   },
   "devDependencies": {
-    "nyc": "^13.1.0",
-    "patch-package": "^5.1.2",
+    "@react-native-firebase/private-tests-helpers": "^0.0.5",
     "babel-plugin-istanbul": "^5.1.1",
-    "@react-native-firebase/private-tests-helpers": "^0.0.5"
+    "nyc": "^13.1.0",
+    "patch-package": "^5.1.2"
   },
   "nyc": {
     "check-coverage": false,
