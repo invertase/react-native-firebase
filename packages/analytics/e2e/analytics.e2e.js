@@ -15,9 +15,6 @@
  *
  */
 
-// TODO all try catch tests can give false positives as there's no
-// TODO checks that it actually threw, only does tests in the catch
-
 describe('analytics()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
@@ -27,17 +24,42 @@ describe('analytics()', () => {
       app.analytics().emitter.should.be.a.Object();
     });
 
-    xit('throws if app arg provided to firebase.analytics(APP)', {
-      // TODO
+    it('throws if non default app arg provided to firebase.analytics(APP)', () => {
+      const app = firebase.app('secondaryFromNative');
+      try {
+        firebase.analytics(app);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('does not support multiple Firebase Apps');
+        return Promise.resolve();
+      }
     });
 
-    xit('throws if args provided to firebase.app().analytics(ARGS)', {
-      // TODO
+    it('throws if analytics access from a non default app', () => {
+      const app = firebase.app('secondaryFromNative');
+      try {
+        app.analytics();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('does not support multiple Firebase Apps');
+        return Promise.resolve();
+      }
+    });
+
+    // TODO in app/registry/namespace.js - if (!hasCustomUrlOrRegionSupport)
+    xit('throws if args provided to firebase.app().analytics(ARGS)', () => {
+      try {
+        firebase.app().analytics('foo', 'arg2');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('does not support multiple Firebase Apps');
+        return Promise.resolve();
+      }
     });
   });
 
   describe('logEvent()', () => {
-    xit('errors on using a reserved name', () => {
+    it('errors on using a reserved name', () => {
       try {
         firebase.analytics().logEvent('session_start');
       } catch (e) {
@@ -45,7 +67,7 @@ describe('analytics()', () => {
       }
     });
 
-    xit('errors if name not alphanumeric', () => {
+    it('errors if name not alphanumeric', () => {
       try {
         firebase.analytics().logEvent('!@£$%^&*');
       } catch (e) {
@@ -53,36 +75,9 @@ describe('analytics()', () => {
       }
     });
 
-    xit('errors if more than 25 params provided', () => {
+    it('errors if more than 25 params provided', () => {
       try {
-        firebase.analytics().logEvent('fooby', {
-          1: 1,
-          2: 2,
-          3: 3,
-          4: 4,
-          5: 5,
-          6: 6,
-          7: 7,
-          8: 8,
-          9: 9,
-          10: 10,
-          11: 11,
-          12: 12,
-          13: 13,
-          14: 14,
-          15: 15,
-          16: 16,
-          17: 17,
-          18: 18,
-          19: 19,
-          20: 20,
-          21: 21,
-          22: 22,
-          23: 23,
-          24: 24,
-          25: 25,
-          26: 26,
-        });
+        firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1)));
       } catch (e) {
         e.message.should.containEql('Maximum number of parameters exceeded');
       }
@@ -90,7 +85,7 @@ describe('analytics()', () => {
 
     it('errors if name is not a string', () => {
       (() => {
-        firebase.analytics().logEvent(123456);
+        firebase.analytics().logEvent(13377331);
       }).should.throw(
         `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
       );
@@ -98,18 +93,18 @@ describe('analytics()', () => {
 
     it('errors if params is not an object', () => {
       (() => {
-        firebase.analytics().logEvent('test_event', 'this should be an object');
+        firebase.analytics().logEvent('invertase_event', 'this should be an object');
       }).should.throw(
         `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
       );
     });
 
     it('log an event without parameters', async () => {
-      await firebase.analytics().logEvent('test_event');
+      await firebase.analytics().logEvent('invertase_event');
     });
 
     it('log an event with parameters', async () => {
-      await firebase.analytics().logEvent('test_event', {
+      await firebase.analytics().logEvent('invertase_event', {
         boolean: true,
         number: 1,
         string: 'string',
@@ -127,21 +122,35 @@ describe('analytics()', () => {
     });
   });
 
+  describe('resetAnalyticsData()', () => {
+    it('calls native fn without error', async () => {
+      await firebase.analytics().resetAnalyticsData();
+    });
+  });
+
   describe('setCurrentScreen()', () => {
     it('screenName only', async () => {
-      await firebase.analytics().setCurrentScreen('test screen');
+      await firebase.analytics().setCurrentScreen('invertase screen');
     });
 
     it('screenName with screenClassOverride', async () => {
-      await firebase.analytics().setCurrentScreen('test screen', 'test class override');
+      await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
     });
 
-    xit('errors if screenName not a string', () => {
-      // TODO needs validations adding to lib
+    it('errors if screenName not a string', async () => {
+      try {
+        await firebase.analytics().setCurrentScreen(666.1337);
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+      }
     });
 
-    xit('errors if screenClassOverride not a string', () => {
-      // TODO needs validations adding to lib
+    it('errors if screenClassOverride not a string', async () => {
+      try {
+        await firebase.analytics().setCurrentScreen('invertase screen', 666.1337);
+      } catch (e) {
+        e.message.should.containEql('must be undefined or a string');
+      }
     });
   });
 
@@ -151,7 +160,7 @@ describe('analytics()', () => {
     });
 
     it('custom duration', async () => {
-      await firebase.analytics().setMinimumSessionDuration(10001);
+      await firebase.analytics().setMinimumSessionDuration(1337);
     });
   });
 
@@ -161,23 +170,22 @@ describe('analytics()', () => {
     });
 
     it('custom duration', async () => {
-      await firebase.analytics().setSessionTimeoutDuration(1800001);
+      await firebase.analytics().setSessionTimeoutDuration(13371337);
     });
   });
 
   describe('setUserId()', () => {
-    // nulls remove the field on firebase
     it('allows a null values to be set', async () => {
       await firebase.analytics().setUserId(null);
     });
 
     it('accepts string values', async () => {
-      await firebase.analytics().setUserId('test-id');
+      await firebase.analytics().setUserId('rn-firebase');
     });
 
-    xit('rejects none string none null values', async () => {
+    it('rejects none string none null values', async () => {
       try {
-        await firebase.analytics().setUserId(33.3333);
+        await firebase.analytics().setUserId(666.1337);
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -185,44 +193,46 @@ describe('analytics()', () => {
   });
 
   describe('setUserProperty()', () => {
-    // nulls remove the field on firebase
     it('allows a null values to be set', async () => {
-      await firebase.analytics().setUserProperty('fooby', null);
+      await firebase.analytics().setUserProperty('invertase', null);
     });
 
     it('accepts string values', async () => {
-      await firebase.analytics().setUserProperty('fooby2', 'test-id');
+      await firebase.analytics().setUserProperty('invertase2', 'rn-firebase');
     });
 
-    xit('rejects none string none null values', async () => {
+    it('rejects none string none null values', async () => {
       try {
-        await firebase.analytics().setUserProperty('fooby3', 33.3333);
+        await firebase.analytics().setUserProperty('invertase3', 33.3333);
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
     });
 
-    xit('errors if property name not a string', () => {
-      // TODO needs validations adding to lib
+    it('errors if property name is not a string', async () => {
+      try {
+        await firebase.analytics().setUserProperty(1337, 'invertase');
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+      }
     });
   });
 
   describe('setUserProperties()', () => {
-    // nulls remove the field on firebase
-    it('allows a null values to be set', async () => {
-      await firebase.analytics().setUserProperties({ fooby: null });
+    it('errors if arg is not an object', async () => {
+      try {
+        await firebase.analytics().setUserProperties(1337);
+      } catch (e) {
+        e.message.should.containEql('must be an object');
+      }
+    });
+
+    it('allows null values to be set', async () => {
+      await firebase.analytics().setUserProperties({ invertase: null });
     });
 
     it('accepts string values', async () => {
-      await firebase.analytics().setUserProperties({ fooby2: 'test-id' });
-    });
-
-    xit('rejects none string none null values', async () => {
-      try {
-        await firebase.analytics().setUserProperties({ fooby3: 33.3333 });
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
+      await firebase.analytics().setUserProperties({ invertase2: 'rn-firebase' });
     });
   });
 });
