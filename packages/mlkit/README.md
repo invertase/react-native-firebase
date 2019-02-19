@@ -30,6 +30,8 @@ Bring powerful machine learning features to your mobile app whether you're new o
 
 ## Installation
 
+Requires `@react-native-firebase/app` to be installed.
+
 ```bash
 yarn add @react-native-firebase/mlkit
 react-native link @react-native-firebase/mlkit

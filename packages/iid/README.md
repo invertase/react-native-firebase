@@ -29,6 +29,8 @@ An Instance ID is long lived except in a few scenarios:
 
 ## Installation
 
+Requires `@react-native-firebase/app` to be installed.
+
 ```bash
 yarn add @react-native-firebase/iid
 react-native link @react-native-firebase/iid

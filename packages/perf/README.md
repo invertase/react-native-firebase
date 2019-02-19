@@ -24,6 +24,8 @@ Perf description.
 
 ## Installation
 
+Requires `@react-native-firebase/app` to be installed.
+
 ```bash
 yarn add @react-native-firebase/perf
 react-native link @react-native-firebase/perf

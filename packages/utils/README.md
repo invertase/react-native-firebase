@@ -24,6 +24,8 @@ Utils description.
 
 ## Installation
 
+Requires `@react-native-firebase/app` to be installed.
+
 ```bash
 yarn add @react-native-firebase/utils
 react-native link @react-native-firebase/utils

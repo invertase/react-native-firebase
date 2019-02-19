@@ -26,6 +26,8 @@ and then add client logic to call the function from your app.
 
 ## Installation
 
+Requires `@react-native-firebase/app` to be installed.
+
 ```bash
 yarn add @react-native-firebase/functions
 react-native link @react-native-firebase/functions

@@ -24,6 +24,8 @@ Firestore description.
 
 ## Installation
 
+Requires `@react-native-firebase/app` & `@react-native-firebase/auth` to be installed.
+
 ```bash
 yarn add @react-native-firebase/firestore
 react-native link @react-native-firebase/firestore
