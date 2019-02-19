@@ -537,6 +537,7 @@
 					"$(SRCROOT)/../../react-native/React/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
+					"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/iphoneos",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -575,12 +576,14 @@
 					"$(SRCROOT)/../../../ios/Pods/FirebaseRemoteConfig/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/FirebaseStorage/Frameworks",
 					"$(SRCROOT)/../../../ios/Pods/Google-Mobile-Ads-SDK/Frameworks/frameworks",
+					"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/iphoneos",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../react-native/React/**",
 					"${SRCROOT}/../../../ios/Firebase/**",
 					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
+					"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/iphoneos",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
