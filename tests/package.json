@@ -49,7 +49,8 @@
     ],
     "exclude": [
       "node_modules",
-      "**/common/lib/**"
+      "**/common/lib/**",
+      "**/internal/registry/**"
     ],
     "cwd": "..",
     "all": true,
