@@ -71,6 +71,12 @@ const config = {
     port: process.env.RCT_METRO_PORT || 8081,
   },
   transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: true,
+        inlineRequires: true,
+      },
+    }),
     babelTransformerPath: require.resolve('metro-react-native-babel-transformer'),
     assetRegistryPath: join(reactNativePath, 'Libraries/Image/AssetRegistry'),
   },
