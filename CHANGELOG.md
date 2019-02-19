@@ -31,6 +31,10 @@ WIP
 
 - [NEW] Instance Id now supports multiple Firebase apps, e.g. `firebase.app('fooApp').iid().get()`
 
+## Performance Monitoring (perf)
+
+- [BREAKING] All `Trace` & `HttpMetric` methods (except for `start` & `stop`) are now synchronous, extra attributes/metrics now only get sent to native when you call `stop`
+
 ## Messaging 
 
 - [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
