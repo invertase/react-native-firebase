@@ -98,6 +98,16 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setCurrentScreen(screenName, screenClassOverride) {
+    if (!isString(screenName)) {
+      throw new Error('analytics.setCurrentScreen(): screenName must be a string.');
+    }
+
+    if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
+      throw new Error(
+        'analytics.setCurrentScreen(): screenClassOverride must be undefined or a string.',
+      );
+    }
+
     return this.native.setCurrentScreen(screenName, screenClassOverride);
   }
 
@@ -118,9 +128,13 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setUserProperty(name, value) {
+    if (!isString(name)) {
+      throw new Error('analytics.setUserProperty(): The supplied property name must be a string.');
+    }
+
     if (value !== null && !isString(value)) {
       throw new Error(
-        'analytics.setUserProperty(): The supplied property must be a string value or null.',
+        'analytics.setUserProperty(): The supplied property value must be a string value or null.',
       );
     }
 
@@ -128,6 +142,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setUserProperties(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'analytics.setUserProperties(): The supplied arg must be an object of key value strings.',
+      );
+    }
+
     return this.native.setUserProperties(object);
   }
 
