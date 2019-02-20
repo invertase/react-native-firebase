@@ -2,7 +2,7 @@
   "name": "@react-native-firebase/functions",
   "version": "6.0.0-alpha.2",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Functions",
+  "description": "React Native Firebase - Cloud Functions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -19,6 +19,8 @@
     "react",
     "react-native",
     "firebase",
+    "https",
+    "callable",
     "functions"
   ],
   "peerDependencies": {

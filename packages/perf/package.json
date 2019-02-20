@@ -2,7 +2,7 @@
   "name": "@react-native-firebase/perf",
   "version": "6.0.0-alpha.2",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Perf",
+  "description": "React Native Firebase - Performance Monitoring",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -19,7 +19,12 @@
     "react",
     "react-native",
     "firebase",
-    "perf"
+    "perf",
+    "trace",
+    "insight",
+    "http",
+    "latency",
+    "performance monitoring"
   ],
   "peerDependencies": {
     "@react-native-firebase/app": "6.0.0-alpha.2"

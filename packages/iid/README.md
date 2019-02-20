@@ -18,6 +18,8 @@
 
 ---
 
+> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
+
 Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
 and authorize actions for it (for example: sending FCM messages).
 

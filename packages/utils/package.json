@@ -19,6 +19,10 @@
     "react",
     "react-native",
     "firebase",
+    "test lab",
+    "google play services",
+    "android",
+    "ios",
     "utils"
   ],
   "peerDependencies": {
