@@ -19,6 +19,7 @@ package io.invertase.firebase.utils;
 
 import android.app.Activity;
 import android.content.IntentSender;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -32,14 +33,30 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.SharedUtils;
 
 public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Utils";
 
+  private static final String FIREBASE_TEST_LAB = "firebase.test.lab";
+
   ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+  }
+
+  /**
+   * Is this app running in Firebase Test Lab
+   *
+   * @return Boolean
+   */
+  private static Boolean isRunningInTestLab() {
+    String testLabSetting = Settings.System.getString(
+      ReactNativeFirebaseApp.getApplicationContext().getContentResolver(),
+      FIREBASE_TEST_LAB
+    );
+
+    return "true".equals(testLabSetting);
   }
 
   @ReactMethod
@@ -53,16 +70,12 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void androidPromptForPlayServices() {
     int status = isGooglePlayServicesAvailable();
+    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
 
-    if (
-      status != ConnectionResult.SUCCESS &&
-        GoogleApiAvailability.getInstance().isUserResolvableError(status)
-    ) {
+    if (status != ConnectionResult.SUCCESS && gapi.isUserResolvableError(status)) {
       Activity activity = getActivity();
       if (activity != null) {
-        GoogleApiAvailability.getInstance()
-          .getErrorDialog(activity, status, status)
-          .show();
+        gapi.getErrorDialog(activity, status, status).show();
       }
     }
   }
@@ -129,8 +142,8 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   @Override
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
+    constants.put("isRunningInTestLab", isRunningInTestLab());
     constants.put("androidPlayServices", getPlayServicesStatusMap());
-    constants.put("isFirebaseTestLab", SharedUtils.isFirebaseTestLab());
     return constants;
   }
 }

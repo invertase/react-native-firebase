@@ -21,7 +21,12 @@ import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types
 export interface Statics {}
 
 export interface Module extends ReactNativeFirebaseModule {
-
+  /**
+   * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
+   *
+   * @android
+   */
+  isRunningInTestLab: boolean;
 }
 
 declare module '@react-native-firebase/utils' {
