@@ -52,8 +52,6 @@ public class SharedUtils {
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
 
-  private static final String FIREBASE_TEST_LAB = "firebase.test.lab";
-
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
     Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
@@ -121,21 +119,6 @@ public class SharedUtils {
     }
 
     return resourceId;
-  }
-
-  /**
-   * Is this app running in Firebase Test Lab
-   *
-   * @return Boolean
-   */
-  public static Boolean isFirebaseTestLab() {
-    String testLabSetting =
-      Settings.System.getString(
-        ReactNativeFirebaseApp.getApplicationContext().getContentResolver(),
-        FIREBASE_TEST_LAB
-      );
-
-    return "true".equals(testLabSetting);
   }
 
   /**
