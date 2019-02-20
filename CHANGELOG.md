@@ -38,3 +38,7 @@ WIP
 ## Messaging 
 
 - [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
+
+## Utils
+
+- [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment
