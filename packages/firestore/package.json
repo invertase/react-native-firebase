@@ -2,7 +2,7 @@
   "name": "@react-native-firebase/firestore",
   "version": "6.0.0-alpha.2",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Firestore",
+  "description": "React Native Firebase - Cloud Firestore",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -19,6 +19,11 @@
     "react",
     "react-native",
     "firebase",
+    "cloud firestore",
+    "database",
+    "nosql",
+    "query",
+    "realtime",
     "firestore"
   ],
   "peerDependencies": {

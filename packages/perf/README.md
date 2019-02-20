@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Perf</h2>
+  <h4 align="center">React Native Firebase - Performance Monitoring</h2>
 </p>
 
 <p align="center">
@@ -18,9 +18,11 @@
 
 ----
 
-Perf description.
+> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
-[> Learn More](https://firebase.google.com/products/perf/)
+Get insights into how your app performs from your users’ point of view, with automatic and customized performance tracing.
+
+[> Learn More](https://firebase.google.com/products/performance/)
 
 ## Installation
 

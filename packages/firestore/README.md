@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Firestore</h2>
+  <h4 align="center">React Native Firebase - Cloud Firestore</h2>
 </p>
 
 <p align="center">
@@ -18,7 +18,9 @@
 
 ----
 
-Firestore description.
+> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
+
+Cloud Firestore is a NoSQL document database that lets you easily store, sync, and query data for your mobile and web apps - at global scale.
 
 [> Learn More](https://firebase.google.com/products/firestore/)
 
