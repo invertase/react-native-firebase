@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/functions",
-  "version": "6.0.0-alpha.2",
+  "version": "6.0.0-alpha.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Cloud Functions",
   "main": "lib/index.js",
@@ -24,11 +24,11 @@
     "functions"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.2"
+    "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.2",
-    "@react-native-firebase/common": "6.0.0-alpha.2"
+    "@react-native-firebase/app-types": "6.0.0-alpha.3",
+    "@react-native-firebase/common": "6.0.0-alpha.3"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"

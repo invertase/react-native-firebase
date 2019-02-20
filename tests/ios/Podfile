@@ -31,11 +31,11 @@ target 'testing' do
   pod 'Jet', :path => '../node_modules/jet/ios/Jet.podspec'
 
   rnfb_version = "0.0.1" # package["version"]
-  pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec', :version => "~> #{rnfb_version}"
-  pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec', :version => "~> #{rnfb_version}"
-  pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec', :version => "~> #{rnfb_version}"
-  pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec', :version => "~> #{rnfb_version}"
-  pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec', :version => "~> #{rnfb_version}"
+  pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec'
+  pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec'
+  pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec'
+  pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec'
+  pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec'
 
 
   # Pods for ReactNativeFirebaseDemo

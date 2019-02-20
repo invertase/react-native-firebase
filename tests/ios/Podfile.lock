@@ -117,20 +117,20 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0-alpha.2):
+  - RNFBAnalytics (6.0.0-alpha.3):
     - Firebase/Core (~> 5.15.0)
     - React
-  - RNFBApp (6.0.0-alpha.2):
+  - RNFBApp (6.0.0-alpha.3):
     - Firebase/Auth (~> 5.15.0)
     - Firebase/Core (~> 5.15.0)
     - React
-  - RNFBFunctions (6.0.0-alpha.2):
+  - RNFBFunctions (6.0.0-alpha.3):
     - Firebase/Functions (~> 5.15.0)
     - React
-  - RNFBIid (6.0.0-alpha.2):
+  - RNFBIid (6.0.0-alpha.3):
     - Firebase/Core (~> 5.15.0)
     - React
-  - RNFBPerf (6.0.0-alpha.2):
+  - RNFBPerf (6.0.0-alpha.3):
     - Firebase/Core (~> 5.15.0)
     - React
   - yoga (0.59.0-rc.2.React)
@@ -182,19 +182,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFBAnalytics:
     :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
-    :version: "~> 0.0.1"
   RNFBApp:
     :path: "../../packages/app/ios/RNFBApp.podspec"
-    :version: "~> 0.0.1"
   RNFBFunctions:
     :path: "../../packages/functions/ios/RNFBFunctions.podspec"
-    :version: "~> 0.0.1"
   RNFBIid:
     :path: "../../packages/iid/ios/RNFBIid.podspec"
-    :version: "~> 0.0.1"
   RNFBPerf:
     :path: "../../packages/perf/ios/RNFBPerf.podspec"
-    :version: "~> 0.0.1"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -223,6 +218,6 @@ SPEC CHECKSUMS:
   RNFBPerf: 665dd32e38f2bfbc99c2075775d7b6ea8feed1a4
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 70bda970a12abad8fccae517c15c759009118ab9
+PODFILE CHECKSUM: 13132429857e87df42318f7c2807fab4a3992817
 
 COCOAPODS: 1.5.3
