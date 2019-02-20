@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { Platform } from 'react-native';
 
 export * from './validate';
 
@@ -30,3 +31,7 @@ export function promiseDefer() {
 
   return deferred;
 }
+
+export const isIOS = Platform.OS === 'ios';
+
+export const isAndroid = Platform.OS === 'android';
