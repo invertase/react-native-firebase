@@ -30,7 +30,12 @@ export namespace Utils {
   export interface Statics {}
 
   export interface Module extends ReactNativeFirebaseModule {
-
+    /**
+     * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
+     *
+     * @android
+     */
+    isRunningInTestLab: boolean;
   }
 }
 
@@ -68,12 +73,9 @@ declare module '@react-native-firebase/utils' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Utils integrates across Firebase features and provides
-     * you with unlimited reporting for up to 500 distinct events
-     * that you can define using the Firebase SDK. Utils reports
-     * help you understand clearly how your users behave, which enables
-     * you to make informed decisions regarding app marketing and
-     * performance optimizations.
+     * Utils provides a collection of utilities to aid in using Firebase
+     * and related services inside React Native, e.g. Test Lab helpers
+     * and Google Play Services version helpers.
      */
     utils: ReactNativeFirebaseModuleAndStatics<
       Utils.Module,
