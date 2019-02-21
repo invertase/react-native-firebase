@@ -15,7 +15,7 @@
  *
  */
 
-describe('perf()', () => {
+android.describe('perf()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -24,7 +24,42 @@ describe('perf()', () => {
     });
   });
 
-  describe('aMethod()', () => {
+  describe('newHttpMetric()', () => {
+    it('returns an instance of HttpMetric', async () => {
+      const metric = firebase.perf().newHttpMetric('https://invertase.io', 'GET');
+      metric.constructor.name.should.be.equal('HttpMetric');
+      metric._url.should.equal('https://invertase.io');
+      metric._httpMethod.should.equal('GET');
+    });
 
+    it('errors if url not a string', async () => {
+      try {
+        firebase.perf().newHttpMetric(1337, 7331);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if httpMethod not a string', async () => {
+      try {
+        firebase.perf().newHttpMetric('https://invertase.io', 1337);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be one of');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if httpMethod not a valid type', async () => {
+      try {
+        firebase.perf().newHttpMetric('https://invertase.io', 'FIRE');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be one of');
+        return Promise.resolve();
+      }
+    });
   });
 });

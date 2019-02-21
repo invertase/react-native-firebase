@@ -21,7 +21,10 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import { isString, isOneOf } from '@react-native-firebase/common';
+
 import version from './version';
+import HttpMetric from './HttpMetric';
 
 const statics = {};
 
@@ -29,8 +32,34 @@ const namespace = 'perf';
 
 const nativeModuleName = 'RNFBPerfModule';
 
-class FirebasePerfModule extends FirebaseModule {
+const VALID_HTTP_METHODS = [
+  'CONNECT',
+  'DELETE',
+  'GET',
+  'HEAD',
+  'OPTIONS',
+  'PATCH',
+  'POST',
+  'PUT',
+  'TRACE',
+];
 
+class FirebasePerfModule extends FirebaseModule {
+  newHttpMetric(url, httpMethod) {
+    if (!isString(url)) {
+      throw new Error(`firebase.perf().newHttpMetric(*, _) 'url' must be a string.`);
+    }
+
+    if (!isString(url) || !isOneOf(httpMethod, VALID_HTTP_METHODS)) {
+      throw new Error(
+        `firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of ${VALID_HTTP_METHODS.join(
+          ', ',
+        )}.`,
+      );
+    }
+
+    return new HttpMetric(this.native, url, httpMethod);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/perf';
