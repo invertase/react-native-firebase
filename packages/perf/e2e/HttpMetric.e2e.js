@@ -17,96 +17,241 @@
 
 const aCoolUrl = 'https://invertase.io';
 
-android.describe('perf()', () => {
+describe('perf()', () => {
   describe('HttpMetric', () => {
-    it('start() & stop()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      await httpMetric.stop();
+    describe('start()', () => {
+      it('correctly starts with internal flag ', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        await httpMetric.start();
+        should.equal(httpMetric._started, true);
+        await Utils.sleep(75);
+        await httpMetric.stop();
+      });
+
+      it('resolves null if already started', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
+        await httpMetric.start();
+        should.equal(httpMetric._started, true);
+        should.equal(await httpMetric.start(), null);
+        await Utils.sleep(75);
+        await httpMetric.stop();
+      });
     });
 
-    it('removeAttribute()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.putAttribute('foo', 'bar');
-      const value = httpMetric.getAttribute('foo');
-      should.equal(value, 'bar');
-      httpMetric.removeAttribute('foo');
-      const value2 = httpMetric.getAttribute('foo');
-      should.equal(value2, null);
-      await httpMetric.stop();
+    describe('stop()', () => {
+      it('correctly stops with internal flag ', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        await httpMetric.start();
+        httpMetric.setHttpResponseCode(500);
+        httpMetric.setRequestPayloadSize(1337);
+        httpMetric.setResponseContentType('application/invertase');
+        httpMetric.setResponsePayloadSize(1337);
+        httpMetric.putAttribute('foo', 'bar');
+        httpMetric.putAttribute('bar', 'foo');
+        await Utils.sleep(100);
+        await httpMetric.stop();
+        should.equal(httpMetric._stopped, true);
+      });
+
+      it('resolves null if already stopped', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
+        await httpMetric.start();
+        await Utils.sleep(100);
+        await httpMetric.stop();
+        should.equal(await httpMetric.stop(), null);
+      });
     });
 
-    it('getAttribute() should return null', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      const value = httpMetric.getAttribute('foo');
-      should.equal(value, null);
-      httpMetric.removeAttribute('foo');
-      await httpMetric.stop();
+    describe('removeAttribute()', async () => {
+      it('errors if not a string', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        try {
+          httpMetric.putAttribute('inver', 'tase');
+          httpMetric.removeAttribute(13377331);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
+
+      it('removes an attribute', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.putAttribute('inver', 'tase');
+        const value = httpMetric.getAttribute('inver');
+        should.equal(value, 'tase');
+        httpMetric.removeAttribute('inver');
+        const value2 = httpMetric.getAttribute('inver');
+        should.equal(value2, null);
+      });
     });
 
-    it('getAttribute() should return string value', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.putAttribute('foo', 'bar');
-      const value = httpMetric.getAttribute('foo');
-      should.equal(value, 'bar');
-      httpMetric.removeAttribute('foo');
-      await httpMetric.stop();
+    describe('getAttribute()', async () => {
+      it('should return null if attribute does not exist', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        const value = httpMetric.getAttribute('inver');
+        should.equal(value, null);
+      });
+
+      it('should return an attribute string value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.putAttribute('inver', 'tase');
+        const value = httpMetric.getAttribute('inver');
+        should.equal(value, 'tase');
+      });
+
+      it('errors if attribute name is not a string', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.getAttribute(1337);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
     });
 
-    it('putAttribute()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.putAttribute('foo', 'bar');
-      const value = httpMetric.getAttribute('foo');
-      value.should.equal('bar');
-      httpMetric.removeAttribute('foo');
-      await httpMetric.stop();
+    describe('putAttribute()', async () => {
+      it('sets an attribute string value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.putAttribute('inver', 'tase');
+        const value = httpMetric.getAttribute('inver');
+        value.should.equal('tase');
+      });
+
+      it('errors if attribute name is not a string', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.putAttribute(1337, 'invertase');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
+
+      it('errors if attribute value is not a string', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.putAttribute('invertase', 1337);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
     });
 
     it('getAttributes()', async () => {
       const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.putAttribute('foo', 'bar');
-      httpMetric.putAttribute('bar', 'baz');
+      httpMetric.putAttribute('inver', 'tase');
+      httpMetric.putAttribute('tase', 'baz');
       const value = httpMetric.getAttributes();
-      // value.should.deepEqual({
-      //   foo: 'bar',
-      //   bar: 'baz',
-      // });
-      httpMetric.removeAttribute('foo');
-      httpMetric.removeAttribute('bar');
-      await httpMetric.stop();
+      JSON.parse(JSON.stringify(value)).should.deepEqual({
+        inver: 'tase',
+        tase: 'baz',
+      });
     });
 
-    it('setHttpResponseCode()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.setHttpResponseCode(500);
-      await httpMetric.stop();
+    describe('setHttpResponseCode()', async () => {
+      it('sets number value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setHttpResponseCode(500);
+        should.equal(httpMetric._httpResponseCode, 500);
+      });
+
+      it('sets a null value to clear value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setHttpResponseCode(null);
+        should.equal(httpMetric._httpResponseCode, null);
+      });
+
+      it('errors if not a number or null value', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.setHttpResponseCode('500');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a number or null');
+          return Promise.resolve();
+        }
+      });
     });
 
-    it('setRequestPayloadSize()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.setRequestPayloadSize(1337);
-      await httpMetric.stop();
+    describe('setRequestPayloadSize()', async () => {
+      it('sets number value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setRequestPayloadSize(13377331);
+        should.equal(httpMetric._requestPayloadSize, 13377331);
+      });
+
+      it('sets a null value to clear value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setRequestPayloadSize(null);
+        should.equal(httpMetric._requestPayloadSize, null);
+      });
+
+      it('errors if not a number or null value', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.setRequestPayloadSize('1337');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a number or null');
+          return Promise.resolve();
+        }
+      });
     });
 
-    it('setResponseContentType()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.setResponseContentType('application/foobar');
-      await httpMetric.stop();
+    describe('setResponsePayloadSize()', async () => {
+      it('sets number value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setResponsePayloadSize(13377331);
+        should.equal(httpMetric._responsePayloadSize, 13377331);
+      });
+
+      it('sets a null value to clear value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setResponsePayloadSize(null);
+        should.equal(httpMetric._responsePayloadSize, null);
+      });
+
+      it('errors if not a number or null value', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.setResponsePayloadSize('1337');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a number or null');
+          return Promise.resolve();
+        }
+      });
     });
 
-    it('setResponsePayloadSize()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      await httpMetric.start();
-      httpMetric.setResponsePayloadSize(13377331);
-      await httpMetric.stop();
+    describe('setResponseContentType()', async () => {
+      it('sets string value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setResponseContentType('application/invertase');
+        should.equal(httpMetric._responseContentType, 'application/invertase');
+      });
+
+      it('sets a null value to clear value', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+        httpMetric.setResponseContentType(null);
+        should.equal(httpMetric._responseContentType, null);
+      });
+
+      it('errors if not a string or null value', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.setResponseContentType(1337);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('must be a string or null');
+          return Promise.resolve();
+        }
+      });
     });
   });
 });

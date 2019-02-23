@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isString, isOneOf } from '@react-native-firebase/common';
+import { isString, isBoolean, isOneOf } from '@react-native-firebase/common';
 
 import version from './version';
 import HttpMetric from './HttpMetric';
@@ -45,6 +45,26 @@ const VALID_HTTP_METHODS = [
 ];
 
 class FirebasePerfModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
+  }
+
+  get isPerformanceCollectionEnabled() {
+    return this._isPerformanceCollectionEnabled;
+  }
+
+  setPerformanceCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.`,
+      );
+    }
+
+    this._isPerformanceCollectionEnabled = enabled;
+    return this.native.setPerformanceCollectionEnabled(enabled);
+  }
+
   newHttpMetric(url, httpMethod) {
     if (!isString(url)) {
       throw new Error(`firebase.perf().newHttpMetric(*, _) 'url' must be a string.`);

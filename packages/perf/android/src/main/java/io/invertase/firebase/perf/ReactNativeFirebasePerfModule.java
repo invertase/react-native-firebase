@@ -30,6 +30,7 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -75,12 +76,12 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
       ReadableMap metrics = traceData.getMap("metrics");
       ReadableMap attributes = traceData.getMap("attributes");
 
-      ReadableMapKeySetIterator metricKeySetIterator = metrics.keySetIterator();
-      ReadableMapKeySetIterator attrKeySetIterator = attributes.keySetIterator();
+      ReadableMapKeySetIterator metricKeySetIterator = Objects.requireNonNull(metrics).keySetIterator();
+      ReadableMapKeySetIterator attrKeySetIterator = Objects.requireNonNull(attributes).keySetIterator();
 
       while (attrKeySetIterator.hasNextKey()) {
         String attrName = attrKeySetIterator.nextKey();
-        trace.putAttribute(attrName, attributes.getString(attrName));
+        trace.putAttribute(attrName, Objects.requireNonNull(attributes.getString(attrName)));
       }
 
       while (metricKeySetIterator.hasNextKey()) {
@@ -132,12 +133,12 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
         httpMetric.setResponseContentType(metricData.getString("responseContentType"));
       }
 
-      ReadableMap attributes = metricData.getMap("attributes");
+      ReadableMap attributes = Objects.requireNonNull(metricData.getMap("attributes"));
       ReadableMapKeySetIterator attrKeySetIterator = attributes.keySetIterator();
 
       while (attrKeySetIterator.hasNextKey()) {
         String attrName = attrKeySetIterator.nextKey();
-        httpMetric.putAttribute(attrName, attributes.getString(attrName));
+        httpMetric.putAttribute(attrName, Objects.requireNonNull(attributes.getString(attrName)));
       }
 
       httpMetric.stop();

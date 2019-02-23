@@ -15,6 +15,8 @@
  *
  */
 
+import { isString, isNumber, isNull } from '@react-native-firebase/common';
+
 let id = 0;
 
 export default class HttpMetric {
@@ -36,7 +38,9 @@ export default class HttpMetric {
   }
 
   getAttribute(attribute) {
-    // TODO String validate
+    if (!isString(attribute)) {
+      throw new Error(`firebase.perf.HttpMetric.getAttribute(*) 'attribute' must be a string.`);
+    }
     return this._attributes[attribute] || null;
   }
 
@@ -45,32 +49,62 @@ export default class HttpMetric {
   }
 
   putAttribute(attribute, value) {
-    // TODO String validate
+    if (!isString(attribute)) {
+      throw new Error(`firebase.perf.HttpMetric.putAttribute(*, _) 'attribute' must be a string.`);
+    }
+
+    if (!isString(value)) {
+      throw new Error(`firebase.perf.HttpMetric.putAttribute(_, *) 'value' must be a string.`);
+    }
+
     this._attributes[attribute] = value;
   }
 
   removeAttribute(attribute) {
-    // TODO String validate
+    if (!isString(attribute)) {
+      throw new Error(`firebase.perf.HttpMetric.removeAttribute(*) 'attribute' must be a string.`);
+    }
+
     delete this._attributes[attribute];
   }
 
   setHttpResponseCode(code) {
-    // TODO Number or null validate
+    if (!isNumber(code) && !isNull(code)) {
+      throw new Error(
+        `firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.`,
+      );
+    }
+
     this._httpResponseCode = code;
   }
 
   setRequestPayloadSize(bytes) {
-    // TODO Number or null validate
+    if (!isNumber(bytes) && !isNull(bytes)) {
+      throw new Error(
+        `firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.`,
+      );
+    }
+
     this._requestPayloadSize = bytes;
   }
 
   setResponsePayloadSize(bytes) {
-    // TODO Number or null validate
+    if (!isNumber(bytes) && !isNull(bytes)) {
+      throw new Error(
+        `firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.`,
+      );
+    }
+
     this._responsePayloadSize = bytes;
   }
 
   setResponseContentType(type) {
-    // TODO String or null validate
+    if (!isString(type) && !isNull(type)) {
+      throw new Error(
+        `firebase.perf.HttpMetric.setResponseContentType(*) 'type' must be a string or null.`,
+      );
+    }
+
     this._responseContentType = type;
   }
 
@@ -89,10 +123,12 @@ export default class HttpMetric {
       attributes: Object.assign({}, this._attributes),
     };
 
-    if (this._httpResponseCode) metricData.httpResponseCode = this._httpResponseCode;
-    if (this._requestPayloadSize) metricData.requestPayloadSize = this._requestPayloadSize;
-    if (this._responsePayloadSize) metricData.responsePayloadSize = this._responsePayloadSize;
-    if (this._responseContentType) metricData.responseContentType = this._responseContentType;
+    if (!isNull(this._httpResponseCode)) metricData.httpResponseCode = this._httpResponseCode;
+    if (!isNull(this._requestPayloadSize)) metricData.requestPayloadSize = this._requestPayloadSize;
+    if (!isNull(this._responsePayloadSize))
+      metricData.responsePayloadSize = this._responsePayloadSize;
+    if (!isNull(this._responseContentType))
+      metricData.responseContentType = this._responseContentType;
 
     return this.native.stopHttpMetric(this._id, metricData);
   }
