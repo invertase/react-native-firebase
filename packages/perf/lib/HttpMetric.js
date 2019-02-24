@@ -16,18 +16,15 @@
  */
 
 import { isString, isNumber, isNull } from '@react-native-firebase/common';
+import MetricWithAttributes from './MetricWithAttributes';
 
-let id = 0;
-
-export default class HttpMetric {
+export default class HttpMetric extends MetricWithAttributes {
   constructor(native, url, httpMethod) {
-    this.native = native;
+    super(native);
 
-    this._id = id++;
     this._url = url;
     this._httpMethod = httpMethod;
 
-    this._attributes = {};
     this._httpResponseCode = null;
     this._requestPayloadSize = null;
     this._responsePayloadSize = null;
@@ -35,37 +32,6 @@ export default class HttpMetric {
 
     this._started = false;
     this._stopped = false;
-  }
-
-  getAttribute(attribute) {
-    if (!isString(attribute)) {
-      throw new Error(`firebase.perf.HttpMetric.getAttribute(*) 'attribute' must be a string.`);
-    }
-    return this._attributes[attribute] || null;
-  }
-
-  getAttributes() {
-    return Object.assign({}, this._attributes);
-  }
-
-  putAttribute(attribute, value) {
-    if (!isString(attribute)) {
-      throw new Error(`firebase.perf.HttpMetric.putAttribute(*, _) 'attribute' must be a string.`);
-    }
-
-    if (!isString(value)) {
-      throw new Error(`firebase.perf.HttpMetric.putAttribute(_, *) 'value' must be a string.`);
-    }
-
-    this._attributes[attribute] = value;
-  }
-
-  removeAttribute(attribute) {
-    if (!isString(attribute)) {
-      throw new Error(`firebase.perf.HttpMetric.removeAttribute(*) 'attribute' must be a string.`);
-    }
-
-    delete this._attributes[attribute];
   }
 
   setHttpResponseCode(code) {
@@ -98,14 +64,14 @@ export default class HttpMetric {
     this._responsePayloadSize = bytes;
   }
 
-  setResponseContentType(type) {
-    if (!isString(type) && !isNull(type)) {
+  setResponseContentType(contentType) {
+    if (!isString(contentType) && !isNull(contentType)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setResponseContentType(*) 'type' must be a string or null.`,
+        `firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.`,
       );
     }
 
-    this._responseContentType = type;
+    this._responseContentType = contentType;
   }
 
   start() {
@@ -123,7 +89,17 @@ export default class HttpMetric {
       attributes: Object.assign({}, this._attributes),
     };
 
-    if (!isNull(this._httpResponseCode)) metricData.httpResponseCode = this._httpResponseCode;
+    if (!isNull(this._httpResponseCode)) {
+      metricData.httpResponseCode = this._httpResponseCode;
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Warning: A firebase.perf.HttpMetric (${this._httpMethod}: ${
+          this._url
+        }) failed to provide a httpResponseCode; this metric will not be visible on the Firebase console.`,
+      );
+    }
+
     if (!isNull(this._requestPayloadSize)) metricData.requestPayloadSize = this._requestPayloadSize;
     if (!isNull(this._responsePayloadSize))
       metricData.responsePayloadSize = this._responsePayloadSize;

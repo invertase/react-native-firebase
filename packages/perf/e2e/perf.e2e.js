@@ -53,6 +53,34 @@ describe('perf()', () => {
     });
   });
 
+  describe('newTrace()', () => {
+    it('returns an instance of Trace', async () => {
+      const trace = firebase.perf().newTrace('invertase');
+      trace.constructor.name.should.be.equal('Trace');
+      trace._identifier.should.equal('invertase');
+    });
+
+    it('errors if identifier not a string', async () => {
+      try {
+        firebase.perf().newTrace(1337);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if identifier length > 100', async () => {
+      try {
+        firebase.perf().newTrace(new Array(101).fill('i').join(''));
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('with a maximum length of 100 characters');
+        return Promise.resolve();
+      }
+    });
+  });
+
   describe('newHttpMetric()', () => {
     it('returns an instance of HttpMetric', async () => {
       const metric = firebase.perf().newHttpMetric('https://invertase.io', 'GET');

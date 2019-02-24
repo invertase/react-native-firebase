@@ -23,6 +23,7 @@ import {
 
 import { isString, isBoolean, isOneOf } from '@react-native-firebase/common';
 
+import Trace from './Trace';
 import version from './version';
 import HttpMetric from './HttpMetric';
 
@@ -63,6 +64,15 @@ class FirebasePerfModule extends FirebaseModule {
 
     this._isPerformanceCollectionEnabled = enabled;
     return this.native.setPerformanceCollectionEnabled(enabled);
+  }
+
+  newTrace(identifier) {
+    // TODO(VALIDATION): identifier: no leading or trailing whitespace, no leading underscore '_'
+    if (!isString(identifier) || identifier.length > 100) {
+      throw new Error(`firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.`);
+    }
+
+    return new Trace(this.native, identifier);
   }
 
   newHttpMetric(url, httpMethod) {

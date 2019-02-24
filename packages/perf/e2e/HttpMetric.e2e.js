@@ -23,6 +23,7 @@ describe('perf()', () => {
       it('correctly starts with internal flag ', async () => {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         await httpMetric.start();
+        httpMetric.setHttpResponseCode(200);
         should.equal(httpMetric._started, true);
         await Utils.sleep(75);
         await httpMetric.stop();
@@ -32,6 +33,7 @@ describe('perf()', () => {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
         await httpMetric.start();
         should.equal(httpMetric._started, true);
+        httpMetric.setHttpResponseCode(200);
         should.equal(await httpMetric.start(), null);
         await Utils.sleep(75);
         await httpMetric.stop();
@@ -138,6 +140,46 @@ describe('perf()', () => {
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
           e.message.should.containEql('must be a string');
+          return Promise.resolve();
+        }
+      });
+
+      it('errors if attribute name is greater than 40 characters', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.putAttribute(new Array(41).fill('1').join(''), 1337);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('a maximum length of 40 characters');
+          return Promise.resolve();
+        }
+      });
+
+      it('errors if attribute value is greater than 100 characters', async () => {
+        try {
+          const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+          httpMetric.putAttribute('invertase', new Array(101).fill('1').join(''));
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('a maximum length of 100 characters');
+          return Promise.resolve();
+        }
+      });
+
+      it('errors if more than 5 attributes are put', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+
+        httpMetric.putAttribute('invertase1', '1337');
+        httpMetric.putAttribute('invertase2', '1337');
+        httpMetric.putAttribute('invertase3', '1337');
+        httpMetric.putAttribute('invertase4', '1337');
+        httpMetric.putAttribute('invertase5', '1337');
+
+        try {
+          httpMetric.putAttribute('invertase6', '1337');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (e) {
+          e.message.should.containEql('maximum number of attributes');
           return Promise.resolve();
         }
       });
