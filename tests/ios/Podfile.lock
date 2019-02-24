@@ -12,6 +12,12 @@ PODS:
   - Firebase/Functions (5.15.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (= 2.1.2)
+  - Firebase/Performance (5.15.0):
+    - Firebase/Core
+    - FirebasePerformance (= 2.2.2)
+  - FirebaseABTesting (2.0.0):
+    - FirebaseCore (~> 5.0)
+    - Protobuf (~> 3.5)
   - FirebaseAnalytics (5.4.0):
     - FirebaseCore (~> 5.1)
     - FirebaseInstanceID (~> 3.3)
@@ -37,6 +43,24 @@ PODS:
     - FirebaseCore (~> 5.1)
     - GoogleUtilities/Environment (~> 5.3)
     - GoogleUtilities/UserDefaults (~> 5.3)
+  - FirebasePerformance (2.2.2):
+    - FirebaseAnalytics (~> 5.4)
+    - FirebaseInstanceID (~> 3.3)
+    - FirebaseRemoteConfig (~> 3.1)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GoogleUtilities/ISASwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.5)
+  - FirebaseRemoteConfig (3.1.0):
+    - FirebaseABTesting (~> 2.0)
+    - FirebaseAnalytics (~> 5.3)
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleUtilities/Environment (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - Protobuf (~> 3.5)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -48,11 +72,17 @@ PODS:
     - GoogleUtilities/Network (~> 5.2)
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
+  - GoogleToolboxForMac/Defines (2.2.0)
+  - GoogleToolboxForMac/Logger (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
+    - GoogleToolboxForMac/Defines (= 2.2.0)
   - GoogleUtilities/AppDelegateSwizzler (5.3.7):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
   - GoogleUtilities/Environment (5.3.7)
+  - GoogleUtilities/ISASwizzler (5.3.7)
   - GoogleUtilities/Logger (5.3.7):
     - GoogleUtilities/Environment
   - GoogleUtilities/MethodSwizzler (5.3.7):
@@ -74,6 +104,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+  - Protobuf (3.6.1)
   - React (0.59.0-rc.2):
     - React/Core (= 0.59.0-rc.2)
   - React/Core (0.59.0-rc.2):
@@ -132,6 +163,7 @@ PODS:
     - React
   - RNFBPerf (6.0.0-alpha.3):
     - Firebase/Core (~> 5.15.0)
+    - Firebase/Performance (~> 5.15.0)
     - React
   - yoga (0.59.0-rc.2.React)
 
@@ -158,16 +190,21 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
     - Firebase
+    - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAuth
     - FirebaseAuthInterop
     - FirebaseCore
     - FirebaseFunctions
     - FirebaseInstanceID
+    - FirebasePerformance
+    - FirebaseRemoteConfig
     - GoogleAppMeasurement
+    - GoogleToolboxForMac
     - GoogleUtilities
     - GTMSessionFetcher
     - nanopb
+    - Protobuf
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -197,25 +234,30 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
+  FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAuth: 02e969ff430e156d99d4cb842d77b806b71ad7bb
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
   FirebaseFunctions: e37c7d4d2dec63972ca4642afeb8dae8ff8ab52e
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
+  FirebasePerformance: 6f77b930f982a54ad487d3de5523ce641db9dcc9
+  FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
+  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   Jet: 5748d9e6ccc47b646859282fc25d1b063540e981
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   RNFBAnalytics: ca21f3fa12a77a9aa251dee9b82ceed29108f7e0
   RNFBApp: 305869c42d87e4792f7f8432189fb4617916731d
   RNFBFunctions: 2b2247e7222349b9b277baa12ed1b82bff4bf1dd
   RNFBIid: d4cf17077faf724ef75ae022dd764351a119923c
-  RNFBPerf: 665dd32e38f2bfbc99c2075775d7b6ea8feed1a4
+  RNFBPerf: 8d30b0ad9aa7419fa53e285a886faec2ef1b9265
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
 PODFILE CHECKSUM: 13132429857e87df42318f7c2807fab4a3992817

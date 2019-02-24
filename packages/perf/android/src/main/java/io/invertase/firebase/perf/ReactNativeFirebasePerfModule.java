@@ -30,6 +30,7 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -45,8 +46,10 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    traces.clear();
-    httpMetrics.clear();
+    synchronized (ReactNativeFirebasePerfModule.class) {
+      traces.clear();
+      httpMetrics.clear();
+    }
   }
 
   @ReactMethod
@@ -59,8 +62,12 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   public void startTrace(int id, String identifier, Promise promise) {
     try {
       Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
-      traces.put(id, trace);
       trace.start();
+
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        traces.put(id, trace);
+      }
+
       promise.resolve(null);
     } catch (Exception exception) {
       rejectPromiseWithExceptionMap(promise, exception);
@@ -70,17 +77,24 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void stopTrace(int id, ReadableMap traceData, Promise promise) {
     try {
-      Trace trace = traces.get(id);
+      Trace trace;
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        trace = traces.get(id);
+      }
 
       ReadableMap metrics = traceData.getMap("metrics");
       ReadableMap attributes = traceData.getMap("attributes");
 
-      ReadableMapKeySetIterator metricKeySetIterator = metrics.keySetIterator();
-      ReadableMapKeySetIterator attrKeySetIterator = attributes.keySetIterator();
+      ReadableMapKeySetIterator metricKeySetIterator = Objects
+        .requireNonNull(metrics)
+        .keySetIterator();
+      ReadableMapKeySetIterator attrKeySetIterator = Objects
+        .requireNonNull(attributes)
+        .keySetIterator();
 
       while (attrKeySetIterator.hasNextKey()) {
         String attrName = attrKeySetIterator.nextKey();
-        trace.putAttribute(attrName, attributes.getString(attrName));
+        trace.putAttribute(attrName, Objects.requireNonNull(attributes.getString(attrName)));
       }
 
       while (metricKeySetIterator.hasNextKey()) {
@@ -89,7 +103,10 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
       }
 
       trace.stop();
-      traces.remove(id);
+
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        traces.remove(id);
+      }
 
       promise.resolve(null);
     } catch (Exception exception) {
@@ -102,8 +119,11 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
     try {
       HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
 
-      httpMetrics.put(id, httpMetric);
       httpMetric.start();
+
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        httpMetrics.put(id, httpMetric);
+      }
 
       promise.resolve(null);
     } catch (Exception exception) {
@@ -114,7 +134,10 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void stopHttpMetric(int id, ReadableMap metricData, Promise promise) {
     try {
-      HttpMetric httpMetric = httpMetrics.get(id);
+      HttpMetric httpMetric;
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        httpMetric = httpMetrics.get(id);
+      }
 
       if (metricData.hasKey("httpResponseCode")) {
         httpMetric.setHttpResponseCode(metricData.getInt("httpResponseCode"));
@@ -132,16 +155,20 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
         httpMetric.setResponseContentType(metricData.getString("responseContentType"));
       }
 
-      ReadableMap attributes = metricData.getMap("attributes");
+      ReadableMap attributes = Objects.requireNonNull(metricData.getMap("attributes"));
       ReadableMapKeySetIterator attrKeySetIterator = attributes.keySetIterator();
 
       while (attrKeySetIterator.hasNextKey()) {
         String attrName = attrKeySetIterator.nextKey();
-        httpMetric.putAttribute(attrName, attributes.getString(attrName));
+        httpMetric.putAttribute(attrName, Objects.requireNonNull(attributes.getString(attrName)));
       }
 
       httpMetric.stop();
-      httpMetrics.remove(id);
+
+      synchronized (ReactNativeFirebasePerfModule.class) {
+        httpMetrics.remove(id);
+      }
+
       promise.resolve(null);
     } catch (Exception exception) {
       rejectPromiseWithExceptionMap(promise, exception);

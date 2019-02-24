@@ -68,12 +68,7 @@ declare module '@react-native-firebase/crashlytics' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Crashlytics integrates across Firebase features and provides
-     * you with unlimited reporting for up to 500 distinct events
-     * that you can define using the Firebase SDK. Crashlytics reports
-     * help you understand clearly how your users behave, which enables
-     * you to make informed decisions regarding app marketing and
-     * performance optimizations.
+     * Crashlytics
      */
     crashlytics: ReactNativeFirebaseModuleAndStatics<
       Crashlytics.Module,

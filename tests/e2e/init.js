@@ -69,7 +69,7 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying... (${retry})`);
-    await sleep(3000);
+    await Utils.sleep(3000);
   }
 });
 
