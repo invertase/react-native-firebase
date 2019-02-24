@@ -20,5 +20,4 @@
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBPerfModule : NSObject <RCTBridgeModule>
-
 @end
