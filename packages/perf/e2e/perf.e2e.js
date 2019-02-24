@@ -24,7 +24,99 @@ describe('perf()', () => {
     });
   });
 
-  describe('aMethod()', () => {
+  describe('setPerformanceCollectionEnabled()', () => {
+    it('true', async () => {
+      should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
+      await firebase.perf().setPerformanceCollectionEnabled(true);
+      should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
+      await Utils.sleep(2000);
+    });
 
+    it('false', async () => {
+      await firebase.perf().setPerformanceCollectionEnabled(false);
+      should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
+      await Utils.sleep(2000);
+      await firebase.perf().setPerformanceCollectionEnabled(true);
+      should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
+      await Utils.sleep(2000);
+      await device.launchApp({ newInstance: true });
+    });
+
+    it('errors if not boolean', async () => {
+      try {
+        firebase.perf().setPerformanceCollectionEnabled();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a boolean');
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('newTrace()', () => {
+    it('returns an instance of Trace', async () => {
+      const trace = firebase.perf().newTrace('invertase');
+      trace.constructor.name.should.be.equal('Trace');
+      trace._identifier.should.equal('invertase');
+    });
+
+    it('errors if identifier not a string', async () => {
+      try {
+        firebase.perf().newTrace(1337);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if identifier length > 100', async () => {
+      try {
+        firebase.perf().newTrace(new Array(101).fill('i').join(''));
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('with a maximum length of 100 characters');
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('newHttpMetric()', () => {
+    it('returns an instance of HttpMetric', async () => {
+      const metric = firebase.perf().newHttpMetric('https://invertase.io', 'GET');
+      metric.constructor.name.should.be.equal('HttpMetric');
+      metric._url.should.equal('https://invertase.io');
+      metric._httpMethod.should.equal('GET');
+    });
+
+    it('errors if url not a string', async () => {
+      try {
+        firebase.perf().newHttpMetric(1337, 7331);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a string');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if httpMethod not a string', async () => {
+      try {
+        firebase.perf().newHttpMetric('https://invertase.io', 1337);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be one of');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if httpMethod not a valid type', async () => {
+      try {
+        firebase.perf().newHttpMetric('https://invertase.io', 'FIRE');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be one of');
+        return Promise.resolve();
+      }
+    });
   });
 });

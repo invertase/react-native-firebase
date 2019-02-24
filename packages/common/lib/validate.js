@@ -57,6 +57,15 @@ export function isString(value) {
 }
 
 /**
+ * Simple is number check
+ * @param value
+ * @return {boolean}
+ */
+export function isNumber(value) {
+  return typeof value === 'number';
+}
+
+/**
  * Simple is boolean check
  *
  * @param value

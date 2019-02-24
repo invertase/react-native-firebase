@@ -21,7 +21,11 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import { isString, isBoolean, isOneOf } from '@react-native-firebase/common';
+
+import Trace from './Trace';
 import version from './version';
+import HttpMetric from './HttpMetric';
 
 const statics = {};
 
@@ -29,8 +33,63 @@ const namespace = 'perf';
 
 const nativeModuleName = 'RNFBPerfModule';
 
-class FirebasePerfModule extends FirebaseModule {
+const VALID_HTTP_METHODS = [
+  'CONNECT',
+  'DELETE',
+  'GET',
+  'HEAD',
+  'OPTIONS',
+  'PATCH',
+  'POST',
+  'PUT',
+  'TRACE',
+];
 
+class FirebasePerfModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
+  }
+
+  get isPerformanceCollectionEnabled() {
+    return this._isPerformanceCollectionEnabled;
+  }
+
+  setPerformanceCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.`,
+      );
+    }
+
+    this._isPerformanceCollectionEnabled = enabled;
+    return this.native.setPerformanceCollectionEnabled(enabled);
+  }
+
+  newTrace(identifier) {
+    // TODO(VALIDATION): identifier: no leading or trailing whitespace, no leading underscore '_'
+    if (!isString(identifier) || identifier.length > 100) {
+      throw new Error(`firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.`);
+    }
+
+    return new Trace(this.native, identifier);
+  }
+
+  newHttpMetric(url, httpMethod) {
+    if (!isString(url)) {
+      throw new Error(`firebase.perf().newHttpMetric(*, _) 'url' must be a string.`);
+    }
+
+    if (!isString(url) || !isOneOf(httpMethod, VALID_HTTP_METHODS)) {
+      throw new Error(
+        `firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of ${VALID_HTTP_METHODS.join(
+          ', ',
+        )}.`,
+      );
+    }
+
+    return new HttpMetric(this.native, url, httpMethod);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/perf';

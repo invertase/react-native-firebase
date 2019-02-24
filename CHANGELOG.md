@@ -34,6 +34,7 @@ WIP
 ## Performance Monitoring (perf)
 
 - [BREAKING] All `Trace` & `HttpMetric` methods (except for `start` & `stop`) are now synchronous, extra attributes/metrics now only get sent to native when you call `stop`
+- [NEW] Added support for `firebase.perf().isPerformanceCollectionEnabled`
 
 ## Messaging 
 

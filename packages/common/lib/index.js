@@ -32,6 +32,10 @@ export function promiseDefer() {
   return deferred;
 }
 
+export function hasOwnProperty(target, property) {
+  return Object.hasOwnProperty.call(target, property);
+}
+
 export const isIOS = Platform.OS === 'ios';
 
 export const isAndroid = Platform.OS === 'android';
