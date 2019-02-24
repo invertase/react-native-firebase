@@ -50,7 +50,7 @@ export namespace Perf {
     getAttribute(attribute: string): string | null;
 
     /**
-     * Returns an object of all the currently added attributes.
+     * Returns an object of all the currently added attributes and their string values.
      */
     getAttributes(): { [key: string]: string };
 
@@ -70,9 +70,45 @@ export namespace Perf {
      */
     removeAttribute(attribute: string);
 
+    /**
+     * Gets the value of the metric with the given name in the current trace. If the metric doesn't exist, it will not be created and a 0 is returned.
+     *
+     * @param metricName Name of the metric to get.
+     */
+    getMetric(metricName: string): number;
 
-    // TODO metrics
+    /**
+     * Returns an object of all the currently added metrics and their number values.
+     */
+    getMetrics(): { [key: string]: number };
 
+    /**
+     * Sets the value of the named metric with the provided number.
+     *
+     * If a metric with the given name exists it will be overwritten.
+     * If a metric with the given name doesn't exist, a new one will be created.
+     *
+     * @param metricName Name of the metric to set. Must not have a leading or trailing whitespace, no leading underscore '_' character and have a max length of 32 characters.
+     * @param value The value the metric should be set to.
+     */
+    putMetric(metricName: string, value: number);
+
+    /**
+     * Increments the named metric by the `incrementBy` value.
+     *
+     * If a metric with the given name doesn't exist, a new one will be created starting with the value of `incrementBy`.
+     *
+     * @param metricName Name of the metric to increment. Must not have a leading or trailing whitespace, no leading underscore '_' character and have a max length of 32 characters.
+     * @param incrementBy The value the metric should be incremented by.
+     */
+    incrementMetric(metricName: string, incrementBy: number);
+
+    /**
+     * Removes a metric by name if it exists.
+     *
+     * @param metricName Name of the metric to remove.
+     */
+    removeMetric(metricName: string);
 
     /**
      * Marks the start time of the trace. Does nothing if already started.
@@ -168,12 +204,14 @@ export namespace Perf {
 
     /**
      * Enables or disables performance monitoring.
+     *
      * @param enabled Should performance monitoring be enabled
      */
     setPerformanceCollectionEnabled(enabled: boolean): void;
 
     /**
      * Creates a Trace instance with given identifier.
+     *
      * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
      */
     newTrace(identifier: string): Trace;
