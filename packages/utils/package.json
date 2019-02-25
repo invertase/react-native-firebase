@@ -39,7 +39,7 @@
       "packageInstance": "new ReactNativeFirebaseUtilsPackage()"
     }
   },
-  "gitHead": "467b81cd8ce49dc971f8fa3732e94a6539e744c3",
+  "gitHead": "14e578c676aa286b030341da0303eb7a987b0f6c",
   "publishConfig": {
     "access": "public"
   }
