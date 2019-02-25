@@ -35,11 +35,12 @@ describe('perf()', () => {
     it('false', async () => {
       await firebase.perf().setPerformanceCollectionEnabled(false);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
-      await Utils.sleep(2000);
+      await Utils.sleep(1500);
       await firebase.perf().setPerformanceCollectionEnabled(true);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
-      await Utils.sleep(2000);
+      await Utils.sleep(1500);
       await device.launchApp({ newInstance: true });
+      await Utils.sleep(1500);
     });
 
     it('errors if not boolean', async () => {
