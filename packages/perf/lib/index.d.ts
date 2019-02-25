@@ -207,7 +207,7 @@ export namespace Perf {
      *
      * @param enabled Should performance monitoring be enabled
      */
-    setPerformanceCollectionEnabled(enabled: boolean): void;
+    setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
     /**
      * Creates a Trace instance with given identifier.
