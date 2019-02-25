@@ -18,6 +18,7 @@ def firebasePackages = [
   'config',
   'crashlytics',
   'functions',
+  'fiam',
   'iid',
   'mlkit',
   'perf',

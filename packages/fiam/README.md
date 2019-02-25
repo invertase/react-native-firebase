@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Fiam</h2>
+  <h4 align="center">React Native Firebase - In-App Messaging</h2>
 </p>
 
 <p align="center">
@@ -20,9 +20,9 @@
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
-Fiam description.
+Firebase In-App Messaging helps you engage users who are actively using your app by sending them targeted and contextual messages that nudge them to complete key in-app actions - like beating a game level, buying an item, or subscribing to content.
 
-[> Learn More](https://firebase.google.com/products/fiam/)
+[> Learn More](https://firebase.google.com/products/in-app-messaging/)
 
 ## Installation
 

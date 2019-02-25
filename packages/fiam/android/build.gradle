@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        fiam: "16.0.6"
+        fiam: "17.0.5"
       ],
     ],
   ])
@@ -56,7 +56,7 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase/app')
-  implementation "com.google.firebase:firebase-fiam:${ReactNative.ext.getVersion("firebase", "fiam")}"
+  implementation "com.google.firebase:firebase-inappmessaging-display:${ReactNative.ext.getVersion("firebase", "fiam")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 

@@ -22,7 +22,9 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Fiam
+ * Firebase In-App Messaging helps you engage users who are actively using your app by sending
+ * them targeted and contextual messages that nudge them to complete key in-app actions - like
+ * beating a game level, buying an item, or subscribing to content.
  *
  * @firebase fiam
  */
@@ -68,7 +70,9 @@ declare module '@react-native-firebase/fiam' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Fiam
+     * Firebase In-App Messaging helps you engage users who are actively using your app by sending
+     * them targeted and contextual messages that nudge them to complete key in-app actions - like
+     * beating a game level, buying an item, or subscribing to content.
      */
     fiam: ReactNativeFirebaseModuleAndStatics<
       Fiam.Module,
@@ -78,7 +82,9 @@ declare module '@react-native-firebase/app-types' {
 
   interface FirebaseApp {
     /**
-     * Fiam
+     * Firebase In-App Messaging helps you engage users who are actively using your app by sending
+     * them targeted and contextual messages that nudge them to complete key in-app actions - like
+     * beating a game level, buying an item, or subscribing to content.
      */
     fiam(): Fiam.Module;
   }
