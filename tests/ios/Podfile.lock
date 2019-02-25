@@ -148,20 +148,20 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0-alpha.3):
+  - RNFBAnalytics (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
-  - RNFBApp (6.0.0-alpha.3):
+  - RNFBApp (6.0.0-alpha.4):
     - Firebase/Auth (~> 5.17.0)
     - Firebase/Core (~> 5.17.0)
     - React
-  - RNFBFunctions (6.0.0-alpha.3):
+  - RNFBFunctions (6.0.0-alpha.4):
     - Firebase/Functions (~> 5.17.0)
     - React
-  - RNFBIid (6.0.0-alpha.3):
+  - RNFBIid (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
-  - RNFBPerf (6.0.0-alpha.3):
+  - RNFBPerf (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - Firebase/Performance (~> 5.17.0)
     - React
