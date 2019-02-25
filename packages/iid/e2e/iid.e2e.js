@@ -16,6 +16,9 @@
  */
 
 describe('iid()', () => {
+  afterEach(async () => {
+    await Utils.sleep(150);
+  });
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -35,7 +38,9 @@ describe('iid()', () => {
         .iid()
         .app.name.should.equal('secondaryFromNative');
 
+      await Utils.sleep(1000);
       const defaultToken = await firebase.iid().getToken();
+      await Utils.sleep(1000);
 
       const secondaryToken = await firebase
         .app('secondaryFromNative')
@@ -60,10 +65,12 @@ describe('iid()', () => {
   describe('delete()', () => {
     it('deletes the current instance id', async () => {
       const iidBefore = await firebase.iid().get();
-      iidBefore.should.be.a.String();
+      await Utils.sleep(1000);
       await firebase.iid().delete();
+      await Utils.sleep(1000);
 
       const iidAfter = await firebase.iid().get();
+
       iidAfter.should.be.a.String();
       iidBefore.should.not.equal(iidAfter);
       await Utils.sleep(3000);
