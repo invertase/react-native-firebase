@@ -1,6 +1,67 @@
 # v6.0.0
 
-WIP
+This version is effectively a re-write; with the aim of splitting every module into it's own package (simplifies maintainence and also installation for users) and bringing each Firebase module up to 100% testing coverage and 100% Firebase API Coverage. As such many of the manual native installation steps for Android & iOS have been removed / internally automated. Most modules are now ready to go just by linking it (e.g. `react-native link @react-native-firebase/analytics`).
+
+The following modules are complete and published to NPM on the `alpha` tag:
+
+
+
+## Migrating from v4 & v5
+
+With the size of the changes mentioned above, it's recommended that you remove all native code/changes previously added for `react-native-firebase` (except for firebase initialisation code (e.g. `[FIRApp configure];` ios, `apply plugin: 'com.google.gms.google-services'` android).
+
+Additionally, it's recommended to remove any native Firebase dependencies (the Firebase Android/iOS SDKs) in your iOS Podfile and your `android/app/build.gradle` file, e.g. `pod 'Firebase/Core', '~> 5.15.0'` or `implementation "com.google.firebase:firebase-core:16.`, as we now manange these dependencies and their versions internally.
+
+Once all the native installation changes have been removed from the previous version you can now follow the install guide below.
+
+> If you're migrating from v4, please ensure you've read up on any breaking changes from v4 to v5 [here](https://rnfirebase.io/docs/v5.x.x/releases/v5.0.0).
+
+### Installing 
+
+1. Install the [@react-native-firebase/app](https://github.com/invertase/react-native-firebase/tree/master/packages/app) NPM package (all modules have a hard dependency requirement on this package):
+
+```bash
+yarn add @react-native-firebase/app@alpha
+react-native link @react-native-firebase/app
+```
+
+2. Install the NPM packages for the Firebase services you'd like to use, e.g. for analytics install [@react-native-firebase/analytics](https://github.com/invertase/react-native-firebase/tree/master/packages/analytics). Repeat this step for each Firebase service you require.
+
+```bash
+yarn add @react-native-firebase/analytics@alpha
+react-native link @react-native-firebase/analytics
+```
+
+3. Some Firebase services such as Performance Monitoring require some minor additional native code steps for Android or iOS that can't be abstracted away, e.g. Perf on Android requires the ` com.google.firebase.firebase-perf ` gradle plugin. Please see the readme for each module (see the table above for links) where these changes are documented; these will later be moved to the new documentation hub.
+
+#### Usage Example
+
+```js
+// import the app module
+import firebase from '@react-native-firebase/app';
+
+// import the modules you'd like to use
+import '@react-native-firebase/analytics';
+import '@react-native-firebase/functions';
+
+// use them
+await firebase.analytics().setUserId('12345678');
+```
+
+Optionally; you can also consume a module directly without needing the default export of `@react-native-firebase/app`, e.g.:
+
+```js
+import { firebase } from '@react-native-firebase/analytics';
+
+// use analytics
+await firebase.analytics().setUserId('12345678');
+
+// ---- OR ----
+import analytics from '@react-native-firebase/analytics';
+
+// use analytics
+await analytics().setUserId('12345678');
+```
 
 ## All Modules
 
