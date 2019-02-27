@@ -16,7 +16,7 @@ android {
   compileSdkVersion 27
 
   defaultConfig {
-    applicationId "com.testing"
+    applicationId "com.invertase.testing"
     minSdkVersion 18
     targetSdkVersion 27
     versionCode 1

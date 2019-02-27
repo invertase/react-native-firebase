@@ -122,9 +122,7 @@ global.TestHelpers = {
   database: require('./database'),
   core: {
     config() {
-      const config =
-        device.getPlatform() === 'ios' ? iosTestConfig : androidTestConfig;
-      return { ...config };
+      return FirebaseHelpers.app.config();
     },
   },
 };

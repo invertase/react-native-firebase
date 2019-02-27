@@ -255,7 +255,7 @@ describe('database()', () => {
 
   describe('issue_679', () => {
     describe('path from snapshot reference', () => {
-      it('should match web SDK', async () => {
+      xit('should match web SDK', async () => {
         const nativeRef = firebase.database().ref('tests/issues/679');
         const webRef = firebaseAdmin.database().ref('tests/issues/679');
         const nativeRef2 = firebase.database().ref('tests/issues/679/');
@@ -265,7 +265,7 @@ describe('database()', () => {
         webRef2.toString().should.equal(nativeRef2.toString());
       });
 
-      it('should be correct when returned from native', async () => {
+      xit('should be correct when returned from native', async () => {
         const nativeRef = firebase.database().ref('tests/issues/679/');
         const webRef = firebaseAdmin.database().ref('tests/issues/679/');
 
