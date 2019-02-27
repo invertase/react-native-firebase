@@ -80,10 +80,7 @@ declare module '@react-native-firebase/fiam' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const FiamDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Fiam.Module,
-    Fiam.Statics
-  >;
+  const FiamDefaultExport: ReactNativeFirebaseModuleAndStatics<Fiam.Module, Fiam.Statics>;
   /**
    * @example
    * ```js
@@ -104,10 +101,7 @@ declare module '@react-native-firebase/app-types' {
      * them targeted and contextual messages that nudge them to complete key in-app actions - like
      * beating a game level, buying an item, or subscribing to content.
      */
-    fiam: ReactNativeFirebaseModuleAndStatics<
-      Fiam.Module,
-      Fiam.Statics
-    >;
+    fiam: ReactNativeFirebaseModuleAndStatics<Fiam.Module, Fiam.Statics>;
   }
 
   interface FirebaseApp {
