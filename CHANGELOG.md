@@ -101,7 +101,7 @@ await analytics().setUserId('12345678');
 
 ## Analytics
 
-- [NEW] Added support for `resetAnalyticsData()` - this is useful for opt-in first analytics/data collection flows
+- [NEW] Added support for `resetAnalyticsData()`
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
 
