@@ -1,0 +1,47 @@
+{
+  "name": "@react-native-firebase/fiam",
+  "version": "6.0.0-alpha.4",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - In-App Messaging - Engage active app users with contextual messages.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/fiam"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "in-app messaging",
+    "analytics",
+    "predictions",
+    "engage",
+    "active users",
+    "fiam"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "6.0.0-alpha.4"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "6.0.0-alpha.4",
+    "@react-native-firebase/common": "6.0.0-alpha.4"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "implementation project(':@react-native-firebase_fiam')",
+      "packageImportPath": "import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;",
+      "packageInstance": "new ReactNativeFirebaseFiamPackage()"
+    }
+  },
+  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "publishConfig": {
+    "access": "public"
+  }
+}

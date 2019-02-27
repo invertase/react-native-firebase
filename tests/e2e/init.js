@@ -26,6 +26,7 @@ const PACKAGES = [
   'app',
   'iid',
   'perf',
+  'fiam',
   'functions',
   'analytics',
   'config',

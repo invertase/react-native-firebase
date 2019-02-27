@@ -12,6 +12,9 @@ PODS:
   - Firebase/Functions (5.17.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (= 2.2.1)
+  - Firebase/InAppMessagingDisplay (5.17.0):
+    - Firebase/CoreOnly
+    - FirebaseInAppMessagingDisplay (= 0.12.2)
   - Firebase/Performance (5.17.0):
     - Firebase/Core
     - FirebasePerformance (= 2.2.3)
@@ -39,6 +42,14 @@ PODS:
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseInAppMessaging (0.12.1):
+    - FirebaseAnalytics (~> 5.3)
+    - FirebaseCore (~> 5.1)
+    - FirebaseInstanceID (~> 3.3)
+    - GoogleUtilities/Environment (~> 5.0)
+  - FirebaseInAppMessagingDisplay (0.12.2):
+    - FirebaseCore
+    - FirebaseInAppMessaging (>= 0.12.0)
   - FirebaseInstanceID (3.5.0):
     - FirebaseCore (~> 5.3)
     - GoogleUtilities/Environment (~> 5.3)
@@ -155,6 +166,10 @@ PODS:
     - Firebase/Auth (~> 5.17.0)
     - Firebase/Core (~> 5.17.0)
     - React
+  - RNFBFiam (6.0.0-alpha.4):
+    - Firebase/Core (~> 5.17.0)
+    - Firebase/InAppMessagingDisplay (~> 5.17.0)
+    - React
   - RNFBFunctions (6.0.0-alpha.4):
     - Firebase/Functions (~> 5.17.0)
     - React
@@ -181,6 +196,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - RNFBAnalytics (from `../../packages/analytics/ios/RNFBAnalytics.podspec`)
   - RNFBApp (from `../../packages/app/ios/RNFBApp.podspec`)
+  - RNFBFiam (from `../../packages/fiam/ios/RNFBFiam.podspec`)
   - RNFBFunctions (from `../../packages/functions/ios/RNFBFunctions.podspec`)
   - RNFBIid (from `../../packages/iid/ios/RNFBIid.podspec`)
   - RNFBPerf (from `../../packages/perf/ios/RNFBPerf.podspec`)
@@ -196,6 +212,8 @@ SPEC REPOS:
     - FirebaseAuthInterop
     - FirebaseCore
     - FirebaseFunctions
+    - FirebaseInAppMessaging
+    - FirebaseInAppMessagingDisplay
     - FirebaseInstanceID
     - FirebasePerformance
     - FirebaseRemoteConfig
@@ -221,6 +239,8 @@ EXTERNAL SOURCES:
     :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
   RNFBApp:
     :path: "../../packages/app/ios/RNFBApp.podspec"
+  RNFBFiam:
+    :path: "../../packages/fiam/ios/RNFBFiam.podspec"
   RNFBFunctions:
     :path: "../../packages/functions/ios/RNFBFunctions.podspec"
   RNFBIid:
@@ -240,6 +260,8 @@ SPEC CHECKSUMS:
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: c0c4befb82374d6aef64d800e569f47625352edc
   FirebaseFunctions: 324bdb368eeb5a1985fbb2184981b9480ea34aa9
+  FirebaseInAppMessaging: aa04bdbbee12aa132156e6085b3bfad7d6e0dcbb
+  FirebaseInAppMessagingDisplay: 5591606580c1ed8040fbf55c938a1ccc0caad3ef
   FirebaseInstanceID: 4522aad88f69297622062c0e9ffccdee3dd9b151
   FirebasePerformance: b97b1c301790b4fddc9fe675bca05b71c04e24a6
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
@@ -255,11 +277,12 @@ SPEC CHECKSUMS:
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   RNFBAnalytics: 7d2fc24309b87f9927efc8396c8bd70883161440
   RNFBApp: 8cbd3bb08f3473dcec9c592940938ebf941bfcaf
+  RNFBFiam: 6da6916d604b4d974a7c3cdc792d3de0bd5d13be
   RNFBFunctions: 9eeaec960694af2269684378d446d2007a59a41e
   RNFBIid: 6383ed7fc583b1ac40c9eb4352c84ec161f95f76
   RNFBPerf: 7ab9996e5742d6327d01ca92e272e11d7099dc06
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 13132429857e87df42318f7c2807fab4a3992817
+PODFILE CHECKSUM: ea1831d1c909aa5165eccd0f76aab3569b3de90d
 
 COCOAPODS: 1.5.3
