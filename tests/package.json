@@ -13,6 +13,7 @@
     "@react-native-firebase/auth": "6.0.0-alpha.4",
     "@react-native-firebase/config": "6.0.0-alpha.4",
     "@react-native-firebase/crashlytics": "6.0.0-alpha.4",
+    "@react-native-firebase/fiam": "^6.0.0-alpha.4",
     "@react-native-firebase/firestore": "6.0.0-alpha.4",
     "@react-native-firebase/functions": "6.0.0-alpha.4",
     "@react-native-firebase/iid": "6.0.0-alpha.4",

@@ -1,10 +1,10 @@
 # v6.0.0
 
-This version is effectively a re-write with the goal of splitting every module into it's own package (simplifies maintenance 
-for contributors and also installation for users) and bringing each Firebase module up to 100% testing coverage and 100% 
-Firebase API Coverage. 
+This version is effectively a re-write with the goal of splitting every module into it's own package (simplifies maintenance
+for contributors and also installation for users) and bringing each Firebase module up to 100% testing coverage and 100%
+Firebase API Coverage.
 
-Many of the manual native installation steps for Android & iOS have been removed / internally automated 
+Many of the manual native installation steps for Android & iOS have been removed / internally automated
 and most modules can now be used just by linking it (e.g. `react-native link @react-native-firebase/analytics`).
 
 The following modules are completed and published to NPM on the `alpha` tag ready to be consumed:
@@ -14,6 +14,7 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | [Analytics](/packages/analytics)         | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics) | [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail) |
 | [App](/packages/app)                     |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)       |       [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)       |
 | [Cloud Functions](/packages/functions)   | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions) | [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail) |
+| [In-app Messaging](/packages/fiam)       |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)      |      [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)      |
 | [Instance ID](/packages/iid)             |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)       |       [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)       |
 | [Performance Monitoring](/packages/perf) |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)      |      [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)      |
 | [Utils](/packages/utils)                 |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)     |     [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)     |
@@ -100,13 +101,20 @@ await analytics().setUserId('12345678');
 
 ## Analytics
 
-- [NEW] Added support for `resetAnalyticsData()` - this is useful for opt-in first analytics/data collection flows
+- [NEW] Added support for `resetAnalyticsData()`
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
 
 ## Functions <a href="https://api.rnfirebase.io/coverage/functions/detail"><img src="https://api.rnfirebase.io/coverage/functions/badge?style=flat-square" alt="Coverage"></a>
 
 - [BUGFIX] Fixed an issue where `useFunctionsEmulator` does not persist natively (Firebase iOS SDK requires chaining this method before other calls and does not modify the instance, Android however persists this)
+
+## In-App Messaging (fiam) - **[NEW]**
+
+- [NEW] Added support for `firebase.fiam().isMessagesDisplaySuppressed: boolean;`
+- [NEW] Added support for `firebase.fiam().setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;`
+- [NEW] Added support for `firebase.fiam().isAutomaticDataCollectionEnabled: boolean;`
+- [NEW] Added support for `firebase.fiam().setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;`
 
 ## Instance Id (iid)
 
