@@ -210,6 +210,13 @@ jobs:
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
 
+      - run:
+          name: Accept Android Licenses
+          shell: /bin/bash -e
+          command: |
+            yes | sdkmanager --licenses
+            yes | sdkmanager --update
+
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
@@ -299,6 +306,13 @@ jobs:
               rm -rf ~/.gradle/caches/build-cache-* &&
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
+
+      - run:
+          name: Accept Android Licenses
+          shell: /bin/bash -e
+          command: |
+            yes | sdkmanager --licenses
+            yes | sdkmanager --update
 
       # download and cache dependencies and Gradle
       - run:
