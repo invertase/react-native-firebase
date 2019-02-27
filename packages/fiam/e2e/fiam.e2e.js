@@ -36,6 +36,7 @@ describe('fiam()', () => {
     });
 
     it('false', async () => {
+      await device.launchApp();
       await firebase.fiam().setAutomaticDataCollectionEnabled(false);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, false);
       await Utils.sleep(1500);
@@ -66,6 +67,7 @@ describe('fiam()', () => {
     });
 
     it('true', async () => {
+      await device.launchApp();
       await firebase.fiam().setMessagesDisplaySuppressed(true);
       should.equal(firebase.fiam().isMessagesDisplaySuppressed, true);
       await Utils.sleep(1500);

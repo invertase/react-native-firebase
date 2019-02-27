@@ -33,6 +33,7 @@ describe('perf()', () => {
     });
 
     it('false', async () => {
+      await device.launchApp();
       await firebase.perf().setPerformanceCollectionEnabled(false);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
       await Utils.sleep(1500);
