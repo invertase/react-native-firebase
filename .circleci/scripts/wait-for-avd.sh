@@ -15,17 +15,35 @@
 # limitations under the License.
 #
 
-bootanim=""
+BOOT=""
+INTERVAL=5
+MAX_RETRIES=60
+REMAINING_RETRIES=${MAX_RETRIES}
 
-echo "Waiting for AVD to finish booting"
+echo "[AVD] Waiting for boot completion..."
 export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
 
-until [[ "$bootanim" =~ "stopped" ]]; do
-  sleep 10
-  bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
+until [[ "$BOOT" =~ "1" ]]; do
+  if [[ ${REMAINING_RETRIES} -eq 0 ]]; then
+    echo "[AVD] Failed to boot within 5 minutes. Exiting..." 1>&2
+    exit 125
+  fi
+
+  BOOT=$(adb -e shell getprop sys.boot_completed 2>&1)
+  sleep ${INTERVAL}
+
+  REMAINING_RETRIES=$((REMAINING_RETRIES - 1))
+  echo "[AVD] $REMAINING_RETRIES retries remaining."
 done
 
-# extra time to let the OS settle
-sleep 25
+sleep ${INTERVAL}
+adb shell settings put global window_animation_scale 0
+adb shell settings put global transition_animation_scale 0
+adb shell settings put global animator_duration_scale 0
 
-echo "Android Virtual Device is now ready."
+sleep ${INTERVAL}
+
+# Wake device if screen not on
+adb shell dumpsys power | grep "mScreenOn=true" | xargs -0 test -z && adb shell input keyevent 26
+
+echo "[AVD] Now ready."

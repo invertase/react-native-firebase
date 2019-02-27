@@ -121,33 +121,33 @@ aliases:
 
 
   # -------------------------
-  #          DETOX
+  #          BREW
   # -------------------------
 
-  - &save-brew-cache
+  - &save-brew-cache-ios
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v7-brew-cache-{{ arch }}
+    key: v7-brew-cache-{{ arch }}-ios
 
-  - &restore-brew-cache
+  - &restore-brew-cache-ios
     keys:
-      - v7-brew-cache-{{ arch }}
+      - v7-brew-cache-{{ arch }}-ios
+
+  - &save-brew-cache-android
+    paths:
+      - /usr/local/Homebrew
+      - ~/Library/Caches/Homebrew
+    key: v7-brew-cache-{{ arch }}-android
+
+  - &restore-brew-cache-android
+    keys:
+      - v7-brew-cache-{{ arch }}-android
 
 
   # -------------------------
   #    SHARED RUN COMMANDS
   # -------------------------
-
-  - &configure-ios-detox-environment
-    name: Configure Jet + Detox Environment
-    command: |
-      HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
-      HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
-      HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
-      HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
-      touch .watchmanconfig
-      node -v
 
   - &packager-jet
     name: Start React Native Packager (background)
@@ -373,15 +373,17 @@ jobs:
             echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
             source $BASH_ENV
 
+      - restore-cache: *restore-brew-cache-android
       - run:
-          name: Install Android SDK Tools
+          name: Configure Detox Environment + Android SDK Tools
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask >/dev/null
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk >/dev/null
             HOMEBREW_NO_AUTO_UPDATE=1 brew cask install intel-haxm >/dev/null
             HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null >/dev/null
+      - save-cache: *save-brew-cache-android
 
-      # Yarn install - to ensure detox post install builds
+      # Yarn install - to ensure detox post install builds + Symlinks are created
       - restore-cache: *restore-yarn-cache
       - run: *yarn
       - save-cache: *save-yarn-cache
@@ -395,7 +397,7 @@ jobs:
           shell: /bin/bash -e
           command: |
             yes | sdkmanager "platform-tools"  "tools" >/dev/null
-            yes | sdkmanager "platforms;android-28" "system-images;android-27;google_apis;x86" "system-images;android-28;google_apis;x86" >/dev/null
+            yes | sdkmanager "platforms;android-28" "system-images;android-28;google_apis;x86" >/dev/null
             yes | sdkmanager "emulator" --channel=3 >/dev/null
             yes | sdkmanager "build-tools;28.0.3" >/dev/null
             yes | sdkmanager --licenses >/dev/null
@@ -410,30 +412,6 @@ jobs:
             adb kill-server
             ls -la ~/.android
 
-#      - run:
-#          name: Create Android Emulator (API 27)
-#          command: avdmanager create avd -n TestingAVD -k "system-images;android-27;google_apis;x86" -g google_apis -d "Nexus 4"
-#
-#      - run:
-#          name: Start Android Emulator (API 27) in background
-#          command: |
-#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-#            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
-#          background: true
-#
-#      - run:
-#          name: Wait for AVD to be ready (API 27)
-#          no_output_timeout: "5m"
-#          command: sh ./.circleci/scripts/wait-for-avd.sh
-#
-#      - run:
-#          name: Run Tests (API 27)
-#          command: yarn run tests:android:test-cover
-#
-#      - run:
-#          name: Stop Emulators (API 27)
-#          command: adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-
       - run:
           name: Create Android Emulator (API 28)
           command: avdmanager create avd --force -n TestingAVD -k "system-images;android-28;google_apis;x86" -g google_apis -d "Nexus 4"
@@ -442,7 +420,7 @@ jobs:
           name: Start Android Emulator (API 28) in background
           command: |
             /usr/local/share/android-sdk/emulator/emulator @TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 2 -gpu auto -accel on -memory 2048 -no-audio -no-snapshot -no-window -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
+            /usr/local/share/android-sdk/emulator/emulator @TestingAVD -skin 470x860 -cores 1 -gpu auto -accel on -memory 1024 -no-audio -no-snapshot -no-window -no-boot-anim -logcat *:W | grep -i 'ReactNative\|RNFB\|com.testing\|io.invertase\|firebase'
           background: true
 
       - run:
@@ -460,8 +438,8 @@ jobs:
 
       - store_artifacts:
           path: ~/detox-artifacts
-      - store_artifacts:
-          path: ~/react-native-firebase/coverage
+#      - store_artifacts:
+#          path: ~/react-native-firebase/coverage
 
   # -------------------------
   #      iOS - TEST E2E
@@ -486,9 +464,17 @@ jobs:
 
 
       # Brew
-      - restore-cache: *restore-brew-cache
-      - run: *configure-ios-detox-environment
-      - save-cache: *save-brew-cache
+      - restore-cache: *restore-brew-cache-ios
+      - run:
+          name: Configure Detox Environment
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
+            touch .watchmanconfig
+            node -v
+      - save-cache: *save-brew-cache-ios
 
       # Yarn install - to ensure detox post install builds
       - restore-cache: *restore-yarn-cache
@@ -529,8 +515,8 @@ jobs:
 
       - store_artifacts:
           path: ~/detox-artifacts
-      - store_artifacts:
-          path: ~/react-native-firebase/coverage
+#      - store_artifacts:
+#          path: ~/react-native-firebase/coverage
 
 # -------------------------
 #        WORK FLOWS
