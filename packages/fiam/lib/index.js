@@ -21,6 +21,8 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import { isBoolean } from '@react-native-firebase/common';
+
 import version from './version';
 
 const statics = {};
@@ -30,7 +32,41 @@ const namespace = 'fiam';
 const nativeModuleName = 'RNFBFiamModule';
 
 class FirebaseFiamModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    this._isMessagesDisplaySuppressed = this.native.isMessagesDisplaySuppressed;
+    this._isAutomaticDataCollectionEnabled = this.native.isAutomaticDataCollectionEnabled;
+  }
 
+  get isMessagesDisplaySuppressed() {
+    return this._isMessagesDisplaySuppressed;
+  }
+
+  get isAutomaticDataCollectionEnabled() {
+    return this._isAutomaticDataCollectionEnabled;
+  }
+
+  setMessagesDisplaySuppressed(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.fiam().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.`,
+      );
+    }
+
+    this._isMessagesDisplaySuppressed = enabled;
+    return this.native.setMessagesDisplaySuppressed(enabled);
+  }
+
+  setAutomaticDataCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.fiam().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.`,
+      );
+    }
+
+    this._isAutomaticDataCollectionEnabled = enabled;
+    return this.native.setAutomaticDataCollectionEnabled(enabled);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/fiam';

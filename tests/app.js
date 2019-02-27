@@ -26,6 +26,7 @@ import '@react-native-firebase/analytics';
 import '@react-native-firebase/config';
 import '@react-native-firebase/utils';
 import '@react-native-firebase/crashlytics';
+import '@react-native-firebase/fiam';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/mlkit';
 import '@react-native-firebase/iid';

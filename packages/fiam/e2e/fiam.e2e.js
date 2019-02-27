@@ -15,30 +15,72 @@
  *
  */
 
-describe('fiam()', () => {
+describe.only('fiam()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.fiam);
       app.fiam().app.should.equal(app);
     });
+  });
 
-    // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
-      firebase.fiam().app.name.should.equal('[DEFAULT]');
+  describe('setAutomaticDataCollectionEnabled()', () => {
+    it('true', async () => {
+      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      await firebase.fiam().setAutomaticDataCollectionEnabled(true);
+      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      await Utils.sleep(2000);
+    });
 
-      firebase
-        .fiam(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
+    it('false', async () => {
+      await firebase.fiam().setAutomaticDataCollectionEnabled(false);
+      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, false);
+      await Utils.sleep(1500);
+      await firebase.fiam().setAutomaticDataCollectionEnabled(true);
+      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      await Utils.sleep(1500);
+      await device.launchApp({ newInstance: true });
+      await Utils.sleep(1500);
+    });
 
-      firebase
-        .app('secondaryFromNative')
-        .fiam()
-        .app.name.should.equal('secondaryFromNative');
+    it('errors if not boolean', async () => {
+      try {
+        firebase.fiam().setAutomaticDataCollectionEnabled();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a boolean');
+        return Promise.resolve();
+      }
     });
   });
 
-  describe('aMethod()', () => {
-    // TODO
+  describe('setMessagesDisplaySuppressed()', () => {
+    it('false', async () => {
+      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
+      await firebase.fiam().setMessagesDisplaySuppressed(false);
+      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
+      await Utils.sleep(2000);
+    });
+
+    it('true', async () => {
+      await firebase.fiam().setMessagesDisplaySuppressed(true);
+      should.equal(firebase.fiam().isMessagesDisplaySuppressed, true);
+      await Utils.sleep(1500);
+      await firebase.fiam().setMessagesDisplaySuppressed(false);
+      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
+      await Utils.sleep(1500);
+      await device.launchApp({ newInstance: true });
+      await Utils.sleep(1500);
+    });
+
+    it('errors if not boolean', async () => {
+      try {
+        firebase.fiam().setMessagesDisplaySuppressed();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a boolean');
+        return Promise.resolve();
+      }
+    });
   });
 });
