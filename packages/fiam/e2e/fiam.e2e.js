@@ -26,7 +26,10 @@ describe('fiam()', () => {
 
   describe('setAutomaticDataCollectionEnabled()', () => {
     it('true', async () => {
-      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      if (Platform.ios) {
+        // android has this as false when Perf tests run prior - internally all share the same flag on the native SDK
+        should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      }
       await firebase.fiam().setAutomaticDataCollectionEnabled(true);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
       await Utils.sleep(2000);
