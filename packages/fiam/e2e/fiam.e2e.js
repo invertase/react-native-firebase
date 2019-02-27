@@ -43,8 +43,6 @@ describe('fiam()', () => {
       await firebase.fiam().setAutomaticDataCollectionEnabled(true);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
       await Utils.sleep(1500);
-      await device.launchApp({ newInstance: true });
-      await Utils.sleep(1500);
     });
 
     it('errors if not boolean', async () => {
@@ -73,8 +71,6 @@ describe('fiam()', () => {
       await Utils.sleep(1500);
       await firebase.fiam().setMessagesDisplaySuppressed(false);
       should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
-      await Utils.sleep(1500);
-      await device.launchApp({ newInstance: true });
       await Utils.sleep(1500);
     });
 
