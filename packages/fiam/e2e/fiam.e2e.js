@@ -26,20 +26,22 @@ describe('fiam()', () => {
 
   describe('setAutomaticDataCollectionEnabled()', () => {
     it('true', async () => {
-      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      if (Platform.ios) {
+        // android has this as false when Perf tests run prior - internally all share the same flag on the native SDK
+        should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      }
       await firebase.fiam().setAutomaticDataCollectionEnabled(true);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
       await Utils.sleep(2000);
     });
 
     it('false', async () => {
+      await device.launchApp();
       await firebase.fiam().setAutomaticDataCollectionEnabled(false);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, false);
       await Utils.sleep(1500);
       await firebase.fiam().setAutomaticDataCollectionEnabled(true);
       should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
-      await Utils.sleep(1500);
-      await device.launchApp({ newInstance: true });
       await Utils.sleep(1500);
     });
 
@@ -63,13 +65,12 @@ describe('fiam()', () => {
     });
 
     it('true', async () => {
+      await device.launchApp();
       await firebase.fiam().setMessagesDisplaySuppressed(true);
       should.equal(firebase.fiam().isMessagesDisplaySuppressed, true);
       await Utils.sleep(1500);
       await firebase.fiam().setMessagesDisplaySuppressed(false);
       should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
-      await Utils.sleep(1500);
-      await device.launchApp({ newInstance: true });
       await Utils.sleep(1500);
     });
 
