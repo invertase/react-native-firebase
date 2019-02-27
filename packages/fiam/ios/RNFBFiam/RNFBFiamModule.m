@@ -16,6 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
 
 #import "RNFBFiamModule.h"
@@ -28,11 +29,38 @@
 
   RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
+  - (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    constants[@"isMessagesDisplaySuppressed"] = @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].messageDisplaySuppressed)]);
+    constants[@"isAutomaticDataCollectionEnabled"] = @([RCTConvert BOOL:@([FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled)]);
+    return constants;
+  }
+
+  + (BOOL)requiresMainQueueSetup {
+    return NO;
   }
 
 #pragma mark -
 #pragma mark Firebase Fiam Methods
+
+  RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled:
+    (BOOL *) enabled
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [FIRInAppMessaging inAppMessaging].automaticDataCollectionEnabled = (BOOL) enabled;
+    resolve([NSNull null]);
+  }
+
+  RCT_EXPORT_METHOD(setMessagesDisplaySuppressed:
+    (BOOL *) enabled
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL) enabled;
+    resolve([NSNull null]);
+  }
 
 @end

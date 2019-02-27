@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('fiam()', () => {
+describe('fiam()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();

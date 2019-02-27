@@ -33,6 +33,7 @@ target 'testing' do
   rnfb_version = "0.0.1" # package["version"]
   pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec'
   pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec'
+  pod 'RNFBFiam', :path => '../../packages/fiam/ios/RNFBFiam.podspec'
   pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec'
   pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec'
   pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec'
