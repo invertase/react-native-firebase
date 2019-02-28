@@ -744,7 +744,7 @@ RCT_EXPORT_METHOD(applyActionCode:
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
-      [self promiseNoUser:resolve rejecter:reject isError:NO];
+      [self promiseWithUser:resolve rejecter:reject user:[FIRAuth authWithApp:firApp].currentUser];
     }
   }];
 }
