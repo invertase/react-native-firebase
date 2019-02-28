@@ -6,9 +6,10 @@ const config = require('../package.json').detox;
 
 before(async () => {
   await detox.init(config);
-  // needs to be called before any usage of firestore
-  // await firebase.firestore().settings({ persistence: true });
-  // await firebase.firestore().settings({ persistence: false });
+  const { user } = await firebase.auth().signInAnonymously();
+  const idToken = await user.getIdToken(true);
+  global.firebaseAdmin = new TestingApi(idToken);
+  await firebase.auth().signOut();
 });
 
 beforeEach(async function beforeEach() {

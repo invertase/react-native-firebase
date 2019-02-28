@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.0.0",
-    "@react-native-firebase/private-tests-helpers": "^0.0.8",
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
     "@babel/runtime": "^7.0.0",
     "babel-eslint": "^9.0.0",

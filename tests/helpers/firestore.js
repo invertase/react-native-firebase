@@ -149,10 +149,10 @@ module.exports = {
     return firebase.firestore().doc(path);
   },
 
-  testCollectionDocAdmin(path) {
-    shouldCleanup = true;
-    return firebaseAdmin.firestore().doc(path);
-  },
+  // testCollectionDocAdmin(path) {
+  //   shouldCleanup = true;
+  //   return firebaseAdmin.firestore().doc(path);
+  // },
 
   async resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
@@ -167,13 +167,13 @@ module.exports = {
   },
 };
 
-firebaseAdmin.firestore().settings({ timestampsInSnapshots: true });
+// firebaseAdmin.firestore().settings({ timestampsInSnapshots: true });
 
 // call a get request without waiting to force firestore to connect
 // so the first test isn't delayed whilst connecting
 
-module.exports
-  .testCollectionDocAdmin(module.exports.DOC_1_PATH)
-  .get()
-  .then(() => {})
-  .catch(() => {});
+// module.exports
+//   .testCollectionDocAdmin(module.exports.DOC_1_PATH)
+//   .get()
+//   .then(() => {})
+//   .catch(() => {});

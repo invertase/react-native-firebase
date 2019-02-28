@@ -849,11 +849,12 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-firebase-functions/-/private-tests-firebase-functions-0.0.1.tgz#bbee243641e92a3d50925cb95e95dbcd28f7fc27"
   integrity sha512-hfz3J6tQlXG7PNfuJLbh486ulN8Q8o8tdiL5TJSXpnEdGZYTqYhka0DFOinU2sr4quxK5O4e6Rsh8tRRcUPrjA==
 
-"@react-native-firebase/private-tests-helpers@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-helpers/-/private-tests-helpers-0.0.8.tgz#8bab47fccc3baffee24dad49be2cbabe5a1e289f"
-  integrity sha512-Xa5dEdCIyK8faHai/wRvSPDso76VIfJiWyJZi+7WhcrLlfLZiCktMe10GvACyXp+h56e8s2boCehodM0s+jK5Q==
+"@react-native-firebase/private-tests-helpers@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-helpers/-/private-tests-helpers-0.0.9.tgz#d9670b03a5590ef3a05019b2e25d29951d51e7a7"
+  integrity sha512-XxiM8szJEWBUfmyZXIAd6YaiZtzloEYFEGcE7bUaGU//ocAEbxZGsORaU8oyCswLKMP1HZMF9DZvV4ODVXjtzQ==
   dependencies:
+    axios "^0.18.0"
     execa "^1.0.0"
     shelljs "^0.8.3"
 
