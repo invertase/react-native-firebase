@@ -8,9 +8,13 @@ description: Authenticate users with your application. React Native Firebase int
 The authentication module provides an easy-to-use API to integrate an authentication workflow into new and existing applications.
 React Native Firebase provides access to all Firebase authentication methods and idenity providers.
 
+<Youtube id="8sGY55yxicA" />
+
+## Install
+
 To get started, install the module on your platform:
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="android"
 		color="#A5C445"
