@@ -37,11 +37,21 @@ export default class Crashlytics extends ModuleBase {
 
   /**
    * Logs a non fatal exception.
-   * @param {string} code
+   * @param {number} code
    * @param {string} message
    */
   recordError(code: number, message: string): void {
     getNativeModule(this).recordError(code, message);
+  }
+
+  /**
+   * Logs a custom non fatal exception.
+   * @param {string} name
+   * @param {string} message
+   * @param {Object[]} stack Optional
+   */
+  recordCustomError(name: string, message: string, stack?:Object[]): void{
+    getNativeModule(this).recordCustomError(name,message,stack || []);
   }
 
   /**

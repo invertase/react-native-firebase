@@ -41,6 +41,39 @@ public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void recordCustomError(String name, String reason, ReadableArray frameArray) {
+      ArrayList<StackTraceElement> stackList = new ArrayList<>(0);
+      for (int i = 0; i < frameArray.size(); i++) {
+        ReadableMap map = frameArray.getMap(i);
+        ReadableMap additional = map.hasKey("additional") ? map.getMap("additional") : null;
+        String functionName = map.hasKey("functionName") ? map.getString("functionName") : "Unknown Function";
+        String className = map.hasKey("className") ? map.getString("className") : "Unknown Class";
+        StackTraceElement stack = new StackTraceElement(
+          className,
+          functionName,
+          map.getString("fileName"),
+          map.hasKey("lineNumber") ? map.getInt("lineNumber") : -1
+        );
+        stackList.add(stack);
+
+        if(additional != null){
+          StackTraceElement s = new StackTraceElement(
+            "Additional Parameters",
+            additional.toString(),
+            map.getString("fileName"),
+            map.hasKey("lineNumber") ? map.getInt("lineNumber") : -1
+          );
+          stackList.add(s);
+        }
+      }
+      StackTraceElement[] stackTrace =  new StackTraceElement[stackList.size()];
+      Exception e = new Exception(name + "\n" + reason);
+      stackTrace = stackList.toArray(stackTrace);
+      e.setStackTrace(stackTrace);
+      Crashlytics.logException(e);
+  }
+
+  @ReactMethod
   public void setBoolValue(final String key, final boolean boolValue) {
     Crashlytics.setBool(key, boolValue);
   }
