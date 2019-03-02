@@ -1,4 +1,4 @@
-describe.only('crashlytics()', () => {
+describe('crashlytics()', () => {
   // todo test is flakey due to a detox error occurring sometimes;
   // Error: the string "Error when sending event: websocketFailed with body:
   // {\n    id = 0;\n    message = \"The operation couldn\\U2019t be completed.
