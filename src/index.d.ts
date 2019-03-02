@@ -2081,6 +2081,16 @@ declare module 'react-native-firebase' {
         setUserIdentifier(userId: string): void;
 
         /**
+         * Set the user name to show alongside any subsequent crash reports.
+         */
+        setUserName(userName: string): void;
+
+        /**
+         * Set the user email to show alongside any subsequent crash reports.
+         */
+        setUserEmail(userEmail: string): void;
+
+        /**
          * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
          */
         enableCrashlyticsCollection(): void;

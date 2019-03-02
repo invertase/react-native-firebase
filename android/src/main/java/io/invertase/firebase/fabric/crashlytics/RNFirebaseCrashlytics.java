@@ -6,6 +6,10 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+
+import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -96,6 +100,16 @@ public class RNFirebaseCrashlytics extends ReactContextBaseJavaModule {
   @ReactMethod
   public void setUserIdentifier(String userId) {
     Crashlytics.setUserIdentifier(userId);
+  }
+
+  @ReactMethod
+  public void setUserName(String userName) {
+    Crashlytics.setUserName(userName);
+  }
+
+  @ReactMethod
+  public void setUserEmail(String userEmail) {
+    Crashlytics.setUserEmail(userEmail);
   }
 
   @ReactMethod

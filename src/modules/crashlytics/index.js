@@ -50,8 +50,8 @@ export default class Crashlytics extends ModuleBase {
    * @param {string} message
    * @param {Object[]} stack Optional
    */
-  recordCustomError(name: string, message: string, stack?:Object[]): void{
-    getNativeModule(this).recordCustomError(name,message,stack || []);
+  recordCustomError(name: string, message: string, stack?: Object[]): void {
+    getNativeModule(this).recordCustomError(name, message, stack || []);
   }
 
   /**
@@ -87,6 +87,20 @@ export default class Crashlytics extends ModuleBase {
    */
   setUserIdentifier(userId: string): void {
     getNativeModule(this).setUserIdentifier(userId);
+  }
+
+  /**
+   * Set the user name to show alongside any subsequent crash reports.
+   */
+  setUserName(userName: string): void {
+    getNativeModule(this).setUserName(userName);
+  }
+
+  /**
+   * Set the user email to show alongside any subsequent crash reports.
+   */
+  setUserEmail(userEmail: string): void {
+    getNativeModule(this).setUserEmail(userEmail);
   }
 
   /**

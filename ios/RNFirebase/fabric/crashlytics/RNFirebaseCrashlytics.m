@@ -78,6 +78,16 @@
         [CrashlyticsKit setUserIdentifier:userId];
     }
 
+    RCT_EXPORT_METHOD(setUserName:(NSString *)userName)
+    {
+        [[Crashlytics sharedInstance] setUserName:userName];
+    }
+
+    RCT_EXPORT_METHOD(setUserEmail:(NSString *)email)
+    {
+        [[Crashlytics sharedInstance] setUserEmail:email];
+    }
+
     RCT_EXPORT_METHOD(enableCrashlyticsCollection) {
 #if __has_include(<Fabric/Fabric.h>)
         [Fabric with:@[[Crashlytics class]]];

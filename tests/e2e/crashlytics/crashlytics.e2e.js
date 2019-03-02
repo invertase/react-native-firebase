@@ -1,4 +1,4 @@
-describe('crashlytics()', () => {
+describe.only('crashlytics()', () => {
   // todo test is flakey due to a detox error occurring sometimes;
   // Error: the string "Error when sending event: websocketFailed with body:
   // {\n    id = 0;\n    message = \"The operation couldn\\U2019t be completed.
@@ -44,6 +44,24 @@ describe('crashlytics()', () => {
     xit('should error on invalid args', async () => {
       // TODO lib needs validations adding - and this should technically take an instance of Error only
       await firebase.crashlytics().recordError({}, []);
+    });
+  });
+
+  describe('recordCustomError()', () => {
+    it('should record an error with a name and message', async () => {
+      await firebase.crashlytics().recordCustomError('Test Error', 'Really bad error!');
+    });
+
+    it('should record an error with a name and message and customError', async () => {
+      await firebase.crashlytics().recordCustomError('Test Error', 'Really bad error!',[{fileName:'TestFile.js'}]);
+    });
+
+    it('should error on invalid args', async () => {
+      await firebase.crashlytics().recordCustomError({}, []);
+    });
+
+    it('should error on missing required customError property', async () => {
+      await firebase.crashlytics().recordCustomError('Test Error', 'Really bad error!',[{}]);
     });
   });
 
@@ -94,6 +112,26 @@ describe('crashlytics()', () => {
     xit('should error on a non a string value', async () => {
       // TODO lib needs validations adding
       await firebase.crashlytics().setUserIdentifier(123456);
+    });
+  });
+
+  describe('setUserName()', () => {
+    it('should set a string value', async () => {
+      await firebase.crashlytics().setUserName('123abc');
+    });
+
+    it('should error on a non a string value', async () => {
+      await firebase.crashlytics().setUserName(123456);
+    });
+  });
+
+  describe('setUserEmail()', () => {
+    it('should set a string value', async () => {
+      await firebase.crashlytics().setUserEmail('123abc');
+    });
+
+    it('should error on a non a string value', async () => {
+      await firebase.crashlytics().setUserEmail(123456);
     });
   });
 
