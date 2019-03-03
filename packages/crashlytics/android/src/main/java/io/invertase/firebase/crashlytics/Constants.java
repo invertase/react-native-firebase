@@ -1,4 +1,4 @@
-package io.invertase.firebase.app;
+package io.invertase.firebase.crashlytics;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -17,15 +17,9 @@ package io.invertase.firebase.app;
  *
  */
 
-import io.invertase.firebase.BuildConfig;
-import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
-
-public class ReactNativeFirebaseAppInitProvider extends ReactNativeFirebaseInitProvider {
-  private static final String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY =
-    BuildConfig.APPLICATION_ID + ".reactnativefirebaseappinitprovider";
-
-  @Override
-  public String getEmptyProviderAuthority() {
-    return EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY;
-  }
+class Constants {
+  final static String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".reactnativefirebasecrashlyticsinitprovider";
+  final static String KEY_CRASHLYTICS_NDK_ENABLED = "crashlytics_ndk_enabled";
+  final static String KEY_CRASHLYTICS_DEBUG_ENABLED = "crashlytics_debug_enabled";
+  final static String KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = "crashlytics_auto_collection_enabled";
 }

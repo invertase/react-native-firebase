@@ -1,9 +1,8 @@
 {
   "react-native": {
-    "crashlytics_ndk_enabled": true,
-    "crashlytics_debug_enabled": false,
+    "crashlytics_ndk_enabled": false,
+    "crashlytics_debug_enabled": true,
     "crashlytics_auto_collection_enabled": true,
-
     "analytics_auto_collection_enabled": true,
     "perf_auto_collection_enabled": true,
     "fiam_auto_collection_enabled": true,

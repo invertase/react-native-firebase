@@ -17,9 +17,6 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -27,14 +24,18 @@ import com.crashlytics.android.ndk.CrashlyticsNdk;
 
 import io.fabric.sdk.android.Fabric;
 import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+
+import static io.invertase.firebase.crashlytics.Constants.EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY;
+import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED;
+import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_DEBUG_ENABLED;
+import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_NDK_ENABLED;
 
 @SuppressWarnings("NullableProblems")
 public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFirebaseInitProvider {
   private static final String TAG = "RNFBCrashlyticsInit";
-  private static final String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY =
-    "io.invertase.firebase.crashlytics.reactnativefirebasecrashlyticsinitprovider";
-  private static final String RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED = "rnfirebase_crashlytics_collection_enabled";
 
   @Override
   public String getEmptyProviderAuthority() {
@@ -45,57 +46,47 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
   public boolean onCreate() {
     super.onCreate();
 
-    Context applicationContext = getContext();
-    if (shouldInitializeCrashlytics(applicationContext)) {
+    if (shouldInitializeCrashlytics() && getContext() != null) {
+      ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+      boolean useNdk = json.getBooleanValue(KEY_CRASHLYTICS_NDK_ENABLED, true);
+      boolean debug = json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false);
+
       try {
-        Fabric.with(applicationContext, new Crashlytics(), new CrashlyticsNdk());
+        Fabric.Builder builder = new Fabric.Builder(getContext());
+
+        if (useNdk) {
+          builder.kits(new Crashlytics(), new CrashlyticsNdk());
+        } else {
+          builder.kits(new Crashlytics());
+        }
+
+        builder.debuggable(debug);
+        Fabric.with(builder.build());
+
         Log.i(TAG, "initialization successful");
       } catch (IllegalStateException exception) {
-        Log.i(TAG, "initialization unsuccessful");
+        Log.e(TAG, "initialization failed", exception);
         return false;
       }
     } else {
-      Log.i(TAG, "skipping initialization");
+      Log.i(TAG, "auto collection disabled, skipping initialization");
     }
 
     return true;
   }
 
-  boolean shouldInitializeCrashlytics(Context applicationContext) {
-    boolean enabled = true;
-    ReactNativeFirebasePreferences preferences = ReactNativeFirebasePreferences.getSharedInstance();
+  boolean shouldInitializeCrashlytics() {
+    boolean enabled;
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+    ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
+    ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
 
-    if (preferences.contains(RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED)) {
-      enabled = preferences.getBooleanValue(RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED, true);
-      Log.i(
-        TAG,
-        RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED + " preference key specified as " + enabled + "."
-      );
+    if (prefs.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
+      enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+    } else if (json.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
+      enabled = json.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
     } else {
-      try {
-        PackageManager packageManager = applicationContext.getPackageManager();
-
-        if (packageManager != null) {
-          ApplicationInfo applicationInfo = packageManager.getApplicationInfo(
-            applicationContext.getPackageName(),
-            PackageManager.GET_META_DATA
-          );
-
-          if (applicationInfo != null && applicationInfo.metaData != null && applicationInfo.metaData
-            .containsKey(
-              RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED)) {
-            enabled = applicationInfo.metaData.getBoolean(RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED);
-            Log.i(
-              TAG,
-              RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED + " meta-data key specified as " + enabled + "."
-            );
-          } else {
-            Log.i(TAG, RNFIREBASE_CRASHLYTICS_COLLECTION_ENABLED + " meta-data not specified");
-          }
-        }
-      } catch (PackageManager.NameNotFoundException var6) {
-        Log.d(TAG, "Unable to get PackageManager, defaulting to enabled.");
-      }
+      enabled = meta.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
     }
 
     return enabled;
