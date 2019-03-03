@@ -24,7 +24,6 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
@@ -32,7 +31,10 @@ import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.interfaces.InitProvider;
 
 public class ReactNativeFirebaseInitProvider extends ContentProvider implements InitProvider {
-  private static void checkContentProviderAuthority(ProviderInfo info, String emptyProviderAuthority) {
+  private static void checkContentProviderAuthority(
+    ProviderInfo info,
+    String emptyProviderAuthority
+  ) {
     if (info != null) {
       if (emptyProviderAuthority.equals(info.authority)) {
         throw new IllegalStateException(
