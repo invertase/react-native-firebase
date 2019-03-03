@@ -28,8 +28,9 @@ project.ext {
         base: "16.1.0",
       ],
 
-      fabric          : [
-        crashlytics: "2.9.9"
+      fabric            : [
+        crashlytics   : "2.9.9",
+        crashlyticsNdk: "2.0.5"
       ],
     ],
   ])
@@ -57,6 +58,7 @@ repositories {
 dependencies {
   api project(':@react-native-firebase/app')
   implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("fabric", "crashlytics")}"
+  implementation "com.crashlytics.sdk.android:crashlytics-ndk:${ReactNative.ext.getVersion("fabric", "crashlyticsNdk")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 

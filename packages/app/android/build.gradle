@@ -63,6 +63,8 @@ if (ReactNative.util.isExpo(project)) {
   apply from: file("./expo.gradle")
 }
 
+apply from: file("./firebase-json.gradle")
+
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()

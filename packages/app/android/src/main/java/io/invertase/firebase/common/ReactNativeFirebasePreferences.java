@@ -34,12 +34,16 @@ public class ReactNativeFirebasePreferences {
     return sharedInstance;
   }
 
+  public boolean contains(String key) {
+    return getPreferences().contains(key);
+  }
+
   public void setBooleanValue(String key, boolean value) {
     getPreferences().edit().putBoolean(key, value).apply();
   }
 
-  public boolean getBooleanValue(String key) {
-    return getPreferences().getBoolean(key, false);
+  public boolean getBooleanValue(String key, boolean defaultValue) {
+    return getPreferences().getBoolean(key, defaultValue);
   }
 
   public WritableMap getAllAsWritableMap() {

@@ -17,18 +17,13 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Crashlytics";
@@ -37,4 +32,59 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     super(reactContext, TAG);
   }
 
+  @ReactMethod
+  public void crash() {
+    Crashlytics.getInstance().crash();
+  }
+
+  @ReactMethod
+  public void log(String message, Promise promise) {
+    Crashlytics.getInstance().core.log(message);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void recordError(final int code, final String domain) {
+    Crashlytics.getInstance().core.logException(new Exception(code + ": " + domain));
+  }
+
+  @ReactMethod
+  public void setBoolValue(final String key, final boolean boolValue) {
+    Crashlytics.getInstance().core.setBool(key, boolValue);
+  }
+
+  @ReactMethod
+  public void setFloatValue(final String key, final float floatValue) {
+    Crashlytics.getInstance().core.setFloat(key, floatValue);
+  }
+
+  @ReactMethod
+  public void setIntValue(final String key, final int intValue) {
+    Crashlytics.getInstance().core.setInt(key, intValue);
+  }
+
+  @ReactMethod
+  public void setStringValue(final String key, final String stringValue) {
+    Crashlytics.getInstance().core.setString(key, stringValue);
+  }
+
+  @ReactMethod
+  public void setUserIdentifier(String userId) {
+    Crashlytics.getInstance().core.setUserIdentifier(userId);
+  }
+
+  @ReactMethod
+  public void setUserName(String userName) {
+    Crashlytics.getInstance().core.setUserName(userName);
+  }
+
+  @ReactMethod
+  public void setUserEmail(String userEmail) {
+    Crashlytics.getInstance().core.setUserEmail(userEmail);
+  }
+
+  @ReactMethod
+  public void setCrashlyticsCollectionEnabled(Boolean enabled) {
+//    ReactNativeFirebasePreferences.getSharedInstance().setBooleanValue();
+  }
 }
