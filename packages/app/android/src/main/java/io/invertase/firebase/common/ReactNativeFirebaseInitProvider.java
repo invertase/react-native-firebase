@@ -48,7 +48,6 @@ public class ReactNativeFirebaseInitProvider extends ContentProvider implements 
 
   @Override
   public void attachInfo(Context context, ProviderInfo info) {
-    Log.d("666", getEmptyProviderAuthority());
     checkContentProviderAuthority(info, getEmptyProviderAuthority());
     super.attachInfo(context, info);
   }
