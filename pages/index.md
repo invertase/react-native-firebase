@@ -3,9 +3,16 @@ title: Introduction
 description: React Native Firebase
 ---
 
-# React Native Firebase
-
-React Native Firebase is a well tested, feature rich modular Firebase implementation for React Native. Supporting both iOS & Android platforms with over 15 Firebase services.
+<div style="text-align: center;">
+  <img    src="https://camo.githubusercontent.com/e7a14b9a151d9b1d23a0d05dac1af86b0e972714/68747470733a2f2f692e696d6775722e636f6d2f4a497942744b572e706e67"
+    alt="React Native Firebase"
+    style="width: 100px;"
+  />
+  <Heading el="h1">React Native Firebase</Heading>
+  <p>
+    React Native Firebase is a well tested, feature rich modular Firebase implementation for React Native. Supporting both iOS & Android platforms with over 15 Firebase services.
+  </p>
+</div>
 
 ## Getting Started
 
