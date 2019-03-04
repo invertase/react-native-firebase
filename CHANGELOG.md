@@ -89,6 +89,7 @@ await analytics().setUserId('12345678');
   - Standardised native error to JS conversion
   - [DEVEX] Native promise rejection errors now contain additional properties to aid debugging
 - [BUGFIX] All native events are now queued natively until a JS listener is registered. This fixes several race conditions for events like `onMessage`, `onNotification`, `onLink` etc where the event would trigger before JS was ready.
+- [NEW][🔥] In an effort to further reduce manual native code changes when integrating and configuring React Native Firebase; we have added support for configuring various Firebase services & features via a `firebase.json` file in your project root.
 
 ## App
 
@@ -104,6 +105,22 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `resetAnalyticsData()`
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
+
+## Crashlytics
+
+- [NEW] Added support for `setUserName(userName: string)`
+- [NEW] Added support for `setUserEmail(userEmail: string)`
+- [NEW] Added support for `isCrashlyticsCollectionEnabled: boolean`
+- [NEW][android] Added support for [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting. This allows Crashlytics to capture Yoga related crashes generated from React Native.
+- [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods:
+  - `setValue(key: string, value: boolean | number | string): Promise<null>` - set a singular value to show alongside any subsequent crash reports
+  - `setValues(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple values to show alongside any subsequent crash reports
+- [BREAKING] all methods except `crash`, `log` & `recordError` now return a `Promise` that resolves when complete
+- [BREAKING] `setUserIdentifier()`'s has been renamed to `setUserId()` to match analytics implementation
+- [BREAKING] `enableCrashlyticsCollection()`'s signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
+  - This can be used in all scenarios (formerly only able to use this when automatic initialization of crashlytics was disabled)
+  - Changes do not take effect until the next app startup
+  - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
 ## Functions <a href="https://api.rnfirebase.io/coverage/functions/detail"><img src="https://api.rnfirebase.io/coverage/functions/badge?style=flat-square" alt="Coverage"></a>
 
