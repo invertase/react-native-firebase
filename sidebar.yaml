@@ -1,3 +1,4 @@
+---
 - group: Library
   children:
   - text: Introduction
@@ -6,10 +7,42 @@
     to: "/quick-start"
   - text: Contributing
     to: "/contributing"
+    
 - group: Modules
   children:
   - text: Admob
-    to: "/<< latest_version >>/admob"
+    to: "/v6/admob"
+  - text: Analytics
+    to: "/v6/analytics"
+  - text: Authentication
+    to: "/v6/auth"
+  - text: Cloud Firestore
+    to: "/v6/firestore"
+  - text: Cloud Functions
+    to: "/v6/functions"
+  - text: Cloud Messaging
+    to: "/v6/messaging"
+  - text: Cloud Storage
+    to: "/v6/storage"
+  - text: Core / App
+    to: "/v6/app"
+  - text: Crashlytics
+    to: "/v6/crashlytics"
+  - text: Realtime Database
+    to: "/v6/database"
+  - text: Dynamic Links
+    to: "/v6/links"
+  - text: Instance ID
+    to: "/v6/iid"
+  - text: Invites
+    to: "/v6/invites"
+  - text: Notifications
+    to: "/v6/notifications"
+  - text: Remote Config
+    to: "/v6/config"
+  - text: Performance Monitoring
+    to: "/v6/perf"
+
 - group: Guides
   action:
     to: "/guides"
@@ -21,6 +54,7 @@
     to: "/guides/integrating-social-phone-auth"
   - text: Notification deep dive
     to: "/guides/notifications-deep-dive"
+    
 - group: Advanced
   children:
   - text: TODO
