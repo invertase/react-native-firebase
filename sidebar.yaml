@@ -1,0 +1,27 @@
+- group: Library
+  children:
+  - text: Introduction
+    to: "/"
+  - text: Quick Start
+    to: "/quick-start"
+  - text: Contributing
+    to: "/contributing"
+- group: Modules
+  children:
+  - text: Admob
+    to: "/<< latest_version >>/admob"
+- group: Guides
+  action:
+    to: "/guides"
+    text: View more
+  children:
+  - text: Getting Started
+    to: "/guides/getting-started-with-react-native-firebase"
+  - text: Integrating Social & Phone Auth
+    to: "/guides/integrating-social-phone-auth"
+  - text: Notification deep dive
+    to: "/guides/notifications-deep-dive"
+- group: Advanced
+  children:
+  - text: TODO
+    to: "/TODO"
