@@ -112,6 +112,9 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `setUserEmail(userEmail: string)`
 - [NEW] Added support for `isCrashlyticsCollectionEnabled: boolean`
 - [NEW][android] Added support for [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting. This allows Crashlytics to capture Yoga related crashes generated from React Native.
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_ndk_enabled`, this toggles NDK support as mentioned above, defaults to `true`
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_debug_enabled`, this toggles Crashlytics native debug logging, defaults to `false`
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_auto_collection_enabled`, this toggles Crashlytics error reporting, this is useful for user opt-in first flows, e.g. set to `false` and when your user agrees to opt-in then call `setCrashlyticsCollectionEnabled(true)` in your app, defaults to `true`
 - [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods:
   - `setValue(key: string, value: boolean | number | string): Promise<null>` - set a singular value to show alongside any subsequent crash reports
   - `setValues(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple values to show alongside any subsequent crash reports
