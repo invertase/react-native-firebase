@@ -37,6 +37,23 @@ import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_NDK_EN
 public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFirebaseInitProvider {
   private static final String TAG = "RNFBCrashlyticsInit";
 
+  static boolean isCrashlyticsCollectionEnabled() {
+    boolean enabled;
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+    ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
+    ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
+
+    if (prefs.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
+      enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+    } else if (json.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
+      enabled = json.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+    } else {
+      enabled = meta.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+    }
+
+    return enabled;
+  }
+
   @Override
   public String getEmptyProviderAuthority() {
     return EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY;
@@ -46,7 +63,7 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
   public boolean onCreate() {
     super.onCreate();
 
-    if (shouldInitializeCrashlytics() && getContext() != null) {
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled() && getContext() != null) {
       ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
       boolean useNdk = json.getBooleanValue(KEY_CRASHLYTICS_NDK_ENABLED, true);
       boolean debug = json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false);
@@ -73,22 +90,5 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
     }
 
     return true;
-  }
-
-  boolean shouldInitializeCrashlytics() {
-    boolean enabled;
-    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
-    ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
-    ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
-
-    if (prefs.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
-      enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
-    } else if (json.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
-      enabled = json.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
-    } else {
-      enabled = meta.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
-    }
-
-    return enabled;
   }
 }

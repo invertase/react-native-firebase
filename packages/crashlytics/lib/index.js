@@ -30,7 +30,9 @@ const namespace = 'crashlytics';
 const nativeModuleName = 'RNFBCrashlyticsModule';
 
 class FirebaseCrashlyticsModule extends FirebaseModule {
-
+  crash() {
+    this.native.crash();
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/crashlytics';

@@ -115,12 +115,14 @@ await analytics().setUserId('12345678');
 - [NEW][🔥] Added `firebase.json` support for `crashlytics_ndk_enabled`, this toggles NDK support as mentioned above, defaults to `true`
 - [NEW][🔥] Added `firebase.json` support for `crashlytics_debug_enabled`, this toggles Crashlytics native debug logging, defaults to `false`
 - [NEW][🔥] Added `firebase.json` support for `crashlytics_auto_collection_enabled`, this toggles Crashlytics error reporting, this is useful for user opt-in first flows, e.g. set to `false` and when your user agrees to opt-in then call `setCrashlyticsCollectionEnabled(true)` in your app, defaults to `true`
+- [BUGFIX][android] `crash()` now correctly crashes without being caught by React Native's RedBox
 - [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods:
-  - `setValue(key: string, value: boolean | number | string): Promise<null>` - set a singular value to show alongside any subsequent crash reports
-  - `setValues(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple values to show alongside any subsequent crash reports
+  - `setAttribute(key: string, value: boolean | number | string): Promise<null>` - set a singular key value to show alongside any subsequent crash reports
+  - `setAttributes(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
 - [BREAKING] all methods except `crash`, `log` & `recordError` now return a `Promise` that resolves when complete
-- [BREAKING] `setUserIdentifier()`'s has been renamed to `setUserId()` to match analytics implementation
-- [BREAKING] `enableCrashlyticsCollection()`'s signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
+- [BREAKING] `recordError(code: number, message: string)`'s fn signature changed to `recordError(error: Error)` - now accepts a JS Error class instance
+- [BREAKING] `enableCrashlyticsCollection()`'s fn signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
+- [BREAKING] `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation
   - This can be used in all scenarios (formerly only able to use this when automatic initialization of crashlytics was disabled)
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed

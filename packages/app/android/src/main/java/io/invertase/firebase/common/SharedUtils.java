@@ -19,7 +19,6 @@ package io.invertase.firebase.common;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
@@ -32,8 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 
 @SuppressWarnings("WeakerAccess")

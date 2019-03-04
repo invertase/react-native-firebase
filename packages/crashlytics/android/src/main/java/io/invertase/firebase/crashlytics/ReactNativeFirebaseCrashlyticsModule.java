@@ -18,9 +18,16 @@ package io.invertase.firebase.crashlytics;
  */
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashTest;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
@@ -34,53 +41,52 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
 
   @ReactMethod
   public void crash() {
-    Crashlytics.getInstance().crash();
+    Crashlytics.getInstance().core.log("Crash Test");
+    (new CrashTest()).crashAsyncTask(50);
   }
 
   @ReactMethod
-  public void log(String message, Promise promise) {
+  public void log(String message) {
     Crashlytics.getInstance().core.log(message);
+  }
+
+  @ReactMethod
+  public void setAttribute(String key, String value, Promise promise) {
+    Crashlytics.getInstance().core.setString(key, value);
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void recordError(final int code, final String domain) {
-    Crashlytics.getInstance().core.logException(new Exception(code + ": " + domain));
+  public void setAttributes(ReadableMap keyValuesMap, Promise promise) {
+    ReadableMapKeySetIterator iterator = keyValuesMap.keySetIterator();
+    CrashlyticsCore crashlyticsCore = Crashlytics.getInstance().core;
+
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      String value = keyValuesMap.getString(key);
+      crashlyticsCore.setString(key, value);
+    }
+
+    promise.resolve(null);
   }
 
-  @ReactMethod
-  public void setBoolValue(final String key, final boolean boolValue) {
-    Crashlytics.getInstance().core.setBool(key, boolValue);
-  }
 
   @ReactMethod
-  public void setFloatValue(final String key, final float floatValue) {
-    Crashlytics.getInstance().core.setFloat(key, floatValue);
-  }
-
-  @ReactMethod
-  public void setIntValue(final String key, final int intValue) {
-    Crashlytics.getInstance().core.setInt(key, intValue);
-  }
-
-  @ReactMethod
-  public void setStringValue(final String key, final String stringValue) {
-    Crashlytics.getInstance().core.setString(key, stringValue);
-  }
-
-  @ReactMethod
-  public void setUserIdentifier(String userId) {
+  public void setUserId(String userId, Promise promise) {
     Crashlytics.getInstance().core.setUserIdentifier(userId);
+    promise.resolve(null);
   }
 
   @ReactMethod
-  public void setUserName(String userName) {
+  public void setUserName(String userName, Promise promise) {
     Crashlytics.getInstance().core.setUserName(userName);
+    promise.resolve(null);
   }
 
   @ReactMethod
-  public void setUserEmail(String userEmail) {
+  public void setUserEmail(String userEmail, Promise promise) {
     Crashlytics.getInstance().core.setUserEmail(userEmail);
+    promise.resolve(null);
   }
 
   @ReactMethod
@@ -88,5 +94,22 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     ReactNativeFirebasePreferences
       .getSharedInstance()
       .setBooleanValue(Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, enabled);
+  }
+
+  @ReactMethod
+  public void recordError(ReadableMap jsErrorMap) {
+    // TODO
+//    Crashlytics.getInstance().core.logException(new Exception(code + ": " + domain));
+  }
+
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put(
+      "isCrashlyticsCollectionEnabled",
+      ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()
+    );
+    return constants;
   }
 }

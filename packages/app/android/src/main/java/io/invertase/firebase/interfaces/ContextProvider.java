@@ -24,6 +24,8 @@ import com.facebook.react.bridge.ReactContext;
 
 public interface ContextProvider {
   Activity getActivity();
+
   ReactContext getContext();
+
   Context getApplicationContext();
 }
