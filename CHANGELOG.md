@@ -121,8 +121,8 @@ await analytics().setUserId('12345678');
   - `setAttributes(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
 - [BREAKING] all methods except `crash`, `log` & `recordError` now return a `Promise` that resolves when complete
 - [BREAKING] `recordError(code: number, message: string)`'s fn signature changed to `recordError(error: Error)` - now accepts a JS Error class instance
-- [BREAKING] `enableCrashlyticsCollection()`'s fn signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
 - [BREAKING] `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation
+- [BREAKING] `enableCrashlyticsCollection()`'s fn signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
   - This can be used in all scenarios (formerly only able to use this when automatic initialization of crashlytics was disabled)
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
