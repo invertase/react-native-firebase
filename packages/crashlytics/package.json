@@ -31,7 +31,8 @@
   },
   "dependencies": {
     "@react-native-firebase/app-types": "6.0.0-alpha.4",
-    "@react-native-firebase/common": "6.0.0-alpha.4"
+    "@react-native-firebase/common": "6.0.0-alpha.4",
+    "stacktrace-js": "^2.0.0"
   },
   "rnpm": {
     "android": {

@@ -22,6 +22,7 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import version from './version';
+import { setGlobalErrorHandler, setOnUnhandledPromiseRejectionHandler } from './handlers';
 
 const statics = {};
 
@@ -30,6 +31,12 @@ const namespace = 'crashlytics';
 const nativeModuleName = 'RNFBCrashlyticsModule';
 
 class FirebaseCrashlyticsModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    setGlobalErrorHandler(this.native);
+    setOnUnhandledPromiseRejectionHandler(this.native);
+  }
+
   crash() {
     this.native.crash();
   }
@@ -55,3 +62,4 @@ export default createModuleNamespace({
 // crashlytics().X(...);
 // firebase.crashlytics().X(...);
 export const firebase = getFirebaseRoot();
+firebase.crashlytics();

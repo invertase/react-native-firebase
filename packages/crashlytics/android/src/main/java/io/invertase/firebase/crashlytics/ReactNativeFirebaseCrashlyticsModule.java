@@ -23,11 +23,13 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
@@ -48,6 +50,13 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   @ReactMethod
   public void log(String message) {
     Crashlytics.getInstance().core.log(message);
+  }
+
+  // For internal use only.
+  @ReactMethod
+  public void logPromise(String message, Promise promise) {
+    Crashlytics.getInstance().core.log(message);
+    promise.resolve(null);
   }
 
   @ReactMethod
@@ -97,9 +106,27 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void recordError(ReadableMap jsErrorMap) {
-    // TODO
-//    Crashlytics.getInstance().core.logException(new Exception(code + ": " + domain));
+  public void recordError(ReadableMap jsErrorMap, Promise promise) {
+    String message = jsErrorMap.getString("message");
+    ReadableMap attributes = jsErrorMap.getMap("attributes");
+    ReadableArray stackFrames = Objects.requireNonNull(jsErrorMap.getArray("frames"));
+
+    @SuppressWarnings("ThrowableNotThrown")
+    Exception customException = new Exception(message);
+    StackTraceElement[] stackTraceElements = new StackTraceElement[stackFrames.size()];
+
+    for (int i = 0; i < stackFrames.size(); i++) {
+      ReadableMap stackFrame = Objects.requireNonNull(stackFrames.getMap(i));
+      int line = stackFrame.getInt("line");
+      String fn = stackFrame.getString("fn");
+      String file = stackFrame.getString("file");
+      stackTraceElements[i] = new StackTraceElement("JavaScript",fn, file,line);
+    }
+
+    customException.setStackTrace(stackTraceElements);
+
+    Crashlytics.getInstance().core.logException(customException);
+    promise.resolve(null);
   }
 
 
