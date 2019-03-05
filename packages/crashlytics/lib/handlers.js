@@ -26,14 +26,15 @@ function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
     nativeObj.message = `Unhandled Promise Rejection: ${nativeObj.message}`;
   }
 
+  // TODO
   // NativeFirebaseError additional properties
-  nativeObj.attributes = { jsError: 'true' };
-  if (hasOwnProperty(error, 'code')) nativeObj.attributes.code = `${error.code}`;
-  if (hasOwnProperty(error, 'namespace')) nativeObj.attributes.namespace = `${error.namespace}`;
-  if (hasOwnProperty(error, 'nativeErrorCode'))
-    nativeObj.attributes.nativeErrorCode = `${error.nativeErrorCode}`;
-  if (hasOwnProperty(error, 'nativeErrorMessage'))
-    nativeObj.attributes.nativeErrorMessage = `${error.nativeErrorMessage}`;
+  // nativeObj.attributes = { jsError: 'true' };
+  // if (hasOwnProperty(error, 'code')) nativeObj.attributes.code = `${error.code}`;
+  // if (hasOwnProperty(error, 'namespace')) nativeObj.attributes.namespace = `${error.namespace}`;
+  // if (hasOwnProperty(error, 'nativeErrorCode'))
+  //   nativeObj.attributes.nativeErrorCode = `${error.nativeErrorCode}`;
+  // if (hasOwnProperty(error, 'nativeErrorMessage'))
+  //   nativeObj.attributes.nativeErrorMessage = `${error.nativeErrorMessage}`;
 
   nativeObj.frames = [];
   for (let i = 0; i < stackFrames.length; i++) {
@@ -43,7 +44,9 @@ function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
       line: lineNumber || 0,
       col: columnNumber || 0,
       fn: functionName || '<unknown>',
-      file: `${fileName}:${lineNumber || 0}:${columnNumber || 0}`,
+      file: `${
+        fileName && fileName.length ? fileName.substring(0, fileName.indexOf('?')) : '<unknown>'
+      }:${lineNumber || 0}:${columnNumber || 0}`,
     });
   }
 
@@ -61,6 +64,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
     } else {
       const stackFrames = await StackTrace.fromError(error, { offline: true });
       await nativeModule.recordError(createNativeErrorObj(error, stackFrames, false));
+      originalHandler(error, fatal);
     }
   }
 
@@ -68,6 +72,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
   return handler;
 });
 
+// TODO
 export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
   const tracking = require('promise/setimmediate/rejection-tracking');
   tracking.enable({

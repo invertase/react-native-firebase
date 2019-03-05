@@ -108,19 +108,19 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   @ReactMethod
   public void recordError(ReadableMap jsErrorMap, Promise promise) {
     String message = jsErrorMap.getString("message");
-    ReadableMap attributes = jsErrorMap.getMap("attributes");
+//    ReadableMap attributes = jsErrorMap.getMap("attributes");
     ReadableArray stackFrames = Objects.requireNonNull(jsErrorMap.getArray("frames"));
 
     @SuppressWarnings("ThrowableNotThrown")
-    Exception customException = new Exception(message);
+    Exception customException = new JavaScriptError(message);
     StackTraceElement[] stackTraceElements = new StackTraceElement[stackFrames.size()];
 
     for (int i = 0; i < stackFrames.size(); i++) {
       ReadableMap stackFrame = Objects.requireNonNull(stackFrames.getMap(i));
-      int line = stackFrame.getInt("line");
+//      int line = stackFrame.getInt("line");
       String fn = stackFrame.getString("fn");
       String file = stackFrame.getString("file");
-      stackTraceElements[i] = new StackTraceElement("JavaScript", fn, file, line);
+      stackTraceElements[i] = new StackTraceElement("", fn, file, -1);
     }
 
     customException.setStackTrace(stackTraceElements);

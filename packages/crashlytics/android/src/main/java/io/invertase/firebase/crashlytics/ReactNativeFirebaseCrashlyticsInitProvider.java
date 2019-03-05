@@ -20,6 +20,7 @@ package io.invertase.firebase.crashlytics;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
 
 import io.fabric.sdk.android.Fabric;
@@ -71,16 +72,21 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
       try {
         Fabric.Builder builder = new Fabric.Builder(getContext());
 
+        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
+          .disabled(false)
+          .build();
+
         if (useNdk) {
-          builder.kits(new Crashlytics(), new CrashlyticsNdk());
+          builder.kits(new Crashlytics.Builder().core(crashlyticsCore).build(), new CrashlyticsNdk());
         } else {
-          builder.kits(new Crashlytics());
+          builder.kits(new Crashlytics.Builder().core(crashlyticsCore).build());
         }
 
         builder.debuggable(debug);
+
         Fabric.with(builder.build());
 
-        Log.i(TAG, "initialization successful");
+         Log.i(TAG, "initialization successful");
       } catch (IllegalStateException exception) {
         Log.e(TAG, "initialization failed", exception);
         return false;

@@ -108,6 +108,8 @@ await analytics().setUserId('12345678');
 
 ## Crashlytics
 
+- [NEW] JavaScript stack traces now automatically captured and parsed
+- [NEW] Optionally enable automatic reporting of JavaScript unhandled Promise rejections
 - [NEW] Added support for `setUserName(userName: string)`
 - [NEW] Added support for `setUserEmail(userEmail: string)`
 - [NEW] Added support for `isCrashlyticsCollectionEnabled: boolean`
