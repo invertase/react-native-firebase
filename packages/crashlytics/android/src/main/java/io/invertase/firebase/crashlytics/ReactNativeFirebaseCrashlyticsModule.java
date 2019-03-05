@@ -120,7 +120,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
       int line = stackFrame.getInt("line");
       String fn = stackFrame.getString("fn");
       String file = stackFrame.getString("file");
-      stackTraceElements[i] = new StackTraceElement("JavaScript",fn, file,line);
+      stackTraceElements[i] = new StackTraceElement("JavaScript", fn, file, line);
     }
 
     customException.setStackTrace(stackTraceElements);

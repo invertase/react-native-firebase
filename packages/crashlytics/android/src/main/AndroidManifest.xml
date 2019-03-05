@@ -10,6 +10,6 @@
       android:name="io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInitProvider"
       android:authorities="${applicationId}.reactnativefirebasecrashlyticsinitprovider"
       android:exported="false"
-      android:initOrder="102" /> <!-- Firebase = 100, ReactNativeFirebase = 101, runs after both -->
+      android:initOrder="98" /> <!-- Firebase = 100, ReactNativeFirebase = 99, runs after both (highest first) -->
   </application>
 </manifest>
