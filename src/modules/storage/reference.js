@@ -2,6 +2,7 @@
  * @flow
  * StorageReference representation wrapper
  */
+import { isIOS } from '../../utils';
 import ReferenceBase from '../../utils/ReferenceBase';
 import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './task';
 import { getNativeModule } from '../../utils/native';
@@ -96,7 +97,7 @@ export default class StorageReference extends ReferenceBase {
    * @return {Promise}
    */
   putFile(filePath: Object, metadata: Object = {}): StorageTask {
-    let _filePath = filePath.replace('file://', '');
+    let _filePath = isIOS ? filePath.replace('file://', '') : filePath;
     if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
     return new StorageTask(
       UPLOAD_TASK,
