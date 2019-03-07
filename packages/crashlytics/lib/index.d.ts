@@ -22,7 +22,8 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Crashlytics
+ * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
+ * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
  *
  * @firebase crashlytics
  */
@@ -30,6 +31,9 @@ export namespace Crashlytics {
   export interface Statics {}
 
   export interface Module extends ReactNativeFirebaseModule {
+    /**
+     * Whether Crashlytics reporting is enabled.
+     */
     isCrashlyticsCollectionEnabled: true;
 
     /**
@@ -47,7 +51,7 @@ export namespace Crashlytics {
     /**
      * Record a JavaScript Error.
      *
-     * The JavaScript stack trace is converted into a mock native exception before submission.
+     * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
      *
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
      */
@@ -140,14 +144,16 @@ declare module '@react-native-firebase/crashlytics' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Crashlytics
+     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
+     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
      */
     crashlytics: ReactNativeFirebaseModuleAndStatics<Crashlytics.Module, Crashlytics.Statics>;
   }
 
   interface FirebaseApp {
     /**
-     * Crashlytics
+     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
+     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
      */
     crashlytics(): Crashlytics.Module;
   }

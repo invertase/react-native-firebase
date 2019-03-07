@@ -248,7 +248,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Crashlytics"
+										"shortText": "Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.\nSpend less time triaging and troubleshooting crashes and more time building app features that delight users."
 									},
 									"type": {
 										"type": "reference",
@@ -260,7 +260,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 152,
+									"line": 158,
 									"character": 15
 								}
 							]
@@ -589,7 +589,7 @@
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 148,
+							"line": 153,
 							"character": 23
 						},
 						{
@@ -745,12 +745,12 @@
 							"kindString": "Property",
 							"flags": {},
 							"comment": {
-								"shortText": "Crashlytics"
+								"shortText": "Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.\nSpend less time triaging and troubleshooting crashes and more time building app features that delight users."
 							},
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 145,
+									"line": 150,
 									"character": 15
 								}
 							],
@@ -1061,7 +1061,7 @@
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 141,
+							"line": 145,
 							"character": 40
 						},
 						{
@@ -1135,7 +1135,7 @@
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 140,
+					"line": 144,
 					"character": 49
 				},
 				{
@@ -1434,7 +1434,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 123,
+							"line": 127,
 							"character": 32
 						}
 					],
@@ -1467,7 +1467,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 112,
+							"line": 116,
 							"character": 31
 						}
 					],
@@ -1505,7 +1505,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 121,
+							"line": 125,
 							"character": 23
 						}
 					],
@@ -1530,7 +1530,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 109,
+					"line": 113,
 					"character": 51
 				}
 			]
@@ -3873,7 +3873,7 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Crashlytics",
+				"shortText": "Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.\nSpend less time triaging and troubleshooting crashes and more time building app features that delight users.",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -3923,10 +3923,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Whether Crashlytics reporting is enabled."
+							},
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 33,
+									"line": 37,
 									"character": 34
 								}
 							],
@@ -3962,7 +3965,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 38,
+									"line": 42,
 									"character": 9
 								}
 							]
@@ -4010,7 +4013,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 45,
+									"line": 49,
 									"character": 7
 								}
 							]
@@ -4059,7 +4062,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 54,
+									"line": 58,
 									"character": 15
 								}
 							]
@@ -4125,7 +4128,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 89,
+									"line": 93,
 									"character": 16
 								}
 							]
@@ -4195,7 +4198,7 @@
 													"sources": [
 														{
 															"fileName": "crashlytics/lib/index.d.ts",
-															"line": 96,
+															"line": 100,
 															"character": 29
 														}
 													]
@@ -4218,7 +4221,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 96,
+									"line": 100,
 									"character": 17
 								}
 							]
@@ -4273,7 +4276,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 105,
+									"line": 109,
 									"character": 35
 								}
 							]
@@ -4328,7 +4331,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 81,
+									"line": 85,
 									"character": 16
 								}
 							]
@@ -4383,7 +4386,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 63,
+									"line": 67,
 									"character": 13
 								}
 							]
@@ -4438,7 +4441,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 72,
+									"line": 76,
 									"character": 15
 								}
 							]
@@ -4472,7 +4475,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 32,
+							"line": 33,
 							"character": 25
 						}
 					],
@@ -4494,7 +4497,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 30,
+							"line": 31,
 							"character": 26
 						}
 					]
@@ -4513,7 +4516,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 29,
+					"line": 30,
 					"character": 28
 				}
 			]
