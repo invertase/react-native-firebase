@@ -55,13 +55,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   log(message) {
-    if (!isString(userId)) {
-      throw new Error(
-        'firebase.crashlytics().message(*): The supplied message must be a string value.',
-      );
-    }
-
-    return this.native.log(message);
+    this.native.log(`${message}`);
   }
 
   setAttribute(name, value) {

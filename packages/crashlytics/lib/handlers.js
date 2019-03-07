@@ -69,18 +69,21 @@ export const setGlobalErrorHandler = once(nativeModule => {
 });
 
 export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
+  async function onUnhandled(id, error) {
+    if (!__DEV__) {
+      // TODO option to disable
+      try {
+        const stackFrames = await StackTrace.fromError(error, { offline: true });
+        await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, true));
+      } catch (_) {
+        // do nothing
+      }
+    }
+  }
   tracking.enable({
     allRejections: true,
-    async onUnhandled(id, error) {
-      if (!__DEV__) {
-        // TODO option to disable
-        try {
-          const stackFrames = await StackTrace.fromError(error, { offline: true });
-          await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, true));
-        } catch (_) {
-          // do nothing
-        }
-      }
-    },
+    onUnhandled,
   });
+
+  return onUnhandled;
 });

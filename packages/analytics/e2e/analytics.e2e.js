@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -62,6 +63,7 @@ describe('analytics()', () => {
     it('errors on using a reserved name', () => {
       try {
         firebase.analytics().logEvent('session_start');
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('reserved event');
       }
@@ -70,6 +72,7 @@ describe('analytics()', () => {
     it('errors if name not alphanumeric', () => {
       try {
         firebase.analytics().logEvent('!@£$%^&*');
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('is invalid');
       }
@@ -78,6 +81,7 @@ describe('analytics()', () => {
     it('errors if more than 25 params provided', () => {
       try {
         firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1)));
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('Maximum number of parameters exceeded');
       }
@@ -87,7 +91,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent(13377331);
       }).should.throw(
-        `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
+        `firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.`,
       );
     });
 
@@ -95,7 +99,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent('invertase_event', 'this should be an object');
       }).should.throw(
-        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
+        `firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.`,
       );
     });
 
@@ -140,6 +144,7 @@ describe('analytics()', () => {
     it('errors if screenName not a string', async () => {
       try {
         await firebase.analytics().setCurrentScreen(666.1337);
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -148,6 +153,7 @@ describe('analytics()', () => {
     it('errors if screenClassOverride not a string', async () => {
       try {
         await firebase.analytics().setCurrentScreen('invertase screen', 666.1337);
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be undefined or a string');
       }
@@ -186,6 +192,7 @@ describe('analytics()', () => {
     it('rejects none string none null values', async () => {
       try {
         await firebase.analytics().setUserId(666.1337);
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -204,6 +211,7 @@ describe('analytics()', () => {
     it('rejects none string none null values', async () => {
       try {
         await firebase.analytics().setUserProperty('invertase3', 33.3333);
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -212,6 +220,7 @@ describe('analytics()', () => {
     it('errors if property name is not a string', async () => {
       try {
         await firebase.analytics().setUserProperty(1337, 'invertase');
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be a string');
       }
@@ -222,6 +231,7 @@ describe('analytics()', () => {
     it('errors if arg is not an object', async () => {
       try {
         await firebase.analytics().setUserProperties(1337);
+        return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be an object');
       }

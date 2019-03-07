@@ -7556,10 +7556,10 @@ react-native-camera@^1.10.1:
   dependencies:
     prop-types "^15.6.2"
 
-react-native@0.59.0-rc.2:
-  version "0.59.0-rc.2"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.59.0-rc.2.tgz#ad1a145be18805be2c55abd1507f473a40220acf"
-  integrity sha512-p6uKqye+PMjLzaBVMm1YJdHSHNDqutAVSCkj11luXf65gnNWuYWta7CDSthXuGGMmhlDFcmFOR8ewpzvo1m46A==
+react-native@0.59.0-rc.3:
+  version "0.59.0-rc.3"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.59.0-rc.3.tgz#a989e4cdab596bb62248c26920fb641b210fd60e"
+  integrity sha512-jMH/5VUaajBXADmBlDyNQ9gYDU3ywXRQTdVMFBLPcPwT+xJzF1HuUo/xEpAQ6G+mjia3G70BQpEgxi55berviw==
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^1.2.1"
