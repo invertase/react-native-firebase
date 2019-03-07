@@ -73,6 +73,7 @@ export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
     allRejections: true,
     async onUnhandled(id, error) {
       if (!__DEV__) {
+        // TODO option to disable
         try {
           const stackFrames = await StackTrace.fromError(error, { offline: true });
           await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, true));
