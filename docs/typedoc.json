@@ -260,7 +260,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 98,
+									"line": 152,
 									"character": 15
 								}
 							]
@@ -589,7 +589,7 @@
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 94,
+							"line": 148,
 							"character": 23
 						},
 						{
@@ -750,7 +750,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 91,
+									"line": 145,
 									"character": 15
 								}
 							],
@@ -1061,7 +1061,7 @@
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 87,
+							"line": 141,
 							"character": 40
 						},
 						{
@@ -1135,7 +1135,7 @@
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 86,
+					"line": 140,
 					"character": 49
 				},
 				{
@@ -1434,7 +1434,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 69,
+							"line": 123,
 							"character": 32
 						}
 					],
@@ -1467,7 +1467,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 58,
+							"line": 112,
 							"character": 31
 						}
 					],
@@ -1505,7 +1505,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 67,
+							"line": 121,
 							"character": 23
 						}
 					],
@@ -1530,7 +1530,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 55,
+					"line": 109,
 					"character": 51
 				}
 			]
@@ -3950,6 +3950,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Cause your app to crash for testing purposes."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -3959,7 +3962,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 35,
+									"line": 38,
 									"character": 9
 								}
 							]
@@ -3979,6 +3982,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Log a message that will appear in any subsequent Crash or Non-fatal error reports."
+									},
 									"parameters": [
 										{
 											"id": 89,
@@ -3986,6 +3992,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -4001,13 +4010,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 37,
+									"line": 45,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 112,
+							"id": 90,
 							"name": "recordError",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4016,18 +4025,25 @@
 							},
 							"signatures": [
 								{
-									"id": 113,
+									"id": 91,
 									"name": "recordError",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Record a JavaScript Error.",
+										"text": "The JavaScript stack trace is converted into a mock native exception before submission.\n"
+									},
 									"parameters": [
 										{
-											"id": 114,
+											"id": 92,
 											"name": "error",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "Expects an instance of Error; e.g. classes that extend Error will also be supported.\n"
+											},
 											"type": {
 												"type": "reference",
 												"name": "Error"
@@ -4043,13 +4059,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 51,
+									"line": 54,
 									"character": 15
 								}
 							]
 						},
 						{
-							"id": 99,
+							"id": 102,
 							"name": "setAttribute",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4058,29 +4074,36 @@
 							},
 							"signatures": [
 								{
-									"id": 100,
+									"id": 103,
 									"name": "setAttribute",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console."
+									},
 									"parameters": [
 										{
-											"id": 101,
+											"id": 104,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
 											}
 										},
 										{
-											"id": 102,
+											"id": 105,
 											"name": "value",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -4102,13 +4125,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 45,
+									"line": 89,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 103,
+							"id": 106,
 							"name": "setAttributes",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4117,36 +4140,42 @@
 							},
 							"signatures": [
 								{
-									"id": 104,
+									"id": 107,
 									"name": "setAttributes",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Like `setAttribute` but for multiple attributes."
+									},
 									"parameters": [
 										{
-											"id": 105,
+											"id": 108,
 											"name": "attributes",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 106,
+													"id": 109,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"indexSignature": [
 														{
-															"id": 107,
+															"id": 110,
 															"name": "__index",
 															"kind": 8192,
 															"kindString": "Index signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 108,
+																	"id": 111,
 																	"name": "key",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -4166,7 +4195,7 @@
 													"sources": [
 														{
 															"fileName": "crashlytics/lib/index.d.ts",
-															"line": 47,
+															"line": 96,
 															"character": 29
 														}
 													]
@@ -4189,13 +4218,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 47,
+									"line": 96,
 									"character": 17
 								}
 							]
 						},
 						{
-							"id": 109,
+							"id": 112,
 							"name": "setCrashlyticsCollectionEnabled",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4204,18 +4233,25 @@
 							},
 							"signatures": [
 								{
-									"id": 110,
+									"id": 113,
 									"name": "setCrashlyticsCollectionEnabled",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Enable/disable Crashlytics reporting.",
+										"text": "Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.\n"
+									},
 									"parameters": [
 										{
-											"id": 111,
+											"id": 114,
 											"name": "enabled",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "boolean"
@@ -4237,13 +4273,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 49,
+									"line": 105,
 									"character": 35
 								}
 							]
 						},
 						{
-							"id": 96,
+							"id": 99,
 							"name": "setUserEmail",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4252,18 +4288,25 @@
 							},
 							"signatures": [
 								{
-									"id": 97,
+									"id": 100,
 									"name": "setUserEmail",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Optionally specify a user email which will be visible in the Firebase Crashlytics console.",
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n"
+									},
 									"parameters": [
 										{
-											"id": 98,
+											"id": 101,
 											"name": "userEmail",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -4285,13 +4328,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 43,
+									"line": 81,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 90,
+							"id": 93,
 							"name": "setUserId",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4300,18 +4343,25 @@
 							},
 							"signatures": [
 								{
-									"id": 91,
+									"id": 94,
 									"name": "setUserId",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Specify a user identifier which will be visible in the Firebase Crashlytics console.",
+										"text": "It is recommended for privacy purposes that this value be a value that's meaningless to a third-party observer; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n"
+									},
 									"parameters": [
 										{
-											"id": 92,
+											"id": 95,
 											"name": "userId",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "An arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -4333,13 +4383,13 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 39,
+									"line": 63,
 									"character": 13
 								}
 							]
 						},
 						{
-							"id": 93,
+							"id": 96,
 							"name": "setUserName",
 							"kind": 2048,
 							"kindString": "Method",
@@ -4348,18 +4398,25 @@
 							},
 							"signatures": [
 								{
-									"id": 94,
+									"id": 97,
 									"name": "setUserName",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Optionally specify a user name which will be visible in the Firebase Crashlytics console.",
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n"
+									},
 									"parameters": [
 										{
-											"id": 95,
+											"id": 98,
 											"name": "userName",
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "A string representing an end-user's name or app username\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -4381,7 +4438,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 41,
+									"line": 72,
 									"character": 15
 								}
 							]
@@ -4402,13 +4459,13 @@
 							"children": [
 								85,
 								87,
+								90,
+								102,
+								106,
 								112,
 								99,
-								103,
-								109,
-								96,
-								90,
-								93
+								93,
+								96
 							]
 						}
 					],
