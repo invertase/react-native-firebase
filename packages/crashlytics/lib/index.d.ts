@@ -30,7 +30,25 @@ export namespace Crashlytics {
   export interface Statics {}
 
   export interface Module extends ReactNativeFirebaseModule {
+    isCrashlyticsCollectionEnabled: true;
 
+    crash(): void;
+
+    log(message: string): void;
+
+    setUserId(userId: string): Promise<null>;
+
+    setUserName(userName: string): Promise<null>;
+
+    setUserEmail(userEmail: string): Promise<null>;
+
+    setAttribute(name: string, value: string): Promise<null>;
+
+    setAttributes(attributes: { [key: string]: string }): Promise<null>;
+
+    setCrashlyticsCollectionEnabled(enabled: boolean): Promise<null>;
+
+    recordError(error: Error): void;
   }
 }
 
@@ -70,10 +88,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * Crashlytics
      */
-    crashlytics: ReactNativeFirebaseModuleAndStatics<
-      Crashlytics.Module,
-      Crashlytics.Statics
-    >;
+    crashlytics: ReactNativeFirebaseModuleAndStatics<Crashlytics.Module, Crashlytics.Statics>;
   }
 
   interface FirebaseApp {
