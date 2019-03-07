@@ -19,10 +19,10 @@ package io.invertase.firebase.crashlytics;
 
 /**
  * This class is purely cosmetic - to indicate on the Crashlytics console that it's
- * a JavaScript error rather than the generic `java.lang.Exception`.
+ * an UnhandledPromiseRejection JS error rather than the generic `java.lang.Exception`.
  */
-class JavaScriptError extends Exception {
-  JavaScriptError(String message) {
+class UnhandledPromiseRejection extends Exception {
+  UnhandledPromiseRejection(String message) {
     super(message);
   }
 }

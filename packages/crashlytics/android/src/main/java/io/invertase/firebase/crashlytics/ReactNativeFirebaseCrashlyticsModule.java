@@ -106,18 +106,33 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void recordError(ReadableMap jsErrorMap, Promise promise) {
+  public void recordError(ReadableMap jsErrorMap) {
+    recordJavaScriptError(jsErrorMap);
+  }
+
+  @ReactMethod
+  public void recordErrorPromise(ReadableMap jsErrorMap, Promise promise) {
+    recordJavaScriptError(jsErrorMap);
+    promise.resolve(null);
+  }
+
+  private void recordJavaScriptError(ReadableMap jsErrorMap) {
     String message = jsErrorMap.getString("message");
-//    ReadableMap attributes = jsErrorMap.getMap("attributes");
     ReadableArray stackFrames = Objects.requireNonNull(jsErrorMap.getArray("frames"));
+    boolean isUnhandledPromiseRejection = jsErrorMap.getBoolean("isUnhandledRejection");
 
     @SuppressWarnings("ThrowableNotThrown")
-    Exception customException = new JavaScriptError(message);
+    Exception customException;
+    if (isUnhandledPromiseRejection) {
+      customException = new UnhandledPromiseRejection(message);
+    } else {
+      customException = new JavaScriptError(message);
+    }
+
     StackTraceElement[] stackTraceElements = new StackTraceElement[stackFrames.size()];
 
     for (int i = 0; i < stackFrames.size(); i++) {
       ReadableMap stackFrame = Objects.requireNonNull(stackFrames.getMap(i));
-//      int line = stackFrame.getInt("line");
       String fn = stackFrame.getString("fn");
       String file = stackFrame.getString("file");
       stackTraceElements[i] = new StackTraceElement("", fn, file, -1);
@@ -126,9 +141,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     customException.setStackTrace(stackTraceElements);
 
     Crashlytics.getInstance().core.logException(customException);
-    promise.resolve(null);
   }
-
 
   @Override
   public Map<String, Object> getConstants() {

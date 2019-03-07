@@ -58,33 +58,33 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}) {
     if (!isString(name)) {
       throw new Error(
-        `analytics.logEvent(): First argument 'name' is required and must be a string value.`,
+        `firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.`,
       );
     }
 
     if (!isUndefined(params) && !isObject(params)) {
       throw new Error(
-        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`,
+        `firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.`,
       );
     }
 
     // check name is not a reserved event name
     if (isOneOf(name, ReservedEventNames)) {
       throw new Error(
-        `analytics.logEvent(): event name '${name}' is a reserved event name and can not be used.`,
+        `firebase.analytics().logEvent(*): event name '${name}' is a reserved event name and can not be used.`,
       );
     }
 
     // name format validation
     if (!isAlphaNumericUnderscore(name)) {
       throw new Error(
-        `analytics.logEvent(): Event name '${name}' is invalid. Names should contain 1 to 32 alphanumeric characters or underscores.`,
+        `firebase.analytics().logEvent(*): Event name '${name}' is invalid. Names should contain 1 to 32 alphanumeric characters or underscores.`,
       );
     }
 
     // maximum number of allowed params check
     if (params && Object.keys(params).length > 25)
-      throw new Error('analytics.logEvent(): Maximum number of parameters exceeded (25).');
+      throw new Error('firebase.analytics().logEvent(_, *): Maximum number of parameters exceeded (25).');
 
     // Parameter names can be up to 24 characters long and must start with an alphabetic character
     // and contain only alphanumeric characters and underscores. Only String, long and double param
@@ -99,12 +99,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setCurrentScreen(screenName, screenClassOverride) {
     if (!isString(screenName)) {
-      throw new Error('analytics.setCurrentScreen(): screenName must be a string.');
+      throw new Error('firebase.analytics().setCurrentScreen(*): screenName must be a string.');
     }
 
     if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
       throw new Error(
-        'analytics.setCurrentScreen(): screenClassOverride must be undefined or a string.',
+        'firebase.analytics().setCurrentScreen(_, *): screenClassOverride must be undefined or a string.',
       );
     }
 
@@ -121,7 +121,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
-      throw new Error('analytics.setUserId(): The supplied userId must be a string value or null.');
+      throw new Error('firebase.analytics().setUserId(*): The supplied userId must be a string value or null.');
     }
 
     return this.native.setUserId(id);
@@ -129,12 +129,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperty(name, value) {
     if (!isString(name)) {
-      throw new Error('analytics.setUserProperty(): The supplied property name must be a string.');
+      throw new Error('firebase.analytics().setUserProperty(*): The supplied property name must be a string.');
     }
 
     if (value !== null && !isString(value)) {
       throw new Error(
-        'analytics.setUserProperty(): The supplied property value must be a string value or null.',
+        'firebase.analytics().setUserProperty(_, *): The supplied property value must be a string value or null.',
       );
     }
 
@@ -144,7 +144,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   setUserProperties(object) {
     if (!isObject(object)) {
       throw new Error(
-        'analytics.setUserProperties(): The supplied arg must be an object of key value strings.',
+        'firebase.analytics().setUserProperties(*): The supplied arg must be an object of key value strings.',
       );
     }
 

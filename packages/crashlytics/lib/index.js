@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -21,8 +22,15 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import StackTrace from 'stacktrace-js';
+import { isBoolean, isError, isObject, isString } from '@react-native-firebase/common';
+
 import version from './version';
-import { setGlobalErrorHandler, setOnUnhandledPromiseRejectionHandler } from './handlers';
+import {
+  createNativeErrorObj,
+  setGlobalErrorHandler,
+  setOnUnhandledPromiseRejectionHandler,
+} from './handlers';
 
 const statics = {};
 
@@ -35,10 +43,104 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     super(...args);
     setGlobalErrorHandler(this.native);
     setOnUnhandledPromiseRejectionHandler(this.native);
+    this._isCrashlyticsCollectionEnabled = this.native.isCrashlyticsCollectionEnabled;
+  }
+
+  get isCrashlyticsCollectionEnabled() {
+    return this._isCrashlyticsCollectionEnabled;
   }
 
   crash() {
     this.native.crash();
+  }
+
+  log(message) {
+    if (!isString(userId)) {
+      throw new Error(
+        'firebase.crashlytics().message(*): The supplied message must be a string value.',
+      );
+    }
+
+    return this.native.log(message);
+  }
+
+  setAttribute(name, value) {
+    if (!isString(name)) {
+      throw new Error(
+        'firebase.crashlytics().setAttribute(*, _): The supplied property name must be a string.',
+      );
+    }
+
+    if (!isString(value)) {
+      throw new Error(
+        'firebase.crashlytics().setAttribute(_, *): The supplied property value must be a string value.',
+      );
+    }
+
+    return this.native.setAttribute(name, value);
+  }
+
+  setAttributes(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.crashlytics().setAttributes(*): The supplied arg must be an object of key value strings.',
+      );
+    }
+
+    return this.native.setAttributes(object);
+  }
+
+  setUserId(userId) {
+    if (!isString(userId)) {
+      throw new Error(
+        'firebase.crashlytics().setUserId(*): The supplied userId must be a string value.',
+      );
+    }
+
+    return this.native.setUserId(userId);
+  }
+
+  setUserName(userName) {
+    if (!isString(userName)) {
+      throw new Error(
+        'firebase.crashlytics().setUserName(*): The supplied userName must be a string value.',
+      );
+    }
+
+    return this.native.setUserName(userName);
+  }
+
+  setUserEmail(userEmail) {
+    if (!isString(userEmail)) {
+      throw new Error(
+        'firebase.crashlytics().setUserEmail(*): The supplied userEmail must be a string value.',
+      );
+    }
+
+    return this.native.setUserEmail(userEmail);
+  }
+
+  recordError(error) {
+    if (isError(error)) {
+      StackTrace.fromError(error, { offline: true }).then(stackFrames => {
+        this.native.recordError(createNativeErrorObj(error, stackFrames, false));
+      });
+    } else {
+      console.warn(
+        'firebase.crashlytics().recordError(*) expects an instance of Error. Non Errors will be ignored.',
+      );
+    }
+  }
+
+  setCrashlyticsCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.`,
+      );
+    }
+
+    this._isCrashlyticsCollectionEnabled = enabled;
+    return this.native.setCrashlyticsCollectionEnabled(enabled);
   }
 }
 
