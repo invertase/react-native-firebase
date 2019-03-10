@@ -119,9 +119,9 @@ await analytics().setUserId('12345678');
 - [NEW][🔥] Added `firebase.json` support for `crashlytics_debug_enabled`, this toggles Crashlytics native debug logging, defaults to `false`
 - [NEW][🔥] Added `firebase.json` support for `crashlytics_auto_collection_enabled`, this toggles Crashlytics error reporting, this is useful for user opt-in first flows, e.g. set to `false` and when your user agrees to opt-in then call `setCrashlyticsCollectionEnabled(true)` in your app, defaults to `true`
 - [BUGFIX][android] `crash()` now correctly crashes without being caught by React Native's RedBox
-- [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods:
-  - `setAttribute(key: string, value: boolean | number | string): Promise<null>` - set a singular key value to show alongside any subsequent crash reports
-  - `setAttributes(values: { [key: string]: boolean | number | string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
+- [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods (the Crashlytics SDK converted all these into strings internally anyway):
+  - `setAttribute(key: string, value: string): Promise<null>` - set a singular key value to show alongside any subsequent crash reports
+  - `setAttributes(values: { [key: string]: string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
 - [BREAKING] all methods except `crash`, `log` & `recordError` now return a `Promise` that resolves when complete
 - [BREAKING] `recordError(code: number, message: string)`'s fn signature changed to `recordError(error: Error)` - now accepts a JS Error class instance
 - [BREAKING] `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation

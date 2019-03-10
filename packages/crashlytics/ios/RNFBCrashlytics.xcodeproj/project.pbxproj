@@ -50,8 +50,6 @@
 		2744B98321F45429004F8E3F /* RNFBCrashlytics */ = {
 			isa = PBXGroup;
 			children = (
-				2744B9A121F48736004F8E3F /* converters */,
-				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBCrashlyticsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */,
 			);
