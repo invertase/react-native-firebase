@@ -43,7 +43,7 @@ _PLIST_ENTRY_VALUES=(
 
 function setPlistValue {
   echo "info:      setting plist entry '$1' of type '$2' in file '$4'"
-  ${_PLIST_BUDDY} -c "Add :$1 $2 $3" $4 >/dev/null
+  ${_PLIST_BUDDY} -c "Add :$1 $2 '$3'" $4 || echo "info:      '$1' already exists"
 }
 
 echo "info: -> RNFB build script started"
@@ -70,8 +70,8 @@ done
 
 if [[ ${_SEARCH_RESULT} ]]; then
   _SEARCH_RESULT="'$_SEARCH_RESULT'"
-  _JSON_OUTPUT=`python -c 'import json,sys; print(json.dumps(json.loads(open('${_SEARCH_RESULT}').read())['${_JSON_ROOT}']))' || echo "{}"`
-  _PLIST_ENTRY_VALUES[${#_PLIST_ENTRY_VALUES[@]}-1]=${_JSON_OUTPUT}
+  _JSON_OUTPUT=`python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('${_SEARCH_RESULT}').read())['${_JSON_ROOT}'])))' || echo "{}"`
+  _PLIST_ENTRY_VALUES[${#_PLIST_ENTRY_VALUES[@]}-1]="${_JSON_OUTPUT}"
   echo "info:      firebase.json value: ${_JSON_OUTPUT}"
 else
   echo "warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase."
