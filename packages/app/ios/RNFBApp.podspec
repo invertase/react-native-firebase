@@ -15,7 +15,6 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.platform            = :ios, "10.0"
   s.source_files        = 'RNFBApp/**/*.{h,m}'
-  s.source_files        = 'RNFBApp/Scripts/**/*.{rb,sh}'
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 5.17.0'
   s.dependency          'Firebase/Auth', '~> 5.17.0'

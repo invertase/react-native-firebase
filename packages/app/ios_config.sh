@@ -28,7 +28,7 @@ _DSYM_PLIST="${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.pli
 
 _PLIST_ENTRY_KEYS=(
   'firebase_crashlytics_collection_enabled'            #1
-  'firebase_json_raw'                                 #2 - must always be last entry
+  'firebase_json_raw'                                  #2 - must always be last entry
 )
 
 _PLIST_ENTRY_TYPES=(

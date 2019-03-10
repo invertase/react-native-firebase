@@ -28,33 +28,22 @@ target 'testing' do
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
 
-  pod 'Jet', :path => '../node_modules/jet/ios/Jet.podspec'
+  pod 'Jet', :path => '../node_modules/jet/ios'
 
-  rnfb_version = "0.0.1" # package["version"]
-  pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec'
-  pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec'
-  pod 'RNFBCrashlytics', :path => '../../packages/crashlytics/ios/RNFBCrashlytics.podspec'
-  pod 'RNFBFiam', :path => '../../packages/fiam/ios/RNFBFiam.podspec'
-  pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec'
-  pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec'
-  pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec'
+  react_native_firebase_path = "../node_modules/@react-native-firebase"
+
+  pod 'RNFBApp', :path => "#{react_native_firebase_path}/app/ios"
+  script_phase :name => 'RNFB App Configuration', :script => File.read("#{react_native_firebase_path}/app/ios_config.sh"), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
+
+  pod 'RNFBCrashlytics', :path => "#{react_native_firebase_path}/crashlytics/ios"
+  script_phase :name => 'RNFB Crashlytics Configuration', :script => File.read("#{react_native_firebase_path}/crashlytics/ios_config.sh"), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
 
 
-  # Pods for ReactNativeFirebaseDemo
-  # pod 'Firebase/Core', '~> 5.15.0'
-  # pod 'Firebase/AdMob', '~> 5.15.0'
-  # pod 'Firebase/Auth', '~> 5.15.0'
-  # pod 'Firebase/Database', '~> 5.15.0'
-  # pod 'Firebase/Functions', '~> 5.15.0'
-  # pod 'Firebase/DynamicLinks', '~> 5.15.0'
-  # pod 'Firebase/Firestore', '~> 5.15.0'
-  # pod 'Firebase/Invites', '~> 5.15.0'
-  # pod 'Firebase/Messaging', '~> 5.15.0'
-  # pod 'Firebase/RemoteConfig', '~> 5.15.0'
-  # pod 'Firebase/Storage', '~> 5.15.0'
-  # pod 'Firebase/Performance', '~> 5.15.0'
-  # pod 'Fabric', '~> 1.7.11'
-  # pod 'Crashlytics', '~> 3.10.7'
+  pod 'RNFBAnalytics', :path => "#{react_native_firebase_path}/analytics/ios"
+  pod 'RNFBFiam', :path => "#{react_native_firebase_path}/fiam/ios"
+  pod 'RNFBFunctions', :path => "#{react_native_firebase_path}/functions/ios"
+  pod 'RNFBIid', :path => "#{react_native_firebase_path}/iid/ios"
+  pod 'RNFBPerf', :path => "#{react_native_firebase_path}/perf/ios"
 end
 
 post_install do |installer|

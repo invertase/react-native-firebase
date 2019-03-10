@@ -194,7 +194,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - Jet (from `../node_modules/jet/ios/Jet.podspec`)
+  - Jet (from `../node_modules/jet/ios`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
@@ -202,13 +202,13 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
-  - RNFBAnalytics (from `../../packages/analytics/ios/RNFBAnalytics.podspec`)
-  - RNFBApp (from `../../packages/app/ios/RNFBApp.podspec`)
-  - RNFBCrashlytics (from `../../packages/crashlytics/ios/RNFBCrashlytics.podspec`)
-  - RNFBFiam (from `../../packages/fiam/ios/RNFBFiam.podspec`)
-  - RNFBFunctions (from `../../packages/functions/ios/RNFBFunctions.podspec`)
-  - RNFBIid (from `../../packages/iid/ios/RNFBIid.podspec`)
-  - RNFBPerf (from `../../packages/perf/ios/RNFBPerf.podspec`)
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
+  - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
+  - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
+  - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
+  - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -243,23 +243,23 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   Jet:
-    :path: "../node_modules/jet/ios/Jet.podspec"
+    :path: "../node_modules/jet/ios"
   React:
     :path: "../node_modules/react-native"
   RNFBAnalytics:
-    :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
+    :path: "../node_modules/@react-native-firebase/analytics/ios"
   RNFBApp:
-    :path: "../../packages/app/ios/RNFBApp.podspec"
+    :path: "../node_modules/@react-native-firebase/app/ios"
   RNFBCrashlytics:
-    :path: "../../packages/crashlytics/ios/RNFBCrashlytics.podspec"
+    :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBFiam:
-    :path: "../../packages/fiam/ios/RNFBFiam.podspec"
+    :path: "../node_modules/@react-native-firebase/fiam/ios"
   RNFBFunctions:
-    :path: "../../packages/functions/ios/RNFBFunctions.podspec"
+    :path: "../node_modules/@react-native-firebase/functions/ios"
   RNFBIid:
-    :path: "../../packages/iid/ios/RNFBIid.podspec"
+    :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBPerf:
-    :path: "../../packages/perf/ios/RNFBPerf.podspec"
+    :path: "../node_modules/@react-native-firebase/perf/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -299,6 +299,6 @@ SPEC CHECKSUMS:
   RNFBPerf: 7ab9996e5742d6327d01ca92e272e11d7099dc06
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 1e3bbe2b2a4d653c9f1d614724b064b64f4579a0
+PODFILE CHECKSUM: 32a9be7c0e3d9823c58f7d93b859d52b56a4d3ca
 
 COCOAPODS: 1.5.3
