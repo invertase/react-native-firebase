@@ -19,4 +19,6 @@ Pod::Spec.new do |s|
   s.dependency          'Firebase/Core', '~> 5.17.0'
   s.dependency          'Fabric', '~> 1.9.0'
   s.dependency          'Crashlytics', '~> 3.12.0'
+  s.dependency          'RNFBApp'
+  s.static_framework    = true
 end

@@ -16,7 +16,7 @@
  *
  */
 
-describe('crashlytics()', () => {
+xdescribe('crashlytics()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();

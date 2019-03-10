@@ -165,6 +165,7 @@ PODS:
   - RNFBAnalytics (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBApp (6.0.0-alpha.4):
     - Firebase/Auth (~> 5.17.0)
     - Firebase/Core (~> 5.17.0)
@@ -174,20 +175,33 @@ PODS:
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBFiam (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - Firebase/InAppMessagingDisplay (~> 5.17.0)
     - React
+    - RNFBApp
+  - RNFBFirestore (6.0.0-alpha.4):
+    - Firebase/Core (~> 5.17.0)
+    - React
+    - RNFBApp
   - RNFBFunctions (6.0.0-alpha.4):
     - Firebase/Functions (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBIid (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBPerf (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - Firebase/Performance (~> 5.17.0)
     - React
+    - RNFBApp
+  - RNFBUtils (6.0.0-alpha.4):
+    - Firebase/Core (~> 5.17.0)
+    - React
+    - RNFBApp
   - yoga (0.59.0-rc.3.React)
 
 DEPENDENCIES:
@@ -206,9 +220,11 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
   - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
+  - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
+  - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -254,12 +270,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBFiam:
     :path: "../node_modules/@react-native-firebase/fiam/ios"
+  RNFBFirestore:
+    :path: "../node_modules/@react-native-firebase/firestore/ios"
   RNFBFunctions:
     :path: "../node_modules/@react-native-firebase/functions/ios"
   RNFBIid:
     :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBPerf:
     :path: "../node_modules/@react-native-firebase/perf/ios"
+  RNFBUtils:
+    :path: "../node_modules/@react-native-firebase/utils/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -290,15 +310,17 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  RNFBAnalytics: 7d2fc24309b87f9927efc8396c8bd70883161440
-  RNFBApp: 8cbd3bb08f3473dcec9c592940938ebf941bfcaf
-  RNFBCrashlytics: 40905b76d6f6c23c5f126e7445e2396ceed7025b
-  RNFBFiam: 6da6916d604b4d974a7c3cdc792d3de0bd5d13be
-  RNFBFunctions: 9eeaec960694af2269684378d446d2007a59a41e
-  RNFBIid: 6383ed7fc583b1ac40c9eb4352c84ec161f95f76
-  RNFBPerf: 7ab9996e5742d6327d01ca92e272e11d7099dc06
+  RNFBAnalytics: 61b9d722deb136454425850860df910250a1874d
+  RNFBApp: ea2649b5993bec4ef4ff5ed4cb29454328e78b74
+  RNFBCrashlytics: b7ec197ade3caaa6060525b506fd2ff65b529a4c
+  RNFBFiam: 7ea892c593296cfb74bced95d96717c991233c69
+  RNFBFirestore: 5cc04b0781abd2a0c339738dcc56fc76a5930ac0
+  RNFBFunctions: 36e961bc49a7f320aa43dcc8db75b191293b781c
+  RNFBIid: e3e9aec77e0989367354e282252340168030e18d
+  RNFBPerf: 28163458cca18c535134e19fea2f8f4c82385d5b
+  RNFBUtils: 1c86022a506cb231adb10a6dfad52b3bc485ebf2
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 32a9be7c0e3d9823c58f7d93b859d52b56a4d3ca
+PODFILE CHECKSUM: b8a7635ae6af2f71c8e50dd738a0a5a2bb05f65f
 
 COCOAPODS: 1.5.3

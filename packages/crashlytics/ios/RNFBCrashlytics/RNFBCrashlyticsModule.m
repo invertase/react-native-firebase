@@ -19,14 +19,14 @@
 #import <Firebase/Firebase.h>
 
 #import "RNFBCrashlyticsModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 
 
 @implementation RNFBCrashlyticsModule
 #pragma mark -
 #pragma mark Module Setup
 
-  RCT_EXPORT_MODULE();
+  RCT_EXPORT_MODULE(RNFBCrashlyticsModule);
 
   - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
@@ -34,5 +34,14 @@
 
 #pragma mark -
 #pragma mark Firebase Crashlytics Methods
+
+RCT_EXPORT_METHOD(setPerformanceCollectionEnabled:
+                  (BOOL *) enabled
+                  resolver:
+                  (RCTPromiseResolveBlock) resolve
+                  rejecter:
+                  (RCTPromiseRejectBlock) reject) {
+  resolve([NSNull null]);
+}
 
 @end

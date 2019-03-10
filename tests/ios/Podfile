@@ -1,49 +1,30 @@
-require 'json'
-package = JSON.parse(File.read('../../package.json'))
+require_relative '../node_modules/@react-native-firebase/app/pod_config'
 
 install! 'cocoapods', :deterministic_uuids => false
-# Uncomment this line to define a global platform for your project
-# platform :ios, '8.0'
 
 target 'testing' do
   platform :ios, '10.0'
-  # Uncomment this line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
+
+  use_frameworks!
 
   react_native_path = "../node_modules/react-native"
   pod 'React', :path => "#{react_native_path}", :subspecs => [
     'Core',
-    'CxxBridge', # Include this for RN >= 0.47
-    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'CxxBridge',
+    'DevSupport',
     'RCTText',
     'RCTNetwork',
     'RCTImage',
-    'RCTWebSocket', # Needed for debugging
+    'RCTWebSocket',
   ]
 
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
-
-  # Third party deps podspec link
   pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
-
   pod 'Jet', :path => '../node_modules/jet/ios'
 
-  react_native_firebase_path = "../node_modules/@react-native-firebase"
-
-  pod 'RNFBApp', :path => "#{react_native_firebase_path}/app/ios"
-  script_phase :name => 'RNFB App Configuration', :script => File.read("#{react_native_firebase_path}/app/ios_config.sh"), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
-
-  pod 'RNFBCrashlytics', :path => "#{react_native_firebase_path}/crashlytics/ios"
-  script_phase :name => 'RNFB Crashlytics Configuration', :script => File.read("#{react_native_firebase_path}/crashlytics/ios_config.sh"), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
-
-
-  pod 'RNFBAnalytics', :path => "#{react_native_firebase_path}/analytics/ios"
-  pod 'RNFBFiam', :path => "#{react_native_firebase_path}/fiam/ios"
-  pod 'RNFBFunctions', :path => "#{react_native_firebase_path}/functions/ios"
-  pod 'RNFBIid', :path => "#{react_native_firebase_path}/iid/ios"
-  pod 'RNFBPerf', :path => "#{react_native_firebase_path}/perf/ios"
+  react_native_firebase!
 end
 
 post_install do |installer|
