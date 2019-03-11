@@ -23,6 +23,8 @@ import android.content.SharedPreferences;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.Map;
+
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 public class ReactNativeFirebasePreferences {
@@ -46,9 +48,23 @@ public class ReactNativeFirebasePreferences {
     return getPreferences().getBoolean(key, defaultValue);
   }
 
-  public WritableMap getAllAsWritableMap() {
-    // TODO: Salakar: convert to writableMap
-    return Arguments.createMap();
+  public void setStringValue(String key, String value) {
+    getPreferences().edit().putString(key, value).apply();
+  }
+
+  public String getStringValue(String key, String defaultValue) {
+    return getPreferences().getString(key, defaultValue);
+  }
+
+  public WritableMap getAll() {
+    WritableMap writableMap = Arguments.createMap();
+    Map<String, ?> prefMap = getPreferences().getAll();
+
+    for (Map.Entry<String, ?> entry : prefMap.entrySet()) {
+      SharedUtils.mapPutValue(entry.getKey(), entry.getValue(), writableMap);
+    }
+
+    return writableMap;
   }
 
   public void clearAll() {

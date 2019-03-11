@@ -65,6 +65,10 @@ static NSString *const RNFBDomainIdentifier = @"io.invertase.firebase";
     [_userDefaults synchronize];
   }
 
+  - (NSDictionary *)getAll {
+    return [_userDefaults dictionaryRepresentation];
+  }
+
   - (void)clearAll {
     [_userDefaults removePersistentDomainForName:RNFBDomainIdentifier];
   }

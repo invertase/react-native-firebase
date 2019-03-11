@@ -25,7 +25,7 @@ import io.invertase.firebase.BuildConfig;
 public class ReactNativeFirebaseJSON {
   private static ReactNativeFirebaseJSON sharedInstance = new ReactNativeFirebaseJSON();
 
-  private JSONObject jsonObject = null;
+  private JSONObject jsonObject;
 
   private ReactNativeFirebaseJSON() {
     try {

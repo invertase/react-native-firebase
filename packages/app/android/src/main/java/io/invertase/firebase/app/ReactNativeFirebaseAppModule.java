@@ -110,17 +110,34 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
     emitter.removeListener(eventName, all);
   }
 
-  @ReactMethod
-  public void getSavedPreferences(Promise promise) {
-    promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAllAsWritableMap());
-  }
+  /**
+   * ------------------
+   *    PREFERENCES
+   * -------------------
+   */
 
   @ReactMethod
-  public void clearSavedPreferences(Promise promise) {
-    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
+  public void preferencesSetBool(String key, boolean value, Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().setBooleanValue(key, value);
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void preferencesSetString(String key, String value, Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().setStringValue(key, value);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void preferencesGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAll());
+  }
+
+  @ReactMethod
+  public void preferencesClearAll(Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
+    promise.resolve(null);
+  }
 
   @Override
   public Map<String, Object> getConstants() {
