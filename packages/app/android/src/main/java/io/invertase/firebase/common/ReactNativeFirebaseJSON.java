@@ -17,6 +17,10 @@ package io.invertase.firebase.common;
  *
  */
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,5 +56,21 @@ public class ReactNativeFirebaseJSON {
   public String getStringValue(String key, String defaultValue) {
     if (jsonObject == null) return defaultValue;
     return jsonObject.optString(key, defaultValue);
+  }
+
+  public WritableMap getAll() {
+    WritableMap writableMap = Arguments.createMap();
+
+    JSONArray keys = jsonObject.names();
+    for (int i = 0; i < keys.length(); ++i) {
+      try {
+        String key = keys.getString(i);
+        SharedUtils.mapPutValue(key, jsonObject.get(key), writableMap);
+      } catch (JSONException e) {
+        // ignore
+      }
+    }
+
+    return writableMap;
   }
 }

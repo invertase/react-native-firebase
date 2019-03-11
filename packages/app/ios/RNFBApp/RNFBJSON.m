@@ -79,6 +79,10 @@ NSString *const RNFBJSONBundleKey = @"firebase_json_raw";
     return string;
   }
 
+  - (NSDictionary *)getAll {
+    return [[NSDictionary alloc] initWithDictionary:_firebaseJson copyItems:YES];
+  }
+
   + (RNFBJSON *)shared {
     return sharedInstance;
   }

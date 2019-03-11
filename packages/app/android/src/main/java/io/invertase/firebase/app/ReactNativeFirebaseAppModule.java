@@ -32,6 +32,8 @@ import java.util.Map;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
@@ -112,8 +114,30 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
 
   /**
    * ------------------
+   *       META
+   * ------------------
+   */
+
+  @ReactMethod
+  public void metaGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebaseMeta.getSharedInstance().getAll());
+  }
+
+  /**
+   * ------------------
+   *       JSON
+   * ------------------
+   */
+
+  @ReactMethod
+  public void jsonGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebaseJSON.getSharedInstance().getAll());
+  }
+
+  /**
+   * ------------------
    *    PREFERENCES
-   * -------------------
+   * ------------------
    */
 
   @ReactMethod

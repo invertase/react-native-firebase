@@ -22,6 +22,8 @@
 #import "RNFBRCTEventEmitter.h"
 #import "RNFBSharedUtils.h"
 #import "RNFBPreferences.h"
+#import "RNFBJSON.h"
+#import "RNFBMeta.h"
 
 
 @implementation RNFBAppModule
@@ -44,7 +46,24 @@
   }
 
 #pragma mark -
+#pragma mark META Methods
+
+  RCT_EXPORT_METHOD(metaGetAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([RNFBMeta getAll]);
+  }
+
+#pragma mark -
 #pragma mark JSON Methods
+
+  RCT_EXPORT_METHOD(jsonGetAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([[RNFBJSON shared] getAll]);
+  }
 
 #pragma mark -
 #pragma mark Preference Methods

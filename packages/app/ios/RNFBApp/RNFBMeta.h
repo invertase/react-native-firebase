@@ -17,16 +17,14 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RNFBJSON : NSObject
+@interface RNFBMeta : NSObject
 
-- (BOOL)contains:(NSString *)key;
++ (BOOL)contains:(NSString *)key;
 
-- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue;
++ (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue;
 
-- (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
++ (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
 
-- (NSDictionary *)getAll;
-
-+ (RNFBJSON *)shared;
++ (NSDictionary *)getAll;
 
 @end
