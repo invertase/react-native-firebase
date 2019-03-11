@@ -58,7 +58,6 @@ NSString *const RNFBJSONBundleKey = @"firebase_json_raw";
       }
 
       self.firebaseJson = dictionary;
-      NSLog(@"debugging");
     });
 
     return self;

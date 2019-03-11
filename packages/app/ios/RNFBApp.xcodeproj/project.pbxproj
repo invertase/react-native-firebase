@@ -13,6 +13,7 @@
 		2744B9A721F57C2F004F8E3F /* RCTConvert+FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B9A621F57C2F004F8E3F /* RCTConvert+FIRApp.m */; };
 		2748D8152236426300FC8DC8 /* RNFBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D8142236426300FC8DC8 /* RNFBJSON.m */; };
 		2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */; };
+		2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,8 @@
 		2748D8112236417700FC8DC8 /* RNFBSharedUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFBSharedUtils.h; sourceTree = "<group>"; };
 		2748D8142236426300FC8DC8 /* RNFBJSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBJSON.m; sourceTree = "<group>"; };
 		2748D8162236428100FC8DC8 /* RNFBJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBJSON.h; sourceTree = "<group>"; };
+		2748D81A223674B600FC8DC8 /* RNFBPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBPreferences.h; sourceTree = "<group>"; };
+		2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferences.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +80,8 @@
 				2744B98521F45429004F8E3F /* RNFBAppModule.m */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
+				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
+				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -150,6 +155,7 @@
 				2744B98621F45429004F8E3F /* RNFBAppModule.m in Sources */,
 				2744B9A721F57C2F004F8E3F /* RCTConvert+FIRApp.m in Sources */,
 				2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */,
+				2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
 				2748D8152236426300FC8DC8 /* RNFBJSON.m in Sources */,
