@@ -38,7 +38,7 @@ _PLIST_ENTRY_TYPES=(
 
 _PLIST_ENTRY_VALUES=(
   'NO'                                                 #1
-  '{}'                                                 #2 - must always be last entry
+  'e30='                                               #2 - must always be last entry - base64 of {}
 )
 
 function setPlistValue {
@@ -70,7 +70,7 @@ done
 
 if [[ ${_SEARCH_RESULT} ]]; then
   _SEARCH_RESULT="'$_SEARCH_RESULT'"
-  _JSON_OUTPUT=`python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('${_SEARCH_RESULT}').read())['${_JSON_ROOT}'])))' || echo "{}"`
+  _JSON_OUTPUT=`python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('${_SEARCH_RESULT}').read())['${_JSON_ROOT}'])))' || echo "e30="`
   _PLIST_ENTRY_VALUES[${#_PLIST_ENTRY_VALUES[@]}-1]="${_JSON_OUTPUT}"
   echo "info:      firebase.json value: ${_JSON_OUTPUT}"
 else

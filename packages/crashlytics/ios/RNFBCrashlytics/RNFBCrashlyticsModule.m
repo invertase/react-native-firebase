@@ -36,7 +36,7 @@
 #pragma mark Firebase Crashlytics Methods
 
 RCT_EXPORT_METHOD(setPerformanceCollectionEnabled:
-                  (BOOL *) enabled
+                  (BOOL) enabled
                   resolver:
                   (RCTPromiseResolveBlock) resolve
                   rejecter:

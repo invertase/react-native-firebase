@@ -68,7 +68,7 @@ static __strong NSMutableDictionary *httpMetrics;
 #pragma mark Firebase Perf Methods
 
   RCT_EXPORT_METHOD(setPerformanceCollectionEnabled:
-    (BOOL *) enabled
+    (BOOL) enabled
         resolver:
         (RCTPromiseResolveBlock) resolve
         rejecter:

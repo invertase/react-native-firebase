@@ -77,7 +77,7 @@
   RCT_EXPORT_METHOD(eventsRemoveListener:
     (NSString *) eventName
         all:
-        (BOOL *) all) {
+        (BOOL) all) {
     [[RNFBRCTEventEmitter shared] removeListeners:eventName all:all];
   }
 

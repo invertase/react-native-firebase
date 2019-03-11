@@ -46,7 +46,7 @@
 /**
  * Removes event listeners
  */
-- (void)removeListeners:(NSString *)eventName all:(BOOL *)all;
+- (void)removeListeners:(NSString *)eventName all:(BOOL)all;
 
 /**
  * Send an event to JS with the specified name and body
@@ -58,7 +58,7 @@
  * Notify the event emitter that JS has loaded and is ready to receive events.
  *
  */
-- (void)notifyJsReady:(bool)ready;
+- (void)notifyJsReady:(BOOL)ready;
 
 /**
  * Returns a dictionary of all registered events & counts. Mainly for testing.
