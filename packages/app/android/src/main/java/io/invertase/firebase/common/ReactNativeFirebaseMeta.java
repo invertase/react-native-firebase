@@ -22,6 +22,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 public class ReactNativeFirebaseMeta {
@@ -69,5 +72,26 @@ public class ReactNativeFirebaseMeta {
     Bundle metaData = getMetaData();
     if (metaData == null) return defaultValue;
     return metaData.getString(META_PREFIX + key, defaultValue);
+  }
+
+  public WritableMap getAll() {
+    Bundle metaData = getMetaData();
+    WritableMap map = Arguments.createMap();
+    if (metaData == null) return map;
+
+    for (String key : metaData.keySet()) {
+      if (key.startsWith(META_PREFIX)) {
+        Object value = metaData.get(key);
+        if (value == null) {
+          map.putNull(key);
+        } else if (value instanceof String) {
+          map.putString(key, (String) value);
+        } else if (value instanceof Boolean) {
+          map.putBoolean(key, (Boolean) value);
+        }
+      }
+    }
+
+    return map;
   }
 }
