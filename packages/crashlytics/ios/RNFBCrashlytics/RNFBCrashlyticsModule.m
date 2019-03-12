@@ -16,32 +16,34 @@
  */
 
 #import <React/RCTUtils.h>
-#import <Firebase/Firebase.h>
 
 #import "RNFBCrashlyticsModule.h"
-#import <RNFBApp/RNFBSharedUtils.h>
-
+#import "RNFBCrashlyticsInitProvider.h"
+#import "RCTConvert.h"
+#import "RNFBPreferences.h"
 
 @implementation RNFBCrashlyticsModule
 #pragma mark -
 #pragma mark Module Setup
 
-  RCT_EXPORT_MODULE(RNFBCrashlyticsModule);
+  RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
+  - (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [NSMutableDictionary new];
+    constants[@"isCrashlyticsCollectionEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled])]);
+    return constants;
+  }
+
+  + (BOOL)requiresMainQueueSetup {
+    return NO;
   }
 
 #pragma mark -
 #pragma mark Firebase Crashlytics Methods
 
-RCT_EXPORT_METHOD(setPerformanceCollectionEnabled:
-                  (BOOL) enabled
-                  resolver:
-                  (RCTPromiseResolveBlock) resolve
-                  rejecter:
-                  (RCTPromiseRejectBlock) reject) {
-  resolve([NSNull null]);
-}
+  RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
+    (BOOL) enabled) {
+    [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled" boolValue:enabled];
+  }
 
 @end
