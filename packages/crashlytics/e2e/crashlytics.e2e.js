@@ -25,7 +25,7 @@ describe('crashlytics()', () => {
     });
   });
 
-  describe('crash()', () => {
+  android.describe('crash()', () => {
     it('crashes the app', async () => {
       jet.context._BEFORE_CRASH_ = 1;
       firebase.crashlytics().crash();
