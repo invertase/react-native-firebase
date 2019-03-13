@@ -29,8 +29,10 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   nativeObj.frames = [];
   for (let i = 0; i < stackFrames.length; i++) {
     const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
+    const subStrLen = fileName.indexOf('?') < 0 ? fileName.length : fileName.indexOf('?');
     const fileNameParsed =
-      fileName && fileName.length ? fileName.substring(0, fileName.indexOf('?')) : '<unknown>';
+      fileName && fileName.length ? fileName.substring(0, subStrLen) : '<unknown>';
+
     nativeObj.frames.push({
       src: source,
       line: lineNumber || 0,
@@ -71,7 +73,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
 export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
   async function onUnhandled(id, error) {
     if (!__DEV__) {
-      // TODO option to disable
+      // TODO(salakar): Option to disable
       try {
         const stackFrames = await StackTrace.fromError(error, { offline: true });
         await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, true));

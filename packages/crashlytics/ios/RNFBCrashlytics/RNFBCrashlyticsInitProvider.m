@@ -32,22 +32,26 @@ NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_col
 
   + (void)load {
     if ([self isCrashlyticsCollectionEnabled]) {
+      // TODO(salakar): Without dispatch `[FIRApp configure];` breaks Detox and causes a crash on start (cannot read a userDefaults key)
+      dispatch_async(dispatch_get_main_queue(), ^{
+        FIROptions *defaultFirebaseOptions = [FIROptions defaultOptions];
+        if (defaultFirebaseOptions == nil) return;
 
-      FIROptions *defaultFirebaseOptions = [FIROptions defaultOptions];
-      if (defaultFirebaseOptions == nil) return;
+        NSString *googleAppID = defaultFirebaseOptions.googleAppID;
+        if (googleAppID == nil) return;
 
-      NSString *googleAppID = defaultFirebaseOptions.googleAppID;
-      if (googleAppID == nil) return;
+        // TODO(salakar): Option to disable auto init
+        // TODO(salakar): If disabled; when the default app is initialized from JS land then init crashlytics (register a block handler somehow in RNFBApp?)
+        if ([FIRApp defaultApp] == nil) {
+          [FIRApp configure];
+        }
 
-      if ([FIRApp defaultApp] == nil) {
-        [FIRApp configure];
-      }
+        if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
+          [Crashlytics sharedInstance].debugMode = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
+        }
 
-      if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
-        [Crashlytics sharedInstance].debugMode = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
-      }
-
-      [Fabric with:@[[Crashlytics class]]];
+        [Fabric with:@[[Crashlytics class]]];
+      });
     }
   }
 

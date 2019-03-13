@@ -120,7 +120,7 @@
 
   RCT_EXPORT_METHOD(recordError:
     (NSDictionary *) jsErrorDict) {
-    // TODO
+    [self recordJavaScriptError:jsErrorDict];
   }
 
   RCT_EXPORT_METHOD(recordErrorPromise:
@@ -129,7 +129,7 @@
         (RCTPromiseResolveBlock) resolve
         rejecter:
         (RCTPromiseRejectBlock) reject) {
-    // TODO
+    [self recordJavaScriptError:jsErrorDict];
     resolve([NSNull null]);
   }
 
@@ -137,5 +137,30 @@
     (BOOL) enabled) {
     [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled" boolValue:enabled];
   }
+
+  - (void)recordJavaScriptError:(NSDictionary *)jsErrorDict {
+    NSString *message = jsErrorDict[@"message"];
+    NSDictionary *stackFrames = jsErrorDict[@"frames"];
+    NSMutableArray *customFrames = [[NSMutableArray alloc] init];
+    BOOL isUnhandledPromiseRejection = [jsErrorDict[@"isUnhandledRejection"] boolValue];
+
+    for (NSDictionary *stackFrame in stackFrames) {
+      CLSStackFrame *customFrame = [CLSStackFrame stackFrame];
+      [customFrame setSymbol:stackFrame[@"fn"]];
+      [customFrame setFileName:stackFrame[@"file"]];
+      [customFrame setLibrary:stackFrame[@"src"]];
+      [customFrame setOffset:(uint64_t) [stackFrame[@"col"] intValue]];
+      [customFrame setLineNumber:(uint32_t) [stackFrame[@"line"] intValue]];
+      [customFrames addObject:customFrame];
+    }
+
+    NSString *name = @"JavaScriptError";
+    if (isUnhandledPromiseRejection) {
+      name = @"UnhandledPromiseRejection";
+    }
+
+    [[Crashlytics sharedInstance] recordCustomExceptionName:name reason:message frameArray:customFrames];
+  }
+
 
 @end
