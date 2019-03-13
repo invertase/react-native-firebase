@@ -90,6 +90,9 @@ await analytics().setUserId('12345678');
   - [DEVEX] Native promise rejection errors now contain additional properties to aid debugging
 - [BUGFIX] All native events are now queued natively until a JS listener is registered. This fixes several race conditions for events like `onMessage`, `onNotification`, `onLink` etc where the event would trigger before JS was ready.
 - [NEW][🔥] In an effort to further reduce manual native code changes when integrating and configuring React Native Firebase; we have added support for configuring various Firebase services & features via a `firebase.json` file in your project root.
+- [NEW][iOS] CocoaPods static framework support for all modules (you can use `use_frameworks!` without issues relating to this lib)
+- [NEW][iOS] Implemented a CocoaPods Firebase React Native modules auto-loader script for your Podfile; you only need to change your Podfile once (to add the script); this script will then automatically include all React Native Firebase modules found in your `node_modules` directory as Pods, manage additional required build phases (e.g. auto adds the crashlytics build phase (`/Fabric/Run`)), and allows the `firebase.json` functionality to work. [Example Podfile](https://github.com/invertase/react-native-firebase/blob/master/tests/ios/Podfile) with script included and sample `pod install` logs:
+![pod install image](https://i.imgur.com/XOqw5Jq.png)
 
 ## App
 
