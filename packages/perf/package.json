@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/perf",
-  "version": "6.0.0-alpha.4",
+  "version": "6.0.0-alpha.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Performance Monitoring",
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.4",
-    "@react-native-firebase/common": "6.0.0-alpha.4"
+    "@react-native-firebase/app-types": "6.0.0-alpha.5",
+    "@react-native-firebase/common": "6.0.0-alpha.5"
   },
   "rnpm": {
     "android": {
