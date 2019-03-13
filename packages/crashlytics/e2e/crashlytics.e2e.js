@@ -25,7 +25,8 @@ describe('crashlytics()', () => {
     });
   });
 
-  android.describe('crash()', () => {
+  // Run locally only - flakey on CI
+  xdescribe('crash()', () => {
     it('crashes the app', async () => {
       jet.context._BEFORE_CRASH_ = 1;
       firebase.crashlytics().crash();
