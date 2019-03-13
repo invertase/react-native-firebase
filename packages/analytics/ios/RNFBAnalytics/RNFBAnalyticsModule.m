@@ -19,7 +19,7 @@
 #import <Firebase/Firebase.h>
 
 #import "RNFBAnalyticsModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 
 
 @implementation RNFBAnalyticsModule

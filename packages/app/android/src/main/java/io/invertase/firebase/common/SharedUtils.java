@@ -19,10 +19,12 @@ package io.invertase.firebase.common;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.provider.Settings;
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -31,12 +33,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
-import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import javax.annotation.Nullable;
 
-
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"unused", "JavaDoc", "WeakerAccess"})
 public class SharedUtils {
   private static final String TAG = "Utils";
   private static final String RN_DEVSUPPORT_CLASS = "DevSupportManagerImpl";
@@ -180,5 +182,75 @@ public class SharedUtils {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  /**
+   * Takes a value and calls the appropriate setter for its type on the target map + key
+   *
+   * @param key   String key to set on target map
+   * @param value Object value to set on target map
+   * @param map   WritableMap target map to write the value to
+   */
+  @SuppressWarnings("unchecked")
+  public static void mapPutValue(String key, @Nullable Object value, WritableMap map) {
+    if (value == null) {
+      map.putNull(key);
+    } else {
+      String type = value.getClass()
+        .getName();
+      switch (type) {
+        case "java.lang.Boolean":
+          map.putBoolean(key, (Boolean) value);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) value;
+          map.putDouble(key, (double) longVal);
+          break;
+        case "java.lang.Float":
+          float floatVal = (float) value;
+          map.putDouble(key, (double) floatVal);
+          break;
+        case "java.lang.Double":
+          map.putDouble(key, (Double) value);
+          break;
+        case "java.lang.Integer":
+          map.putInt(key, (int) value);
+          break;
+        case "java.lang.String":
+          map.putString(key, (String) value);
+          break;
+        case "org.json.JSONObject$1":
+          map.putString(key, value.toString());
+          break;
+        default:
+          if (List.class.isAssignableFrom(value.getClass())) {
+            map.putArray(key, Arguments.makeNativeArray((List<Object>) value));
+          } else if (Map.class.isAssignableFrom(value.getClass())) {
+            WritableMap childMap = Arguments.createMap();
+
+            Map<String, Object> valueMap = (Map<String, Object>) value;
+            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+              mapPutValue(entry.getKey(), entry.getValue(), childMap);
+            }
+
+            map.putMap(key, childMap);
+          } else {
+            Log.d(TAG, "SharedUtils:mapPutValue:unknownType:" + type);
+            map.putNull(key);
+          }
+      }
+    }
+  }
+
+  /**
+   * Convert a ReadableMap to a WritableMap for the purposes of re-sending back to JS
+   *
+   * @param map ReadableMap
+   * @return WritableMap
+   */
+  public static WritableMap readableMapToWritableMap(ReadableMap map) {
+    WritableMap writableMap = Arguments.createMap();
+    writableMap.merge(map);
+    return writableMap;
   }
 }

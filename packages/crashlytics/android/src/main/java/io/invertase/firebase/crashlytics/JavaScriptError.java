@@ -1,4 +1,6 @@
-/**
+package io.invertase.firebase.crashlytics;
+
+/*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +17,12 @@
  *
  */
 
-#import <React/RCTConvert.h>
-#import <Firebase/Firebase.h>
-
-@interface RCTConvert (FIRApp)
-+ (FIRApp *)firAppFromString:(NSString *)appName;
-@end
+/**
+ * This class is purely cosmetic - to indicate on the Crashlytics console that it's
+ * a JavaScript error rather than the generic `java.lang.Exception`.
+ */
+class JavaScriptError extends Exception {
+  JavaScriptError(String message) {
+    super(message);
+  }
+}

@@ -21,6 +21,7 @@ require('@react-native-firebase/private-tests-helpers');
 const detox = require('detox');
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
+const jet = require('jet/platform/node');
 
 const PACKAGES = [
   'app',
@@ -47,6 +48,7 @@ for (let i = 0; i < PACKAGES.length; i++) {
 
 before(async () => {
   await detox.init(config);
+  await jet.init();
 });
 
 beforeEach(async function beforeEach() {

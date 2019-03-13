@@ -18,7 +18,7 @@
 #import "RNFBRCTEventEmitter.h"
 
 @interface RNFBRCTEventEmitter ()
-@property(atomic, assign) bool jsReady;
+@property(atomic, assign) BOOL jsReady;
 @property(atomic, assign) NSInteger jsListenerCount;
 @property(nonatomic, strong) NSMutableDictionary *jsListeners;
 @property(nonatomic, strong) NSMutableArray *queuedEvents;
@@ -52,7 +52,7 @@ NSString *const RNFBRCTEventBodyKey = @"body";
     return self;
   }
 
-  - (void)notifyJsReady:(bool)jsReady {
+  - (void)notifyJsReady:(BOOL)jsReady {
     @synchronized (self.jsListeners) {
       self.jsReady = jsReady;
       if (jsReady) {
@@ -103,7 +103,7 @@ NSString *const RNFBRCTEventBodyKey = @"body";
     }
   }
 
-  - (void)removeListeners:(NSString *)eventName all:(BOOL *)all {
+  - (void)removeListeners:(NSString *)eventName all:(BOOL)all {
     @synchronized (self.jsListeners) {
       if (self.jsListeners[eventName] != nil) {
         NSInteger listenersForEvent = [self.jsListeners[eventName] integerValue];
