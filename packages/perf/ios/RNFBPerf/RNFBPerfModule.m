@@ -68,7 +68,7 @@ static __strong NSMutableDictionary *httpMetrics;
 #pragma mark Firebase Perf Methods
 
   RCT_EXPORT_METHOD(setPerformanceCollectionEnabled:
-    (BOOL *) enabled
+    (BOOL) enabled
         resolver:
         (RCTPromiseResolveBlock) resolve
         rejecter:
@@ -115,7 +115,7 @@ static __strong NSMutableDictionary *httpMetrics;
     NSDictionary *attributes = traceData[@"attributes"];
 
     [metrics enumerateKeysAndObjectsUsingBlock:^(NSString *metricName, NSNumber *value, BOOL *stop) {
-      [trace setIntValue:(int64_t) value forMetric:metricName];
+      [trace setIntValue:[value longLongValue] forMetric:metricName];
     }];
 
     [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {

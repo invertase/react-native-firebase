@@ -32,6 +32,8 @@ import java.util.Map;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
@@ -110,17 +112,56 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
     emitter.removeListener(eventName, all);
   }
 
-  @ReactMethod
-  public void getSavedPreferences(Promise promise) {
-    promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAllAsWritableMap());
-  }
+  /**
+   * ------------------
+   *       META
+   * ------------------
+   */
 
   @ReactMethod
-  public void clearSavedPreferences(Promise promise) {
-    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
+  public void metaGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebaseMeta.getSharedInstance().getAll());
+  }
+
+  /**
+   * ------------------
+   *       JSON
+   * ------------------
+   */
+
+  @ReactMethod
+  public void jsonGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebaseJSON.getSharedInstance().getAll());
+  }
+
+  /**
+   * ------------------
+   *    PREFERENCES
+   * ------------------
+   */
+
+  @ReactMethod
+  public void preferencesSetBool(String key, boolean value, Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().setBooleanValue(key, value);
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void preferencesSetString(String key, String value, Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().setStringValue(key, value);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void preferencesGetAll(Promise promise) {
+    promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAll());
+  }
+
+  @ReactMethod
+  public void preferencesClearAll(Promise promise) {
+    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
+    promise.resolve(null);
+  }
 
   @Override
   public Map<String, Object> getConstants() {

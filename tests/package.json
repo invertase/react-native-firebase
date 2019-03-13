@@ -20,13 +20,13 @@
     "@react-native-firebase/mlkit": "6.0.0-alpha.4",
     "@react-native-firebase/perf": "6.0.0-alpha.4",
     "@react-native-firebase/utils": "6.0.0-alpha.4",
-    "detox": "9.1.2",
+    "detox": "10.0.13",
     "jet": "^0.3.0",
     "mocha": "^5.2.0",
     "prop-types": "^15.6.1",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-native": "0.59.0-rc.2",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
+    "react-native": "0.59.0",
     "react-native-camera": "^1.10.1",
     "require-all": "3.0.0",
     "should": "^13.2.3",
@@ -51,7 +51,8 @@
     "exclude": [
       "node_modules",
       "**/common/lib/**",
-      "**/internal/registry/**"
+      "**/internal/registry/**",
+      "**/lib/handlers.js"
     ],
     "cwd": "..",
     "all": true,
@@ -70,10 +71,9 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X",
-        "logLevel": "error"
+        "name": "iPhone X"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",

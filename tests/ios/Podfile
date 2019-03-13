@@ -1,59 +1,30 @@
-require 'json'
-package = JSON.parse(File.read('../../package.json'))
+require_relative '../node_modules/@react-native-firebase/app/pod_config'
 
 install! 'cocoapods', :deterministic_uuids => false
-# Uncomment this line to define a global platform for your project
-# platform :ios, '8.0'
 
 target 'testing' do
   platform :ios, '10.0'
-  # Uncomment this line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
+
+  use_frameworks!
 
   react_native_path = "../node_modules/react-native"
   pod 'React', :path => "#{react_native_path}", :subspecs => [
     'Core',
-    'CxxBridge', # Include this for RN >= 0.47
-    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'CxxBridge',
+    'DevSupport',
     'RCTText',
     'RCTNetwork',
     'RCTImage',
-    'RCTWebSocket', # Needed for debugging
+    'RCTWebSocket',
   ]
 
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
-
-  # Third party deps podspec link
   pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
+  pod 'Jet', :path => '../node_modules/jet/ios'
 
-  pod 'Jet', :path => '../node_modules/jet/ios/Jet.podspec'
-
-  rnfb_version = "0.0.1" # package["version"]
-  pod 'RNFBApp', :path => '../../packages/app/ios/RNFBApp.podspec'
-  pod 'RNFBAnalytics', :path => '../../packages/analytics/ios/RNFBAnalytics.podspec'
-  pod 'RNFBFiam', :path => '../../packages/fiam/ios/RNFBFiam.podspec'
-  pod 'RNFBFunctions', :path => '../../packages/functions/ios/RNFBFunctions.podspec'
-  pod 'RNFBIid', :path => '../../packages/iid/ios/RNFBIid.podspec'
-  pod 'RNFBPerf', :path => '../../packages/perf/ios/RNFBPerf.podspec'
-
-
-  # Pods for ReactNativeFirebaseDemo
-  # pod 'Firebase/Core', '~> 5.15.0'
-  # pod 'Firebase/AdMob', '~> 5.15.0'
-  # pod 'Firebase/Auth', '~> 5.15.0'
-  # pod 'Firebase/Database', '~> 5.15.0'
-  # pod 'Firebase/Functions', '~> 5.15.0'
-  # pod 'Firebase/DynamicLinks', '~> 5.15.0'
-  # pod 'Firebase/Firestore', '~> 5.15.0'
-  # pod 'Firebase/Invites', '~> 5.15.0'
-  # pod 'Firebase/Messaging', '~> 5.15.0'
-  # pod 'Firebase/RemoteConfig', '~> 5.15.0'
-  # pod 'Firebase/Storage', '~> 5.15.0'
-  # pod 'Firebase/Performance', '~> 5.15.0'
-  # pod 'Fabric', '~> 1.7.11'
-  # pod 'Crashlytics', '~> 3.10.7'
+  react_native_firebase!
 end
 
 post_install do |installer|

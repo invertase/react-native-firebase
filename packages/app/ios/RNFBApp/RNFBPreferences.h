@@ -15,9 +15,24 @@
  *
  */
 
-#import <React/RCTConvert.h>
-#import <Firebase/Firebase.h>
+#import <Foundation/Foundation.h>
 
-@interface RCTConvert (FIROptions)
-+ (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions;
+@interface RNFBPreferences : NSObject
+
+- (BOOL)contains:(NSString *)key;
+
+- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue;
+
+- (void)setBooleanValue:(NSString *)key boolValue:(BOOL)boolValue;
+
+- (void)setStringValue:(NSString *)key stringValue:(NSString *)stringValue;
+
+- (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
+
+- (NSDictionary *)getAll;
+
+- (void)clearAll;
+
++ (RNFBPreferences *)shared;
+
 @end

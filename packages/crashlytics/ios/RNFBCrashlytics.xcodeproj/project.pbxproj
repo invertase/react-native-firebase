@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */; };
+		2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		2744B98221F45429004F8E3F /* libRNFBCrashlytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBCrashlytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBCrashlyticsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBCrashlyticsModule.h; path = RNFBCrashlytics/RNFBCrashlyticsModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBCrashlyticsModule.m; path = RNFBCrashlytics/RNFBCrashlyticsModule.m; sourceTree = SOURCE_ROOT; };
+		2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBCrashlyticsInitProvider.h; sourceTree = "<group>"; };
+		2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsInitProvider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,10 +53,10 @@
 		2744B98321F45429004F8E3F /* RNFBCrashlytics */ = {
 			isa = PBXGroup;
 			children = (
-				2744B9A121F48736004F8E3F /* converters */,
-				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBCrashlyticsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */,
+				2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */,
+				2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */,
 			);
 			path = RNFBCrashlytics;
 			sourceTree = "<group>";
@@ -124,6 +127,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

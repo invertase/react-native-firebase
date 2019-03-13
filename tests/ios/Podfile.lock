@@ -1,6 +1,9 @@
 PODS:
   - boost-for-react-native (1.63.0)
+  - Crashlytics (3.12.0):
+    - Fabric (~> 1.9.0)
   - DoubleConversion (1.1.6)
+  - Fabric (1.9.0)
   - Firebase/Auth (5.17.0):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.3.1)
@@ -50,10 +53,10 @@ PODS:
   - FirebaseInAppMessagingDisplay (0.12.2):
     - FirebaseCore
     - FirebaseInAppMessaging (>= 0.12.0)
-  - FirebaseInstanceID (3.5.0):
-    - FirebaseCore (~> 5.3)
-    - GoogleUtilities/Environment (~> 5.3)
-    - GoogleUtilities/UserDefaults (~> 5.3)
+  - FirebaseInstanceID (3.7.0):
+    - FirebaseCore (~> 5.2)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/UserDefaults (~> 5.2)
   - FirebasePerformance (2.2.3):
     - FirebaseAnalytics (~> 5.6)
     - FirebaseInstanceID (~> 3.5)
@@ -115,78 +118,97 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - Protobuf (3.6.1)
-  - React (0.59.0-rc.2):
-    - React/Core (= 0.59.0-rc.2)
-  - React/Core (0.59.0-rc.2):
-    - yoga (= 0.59.0-rc.2.React)
-  - React/CxxBridge (0.59.0-rc.2):
+  - Protobuf (3.7.0)
+  - React (0.59.0):
+    - React/Core (= 0.59.0)
+  - React/Core (0.59.0):
+    - yoga (= 0.59.0.React)
+  - React/CxxBridge (0.59.0):
     - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
     - React/jsiexecutor
-  - React/cxxreact (0.59.0-rc.2):
+  - React/cxxreact (0.59.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/jsinspector
-  - React/DevSupport (0.59.0-rc.2):
+  - React/DevSupport (0.59.0):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.0-rc.2)
-  - React/jsi (0.59.0-rc.2):
+  - React/fishhook (0.59.0)
+  - React/jsi (0.59.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React/jsiexecutor (0.59.0-rc.2):
+  - React/jsiexecutor (0.59.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/cxxreact
     - React/jsi
-  - React/jsinspector (0.59.0-rc.2)
-  - React/RCTBlob (0.59.0-rc.2):
+  - React/jsinspector (0.59.0)
+  - React/RCTBlob (0.59.0):
     - React/Core
-  - React/RCTImage (0.59.0-rc.2):
+  - React/RCTImage (0.59.0):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.59.0-rc.2):
+  - React/RCTNetwork (0.59.0):
     - React/Core
-  - React/RCTText (0.59.0-rc.2):
+  - React/RCTText (0.59.0):
     - React/Core
-  - React/RCTWebSocket (0.59.0-rc.2):
+  - React/RCTWebSocket (0.59.0):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFBAnalytics (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBApp (6.0.0-alpha.4):
     - Firebase/Auth (~> 5.17.0)
     - Firebase/Core (~> 5.17.0)
     - React
+  - RNFBCrashlytics (6.0.0-alpha.4):
+    - Crashlytics (~> 3.12.0)
+    - Fabric (~> 1.9.0)
+    - Firebase/Core (~> 5.17.0)
+    - React
+    - RNFBApp
   - RNFBFiam (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - Firebase/InAppMessagingDisplay (~> 5.17.0)
     - React
+    - RNFBApp
+  - RNFBFirestore (6.0.0-alpha.4):
+    - Firebase/Core (~> 5.17.0)
+    - React
+    - RNFBApp
   - RNFBFunctions (6.0.0-alpha.4):
     - Firebase/Functions (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBIid (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - React
+    - RNFBApp
   - RNFBPerf (6.0.0-alpha.4):
     - Firebase/Core (~> 5.17.0)
     - Firebase/Performance (~> 5.17.0)
     - React
-  - yoga (0.59.0-rc.2.React)
+    - RNFBApp
+  - RNFBUtils (6.0.0-alpha.4):
+    - Firebase/Core (~> 5.17.0)
+    - React
+    - RNFBApp
+  - yoga (0.59.0.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - Jet (from `../node_modules/jet/ios/Jet.podspec`)
+  - Jet (from `../node_modules/jet/ios`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
@@ -194,17 +216,22 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
-  - RNFBAnalytics (from `../../packages/analytics/ios/RNFBAnalytics.podspec`)
-  - RNFBApp (from `../../packages/app/ios/RNFBApp.podspec`)
-  - RNFBFiam (from `../../packages/fiam/ios/RNFBFiam.podspec`)
-  - RNFBFunctions (from `../../packages/functions/ios/RNFBFunctions.podspec`)
-  - RNFBIid (from `../../packages/iid/ios/RNFBIid.podspec`)
-  - RNFBPerf (from `../../packages/perf/ios/RNFBPerf.podspec`)
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
+  - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
+  - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
+  - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
+  - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
+  - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
+  - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - boost-for-react-native
+    - Crashlytics
+    - Fabric
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -232,27 +259,35 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   Jet:
-    :path: "../node_modules/jet/ios/Jet.podspec"
+    :path: "../node_modules/jet/ios"
   React:
     :path: "../node_modules/react-native"
   RNFBAnalytics:
-    :path: "../../packages/analytics/ios/RNFBAnalytics.podspec"
+    :path: "../node_modules/@react-native-firebase/analytics/ios"
   RNFBApp:
-    :path: "../../packages/app/ios/RNFBApp.podspec"
+    :path: "../node_modules/@react-native-firebase/app/ios"
+  RNFBCrashlytics:
+    :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBFiam:
-    :path: "../../packages/fiam/ios/RNFBFiam.podspec"
+    :path: "../node_modules/@react-native-firebase/fiam/ios"
+  RNFBFirestore:
+    :path: "../node_modules/@react-native-firebase/firestore/ios"
   RNFBFunctions:
-    :path: "../../packages/functions/ios/RNFBFunctions.podspec"
+    :path: "../node_modules/@react-native-firebase/functions/ios"
   RNFBIid:
-    :path: "../../packages/iid/ios/RNFBIid.podspec"
+    :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBPerf:
-    :path: "../../packages/perf/ios/RNFBPerf.podspec"
+    :path: "../node_modules/@react-native-firebase/perf/ios"
+  RNFBUtils:
+    :path: "../node_modules/@react-native-firebase/utils/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   Firebase: 59d557e064217fab6a03ff00baa73c06e73832e6
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: 75e4bbc6417d190cc98ec1f17c41a4fad4c2c976
@@ -262,7 +297,7 @@ SPEC CHECKSUMS:
   FirebaseFunctions: 324bdb368eeb5a1985fbb2184981b9480ea34aa9
   FirebaseInAppMessaging: aa04bdbbee12aa132156e6085b3bfad7d6e0dcbb
   FirebaseInAppMessagingDisplay: 5591606580c1ed8040fbf55c938a1ccc0caad3ef
-  FirebaseInstanceID: 4522aad88f69297622062c0e9ffccdee3dd9b151
+  FirebaseInstanceID: bd6fc5a258884e206fd5c474ebe4f5b00e21770e
   FirebasePerformance: b97b1c301790b4fddc9fe675bca05b71c04e24a6
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
@@ -273,16 +308,19 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   Jet: 5748d9e6ccc47b646859282fc25d1b063540e981
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
+  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  RNFBAnalytics: 7d2fc24309b87f9927efc8396c8bd70883161440
-  RNFBApp: 8cbd3bb08f3473dcec9c592940938ebf941bfcaf
-  RNFBFiam: 6da6916d604b4d974a7c3cdc792d3de0bd5d13be
-  RNFBFunctions: 9eeaec960694af2269684378d446d2007a59a41e
-  RNFBIid: 6383ed7fc583b1ac40c9eb4352c84ec161f95f76
-  RNFBPerf: 7ab9996e5742d6327d01ca92e272e11d7099dc06
+  RNFBAnalytics: 61b9d722deb136454425850860df910250a1874d
+  RNFBApp: ea2649b5993bec4ef4ff5ed4cb29454328e78b74
+  RNFBCrashlytics: b7ec197ade3caaa6060525b506fd2ff65b529a4c
+  RNFBFiam: 7ea892c593296cfb74bced95d96717c991233c69
+  RNFBFirestore: 5cc04b0781abd2a0c339738dcc56fc76a5930ac0
+  RNFBFunctions: 36e961bc49a7f320aa43dcc8db75b191293b781c
+  RNFBIid: e3e9aec77e0989367354e282252340168030e18d
+  RNFBPerf: 28163458cca18c535134e19fea2f8f4c82385d5b
+  RNFBUtils: 1c86022a506cb231adb10a6dfad52b3bc485ebf2
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: ea1831d1c909aa5165eccd0f76aab3569b3de90d
+PODFILE CHECKSUM: b8a7635ae6af2f71c8e50dd738a0a5a2bb05f65f
 
 COCOAPODS: 1.5.3

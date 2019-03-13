@@ -48,6 +48,8 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -58,7 +60,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<key>rnfirebase_meta_testing_string</key>
+	<string>abc</string>
+	<key>rnfirebase_meta_testing_boolean_false</key>
 	<false/>
+	<key>rnfirebase_meta_testing_boolean_true</key>
+	<true/>
 </dict>
 </plist>

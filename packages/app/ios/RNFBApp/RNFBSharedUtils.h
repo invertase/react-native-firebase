@@ -18,7 +18,7 @@
 #ifndef RNFBSharedUtils_h
 #define RNFBSharedUtils_h
 
-#import <Firebase/Firebase.h>
+#import <FirebaseCore/FirebaseCore.h>
 #import "RCTBridgeModule.h"
 
 #ifdef DEBUG

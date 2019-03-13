@@ -18,4 +18,5 @@ Pod::Spec.new do |s|
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 5.17.0'
   s.dependency          'Firebase/Auth', '~> 5.17.0'
+  s.static_framework    = true
 end

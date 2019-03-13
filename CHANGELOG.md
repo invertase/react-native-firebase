@@ -89,6 +89,7 @@ await analytics().setUserId('12345678');
   - Standardised native error to JS conversion
   - [DEVEX] Native promise rejection errors now contain additional properties to aid debugging
 - [BUGFIX] All native events are now queued natively until a JS listener is registered. This fixes several race conditions for events like `onMessage`, `onNotification`, `onLink` etc where the event would trigger before JS was ready.
+- [NEW][🔥] In an effort to further reduce manual native code changes when integrating and configuring React Native Firebase; we have added support for configuring various Firebase services & features via a `firebase.json` file in your project root.
 
 ## App
 
@@ -104,6 +105,30 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `resetAnalyticsData()`
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
+
+## Crashlytics
+
+- [NEW] JavaScript stack traces now automatically captured and parsed
+![js stack trace preview](https://pbs.twimg.com/media/D07RPDMW0AA7TTv.jpg:large)
+- [NEW] Optionally enable automatic reporting of JavaScript unhandled Promise rejections
+- [NEW] Added support for `setUserName(userName: string)`
+- [NEW] Added support for `setUserEmail(userEmail: string)`
+- [NEW] Added support for `isCrashlyticsCollectionEnabled: boolean`
+- [NEW][android] Added support for [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting. This allows Crashlytics to capture Yoga related crashes generated from React Native.
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_ndk_enabled`, this toggles NDK support as mentioned above, defaults to `true`
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_debug_enabled`, this toggles Crashlytics native debug logging, defaults to `false`
+- [NEW][🔥] Added `firebase.json` support for `crashlytics_auto_collection_enabled`, this toggles Crashlytics error reporting, this is useful for user opt-in first flows, e.g. set to `false` and when your user agrees to opt-in then call `setCrashlyticsCollectionEnabled(true)` in your app, defaults to `true`
+- [BUGFIX][android] `crash()` now correctly crashes without being caught by React Native's RedBox
+- [BREAKING] `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods (the Crashlytics SDK converted all these into strings internally anyway):
+  - `setAttribute(key: string, value: string): Promise<null>` - set a singular key value to show alongside any subsequent crash reports
+  - `setAttributes(values: { [key: string]: string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
+- [BREAKING] all methods except `crash`, `log` & `recordError` now return a `Promise` that resolves when complete
+- [BREAKING] `recordError(code: number, message: string)`'s fn signature changed to `recordError(error: Error)` - now accepts a JS Error class instance
+- [BREAKING] `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation
+- [BREAKING] `enableCrashlyticsCollection()`'s fn signature changed to `setCrashlyticsCollectionEnabled(enabled: boolean)`
+  - This can be used in all scenarios (formerly only able to use this when automatic initialization of crashlytics was disabled)
+  - Changes do not take effect until the next app startup
+  - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
 ## Functions <a href="https://api.rnfirebase.io/coverage/functions/detail"><img src="https://api.rnfirebase.io/coverage/functions/badge?style=flat-square" alt="Coverage"></a>
 

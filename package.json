@@ -106,7 +106,9 @@
       "**/react",
       "**/react/**",
       "**/react-native",
-      "**/react-native/**"
+      "**/react-native/**",
+      "**/stacktrace-js",
+      "**/stacktrace-js/**"
     ]
   },
   "dependencies": {

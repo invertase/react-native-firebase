@@ -2,6 +2,10 @@ apply plugin: "com.android.application"
 apply plugin: "com.google.firebase.firebase-perf"
 apply plugin: 'io.fabric'
 
+crashlytics {
+  enableNdk true
+}
+
 import com.android.build.OutputFile
 
 project.ext.react = [

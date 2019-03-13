@@ -44,7 +44,7 @@
 #pragma mark Firebase Fiam Methods
 
   RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled:
-    (BOOL *) enabled
+    (BOOL) enabled
         resolver:
         (RCTPromiseResolveBlock) resolve
         rejecter:
@@ -54,7 +54,7 @@
   }
 
   RCT_EXPORT_METHOD(setMessagesDisplaySuppressed:
-    (BOOL *) enabled
+    (BOOL) enabled
         resolver:
         (RCTPromiseResolveBlock) resolve
         rejecter:
