@@ -40,7 +40,7 @@
       "packageInstance": "new ReactNativeFirebaseFiamPackage()"
     }
   },
-  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
   "publishConfig": {
     "access": "public"
   }
