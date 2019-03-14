@@ -133,15 +133,6 @@ public class SharedUtils {
   }
 
   /**
-   * Is the build platform Expo?
-   *
-   * @return Boolean
-   */
-  public static Boolean isExpo() {
-    return hasPackageClass(EXPO_CORE_PACKAGE, EXPO_REGISTRY_CLASS);
-  }
-
-  /**
    * Is the build platform Flutter?
    *
    * @return Boolean
