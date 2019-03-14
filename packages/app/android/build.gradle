@@ -59,10 +59,6 @@ dependencies {
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 
-if (ReactNative.util.isExpo(project)) {
-  apply from: file("./expo.gradle")
-}
-
 apply from: file("./firebase-json.gradle")
 
 ReactNative.shared.applyPackageVersion()
