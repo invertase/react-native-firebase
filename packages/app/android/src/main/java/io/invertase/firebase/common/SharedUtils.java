@@ -44,9 +44,6 @@ public class SharedUtils {
   private static final String RN_DEVSUPPORT_CLASS = "DevSupportManagerImpl";
   private static final String RN_DEVSUPPORT_PACKAGE = "com.facebook.react.devsupport";
 
-  private static final String EXPO_REGISTRY_CLASS = "ModuleRegistry";
-  private static final String EXPO_CORE_PACKAGE = "expo.core";
-
   private static final String FLUTTER_REGISTRY_CLASS = "PluginRegistry";
   private static final String FLUTTER_CORE_PACKAGE = "io.flutter.plugin.common";
 
