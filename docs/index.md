@@ -1,8 +1,3 @@
 ---
-title: Overview
-description: React Native Firebase
+redirect: /
 ---
-
-# Overview
-
-TODO

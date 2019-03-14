@@ -1,11 +1,10 @@
 # Number of days of inactivity before an issue becomes stale
 daysUntilStale: 28
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 14
+daysUntilClose: 28
 # Issues with these labels will never be considered stale
 exemptLabels:
   - 📌 pin
-  - await-invertase-feedback
   - await-firebase-sdk-fix
   - await-maintainer-feedback
   - await-google-feedback

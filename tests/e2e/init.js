@@ -21,11 +21,13 @@ require('@react-native-firebase/private-tests-helpers');
 const detox = require('detox');
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
+const jet = require('jet/platform/node');
 
 const PACKAGES = [
   'app',
   'iid',
   'perf',
+  'fiam',
   'functions',
   'analytics',
   'config',
@@ -46,6 +48,7 @@ for (let i = 0; i < PACKAGES.length; i++) {
 
 before(async () => {
   await detox.init(config);
+  await jet.init();
 });
 
 beforeEach(async function beforeEach() {
@@ -69,7 +72,7 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying... (${retry})`);
-    await sleep(3000);
+    await Utils.sleep(3000);
   }
 });
 

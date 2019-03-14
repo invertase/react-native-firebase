@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/crashlytics",
-  "version": "6.0.0-alpha.2",
+  "version": "6.0.0-alpha.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Crashlytics",
   "main": "lib/index.js",
@@ -19,14 +19,20 @@
     "react",
     "react-native",
     "firebase",
+    "fabric",
+    "crash",
+    "bug",
+    "error",
+    "reporting",
     "crashlytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.2"
+    "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.2",
-    "@react-native-firebase/common": "6.0.0-alpha.2"
+    "@react-native-firebase/app-types": "6.0.0-alpha.5",
+    "@react-native-firebase/common": "6.0.0-alpha.5",
+    "stacktrace-js": "^2.0.0"
   },
   "rnpm": {
     "android": {
@@ -35,7 +41,7 @@
       "packageInstance": "new ReactNativeFirebaseCrashlyticsPackage()"
     }
   },
-  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
   "publishConfig": {
     "access": "public"
   }

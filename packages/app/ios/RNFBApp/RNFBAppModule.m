@@ -21,6 +21,9 @@
 #import "RNFBAppModule.h"
 #import "RNFBRCTEventEmitter.h"
 #import "RNFBSharedUtils.h"
+#import "RNFBPreferences.h"
+#import "RNFBJSON.h"
+#import "RNFBMeta.h"
 
 
 @implementation RNFBAppModule
@@ -40,6 +43,68 @@
 
   - (RCTBridge *)bridge {
     return [RNFBRCTEventEmitter shared].bridge;
+  }
+
+#pragma mark -
+#pragma mark META Methods
+
+  RCT_EXPORT_METHOD(metaGetAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([RNFBMeta getAll]);
+  }
+
+#pragma mark -
+#pragma mark JSON Methods
+
+  RCT_EXPORT_METHOD(jsonGetAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([[RNFBJSON shared] getAll]);
+  }
+
+#pragma mark -
+#pragma mark Preference Methods
+
+  RCT_EXPORT_METHOD(preferencesSetBool:
+    (NSString *) key
+        boolValue:
+        (BOOL) boolValue
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[RNFBPreferences shared] setBooleanValue:key boolValue:boolValue];
+    resolve([NSNull null]);
+  }
+
+  RCT_EXPORT_METHOD(preferencesSetString:
+    (NSString *) key
+        stringValue:
+        (NSString *) stringValue
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[RNFBPreferences shared] setStringValue:key stringValue:stringValue];
+    resolve([NSNull null]);
+  }
+
+  RCT_EXPORT_METHOD(preferencesGetAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    resolve([[RNFBPreferences shared] getAll]);
+  }
+
+  RCT_EXPORT_METHOD(preferencesClearAll:
+    (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[RNFBPreferences shared] clearAll];
+    resolve([NSNull null]);
   }
 
 #pragma mark -
@@ -77,7 +142,7 @@
   RCT_EXPORT_METHOD(eventsRemoveListener:
     (NSString *) eventName
         all:
-        (BOOL *) all) {
+        (BOOL) all) {
     [[RNFBRCTEventEmitter shared] removeListeners:eventName all:all];
   }
 

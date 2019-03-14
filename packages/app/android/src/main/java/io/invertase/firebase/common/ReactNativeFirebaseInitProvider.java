@@ -25,22 +25,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.interfaces.InitProvider;
 
-public class ReactNativeFirebaseInitProvider extends ContentProvider {
-  /**
-   * Should match the {@link ReactNativeFirebaseInitProvider} authority if $androidId is empty.
-   */
-  static final String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY =
-    "io.invertase.firebase.common.reactnativefirebaseinitprovider";
-
-  /**
-   * Check that the content provider's authority does not use the common package name. If it
-   * does, crash in order to alert the developer of the problem before they distribute the app.
-   */
-  private static void checkContentProviderAuthority(ProviderInfo info) {
+public class ReactNativeFirebaseInitProvider extends ContentProvider implements InitProvider {
+  private static void checkContentProviderAuthority(
+    ProviderInfo info,
+    String emptyProviderAuthority
+  ) {
     if (info != null) {
-      if (EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY.equals(info.authority)) {
+      if (emptyProviderAuthority.equals(info.authority)) {
         throw new IllegalStateException(
           "Incorrect provider authority in manifest. This is most likely due to a missing "
             + "applicationId variable in application's build.gradle.");
@@ -48,24 +44,26 @@ public class ReactNativeFirebaseInitProvider extends ContentProvider {
     }
   }
 
+  public String getEmptyProviderAuthority() {
+    throw new RuntimeException("STUB: getEmptyProviderAuthority override not implemented");
+  }
+
   @Override
   public void attachInfo(Context context, ProviderInfo info) {
-    checkContentProviderAuthority(info);
+    checkContentProviderAuthority(info, getEmptyProviderAuthority());
     super.attachInfo(context, info);
   }
 
-  /**
-   * Called before {@link Application#onCreate()}.
-   */
   @Override
+  @OverridingMethodsMustInvokeSuper
   public boolean onCreate() {
-    Context applicationContext = getContext();
-
-    if (applicationContext != null && applicationContext.getApplicationContext() != null) {
-      applicationContext = applicationContext.getApplicationContext();
+    if (ReactNativeFirebaseApp.getApplicationContext() == null) {
+      Context applicationContext = getContext();
+      if (applicationContext != null && applicationContext.getApplicationContext() != null) {
+        applicationContext = applicationContext.getApplicationContext();
+      }
+      ReactNativeFirebaseApp.setApplicationContext(applicationContext);
     }
-
-    ReactNativeFirebaseApp.setApplicationContext(applicationContext);
 
     return false;
   }

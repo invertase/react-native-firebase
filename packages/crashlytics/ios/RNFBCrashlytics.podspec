@@ -16,5 +16,9 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "10.0"
   s.source_files        = 'RNFBCrashlytics/**/*.{h,m}'
   s.dependency          'React'
-  s.dependency          'Firebase/Core', '~> 5.15.0'
+  s.dependency          'Firebase/Core', '~> 5.17.0'
+  s.dependency          'Fabric', '~> 1.9.0'
+  s.dependency          'Crashlytics', '~> 3.12.0'
+  s.dependency          'RNFBApp'
+  s.static_framework    = true
 end

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { Platform } from 'react-native';
 
 export * from './validate';
 
@@ -30,3 +31,33 @@ export function promiseDefer() {
 
   return deferred;
 }
+
+export function once(fn, context) {
+  let onceResult;
+  let ranOnce = false;
+
+  return function onceInner(...args) {
+    if (!ranOnce) {
+      ranOnce = true;
+      onceResult = fn.apply(context || this, args);
+    }
+
+    return onceResult;
+  };
+}
+
+export function isError(value) {
+  if (Object.prototype.toString.call(value) === '[object Error]') {
+    return true;
+  }
+
+  return value instanceof Error;
+}
+
+export function hasOwnProperty(target, property) {
+  return Object.hasOwnProperty.call(target, property);
+}
+
+export const isIOS = Platform.OS === 'ios';
+
+export const isAndroid = Platform.OS === 'android';

@@ -18,11 +18,15 @@
 
 ----
 
-Utils description.
+> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
+
+A collection of utilities to aid in using Firebase and related services inside React Native, e.g. Test Lab helpers and Google Play Services version helpers.
 
 [> Learn More](https://firebase.google.com/products/utils/)
 
 ## Installation
+
+Requires `@react-native-firebase/app` to be installed.
 
 ```bash
 yarn add @react-native-firebase/utils

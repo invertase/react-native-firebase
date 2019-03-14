@@ -1,8 +1,8 @@
 {
   "name": "@react-native-firebase/functions",
-  "version": "6.0.0-alpha.2",
+  "version": "6.0.0-alpha.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Functions",
+  "description": "React Native Firebase - Cloud Functions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -19,14 +19,16 @@
     "react",
     "react-native",
     "firebase",
+    "https",
+    "callable",
     "functions"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.2"
+    "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.2",
-    "@react-native-firebase/common": "6.0.0-alpha.2"
+    "@react-native-firebase/app-types": "6.0.0-alpha.5",
+    "@react-native-firebase/common": "6.0.0-alpha.5"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
@@ -38,7 +40,7 @@
       "packageInstance": "new ReactNativeFirebaseFunctionsPackage()"
     }
   },
-  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
   "publishConfig": {
     "access": "public"
   }

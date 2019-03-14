@@ -4,9 +4,9 @@
 
   <application>
     <provider
-      android:name="io.invertase.firebase.common.ReactNativeFirebaseInitProvider"
-      android:authorities="${applicationId}.reactnativefirebaseinitprovider"
+      android:name="io.invertase.firebase.app.ReactNativeFirebaseAppInitProvider"
+      android:authorities="${applicationId}.reactnativefirebaseappinitprovider"
       android:exported="false"
-      android:initOrder="101" /> <!-- Firebase = 100, using 101 to run after Firebase initialises -->
+      android:initOrder="99" /> <!-- Firebase = 100, using 99 to run after Firebase initialises (highest first) -->
   </application>
 </manifest>

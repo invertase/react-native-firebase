@@ -1,0 +1,47 @@
+{
+  "name": "@react-native-firebase/firestore",
+  "version": "6.0.0-alpha.5",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Cloud Firestore",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/firestore"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "cloud firestore",
+    "database",
+    "nosql",
+    "query",
+    "realtime",
+    "firestore"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "*"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "6.0.0-alpha.5",
+    "@react-native-firebase/common": "6.0.0-alpha.5"
+  },
+  "rnpm": {
+    "android": {
+      "buildPatch": "implementation project(':@react-native-firebase_firestore')",
+      "packageImportPath": "import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;",
+      "packageInstance": "new ReactNativeFirebaseFirestorePackage()"
+    }
+  },
+  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
+  "publishConfig": {
+    "access": "public"
+  }
+}
