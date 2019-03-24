@@ -17,24 +17,256 @@ package io.invertase.firebase.config;
  *
  */
 
-import android.app.Activity;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Set;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.LAST_FETCH_STATUS_FAILURE;
+import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.LAST_FETCH_STATUS_NO_FETCH_YET;
+import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.LAST_FETCH_STATUS_SUCCESS;
+import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.LAST_FETCH_STATUS_THROTTLED;
+
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Config";
+  private static final String STRING_VALUE = "stringValue";
+  private static final String DATA_VALUE = "dataValue";
+  private static final String BOOL_VALUE = "boolValue";
+  private static final String NUMBER_VALUE = "numberValue";
+  private static final String SOURCE = "source";
 
   ReactNativeFirebaseConfigModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 
+
+  public void activateFetched(Promise promise) {
+    boolean activated = FirebaseRemoteConfig.getInstance().activateFetched();
+    promise.resolve(activated);
+  }
+
+  public void fetch(long cacheExpirationSeconds, Promise promise) {
+    Task<Void> fetchTask;
+
+    if (cacheExpirationSeconds == -1) {
+      fetchTask = FirebaseRemoteConfig.getInstance().fetch(cacheExpirationSeconds);
+    } else {
+      fetchTask = FirebaseRemoteConfig.getInstance().fetch();
+    }
+
+    fetchTask.addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
+          // TODO(salakar) cleanup error codes to match other modules
+          promise.reject(
+            "config/throttled",
+            "fetch() operation cannot be completed successfully, due to throttling.",
+            task.getException()
+          );
+        } else {
+          // TODO(salakar) cleanup error codes to match other modules
+          promise.reject(
+            "config/failure",
+            "fetch() operation cannot be completed successfully.",
+            task.getException()
+          );
+        }
+      }
+    });
+  }
+
+  public void getConfigSettings(Promise promise) {
+    WritableMap configSettingsMap = Arguments.createMap();
+    FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance().getInfo();
+    FirebaseRemoteConfigSettings remoteConfigSettings = remoteConfigInfo.getConfigSettings();
+
+    configSettingsMap.putDouble("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
+    configSettingsMap.putString(
+      "lastFetchStatus",
+      lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus())
+    );
+    configSettingsMap.putBoolean(
+      "isDeveloperModeEnabled",
+      remoteConfigSettings.isDeveloperModeEnabled()
+    );
+
+    promise.resolve(configSettingsMap);
+  }
+
+  public void setConfigSettings(WritableMap configSettings, Promise promise) {
+    FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
+    configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
+    FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
+    getConfigSettings(promise);
+  }
+
+  public void setDefaults(WritableMap defaults, String namespace, Promise promise) {
+    if (namespace != null) {
+      FirebaseRemoteConfig.getInstance().setDefaults(defaults.toHashMap(), namespace);
+    } else {
+      FirebaseRemoteConfig.getInstance().setDefaults(defaults.toHashMap());
+    }
+
+    promise.resolve(null);
+  }
+
+  public void setDefaultsFromResource(String resourceName, String namespace, Promise promise) {
+    int resourceId = getXmlResourceIdByName(resourceName);
+    XmlResourceParser xmlResourceParser = null;
+
+    try {
+      xmlResourceParser = getApplicationContext().getResources().getXml(resourceId);
+    } catch (Resources.NotFoundException nfe) {
+      // do nothing
+    }
+
+    if (xmlResourceParser != null) {
+      if (namespace != null) {
+        FirebaseRemoteConfig.getInstance().setDefaults(resourceId, namespace);
+      } else {
+        FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
+      }
+
+      promise.resolve(null);
+    } else {
+      // TODO(salakar) cleanup error codes to match other modules
+      promise.reject(
+        "config/resource_not_found",
+        "The specified resource name was not found."
+      );
+    }
+  }
+
+  private int getXmlResourceIdByName(String name) {
+    String packageName = getApplicationContext().getPackageName();
+    return getApplicationContext().getResources().getIdentifier(name, "xml", packageName);
+  }
+
+  public void getKeysByPrefix(String prefix, String namespace, Promise promise) {
+    WritableArray keysByPrefix = Arguments.createArray();
+
+    Set<String> keys;
+    if (namespace != null) {
+      keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix, namespace);
+    } else {
+      keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
+    }
+
+    for (String key : keys) {
+      keysByPrefix.pushString(key);
+    }
+
+    promise.resolve(keysByPrefix);
+  }
+
+
+  public void getValue(String key, String namespace, Promise promise) {
+    FirebaseRemoteConfigValue configValue;
+
+    if (namespace != null) {
+      configValue = FirebaseRemoteConfig.getInstance().getValue(key, namespace);
+    } else {
+      configValue = FirebaseRemoteConfig.getInstance().getValue(key);
+    }
+
+    promise.resolve(convertRemoteConfigValue(configValue));
+  }
+
+  public void getValues(ReadableArray keys, String namespace, Promise promise) {
+    WritableArray valuesArray = Arguments.createArray();
+    ArrayList<Object> keysList = keys.toArrayList();
+
+    for (Object key : keysList) {
+
+      FirebaseRemoteConfigValue configValue;
+      if (namespace != null) {
+        configValue = FirebaseRemoteConfig.getInstance().getValue((String) key, namespace);
+      } else {
+        configValue = FirebaseRemoteConfig.getInstance().getValue((String) key);
+      }
+
+      valuesArray.pushMap(convertRemoteConfigValue(configValue));
+    }
+
+    promise.resolve(valuesArray);
+  }
+
+  private WritableMap convertRemoteConfigValue(FirebaseRemoteConfigValue value) {
+    WritableMap map = Arguments.createMap();
+
+    map.putString(STRING_VALUE, value.asString());
+
+    try {
+      map.putString(DATA_VALUE, new String(value.asByteArray()));
+    } catch (Exception e) {
+      map.putNull(DATA_VALUE);
+    }
+
+    boolean booleanValue;
+    try {
+      booleanValue = value.asBoolean();
+      map.putBoolean(BOOL_VALUE, booleanValue);
+    } catch (Exception e) {
+      map.putNull(BOOL_VALUE);
+    }
+
+    double numberValue;
+    try {
+      numberValue = value.asDouble();
+      map.putDouble(NUMBER_VALUE, numberValue);
+    } catch (Exception e) {
+      map.putNull(NUMBER_VALUE);
+    }
+
+    switch (value.getSource()) {
+      case FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT:
+        map.putString(SOURCE, "default");
+        break;
+      case FirebaseRemoteConfig.VALUE_SOURCE_REMOTE:
+        map.putString(SOURCE, "remote");
+        break;
+      default:
+        map.putString(SOURCE, "static");
+    }
+
+    return map;
+  }
+
+
+  private String lastFetchStatusToString(int fetchStatus) {
+    String status = "unknown";
+    switch (fetchStatus) {
+      case LAST_FETCH_STATUS_SUCCESS:
+        status = "success";
+        break;
+      case LAST_FETCH_STATUS_FAILURE:
+        status = "failure";
+        break;
+      case LAST_FETCH_STATUS_NO_FETCH_YET:
+        status = "no_fetch_yet";
+        break;
+      case LAST_FETCH_STATUS_THROTTLED:
+        status = "throttled";
+        break;
+    }
+    return status;
+  }
 }
