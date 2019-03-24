@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase/app')
+  api project(':@react-native-firebase_app')
   implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("fabric", "crashlytics")}"
   implementation "com.crashlytics.sdk.android:crashlytics-ndk:${ReactNative.ext.getVersion("fabric", "crashlyticsNdk")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"

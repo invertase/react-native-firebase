@@ -57,7 +57,7 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase/app')
+  api project(':@react-native-firebase_app')
   implementation "com.google.firebase:firebase-ml-common:${ReactNative.ext.getVersion("firebase", "mlkitCommon")}"
   implementation "com.google.firebase:firebase-ml-vision:${ReactNative.ext.getVersion("firebase", "mlkitVision")}"
   implementation "com.google.firebase:firebase-ml-natural-language:${ReactNative.ext.getVersion("firebase", "mlkitNaturalLanguage")}"

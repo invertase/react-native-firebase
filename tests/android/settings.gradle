@@ -1,4 +1,4 @@
-rootProject.name = '@react-native-firebase/tests'
+rootProject.name = '@react-native-firebase_tests'
 
 def firebasePackages = [
   'app',
@@ -14,8 +14,8 @@ def firebasePackages = [
 ]
 
 firebasePackages.each { firebasePackage ->
-  include ":@react-native-firebase/${firebasePackage}"
-  project(":@react-native-firebase/${firebasePackage}").projectDir = new File(rootProject.projectDir, "./../../packages/${firebasePackage}/android")
+  include ":@react-native-firebase_${firebasePackage}"
+  project(":@react-native-firebase_${firebasePackage}").projectDir = new File(rootProject.projectDir, "./../../packages/${firebasePackage}/android")
 }
 
 include ':jet'

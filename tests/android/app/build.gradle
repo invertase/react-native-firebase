@@ -109,7 +109,7 @@ dependencies {
    * ---------------------------- */
 
   firebasePackages.each { firebasePackage ->
-    implementation project(path: ":@react-native-firebase/${firebasePackage}")
+    implementation project(path: ":@react-native-firebase_${firebasePackage}")
   }
 
   /* ------------------------
