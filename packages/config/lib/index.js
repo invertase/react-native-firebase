@@ -29,6 +29,61 @@ const namespace = 'config';
 
 const nativeModuleName = 'RNFBConfigModule';
 
+/**
+ *
+ * @param nativeValue
+ * @returns {*}
+ */
+function nativeValueToJS(nativeValue) {
+  console.dir(nativeValue)
+  return {
+    source: nativeValue.source,
+    get value() {
+      const { boolValue, stringValue, numberValue, dataValue } = nativeValue;
+
+      // undefined
+      if (boolValue === false && numberValue === 0 && !stringValue.length && !dataValue.length) {
+        return undefined;
+      }
+
+      // boolean
+      if (
+        boolValue !== null &&
+        (stringValue === 'true' ||
+          stringValue === 'false' ||
+          stringValue === null)
+      ) {
+        return boolValue;
+      }
+
+      // number
+      if (
+        numberValue !== null &&
+        numberValue !== undefined &&
+        (stringValue == null ||
+          stringValue === '' ||
+          numberValue.toString() === stringValue)
+      ) {
+        return numberValue;
+      }
+
+      // data
+      if (
+        dataValue !== stringValue &&
+        (stringValue == null || stringValue === '')
+      ) {
+        return dataValue;
+      }
+
+      // string
+      return stringValue;
+    },
+  };
+}
+
+
+// TODO(salakar) remove namespacing of remote config - internal firebase use only
+// "Namespaces are intended for introducing future Google services that leverage Remote Config to provide a feature. They are not meant for setting user assigned values."
 class FirebaseConfigModule extends FirebaseModule {
   /**
    * Activates the Fetched Config, so that the fetched key-values take effect.
@@ -40,6 +95,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   /**
    * Fetches parameter values for your app.
+   * TODO(salakar) add activate flag - (fetch & activate)
    * @param {number} cacheExpirationSeconds
    * @returns {Promise}
    */
@@ -52,7 +108,7 @@ class FirebaseConfigModule extends FirebaseModule {
       return this.native.fetch(cacheExpirationSeconds);
     }
 
-    return this.native.fetch(null);
+    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1);
   }
 
   /**
@@ -73,7 +129,13 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {string} namespace
    * @returns {string[]}
    */
-  getKeysByPrefix(prefix, namespace = null) {}
+  getKeysByPrefix(prefix, configNamespace = null) {
+    // TODO(salakar) validate args
+    return this.native.getKeysByPrefix(prefix, configNamespace);
+  }
+
+  // TODO(salakar) implement natively
+  getValuesByKeysPrefix(prefix, configNamespace = null) {}
 
   /**
    * Gets the FirebaseRemoteConfigValue corresponding to the specified key.
@@ -81,15 +143,26 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {string} key
    * @param {string} namespace
    */
-  getValue(key, namespace = null) {}
+  getValue(key, configNamespace = null) {}
 
   /**
    * Gets the FirebaseRemoteConfigValue array corresponding to the specified keys.
    * Optionally in the specified namespace.
-   * @param {string[]} key
-   * @param {string} namespace
+   * @param keys
+   * @param configNamespace
    */
-  getValues(keys, namespace = null) {}
+  async getValues(keys, configNamespace = null) {
+    // TODO(salakar) validate args
+    const valuesObject = {};
+    const keyValues = await this.native.getValues(keys, configNamespace);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      valuesObject[key] = nativeValueToJS(keyValues[i]);
+    }
+
+    return valuesObject;
+  }
 
   /**
    * Changes the settings for the FirebaseRemoteConfig object's operations,
@@ -97,7 +170,10 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {object} settings
    * @description Android & iOS
    */
-  setConfigSettings(settings) {}
+  setConfigSettings(settings = {}) {
+    // TODO(salakar) validate isDeveloperModeEnabled
+    return this.native.setConfigSettings(settings);
+  }
 
   /**
    * Sets defaults.
@@ -105,13 +181,14 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {object} defaults
    * @param {string} namespace
    */
-  setDefaults(defaults, namespace = null) {}
+  setDefaults(defaults, configNamespace = null) {}
 
   /**
    * Sets defaults based on resource.
-   * @param {string | number} resource
+   * @param {string} resource
    */
-  setDefaultsFromSource(resource, namespace = null) {}
+  // TODO(salakar) will remove resourceId and support resource name - won't need to find the id then
+  setDefaultsFromResource(resource, configNamespace = null) {}
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/config';

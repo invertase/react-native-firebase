@@ -85,8 +85,7 @@
 #pragma mark Firebase Config Methods
 
   RCT_EXPORT_METHOD(fetch:
-    (nullable
-      NSNumber *)expirationDuration
+    (nonnull NSNumber *)expirationDuration
       resolver:(RCTPromiseResolveBlock)resolve
       rejecter:(RCTPromiseRejectBlock)reject) {
     if (expirationDuration == @(-1)) {
@@ -126,7 +125,7 @@
     NSDate *lastFetchTime = remoteConfig.lastFetchTime;
     resolve(@{
         @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
-        @"lastFetchTime": lastFetchTime,
+        @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970])),
         @"lastFetchStatus": lastFetchStatus
     });
   }
