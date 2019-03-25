@@ -20,6 +20,7 @@
 #import <Firebase/Firebase.h>
 
 #import "RNFBConfigModule.h"
+#import "RNFBSharedUtils.h"
 
 
 @implementation RNFBConfigModule
@@ -92,7 +93,7 @@
       rejecter:(RCTPromiseRejectBlock)reject) {
     FIRRemoteConfigFetchCompletion completionHandler = ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
       if (error) {
-        reject(convertFIRRemoteConfigFetchStatusToNSString(status), convertFIRRemoteConfigFetchStatusToNSStringDescription(status), error);
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": convertFIRRemoteConfigFetchStatusToNSString(status), @"message": convertFIRRemoteConfigFetchStatusToNSStringDescription(status)} mutableCopy]];
       } else {
         if (activate) {
           resolve(@([[FIRRemoteConfig remoteConfig] activateFetched]));
@@ -131,7 +132,6 @@
         rejecter:
         (RCTPromiseRejectBlock) reject) {
     FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
-
     resolve(convertFIRRemoteConfigValueToNSDictionary(value));
   }
 
@@ -216,8 +216,7 @@
       [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
       resolve([NSNull null]);
     } else {
-      // TODO(salakar) cleanup error codes to match other modules
-      reject(@"config/resource_not_found", @"The specified resource name was not found.", nil);
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": @"resource_not_found", @"message": @"The specified resource name was not found."} mutableCopy]];
     }
   }
 

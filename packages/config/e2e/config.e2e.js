@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('config()', () => {
+describe('config()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -232,7 +232,7 @@ describe.only('config()', () => {
     });
   });
 
-  describe.only('setDefaultsFromResource()', () => {
+  describe('setDefaultsFromResource()', () => {
     it('sets defaults from remote_config_resource_test file', async () => {
       await Utils.sleep(10000);
       await firebase.config().setDefaultsFromResource('remote_config_resource_test');
