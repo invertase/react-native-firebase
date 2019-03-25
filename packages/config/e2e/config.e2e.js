@@ -241,6 +241,13 @@ describe.only('config()', () => {
       config.company.value.should.equal('invertase');
     });
 
+    it('it rejects if resource not found', async () => {
+        const [error] = await A2A(firebase.config().setDefaultsFromResource('i_do_not_exist'));
+        if (!error) throw new Error('Did not reject');
+        error.code.should.equal('config/resource_not_found');
+        error.message.should.containEql('was not found');
+    });
+
     it('it throws if resourceName is not a string', () => {
       try {
         firebase.config().setDefaultsFromResource(1337);

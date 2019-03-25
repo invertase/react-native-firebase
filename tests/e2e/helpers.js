@@ -38,6 +38,12 @@ function requirePackageTests(packageName) {
   }
 }
 
+Object.defineProperty(global, 'A2A', {
+  get() {
+    return require('a2a');
+  },
+});
+
 Object.defineProperty(global, 'firebase', {
   get() {
     return jet.module;

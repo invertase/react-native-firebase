@@ -81,18 +81,16 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
         }
       } else {
         if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
-          // TODO(salakar) cleanup error codes to match other modules
-          promise.reject(
-            "config/throttled",
-            "fetch() operation cannot be completed successfully, due to throttling.",
-            task.getException()
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            "throttled",
+            "fetch() operation cannot be completed successfully, due to throttling."
           );
         } else {
-          // TODO(salakar) cleanup error codes to match other modules
-          promise.reject(
-            "config/failure",
-            "fetch() operation cannot be completed successfully.",
-            task.getException()
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            "failure",
+            "fetch() operation cannot be completed successfully."
           );
         }
       }
@@ -147,9 +145,9 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
       FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
       promise.resolve(null);
     } else {
-      // TODO(salakar) cleanup error codes to match other modules
-      promise.reject(
-        "config/resource_not_found",
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "resource_not_found",
         "The specified resource name was not found."
       );
     }

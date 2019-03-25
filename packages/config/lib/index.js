@@ -43,7 +43,6 @@ const nativeModuleName = 'RNFBConfigModule';
  * @returns {*}
  */
 function nativeValueToJS(nativeValue) {
-  console.dir(nativeValue)
   return {
     source: nativeValue.source,
     get value() {
