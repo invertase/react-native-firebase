@@ -23,7 +23,9 @@ import android.content.res.XmlResourceParser;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +48,6 @@ import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.LAST_FETCH_S
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Config";
   private static final String STRING_VALUE = "stringValue";
-  private static final String DATA_VALUE = "dataValue";
   private static final String BOOL_VALUE = "boolValue";
   private static final String NUMBER_VALUE = "numberValue";
   private static final String SOURCE = "source";
@@ -55,24 +56,29 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     super(reactContext, TAG);
   }
 
-
+  @ReactMethod
   public void activateFetched(Promise promise) {
     boolean activated = FirebaseRemoteConfig.getInstance().activateFetched();
     promise.resolve(activated);
   }
 
-  public void fetch(long cacheExpirationSeconds, Promise promise) {
+  @ReactMethod
+  public void fetch(double cacheExpirationSeconds, boolean activate, Promise promise) {
     Task<Void> fetchTask;
 
     if (cacheExpirationSeconds == -1) {
-      fetchTask = FirebaseRemoteConfig.getInstance().fetch(cacheExpirationSeconds);
+      fetchTask = FirebaseRemoteConfig.getInstance().fetch((long) cacheExpirationSeconds);
     } else {
       fetchTask = FirebaseRemoteConfig.getInstance().fetch();
     }
 
     fetchTask.addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(null);
+        if (activate) {
+          promise.resolve(FirebaseRemoteConfig.getInstance().activateFetched());
+        } else {
+          promise.resolve(null);
+        }
       } else {
         if (task.getException() instanceof FirebaseRemoteConfigFetchThrottledException) {
           // TODO(salakar) cleanup error codes to match other modules
@@ -93,6 +99,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     });
   }
 
+  @ReactMethod
   public void getConfigSettings(Promise promise) {
     WritableMap configSettingsMap = Arguments.createMap();
     FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance().getInfo();
@@ -111,24 +118,22 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     promise.resolve(configSettingsMap);
   }
 
-  public void setConfigSettings(WritableMap configSettings, Promise promise) {
+  @ReactMethod
+  public void setConfigSettings(ReadableMap configSettings, Promise promise) {
     FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
     configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
     FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
     getConfigSettings(promise);
   }
 
-  public void setDefaults(WritableMap defaults, String namespace, Promise promise) {
-    if (namespace != null) {
-      FirebaseRemoteConfig.getInstance().setDefaults(defaults.toHashMap(), namespace);
-    } else {
-      FirebaseRemoteConfig.getInstance().setDefaults(defaults.toHashMap());
-    }
-
+  @ReactMethod
+  public void setDefaults(ReadableMap defaults, Promise promise) {
+    FirebaseRemoteConfig.getInstance().setDefaults(defaults.toHashMap());
     promise.resolve(null);
   }
 
-  public void setDefaultsFromResource(String resourceName, String namespace, Promise promise) {
+  @ReactMethod
+  public void setDefaultsFromResource(String resourceName, Promise promise) {
     int resourceId = getXmlResourceIdByName(resourceName);
     XmlResourceParser xmlResourceParser = null;
 
@@ -139,12 +144,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     }
 
     if (xmlResourceParser != null) {
-      if (namespace != null) {
-        FirebaseRemoteConfig.getInstance().setDefaults(resourceId, namespace);
-      } else {
-        FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
-      }
-
+      FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
       promise.resolve(null);
     } else {
       // TODO(salakar) cleanup error codes to match other modules
@@ -160,15 +160,25 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     return getApplicationContext().getResources().getIdentifier(name, "xml", packageName);
   }
 
-  public void getKeysByPrefix(String prefix, String namespace, Promise promise) {
+  @ReactMethod
+  public void getValuesByKeysPrefix(String prefix, Promise promise) {
+    Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
+    WritableMap writableMap = Arguments.createMap();
+
+    for (String key : keys) {
+      FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig.getInstance().getValue(key);
+      writableMap.putMap(key, convertRemoteConfigValue(configValue));
+    }
+
+    promise.resolve(writableMap);
+  }
+
+
+  @ReactMethod
+  public void getKeysByPrefix(String prefix, Promise promise) {
     WritableArray keysByPrefix = Arguments.createArray();
 
-    Set<String> keys;
-    if (namespace != null) {
-      keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix, namespace);
-    } else {
-      keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
-    }
+    Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
 
     for (String key : keys) {
       keysByPrefix.pushString(key);
@@ -177,31 +187,22 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     promise.resolve(keysByPrefix);
   }
 
-
-  public void getValue(String key, String namespace, Promise promise) {
-    FirebaseRemoteConfigValue configValue;
-
-    if (namespace != null) {
-      configValue = FirebaseRemoteConfig.getInstance().getValue(key, namespace);
-    } else {
-      configValue = FirebaseRemoteConfig.getInstance().getValue(key);
-    }
-
+  @ReactMethod
+  public void getValue(String key, Promise promise) {
+    FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig.getInstance().getValue(key);
     promise.resolve(convertRemoteConfigValue(configValue));
   }
 
-  public void getValues(ReadableArray keys, String namespace, Promise promise) {
+  @ReactMethod
+  public void getValues(ReadableArray keys, Promise promise) {
     WritableArray valuesArray = Arguments.createArray();
     ArrayList<Object> keysList = keys.toArrayList();
 
     for (Object key : keysList) {
 
-      FirebaseRemoteConfigValue configValue;
-      if (namespace != null) {
-        configValue = FirebaseRemoteConfig.getInstance().getValue((String) key, namespace);
-      } else {
-        configValue = FirebaseRemoteConfig.getInstance().getValue((String) key);
-      }
+      FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig
+        .getInstance()
+        .getValue((String) key);
 
       valuesArray.pushMap(convertRemoteConfigValue(configValue));
     }
@@ -215,22 +216,14 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     map.putString(STRING_VALUE, value.asString());
 
     try {
-      map.putString(DATA_VALUE, new String(value.asByteArray()));
-    } catch (Exception e) {
-      map.putNull(DATA_VALUE);
-    }
-
-    boolean booleanValue;
-    try {
-      booleanValue = value.asBoolean();
+      boolean booleanValue = value.asBoolean();
       map.putBoolean(BOOL_VALUE, booleanValue);
     } catch (Exception e) {
       map.putNull(BOOL_VALUE);
     }
 
-    double numberValue;
     try {
-      numberValue = value.asDouble();
+      double numberValue = value.asDouble();
       map.putDouble(NUMBER_VALUE, numberValue);
     } catch (Exception e) {
       map.putNull(NUMBER_VALUE);

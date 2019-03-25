@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react-native';
 
-import jet from 'jet/platform/react-native';
+// import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
 import '@react-native-firebase/analytics';
@@ -33,9 +33,9 @@ import '@react-native-firebase/iid';
 import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 
-jet.exposeContextProperty('NativeModules', NativeModules);
-jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
-jet.exposeContextProperty('module', firebase);
+// jet.exposeContextProperty('NativeModules', NativeModules);
+// jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
+// jet.exposeContextProperty('module', firebase);
 
 class Root extends Component {
   constructor(props) {
@@ -44,7 +44,8 @@ class Root extends Component {
       currentTest: null,
     };
 
-    jet.exposeContextProperty('root', this);
+    firebase.config().setDefaultsFromResource('remote_config_resource_test');
+    // jet.exposeContextProperty('root', this);
   }
 
   render() {

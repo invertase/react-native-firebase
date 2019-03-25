@@ -20,7 +20,15 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isNumber, isUndefined } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isNumber,
+  isString,
+  isBoolean,
+  isArray,
+  isUndefined,
+  isObject,
+} from '@react-native-firebase/common';
 import version from './version';
 
 const statics = {};
@@ -39,19 +47,17 @@ function nativeValueToJS(nativeValue) {
   return {
     source: nativeValue.source,
     get value() {
-      const { boolValue, stringValue, numberValue, dataValue } = nativeValue;
+      const { boolValue, stringValue, numberValue } = nativeValue;
 
       // undefined
-      if (boolValue === false && numberValue === 0 && !stringValue.length && !dataValue.length) {
+      if (boolValue === false && numberValue === 0 && !stringValue.length) {
         return undefined;
       }
 
       // boolean
       if (
         boolValue !== null &&
-        (stringValue === 'true' ||
-          stringValue === 'false' ||
-          stringValue === null)
+        (stringValue === 'true' || stringValue === 'false' || stringValue === null)
       ) {
         return boolValue;
       }
@@ -60,19 +66,9 @@ function nativeValueToJS(nativeValue) {
       if (
         numberValue !== null &&
         numberValue !== undefined &&
-        (stringValue == null ||
-          stringValue === '' ||
-          numberValue.toString() === stringValue)
+        (stringValue == null || stringValue === '' || numberValue.toString() === stringValue || parseInt(stringValue, 10) === numberValue)
       ) {
         return numberValue;
-      }
-
-      // data
-      if (
-        dataValue !== stringValue &&
-        (stringValue == null || stringValue === '')
-      ) {
-        return dataValue;
       }
 
       // string
@@ -81,9 +77,6 @@ function nativeValueToJS(nativeValue) {
   };
 }
 
-
-// TODO(salakar) remove namespacing of remote config - internal firebase use only
-// "Namespaces are intended for introducing future Google services that leverage Remote Config to provide a feature. They are not meant for setting user assigned values."
 class FirebaseConfigModule extends FirebaseModule {
   /**
    * Activates the Fetched Config, so that the fetched key-values take effect.
@@ -95,20 +88,33 @@ class FirebaseConfigModule extends FirebaseModule {
 
   /**
    * Fetches parameter values for your app.
-   * TODO(salakar) add activate flag - (fetch & activate)
+
    * @param {number} cacheExpirationSeconds
    * @returns {Promise}
    */
-  fetch(cacheExpirationSeconds = undefined) {
+  fetch(cacheExpirationSeconds) {
     if (!isUndefined(cacheExpirationSeconds) && !isNumber(cacheExpirationSeconds)) {
-      throw new Error(`config.fetch(): 'cacheExpirationSeconds' is must be a number value.`);
+      throw new Error(
+        `firebase.config().fetch(): 'cacheExpirationSeconds' must be a number value.`,
+      );
     }
 
-    if (isNumber(cacheExpirationSeconds)) {
-      return this.native.fetch(cacheExpirationSeconds);
+    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1, false);
+  }
+
+  /**
+   *
+   * @param cacheExpirationSeconds
+   * @returns {Promise|never|Promise<Response>}
+   */
+  fetchAndActivate(cacheExpirationSeconds) {
+    if (!isUndefined(cacheExpirationSeconds) && !isNumber(cacheExpirationSeconds)) {
+      throw new Error(
+        `firebase.config().fetchAndActivate(): 'cacheExpirationSeconds' must be a number value.`,
+      );
     }
 
-    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1);
+    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1, true);
   }
 
   /**
@@ -124,37 +130,70 @@ class FirebaseConfigModule extends FirebaseModule {
 
   /**
    * Gets the set of keys that start with the given prefix.
-   * Optionally in the given namespace.
+   *
    * @param {string} prefix
-   * @param {string} namespace
    * @returns {string[]}
    */
-  getKeysByPrefix(prefix, configNamespace = null) {
-    // TODO(salakar) validate args
-    return this.native.getKeysByPrefix(prefix, configNamespace);
+  getKeysByPrefix(prefix) {
+    if (!isUndefined(prefix) && !isString(prefix)) {
+      throw new Error(`firebase.config().getKeysByPrefix(): 'prefix' must be a string value.`);
+    }
+
+    return this.native.getKeysByPrefix(prefix);
   }
 
-  // TODO(salakar) implement natively
-  getValuesByKeysPrefix(prefix, configNamespace = null) {}
+  /**
+   *
+   * @param prefix
+   * @returns {Promise<void>}
+   */
+  async getValuesByKeysPrefix(prefix) {
+    if (!isUndefined(prefix) && !isString(prefix)) {
+      throw new Error(
+        `firebase.config().getValuesByKeysPrefix(): 'prefix' must be a string value.`,
+      );
+    }
+
+    const output = {};
+    const entries = Object.entries(await this.native.getValuesByKeysPrefix(prefix));
+
+    for (let i = 0; i < entries.length; i++) {
+      const [key, value] = entries[i];
+      output[key] = nativeValueToJS(value);
+    }
+
+    return output;
+  }
 
   /**
    * Gets the FirebaseRemoteConfigValue corresponding to the specified key.
-   * Optionally in the specified namespace.
+   *
    * @param {string} key
-   * @param {string} namespace
    */
-  getValue(key, configNamespace = null) {}
+  async getValue(key) {
+    if (!isString(key)) {
+      throw new Error(`firebase.config().getValue(): 'key' must be a string value.`);
+    }
+
+    return nativeValueToJS(await this.native.getValue(key));
+  }
 
   /**
    * Gets the FirebaseRemoteConfigValue array corresponding to the specified keys.
-   * Optionally in the specified namespace.
+   *
    * @param keys
-   * @param configNamespace
    */
-  async getValues(keys, configNamespace = null) {
-    // TODO(salakar) validate args
+  async getValues(keys) {
+    if (!isArray(keys) || !keys.length) {
+      throw new Error(`firebase.config().getValues(): 'keys' must be an non empty array.`);
+    }
+
+    if (!isString(keys[0])) {
+      throw new Error(`firebase.config().getValues(): 'keys' must be an array of strings.`);
+    }
+
     const valuesObject = {};
-    const keyValues = await this.native.getValues(keys, configNamespace);
+    const keyValues = await this.native.getValues(keys);
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -171,24 +210,49 @@ class FirebaseConfigModule extends FirebaseModule {
    * @description Android & iOS
    */
   setConfigSettings(settings = {}) {
-    // TODO(salakar) validate isDeveloperModeEnabled
+    if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      throw new Error(
+        `firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.`,
+      );
+    }
+
+    if (!isBoolean(settings.isDeveloperModeEnabled)) {
+      throw new Error(
+        `firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.`,
+      );
+    }
+
     return this.native.setConfigSettings(settings);
   }
 
   /**
    * Sets defaults.
-   * Optionally in the default namespace.
+   *
    * @param {object} defaults
-   * @param {string} namespace
    */
-  setDefaults(defaults, configNamespace = null) {}
+  setDefaults(defaults) {
+    if (!isObject(defaults)) {
+      throw new Error(
+        `firebase.config().setDefaults(): 'defaults' must be an object.`,
+      );
+    }
+
+    return this.native.setDefaults(defaults);
+  }
 
   /**
    * Sets defaults based on resource.
-   * @param {string} resource
+   * @param {string} resourceName
    */
-  // TODO(salakar) will remove resourceId and support resource name - won't need to find the id then
-  setDefaultsFromResource(resource, configNamespace = null) {}
+  setDefaultsFromResource(resourceName) {
+    if (!isString(resourceName)) {
+      throw new Error(
+        `firebase.config().setDefaultsFromResource(): 'resourceName' must be a string value.`,
+      );
+    }
+
+    return this.native.setDefaultsFromResource(resourceName);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/config';
