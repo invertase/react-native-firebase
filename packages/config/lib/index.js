@@ -102,7 +102,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
-   *
+   * TODO(salakar) return boolean always?
    * @param cacheExpirationSeconds
    * @returns {Promise|never|Promise<Response>}
    */
