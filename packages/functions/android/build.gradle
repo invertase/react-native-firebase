@@ -55,7 +55,7 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase/app')
+  api project(':@react-native-firebase_app')
   implementation "com.google.firebase:firebase-functions:${ReactNative.ext.getVersion("firebase", "functions")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }

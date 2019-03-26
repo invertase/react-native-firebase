@@ -2,7 +2,7 @@
 --timeout 260000
 --reporter spec
 --slow 1000
---retries 3
+--retries 1
 --bail
 --exit
 --require jet/platform/node

@@ -22,15 +22,129 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Config
+ * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
+ * app without requiring users to download an app update. When using Remote Config, you create in-app default
+ * values that control the behavior and appearance of your app.
  *
  * @firebase config
  */
 export namespace Config {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * An Interface representing a Remote Config value
+   */
+  export interface ConfigValue {
+    /**
+     * Where the value was retrieved from
+     */
+    source: 'remote' | 'default' | 'static';
 
+    /**
+     * The value
+     */
+    value: undefined | number | boolean | string;
+  }
+
+  /**
+   * An Interface representing multiple Config Values
+   */
+  export interface ConfigValues {
+    [key: string]: ConfigValue;
+  }
+
+  /**
+   * An Interface representing settable config settings.
+   */
+  export interface ConfigSettingsWrite {
+    isDeveloperModeEnabled: boolean;
+  }
+
+  /**
+   * An Interface representing readable config settings.
+   */
+  export interface ConfigSettingsRead {
+    lastFetchTime: number;
+    isDeveloperModeEnabled: boolean;
+    lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+  }
+
+  /**
+   * An Interface representing a Config Defaults object.
+   */
+  export interface ConfigDefaults {
+    [key: string]: number | string | boolean;
+  }
+
+  export interface Module extends ReactNativeFirebaseModule {
+    /**
+     * Moves fetched data to the apps active config.
+     * Always successfully resolves with a boolean value of whether the fetched config was moved successfully.
+     */
+    activateFetched(): Promise<boolean>;
+
+    /**
+     * Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     *
+     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To force a cache use a duration of 0.
+     */
+    fetch(cacheExpirationSeconds?: number): Promise<null>;
+
+    /**
+     * Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     *
+     * Once fetching is completely this method immediately calls activateFetched on native and returns a boolean value of activation status.
+     *
+     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To force a cache use a duration of 0.
+     */
+    fetchAndActivate(cacheExpirationSeconds?: number): Promise<boolean>;
+
+    /**
+     * Retrieve the configuration settings and status for Remote Config.
+     */
+    getConfigSettings(): Promise<ConfigSettingsRead>;
+
+    /**
+     * Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned.
+     *
+     * @param prefix
+     */
+    getKeysByPrefix(prefix?: string): Promise<string[]>;
+
+    /**
+     * Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned.
+     *
+     * @param prefix
+     */
+    getValuesByKeysPrefix(prefix?: string): Promise<ConfigValues>;
+
+    /**
+     * Gets a ConfigValue by key.
+     *
+     * @param key
+     */
+    getValue(key: string): Promise<ConfigValue>;
+
+    /**
+     * Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.
+     */
+    setConfigSettings(configSettings: ConfigSettingsWrite): Promise<ConfigSettingsRead>;
+
+    /**
+     * Sets default values for the app to use when accessing values.
+     * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
+     *
+     */
+    setDefaults(defaults: ConfigDefaults): Promise<null>;
+
+    /**
+     * Sets the default values from a resource file.
+     * On iOS this is a plist file and on Android this is an XML defaultsMap file.
+     * TODO(ehesp): insert link to guide here somehow?
+     *
+     * @param resourceName The plist/xml file name with no extension.
+     */
+    setDefaultsFromResource(resourceName: string): Promise<null>;
   }
 }
 
@@ -48,10 +162,7 @@ declare module '@react-native-firebase/config' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const ConfigDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Config.Module,
-    Config.Statics
-  >;
+  const ConfigDefaultExport: ReactNativeFirebaseModuleAndStatics<Config.Module, Config.Statics>;
   /**
    * @example
    * ```js
@@ -68,17 +179,18 @@ declare module '@react-native-firebase/config' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Config
+     * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
+     * app without requiring users to download an app update. When using Remote Config, you create in-app default
+     * values that control the behavior and appearance of your app.
      */
-    config: ReactNativeFirebaseModuleAndStatics<
-      Config.Module,
-      Config.Statics
-    >;
+    config: ReactNativeFirebaseModuleAndStatics<Config.Module, Config.Statics>;
   }
 
   interface FirebaseApp {
     /**
-     * Config
+     * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
+     * app without requiring users to download an app update. When using Remote Config, you create in-app default
+     * values that control the behavior and appearance of your app.
      */
     config(): Config.Module;
   }

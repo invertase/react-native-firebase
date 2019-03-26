@@ -30,6 +30,8 @@ import com.facebook.react.bridge.WritableMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import io.invertase.firebase.interfaces.ContextProvider;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
@@ -72,10 +74,17 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
-    // TODO hook into crashlytics - report as handled exception?
     promise.reject(exception, getExceptionMap(exception));
   }
 
+  public void rejectPromiseWithCodeAndMessage(Promise promise, String code, String message) {
+    WritableMap userInfoMap = Arguments.createMap();
+    userInfoMap.putString("code", code);
+    userInfoMap.putString("message", message);
+    promise.reject(code, message, userInfoMap);
+  }
+
+  @Nonnull
   @Override
   public String getName() {
     return "RNFB" + moduleName + "Module";
