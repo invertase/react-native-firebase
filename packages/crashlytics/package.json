@@ -41,7 +41,7 @@
       "packageInstance": "new ReactNativeFirebaseCrashlyticsPackage()"
     }
   },
-  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
+  "gitHead": "b3e3f0742d368ea1dd4af0dd4a7f4b8d88ae4086",
   "publishConfig": {
     "access": "public"
   }
