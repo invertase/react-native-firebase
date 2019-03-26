@@ -34,7 +34,7 @@ export namespace Config {
   /**
    * An Interface representing a Remote Config value
    */
-  interface ConfigValue {
+  export interface ConfigValue {
     /**
      * Where the value was retrieved from
      */
@@ -49,21 +49,21 @@ export namespace Config {
   /**
    * An Interface representing multiple Config Values
    */
-  interface ConfigValues {
+  export interface ConfigValues {
     [key: string]: ConfigValue;
   }
 
   /**
    * An Interface representing settable config settings.
    */
-  interface ConfigSettingsWrite {
+  export interface ConfigSettingsWrite {
     isDeveloperModeEnabled: boolean;
   }
 
   /**
    * An Interface representing readable config settings.
    */
-  interface ConfigSettingsRead {
+  export interface ConfigSettingsRead {
     lastFetchTime: number;
     isDeveloperModeEnabled: boolean;
     lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
@@ -72,7 +72,7 @@ export namespace Config {
   /**
    * An Interface representing a Config Defaults object.
    */
-  interface ConfigDefaults {
+  export interface ConfigDefaults {
     [key: string]: number | string | boolean;
   }
 
