@@ -34,6 +34,7 @@
     "sinon": "^6.2.0"
   },
   "devDependencies": {
+    "a2a": "^0.2.0",
     "@react-native-firebase/private-tests-helpers": "^0.0.8",
     "babel-plugin-istanbul": "^5.1.1",
     "nyc": "^13.1.0",

@@ -21,6 +21,9 @@ PODS:
   - Firebase/Performance (5.17.0):
     - Firebase/Core
     - FirebasePerformance (= 2.2.3)
+  - Firebase/RemoteConfig (5.17.0):
+    - Firebase/Core
+    - FirebaseRemoteConfig (= 3.1.0)
   - FirebaseABTesting (2.0.0):
     - FirebaseCore (~> 5.0)
     - Protobuf (~> 3.5)
@@ -170,6 +173,11 @@ PODS:
     - Firebase/Auth (~> 5.17.0)
     - Firebase/Core (~> 5.17.0)
     - React
+  - RNFBConfig (6.0.0-alpha.5):
+    - Firebase/Core (~> 5.17.0)
+    - Firebase/RemoteConfig (~> 5.17.0)
+    - React
+    - RNFBApp
   - RNFBCrashlytics (6.0.0-alpha.5):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
@@ -218,6 +226,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
+  - "RNFBConfig (from `../node_modules/@react-native-firebase/config/ios`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
   - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
@@ -266,6 +275,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/analytics/ios"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app/ios"
+  RNFBConfig:
+    :path: "../node_modules/@react-native-firebase/config/ios"
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBFiam:
@@ -312,6 +323,7 @@ SPEC CHECKSUMS:
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   RNFBAnalytics: 61b9d722deb136454425850860df910250a1874d
   RNFBApp: ea2649b5993bec4ef4ff5ed4cb29454328e78b74
+  RNFBConfig: 7804a2113cb720f6819c3b289a1bee8342b82aad
   RNFBCrashlytics: b7ec197ade3caaa6060525b506fd2ff65b529a4c
   RNFBFiam: 7ea892c593296cfb74bced95d96717c991233c69
   RNFBFirestore: 5cc04b0781abd2a0c339738dcc56fc76a5930ac0

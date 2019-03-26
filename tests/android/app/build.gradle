@@ -74,6 +74,12 @@ android {
       matchingFallbacks = ['debug']
     }
   }
+
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+
   // applicationVariants are e.g. debug, release
   applicationVariants.all { variant ->
     variant.outputs.each { output ->
@@ -109,7 +115,7 @@ dependencies {
    * ---------------------------- */
 
   firebasePackages.each { firebasePackage ->
-    implementation project(path: ":@react-native-firebase/${firebasePackage}")
+    implementation project(path: ":@react-native-firebase_${firebasePackage}")
   }
 
   /* ------------------------

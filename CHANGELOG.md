@@ -158,6 +158,20 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `firebase.perf.Trace.removeMetric(metricName: string)`
 - [NEW] Added support for `firebase.perf.Trace.getMetrics(): { [key: string]: number }`
 
+
+## Remote Config (config)
+
+ - [NEW] Added a new `fetchAndActivate` method - this fetches the config and activate it without the need to call `activateFetch()` separately
+ - [NEW] Added a new `getConfigSettings` method - this provides the following properties; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
+ - [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
+ - [NEW] Added a new `getValuesByKeysPrefix` method - this will retrieve all values where the key matches the prefix provided, this saves having to call `getKeysByPrefix` and then `getValues` separately
+ - [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
+ - [BREAKING] `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android)
+   - We're writing up a guide for this on the new documentation website, showing how to use the plist/xml defaults files on each platform
+ - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
+ - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
+
+
 ## Messaging
 
 - [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
