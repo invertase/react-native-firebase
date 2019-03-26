@@ -18,6 +18,7 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | [In-app Messaging](/packages/fiam)       |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)        |        [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)        |
 | [Instance ID](/packages/iid)             |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)         |         [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)         |
 | [Performance Monitoring](/packages/perf) |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)        |        [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)        |
+| [Remote Config](/packages/config)        |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)      |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
 | [Utils](/packages/utils)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)       |       [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)       |
 
 > If a module you use is not yet listed above please refrain from using v6 for now - attempting to use v6 alongside v5 can cause issues with dependencies.
@@ -158,19 +159,17 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `firebase.perf.Trace.removeMetric(metricName: string)`
 - [NEW] Added support for `firebase.perf.Trace.getMetrics(): { [key: string]: number }`
 
-
 ## Remote Config (config)
 
- - [NEW] Added a new `fetchAndActivate` method - this fetches the config and activate it without the need to call `activateFetch()` separately
- - [NEW] Added a new `getConfigSettings` method - this provides the following properties; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
- - [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
- - [NEW] Added a new `getValuesByKeysPrefix` method - this will retrieve all values where the key matches the prefix provided, this saves having to call `getKeysByPrefix` and then `getValues` separately
- - [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
- - [BREAKING] `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android)
-   - We're writing up a guide for this on the new documentation website, showing how to use the plist/xml defaults files on each platform
- - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
- - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
-
+- [NEW] Added a new `fetchAndActivate` method - this fetches the config and activate it without the need to call `activateFetch()` separately
+- [NEW] Added a new `getConfigSettings` method - this provides the following properties; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
+- [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
+- [NEW] Added a new `getValuesByKeysPrefix` method - this will retrieve all values where the key matches the prefix provided, this saves having to call `getKeysByPrefix` and then `getValues` separately
+- [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
+- [BREAKING] `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android)
+  - We're writing up a guide for this on the new documentation website, showing how to use the plist/xml defaults files on each platform
+- [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
+- [BREAKING] `setDefaults` now returns a Promise that resolves when completed
 
 ## Messaging
 
