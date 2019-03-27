@@ -20,9 +20,11 @@
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
-Invites description.
+> **Firebase Invites is deprecated**. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
 
-[> Learn More](https://firebase.google.com/products/invites/)
+Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS. To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
+
+[> Learn More](https://firebase.google.com/docs/invites/)
 
 ## Installation
 
