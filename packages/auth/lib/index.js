@@ -29,9 +29,7 @@ const namespace = 'auth';
 
 const nativeModuleName = 'RNFBAuthModule';
 
-class FirebaseAuthModule extends FirebaseModule {
-
-}
+class FirebaseAuthModule extends FirebaseModule {}
 
 // import { SDK_VERSION } from '@react-native-firebase/auth';
 export const SDK_VERSION = version;

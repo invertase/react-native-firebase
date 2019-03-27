@@ -60,9 +60,7 @@ describe('jet', () => {
     should(jet.root.state).be.a.Object();
 
     // test setting state
-    await new Promise(resolve =>
-      jet.root.setState({ message: 'hello world' }, resolve)
-    );
+    await new Promise(resolve => jet.root.setState({ message: 'hello world' }, resolve));
     should(jet.root.state.message).equal('hello world');
     return Promise.resolve();
   });
@@ -109,10 +107,9 @@ describe('jet', () => {
 
   it('timing.setInterval', cb => {
     let times = 0;
-    let interval;
     const start = Date.now();
 
-    interval = jet.context.setInterval(() => {
+    const interval = jet.context.setInterval(() => {
       const timeTaken = Date.now() - start;
 
       times++;
