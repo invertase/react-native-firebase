@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -19,9 +20,10 @@
 require('@react-native-firebase/private-tests-helpers');
 
 const detox = require('detox');
+const jet = require('jet/platform/node');
+
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
-const jet = require('jet/platform/node');
 
 const PACKAGES = [
   'app',

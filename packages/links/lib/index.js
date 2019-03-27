@@ -21,16 +21,41 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import DynamicLink from './DynamicLink';
+
 import version from './version';
 
-const statics = {};
+const statics = {
+  DynamicLink,
+};
 
 const namespace = 'links';
 
 const nativeModuleName = 'RNFBLinksModule';
 
-class FirebaseLinksModule extends FirebaseModule {
+const nativeEvents = ['links_link_received'];
 
+class FirebaseLinksModule extends FirebaseModule {
+  createDynamicLink(link) {
+    // TODO(salakar) instance of link validate
+    return this.native.createDynamicLink(link.build());
+  }
+
+  createShortDynamicLink(link, type) {
+    // TODO(salakar) instance of link validate
+    return this.native.createShortDynamicLink(link.build(), type);
+  }
+
+  getInitialLink() {
+    return this.native.getInitialLink();
+  }
+
+  onLink(listener) {
+    const subscription = this.emitter.addListener('links_link_received', listener);
+    return () => {
+      subscription.remove();
+    };
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/links';
@@ -42,8 +67,8 @@ export default createModuleNamespace({
   statics,
   version,
   namespace,
+  nativeEvents,
   nativeModuleName,
-  nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseLinksModule,

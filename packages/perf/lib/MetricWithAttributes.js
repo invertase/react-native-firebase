@@ -40,11 +40,15 @@ export default class MetricWithAttributes {
   putAttribute(attribute, value) {
     // TODO(VALIDATION): attribute: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(attribute) || attribute.length > 40) {
-      throw new Error(`firebase.perf.*.putAttribute(*, _) 'attribute' must be a string with a maximum length of 40 characters.`);
+      throw new Error(
+        `firebase.perf.*.putAttribute(*, _) 'attribute' must be a string with a maximum length of 40 characters.`,
+      );
     }
 
     if (!isString(value) || value.length > 100) {
-      throw new Error(`firebase.perf.*.putAttribute(_, *) 'value' must be a string with a maximum length of 100 characters.`);
+      throw new Error(
+        `firebase.perf.*.putAttribute(_, *) 'value' must be a string with a maximum length of 100 characters.`,
+      );
     }
 
     if (!hasOwnProperty(this._attributes, attribute) && Object.keys(this._attributes).length > 4) {

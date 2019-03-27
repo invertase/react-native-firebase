@@ -10,10 +10,10 @@
   "printWidth": 100,
   "overrides": [{
     "files": [
-      "**/packages/library/**/*.js"
+      "**/packages/**/*.js"
     ],
-    "parser": "babylon",
     "options": {
+      "parser": "babel",
       "trailingComma": "all"
     }
   }]

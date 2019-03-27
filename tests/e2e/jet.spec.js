@@ -60,9 +60,7 @@ describe('jet', () => {
     should(jet.root.state).be.a.Object();
 
     // test setting state
-    await new Promise(resolve =>
-      jet.root.setState({ message: 'hello world' }, resolve)
-    );
+    await new Promise(resolve => jet.root.setState({ message: 'hello world' }, resolve));
     should(jet.root.state.message).equal('hello world');
     return Promise.resolve();
   });

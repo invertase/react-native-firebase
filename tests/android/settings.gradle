@@ -10,6 +10,7 @@ def firebasePackages = [
   'iid',
   'mlkit',
   'perf',
+  'links',
   'utils'
 ]
 

@@ -17,9 +17,9 @@
 
 import {
   ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
   ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+  ReactNativeFirebaseNamespace
+} from "@react-native-firebase/app-types";
 
 /**
  * Analytics integrates across Firebase features and provides
@@ -45,8 +45,8 @@ export namespace Analytics {
     logEvent(name: string, params: { [key: string]: string }): Promise<void>;
 
     /**
-     * If true, allows the device to collect analytical data and send it to Firebase.
-     * Useful for GDPR.
+     * If true, allows the device to collect analytical data and send it to
+     * Firebase. Useful for GDPR.
      *
      * @param enabled
      */
@@ -56,13 +56,16 @@ export namespace Analytics {
      * Sets the current screen name.
      *
      * @note Whilst screenClassOverride is optional, it is recommended it is
-     * always sent as your current class name. For example on Android it will always
-     * show as 'MainActivity' if you do not specify it.
+     * always sent as your current class name. For example on Android it will
+     * always show as 'MainActivity' if you do not specify it.
      *
      * @param screenName
      * @param screenClassOverride
      */
-    setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
+    setCurrentScreen(
+      screenName: string,
+      screenClassOverride?: string
+    ): Promise<void>;
 
     /**
      * Sets the minimum engagement time required before starting a session.
@@ -82,7 +85,8 @@ export namespace Analytics {
      * Gives a user a unique identification.
      *
      *
-     * @param id Set to null to remove a previously assigned id from analytics events
+     * @param id Set to null to remove a previously assigned id from analytics
+     * events
      */
     setUserId(id: string | null): Promise<void>;
 
@@ -90,7 +94,8 @@ export namespace Analytics {
      * Sets a key/value pair of data on the current user.
      *
      * @param name
-     * @param value Set to null to remove a previously assigned id from analytics events.
+     * @param value Set to null to remove a previously assigned id from
+     * analytics events.
      */
     setUserProperty(name: string, value: string | null): Promise<void>;
 
@@ -99,17 +104,20 @@ export namespace Analytics {
      *
      * @param properties Set a property value to null to remove it.
      */
-    setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
+    setUserProperties(properties: {
+      [key: string]: string | null;
+    }): Promise<void>;
 
     /**
-     * Clears all analytics data for this instance from the device and resets the app instance ID.
+     * Clears all analytics data for this instance from the device and resets
+     * the app instance ID.
      */
     resetAnalyticsData(): Promise<void>;
   }
 }
 
-declare module '@react-native-firebase/analytics' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+declare module "@react-native-firebase/analytics" {
+  import { ReactNativeFirebaseNamespace } from "@react-native-firebase/app-types";
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
@@ -139,7 +147,7 @@ declare module '@react-native-firebase/analytics' {
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
+declare module "@react-native-firebase/app-types" {
   interface ReactNativeFirebaseNamespace {
     /**
      * Analytics integrates across Firebase features and provides
