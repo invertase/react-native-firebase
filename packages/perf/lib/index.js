@@ -69,7 +69,9 @@ class FirebasePerfModule extends FirebaseModule {
   newTrace(identifier) {
     // TODO(VALIDATION): identifier: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(identifier) || identifier.length > 100) {
-      throw new Error(`firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.`);
+      throw new Error(
+        `firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.`,
+      );
     }
 
     return new Trace(this.native, identifier);

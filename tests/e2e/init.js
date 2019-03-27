@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,13 +16,14 @@
  *
  */
 
-// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE BEEN WARNED 🙃
+// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE
+// BEEN WARNED 🙃
 require('@react-native-firebase/private-tests-helpers');
 
 const detox = require('detox');
+const jet = require('jet/platform/node');
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
-const jet = require('jet/platform/node');
 
 const PACKAGES = [
   'app',

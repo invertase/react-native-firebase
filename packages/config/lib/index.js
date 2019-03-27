@@ -22,13 +22,14 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import {
   hasOwnProperty,
-  isNumber,
-  isString,
-  isBoolean,
   isArray,
-  isUndefined,
+  isBoolean,
+  isNumber,
   isObject,
+  isString,
+  isUndefined,
 } from '@react-native-firebase/common';
+
 import version from './version';
 
 const statics = {};
@@ -65,7 +66,10 @@ function nativeValueToJS(nativeValue) {
       if (
         numberValue !== null &&
         numberValue !== undefined &&
-        (stringValue == null || stringValue === '' || numberValue.toString() === stringValue || parseInt(stringValue, 10) === numberValue)
+        (stringValue == null ||
+          stringValue === '' ||
+          numberValue.toString() === stringValue ||
+          parseInt(stringValue, 10) === numberValue)
       ) {
         return numberValue;
       }
@@ -98,7 +102,10 @@ class FirebaseConfigModule extends FirebaseModule {
       );
     }
 
-    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1, false);
+    return this.native.fetch(
+      cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1,
+      false,
+    );
   }
 
   /**
@@ -113,7 +120,10 @@ class FirebaseConfigModule extends FirebaseModule {
       );
     }
 
-    return this.native.fetch(cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1, true);
+    return this.native.fetch(
+      cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1,
+      true,
+    );
   }
 
   /**
@@ -178,7 +188,8 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
-   * Gets the FirebaseRemoteConfigValue array corresponding to the specified keys.
+   * Gets the FirebaseRemoteConfigValue array corresponding to the specified
+   * keys.
    *
    * @param keys
    */
@@ -231,9 +242,7 @@ class FirebaseConfigModule extends FirebaseModule {
    */
   setDefaults(defaults) {
     if (!isObject(defaults)) {
-      throw new Error(
-        `firebase.config().setDefaults(): 'defaults' must be an object.`,
-      );
+      throw new Error(`firebase.config().setDefaults(): 'defaults' must be an object.`);
     }
 
     return this.native.setDefaults(defaults);
