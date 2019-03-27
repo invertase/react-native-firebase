@@ -17,6 +17,7 @@
     "@react-native-firebase/firestore": "6.0.0-alpha.6",
     "@react-native-firebase/functions": "6.0.0-alpha.6",
     "@react-native-firebase/iid": "6.0.0-alpha.6",
+    "@react-native-firebase/invites": "^6.0.0-alpha.6",
     "@react-native-firebase/mlkit": "6.0.0-alpha.6",
     "@react-native-firebase/perf": "6.0.0-alpha.6",
     "@react-native-firebase/utils": "6.0.0-alpha.6",
