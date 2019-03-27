@@ -29,8 +29,24 @@ const namespace = 'invites';
 
 const nativeModuleName = 'RNFBInvitesModule';
 
-class FirebaseInvitesModule extends FirebaseModule {
+const nativeEvents = ['invites_invitation_received'];
 
+class FirebaseInvitesModule extends FirebaseModule {
+  getInitialInvitation() {
+    return this.native.getInitialInvitation();
+  }
+
+  onInvitation(listener) {
+    const subscription = this.emitter.addListener('invites_invitation_received', listener);
+    return () => {
+      subscription.remove();
+    };
+  }
+
+  sendInvitation(invite) {
+    // TODO(salakar) validate invite
+    return this.native.sendInvitation(invite);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/invites';
@@ -42,8 +58,8 @@ export default createModuleNamespace({
   statics,
   version,
   namespace,
+  nativeEvents,
   nativeModuleName,
-  nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseInvitesModule,

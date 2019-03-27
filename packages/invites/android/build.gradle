@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        invites: "16.0.6"
+        invites: "16.1.1"
       ],
     ],
   ])

@@ -25,6 +25,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.WritableMap;
+import com.sun.org.apache.xpath.internal.Arg;
 
 import javax.annotation.Nullable;
 
@@ -37,4 +39,13 @@ public class ReactNativeFirebaseInvitesModule extends ReactNativeFirebaseModule 
     super(reactContext, TAG);
   }
 
+  @ReactMethod
+  public void getInitialInvitation(Promise promise) {
+    // TODO(salakar) implement
+    promise.resolve(null);
+  }
+  @ReactMethod
+  public void sendInvitation(ReadableMap invite, Promise promise) {
+    promise.resolve(null);
+  }
 }
