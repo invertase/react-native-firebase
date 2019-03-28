@@ -106,6 +106,10 @@ await analytics().setUserId('12345678');
 - [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
 - [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
 
+## App Invites
+
+- [NEW] Added `createInvitation(title: string, message: string)` method to replace construction an Invite from `new firebase.invites.Invitation` (this is still supported for now)
+
 ## Analytics
 
 - [NEW] Added support for `resetAnalyticsData()`
