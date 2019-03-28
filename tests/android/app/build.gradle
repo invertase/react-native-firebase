@@ -26,6 +26,7 @@ def firebasePackages = [
   'iid',
   'invites',
   'mlkit',
+  'storage',
   'perf',
   'utils'
 ]

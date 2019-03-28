@@ -36,6 +36,7 @@ const PACKAGES = [
   'crashlytics',
   'utils',
   'mlkit',
+  'storage',
   'invites',
   'fiam',
   // 'auth',

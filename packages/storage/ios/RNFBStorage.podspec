@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.source_files        = 'RNFBStorage/**/*.{h,m}'
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 5.19.0'
+  s.dependency          'Firebase/Storage', '~> 5.19.0'
   s.dependency          'RNFBApp'
   s.static_framework    = true
 end
