@@ -63,4 +63,6 @@ Object.defineProperty(global, 'NativeEventEmitter', {
   },
 });
 
+global.isCI = !!process.env.CI;
+
 module.exports.requirePackageTests = requirePackageTests;
