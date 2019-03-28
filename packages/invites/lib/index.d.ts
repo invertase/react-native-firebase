@@ -22,15 +22,177 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Invites
+ * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
+ * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
+ * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
  *
  * @firebase invites
  */
 export namespace Invites {
-  export interface Statics {}
+  export interface Statics {
+    Invitation: InviteBuilder;
+  }
+
+  /**
+   * Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameters
+   * TODO(ehesp) allow linking to named type above somehow?
+   *
+   */
+  export interface AdditionalReferralParameters {
+    [key: string]: string;
+  }
+
+  /**
+   * Android Invite representation
+   */
+  export interface AndroidInviteBuilder {
+    /**
+     * Adds query parameters to the play store referral URL when the app needs additional referral parameters for other
+     * application component referrals. These parameters are added to the referral URL sent from the play store and are
+     * available to be processed by other application components, for example Google Analytics. The parameters are set
+     * as name, value pairs that will be set as query parameter name and value on the referral URL.
+     *
+     * @param additionalReferralParameters Referral parameters defined as string name value pairs.
+     */
+    setAdditionalReferralParameters(
+      additionalReferralParameters: AdditionalReferralParameters,
+    ): InviteBuilder;
+
+    /**
+     * Sets the HTML-formatted (UTF-8 encoded, no JavaScript) content for invites sent through email. If set, this will
+     * be sent instead of the default email.
+     * emailHtmlContent must be valid HTML for standard email processing. The pattern %%APPINVITE_LINK_PLACEHOLDER%%
+     * should be embedded in your htmlContent and will be replaced with the invitation URL.
+     * This url is a link that will launch the app if already installed or take the user to the appropriate app store
+     * if not. In both cases the deep link will be available if provided using setDeepLink(Uri).
+     *
+     * @warning Cannot be used with InviteBuilder.setCallToActionText
+     *
+     * @param emailHtmlContent The html-formatted content for the email.
+     */
+    setEmailHtmlContent(emailHtmlContent: string): InviteBuilder;
+
+    /**
+     * Sets the subject for invites sent by email.
+     *
+     * @param emailSubject The subject for the email.
+     */
+    setEmailSubject(emailSubject: string): InviteBuilder;
+
+    /**
+     * Sets the Google Analytics Tracking id. The tracking id should be created for the calling application under
+     * Google Analytics. See more about how to get a tracking id . The tracking id is recommended so that invitations
+     * sent from the calling application are available in Google Analytics.
+     *
+     * @param gaTrackingId String of the form UA-xxxx-y
+     */
+    setGoogleAnalyticsTrackingId(gaTrackingId: string): InviteBuilder;
+  }
+
+  /**
+   * Invite builder representation returned from `firebase.invite().createInvitation();`
+   */
+  export interface InviteBuilder {
+    /**
+     * Set Android specific Invite properties
+     */
+    android: AndroidInviteBuilder;
+
+    /**
+     * Set the Android target client ID for the invitation.
+     *
+     * @param androidClientId The android client ID.
+     */
+    setAndroidClientId(androidClientId: string): InviteBuilder;
+
+    /**
+     * Sets the minimum version of the android app installed on the receiving device. If this minimum version is not installed then the install flow will be triggered.
+     *
+     * @param androidMinimumVersionCode Minimum version of the android app.
+     */
+    setAndroidMinimumVersionCode(androidMinimumVersionCode: number): InviteBuilder;
+
+    /**
+     * Text shown on the email invitation for the user to accept the invitation. Default install text used if not set.
+     *
+     * @warning Cannot be used with AndroidInviteBuilder.setEmailHtmlContent.
+     *
+     * @param callToActionText Text to use on the invitation button.
+     */
+    setCallToActionText(callToActionText: string): InviteBuilder;
+
+    /**
+     * Sets an image for invitations.
+     *
+     * @param customImage The image Uri. The Uri is required to be in absolute format. The supported image formats are "jpg", "jpeg" and "png".
+     */
+    setCustomImage(customImage: string): InviteBuilder;
+
+    /**
+     * Sets the deep link that is made available to the app when opened from the invitation. This deep link is made
+     * available both to a newly installed application and an already installed application. The deep link can be sent
+     * to Android and other platforms so should be formatted to support deep links across platforms.
+     *
+     * @param deepLink The app deep link.
+     */
+    setDeepLink(deepLink: string): InviteBuilder;
+
+    /**
+     * Set the iOS target client ID for the invitation.
+     *
+     * @param iOSClientId The iOS client ID.
+     */
+    setIOSClientId(iOSClientId: string): InviteBuilder;
+  }
+
+  /**
+   * A native invite representation returned from getInitialInvite and onInvite.
+   */
+  export interface NativeInvite {
+    /**
+     * The deepLink that should be opened within the application.
+     */
+    deepLink: string;
+
+    /**
+     * The ID of the invitation that was opened.
+     */
+    invitationId: string;
+  }
+
+  export type InviteListener = (nativeInvite: NativeInvite) => void;
 
   export interface Module extends ReactNativeFirebaseModule {
+    /**
+     * Create an invitation via an InvitationBuilder instance.
+     *
+     * @param title
+     * @param message
+     */
+    createInvitation(title: string, message: string): InviteBuilder;
 
+    /**
+     * When an invitation is opened whilst the app is open, the listener is invoked with the invitation.
+     * Returns a function that when called unsubscribes the listener from further events.
+     *
+     * @param listener
+     */
+    onInvitation(listener: InviteListener): Function;
+
+    /**
+     * Returns the Invitation that the app has been launched from. If the app was not launched from an Invitation the
+     * return value will be null.
+     */
+    getInitialInvitation(): Promise<NativeInvite>;
+
+    /**
+     * Displays the invitation dialog which allows the user to select who received the invitation.
+     * Returns a promise that resolves with the created invitation IDs if the invitation is sent, otherwise it is
+     * rejected with an error.
+     *
+     * @param invite The invitation to send. Must be an instance of InviteBuilder
+     */
+    sendInvitation(invite: InviteBuilder): Promise<string[]>;
   }
 }
 
@@ -48,10 +210,7 @@ declare module '@react-native-firebase/invites' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const InvitesDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Invites.Module,
-    Invites.Statics
-  >;
+  const InvitesDefaultExport: ReactNativeFirebaseModuleAndStatics<Invites.Module, Invites.Statics>;
   /**
    * @example
    * ```js
@@ -68,17 +227,19 @@ declare module '@react-native-firebase/invites' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Invites
+     * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
+     * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
+     * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
      */
-    invites: ReactNativeFirebaseModuleAndStatics<
-      Invites.Module,
-      Invites.Statics
-    >;
+    invites: ReactNativeFirebaseModuleAndStatics<Invites.Module, Invites.Statics>;
   }
 
   interface FirebaseApp {
     /**
-     * Invites
+     * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
+     * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
+     * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
+     *
      */
     invites(): Invites.Module;
   }

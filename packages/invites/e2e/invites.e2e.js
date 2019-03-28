@@ -106,7 +106,7 @@ describe('invites()', () => {
       const sendInvitation = firebase.invites().sendInvitation(invite);
 
       if (device.getPlatform() === 'android') {
-        await Utils.sleep(1000);
+        await Utils.sleep(isCI ? 6000 : 1000);
         await device.pressBack();
       }
 
