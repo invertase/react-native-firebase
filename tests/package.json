@@ -20,6 +20,7 @@
     "@react-native-firebase/invites": "6.0.0-alpha.7",
     "@react-native-firebase/mlkit": "6.0.0-alpha.7",
     "@react-native-firebase/perf": "6.0.0-alpha.7",
+    "@react-native-firebase/storage": "^6.0.0-alpha.7",
     "@react-native-firebase/utils": "6.0.0-alpha.7",
     "detox": "10.0.13",
     "jet": "^0.3.0",
