@@ -8,6 +8,7 @@ def firebasePackages = [
   'functions',
   'fiam',
   'iid',
+  'invites',
   'mlkit',
   'perf',
   'utils'

@@ -56,7 +56,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.11.1",
-    "flow-bin": "^0.89.0",
+    "flow-bin": "^0.93.0",
     "genversion": "^2.1.1",
     "husky": "^1.2.1",
     "lerna": "^3.6.0",

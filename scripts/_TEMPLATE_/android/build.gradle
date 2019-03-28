@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.0'
+    classpath 'com.android.tools.build:gradle:3.3.2'
   }
 }
 
@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        _template_: "16.0.6"
+        _template_: "16.0.8"
       ],
     ],
   ])

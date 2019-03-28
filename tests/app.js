@@ -30,6 +30,7 @@ import '@react-native-firebase/fiam';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/mlkit';
 import '@react-native-firebase/iid';
+import '@react-native-firebase/invites';
 import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 

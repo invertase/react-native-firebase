@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.1'
+    classpath 'com.android.tools.build:gradle:3.3.2'
   }
 }
 
@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        iid: "17.0.4"
+        iid: "17.1.1"
       ],
     ],
   ])
