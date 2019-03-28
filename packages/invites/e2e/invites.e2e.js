@@ -15,7 +15,7 @@
  *
  */
 
-android.describe('invites()', () => {
+describe('invites()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -104,13 +104,21 @@ android.describe('invites()', () => {
       androidInvite.setGoogleAnalyticsTrackingId(androidInviteParams.googleAnalyticsTrackingId);
 
       const sendInvitation = firebase.invites().sendInvitation(invite);
-      await Utils.sleep(1000);
-      await device.pressBack();
+
+      if (device.getPlatform() === 'android') {
+        await Utils.sleep(1000);
+        await device.pressBack();
+      }
 
       try {
         await sendInvitation;
-      } catch (cancelledError) {
-        cancelledError.code.should.equal('invites/invitation-cancelled');
+      } catch (error) {
+        if (device.getPlatform() === 'android') {
+          error.code.should.equal('invites/invitation-cancelled');
+        } else {
+          error.code.should.equal('invites/invitation-error');
+          error.message.should.containEql('User must be signed in with GoogleSignIn');
+        }
       }
     });
 

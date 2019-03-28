@@ -15,7 +15,7 @@
  *
  */
 
-android.describe('firebase.invites.Invite', () => {
+describe('firebase.invites.Invite', () => {
   describe('setAndroidClientId', () => {
     it('sets the client id', () => {
       const invite = firebase.invites().createInvitation('foo', 'bar');

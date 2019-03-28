@@ -18,7 +18,21 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RNFBInvitesModule : NSObject <RCTBridgeModule>
+#import <FirebaseInvites/FirebaseInvites.h>
+
+@interface RNFBInvitesModule : RCTEventEmitter <RCTBridgeModule, FIRInviteDelegate>
+@property _Nullable RCTPromiseRejectBlock invitationsRejecter;
+@property _Nullable RCTPromiseResolveBlock invitationsResolver;
+
++ (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+
++ (BOOL)application:(nonnull UIApplication *)application continueUserActivity :(nonnull NSUserActivity *)userActivity restorationHandler:
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+  (nonnull void (^)(NSArray<id <UIUserActivityRestoring>> *_Nullable))restorationHandler;
+#else
+  (nonnull void (^)(NSArray *_Nullable))restorationHandler;
+#endif
 
 @end

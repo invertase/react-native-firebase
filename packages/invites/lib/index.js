@@ -51,15 +51,15 @@ class FirebaseInvitesModule extends FirebaseModule {
     return new Invite(title, message);
   }
 
-  getInitialInvitation() {
-    return this.native.getInitialInvitation();
-  }
-
   onInvitation(listener) {
     const subscription = this.emitter.addListener(EVENT_INVITE_RECEIVED, listener);
     return () => {
       subscription.remove();
     };
+  }
+
+  getInitialInvitation() {
+    return this.native.getInitialInvitation();
   }
 
   sendInvitation(invite) {
