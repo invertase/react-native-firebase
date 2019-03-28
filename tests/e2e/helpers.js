@@ -63,5 +63,4 @@ Object.defineProperty(global, 'NativeEventEmitter', {
   },
 });
 
-
 module.exports.requirePackageTests = requirePackageTests;
