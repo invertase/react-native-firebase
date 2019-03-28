@@ -41,7 +41,7 @@
       "packageInstance": "new ReactNativeFirebaseMlkitPackage()"
     }
   },
-  "gitHead": "b3e3f0742d368ea1dd4af0dd4a7f4b8d88ae4086",
+  "gitHead": "1e1927c068973f1b5d1be2695093aa603716b2da",
   "publishConfig": {
     "access": "public"
   }
