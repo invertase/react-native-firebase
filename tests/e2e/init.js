@@ -36,9 +36,10 @@ const PACKAGES = [
   'crashlytics',
   'utils',
   'mlkit',
+  'invites',
+  'fiam',
   // 'auth',
   // 'firestore',
-  // 'fiam',
   // 'links',
   // 'messaging',
   // 'storage',
@@ -65,7 +66,7 @@ beforeEach(async function beforeEach() {
   if (retry > 0) {
     if (retry === 1) {
       console.log('');
-      console.warn(`⚠️ A test failed:`);
+      console.warn('⚠️ A test failed:');
       console.warn(`️   ->  ${this.currentTest.title}`);
     }
 

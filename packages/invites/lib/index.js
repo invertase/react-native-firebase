@@ -21,31 +21,53 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
+import { isString } from '@react-native-firebase/common';
+
+import Invite from './Invite';
 import version from './version';
 
-const statics = {};
+const statics = {
+  Invite,
+};
 
 const namespace = 'invites';
 
 const nativeModuleName = 'RNFBInvitesModule';
 
-const nativeEvents = ['invites_invitation_received'];
+const EVENT_INVITE_RECEIVED = 'invites_invitation_received';
+
+const nativeEvents = [EVENT_INVITE_RECEIVED];
 
 class FirebaseInvitesModule extends FirebaseModule {
+  createInvitation(title, message) {
+    if (!isString(title)) {
+      throw new Error(`firebase.invites().createInvite(*, _) 'title' must be a string value.`);
+    }
+
+    if (!isString(message)) {
+      throw new Error(`firebase.invites().createInvite(_, *) 'message' must be a string value.`);
+    }
+
+    return new Invite(title, message);
+  }
+
   getInitialInvitation() {
     return this.native.getInitialInvitation();
   }
 
   onInvitation(listener) {
-    const subscription = this.emitter.addListener('invites_invitation_received', listener);
+    const subscription = this.emitter.addListener(EVENT_INVITE_RECEIVED, listener);
     return () => {
       subscription.remove();
     };
   }
 
   sendInvitation(invite) {
-    // TODO(salakar) validate invite
-    return this.native.sendInvitation(invite);
+    if (invite instanceof Invite) {
+      return this.native.sendInvitation(invite.build());
+    }
+
+    throw new Error(`firebase.invites().sendInvitation(*) expects and instance of Invite.`);
   }
 }
 

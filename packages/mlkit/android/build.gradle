@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.1'
+    classpath 'com.android.tools.build:gradle:3.3.2'
   }
 }
 
@@ -29,9 +29,9 @@ project.ext {
       ],
 
       firebase          : [
-        mlkitVision: "19.0.2",
-        mlkitCommon: "16.2.1",
-        mlkitNaturalLanguage: "18.1.1",
+        mlkitVision: "19.0.3",
+        mlkitCommon: "17.0.0",
+        mlkitNaturalLanguage: "18.2.0",
       ],
     ],
   ])

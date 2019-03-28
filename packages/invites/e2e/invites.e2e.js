@@ -15,30 +15,113 @@
  *
  */
 
-describe('invites()', () => {
+android.describe('invites()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.invites);
       app.invites().app.should.equal(app);
     });
+  });
 
-    // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
-      firebase.invites().app.name.should.equal('[DEFAULT]');
-
-      firebase
-        .invites(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
-
-      firebase
-        .app('secondaryFromNative')
-        .invites()
-        .app.name.should.equal('secondaryFromNative');
+  ios.describe('getInitialInvitation()', () => {
+    it('should return initial invitation', () => {
+      // TODO(salakar) mock url open with detox -- ios
     });
   });
 
-  describe('aMethod()', () => {
-    // TODO
+  describe('createInvitation()', () => {
+    it('returns a new instance of Invite', () => {
+      const invite = firebase.invites().createInvitation('foo', 'bar');
+      const { Invite } = firebase.invites;
+      invite.should.be.instanceOf(Invite);
+    });
+
+    it('throw when title is not a string', () => {
+      try {
+        firebase.invites().createInvitation(1234, 'bar');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`'title' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throw when message is not a string', () => {
+      try {
+        firebase.invites().createInvitation('foo', 1234);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`'message' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('getInitialInvitation()', () => {
+    it('returns null when no invite', async () => {
+      const invite = await firebase.invites().getInitialInvitation();
+      should.equal(invite, null);
+    });
+  });
+
+  describe('sendInvitation()', () => {
+    // sending can only be manually tested as this starts an intent on Android
+    // we test cancellation as we can call detox's pressBack api to cancel
+    it('should cancel sending and reject with cancelled error code', async () => {
+      const invite = firebase.invites().createInvitation('foo', 'bar');
+      const androidInvite = invite.android;
+      const inviteParams = {
+        android: undefined,
+        androidClientId: 'androidClientId',
+        androidMinimumVersionCode: 1337,
+        callToActionText: 'callToActionText',
+        iosClientId: 'iosClientId',
+      };
+      const androidInviteParams = {
+        additionalReferralParameters: {
+          a: 'b',
+          c: 'd',
+        },
+        emailHtmlContent: 'emailHtmlContent',
+        emailSubject: 'emailSubject',
+        googleAnalyticsTrackingId: 'googleAnalyticsTrackingId',
+      };
+
+      invite.setAndroidClientId(inviteParams.androidClientId);
+      invite.setAndroidMinimumVersionCode(inviteParams.androidMinimumVersionCode);
+
+      // invite.setCustomImage(inviteParams.customImage);
+      // invite.setDeepLink(inviteParams.deepLink);
+      invite.setIOSClientId(inviteParams.iosClientId);
+
+      androidInvite.setAdditionalReferralParameters(
+        androidInviteParams.additionalReferralParameters,
+      );
+
+      androidInvite.setEmailHtmlContent(androidInviteParams.emailHtmlContent);
+      androidInvite.setEmailSubject(androidInviteParams.emailSubject);
+      androidInvite.setGoogleAnalyticsTrackingId(androidInviteParams.googleAnalyticsTrackingId);
+
+      const sendInvitation = firebase.invites().sendInvitation(invite);
+      await Utils.sleep(1000);
+      await device.pressBack();
+
+      try {
+        await sendInvitation;
+      } catch (cancelledError) {
+        cancelledError.code.should.equal('invites/invitation-cancelled');
+      }
+    });
+
+    it('throw when not an invite', () => {
+      try {
+        firebase.invites().sendInvitation('foo');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`expects and instance of Invite.`);
+        return Promise.resolve();
+      }
+    });
   });
 });
