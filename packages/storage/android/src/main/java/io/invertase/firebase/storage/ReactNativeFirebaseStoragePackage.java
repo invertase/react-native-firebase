@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 @SuppressWarnings("unused")
 public class ReactNativeFirebaseStoragePackage implements ReactPackage {
+  @Nonnull
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
@@ -35,6 +38,7 @@ public class ReactNativeFirebaseStoragePackage implements ReactPackage {
     return modules;
   }
 
+  @Nonnull
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Collections.emptyList();

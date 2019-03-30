@@ -15,6 +15,7 @@
  *
  */
 import { Platform } from 'react-native';
+import { isString } from './validate';
 
 export * from './validate';
 
@@ -56,6 +57,17 @@ export function isError(value) {
 
 export function hasOwnProperty(target, property) {
   return Object.hasOwnProperty.call(target, property);
+}
+
+/**
+ * Remove a trailing forward slash from a string if it exists
+ *
+ * @param string
+ * @returns {*}
+ */
+export function stripTrailingSlash(string) {
+  if (!isString(string)) return string;
+  return string.endsWith('/') ? string.slice(0, -1) : string;
 }
 
 export const isIOS = Platform.OS === 'ios';

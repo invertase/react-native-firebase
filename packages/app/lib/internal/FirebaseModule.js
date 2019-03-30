@@ -34,6 +34,10 @@ export default class FirebaseModule {
     return SharedEventEmitter;
   }
 
+  eventNameForApp(eventName) {
+    return `${this.app.name}-${eventName}`;
+  }
+
   get native() {
     if (this._nativeModule) return this._nativeModule;
     this._nativeModule = getNativeModule(this);

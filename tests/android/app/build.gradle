@@ -1,10 +1,10 @@
 apply plugin: "com.android.application"
-apply plugin: "com.google.firebase.firebase-perf"
-apply plugin: 'io.fabric'
+//apply plugin: "com.google.firebase.firebase-perf"
+//apply plugin: 'io.fabric'
 
-crashlytics {
-  enableNdk true
-}
+//crashlytics {
+//  enableNdk true
+//}
 
 import com.android.build.OutputFile
 
@@ -18,16 +18,16 @@ apply from: "../../node_modules/react-native/react.gradle"
 def enableSeparateBuildPerCPUArchitecture = false
 def firebasePackages = [
   'app',
-  'analytics',
-  'config',
-  'crashlytics',
-  'functions',
-  'fiam',
-  'iid',
-  'invites',
-  'mlkit',
+//  'analytics',
+//  'config',
+//  'crashlytics',
+//  'functions',
+//  'fiam',
+//  'iid',
+//  'invites',
+//  'mlkit',
   'storage',
-  'perf',
+//  'perf',
   'utils'
 ]
 

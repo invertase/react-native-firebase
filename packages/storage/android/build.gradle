@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        storage: "16.0.8"
+        storage: "16.1.0"
       ],
     ],
   ])

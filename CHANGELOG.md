@@ -176,6 +176,10 @@ await analytics().setUserId('12345678');
 - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
 - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
 
+## Storage
+
+- [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead.
+
 ## Messaging
 
 - [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
