@@ -18,6 +18,7 @@ import { Platform } from 'react-native';
 import { isString } from './validate';
 
 export * from './validate';
+export ReferenceBase from './ReferenceBase';
 
 export function promiseDefer() {
   const deferred = {

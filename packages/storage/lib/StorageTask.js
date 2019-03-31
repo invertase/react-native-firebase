@@ -17,8 +17,10 @@
 
 // import { statics as StorageStatics } from './';
 import { isFunction } from '@react-native-firebase/common';
+import StorageStatics from './StorageStatics';
 
 export const UPLOAD_TASK = 'upload';
+
 export const DOWNLOAD_TASK = 'download';
 
 export default class StorageTask {
@@ -47,7 +49,6 @@ export default class StorageTask {
     if (!isFunction(f)) return null;
     return error => {
       const _error = new Error(error.message);
-      // $FlowExpectedError
       _error.code = error.code;
       return f && f(_error);
     };
@@ -55,8 +56,13 @@ export default class StorageTask {
 
   _subscribe(nextOrObserver, error, complete) {
     let _error;
+    let _errorSubscription;
+
     let _next;
+    let _nextSubscription;
+
     let _complete;
+    let _completeSubscription;
 
     if (typeof nextOrObserver === 'function') {
       _error = this._interceptErrorEvent(error);
@@ -69,20 +75,29 @@ export default class StorageTask {
     }
 
     if (_next) {
-      this.storage._addListener(this.path, StorageStatics.TaskEvent.STATE_CHANGED, _next);
+      _nextSubscription = this.storage._addListener(
+        this.path,
+        StorageStatics.TaskEvent.STATE_CHANGED,
+        _next,
+      );
     }
+
     if (_error) {
-      this.storage._addListener(this.path, `${this.type}_failure`, _error);
+      _errorSubscription = this.storage._addListener(this.path, `${this.type}_failure`, _error);
     }
+
     if (_complete) {
-      this.storage._addListener(this.path, `${this.type}_success`, _complete);
+      _completeSubscription = this.storage._addListener(
+        this.path,
+        `${this.type}_success`,
+        _complete,
+      );
     }
 
     return () => {
-      if (_next)
-        this.storage._removeListener(this.path, StorageStatics.TaskEvent.STATE_CHANGED, _next);
-      if (_error) this.storage._removeListener(this.path, `${this.type}_failure`, _error);
-      if (_complete) this.storage._removeListener(this.path, `${this.type}_success`, _complete);
+      if (_nextSubscription) _nextSubscription.remove();
+      if (_errorSubscription) _errorSubscription.remove();
+      if (_completeSubscription) _completeSubscription.remove();
     };
   }
 

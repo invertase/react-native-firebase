@@ -22,9 +22,14 @@ const { RNFBAppModule } = NativeModules;
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   constructor() {
     super(RNFBAppModule);
+    this.ready = false;
   }
 
   addListener(eventType, listener, context) {
+    if (!this.ready) {
+      RNFBAppModule.eventsNotifyReady(true);
+      this.ready = true;
+    }
     RNFBAppModule.eventsAddListener(eventType);
     return super.addListener(`rnfb_${eventType}`, listener, context);
   }

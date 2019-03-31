@@ -23,7 +23,7 @@ import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseStorageEvent implements NativeEvent {
-  static final String EVENT_DEFAULT = "storage_event";
+  private static final String EVENT_DEFAULT = "storage_event";
   static final String EVENT_STATE_CHANGED = "state_changed";
   static final String EVENT_UPLOAD_SUCCESS = "upload_success";
   static final String EVENT_UPLOAD_FAILURE = "upload_failure";
@@ -43,7 +43,7 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
   }
 
   public String getEventName() {
-    return "storage_event";
+    return EVENT_DEFAULT;
   }
 
   public WritableMap getEventBody() {
@@ -52,7 +52,7 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
     event.putMap("body", eventBody);
     event.putString("appName", appName);
     event.putString("eventName", internalEventName);
-    return this.eventBody;
+    return event;
   }
 
   public String getFirebaseAppName() {

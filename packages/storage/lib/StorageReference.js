@@ -15,7 +15,9 @@
  *
  */
 
-import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './task';
+import { ReferenceBase } from '@react-native-firebase/common';
+import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
+import { validateMetadata } from './SettableMetadata';
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
@@ -36,25 +38,26 @@ export default class StorageReference extends ReferenceBase {
   }
 
   delete() {
-    return getNativeModule(this._storage).delete(this.path);
+    return this._storage.native.delete(this.path);
   }
 
   getDownloadURL() {
-    return getNativeModule(this._storage).getDownloadURL(this.path);
+    return this._storage.native.getDownloadURL(this.path);
   }
 
   getMetadata() {
-    return getNativeModule(this._storage).getMetadata(this.path);
+    return this._storage.native.getMetadata(this.path);
   }
 
   updateMetadata(metadata) {
-    return getNativeModule(this._storage).updateMetadata(this.path, metadata);
+    validateMetadata(metadata);
+    return this._storage.native.updateMetadata(this.path, metadata);
   }
 
   downloadFile(filePath) {
     return new StorageTask(
       DOWNLOAD_TASK,
-      getNativeModule(this._storage).downloadFile(this.path, filePath),
+      this._storage.native.downloadFile(this.path, filePath),
       this,
     );
   }
@@ -66,9 +69,10 @@ export default class StorageReference extends ReferenceBase {
   putFile(filePath, metadata) {
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
+
     return new StorageTask(
       UPLOAD_TASK,
-      getNativeModule(this._storage).putFile(this.path, _filePath, metadata),
+      this._storage.native.putFile(this.path, _filePath, metadata),
       this,
     );
   }

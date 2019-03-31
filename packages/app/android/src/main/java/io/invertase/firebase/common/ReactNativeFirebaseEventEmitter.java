@@ -20,6 +20,7 @@ package io.invertase.firebase.common;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.MainThread;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -46,33 +47,26 @@ public class ReactNativeFirebaseEventEmitter {
   }
 
   public void attachReactContext(final ReactContext reactContext) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
-        sendQueuedEvents();
-      }
+    handler.post(() -> {
+      ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
+      sendQueuedEvents();
     });
   }
 
   public void notifyJsReady(Boolean ready) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        jsReady = ready;
-        sendQueuedEvents();
-      }
+    Log.d("RNFB_NOTIF_JS_READY", String.valueOf(ready));
+    handler.post(() -> {
+      jsReady = ready;
+      sendQueuedEvents();
     });
   }
 
   public void sendEvent(final NativeEvent event) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        synchronized (jsListeners) {
-          if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
-            queuedEvents.add(event);
-          }
+    handler.post(() -> {
+      synchronized (jsListeners) {
+        Log.d("RNFB_" + event.getEventName(), jsListeners.toString());
+        if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
+          queuedEvents.add(event);
         }
       }
     });
@@ -89,12 +83,7 @@ public class ReactNativeFirebaseEventEmitter {
       }
     }
 
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        sendQueuedEvents();
-      }
-    });
+    handler.post(this::sendQueuedEvents);
   }
 
   public void removeListener(String eventName, Boolean all) {
@@ -145,6 +134,7 @@ public class ReactNativeFirebaseEventEmitter {
 
   @MainThread
   private boolean emit(final NativeEvent event) {
+    Log.d("RNFB_EMIT_" + event.getEventName(), jsListeners.toString());
     if (!jsReady || reactContext == null || !reactContext.hasActiveCatalystInstance()) {
       return false;
     }
@@ -153,7 +143,11 @@ public class ReactNativeFirebaseEventEmitter {
       reactContext.getJSModule(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class
       ).emit("rnfb_" + event.getEventName(), event.getEventBody());
+      Log.d("RNFB_EMIT_" + event.getEventName(), jsListeners.toString());
+
     } catch (Exception e) {
+
+      Log.wtf("RNFB_EMIT_ERR", "send help", e);
       return false;
     }
 

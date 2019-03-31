@@ -64,6 +64,15 @@ public class ReactNativeFirebaseStorageTask {
     return taskMap;
   }
 
+  static WritableMap getErrorTaskMap() {
+    WritableMap taskMap = Arguments.createMap();
+    taskMap.putString(
+      "state",
+      "error"
+    );
+    return taskMap;
+  }
+
   static WritableMap getDownloadTaskAsMap(@Nullable StreamDownloadTask.TaskSnapshot taskSnapshot) {
     // TODO(salakar) handle null snapshots
 
@@ -121,7 +130,6 @@ public class ReactNativeFirebaseStorageTask {
     );
 
     uploadTask = storageReference.putFile(fileUri, metadata);
-
     uploadTask.addOnProgressListener(taskSnapshotRaw -> {
       WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -223,5 +231,4 @@ public class ReactNativeFirebaseStorageTask {
 
     return streamDownloadTask;
   }
-
 }

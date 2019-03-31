@@ -15,67 +15,21 @@
  *
  */
 
-import { NativeModules } from 'react-native';
-
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { stripTrailingSlash } from '@react-native-firebase/common';
+import { isNumber } from '@react-native-firebase/common';
 
 import version from './version';
-
-const statics = {
-  TaskEvent: {
-    STATE_CHANGED: 'state_changed',
-  },
-  TaskState: {
-    RUNNING: 'running',
-    PAUSED: 'paused',
-    SUCCESS: 'success',
-    CANCELLED: 'cancelled',
-    ERROR: 'error',
-  },
-  Native: FirebaseStorage
-    ? {
-        MAIN_BUNDLE_PATH: stripTrailingSlash(NativeModules.RNFBStorageModule.MAIN_BUNDLE_PATH),
-        CACHES_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.CACHES_DIRECTORY_PATH,
-        ),
-        DOCUMENT_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.DOCUMENT_DIRECTORY_PATH,
-        ),
-        EXTERNAL_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.EXTERNAL_DIRECTORY_PATH,
-        ),
-        EXTERNAL_STORAGE_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.EXTERNAL_STORAGE_DIRECTORY_PATH,
-        ),
-        TEMP_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.TEMP_DIRECTORY_PATH,
-        ),
-        LIBRARY_DIRECTORY_PATH: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.LIBRARY_DIRECTORY_PATH,
-        ),
-        FILE_TYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
-        FILE_TYPE_DIRECTORY: stripTrailingSlash(
-          NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY,
-        ),
-
-        // TODO(salakar) remove in 6.1.0 - deprecated but here for backwards compat
-        FILETYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
-        FILETYPE_DIRECTORY: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY),
-      }
-    : {},
-};
+import StorageStatics from './StorageStatics';
+import StorageReference from './StorageReference';
 
 const namespace = 'storage';
-
-const nativeModuleName = 'RNFBStorageModule';
-
 const nativeEvents = ['storage_event'];
+const nativeModuleName = 'RNFBStorageModule';
 
 class FirebaseStorageModule extends FirebaseModule {
   constructor(...args) {
@@ -86,29 +40,45 @@ class FirebaseStorageModule extends FirebaseModule {
       this._handleStorageEvent.bind(this),
     );
 
-    this.emitter.addListener(
-      this.eventNameForApp('storage_error'),
-      this._handleStorageEvent.bind(this),
-    );
+    // this.emitter.addListener(
+    //   this.eventNameForApp('storage_error'),
+    //   this._handleStorageEvent.bind(this),
+    // );
   }
 
   ref(path) {
-    return new StorageRef(this, path);
+    return new StorageReference(this, path);
   }
 
   refFromURL(url) {
-    return new StorageRef(this, `url::${url}`);
+    return new StorageReference(this, `url::${url}`);
   }
 
   setMaxOperationRetryTime(time) {
+    if (!isNumber(time)) {
+      throw new Error(
+        `firebase.storage().setMaxOperationRetryTime(*) 'time' must be a number value.`,
+      );
+    }
+
     return this.native.setMaxOperationRetryTime(time);
   }
 
   setMaxUploadRetryTime(time) {
+    if (!isNumber(time)) {
+      throw new Error(`firebase.storage().setMaxUploadRetryTime(*) 'time' must be a number value.`);
+    }
+
     return this.native.setMaxUploadRetryTime(time);
   }
 
   setMaxDownloadRetryTime(time) {
+    if (!isNumber(time)) {
+      throw new Error(
+        `firebase.storage().setMaxDownloadRetryTime(*) 'time' must be a number value.`,
+      );
+    }
+
     return this.native.setMaxDownloadRetryTime(time);
   }
 
@@ -119,22 +89,21 @@ class FirebaseStorageModule extends FirebaseModule {
   _handleStorageEvent(event) {
     const { path, eventName } = event;
     const body = event.body || {};
+    if (eventName.endsWith('failure')) {
+      // TODO generate an error?
+    }
     this.emitter.emit(this._getSubEventName(path, eventName), body);
   }
 
-  _handleStorageError(error) {
-    const { path, eventName } = error;
-    const body = error.body || {};
-
-    this.emitter.emit(this._getSubEventName(path, eventName), body);
-  }
+  // _handleStorageError(error) {
+  //   const { path, eventName } = error;
+  //   const body = error.body || {};
+  //
+  //   this.emitter.emit(this._getSubEventName(path, eventName), body);
+  // }
 
   _addListener(path, eventName, cb) {
-    this.emitter.addListener(this._getSubEventName(path, eventName), cb);
-  }
-
-  _removeListener(path, eventName, origCB) {
-    this.emitter.removeListener(this._getSubEventName(path, eventName), origCB);
+    return this.emitter.addListener(this._getSubEventName(path, eventName), cb);
   }
 }
 
@@ -144,12 +113,13 @@ export const SDK_VERSION = version;
 // import storage from '@react-native-firebase/storage';
 // storage().X(...);
 export default createModuleNamespace({
-  statics,
+  statics: StorageStatics,
   version,
   namespace,
   nativeEvents,
   nativeModuleName,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
+  // TODO
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseStorageModule,
 });

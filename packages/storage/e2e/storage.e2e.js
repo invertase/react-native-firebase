@@ -15,7 +15,7 @@
  *
  */
 
-describe('storage()', () => {
+describe.only('storage()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -24,7 +24,7 @@ describe('storage()', () => {
     });
 
     // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
+    it('supports multiple apps', async () => {
       firebase.storage().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -38,7 +38,51 @@ describe('storage()', () => {
     });
   });
 
-  describe('aMethod()', () => {
-    // TODO
+  describe('setMaxOperationRetryTime', () => {
+    it('should set', async () => {
+      await firebase.storage().setMaxOperationRetryTime(100000);
+    });
+
+    it('throws if time is not a number value', async () => {
+      try {
+        await firebase.storage().setMaxOperationRetryTime('im a teapot');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`'time' must be a number value`);
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('setMaxUploadRetryTime', () => {
+    it('should set', async () => {
+      await firebase.storage().setMaxUploadRetryTime(100000);
+    });
+
+    it('throws if time is not a number value', async () => {
+      try {
+        await firebase.storage().setMaxUploadRetryTime('im a teapot');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`'time' must be a number value`);
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('setMaxDownloadRetryTime', () => {
+    it('should set', async () => {
+      await firebase.storage().setMaxDownloadRetryTime(100000);
+    });
+
+    it('throws if time is not a number value', async () => {
+      try {
+        await firebase.storage().setMaxDownloadRetryTime('im a teapot');
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql(`'time' must be a number value`);
+        return Promise.resolve();
+      }
+    });
   });
 });

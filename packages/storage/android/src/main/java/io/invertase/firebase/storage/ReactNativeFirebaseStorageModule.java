@@ -18,6 +18,7 @@ package io.invertase.firebase.storage;
  */
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -58,16 +59,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   private static final String PicturesDirectoryPath = "PICTURES_DIRECTORY_PATH";
   private static final String TemporaryDirectoryPath = "TEMP_DIRECTORY_PATH";
   private static final String CachesDirectoryPath = "CACHES_DIRECTORY_PATH";
-
   private static final String FileTypeRegular = "FILE_TYPE_REGULAR";
   private static final String FileTypeDirectory = "FILE_TYPE_DIRECTORY";
-
-  private static final String STORAGE_EVENT = "storage_event";
-  private static final String STORAGE_STATE_CHANGED = "state_changed";
-  private static final String STORAGE_UPLOAD_SUCCESS = "upload_success";
-  private static final String STORAGE_UPLOAD_FAILURE = "upload_failure";
-  private static final String STORAGE_DOWNLOAD_SUCCESS = "download_success";
-  private static final String STORAGE_DOWNLOAD_FAILURE = "download_failure";
 
   ReactNativeFirebaseStorageModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -101,52 +94,59 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   static StorageMetadata buildMetadataFromMap(ReadableMap metadataMap, @Nullable Uri file) {
     StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
 
-    try {
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadataMap);
-      Map<String, Object> customMetadata = (Map<String, Object>) m.get("customMetadata");
-      if (customMetadata != null) {
-        for (Map.Entry<String, Object> entry : customMetadata.entrySet()) {
+    if (metadataMap != null) {
+      if (metadataMap.hasKey("customMetadata")) {
+        ReadableMap customerMetaMap = Objects.requireNonNull(metadataMap.getMap("customMetadata"));
+        Map<String, Object> customMeta = customerMetaMap.toHashMap();
+        for (Map.Entry<String, Object> entry : customMeta.entrySet()) {
           metadataBuilder.setCustomMetadata(entry.getKey(), String.valueOf(entry.getValue()));
         }
       }
 
-      metadataBuilder.setCacheControl((Strin metadataMap.getString("cacheControl"));
-      metadataBuilder.setContentDisposition((String) m.get("contentDisposition"));
-      metadataBuilder.setContentEncoding((String) m.get("contentEncoding"));
-      metadataBuilder.setContentLanguage((String) m.get("contentLanguage"));
-
-      if (metadataMap.hasKey("contentType")) {
-        metadataBuilder.setContentType((String) m.get("contentType"));
-      } else if (file != null) {
-        String mimeType;
-
-        if (file.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
-          ContentResolver cr = ReactNativeFirebaseApp.getApplicationContext().getContentResolver();
-          mimeType = cr.getType(file);
-        } else {
-          String fileExtension = MimeTypeMap.getFileExtensionFromUrl(file.toString());
-          mimeType = MimeTypeMap
-            .getSingleton()
-            .getMimeTypeFromExtension(fileExtension.toLowerCase());
-        }
-
-        if (mimeType != null) metadataBuilder.setContentType(mimeType);
+      if (metadataMap.hasKey("cacheControl")) {
+        metadataBuilder.setCacheControl(metadataMap.getString("cacheControl"));
       }
-    } catch (Exception e) {
-      // TODO(salakar) send error to js / reject promise?
-      Log.e(TAG, "error while building meta data " + e.getMessage());
+
+      if (metadataMap.hasKey("contentEncoding")) {
+        metadataBuilder.setContentEncoding(metadataMap.getString("contentEncoding"));
+      }
+
+      if (metadataMap.hasKey("contentLanguage")) {
+        metadataBuilder.setContentLanguage(metadataMap.getString("contentLanguage"));
+      }
+
+      if (metadataMap.hasKey("contentDisposition")) {
+        metadataBuilder.setContentDisposition(metadataMap.getString("contentDisposition"));
+      }
+    }
+
+    if (metadataMap != null && metadataMap.hasKey("contentType")) {
+      metadataBuilder.setContentType(metadataMap.getString("contentType"));
+    } else if (file != null) {
+      String mimeType = null;
+      String fileScheme = file.getScheme();
+
+      if (fileScheme != null && fileScheme.equals(ContentResolver.SCHEME_CONTENT)) {
+        Context context = ReactNativeFirebaseApp.getApplicationContext();
+        mimeType = context.getContentResolver().getType(file);
+      }
+
+      if (mimeType == null) {
+        String fileExt = MimeTypeMap.getFileExtensionFromUrl(file.toString());
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt.toLowerCase());
+      }
+
+      if (mimeType != null) {
+        metadataBuilder.setContentType(mimeType);
+      }
     }
 
     return metadataBuilder.build();
   }
 
-  /**
-   * Converts storageMetadata into a map
-   *
-   * @param storageMetadata
-   * @return
-   */
   static WritableMap getMetadataAsMap(@Nullable StorageMetadata storageMetadata) {
+    if (storageMetadata == null) return null;
+
     WritableMap metadata = Arguments.createMap();
 
     metadata.putString("bucket", storageMetadata.getBucket());
@@ -165,9 +165,11 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     metadata.putString("contentType", storageMetadata.getContentType());
 
     WritableMap customMetadata = Arguments.createMap();
+
     for (String key : storageMetadata.getCustomMetadataKeys()) {
       customMetadata.putString(key, storageMetadata.getCustomMetadata(key));
     }
+
     metadata.putMap("customMetadata", customMetadata);
 
     return metadata;
@@ -202,7 +204,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void delete(String appName, String path, final Promise promise) {
-    StorageReference reference = this.getReference(path, appName);
+    StorageReference reference = getReference(path, appName);
     reference.delete().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(null);
@@ -217,10 +219,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void getDownloadURL(String appName, final String path, final Promise promise) {
-    Log.d(TAG, "getDownloadURL path " + path);
-    final StorageReference reference = this.getReference(path, appName);
-
+    StorageReference reference = getReference(path, appName);
     Task<Uri> downloadTask = reference.getDownloadUrl();
+
     downloadTask.addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult() != null ? task.getResult().toString() : null);
@@ -234,8 +235,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
    */
   @ReactMethod
-  public void getMetadata(String appName, final String path, final Promise promise) {
-    StorageReference reference = this.getReference(path, appName);
+  public void getMetadata(String appName, String path, Promise promise) {
+    StorageReference reference = getReference(path, appName);
     reference.getMetadata().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
@@ -277,17 +278,17 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     final String localFilePath,
     final Promise promise
   ) {
+    Log.d("RNFB_STORAGE_D", localFilePath);
     if (!isExternalStorageWritable()) {
-      // TODO(salakar) use new error utils
-      promise.reject(
-        "storage/invalid-device-file-path",
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "invalid-device-file-path",
         "The specified device file path is invalid or is restricted."
       );
-
       return;
     }
 
-    StorageReference reference = this.getReference(path, appName);
+    StorageReference reference = getReference(path, appName);
 
     // TODO(salakar) add bucket support
     ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
@@ -306,29 +307,26 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           localFilePath
         ));
 
-        // Re-creating WritableMap as they can only be consumed once, so another one is required
+        // re-creating WritableMap as they can only be consumed once, so another one is required
         taskSnapshot = ReactNativeFirebaseStorageTask.getDownloadTaskAsMap(task.getResult());
         promise.resolve(taskSnapshot);
       } else {
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap taskSnapshot = ReactNativeFirebaseStorageTask.getDownloadTaskAsMap(task.getResult());
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
           localFilePath
         ));
 
-        taskSnapshot = ReactNativeFirebaseStorageTask.getDownloadTaskAsMap(task.getResult());
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
           appName,
           localFilePath
         ));
 
-        // TODO(salakar) refactor to new error utils
         promiseRejectStorageException(promise, task.getException());
       }
     });
@@ -372,13 +370,14 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void putFile(
-    final String appName,
-    final String path,
-    final String localFilePath,
-    final ReadableMap metadata,
-    final Promise promise
+    String appName,
+    String path,
+    String localFilePath,
+    ReadableMap metadata,
+    Promise promise
   ) {
-    StorageReference reference = this.getReference(path, appName);
+    Log.d("RNFB_STORAGE_U", localFilePath);
+    StorageReference reference = getReference(path, appName);
 
     // TODO(salakar) bucket support
     ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
@@ -398,196 +397,130 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          path
         ));
 
+        // re-creating WritableMap as they can only be consumed once, so another one is required
         taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
           appName,
-          localFilePath
+          path
         ));
 
         taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
         promise.resolve(taskSnapshotMap);
       } else {
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshotMap,
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          path
         ));
 
-        taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshotMap,
-          ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
+          ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
           appName,
-          localFilePath
+          path
         ));
 
-        // TODO(salakar) refactor to new error utils
         promiseRejectStorageException(promise, task.getException());
       }
     });
   }
 
-  /**
-   * @return
-   */
   private StorageReference getReference(String path, String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
 
     if (path.startsWith("url::")) {
-      String url = path.substring(5);
-      return firebaseStorage.getReferenceFromUrl(url);
+      return firebaseStorage.getReferenceFromUrl(path.substring(5));
     } else {
       return firebaseStorage.getReference(path);
     }
   }
 
-  /**
-   * @param name
-   * @param path
-   * @param body
-   */
-  private void sendJSEvent(String appName, final String name, final String path, WritableMap body) {
-    WritableMap event = Arguments.createMap();
-    event.putMap("body", body);
-    event.putString("path", path);
-    event.putString("eventName", name);
-    event.putString("appName", appName);
-    Utils.sendEvent(this.getReactApplicationContext(), STORAGE_EVENT, event);
-  }
-
-  /**
-   * Reject a promise with a web sdk error code
-   *
-   * @param promise
-   * @param exception
-   */
   private void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {
-    String code = "storage/unknown";
-    String message = exception.getMessage();
+    String code = "unknown";
+    String message = "An unknown error has occurred.";
 
-    try {
+    if (exception != null) {
+      message = exception.getMessage();
       if (exception instanceof StorageException) {
         StorageException storageException = (StorageException) exception;
-
         switch (storageException.getErrorCode()) {
-          case StorageException.ERROR_UNKNOWN:
-            code = "storage/unknown";
-            message = "An unknown error has occurred.";
-            break;
           case StorageException.ERROR_OBJECT_NOT_FOUND:
-            code = "storage/object-not-found";
+            code = "object-not-found";
             message = "No object exists at the desired reference.";
             break;
           case StorageException.ERROR_BUCKET_NOT_FOUND:
-            code = "storage/bucket-not-found";
+            code = "bucket-not-found";
             message = "No bucket is configured for Firebase Storage.";
             break;
           case StorageException.ERROR_PROJECT_NOT_FOUND:
-            code = "storage/project-not-found";
+            code = "project-not-found";
             message = "No project is configured for Firebase Storage.";
             break;
           case StorageException.ERROR_QUOTA_EXCEEDED:
-            code = "storage/quota-exceeded";
+            code = "quota-exceeded";
             message = "Quota on your Firebase Storage bucket has been exceeded.";
             break;
           case StorageException.ERROR_NOT_AUTHENTICATED:
-            code = "storage/unauthenticated";
+            code = "unauthenticated";
             message = "User is unauthenticated. Authenticate and try again.";
             break;
           case StorageException.ERROR_NOT_AUTHORIZED:
-            code = "storage/unauthorized";
+            code = "unauthorized";
             message = "User is not authorized to perform the desired action.";
             break;
           case StorageException.ERROR_RETRY_LIMIT_EXCEEDED:
-            code = "storage/retry-limit-exceeded";
+            code = "retry-limit-exceeded";
             message = "The maximum time limit on an operation (upload, download, delete, etc.) has been exceeded.";
             break;
           case StorageException.ERROR_INVALID_CHECKSUM:
-            code = "storage/non-matching-checksum";
+            code = "non-matching-checksum";
             message = "File on the client does not match the checksum of the file received by the server.";
             break;
           case StorageException.ERROR_CANCELED:
-            code = "storage/cancelled";
+            code = "cancelled";
             message = "User cancelled the operation.";
             break;
         }
-      } else {
-        code = "storage/unknown";
-        message = "An unknown error has occurred.";
       }
-    } finally {
-      promise.reject(code, message, exception);
     }
+
+    rejectPromiseWithCodeAndMessage(promise, code, message);
   }
 
-  /**
-   * Constants bootstrapped on react native app boot
-   * e.g. firebase.storage.Native.DOCUMENT_DIRECTORY_PATH
-   *
-   * @return
-   */
   @Override
   public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
+    Map<String, Object> constants = new HashMap<>();
+    Context context = getReactApplicationContext();
+    File externalDirectory = context.getExternalFilesDir(null);
+    File externalStorageDirectory = Environment.getExternalStorageDirectory();
+    String storagePublicDir = Environment
+      .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+      .getAbsolutePath();
 
-    constants.put(
-      DocumentDirectoryPath,
-      this
-        .getReactApplicationContext()
-        .getFilesDir()
-        .getAbsolutePath()
-    );
-    constants.put(
-      TemporaryDirectoryPath,
-      this
-        .getReactApplicationContext()
-        .getCacheDir()
-        .getAbsolutePath()
-    );
-    constants.put(
-      PicturesDirectoryPath,
-      Environment
-        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        .getAbsolutePath()
-    );
-    constants.put(
-      CachesDirectoryPath,
-      this
-        .getReactApplicationContext()
-        .getCacheDir()
-        .getAbsolutePath()
-    );
+    constants.put(DocumentDirectoryPath, context.getFilesDir().getAbsolutePath());
+    constants.put(TemporaryDirectoryPath, context.getCacheDir().getAbsolutePath());
+    constants.put(PicturesDirectoryPath, storagePublicDir);
+    constants.put(CachesDirectoryPath, context.getCacheDir().getAbsolutePath());
     constants.put(FileTypeRegular, 0);
     constants.put(FileTypeDirectory, 1);
 
-    File externalStorageDirectory = Environment.getExternalStorageDirectory();
     if (externalStorageDirectory != null) {
       constants.put(ExternalStorageDirectoryPath, externalStorageDirectory.getAbsolutePath());
-    } else {
-      constants.put(ExternalStorageDirectoryPath, null);
     }
 
-    File externalDirectory = this
-      .getReactApplicationContext()
-      .getExternalFilesDir(null);
     if (externalDirectory != null) {
       constants.put(ExternalDirectoryPath, externalDirectory.getAbsolutePath());
-    } else {
-      constants.put(ExternalDirectoryPath, null);
     }
 
     return constants;
   }
-
-
 }
