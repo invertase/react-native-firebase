@@ -54,7 +54,6 @@ public class ReactNativeFirebaseEventEmitter {
   }
 
   public void notifyJsReady(Boolean ready) {
-    Log.d("RNFB_NOTIF_JS_READY", String.valueOf(ready));
     handler.post(() -> {
       jsReady = ready;
       sendQueuedEvents();
@@ -64,7 +63,6 @@ public class ReactNativeFirebaseEventEmitter {
   public void sendEvent(final NativeEvent event) {
     handler.post(() -> {
       synchronized (jsListeners) {
-        Log.d("RNFB_" + event.getEventName(), jsListeners.toString());
         if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
           queuedEvents.add(event);
         }
@@ -134,7 +132,6 @@ public class ReactNativeFirebaseEventEmitter {
 
   @MainThread
   private boolean emit(final NativeEvent event) {
-    Log.d("RNFB_EMIT_" + event.getEventName(), jsListeners.toString());
     if (!jsReady || reactContext == null || !reactContext.hasActiveCatalystInstance()) {
       return false;
     }
@@ -143,11 +140,8 @@ public class ReactNativeFirebaseEventEmitter {
       reactContext.getJSModule(
         DeviceEventManagerModule.RCTDeviceEventEmitter.class
       ).emit("rnfb_" + event.getEventName(), event.getEventBody());
-      Log.d("RNFB_EMIT_" + event.getEventName(), jsListeners.toString());
-
     } catch (Exception e) {
-
-      Log.wtf("RNFB_EMIT_ERR", "send help", e);
+      Log.wtf("RNFB_EMITTER", "Error sending Event " + event.getEventName(), e);
       return false;
     }
 

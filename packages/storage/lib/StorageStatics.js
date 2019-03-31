@@ -47,6 +47,12 @@ const NativePaths = NativeModules.RNFBStorageModule
   : {};
 
 export default {
+  StringFormat: {
+    RAW: 'raw',
+    BASE64: 'base64',
+    BASE64URL: 'base64url',
+    DATA_URL: 'data_url',
+  },
   TaskEvent: {
     STATE_CHANGED: 'state_changed',
   },

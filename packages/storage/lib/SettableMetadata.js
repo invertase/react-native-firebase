@@ -43,7 +43,7 @@ export function validateMetadata(metadata) {
     }
 
     if (key !== 'customMetadata') {
-      if (!isString(value) || !isNull(value)) {
+      if (!isString(value) && !isNull(value)) {
         throw new Error(
           `firebase.storage.StorageReference.updateMetadata(*) property '${key}' should be a string or null value.`,
         );

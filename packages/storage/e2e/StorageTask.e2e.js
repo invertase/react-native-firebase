@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('storage() -> StorageTask', () => {
+describe('storage() -> StorageTask', () => {
   describe('downloadFile()', () => {
     it('errors if permission denied', async () => {
       try {
@@ -39,6 +39,53 @@ describe.only('storage() -> StorageTask', () => {
 
       meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
       meta.bytesTransferred.should.eql(meta.totalBytes);
+    });
+  });
+
+  describe('putString()', () => {
+    it('uploads a raw string', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putString.json')
+        .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('uploads a base64 string', async () => {
+      const base64String = 'eyJmb28iOiJiYXNlNjQifQ==';
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringBase64.json')
+        .putString(base64String, firebase.storage.StringFormat.BASE64, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('uploads a base64url string', async () => {
+      const base64UrlString = 'eyJmb28iOiJiYXNlNjQifQ';
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringBase64Url.json')
+        .putString(base64UrlString, firebase.storage.StringFormat.BASE64, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
     });
   });
 

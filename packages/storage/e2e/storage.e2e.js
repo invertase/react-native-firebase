@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('storage()', () => {
+describe('storage()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();

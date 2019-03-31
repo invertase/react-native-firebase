@@ -178,7 +178,11 @@ await analytics().setUserId('12345678');
 
 ## Storage
 
-- [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead.
+- [NEW] Added support for `put` (Blobs)
+- [NEW] Added support for `putString` and all StringFormat's (raw, base64, base64 & data_url)
+- [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
+- [BUGFIX][ANDROID] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
+- [BUGFIX][ANDROID] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
 
 ## Messaging
 

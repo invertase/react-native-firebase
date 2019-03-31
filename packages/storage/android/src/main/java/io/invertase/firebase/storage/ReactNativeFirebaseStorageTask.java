@@ -18,6 +18,7 @@ package io.invertase.firebase.storage;
  */
 
 import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -30,15 +31,14 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 
-public class ReactNativeFirebaseStorageTask {
+class ReactNativeFirebaseStorageTask {
   private static final String TAG = "RNFirebaseStorageTask";
-
-
   private String appName;
   private String bucketUrl; // TODO
   private UploadTask uploadTask;
@@ -122,7 +122,76 @@ public class ReactNativeFirebaseStorageTask {
     return parsed;
   }
 
-  UploadTask startUpload(String localFilePath, ReadableMap metadataMap) {
+  private byte[] uploadStringToByteArray(String string, String format) {
+    byte[] bytes = null;
+    switch (format) {
+      case "raw":
+        try {
+          //noinspection CharsetObjectCanBeUsed
+          bytes = string.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          // do nothing
+        }
+        break;
+      case "base64":
+        bytes = Base64.decode(string, Base64.DEFAULT);
+        break;
+      case "base64url":
+        bytes = Base64.decode(string, Base64.URL_SAFE);
+        break;
+    }
+
+    return bytes;
+  }
+
+  UploadTask startStringUpload(String string, String format, ReadableMap metadataMap) {
+    StorageMetadata metadata = ReactNativeFirebaseStorageModule.buildMetadataFromMap(
+      metadataMap,
+      null
+    );
+
+    byte[] stringBytes = uploadStringToByteArray(string, format);
+
+    uploadTask = storageReference.putBytes(stringBytes, metadata);
+
+    uploadTask.addOnProgressListener(taskSnapshotRaw -> {
+      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
+      ReactNativeFirebaseEventEmitter
+        .getSharedInstance()
+        .sendEvent(new ReactNativeFirebaseStorageEvent(
+          taskSnapshot,
+          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+          appName,
+          storageReference.getPath()
+        ));
+    });
+
+    uploadTask.addOnCanceledListener(() -> ReactNativeFirebaseEventEmitter
+      .getSharedInstance()
+      .sendEvent(new ReactNativeFirebaseStorageEvent(
+        getCancelledTaskMap(),
+        ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+        appName,
+        storageReference.getPath()
+      )));
+
+    uploadTask.addOnPausedListener(taskSnapshotRaw -> {
+      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
+      ReactNativeFirebaseEventEmitter
+        .getSharedInstance()
+        .sendEvent(new ReactNativeFirebaseStorageEvent(
+          taskSnapshot,
+          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+          appName,
+          storageReference.getPath()
+        ));
+    });
+
+    return uploadTask;
+
+  }
+
+  UploadTask startFileUpload(String localFilePath, ReadableMap metadataMap) {
     Uri fileUri = getUri(localFilePath);
     StorageMetadata metadata = ReactNativeFirebaseStorageModule.buildMetadataFromMap(
       metadataMap,
@@ -138,7 +207,7 @@ public class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          storageReference.getPath()
         ));
     });
 
@@ -148,7 +217,7 @@ public class ReactNativeFirebaseStorageTask {
         getCancelledTaskMap(),
         ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
         appName,
-        localFilePath
+        storageReference.getPath()
       )));
 
     uploadTask.addOnPausedListener(taskSnapshotRaw -> {
@@ -159,7 +228,7 @@ public class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          storageReference.getPath()
         ));
     });
 
@@ -203,7 +272,7 @@ public class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          storageReference.getPath()
         ));
     });
 
@@ -213,7 +282,7 @@ public class ReactNativeFirebaseStorageTask {
         getCancelledTaskMap(),
         ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
         appName,
-        localFilePath
+        storageReference.getPath()
       )));
 
     streamDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
@@ -225,7 +294,7 @@ public class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          storageReference.getPath()
         ));
     });
 

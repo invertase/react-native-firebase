@@ -21,7 +21,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
@@ -99,7 +98,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
         ReadableMap customerMetaMap = Objects.requireNonNull(metadataMap.getMap("customMetadata"));
         Map<String, Object> customMeta = customerMetaMap.toHashMap();
         for (Map.Entry<String, Object> entry : customMeta.entrySet()) {
-          metadataBuilder.setCustomMetadata(entry.getKey(), String.valueOf(entry.getValue()));
+          metadataBuilder.setCustomMetadata(entry.getKey(), (String) entry.getValue());
         }
       }
 
@@ -256,7 +255,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     ReadableMap metadataMap,
     final Promise promise
   ) {
-    StorageReference reference = this.getReference(path, appName);
+    StorageReference reference = getReference(path, appName);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
 
     reference.updateMetadata(metadata).addOnCompleteListener(task -> {
@@ -278,7 +277,6 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     final String localFilePath,
     final Promise promise
   ) {
-    Log.d("RNFB_STORAGE_D", localFilePath);
     if (!isExternalStorageWritable()) {
       rejectPromiseWithCodeAndMessage(
         promise,
@@ -366,6 +364,74 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
+   */
+  @ReactMethod
+  public void putString(
+    String appName,
+    String path,
+    String string,
+    String format,
+    ReadableMap metadataMap,
+    Promise promise
+  ) {
+    StorageReference reference = getReference(path, appName);
+
+    ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
+      reference,
+      appName,
+      ""
+    );
+
+    UploadTask uploadTask = storageTask.startStringUpload(string, format, metadataMap);
+
+    uploadTask.addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+        WritableMap taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
+
+        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+          taskSnapshotMap,
+          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+          appName,
+          path
+        ));
+
+        // re-creating WritableMap as they can only be consumed once, so another one is required
+        taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
+        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+          taskSnapshotMap,
+          ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
+          appName,
+          path
+        ));
+
+        taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
+        promise.resolve(taskSnapshotMap);
+      } else {
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
+          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+          appName,
+          path
+        ));
+
+        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+          ReactNativeFirebaseStorageTask.getErrorTaskMap(),
+          ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
+          appName,
+          path
+        ));
+
+        promiseRejectStorageException(promise, task.getException());
+      }
+    });
+ }
+
+
+  /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
    */
   @ReactMethod
@@ -376,7 +442,6 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     ReadableMap metadata,
     Promise promise
   ) {
-    Log.d("RNFB_STORAGE_U", localFilePath);
     StorageReference reference = getReference(path, appName);
 
     // TODO(salakar) bucket support
@@ -386,7 +451,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       ""
     );
 
-    UploadTask uploadTask = storageTask.startUpload(localFilePath, metadata);
+    UploadTask uploadTask = storageTask.startFileUpload(localFilePath, metadata);
 
     uploadTask.addOnCompleteListener(task -> {
       if (task.isSuccessful()) {

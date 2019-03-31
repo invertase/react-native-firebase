@@ -15,9 +15,10 @@
  *
  */
 
-import { ReferenceBase } from '@react-native-firebase/common';
-import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
+import { ReferenceBase, isString, isUndefined, isObject } from '@react-native-firebase/common';
+import StorageStatics from './StorageStatics';
 import { validateMetadata } from './SettableMetadata';
+import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
@@ -62,11 +63,38 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 
-  get put() {
-    return this.putFile;
+  // TODO remove types
+  put(data: Blob | Uint8Array | ArrayBuffer, metadata: Metadata | null = null) {
+    // TODO implement
+  }
+
+  putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
+    if (!isString(string)) {
+      throw new Error(
+        `firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.`,
+      );
+    }
+
+    if (!Object.values(StorageStatics.StringFormat).includes(format)) {
+      throw new Error(
+        `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
+          StorageStatics.StringFormat,
+        ).join(',')}.`,
+      );
+    }
+
+    // TODO(salakar) change to use SettableMetadata validator
+    if (!isUndefined(metadata) && !isObject(metadata)) {
+      throw new Error(
+        `firebase.storage.StorageReference.putString(_, _, *) 'metadata' must be an object value if provided.`,
+      );
+    }
+
+    return this._storage.native.putString(this.path, string, format, metadata);
   }
 
   putFile(filePath, metadata) {
+    // TODO(salakar) validate args
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
 

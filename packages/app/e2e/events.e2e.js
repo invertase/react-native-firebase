@@ -40,6 +40,7 @@ describe('Core -> EventEmitter', () => {
         return resolve();
       });
 
+      await eventsNotifyReady(false);
       await eventsPing(eventName, eventBody);
       await Utils.sleep(100);
       const nativeListenersBefore = await eventsGetListeners();

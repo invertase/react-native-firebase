@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('storage() -> StorageReference', () => {
+describe('storage() -> StorageReference', () => {
   describe('toString()', () => {
     it('returns the correct bucket path to the file', () => {
       const app = firebase.app();
@@ -36,7 +36,7 @@ describe.only('storage() -> StorageReference', () => {
       await firebase
         .storage()
         .ref('/deleteMe.jpeg')
-        .put(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
+        .putFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
     });
 
     it('should delete a file', async () => {
@@ -152,24 +152,19 @@ describe.only('storage() -> StorageReference', () => {
   });
 
   describe('updateMetadata', () => {
-    /**
-     * customMetadata: {},
-     */
-    it.only('should return a metadata for a file', async () => {
-      const storageReference = firebase.storage().ref('/ok.jpeg');
+    it('should return the updated metadata for a file', async () => {
+      const storageReference = firebase.storage().ref('/writeOnly.jpeg');
       const metadata = await storageReference.updateMetadata({
-        cacheControl: 'foo',
-        contentDisposition: 'bar',
-        contentEncoding: 'utf-8',
-        contentLanguage: 'gb-en',
         contentType: 'image/jpeg',
-        customMetadata: {},
+        customMetadata: {
+          hello: 'world',
+        },
       });
 
-
+      metadata.customMetadata.hello.should.equal('world');
       metadata.generation.should.be.a.String();
-      metadata.fullPath.should.equal('ok.jpeg');
-      metadata.name.should.equal('ok.jpeg');
+      metadata.fullPath.should.equal('writeOnly.jpeg');
+      metadata.name.should.equal('writeOnly.jpeg');
       metadata.size.should.be.a.Number();
       should.equal(metadata.size > 0, true);
       metadata.updated.should.be.a.Number();
@@ -185,6 +180,27 @@ describe.only('storage() -> StorageReference', () => {
       metadata.cacheControl.should.be.a.String();
       metadata.contentLanguage.should.be.a.String();
       metadata.customMetadata.should.be.a.Object();
+    });
+
+    it('should remove customMetadata properties by setting the value to null', async () => {
+      const storageReference = firebase.storage().ref('/writeOnly.jpeg');
+      const metadata = await storageReference.updateMetadata({
+        contentType: 'image/jpeg',
+        customMetadata: {
+          removeMe: 'please',
+        },
+      });
+
+      metadata.customMetadata.removeMe.should.equal('please');
+
+      const metadataAfterRemove = await storageReference.updateMetadata({
+        contentType: 'image/jpeg',
+        customMetadata: {
+          removeMe: null,
+        },
+      });
+
+      should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
     });
   });
 });
