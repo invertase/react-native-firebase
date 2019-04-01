@@ -498,15 +498,16 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     });
   }
 
+  // TODO(salakar) js land always send URL only instead of path for multi-bucket support
   private StorageReference getReference(String path, String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
 
-    if (path.startsWith("url::")) {
-      return firebaseStorage.getReferenceFromUrl(path.substring(5));
-    } else {
+//    if (path.startsWith("url::")) {
+//      return firebaseStorage.getReferenceFromUrl(path.substring(5));
+//    } else {
       return firebaseStorage.getReference(path);
-    }
+//    }
   }
 
   private void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {

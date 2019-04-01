@@ -16,12 +16,21 @@
  */
 
 export default class ReferenceBase {
-  constructor(path) {
-    if (path) {
-      this.path = path.length > 1 && path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-    } else {
-      this.path = '/';
+  constructor(_path) {
+    let path = _path;
+    if (path && path.startsWith('gs://')) {
+      path = path.replace('gs://', '');
+      path = path.substring(path.indexOf('/') + 1, path.length);
     }
+
+    if (path) {
+      path = path.length > 1 && path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+      if (path.startsWith('/') && path.length > 1) path = path.substring(1, path.length);
+    } else {
+      path = '/';
+    }
+
+    this.path = path;
   }
 
   /**

@@ -125,14 +125,6 @@ class ReactNativeFirebaseStorageTask {
   private byte[] uploadStringToByteArray(String string, String format) {
     byte[] bytes = null;
     switch (format) {
-      case "raw":
-        try {
-          //noinspection CharsetObjectCanBeUsed
-          bytes = string.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          // do nothing
-        }
-        break;
       case "base64":
         bytes = Base64.decode(string, Base64.DEFAULT);
         break;

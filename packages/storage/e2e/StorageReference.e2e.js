@@ -27,6 +27,80 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
+  describe('properties', () => {
+    describe('fullPath', () => {
+      it('returns the full path as a string', () => {
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+        firebase
+          .storage()
+          .ref('foo/uploadNope.jpeg')
+          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+      });
+    });
+
+    describe('storage', () => {
+      it('returns the instance of storage', () => {
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .storage.ref.should.be.a.Function();
+      });
+    });
+
+    describe('bucket', () => {
+      it('returns the storage bucket as a string', () => {
+        const app = firebase.app();
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .bucket.should.equal(app.options.storageBucket);
+      });
+    });
+
+    describe('name', () => {
+      it('returns the file name as a string', () => {
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .name.should.equal('uploadNope.jpeg');
+      });
+    });
+
+    describe('parent', () => {
+      it('returns the parent directory as a reference', () => {
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .parent.fullPath.should.equal('foo');
+      });
+
+      it('returns null if already at root', () => {
+        const ref = firebase.storage().ref('/');
+        should.equal(ref.parent, null);
+      });
+    });
+
+    describe('root', () => {
+      it('returns a reference to the root of the bucket', () => {
+        firebase
+          .storage()
+          .ref('/foo/uploadNope.jpeg')
+          .root.fullPath.should.equal('/');
+      });
+    });
+  });
+
+  describe('child()', () => {
+    it('returns a reference to a child path', () => {
+      const parentRef = firebase.storage().ref('/foo');
+      const childRef = parentRef.child('someFile.json');
+      childRef.fullPath.should.equal('foo/someFile.json');
+    });
+  });
+
   describe('delete', () => {
     before(async () => {
       await firebase

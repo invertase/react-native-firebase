@@ -51,7 +51,8 @@ class FirebaseStorageModule extends FirebaseModule {
   }
 
   refFromURL(url) {
-    return new StorageReference(this, `url::${url}`);
+    // TODO(salakar) validate url starts with gs://    (<bucketName>/<pathToFile>)
+    return new StorageReference(this, url);
   }
 
   setMaxOperationRetryTime(time) {

@@ -16,9 +16,21 @@
  */
 import { Platform } from 'react-native';
 import { isString } from './validate';
+import Base64 from './Base64';
 
 export * from './validate';
+export Base64 from './Base64';
 export ReferenceBase from './ReferenceBase';
+
+export function getDataUrlParts(dataUrlString) {
+  const isBase64 = dataUrlString.includes(`;base64`);
+  let [mediaType, base64String] = dataUrlString.split(',');
+  if (!mediaType || !base64String) return { base64String: undefined, mediaType: undefined };
+  mediaType = mediaType.replace('data:', '').replace(';base64', '');
+  if (base64String && base64String.includes('%')) base64String = decodeURIComponent(base64String);
+  if (!isBase64) base64String = Base64.btoa(base64String);
+  return { base64String, mediaType };
+}
 
 export function promiseDefer() {
   const deferred = {

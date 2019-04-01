@@ -58,6 +58,48 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
+    it('uploads a data_url formatted string', async () => {
+      const dataUrl = `data:application/json;base64,eyJmb28iOiJiYXNlNjQifQ==`;
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringDataURL.json')
+        .putString(dataUrl, firebase.storage.StringFormat.DATA_URL);
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('uploads a url encoded data_url formatted string', async () => {
+      const dataUrl = `data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E`;
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/helloWorld.html')
+        .putString(dataUrl, firebase.storage.StringFormat.DATA_URL);
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('when using data_url it still sets the content type if metadata is provided', async () => {
+      const dataUrl = `data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E`;
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/helloWorld.html')
+        .putString(dataUrl, firebase.storage.StringFormat.DATA_URL, {
+          // TODO(salakar) automate test metadata is preserved when auto setting mediatype
+          customMetadata: {
+            hello: 'world',
+          },
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
     it('uploads a base64 string', async () => {
       const base64String = 'eyJmb28iOiJiYXNlNjQifQ==';
 
@@ -86,6 +128,59 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('throws an error on invalid data_url', async () => {
+      const dataUrl = ``;
+      try {
+        await firebase
+          .storage()
+          .ref('/a.b')
+          .putString(dataUrl, firebase.storage.StringFormat.DATA_URL);
+        return Promise.reject(new Error('Did not throw!'));
+      } catch (error) {
+        error.message.should.containEql('invalid data_url string provided');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if string arg is not a valid string', async () => {
+      try {
+        await firebase
+          .storage()
+          .ref('/a.b')
+          .putString(1, 'base64');
+        return Promise.reject(new Error('Did not throw!'));
+      } catch (error) {
+        error.message.should.containEql(`'string' expects a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error on invalid string format', async () => {
+      try {
+        await firebase
+          .storage()
+          .ref('/a.b')
+          .putString('fooby', 'abc');
+        return Promise.reject(new Error('Did not throw!'));
+      } catch (error) {
+        error.message.should.containEql(`'format' provided is invalid, must be one of`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if metadata is not an object', async () => {
+      try {
+        await firebase
+          .storage()
+          .ref('/a.b')
+          .putString('fooby', 'raw', 1234);
+        return Promise.reject(new Error('Did not throw!'));
+      } catch (error) {
+        error.message.should.containEql(`'metadata' must be an object value if provided`);
+        return Promise.resolve();
+      }
     });
   });
 

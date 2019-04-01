@@ -15,7 +15,14 @@
  *
  */
 
-import { ReferenceBase, isString, isUndefined, isObject } from '@react-native-firebase/common';
+import {
+  Base64,
+  ReferenceBase,
+  isString,
+  isUndefined,
+  isObject,
+  getDataUrlParts,
+} from '@react-native-firebase/common';
 import StorageStatics from './StorageStatics';
 import { validateMetadata } from './SettableMetadata';
 import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
@@ -26,16 +33,37 @@ export default class StorageReference extends ReferenceBase {
     this._storage = storage;
   }
 
+  get bucket() {
+    return this._storage.app.options.storageBucket;
+  }
+
+  get name() {
+    return this.path.substring(this.path.lastIndexOf('/') + 1, this.path.length);
+  }
+
+  get parent() {
+    if (this.path === '/') return null;
+    return new StorageReference(this._storage, this.path.substring(0, this.path.lastIndexOf('/')));
+  }
+
+  get root() {
+    return new StorageReference(this._storage, '/');
+  }
+
+  get storage() {
+    return this._storage;
+  }
+
   get fullPath() {
     return this.path;
   }
 
-  toString() {
-    return `gs://${this._storage.app.options.storageBucket}${this.path}`;
-  }
-
   child(path) {
     return new StorageReference(this._storage, `${this.path}/${path}`);
+  }
+
+  toString() {
+    return `gs://${this._storage.app.options.storageBucket}/${this.path}`;
   }
 
   delete() {
@@ -90,13 +118,35 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    return this._storage.native.putString(this.path, string, format, metadata);
+    let _string = string;
+    let _format = format;
+    let _metadata = metadata;
+
+    if (format === StorageStatics.StringFormat.RAW) {
+      _string = Base64.btoa(_string);
+      _format = StorageStatics.StringFormat.BASE64;
+    } else if (format === StorageStatics.StringFormat.DATA_URL) {
+      const { mediaType, base64String } = getDataUrlParts(_string);
+      if (isUndefined(base64String)) {
+        throw new Error(
+          `firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.`,
+        );
+      }
+      if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
+        if (isUndefined(metadata)) _metadata = {};
+        _metadata.contentType = mediaType;
+        _string = base64String;
+        _format = StorageStatics.StringFormat.BASE64;
+      }
+    }
+
+    return this._storage.native.putString(this.path, _string, _format, _metadata);
   }
 
   putFile(filePath, metadata) {
     // TODO(salakar) validate args
     let _filePath = filePath.replace('file://', '');
-    if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
+    if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
 
     return new StorageTask(
       UPLOAD_TASK,
