@@ -54,10 +54,12 @@
 }
 
 - (void)sendEvent:(NSString *)type payload:(NSDictionary *_Nullable)payload {
-    self.onBannerEvent(@{
-            @"type": type,
-            @"payload": payload != nil ? payload : [NSNull null],
-    });
+    if (self.onBannerEvent) {
+        self.onBannerEvent(@{
+                @"type": type,
+                @"payload": payload != nil ? payload : [NSNull null],
+        });
+    }
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {
