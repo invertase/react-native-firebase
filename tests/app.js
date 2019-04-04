@@ -32,7 +32,7 @@ import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNati
 import '@react-native-firebase/storage';
 // import '@react-native-firebase/iid';
 // import '@react-native-firebase/invites';
-// import '@react-native-firebase/perf';
+import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
@@ -51,6 +51,7 @@ class Root extends Component {
 
   render() {
     const { currentTest } = this.state;
+
     if (!currentTest) {
       return (
         <View style={[styles.container, styles.horizontal]}>

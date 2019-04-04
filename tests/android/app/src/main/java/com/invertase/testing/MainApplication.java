@@ -14,6 +14,7 @@ import java.util.List;
 
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
 import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;
 import io.invertase.jet.JetPackage;
@@ -40,7 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
 //        new ReactNativeFirebaseFunctionsPackage(),
 //        new ReactNativeFirebaseFiamPackage(),
 //        new ReactNativeFirebaseIidPackage(),
-//        new ReactNativeFirebasePerfPackage(),
+        new ReactNativeFirebasePerfPackage(),
         new ReactNativeFirebaseUtilsPackage()
       );
     }

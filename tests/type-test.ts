@@ -4,7 +4,6 @@ import '@react-native-firebase/invites';
 import { firebase } from '@react-native-firebase/analytics';
 
 async () => {
-  frebasei
   await firebase.config().activateFetched();
   await firebase.config().fetch(0);
   await firebase.config().fetch();

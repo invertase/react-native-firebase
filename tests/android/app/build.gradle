@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-//apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: "com.google.firebase.firebase-perf"
 //apply plugin: 'io.fabric'
 
 //crashlytics {
@@ -27,7 +27,7 @@ def firebasePackages = [
 //  'invites',
 //  'mlkit',
   'storage',
-//  'perf',
+  'perf',
   'utils'
 ]
 

@@ -24,23 +24,23 @@
     "@react-native-firebase/utils": "6.0.0-alpha.7",
     "detox": "10.0.13",
     "jet": "^0.3.0",
-    "mocha": "^5.2.0",
-    "prop-types": "^15.6.1",
+    "mocha": "^6.0.2",
+    "prop-types": "^15.7.2",
     "react": "16.8.3",
     "react-dom": "16.8.3",
-    "react-native": "0.59.0",
-    "react-native-camera": "^1.10.1",
+    "react-native": "0.59.3",
+    "react-native-camera": "^2.2.0",
     "require-all": "3.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0"
+    "sinon": "^7.3.1"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-helpers": "^0.0.8",
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.1.1",
-    "nyc": "^13.1.0",
-    "patch-package": "^5.1.2"
+    "nyc": "^13.3.0",
+    "patch-package": "^6.1.0"
   },
   "nyc": {
     "check-coverage": false,

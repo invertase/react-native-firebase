@@ -5,4 +5,4 @@
 --retries 0
 --bail
 --exit
---require jet/platform/node
+--require node_modules/jet/platform/node
