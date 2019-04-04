@@ -13,7 +13,7 @@
     "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app-types"
   },
   "license": "Apache-2.0",
-  "gitHead": "1e1927c068973f1b5d1be2695093aa603716b2da",
+  "gitHead": "8c81b64c4961d0258eea34be4dee11e928080c4e",
   "publishConfig": {
     "access": "public"
   }
