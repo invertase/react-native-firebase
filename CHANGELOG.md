@@ -109,6 +109,7 @@ await analytics().setUserId('12345678');
 ## App Invites
 
 - [NEW] Added `createInvitation(title: string, message: string)` method to replace construction an Invite from `new firebase.invites.Invitation` (this is still supported for now)
+- [WARNING] Deprecation notice printed when using Invites - it's now deprecated by Firebase and will be removed by January 2020 - the suggested migration path is switching to Dynamic Links and handling the sending of the link yourself.
 
 ## Analytics
 
