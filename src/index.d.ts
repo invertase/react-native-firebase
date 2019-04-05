@@ -1339,7 +1339,10 @@ declare module 'react-native-firebase' {
       type CompletionHandler = (
         backgroundFetchResult: BackgroundFetchResultValue
       ) => void;
-
+      type Schedule = {
+        fireDate: number,
+        repeatInterval?: "minute" | "hour" | "day" | "week"
+      }
       interface Notifications {
         android: AndroidNotifications;
 
@@ -1383,7 +1386,7 @@ declare module 'react-native-firebase' {
         /**
          * Schedule a local notification to be shown on the device.
          */
-        scheduleNotification(notification: Notification, schedule: any): any;
+        scheduleNotification(notification: Notification, schedule: Schedule): any;
 
         /**
          * Sets the badge number on the iOS app icon.
