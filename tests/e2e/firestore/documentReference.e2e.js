@@ -65,6 +65,34 @@ describe('firestore()', () => {
       });
     });
 
+    describe('isEqual()', () => {
+      it(`returns true if two DocumentReference's are for the same location`, () => {
+        const ref1 = firebase.firestore().doc('foo/bar');
+        const ref2 = firebase.firestore().doc('foo/bar');
+        should.equal(ref1.isEqual(ref2), true);
+      });
+
+      it(`returns false if two DocumentReference's are for the different paths`, () => {
+        const ref1 = firebase.firestore().doc('foo/bar');
+        const ref2 = firebase.firestore().doc('bar/foo');
+        should.equal(ref1.isEqual(ref2), false);
+      });
+
+      it(`throws if arg is not an instance of DocumentReference`, () => {
+        const ref1 = firebase.firestore().doc('foo/bar');
+        const maybeRef2 = 'nope';
+        try {
+          ref1.isEqual(maybeRef2);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql(
+            'expects an instance of DocumentReference'
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('get()', () => {
       it('DocumentSnapshot should have correct properties', async () => {
         await resetTestCollectionDoc(COL2_DOC_1_PATH, COL2_DOC_1());

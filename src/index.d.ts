@@ -2362,6 +2362,8 @@ declare module 'react-native-firebase' {
 
         delete(): Promise<void>;
 
+        isEqual(otherDocumentReference: DocumentReference): boolean;
+
         get(options?: Types.GetOptions): Promise<DocumentSnapshot>;
 
         onSnapshot(
