@@ -13,12 +13,11 @@ apply from: "../../node_modules/react-native/react.gradle"
 def enableSeparateBuildPerCPUArchitecture = false
 
 android {
-  compileSdkVersion 27
-
+  compileSdkVersion 28
   defaultConfig {
     applicationId "com.invertase.testing"
     minSdkVersion 18
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
     ndk {
@@ -136,6 +135,7 @@ dependencies {
    * -------------------------------- */
 
   // For Firebase Ads
+  //noinspection GradleCompatible
   implementation "com.android.support:customtabs:27.1.1"
 
   // For React Native Firebase Notifications

@@ -8,6 +8,8 @@ import AndroidChannelGroup from './AndroidChannelGroup';
 import { getNativeModule } from '../../utils/native';
 
 import type Notifications from './';
+import type { NativeAndroidChannel } from './AndroidChannel';
+import type { NativeAndroidChannelGroup } from './AndroidChannelGroup';
 
 export default class AndroidNotifications {
   _notifications: Notifications;
@@ -128,5 +130,51 @@ export default class AndroidNotifications {
       return getNativeModule(this._notifications).deleteChannel(channelId);
     }
     return Promise.resolve();
+  }
+
+  getChannel(channelId: string): Promise<?NativeAndroidChannel> {
+    if (Platform.OS === 'android') {
+      if (typeof channelId !== 'string') {
+        throw new Error(
+          `AndroidNotifications:getChannel expects an 'string' but got type ${typeof channelId}`
+        );
+      }
+      return Promise.resolve(
+        getNativeModule(this._notifications).getChannel(channelId)
+      );
+    }
+    return Promise.resolve(null);
+  }
+
+  getChannels(): Promise<NativeAndroidChannel[]> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(
+        getNativeModule(this._notifications).getChannels()
+      );
+    }
+    return Promise.resolve([]);
+  }
+
+  getChannelGroup(channelGroupId: string): Promise<?NativeAndroidChannelGroup> {
+    if (Platform.OS === 'android') {
+      if (typeof channelGroupId !== 'string') {
+        throw new Error(
+          `AndroidNotifications:getChannel expects an 'string' but got type ${typeof channelGroupId}`
+        );
+      }
+      return Promise.resolve(
+        getNativeModule(this._notifications).getChannelGroup(channelGroupId)
+      );
+    }
+    return Promise.resolve(null);
+  }
+
+  getChannelGroups(): Promise<NativeAndroidChannelGroup[]> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(
+        getNativeModule(this._notifications).getChannelGroups()
+      );
+    }
+    return Promise.resolve([]);
   }
 }

@@ -24,6 +24,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -212,6 +213,50 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       // do nothing - most likely a NoSuchMethodError for < v4 support lib
     }
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannel(String channelId, Promise promise) {
+    try {
+      promise.resolve(notificationManager.getChannel(channelId));
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannels(Promise promise) {
+    try {
+      promise.resolve(notificationManager.getChannels());
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(Collections.emptyList());
+  }
+
+  @ReactMethod
+  public void getChannelGroup(String channelGroupId, Promise promise) {
+    try {
+      promise.resolve(notificationManager.getChannelGroup(channelGroupId));
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannelGroups(Promise promise) {
+    try {
+      promise.resolve(notificationManager.getChannelGroups());
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(Collections.emptyList());
   }
   //////////////////////////////////////////////////////////////////////
   // End Android specific methods
