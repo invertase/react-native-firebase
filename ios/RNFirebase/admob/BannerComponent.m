@@ -54,9 +54,13 @@
 }
 
 - (void)sendEvent:(NSString *)type payload:(NSDictionary *_Nullable)payload {
+    if (!self.onBannerEvent) {
+      return;
+    }
+
     self.onBannerEvent(@{
-            @"type": type,
-            @"payload": payload != nil ? payload : [NSNull null],
+      @"type": type,
+      @"payload": payload != nil ? payload : [NSNull null],
     });
 }
 
