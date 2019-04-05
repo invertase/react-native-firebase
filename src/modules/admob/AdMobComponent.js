@@ -70,8 +70,12 @@ class AdMobComponent extends React.Component {
       }
     }
 
-    if (nativeEvent.type === 'onSizeChange')
+    if (
+      nativeEvent.type === 'onSizeChange' ||
+      nativeEvent.type === 'onAdLoaded'
+    ) {
       this.updateSize(nativeEvent.payload);
+    }
   };
 
   /**
@@ -80,7 +84,9 @@ class AdMobComponent extends React.Component {
    * @param height
    */
   updateSize = ({ width, height }) => {
-    this.setState({ width, height });
+    if (width !== undefined && height !== undefined) {
+      this.setState({ width, height });
+    }
   };
 
   /**
