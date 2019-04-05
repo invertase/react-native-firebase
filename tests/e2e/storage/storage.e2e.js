@@ -1,4 +1,6 @@
-describe('storage()', () => {
+// TODO(salakar): marked as pending because breaking CI - had to rework/restructure credentials/firebase project due
+// TODO(salakar): to a third parties unauthorised usage of credentials
+xdescribe('storage()', () => {
   describe('ref()', () => {
     describe('toString()', () => {
       it('returns the correct bucket path to the file', () => {
