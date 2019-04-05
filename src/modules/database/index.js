@@ -81,9 +81,9 @@ export default class Database extends ModuleBase {
 
   /**
    *
-   * @return {number}
+   * @return {Date}
    */
-  getServerTime(): number {
+  getServerTime(): Date {
     return new Date(Date.now() + this._serverTimeOffset);
   }
 
