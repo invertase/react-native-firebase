@@ -12,6 +12,7 @@ import { typeOf } from '../../../utils';
 
 import type Firestore from '..';
 import type { NativeTypeMap } from '../firestoreTypes.flow';
+import Timestamp from '../Timestamp';
 
 /*
  * Functions that build up the data needed to represent
@@ -108,6 +109,16 @@ export const buildTypeMap = (value: any): NativeTypeMap | null => {
       };
     }
 
+    if (value instanceof Timestamp) {
+      return {
+        type: 'timestamp',
+        value: {
+          seconds: value.seconds,
+          nanoseconds: value.nanoseconds,
+        },
+      };
+    }
+
     if (value instanceof Date) {
       return {
         type: 'date',
@@ -199,6 +210,10 @@ const parseTypeMap = (firestore: Firestore, typeMap: NativeTypeMap): any => {
 
   if (type === 'geopoint') {
     return new GeoPoint(value.latitude, value.longitude);
+  }
+
+  if (type === 'timestamp') {
+    return new Timestamp(value.seconds, value.nanoseconds);
   }
 
   if (type === 'date') {
