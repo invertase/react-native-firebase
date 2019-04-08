@@ -54,6 +54,7 @@ export type NativeTypeMap = {
     | 'blob'
     | 'documentid'
     | 'fieldvalue'
+    | 'timestamp'
     | 'geopoint'
     | 'null'
     | 'number'
