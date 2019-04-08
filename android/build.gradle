@@ -7,7 +7,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.3.2'
   }
 }
 
@@ -15,7 +15,7 @@ apply plugin: 'com.android.library'
 
 def DEFAULT_COMPILE_SDK_VERSION = 28
 def DEFAULT_TARGET_SDK_VERSION = 28
-def DEFAULT_SUPPORT_LIB_VERSION = "27.1.1"
+def DEFAULT_SUPPORT_LIB_VERSION = "28.0.0"
 
 android {
   compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
@@ -158,7 +158,7 @@ dependencies {
     exclude group: 'com.android.support', module: 'customtabs'
   }
   // Authentication
-  compileOnly "com.google.firebase:firebase-auth:16.2.0"
+  compileOnly "com.google.firebase:firebase-auth:16.2.1"
   // Analytics
   compileOnly "com.google.firebase:firebase-analytics:16.4.0"
   // Performance Monitoring
