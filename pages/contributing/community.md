@@ -19,7 +19,10 @@ We'd love to help promote the event via:
 
 Please send as many details of the event as possible:
 
-<Form success="Thanks, we aim to respond to all enquiries within 48 hours.">
+<Form 
+    success="Thanks, we aim to respond to all enquiries within 48 hours."
+    required={['name', 'email', 'type', 'event', 'details']}
+>
     <Form.Input 
         id="name"
         label="Name"
@@ -38,16 +41,12 @@ Please send as many details of the event as possible:
     </Form.Select>
     <Form.Input 
         id="event"
-        label="Event"
-    />
-    <Form.Input 
-        id="event"
         label="Event Name"
     />
     <Form.TextArea 
         id="details"
         label="Event Details"
-        placeholder="Date, Time, "
+        placeholder="Please include details such as location, date, time, talk and anything else related to the event"
     />
     <Form.Submit>
         Send Enquiry
