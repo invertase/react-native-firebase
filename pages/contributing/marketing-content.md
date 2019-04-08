@@ -14,7 +14,7 @@ give it extra attention using the website and/or social media platforms. Please 
 
 Have you written an article/blog post about React Native Firebase? We're always looking for external content
 to help promote the library and we'd love to have this featured on this website. We are supportive of both
-self hosted content (such a a Wordpress website) or 3rd party hosted (such as Medium).
+self hosted content (such as a Wordpress website) or 3rd party hosted (such as Medium).
 
 ### Self hosted content
 
@@ -37,16 +37,17 @@ the appropriate area. Content will be 301 directed from the website to the exter
     <Form.Input 
         name="github"
         label="Github Profile"
+        placeholder="https://github.com"
     />
     <Form.Input 
         name="url"
         label="Content URL"
+        placeholder="https://"
     />
+    <Form.Submit>Send Submission</Form.Submit>
 </Form>
 
 ### On-site content
 
 Our documentation is Open Source. If you'd like to write content on our website which we host, 
 please send a pull request to the repository.
-
-TODO How to submit On-site content example
