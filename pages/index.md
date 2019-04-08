@@ -10,7 +10,7 @@ description: React Native Firebase
   />
   <Heading el="h1">React Native Firebase</Heading>
   <p>
-    React Native Firebase is a well tested, feature rich modular Firebase implementation for React Native. Supporting both iOS & Android platforms with over 15 Firebase services.
+    React Native Firebase is a well tested, feature rich modular Firebase implementation for React Native. Supporting both iOS & Android platforms with over 15 supported Firebase services.
   </p>
 </div>
 
@@ -22,7 +22,7 @@ There are a number of ways to get started with React Native Firebase:
 	<Block
 		title="Quick Start"
 		to="/quick-start"
-		icon="star_rate"
+		icon="done"
 		color="#2196F3"
 	>
 		Get up and running in less than 5 minutes with the quick start tutorial. 
