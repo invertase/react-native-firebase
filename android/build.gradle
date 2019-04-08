@@ -136,6 +136,7 @@ def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.
 dependencies {
   //noinspection GradleDynamicVersion
   api "com.facebook.react:react-native:+"
+  implementation "com.google.firebase:firebase-common:16.1.0"
 
   /* ----------------------------
    *    REACT NATIVE FIREBASE
