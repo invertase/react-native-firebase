@@ -4,7 +4,8 @@ description: React Native Firebase
 ---
 
 <div style="text-align: center;">
-  <img    src="https://camo.githubusercontent.com/e7a14b9a151d9b1d23a0d05dac1af86b0e972714/68747470733a2f2f692e696d6775722e636f6d2f4a497942744b572e706e67"
+  <img 
+    src="https://camo.githubusercontent.com/e7a14b9a151d9b1d23a0d05dac1af86b0e972714/68747470733a2f2f692e696d6775722e636f6d2f4a497942744b572e706e67"
     alt="React Native Firebase"
     style="width: 100px;"
   />
@@ -36,8 +37,8 @@ There are a number of ways to get started with React Native Firebase:
 		Guides cover both basic and advanced topics for all of the Firebase modules.
   	</Block>
 	<Block
-		title="Reference"
-		to="/<< latest_version/reference"
+		title="Module Reference"
+		to="/{{ latest_version }}"
 		icon="layers"
 		color="#9C27B0"
 	>

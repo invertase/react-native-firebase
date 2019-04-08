@@ -2,6 +2,7 @@
 title: Firebase Performance Monitoring and Axios
 description: Automatically add Firebase Performance Monitoring HttpMetric's to every Axios request.
 author: salakar
+date: 2019-01-22
 tags:
   - perf
   - axios
