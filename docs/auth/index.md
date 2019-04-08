@@ -23,7 +23,7 @@ To get started, install the module on your platform:
 	</Block>
 	<Block
 		title="iOS"
-		to="/<< version >>/authentication/installation#ios"
+		to="/{{ version }}/authentication/installation#ios"
 	>
 		Follow the iOS installation guide.
 	</Block>
@@ -36,7 +36,7 @@ To get started, install the module on your platform:
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/<< version >>/authentication/quick-start"
+		to="/{{ version }}/authentication/quick-start"
 	>
     Getting started with authentication? The quick guide will have you up and running in minutes. 
 	</Block>
@@ -52,7 +52,7 @@ To get started, install the module on your platform:
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/<< version >>/authentication/reference"
+		to="/{{ version }}/authentication/reference"
 	>
     The authentication API reference documentation provides detailed information for each of the classes and methods.
 	</Block>
@@ -63,17 +63,6 @@ To get started, install the module on your platform:
 Our documentation is a great place to start, however if you're looking for more help or want to help others, 
 check out the resources below:
 
-<Grid>
-	<Block
-		title="Stack Overflow"
-		to="https://stackoverflow.com/questions/tagged/react-native-firebase-auth"
-	/>
-	<Block
-		title="Github Issues"
-		to="https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aauth+"
-	/>
-  <Block
-		title="Firebase Documentation"
-		to="https://firebase.google.com/docs/auth/"
-	/>
-</Grid>
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-auth)
+- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aauth+)
+- [Firebase Documentation](https://firebase.google.com/docs/auth?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=auth)
