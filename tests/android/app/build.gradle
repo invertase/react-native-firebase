@@ -97,7 +97,7 @@ dependencies {
    *   OPTIONAL FIREBASE SDKS
    * ------------------------- */
 
-  implementation('com.google.firebase:firebase-ads:15.0.1') {
+  implementation('com.google.firebase:firebase-ads:17.2.0') {
     // exclude `customtabs` as the support lib version is out of date
     // we manually add it as a dependency below with a custom version
     exclude group: 'com.android.support', module: 'customtabs'
