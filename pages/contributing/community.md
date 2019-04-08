@@ -20,6 +20,7 @@ We'd love to help promote the event via:
 Please send as many details of the event as possible:
 
 <Form 
+    name="community"
     success="Thanks, we aim to respond to all enquiries within 48 hours."
     required={['name', 'email', 'type', 'event', 'details']}
 >
