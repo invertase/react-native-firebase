@@ -24,15 +24,15 @@ Please send as many details of the event as possible:
     required={['name', 'email', 'type', 'event', 'details']}
 >
     <Form.Input 
-        id="name"
+        name="name"
         label="Name"
     />
     <Form.Input 
-        id="email"
+        name="email"
         label="Email Address"
     />
     <Form.Select 
-        id="type"
+        name="type"
         label="Your role"
     >
         <Form.Select.Option value="host" label="Event Host" />
@@ -40,11 +40,11 @@ Please send as many details of the event as possible:
         <Form.Select.Option value="attendee" label="Event Attendee" />
     </Form.Select>
     <Form.Input 
-        id="event"
+        name="event"
         label="Event Name"
     />
     <Form.TextArea 
-        id="details"
+        name="details"
         label="Event Details"
         placeholder="Please include details such as location, date, time, talk and anything else related to the event"
     />
