@@ -37,7 +37,7 @@ There are a number of ways to get started with React Native Firebase:
 		Guides cover both basic and advanced topics for all of the Firebase modules.
   	</Block>
 	<Block
-		title="Module Reference"
+		title="Reference"
 		to="/{{ latest_version }}"
 		icon="layers"
 		color="#9C27B0"
