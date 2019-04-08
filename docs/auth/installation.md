@@ -1,9 +1,9 @@
 ---
-title: Auth Installation
-description: Installing Firebase Auth for Android & iOS
+title: Authentication Installation
+description: Installing Firebase Authentication for Android & iOS
 ---
 
-# Auth Installation
+# Authentication Installation
 
 TODO
 

@@ -1,5 +1,5 @@
-auth:
-- group: Authentication
+analytics:
+- group: Analytics
   children:
   - text: Overview
     to: "/"
@@ -7,3 +7,30 @@ auth:
     to: "/android"
   - text: iOS Installation
     to: "/ios"
+auth:
+  - group: Authentication
+    children:
+      - text: Overview
+        to: "/"
+      - text: Android Installation
+        to: "/android"
+      - text: iOS Installation
+        to: "/ios"
+firestore:
+  - group: Cloud Firestore
+    children:
+      - text: Overview
+        to: "/"
+      - text: Android Installation
+        to: "/android"
+      - text: iOS Installation
+        to: "/ios"
+functions:
+  - group: Cloud Functions
+    children:
+      - text: Overview
+        to: "/"
+      - text: Android Installation
+        to: "/android"
+      - text: iOS Installation
+        to: "/ios"

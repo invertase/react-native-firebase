@@ -17,13 +17,13 @@ To get started, install the module on your platform:
 <Grid columns="2">
 	<Block
 		title="Android"
-		to="/<< version >>/authentication/installation#android"
+		to="/<< version >>/auth/installation#android"
 	>
     Follow the Android installation guide.
 	</Block>
 	<Block
 		title="iOS"
-		to="/{{ version }}/authentication/installation#ios"
+		to="/{{ version }}/auth/installation#ios"
 	>
 		Follow the iOS installation guide.
 	</Block>
@@ -36,7 +36,7 @@ To get started, install the module on your platform:
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/authentication/quick-start"
+		to="/{{ version }}/auth/quick-start"
 	>
     Getting started with authentication? The quick guide will have you up and running in minutes. 
 	</Block>
@@ -52,7 +52,7 @@ To get started, install the module on your platform:
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/authentication/reference"
+		to="/{{ version }}/auth/reference"
 	>
     The authentication API reference documentation provides detailed information for each of the classes and methods.
 	</Block>
