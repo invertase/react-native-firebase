@@ -22,10 +22,52 @@ import {
   isUndefined,
   isObject,
   getDataUrlParts,
+  promiseDefer,
 } from '@react-native-firebase/common';
 import StorageStatics from './StorageStatics';
 import { validateMetadata } from './SettableMetadata';
 import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
+
+/**
+ *
+ * @param data
+ * @returns {Promise<string>|Promise<string>}
+ */
+function dataToBase64(data) {
+  if (data instanceof Blob) {
+    const fileReader = new FileReader();
+    const { resolve, reject, promise } = promiseDefer();
+
+    fileReader.readAsDataURL(data);
+
+    fileReader.onloadend = function onloadend() {
+      resolve({ string: fileReader.result, format: StorageStatics.StringFormat.DATA_URL });
+    };
+
+    fileReader.onerror = function onerror(event) {
+      fileReader.abort();
+      reject(event);
+    };
+
+    return promise;
+  }
+
+  if (data instanceof ArrayBuffer) {
+    return Promise.resolve({
+      string: Base64.fromArrayBuffer(data),
+      format: StorageStatics.StringFormat.BASE64,
+    });
+  }
+
+  if (data instanceof Uint8Array) {
+    return Promise.resolve({
+      string: Base64.fromUint8Array(data),
+      format: StorageStatics.StringFormat.BASE64,
+    });
+  }
+
+  return Promise.reject(new Error('Unknown data type for firebase.storage().put()'));
+}
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
@@ -91,9 +133,9 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 
-  // TODO remove types
-  put(data: Blob | Uint8Array | ArrayBuffer, metadata: Metadata | null = null) {
-    // TODO implement
+  async put(data, metadata) {
+    const { string, format } = await dataToBase64(data);
+    return this.putString(string, format, metadata);
   }
 
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {

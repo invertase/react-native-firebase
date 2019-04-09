@@ -26,9 +26,9 @@ const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
 const PACKAGES = [
-  'app',
+  // 'app',
   // 'iid',
-  'perf',
+  // 'perf',
   // 'fiam',
   // 'functions',
   // 'analytics',
@@ -43,7 +43,7 @@ const PACKAGES = [
   // 'firestore',
   // 'links',
   // 'messaging',
-  // 'storage',
+  'storage',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {

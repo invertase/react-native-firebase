@@ -184,6 +184,69 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
+  describe('put()', () => {
+    it('uploads a Blob', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const bob = new jet.context.Blob([jsonDerulo], {
+        type: 'application/json',
+      });
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .put(bob);
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('uploads an ArrayBuffer', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const arrayBuffer = new jet.context.window.ArrayBuffer(jsonDerulo.length);
+      const arrayBufferView = new jet.context.window.Uint8Array(arrayBuffer);
+
+      for (let i = 0, strLen = jsonDerulo.length; i < strLen; i++) {
+        arrayBufferView[i] = jsonDerulo.charCodeAt(i);
+      }
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringArrayBuffer.json')
+        .put(arrayBuffer, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('uploads an Uint8Array', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const arrayBuffer = new jet.context.window.ArrayBuffer(jsonDerulo.length);
+      const unit8Array = new jet.context.window.Uint8Array(arrayBuffer);
+
+      for (let i = 0, strLen = jsonDerulo.length; i < strLen; i++) {
+        unit8Array[i] = jsonDerulo.charCodeAt(i);
+      }
+
+      const uploadTaskSnapshot = await firebase
+        .storage()
+        .ref('/putStringUint8Array.json')
+        .put(unit8Array, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+  });
+
   describe('putFile()', () => {
     before(async () => {
       await firebase
