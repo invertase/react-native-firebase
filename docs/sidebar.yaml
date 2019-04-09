@@ -10,9 +10,9 @@
 - module: auth
   title: Authentication
   children:
-  	- text: Overview
-      to: "/"
-    - text: Android Installation
-      to: "/android"
-    - text: iOS Installation
-      to: "/ios"
+  - text: Overview
+    to: "/"
+  - text: Android Installation
+    to: "/android"
+  - text: iOS Installation
+    to: "/ios"
