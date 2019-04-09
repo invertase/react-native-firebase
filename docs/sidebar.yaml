@@ -1,5 +1,5 @@
 - module: analytics
-  title: Analytics
+  group: Analytics
   children:
   - text: Overview
     to: "/"
@@ -8,7 +8,7 @@
   - text: iOS Installation
     to: "/ios"
 - module: auth
-  title: Authentication
+  group: Authentication
   children:
   - text: Overview
     to: "/"
