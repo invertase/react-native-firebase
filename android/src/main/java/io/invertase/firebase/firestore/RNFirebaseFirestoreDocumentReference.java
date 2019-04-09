@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 
 import io.invertase.firebase.Utils;
 
-
 public class RNFirebaseFirestoreDocumentReference {
   private static final String TAG = "RNFBFSDocumentReference";
   private static Map<String, ListenerRegistration> documentSnapshotListeners = new HashMap<>();

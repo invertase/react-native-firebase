@@ -1003,8 +1003,10 @@ declare module 'react-native-firebase' {
           smsCode: string
         ): Promise<null>;
       }
+
       type OrNull<T> = T | null;
       type AuthListenerCallback = (user: OrNull<User>) => void;
+
       interface Auth {
         readonly app: App;
         /**
@@ -1213,9 +1215,9 @@ declare module 'react-native-firebase' {
     namespace messaging {
       interface Messaging {
         /**
-        * Returns firebase.messaging.IOSMessaging that gets the
-        *  iOS specific methods and properties of messaging.
-        */
+         * Returns firebase.messaging.IOSMessaging that gets the
+         *  iOS specific methods and properties of messaging.
+         */
         ios: IOSMessaging;
 
         /**
@@ -1319,6 +1321,31 @@ declare module 'react-native-firebase' {
     }
 
     namespace notifications {
+      interface NativeAndroidChannel {
+        bypassDnd?: boolean;
+        channelId: string;
+        description?: string;
+        group?: string;
+        importance: number;
+        lightColor?: string;
+        lightsEnabled?: boolean;
+        lockScreenVisibility?: number;
+        name: string;
+        showBadge?: boolean;
+        sound?: string;
+        vibrationEnabled?: boolean;
+        vibrationPattern?: number[];
+      }
+
+      interface NativeAndroidChannelGroup {
+        name: string;
+        groupId: string;
+        // Android API >= 28
+        description: string | void;
+        // Android API >= 28
+        channels: void | NativeAndroidChannel[];
+      }
+
       interface AndroidNotifications {
         createChannel(channel: Android.Channel): Promise<void>;
 
@@ -1333,6 +1360,18 @@ declare module 'react-native-firebase' {
         deleteChannelGroup(groupId: string): Promise<void>;
 
         deleteChannel(channelId: string): Promise<void>;
+
+        getChannel(channelId: string): Promise<NativeAndroidChannel | null>;
+
+        getChannels(channelId: string): Promise<NativeAndroidChannel[]>;
+
+        getChannelGroup(
+          channelId: string
+        ): Promise<NativeAndroidChannelGroup | null>;
+
+        getChannelGroups(
+          channelId: string
+        ): Promise<NativeAndroidChannelGroup[]>;
       }
 
       type BackgroundFetchResultValue = string;
@@ -1340,9 +1379,9 @@ declare module 'react-native-firebase' {
         backgroundFetchResult: BackgroundFetchResultValue
       ) => void;
       type Schedule = {
-        fireDate: number,
-        repeatInterval?: "minute" | "hour" | "day" | "week"
-      }
+        fireDate: number;
+        repeatInterval?: 'minute' | 'hour' | 'day' | 'week';
+      };
       interface Notifications {
         android: AndroidNotifications;
 
@@ -1386,7 +1425,10 @@ declare module 'react-native-firebase' {
         /**
          * Schedule a local notification to be shown on the device.
          */
-        scheduleNotification(notification: Notification, schedule: Schedule): any;
+        scheduleNotification(
+          notification: Notification,
+          schedule: Schedule
+        ): any;
 
         /**
          * Sets the badge number on the iOS app icon.
@@ -2199,10 +2241,9 @@ declare module 'react-native-firebase' {
        * An HttpsCallable is a reference to a "callable" http trigger in
        * Google Cloud Functions.
        */
-      type HttpsCallable<Params, Result> =
-        Params extends void ?
-          () => Promise<HttpsCallableResult<Result>> :
-          (data: Params) => Promise<HttpsCallableResult<Result>>
+      type HttpsCallable<Params, Result> = Params extends void
+        ? () => Promise<HttpsCallableResult<Result>>
+        : (data: Params) => Promise<HttpsCallableResult<Result>>;
 
       /**
        * `FirebaseFunctions` represents a Functions app, and is the entry point for
@@ -2216,7 +2257,9 @@ declare module 'react-native-firebase' {
          * @param name The name of the https callable function.
          * @return The `HttpsCallable` instance.
          */
-        httpsCallable<Params = any, Result = any>(name: string): HttpsCallable<Params, Result>;
+        httpsCallable<Params = any, Result = any>(
+          name: string
+        ): HttpsCallable<Params, Result>;
 
         /**
          * Changes this instance to point to a Cloud Functions emulator running
@@ -2283,7 +2326,7 @@ declare module 'react-native-firebase' {
         FieldPath: typeof FieldPath;
         FieldValue: typeof FieldValue;
         GeoPoint: typeof GeoPoint;
-
+        Timestamp: typeof Timestamp;
         enableLogging(enabled: boolean): void;
 
         setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
@@ -2467,6 +2510,19 @@ declare module 'react-native-firebase' {
         toUint8Array(): Uint8Array;
       }
 
+      class Timestamp {
+        readonly seconds: number;
+        readonly nanoseconds: number;
+        static now(): Timestamp;
+        static fromDate(date: Date): Timestamp;
+        static fromMillis(milliseconds: number): Timestamp;
+        constructor(seconds: number, nanoseconds: number);
+        toDate(): Date;
+        toMillis(): number;
+        isEqual(other: Timestamp): boolean;
+        toString(): string;
+      }
+
       class FieldPath {
         static documentId(): FieldPath;
 
@@ -2479,6 +2535,8 @@ declare module 'react-native-firebase' {
         static delete(): FieldValue;
 
         static serverTimestamp(): FieldValue;
+
+        static increment(n: number): FieldValue;
 
         static arrayUnion(...elements: AnyJs[]): FieldValue;
 
@@ -2933,6 +2991,7 @@ declare module 'react-native-firebase/firestore' {
   export type DocumentReference = RNFirebase.firestore.DocumentReference;
   export type DocumentSnapshot = RNFirebase.firestore.DocumentSnapshot;
   export type FieldPath = RNFirebase.firestore.FieldPath;
+  export type Timestamp = RNFirebase.firestore.Timestamp;
   export type FieldValue = RNFirebase.firestore.FieldValue;
   export type GeoPoint = RNFirebase.firestore.GeoPoint;
   export type Path = RNFirebase.firestore.Path;

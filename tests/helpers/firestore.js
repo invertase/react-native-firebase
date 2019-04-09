@@ -48,7 +48,9 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      timestamp: firebase.firestore.Timestamp.fromDate(
+        new jet.context.window.Date(2017, 2, 10, 10, 0, 0)
+      ),
     };
   },
 
@@ -67,7 +69,10 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      // timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      timestamp: firebase.firestore.Timestamp.fromDate(
+        new jet.context.window.Date(2017, 2, 10, 10, 0, 0, 0)
+      ),
     };
   },
 

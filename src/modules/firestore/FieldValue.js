@@ -11,7 +11,7 @@ export default class FieldValue {
 
   _elements: AnyJs[] | any;
 
-  constructor(type: string, elements?: AnyJs[]) {
+  constructor(type: string, elements?: AnyJs[] | number) {
     this._type = type;
     this._elements = elements;
   }
@@ -26,6 +26,10 @@ export default class FieldValue {
 
   static delete(): FieldValue {
     return new FieldValue(TypeFieldValueDelete);
+  }
+
+  static increment(n: number): FieldValue {
+    return new FieldValue(TypeFieldValueIncrement, n);
   }
 
   static serverTimestamp(): FieldValue {
@@ -48,6 +52,7 @@ export default class FieldValue {
 }
 
 export const TypeFieldValueDelete = 'delete';
+export const TypeFieldValueIncrement = 'increment';
 export const TypeFieldValueRemove = 'remove';
 export const TypeFieldValueUnion = 'union';
 export const TypeFieldValueTimestamp = 'timestamp';

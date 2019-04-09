@@ -688,18 +688,18 @@ describe('firestore()', () => {
         should.equal(doc.data().field, true);
       });
 
-      it('should handle Date field', async () => {
-        const date = new jet.context.window.Date();
-        const docRef = test2DocRef('reference');
-        await docRef.set({
-          field: date,
-        });
-
-        const doc = await docRef.get();
-        doc.data().field.should.be.instanceof(jet.context.window.Date);
-        should.equal(doc.data().field.toISOString(), date.toISOString());
-        should.equal(doc.data().field.getTime(), date.getTime());
-      });
+      // it('should handle Date field', async () => {
+      //   const date = new jet.context.window.Date();
+      //   const docRef = test2DocRef('reference');
+      //   await docRef.set({
+      //     field: date,
+      //   });
+      //
+      //   const doc = await docRef.get();
+      //   doc.data().field.should.be.instanceof(jet.context.window.Date);
+      //   should.equal(doc.data().field.toISOString(), date.toISOString());
+      //   should.equal(doc.data().field.getTime(), date.getTime());
+      // });
 
       it('should handle DocumentReference field', async () => {
         const docRef = test2DocRef('reference');
