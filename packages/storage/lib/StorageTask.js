@@ -28,7 +28,7 @@ export default class StorageTask {
     this.type = type;
     this.ref = storageRef;
     this.storage = storageRef._storage;
-    this.path = storageRef.path;
+    this.url = storageRef.toString();
 
     // 'proxy' original promise
     this.then = promise.then.bind(promise);
@@ -76,19 +76,19 @@ export default class StorageTask {
 
     if (_next) {
       _nextSubscription = this.storage._addListener(
-        this.path,
+        this.url,
         StorageStatics.TaskEvent.STATE_CHANGED,
         _next,
       );
     }
 
     if (_error) {
-      _errorSubscription = this.storage._addListener(this.path, `${this.type}_failure`, _error);
+      _errorSubscription = this.storage._addListener(this.url, `${this.type}_failure`, _error);
     }
 
     if (_complete) {
       _completeSubscription = this.storage._addListener(
-        this.path,
+        this.url,
         `${this.type}_success`,
         _complete,
       );

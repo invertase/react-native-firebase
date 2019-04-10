@@ -67,9 +67,6 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
 
   /**
    * Returns the task status as string
-   *
-   * @param task
-   * @return
    */
   static String getTaskStatus(StorageTask<?> task) {
     if (task.isInProgress()) {
@@ -202,8 +199,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
    */
   @ReactMethod
-  public void delete(String appName, String path, final Promise promise) {
-    StorageReference reference = getReference(path, appName);
+  public void delete(String appName, String url, final Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
     reference.delete().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(null);
@@ -217,8 +214,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
    */
   @ReactMethod
-  public void getDownloadURL(String appName, final String path, final Promise promise) {
-    StorageReference reference = getReference(path, appName);
+  public void getDownloadURL(String appName, final String url, final Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
     Task<Uri> downloadTask = reference.getDownloadUrl();
 
     downloadTask.addOnCompleteListener(task -> {
@@ -234,8 +231,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
    */
   @ReactMethod
-  public void getMetadata(String appName, String path, Promise promise) {
-    StorageReference reference = getReference(path, appName);
+  public void getMetadata(String appName, String url, Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
     reference.getMetadata().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
@@ -251,11 +248,11 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @ReactMethod
   public void updateMetadata(
     String appName,
-    String path,
+    String url,
     ReadableMap metadataMap,
     final Promise promise
   ) {
-    StorageReference reference = getReference(path, appName);
+    StorageReference reference = getReferenceFromUrl(url, appName);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
 
     reference.updateMetadata(metadata).addOnCompleteListener(task -> {
@@ -273,7 +270,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @ReactMethod
   public void downloadFile(
     final String appName,
-    final String path,
+    final String url,
     final String localFilePath,
     final Promise promise
   ) {
@@ -286,11 +283,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       return;
     }
 
-    StorageReference reference = getReference(path, appName);
-
-    // TODO(salakar) add bucket support
+    StorageReference reference = getReferenceFromUrl(url, appName);
     ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
-      reference, appName, ""
+      reference,
+      appName
     );
 
     storageTask.startDownload(localFilePath).addOnCompleteListener(task -> {
@@ -302,7 +298,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_SUCCESS,
           appName,
-          localFilePath
+          url
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
@@ -315,14 +311,14 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          localFilePath
+          url
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
           appName,
-          localFilePath
+          reference.toString()
         ));
 
         promiseRejectStorageException(promise, task.getException());
@@ -369,18 +365,16 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @ReactMethod
   public void putString(
     String appName,
-    String path,
+    String url,
     String string,
     String format,
     ReadableMap metadataMap,
     Promise promise
   ) {
-    StorageReference reference = getReference(path, appName);
-
+    StorageReference reference = getReferenceFromUrl(url, appName);
     ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
       reference,
-      appName,
-      ""
+      appName
     );
 
     UploadTask uploadTask = storageTask.startStringUpload(string, format, metadataMap);
@@ -394,7 +388,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          path
+          url
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
@@ -403,7 +397,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
           appName,
-          path
+          url
         ));
 
         taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
@@ -415,20 +409,20 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          path
+          url
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
           appName,
-          path
+          url
         ));
 
         promiseRejectStorageException(promise, task.getException());
       }
     });
- }
+  }
 
 
   /**
@@ -437,18 +431,16 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @ReactMethod
   public void putFile(
     String appName,
-    String path,
+    String url,
     String localFilePath,
     ReadableMap metadata,
     Promise promise
   ) {
-    StorageReference reference = getReference(path, appName);
+    StorageReference reference = getReferenceFromUrl(url, appName);
 
-    // TODO(salakar) bucket support
     ReactNativeFirebaseStorageTask storageTask = new ReactNativeFirebaseStorageTask(
       reference,
-      appName,
-      ""
+      appName
     );
 
     UploadTask uploadTask = storageTask.startFileUpload(localFilePath, metadata);
@@ -462,7 +454,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          path
+          url
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
@@ -471,7 +463,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
           appName,
-          path
+          url
         ));
 
         taskSnapshotMap = ReactNativeFirebaseStorageTask.getUploadTaskAsMap(task.getResult());
@@ -483,14 +475,14 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          path
+          url
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           ReactNativeFirebaseStorageTask.getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
           appName,
-          path
+          url
         ));
 
         promiseRejectStorageException(promise, task.getException());
@@ -498,16 +490,15 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     });
   }
 
-  // TODO(salakar) js land always send URL only instead of path for multi-bucket support
-  private StorageReference getReference(String path, String appName) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
+  private String getBucketFromUrl(String url) {
+    String pathWithBucketName = url.substring(5);
+    return url.substring(0, pathWithBucketName.indexOf("/") + 5);
+  }
 
-//    if (path.startsWith("url::")) {
-//      return firebaseStorage.getReferenceFromUrl(path.substring(5));
-//    } else {
-      return firebaseStorage.getReference(path);
-//    }
+  private StorageReference getReferenceFromUrl(String url, String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp, getBucketFromUrl(url));
+    return firebaseStorage.getReferenceFromUrl(url);
   }
 
   private void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {

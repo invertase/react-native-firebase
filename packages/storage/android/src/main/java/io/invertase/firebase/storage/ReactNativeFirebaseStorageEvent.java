@@ -30,16 +30,16 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
   static final String EVENT_DOWNLOAD_SUCCESS = "download_success";
   static final String EVENT_DOWNLOAD_FAILURE = "download_failure";
 
-  private String path;
+  private String url;
   private String appName;
   private WritableMap eventBody;
   private String internalEventName;
 
-  ReactNativeFirebaseStorageEvent(WritableMap eventBody, String internalEventName, String appName, String path) {
+  ReactNativeFirebaseStorageEvent(WritableMap eventBody, String internalEventName, String appName, String url) {
     this.eventBody = eventBody;
     this.internalEventName = internalEventName;
     this.appName = appName;
-    this.path = path;
+    this.url = url;
   }
 
   public String getEventName() {
@@ -48,7 +48,7 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
 
   public WritableMap getEventBody() {
     WritableMap event = Arguments.createMap();
-    event.putString("path", path);
+    event.putString("url", url);
     event.putMap("body", eventBody);
     event.putString("appName", appName);
     event.putString("eventName", internalEventName);

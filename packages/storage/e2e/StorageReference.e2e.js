@@ -62,10 +62,8 @@ describe('storage() -> StorageReference', () => {
 
     describe('name', () => {
       it('returns the file name as a string', () => {
-        firebase
-          .storage()
-          .ref('/foo/uploadNope.jpeg')
-          .name.should.equal('uploadNope.jpeg');
+        const ref = firebase.storage().ref('/foo/uploadNope.jpeg');
+        ref.name.should.equal('uploadNope.jpeg');
       });
     });
 

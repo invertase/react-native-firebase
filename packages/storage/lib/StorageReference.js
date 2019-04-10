@@ -76,7 +76,7 @@ export default class StorageReference extends ReferenceBase {
   }
 
   get bucket() {
-    return this._storage.app.options.storageBucket;
+    return this._storage._customUrlOrRegion.replace('gs://', '');
   }
 
   get name() {
@@ -105,30 +105,30 @@ export default class StorageReference extends ReferenceBase {
   }
 
   toString() {
-    return `gs://${this._storage.app.options.storageBucket}/${this.path}`;
+    return `${this._storage._customUrlOrRegion}/${this.path}`;
   }
 
   delete() {
-    return this._storage.native.delete(this.path);
+    return this._storage.native.delete(this.toString());
   }
 
   getDownloadURL() {
-    return this._storage.native.getDownloadURL(this.path);
+    return this._storage.native.getDownloadURL(this.toString());
   }
 
   getMetadata() {
-    return this._storage.native.getMetadata(this.path);
+    return this._storage.native.getMetadata(this.toString());
   }
 
   updateMetadata(metadata) {
     validateMetadata(metadata);
-    return this._storage.native.updateMetadata(this.path, metadata);
+    return this._storage.native.updateMetadata(this.toString(), metadata);
   }
 
   downloadFile(filePath) {
     return new StorageTask(
       DOWNLOAD_TASK,
-      this._storage.native.downloadFile(this.path, filePath),
+      this._storage.native.downloadFile(this.toString(), filePath),
       this,
     );
   }
@@ -174,6 +174,7 @@ export default class StorageReference extends ReferenceBase {
           `firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.`,
         );
       }
+
       if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
         if (isUndefined(metadata)) _metadata = {};
         _metadata.contentType = mediaType;
@@ -182,7 +183,7 @@ export default class StorageReference extends ReferenceBase {
       }
     }
 
-    return this._storage.native.putString(this.path, _string, _format, _metadata);
+    return this._storage.native.putString(this.toString(), _string, _format, _metadata);
   }
 
   putFile(filePath, metadata) {
@@ -192,7 +193,7 @@ export default class StorageReference extends ReferenceBase {
 
     return new StorageTask(
       UPLOAD_TASK,
-      this._storage.native.putFile(this.path, _filePath, metadata),
+      this._storage.native.putFile(this.toString(), _filePath, metadata),
       this,
     );
   }

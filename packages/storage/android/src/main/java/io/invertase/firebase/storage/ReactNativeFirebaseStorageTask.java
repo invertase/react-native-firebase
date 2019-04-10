@@ -40,19 +40,16 @@ import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 class ReactNativeFirebaseStorageTask {
   private static final String TAG = "RNFirebaseStorageTask";
   private String appName;
-  private String bucketUrl; // TODO
   private UploadTask uploadTask;
   private StorageReference storageReference;
   private StreamDownloadTask streamDownloadTask; // TODO
 
   ReactNativeFirebaseStorageTask(
     StorageReference storageReference,
-    String appName,
-    String bucketUrl
+    String appName
   ) {
     this.storageReference = storageReference;
     this.appName = appName;
-    this.bucketUrl = bucketUrl;
   }
 
   private static WritableMap getCancelledTaskMap() {
@@ -111,7 +108,7 @@ class ReactNativeFirebaseStorageTask {
   /**
    * Create a Uri from the path, defaulting to file when there is no supplied scheme
    */
-  private static Uri getUri(final String uri) {
+  private static Uri getUri(String uri) {
     Uri parsed = Uri.parse(uri);
 
     if (parsed.getScheme() == null || parsed
@@ -154,7 +151,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 
@@ -164,7 +161,7 @@ class ReactNativeFirebaseStorageTask {
         getCancelledTaskMap(),
         ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
         appName,
-        storageReference.getPath()
+        storageReference.toString()
       )));
 
     uploadTask.addOnPausedListener(taskSnapshotRaw -> {
@@ -175,7 +172,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 
@@ -199,7 +196,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 
@@ -209,7 +206,7 @@ class ReactNativeFirebaseStorageTask {
         getCancelledTaskMap(),
         ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
         appName,
-        storageReference.getPath()
+        storageReference.toString()
       )));
 
     uploadTask.addOnPausedListener(taskSnapshotRaw -> {
@@ -220,7 +217,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 
@@ -264,7 +261,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 
@@ -274,7 +271,7 @@ class ReactNativeFirebaseStorageTask {
         getCancelledTaskMap(),
         ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
         appName,
-        storageReference.getPath()
+        storageReference.toString()
       )));
 
     streamDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
@@ -286,7 +283,7 @@ class ReactNativeFirebaseStorageTask {
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.getPath()
+          storageReference.toString()
         ));
     });
 

@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isNumber } from '@react-native-firebase/common';
+import { isNumber, isString } from '@react-native-firebase/common';
 
 import version from './version';
 import StorageStatics from './StorageStatics';
@@ -32,8 +32,14 @@ const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';
 
 class FirebaseStorageModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+  constructor(app, config, bucketUrl) {
+    super(app, config, bucketUrl);
+    if (bucketUrl === undefined) this._customUrlOrRegion = `gs://${app.options.storageBucket}`;
+    else if (!isString(bucketUrl) || !bucketUrl.startsWith('gs://')) {
+      throw new Error(
+        `firebase.app().storage(*) bucket url must be a string and begin with 'gs://'`,
+      );
+    }
 
     this.emitter.addListener(
       this.eventNameForApp('storage_event'),
@@ -83,17 +89,17 @@ class FirebaseStorageModule extends FirebaseModule {
     return this.native.setMaxDownloadRetryTime(time);
   }
 
-  _getSubEventName(path, eventName) {
-    return this.eventNameForApp(`${path}-${eventName}`);
+  _getSubEventName(url, eventName) {
+    return this.eventNameForApp(`${url}-${eventName}`);
   }
 
   _handleStorageEvent(event) {
-    const { path, eventName } = event;
+    const { url, eventName } = event;
     const body = event.body || {};
     if (eventName.endsWith('failure')) {
       // TODO generate an error?
     }
-    this.emitter.emit(this._getSubEventName(path, eventName), body);
+    this.emitter.emit(this._getSubEventName(url, eventName), body);
   }
 
   // _handleStorageError(error) {
@@ -103,8 +109,8 @@ class FirebaseStorageModule extends FirebaseModule {
   //   this.emitter.emit(this._getSubEventName(path, eventName), body);
   // }
 
-  _addListener(path, eventName, cb) {
-    return this.emitter.addListener(this._getSubEventName(path, eventName), cb);
+  _addListener(url, eventName, cb) {
+    return this.emitter.addListener(this._getSubEventName(url, eventName), cb);
   }
 }
 
@@ -120,8 +126,8 @@ export default createModuleNamespace({
   nativeEvents,
   nativeModuleName,
   hasMultiAppSupport: true,
-  // TODO
-  hasCustomUrlOrRegionSupport: false,
+  hasCustomUrlOrRegionSupport: true,
+  disablePrependCustomUrlOrRegion: true,
   ModuleClass: FirebaseStorageModule,
 });
 

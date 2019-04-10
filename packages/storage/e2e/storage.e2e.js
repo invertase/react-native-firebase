@@ -23,7 +23,6 @@ describe('storage()', () => {
       app.storage().app.should.equal(app);
     });
 
-    // removing as pending if module.options.hasMultiAppSupport = true
     it('supports multiple apps', async () => {
       firebase.storage().app.name.should.equal('[DEFAULT]');
 
@@ -35,6 +34,47 @@ describe('storage()', () => {
         .app('secondaryFromNative')
         .storage()
         .app.name.should.equal('secondaryFromNative');
+    });
+
+    it('supports specifying a bucket', async () => {
+      const bucket = 'gs://react-native-firebase-testing';
+      const defaultInstance = firebase.storage();
+      defaultInstance.app.name.should.equal('[DEFAULT]');
+      should.equal(
+        defaultInstance._customUrlOrRegion,
+        'gs://react-native-firebase-testing.appspot.com',
+      );
+      firebase.storage().app.name.should.equal('[DEFAULT]');
+      const instanceForBucket = firebase.app().storage(bucket);
+      instanceForBucket._customUrlOrRegion.should.equal(bucket);
+    });
+
+    it('throws an error if an invalid bucket url is provided', async () => {
+      const bucket = 'invalid://react-native-firebase-testing';
+      try {
+        firebase.app().storage(bucket);
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (error) {
+        error.message.should.containEql(`bucket url must be a string and begin with 'gs://'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('uploads to a custom bucket when specified', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+      const bucket = 'gs://react-native-firebase-testing';
+
+      const uploadTaskSnapshot = await firebase
+        .app()
+        .storage(bucket)
+        .ref('/putString.json')
+        .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
+          contentType: 'application/json',
+        });
+
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
     });
   });
 
