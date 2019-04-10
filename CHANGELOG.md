@@ -119,6 +119,9 @@ await analytics().setUserId('12345678');
 
 ## Crashlytics
 
+> **Blog post announcement**: [[Firebase Crashlytics for React Native](https://invertase.io/blog/firebase-crashlytics-for-react-native?utm_source=github&utm_medium=changelog)]
+
+
 - [NEW] JavaScript stack traces now automatically captured and parsed
   ![js stack trace preview](https://pbs.twimg.com/media/D07RPDMW0AA7TTv.jpg:large)
 - [NEW] Optionally enable automatic reporting of JavaScript unhandled Promise rejections
