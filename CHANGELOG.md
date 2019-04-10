@@ -178,8 +178,11 @@ await analytics().setUserId('12345678');
 
 ## Storage
 
-- [NEW] Added support for `put` (Blobs)
+- [NEW] Added support for `put` (`Blob` | `ArrayBuffer` | `Uint8Array`)
+  - `contentType` mime type is automatically inferred from `Blob`
 - [NEW] Added support for `putString` and all StringFormat's (raw, base64, base64 & data_url)
+  - `contentType` mime type is automatically inferred from `data_url` strings
+- [NEW] Added support multiple buckets, e.g. `firebase.app().storage('gs://my-other-bucket')`
 - [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
 - [BUGFIX][ANDROID] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
 - [BUGFIX][ANDROID] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
