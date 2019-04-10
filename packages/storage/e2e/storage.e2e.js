@@ -67,7 +67,7 @@ describe('storage()', () => {
       const uploadTaskSnapshot = await firebase
         .app()
         .storage(bucket)
-        .ref('/putString.json')
+        .ref('/putStringCustomBucket.json')
         .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
           contentType: 'application/json',
         });
