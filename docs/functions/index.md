@@ -14,7 +14,7 @@ React Native Firebase supports integration with production and locally emulated 
 
 To get started, install the module using Yarn:
 
-```
+```bash
 yarn add @react-native-firebase/functions
 ```
 
