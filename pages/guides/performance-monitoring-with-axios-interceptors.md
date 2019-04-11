@@ -5,8 +5,6 @@ author: salakar
 date: 2019-01-22
 tags:
   - perf
-  - axios
-  - http
 ---
 
 # Monitor HTTP request performance with Firebase Performance Monitoring and Axios
