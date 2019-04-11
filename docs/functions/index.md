@@ -12,22 +12,11 @@ React Native Firebase supports integration with production and locally emulated 
 
 ## Install
 
-To get started, install the module on your platform:
+To get started, install the module using Yarn:
 
-<Grid columns="2">
-	<Block
-		title="Android"
-		to="/{{ version }}/functions/installation#android"
-	>
-    Follow the Android installation guide.
-	</Block>
-	<Block
-		title="iOS"
-		to="/{{ version }}/functions/installation#ios"
-	>
-		Follow the iOS installation guide.
-	</Block>
-</Grid>
+```
+yarn add @react-native-firebase/functions
+```
 
 ## Getting Started
 
