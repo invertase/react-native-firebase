@@ -19,7 +19,12 @@
     "react",
     "react-native",
     "firebase",
-    "storage"
+    "images",
+    "json",
+    "cloud storage",
+    "storage",
+    "upload",
+    "download"
   ],
   "peerDependencies": {
     "@react-native-firebase/app": "6.0.0-alpha.7"

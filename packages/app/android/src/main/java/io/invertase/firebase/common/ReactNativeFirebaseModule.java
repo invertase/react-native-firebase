@@ -62,7 +62,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     return getCurrentActivity();
   }
 
-  public WritableMap getExceptionMap(Exception exception) {
+  static WritableMap getExceptionMap(Exception exception) {
     WritableMap exceptionMap = Arguments.createMap();
     String code = "unknown";
     String message = exception.getMessage();
@@ -73,11 +73,11 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     return exceptionMap;
   }
 
-  public void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
+  public static void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
     promise.reject(exception, getExceptionMap(exception));
   }
 
-  public void rejectPromiseWithCodeAndMessage(Promise promise, String code, String message) {
+  public static void rejectPromiseWithCodeAndMessage(Promise promise, String code, String message) {
     WritableMap userInfoMap = Arguments.createMap();
     userInfoMap.putString("code", code);
     userInfoMap.putString("message", message);

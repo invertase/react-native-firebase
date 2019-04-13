@@ -117,6 +117,9 @@ class FirebaseStorageModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/storage';
 export const SDK_VERSION = version;
 
+// import { STATICS } from '@react-native-firebase/storage';
+export const STATICS = StorageStatics;
+
 // import storage from '@react-native-firebase/storage';
 // storage().X(...);
 export default createModuleNamespace({

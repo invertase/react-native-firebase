@@ -1,5 +1,5 @@
-auth:
-- group: Authentication
+- module: analytics
+  group: Analytics
   children:
   - text: Overview
     to: "/"
@@ -7,3 +7,25 @@ auth:
     to: "/android"
   - text: iOS Installation
     to: "/ios"
+
+- module: auth
+  group: Authentication
+  children:
+  - text: Overview
+    to: "/"
+  - text: Android Installation
+    to: "/android"
+  - text: iOS Installation
+    to: "/ios"
+
+- module: functions
+  group: Cloud Functions
+  children:
+    - text: Overview
+      to: "/"
+    - text: Android Installation
+      to: "/android"
+    - text: iOS Installation
+      to: "/ios"
+    - text: Quick Start
+      to: "/quick-start"

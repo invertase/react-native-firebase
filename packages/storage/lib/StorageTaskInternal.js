@@ -15,24 +15,22 @@
  *
  */
 
-// import { statics as StorageStatics } from './';
 import { isFunction } from '@react-native-firebase/common';
 import StorageStatics from './StorageStatics';
 
-export const UPLOAD_TASK = 'upload';
+let TASK_ID = 0;
 
-export const DOWNLOAD_TASK = 'download';
-
-export default class StorageTask {
-  constructor(type, promise, storageRef) {
-    this.type = type;
-    this.ref = storageRef;
-    this.storage = storageRef._storage;
-    this.url = storageRef.toString();
+export default class StorageTaskInternal {
+  constructor(type, storageRef) {
+    this._id = TASK_ID++;
+    this._type = type;
+    this._ref = storageRef;
+    this._storage = storageRef._storage;
+    this._url = storageRef.toString();
 
     // 'proxy' original promise
-    this.then = promise.then.bind(promise);
-    this.catch = promise.catch.bind(promise);
+    // this.then = promise.then.bind(promise);
+    // this.catch = promise.catch.bind(promise);
   }
 
   _interceptSnapshotEvent(f) {
@@ -40,7 +38,7 @@ export default class StorageTask {
     return snapshot => {
       const _snapshot = Object.assign({}, snapshot);
       _snapshot.task = this;
-      _snapshot.ref = this.ref;
+      _snapshot.ref = this._ref;
       return f && f(_snapshot);
     };
   }
@@ -75,21 +73,21 @@ export default class StorageTask {
     }
 
     if (_next) {
-      _nextSubscription = this.storage._addListener(
-        this.url,
+      _nextSubscription = this._storage._addListener(
+        this._url,
         StorageStatics.TaskEvent.STATE_CHANGED,
         _next,
       );
     }
 
     if (_error) {
-      _errorSubscription = this.storage._addListener(this.url, `${this.type}_failure`, _error);
+      _errorSubscription = this._storage._addListener(this._url, `${this._type}_failure`, _error);
     }
 
     if (_complete) {
-      _completeSubscription = this.storage._addListener(
-        this.url,
-        `${this.type}_success`,
+      _completeSubscription = this._storage._addListener(
+        this._url,
+        `${this._type}_success`,
         _complete,
       );
     }

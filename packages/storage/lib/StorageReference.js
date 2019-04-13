@@ -25,8 +25,10 @@ import {
   promiseDefer,
 } from '@react-native-firebase/common';
 import StorageStatics from './StorageStatics';
-import { validateMetadata } from './SettableMetadata';
-import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTask';
+import { validateMetadata } from './StorageSettableMetadata';
+import StorageTaskInternal, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTaskInternal';
+import StorageUploadTask from './StorageUploadTask';
+import StorageDownloadTask from './StorageDownloadTask';
 
 /**
  *
@@ -126,11 +128,8 @@ export default class StorageReference extends ReferenceBase {
   }
 
   downloadFile(filePath) {
-    return new StorageTask(
-      DOWNLOAD_TASK,
-      this._storage.native.downloadFile(this.toString(), filePath),
-      this,
-    );
+    // TODO(salakar) validate arg
+    return new StorageDownloadTask(this, filePath);
   }
 
   async put(data, metadata) {
@@ -183,6 +182,7 @@ export default class StorageReference extends ReferenceBase {
       }
     }
 
+    // TODO(salakar) should return StorageTask
     return this._storage.native.putString(this.toString(), _string, _format, _metadata);
   }
 
@@ -190,11 +190,6 @@ export default class StorageReference extends ReferenceBase {
     // TODO(salakar) validate args
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
-
-    return new StorageTask(
-      UPLOAD_TASK,
-      this._storage.native.putFile(this.toString(), _filePath, metadata),
-      this,
-    );
+    return new StorageUploadTask(this, _filePath, metadata);
   }
 }

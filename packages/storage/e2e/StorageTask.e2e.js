@@ -318,13 +318,34 @@ describe('storage() -> StorageTask', () => {
         .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
     });
 
+    it('listens to download state', () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, reject, promise } = Promise.defer();
+      const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/onDownload.jpeg`;
+
+      const unsubscribe = ref.downloadFile(path).on(
+        'state_changed',
+        snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            resolve();
+          }
+        },
+        error => {
+          unsubscribe();
+          reject(error);
+        },
+      );
+
+      return promise;
+    });
+
     it('listens to upload state', () => {
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
 
       const unsubscribe = ref.putFile(path).on(
-        firebase.storage.TaskEvent.STATE_CHANGED,
+        'state_changed',
         snapshot => {
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
             resolve();

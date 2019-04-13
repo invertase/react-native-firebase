@@ -23,19 +23,28 @@ import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseStorageEvent implements NativeEvent {
-  private static final String EVENT_DEFAULT = "storage_event";
   static final String EVENT_STATE_CHANGED = "state_changed";
   static final String EVENT_UPLOAD_SUCCESS = "upload_success";
   static final String EVENT_UPLOAD_FAILURE = "upload_failure";
   static final String EVENT_DOWNLOAD_SUCCESS = "download_success";
   static final String EVENT_DOWNLOAD_FAILURE = "download_failure";
+  private static final String EVENT_DEFAULT = "storage_event";
+  private static final String KEY_URL = "url";
+  private static final String KEY_BODY = "body";
+  private static final String KEY_APP_NAME = "appName";
+  private static final String KEY_EVENT_NAME = "eventName";
 
   private String url;
   private String appName;
   private WritableMap eventBody;
   private String internalEventName;
 
-  ReactNativeFirebaseStorageEvent(WritableMap eventBody, String internalEventName, String appName, String url) {
+  ReactNativeFirebaseStorageEvent(
+    WritableMap eventBody,
+    String internalEventName,
+    String appName,
+    String url
+  ) {
     this.eventBody = eventBody;
     this.internalEventName = internalEventName;
     this.appName = appName;
@@ -48,10 +57,10 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
 
   public WritableMap getEventBody() {
     WritableMap event = Arguments.createMap();
-    event.putString("url", url);
-    event.putMap("body", eventBody);
-    event.putString("appName", appName);
-    event.putString("eventName", internalEventName);
+    event.putString(KEY_URL, url);
+    event.putMap(KEY_BODY, eventBody);
+    event.putString(KEY_APP_NAME, appName);
+    event.putString(KEY_EVENT_NAME, internalEventName);
     return event;
   }
 

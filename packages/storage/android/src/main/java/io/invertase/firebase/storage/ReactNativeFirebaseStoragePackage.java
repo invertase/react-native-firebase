@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public class ReactNativeFirebaseStoragePackage implements ReactPackage {
   @Nonnull
   @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+  public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new ReactNativeFirebaseStorageModule(reactContext));
     return modules;
@@ -40,7 +40,7 @@ public class ReactNativeFirebaseStoragePackage implements ReactPackage {
 
   @Nonnull
   @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+  public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
     return Collections.emptyList();
   }
 }

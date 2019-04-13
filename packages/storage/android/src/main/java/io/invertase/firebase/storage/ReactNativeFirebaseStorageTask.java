@@ -17,276 +17,101 @@ package io.invertase.firebase.storage;
  *
  */
 
-import android.net.Uri;
-import android.util.Base64;
-import android.util.Log;
+import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
-
-import javax.annotation.Nullable;
-
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import com.google.firebase.storage.StorageTaskInternal;
 
 class ReactNativeFirebaseStorageTask {
-  private static final String TAG = "RNFirebaseStorageTask";
-  private String appName;
-  private UploadTask uploadTask;
-  private StorageReference storageReference;
-  private StreamDownloadTask streamDownloadTask; // TODO
+  static final String KEY_STATE = "state";
+  static final String KEY_META_DATA = "metadata";
+  static final String KEY_TOTAL_BYTES = "totalBytes";
+  static final String KEY_BYTES_TRANSFERRED = "bytesTransferred";
+  static final SparseArray<ReactNativeFirebaseStorageTask> PENDING_TASKS = new SparseArray<>();
 
-  ReactNativeFirebaseStorageTask(
-    StorageReference storageReference,
-    String appName
-  ) {
+  int taskId;
+  String appName;
+  StorageTaskInternal storageTask;
+  StorageReference storageReference;
+
+  ReactNativeFirebaseStorageTask(int taskId, StorageReference storageReference, String appName) {
+    this.taskId = taskId;
     this.storageReference = storageReference;
     this.appName = appName;
+    PENDING_TASKS.put(taskId, this);
   }
 
-  private static WritableMap getCancelledTaskMap() {
+  static boolean pauseTaskById(int taskId) {
+    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
+    if (reactNativeFirebaseStorageTask != null) {
+      return reactNativeFirebaseStorageTask.pause();
+    }
+
+    return false;
+  }
+
+  static boolean resumeTaskById(int taskId) {
+    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
+    if (reactNativeFirebaseStorageTask != null) {
+      return reactNativeFirebaseStorageTask.resume();
+    }
+
+    return false;
+  }
+
+  static boolean cancelTaskById(int taskId) {
+    ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(taskId);
+    if (reactNativeFirebaseStorageTask != null) {
+      return reactNativeFirebaseStorageTask.cancel();
+    }
+
+    return false;
+  }
+
+  static WritableMap getCancelledTaskMap() {
     WritableMap taskMap = Arguments.createMap();
-    taskMap.putString(
-      "state",
-      "cancelled"
-    );
+    taskMap.putString("state", "cancelled");
     return taskMap;
   }
 
   static WritableMap getErrorTaskMap() {
     WritableMap taskMap = Arguments.createMap();
-    taskMap.putString(
-      "state",
-      "error"
-    );
+    taskMap.putString("state", "error");
     return taskMap;
   }
 
-  static WritableMap getDownloadTaskAsMap(@Nullable StreamDownloadTask.TaskSnapshot taskSnapshot) {
-    // TODO(salakar) handle null snapshots
-
-    WritableMap taskMap = Arguments.createMap();
-    taskMap.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-    taskMap.putString("ref", taskSnapshot.getStorage().getPath());
-    taskMap.putString(
-      "state",
-      ReactNativeFirebaseStorageModule.getTaskStatus(taskSnapshot.getTask())
-    );
-    taskMap.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
-    return taskMap;
-  }
-
-  static WritableMap getUploadTaskAsMap(@Nullable UploadTask.TaskSnapshot taskSnapshot) {
-    // TODO(salakar) handle null snapshots
-
-    WritableMap uploadTaskMap = Arguments.createMap();
-    StorageMetadata metadata = taskSnapshot.getMetadata();
-    uploadTaskMap.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
-
-    if (metadata != null) {
-      uploadTaskMap.putMap("metadata", ReactNativeFirebaseStorageModule.getMetadataAsMap(metadata));
+  private boolean pause() {
+    if (!storageTask.isPaused() && storageTask.isInProgress()) {
+      return storageTask.pause();
     }
 
-    uploadTaskMap.putString("ref", taskSnapshot.getStorage().getPath());
-    uploadTaskMap.putString(
-      "state",
-      ReactNativeFirebaseStorageModule.getTaskStatus(taskSnapshot.getTask())
-    );
-    uploadTaskMap.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
-
-    return uploadTaskMap;
+    return false;
   }
 
-  /**
-   * Create a Uri from the path, defaulting to file when there is no supplied scheme
-   */
-  private static Uri getUri(String uri) {
-    Uri parsed = Uri.parse(uri);
-
-    if (parsed.getScheme() == null || parsed
-      .getScheme()
-      .isEmpty()) {
-      return Uri.fromFile(new File(uri));
-    }
-    return parsed;
-  }
-
-  private byte[] uploadStringToByteArray(String string, String format) {
-    byte[] bytes = null;
-    switch (format) {
-      case "base64":
-        bytes = Base64.decode(string, Base64.DEFAULT);
-        break;
-      case "base64url":
-        bytes = Base64.decode(string, Base64.URL_SAFE);
-        break;
+  private boolean resume() {
+    if (storageTask.isPaused() && storageTask.isInProgress()) {
+      return storageTask.resume();
     }
 
-    return bytes;
+    return false;
   }
 
-  UploadTask startStringUpload(String string, String format, ReadableMap metadataMap) {
-    StorageMetadata metadata = ReactNativeFirebaseStorageModule.buildMetadataFromMap(
-      metadataMap,
-      null
-    );
+  private boolean cancel() {
+    if (!storageTask.isCanceled() && storageTask.isInProgress()) {
+      destroyTask();
+      return storageTask.cancel();
+    }
 
-    byte[] stringBytes = uploadStringToByteArray(string, format);
-
-    uploadTask = storageReference.putBytes(stringBytes, metadata);
-
-    uploadTask.addOnProgressListener(taskSnapshotRaw -> {
-      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    uploadTask.addOnCanceledListener(() -> ReactNativeFirebaseEventEmitter
-      .getSharedInstance()
-      .sendEvent(new ReactNativeFirebaseStorageEvent(
-        getCancelledTaskMap(),
-        ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-        appName,
-        storageReference.toString()
-      )));
-
-    uploadTask.addOnPausedListener(taskSnapshotRaw -> {
-      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    return uploadTask;
-
+    return false;
   }
 
-  UploadTask startFileUpload(String localFilePath, ReadableMap metadataMap) {
-    Uri fileUri = getUri(localFilePath);
-    StorageMetadata metadata = ReactNativeFirebaseStorageModule.buildMetadataFromMap(
-      metadataMap,
-      fileUri
-    );
-
-    uploadTask = storageReference.putFile(fileUri, metadata);
-    uploadTask.addOnProgressListener(taskSnapshotRaw -> {
-      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    uploadTask.addOnCanceledListener(() -> ReactNativeFirebaseEventEmitter
-      .getSharedInstance()
-      .sendEvent(new ReactNativeFirebaseStorageEvent(
-        getCancelledTaskMap(),
-        ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-        appName,
-        storageReference.toString()
-      )));
-
-    uploadTask.addOnPausedListener(taskSnapshotRaw -> {
-      WritableMap taskSnapshot = getUploadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    return uploadTask;
+  void destroyTask() {
+    PENDING_TASKS.remove(taskId);
   }
 
-  StreamDownloadTask startDownload(String localFilePath) {
-    streamDownloadTask = storageReference
-      .getStream((taskSnapshot, inputStream) -> {
-        int indexOfLastSlash = localFilePath.lastIndexOf("/");
-        String pathMinusFileName = indexOfLastSlash > 0 ? localFilePath.substring(
-          0,
-          indexOfLastSlash
-        ) + "/" : "/";
-        String filename = indexOfLastSlash > 0 ? localFilePath.substring(indexOfLastSlash + 1) : localFilePath;
-        File fileWithJustPath = new File(pathMinusFileName);
-
-        // directoriesCreated assignment for not consumed warning
-        Boolean directoriesCreated = fileWithJustPath.mkdirs();
-        File fileWithFullPath = new File(pathMinusFileName, filename);
-        FileOutputStream output = new FileOutputStream(fileWithFullPath);
-
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
-          output.write(buffer, 0, len);
-        }
-
-        output.close();
-      });
-
-
-    streamDownloadTask.addOnProgressListener(taskSnapshotRaw -> {
-      Log.d(TAG, "downloadFile progress " + taskSnapshotRaw);
-      WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    streamDownloadTask.addOnCanceledListener(() -> ReactNativeFirebaseEventEmitter
-      .getSharedInstance()
-      .sendEvent(new ReactNativeFirebaseStorageEvent(
-        getCancelledTaskMap(),
-        ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-        appName,
-        storageReference.toString()
-      )));
-
-    streamDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
-      Log.d(TAG, "downloadFile paused " + taskSnapshotRaw);
-      WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          storageReference.toString()
-        ));
-    });
-
-    return streamDownloadTask;
+  void setStorageTask(StorageTaskInternal storageTask) {
+    this.storageTask = storageTask;
   }
 }
