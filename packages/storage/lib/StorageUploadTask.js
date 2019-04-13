@@ -22,6 +22,11 @@ const UPLOAD_TASK = 'upload';
 export default class StorageUploadTask extends StorageTaskInternal {
   constructor(storageRef, filePath, metadata) {
     super(UPLOAD_TASK, storageRef);
-    this._beginTask = () => this._storage.native.putFile(storageRef.toString(), filePath, metadata);
+    this._beginTask = () =>
+      this._storage.native.putFile(storageRef.toString(), filePath, metadata, this._id);
+
+    const promise = this._beginTask();
+    this.then = promise.then.bind(promise);
+    this.catch = promise.catch.bind(promise);
   }
 }

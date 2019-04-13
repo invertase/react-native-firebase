@@ -89,17 +89,18 @@ class FirebaseStorageModule extends FirebaseModule {
     return this.native.setMaxDownloadRetryTime(time);
   }
 
-  _getSubEventName(url, eventName) {
-    return this.eventNameForApp(`${url}-${eventName}`);
+  _getSubEventName(taskId, eventName) {
+    return this.eventNameForApp(`${taskId}-${eventName}`);
   }
 
   _handleStorageEvent(event) {
-    const { url, eventName } = event;
+    const { taskId, eventName } = event;
     const body = event.body || {};
+    console.log('event', event)
     if (eventName.endsWith('failure')) {
       // TODO generate an error?
     }
-    this.emitter.emit(this._getSubEventName(url, eventName), body);
+    this.emitter.emit(this._getSubEventName(taskId, eventName), body);
   }
 
   // _handleStorageError(error) {
@@ -109,8 +110,8 @@ class FirebaseStorageModule extends FirebaseModule {
   //   this.emitter.emit(this._getSubEventName(path, eventName), body);
   // }
 
-  _addListener(url, eventName, cb) {
-    return this.emitter.addListener(this._getSubEventName(url, eventName), cb);
+  _addListener(taskId, eventName, cb) {
+    return this.emitter.addListener(this._getSubEventName(taskId, eventName), cb);
   }
 }
 

@@ -22,28 +22,32 @@ import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getTaskStatus;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.promiseRejectStorageException;
 
 class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageTask {
   private static final String TAG = "RNFBStorageDownload";
-  private StreamDownloadTask streamDownloadTask;
+  private FileDownloadTask fileDownloadTask;
 
-  ReactNativeFirebaseStorageDownloadTask(int taskId, StorageReference storageReference, String appName) {
+  ReactNativeFirebaseStorageDownloadTask(
+    int taskId,
+    StorageReference storageReference,
+    String appName
+  ) {
     super(taskId, storageReference, appName);
   }
 
-  private static WritableMap getDownloadTaskAsMap(@Nullable StreamDownloadTask.TaskSnapshot snapshot) {
+  private static WritableMap getDownloadTaskAsMap(@Nullable FileDownloadTask.TaskSnapshot snapshot) {
     WritableMap map = Arguments.createMap();
 
     if (snapshot != null) {
@@ -70,7 +74,17 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
   }
 
   void addOnCompleteListener(Promise promise) {
-    streamDownloadTask.addOnCompleteListener(task -> {
+    if (fileDownloadTask == null) {
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "error-creating-directory",
+        "Unable to create the directory specified as the download path for your file."
+      );
+
+      return;
+    }
+
+    fileDownloadTask.addOnCompleteListener(task -> {
       destroyTask();
 
       if (task.isSuccessful()) {
@@ -81,7 +95,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_SUCCESS,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
@@ -95,14 +109,14 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
           getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         promiseRejectStorageException(promise, task.getException());
@@ -111,7 +125,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
   }
 
   private void addEventListeners() {
-    streamDownloadTask.addOnProgressListener(taskSnapshotRaw -> {
+    fileDownloadTask.addOnProgressListener(taskSnapshotRaw -> {
       Log.d(TAG, "onProgress " + storageReference.toString());
       WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -120,11 +134,11 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
 
-    streamDownloadTask.addOnCanceledListener(() -> {
+    fileDownloadTask.addOnCanceledListener(() -> {
       Log.d(TAG, "onCancelled " + storageReference.toString());
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
@@ -132,11 +146,11 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
           getCancelledTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
 
-    streamDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
+    fileDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
       Log.d(TAG, "onPaused " + storageReference.toString());
       WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -145,46 +159,26 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
   }
 
   void begin(String localFilePath) {
-    streamDownloadTask = storageReference
-      .getStream((taskSnapshot, inputStream) -> {
-        String pathWithoutFile = getPath(localFilePath);
-        File downloadDirectory = new File(pathWithoutFile);
-        boolean directoriesCreated = true;
+    String pathWithoutFile = getPath(localFilePath);
+    File downloadDirectory = new File(pathWithoutFile);
 
-        if (!downloadDirectory.exists()) {
-          directoriesCreated = downloadDirectory.mkdirs();
-        }
+    boolean directoriesCreated = true;
 
-        if (directoriesCreated) {
-          File fileWithFullPath = new File(pathWithoutFile, getFileName(localFilePath));
-          FileOutputStream output = new FileOutputStream(fileWithFullPath);
+    if (!downloadDirectory.exists()) {
+      directoriesCreated = downloadDirectory.mkdirs();
+    }
 
-          int len;
-          int bufferSize = 2048;
-          byte[] buffer = new byte[bufferSize];
-          while ((len = inputStream.read(buffer)) != -1) {
-            output.write(buffer, 0, len);
-          }
-
-          output.close();
-          inputStream.close();
-        } else {
-          Log.e(
-            TAG,
-            "failed to start download (ERROR_CREATING_DIRECTORIES) " + storageReference.toString()
-          );
-          streamDownloadTask.cancel();
-          inputStream.close();
-        }
-      });
-
-    addEventListeners();
-    setStorageTask(streamDownloadTask);
+    if (directoriesCreated) {
+      File fileWithFullPath = new File(pathWithoutFile, getFileName(localFilePath));
+      fileDownloadTask = storageReference.getFile(fileWithFullPath);
+      addEventListeners();
+      setStorageTask(fileDownloadTask);
+    }
   }
 }

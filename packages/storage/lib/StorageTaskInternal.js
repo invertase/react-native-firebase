@@ -26,11 +26,6 @@ export default class StorageTaskInternal {
     this._type = type;
     this._ref = storageRef;
     this._storage = storageRef._storage;
-    this._url = storageRef.toString();
-
-    // 'proxy' original promise
-    // this.then = promise.then.bind(promise);
-    // this.catch = promise.catch.bind(promise);
   }
 
   _interceptSnapshotEvent(f) {
@@ -74,19 +69,19 @@ export default class StorageTaskInternal {
 
     if (_next) {
       _nextSubscription = this._storage._addListener(
-        this._url,
+        this._id,
         StorageStatics.TaskEvent.STATE_CHANGED,
         _next,
       );
     }
 
     if (_error) {
-      _errorSubscription = this._storage._addListener(this._url, `${this._type}_failure`, _error);
+      _errorSubscription = this._storage._addListener(this._id, `${this._type}_failure`, _error);
     }
 
     if (_complete) {
       _completeSubscription = this._storage._addListener(
-        this._url,
+        this._id,
         `${this._type}_success`,
         _complete,
       );
@@ -121,14 +116,14 @@ export default class StorageTaskInternal {
   }
 
   pause() {
-    // TODO(salakar) implement
+    return this._storage.native.setTaskStatus(this._id, 0);
   }
 
   resume() {
-    // TODO(salakar) implement
+    return this._storage.native.setTaskStatus(this._id, 1);
   }
 
   cancel() {
-    // TODO(salakar) implement
+    return this._storage.native.setTaskStatus(this._id, 2);
   }
 }

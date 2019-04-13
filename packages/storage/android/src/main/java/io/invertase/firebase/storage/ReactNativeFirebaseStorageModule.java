@@ -25,7 +25,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
@@ -37,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
@@ -129,36 +127,6 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
-   */
-  @ReactMethod
-  public void downloadFile(
-    String appName,
-    String url,
-    String localFilePath,
-    int taskId,
-    Promise promise
-  ) {
-    if (!isExternalStorageWritable()) {
-      rejectPromiseWithCodeAndMessage(
-        promise,
-        "invalid-device-file-path",
-        "The specified device file path is invalid or is restricted."
-      );
-      return;
-    }
-
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    ReactNativeFirebaseStorageDownloadTask storageTask = new ReactNativeFirebaseStorageDownloadTask(
-      taskId,
-      reference,
-      appName
-    );
-    storageTask.begin(localFilePath);
-    storageTask.addOnCompleteListener(promise);
-  }
-
-  /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
    */
   @ReactMethod
@@ -192,6 +160,36 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
+   */
+  @ReactMethod
+  public void downloadFile(
+    String appName,
+    String url,
+    String localFilePath,
+    int taskId,
+    Promise promise
+  ) {
+    if (!isExternalStorageWritable()) {
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "invalid-device-file-path",
+        "The specified device file path is invalid or is restricted."
+      );
+      return;
+    }
+
+    StorageReference reference = getReferenceFromUrl(url, appName);
+    ReactNativeFirebaseStorageDownloadTask storageTask = new ReactNativeFirebaseStorageDownloadTask(
+      taskId,
+      reference,
+      appName
+    );
+    storageTask.begin(localFilePath);
+    storageTask.addOnCompleteListener(promise);
+  }
+
+  /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
   @ReactMethod
@@ -201,12 +199,12 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     String string,
     String format,
     ReadableMap metadataMap,
-    int taskId,
+//    int taskId,
     Promise promise
   ) {
     StorageReference reference = getReferenceFromUrl(url, appName);
     ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
-      taskId,
+      0,
       reference,
       appName
     );
@@ -234,6 +232,21 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     );
     storageTask.begin(localFilePath, metadata);
     storageTask.addOnCompleteListener(promise);
+  }
+
+  @ReactMethod
+  public void setTaskStatus(String appName, int taskId, int status, Promise promise) {
+    switch (status) {
+      case 0:
+        promise.resolve(ReactNativeFirebaseStorageTask.pauseTaskById(taskId));
+        break;
+      case 1:
+        promise.resolve(ReactNativeFirebaseStorageTask.resumeTaskById(taskId));
+        break;
+      case 2:
+        promise.resolve(ReactNativeFirebaseStorageTask.cancelTaskById(taskId));
+        break;
+    }
   }
 
   private String getBucketFromUrl(String url) {

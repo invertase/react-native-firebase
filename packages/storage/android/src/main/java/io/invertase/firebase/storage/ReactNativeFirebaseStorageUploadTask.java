@@ -103,7 +103,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
 
@@ -115,7 +115,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           getCancelledTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
 
@@ -128,7 +128,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           taskSnapshot,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
     });
   }
@@ -145,7 +145,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
@@ -154,7 +154,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           taskSnapshotMap,
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         taskSnapshotMap = getUploadTaskAsMap(task.getResult());
@@ -166,14 +166,14 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
           getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           getErrorTaskMap(),
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
           appName,
-          storageReference.toString()
+          taskId
         ));
 
         promiseRejectStorageException(promise, task.getException());

@@ -29,7 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
-import com.google.firebase.storage.StorageTaskInternal;
+import com.google.firebase.storage.StorageTask;
 
 import java.util.Map;
 import java.util.Objects;
@@ -60,8 +60,8 @@ class ReactNativeFirebaseStorageCommon {
   private static final String STATUS_RUNNING = "running";
   private static final String STATUS_PAUSED = "paused";
   private static final String STATUS_SUCCESS = "success";
-  private static final String STATUS_CANCELLED = "cancelled";
-  private static final String STATUS_ERROR = "error";
+  static final String STATUS_CANCELLED = "cancelled";
+  static final String STATUS_ERROR = "error";
   private static final String CODE_OBJECT_NOT_FOUND = "object-not-found";
   private static final String CODE_BUCKET_NOT_FOUND = "bucket-not-found";
   private static final String CODE_PROJECT_NOT_FOUND = "project-not-found";
@@ -75,7 +75,7 @@ class ReactNativeFirebaseStorageCommon {
   /**
    * Returns the task status as string
    */
-  static String getTaskStatus(@Nullable StorageTaskInternal<?> task) {
+  static String getTaskStatus(@Nullable StorageTask<?> task) {
     if (task == null) return STATUS_UNKNOWN;
     if (task.isInProgress()) {
       return STATUS_RUNNING;
@@ -237,7 +237,7 @@ class ReactNativeFirebaseStorageCommon {
     String state = Environment.getExternalStorageState();
 
     if (Environment.MEDIA_MOUNTED.equals(state)) {
-      // we can read and write the media
+      // we can read and write to the media
       mExternalStorageAvailable = mExternalStorageWritable = true;
     } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
       // we can only read the media

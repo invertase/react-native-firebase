@@ -360,4 +360,226 @@ describe('storage() -> StorageTask', () => {
       return promise;
     });
   });
+
+  describe('pause() resume()', () => {
+    before(async () => {
+      await firebase
+        .storage()
+        .ref('/cat.gif')
+        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
+    });
+
+    it('successfully pauses and resumes an upload', () => {
+      const ref = firebase.storage().ref('/uploadCat.gif');
+      const { resolve, reject, promise } = Promise.defer();
+      const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`;
+      const uploadTask = ref.putFile(path);
+
+      let hadRunningStatus = false;
+      let hadPausedStatus = false;
+      let hadResumedStatus = false;
+
+      uploadTask.on(
+        'state_changed',
+        snapshot => {
+          // 1) pause when we receive first running event
+          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            hadRunningStatus = true;
+            uploadTask.pause();
+          }
+
+          // 2) resume when we receive first paused event
+          if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+            hadPausedStatus = true;
+            uploadTask.resume();
+          }
+
+          // 3) track that we resumed on 2nd running status whilst paused
+          if (
+            snapshot.state === firebase.storage.TaskState.RUNNING &&
+            hadRunningStatus &&
+            hadPausedStatus &&
+            !hadResumedStatus
+          ) {
+            hadResumedStatus = true;
+          }
+
+          // 4) finally confirm we received all statuses
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            should.equal(hadRunningStatus, true);
+            should.equal(hadPausedStatus, true);
+            should.equal(hadResumedStatus, true);
+            resolve();
+          }
+        },
+        error => {
+          reject(error);
+        },
+      );
+
+      return promise;
+    });
+
+    it('successfully pauses and resumes a download', () => {
+      const ref = firebase.storage().ref('/cat.gif');
+      const { resolve, reject, promise } = Promise.defer();
+      const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseDownload.gif`;
+      const downloadTask = ref.downloadFile(path);
+
+      let hadRunningStatus = false;
+      let hadPausedStatus = false;
+      let hadResumedStatus = false;
+
+      downloadTask.on(
+        'state_changed',
+        snapshot => {
+          // 1) pause when we receive first running event
+          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            hadRunningStatus = true;
+            downloadTask.pause();
+          }
+
+          // 2) resume when we receive first paused event
+          if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+            hadPausedStatus = true;
+            downloadTask.resume();
+          }
+
+          // 3) track that we resumed on 2nd running status whilst paused
+          if (
+            snapshot.state === firebase.storage.TaskState.RUNNING &&
+            hadRunningStatus &&
+            hadPausedStatus &&
+            !hadResumedStatus
+          ) {
+            hadResumedStatus = true;
+          }
+
+          // 4) finally confirm we received all statuses
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            should.equal(hadRunningStatus, true);
+            should.equal(hadPausedStatus, true);
+            should.equal(hadResumedStatus, true);
+            resolve();
+          }
+        },
+        error => {
+          reject(error);
+        },
+      );
+
+      return promise;
+    });
+  });
+
+  describe.only('cancel()', () => {
+    before(async () => {
+      await firebase
+        .storage()
+        .ref('/cat.gif')
+        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
+    });
+
+    it('successfully cancels an upload', () => {
+      const ref = firebase.storage().ref('/uploadCat.gif');
+      const { resolve, reject, promise } = Promise.defer();
+      const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`;
+      const uploadTask = ref.putFile(path);
+
+      let hadRunningStatus = false;
+      let hadCancelledStatus = false;
+      let hadErrorStatus = false;
+
+      uploadTask.on(
+        'state_changed',
+        snapshot => {
+          console.log(snapshot.state);
+          // 1) cancel it when we receive first running event
+          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            hadRunningStatus = true;
+            uploadTask.cancel();
+          }
+
+          // 2) confirm cancellation
+          if (snapshot.state === firebase.storage.TaskState.CANCELLED) {
+            should.equal(hadRunningStatus, true);
+            hadCancelledStatus = true;
+          }
+
+          // 3) confirm we receive an error event
+          if (snapshot.state === firebase.storage.TaskState.ERROR) {
+            console.dir(snapshot)
+            hadErrorStatus = true;
+          }
+
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            reject(new Error('UploadTask did not cancel!'));
+          }
+        },
+        error => {
+          should.equal(hadErrorStatus, true);
+          should.equal(hadRunningStatus, true);
+          should.equal(hadCancelledStatus, true);
+          console.error(error);
+          console.log(error);
+          console.log(error.code);
+          console.log(error.message);
+          resolve();
+        },
+      );
+
+      return promise;
+    });
+    //
+    // it('successfully cancels a download', () => {
+    //   const ref = firebase.storage().ref('/cat.gif');
+    //   const { resolve, reject, promise } = Promise.defer();
+    //   const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseDownload.gif`;
+    //   const downloadTask = ref.downloadFile(path);
+    //
+    //   let hadRunningStatus = false;
+    //   let hadPausedStatus = false;
+    //   let hadResumedStatus = false;
+    //
+    //   downloadTask.on(
+    //     'state_changed',
+    //     snapshot => {
+    //       // 1) pause when we receive first running event
+    //       if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+    //         hadRunningStatus = true;
+    //         downloadTask.pause();
+    //       }
+    //
+    //       // 2) resume when we receive first paused event
+    //       if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+    //         hadPausedStatus = true;
+    //         downloadTask.resume();
+    //       }
+    //
+    //       // 3) track that we resumed on 2nd running status whilst paused
+    //       if (
+    //         snapshot.state === firebase.storage.TaskState.RUNNING &&
+    //         hadRunningStatus &&
+    //         hadPausedStatus &&
+    //         !hadResumedStatus
+    //       ) {
+    //         hadResumedStatus = true;
+    //       }
+    //
+    //       // 4) finally confirm we received all statuses
+    //       if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+    //         should.equal(hadRunningStatus, true);
+    //         should.equal(hadPausedStatus, true);
+    //         should.equal(hadResumedStatus, true);
+    //         resolve();
+    //       }
+    //     },
+    //     error => {
+    //       reject(error);
+    //     },
+    //   );
+    //
+    //   return promise;
+    // });
+  });
 });
