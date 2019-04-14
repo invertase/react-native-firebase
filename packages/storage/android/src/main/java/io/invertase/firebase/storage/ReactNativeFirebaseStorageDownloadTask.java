@@ -47,7 +47,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
     super(taskId, storageReference, appName);
   }
 
-  private static WritableMap getDownloadTaskAsMap(@Nullable FileDownloadTask.TaskSnapshot snapshot) {
+  private static WritableMap buildDownloadSnapshotMap(@Nullable FileDownloadTask.TaskSnapshot snapshot) {
     WritableMap map = Arguments.createMap();
 
     if (snapshot != null) {
@@ -88,7 +88,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
       destroyTask();
 
       if (task.isSuccessful()) {
-        WritableMap taskSnapshot = getDownloadTaskAsMap(task.getResult());
+        WritableMap taskSnapshot = buildDownloadSnapshotMap(task.getResult());
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
@@ -99,21 +99,27 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
         ));
 
         // re-creating WritableMap as they can only be consumed once, so another one is required
-        taskSnapshot = getDownloadTaskAsMap(task.getResult());
+        taskSnapshot = buildDownloadSnapshotMap(task.getResult());
 
         promise.resolve(taskSnapshot);
       } else {
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          getErrorTaskMap(),
+          buildErrorSnapshotMap(
+            task.getException(),
+            buildDownloadSnapshotMap(fileDownloadTask.getSnapshot())
+          ),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
           taskId
         ));
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          getErrorTaskMap(),
+          buildErrorSnapshotMap(
+            task.getException(),
+            buildDownloadSnapshotMap(fileDownloadTask.getSnapshot())
+          ),
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
           appName,
           taskId
@@ -127,7 +133,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
   private void addEventListeners() {
     fileDownloadTask.addOnProgressListener(taskSnapshotRaw -> {
       Log.d(TAG, "onProgress " + storageReference.toString());
-      WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
+      WritableMap taskSnapshot = buildDownloadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
         .sendEvent(new ReactNativeFirebaseStorageEvent(
@@ -143,7 +149,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
         .sendEvent(new ReactNativeFirebaseStorageEvent(
-          getCancelledTaskMap(),
+          buildCancelledSnapshotMap(buildDownloadSnapshotMap(fileDownloadTask.getSnapshot())),
           ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
           appName,
           taskId
@@ -152,7 +158,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
 
     fileDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
       Log.d(TAG, "onPaused " + storageReference.toString());
-      WritableMap taskSnapshot = getDownloadTaskAsMap(taskSnapshotRaw);
+      WritableMap taskSnapshot = buildDownloadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
         .sendEvent(new ReactNativeFirebaseStorageEvent(

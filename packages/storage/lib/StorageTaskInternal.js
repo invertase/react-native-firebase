@@ -28,22 +28,30 @@ export default class StorageTaskInternal {
     this._storage = storageRef._storage;
   }
 
-  _interceptSnapshotEvent(f) {
-    if (!isFunction(f)) return null;
-    return snapshot => {
-      const _snapshot = Object.assign({}, snapshot);
-      _snapshot.task = this;
-      _snapshot.ref = this._ref;
-      return f && f(_snapshot);
+  _interceptSnapshotEvent(fn) {
+    if (!isFunction(fn)) return null;
+    return event => {
+      const snapshot = Object.assign({}, event);
+      snapshot.task = this;
+      snapshot.ref = this._ref;
+
+      if (snapshot.metadata) {
+        if (!snapshot.metadata.name) snapshot.metadata.name = this._ref.name;
+        if (!snapshot.metadata.generation) snapshot.metadata.generation = '';
+        if (!snapshot.metadata.bucket) snapshot.metadata.bucket = this._ref.bucket;
+        if (!snapshot.metadata.metageneration) snapshot.metadata.metageneration = '';
+        if (!snapshot.metadata.fullPath) snapshot.metadata.fullPath = this._ref.fullPath;
+      }
+
+      Object.freeze(snapshot);
+      return fn && fn(snapshot);
     };
   }
 
-  _interceptErrorEvent(f) {
-    if (!isFunction(f)) return null;
-    return error => {
-      const _error = new Error(error.message);
-      _error.code = error.code;
-      return f && f(_error);
+  _interceptErrorEvent(fn) {
+    if (!isFunction(fn)) return null;
+    return event => {
+      return fn && fn(event.error);
     };
   }
 

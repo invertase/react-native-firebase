@@ -19,6 +19,7 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  NativeFirebaseError,
 } from '@react-native-firebase/app/lib/internal';
 
 import { isNumber, isString } from '@react-native-firebase/common';
@@ -45,11 +46,6 @@ class FirebaseStorageModule extends FirebaseModule {
       this.eventNameForApp('storage_event'),
       this._handleStorageEvent.bind(this),
     );
-
-    // this.emitter.addListener(
-    //   this.eventNameForApp('storage_error'),
-    //   this._handleStorageEvent.bind(this),
-    // );
   }
 
   ref(path) {
@@ -96,10 +92,11 @@ class FirebaseStorageModule extends FirebaseModule {
   _handleStorageEvent(event) {
     const { taskId, eventName } = event;
     const body = event.body || {};
-    console.log('event', event)
-    if (eventName.endsWith('failure')) {
-      // TODO generate an error?
+
+    if (body.error) {
+      body.error = NativeFirebaseError.fromEvent(body.error, namespace);
     }
+
     this.emitter.emit(this._getSubEventName(taskId, eventName), body);
   }
 

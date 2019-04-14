@@ -22,21 +22,26 @@ import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 
+import javax.annotation.Nullable;
+
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_CANCELLED;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_ERROR;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getExceptionCodeAndMessage;
 
 class ReactNativeFirebaseStorageTask {
   static final String KEY_STATE = "state";
   static final String KEY_META_DATA = "metadata";
   static final String KEY_TOTAL_BYTES = "totalBytes";
   static final String KEY_BYTES_TRANSFERRED = "bytesTransferred";
+  private static final String KEY_ERROR = "error";
+  private static final String KEY_CODE = "code";
+  private static final String KEY_MESSAGE = "message";
+  private static final String KEY_NATIVE_ERROR_MESSAGE = "nativeErrorMessage";
   private static final SparseArray<ReactNativeFirebaseStorageTask> PENDING_TASKS = new SparseArray<>();
   private static final String TAG = "RNFBStorageTask";
-
   int taskId;
   String appName;
   StorageReference storageReference;
@@ -76,14 +81,18 @@ class ReactNativeFirebaseStorageTask {
     return false;
   }
 
-  static WritableMap getCancelledTaskMap() {
-    WritableMap taskMap = Arguments.createMap();
-    taskMap.putString(KEY_STATE, STATUS_CANCELLED);
-    return taskMap;
+  static WritableMap buildCancelledSnapshotMap(WritableMap snapshot) {
+    snapshot.putString(KEY_STATE, STATUS_CANCELLED);
+    return snapshot;
   }
 
-  static WritableMap getErrorTaskMap(StorageException exception) {
-    WritableMap taskMap = Arguments.createMap();
+  static WritableMap buildErrorSnapshotMap(@Nullable Exception exception, WritableMap taskMap) {
+    WritableMap errorMap = Arguments.createMap();
+    String[] exceptionCodeAndMessage = getExceptionCodeAndMessage(exception);
+    errorMap.putString(KEY_CODE, exceptionCodeAndMessage[0]);
+    errorMap.putString(KEY_MESSAGE, exceptionCodeAndMessage[1]);
+    if (exception != null) errorMap.putString(KEY_NATIVE_ERROR_MESSAGE, exception.getMessage());
+    taskMap.putMap(KEY_ERROR, errorMap);
     taskMap.putString(KEY_STATE, STATUS_ERROR);
     return taskMap;
   }

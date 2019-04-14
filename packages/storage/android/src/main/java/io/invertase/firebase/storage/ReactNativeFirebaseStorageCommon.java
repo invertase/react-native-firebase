@@ -41,6 +41,8 @@ import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 
 class ReactNativeFirebaseStorageCommon {
+  static final String STATUS_CANCELLED = "cancelled";
+  static final String STATUS_ERROR = "error";
   private static final String KEY_CUSTOM_META = "customMetadata";
   private static final String KEY_CACHE_CONTROL = "cacheControl";
   private static final String KEY_CONTENT_ENCODING = "contentEncoding";
@@ -60,8 +62,6 @@ class ReactNativeFirebaseStorageCommon {
   private static final String STATUS_RUNNING = "running";
   private static final String STATUS_PAUSED = "paused";
   private static final String STATUS_SUCCESS = "success";
-  static final String STATUS_CANCELLED = "cancelled";
-  static final String STATUS_ERROR = "error";
   private static final String CODE_OBJECT_NOT_FOUND = "object-not-found";
   private static final String CODE_BUCKET_NOT_FOUND = "bucket-not-found";
   private static final String CODE_PROJECT_NOT_FOUND = "project-not-found";
@@ -176,7 +176,7 @@ class ReactNativeFirebaseStorageCommon {
     return metadata;
   }
 
-  static void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {
+  static String[] getExceptionCodeAndMessage(@Nullable Exception exception) {
     String code = STATUS_UNKNOWN;
     String message = "An unknown error has occurred.";
 
@@ -225,7 +225,12 @@ class ReactNativeFirebaseStorageCommon {
       }
     }
 
-    rejectPromiseWithCodeAndMessage(promise, code, message);
+    return new String[]{code, message};
+  }
+
+  static void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {
+    String[] codeAndMessage = getExceptionCodeAndMessage(exception);
+    rejectPromiseWithCodeAndMessage(promise, codeAndMessage[0], codeAndMessage[1]);
   }
 
   /**
