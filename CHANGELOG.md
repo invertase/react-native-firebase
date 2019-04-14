@@ -182,6 +182,9 @@ await analytics().setUserId('12345678');
 
 ## Storage
 
+<!-- TODO(salakar) change link -->
+> **Blog post announcement (NOT LIVE YET)**: [[Firebase Cloud Storage for React Native](https://invertase.io/blog?utm_source=github&utm_medium=changelog)]
+
 - [NEW] Added support for `put` (`Blob` | `ArrayBuffer` | `Uint8Array`)
   - `contentType` mime type is automatically inferred from `Blob`
 - [NEW] Added support for `putString` and all StringFormat's (raw, base64, base64 & data_url)
