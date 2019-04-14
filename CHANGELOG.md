@@ -187,9 +187,12 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `putString` and all StringFormat's (raw, base64, base64 & data_url)
   - `contentType` mime type is automatically inferred from `data_url` strings
 - [NEW] Added support multiple buckets, e.g. `firebase.app().storage('gs://my-other-bucket')`
+- [NEW] Added support `pause()`, `resume()` & `cancel()` for Upload & Download Storage tasks
+- [NEW] Added an `error` property to TaskSnapshot's for `error` state events - this is an instance of `NativeFirebaseError` (with `code` & `message`)
 - [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
 - [BUGFIX][ANDROID] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
 - [BUGFIX][ANDROID] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
+- [INTERNAL][ANDROID] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
 
 ## Messaging
 
