@@ -25,6 +25,7 @@ export default class StorageUploadTask extends StorageTaskInternal {
     this._beginTask = () =>
       this._storage.native.putFile(storageRef.toString(), filePath, metadata, this._id);
 
+    // TODO(salakar) implement in Internals
     const promise = this._beginTask();
     this.then = promise.then.bind(promise);
     this.catch = promise.catch.bind(promise);
