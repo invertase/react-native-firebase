@@ -20,9 +20,7 @@ import StorageTask from './StorageTask';
 const DOWNLOAD_TASK = 'download';
 
 export default class StorageDownloadTask extends StorageTask {
-  constructor(storageRef, filePath) {
-    super(DOWNLOAD_TASK, storageRef, () =>
-      this._storage.native.downloadFile(storageRef.toString(), filePath, this._id),
-    );
+  constructor(storageRef, beginTaskFn) {
+    super(DOWNLOAD_TASK, storageRef, beginTaskFn);
   }
 }

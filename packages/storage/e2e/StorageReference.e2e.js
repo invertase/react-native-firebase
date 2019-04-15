@@ -104,7 +104,7 @@ describe('storage() -> StorageReference', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
       await firebase
         .storage()
         .ref('/deleteMe.jpeg')

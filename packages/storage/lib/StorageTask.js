@@ -109,17 +109,17 @@ export default class StorageTask {
   }
 
   get then() {
-    if (!this._promise) this._promise = this._beginTask();
+    if (!this._promise) this._promise = this._beginTask(this);
     return this._promise.then.bind(this._promise);
   }
 
   get catch() {
-    if (!this._promise) this._promise = this._beginTask();
+    if (!this._promise) this._promise = this._beginTask(this);
     return this._promise.catch.bind(this._promise);
   }
 
   on(event, nextOrObserver, error, complete) {
-    if (!this._promise) this._promise = this._beginTask();
+    if (!this._promise) this._promise = this._beginTask(this);
 
     if (!event) {
       throw new Error("StorageTask.on listener is missing required string argument 'event'.");

@@ -64,6 +64,10 @@ export default class StorageReference extends ReferenceBase {
   }
 
   toString() {
+    if (this.path.length <= 1) {
+      return this._storage._customUrlOrRegion;
+    }
+
     return `${this._storage._customUrlOrRegion}/${this.path}`;
   }
 
@@ -84,9 +88,18 @@ export default class StorageReference extends ReferenceBase {
     return this._storage.native.updateMetadata(this.toString(), metadata);
   }
 
-  downloadFile(filePath) {
+  getFile(filePath) {
     // TODO(salakar) validate arg
-    return new StorageDownloadTask(this, filePath);
+    return new StorageDownloadTask(this, task =>
+      this._storage.native.getFile(this.toString(), filePath, task._id),
+    );
+  }
+
+  downloadFile(filePath) {
+    console.warn(
+      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'getFile()'",
+    );
+    return this.getFile(filePath);
   }
 
   put(data, metadata) {
@@ -141,14 +154,17 @@ export default class StorageReference extends ReferenceBase {
       }
     }
 
-    // TODO(salakar) should return StorageTask
-    return this._storage.native.putString(this.toString(), _string, _format, _metadata);
+    return new StorageUploadTask(this, task =>
+      this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
+    );
   }
 
   putFile(filePath, metadata) {
     // TODO(salakar) validate args
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
-    return new StorageUploadTask(this, _filePath, metadata);
+    return new StorageUploadTask(this, task =>
+      this._storage.native.putFile(this.toString(), _filePath, metadata, task._id),
+    );
   }
 }

@@ -161,10 +161,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getFile
    */
   @ReactMethod
-  public void downloadFile(
+  public void getFile(
     String appName,
     String url,
     String localFilePath,
@@ -200,12 +200,12 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     String string,
     String format,
     ReadableMap metadataMap,
-//    int taskId,
+    int taskId,
     Promise promise
   ) {
     StorageReference reference = getReferenceFromUrl(url, appName);
     ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
-      0,
+      taskId,
       reference,
       appName
     );

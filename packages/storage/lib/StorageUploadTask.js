@@ -20,9 +20,7 @@ import StorageTask from './StorageTask';
 const UPLOAD_TASK = 'upload';
 
 export default class StorageUploadTask extends StorageTask {
-  constructor(storageRef, filePath, metadata) {
-    super(UPLOAD_TASK, storageRef, () =>
-      this._storage.native.putFile(storageRef.toString(), filePath, metadata, this._id),
-    );
+  constructor(storageRef, beginTaskFn) {
+    super(UPLOAD_TASK, storageRef, beginTaskFn);
   }
 }

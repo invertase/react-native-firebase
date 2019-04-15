@@ -16,13 +16,13 @@
  */
 
 describe('storage() -> StorageTask', () => {
-  describe('downloadFile()', () => {
+  describe('getFile()', () => {
     it('errors if permission denied', async () => {
       try {
         await firebase
           .storage()
           .ref('/not.jpg')
-          .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/not.jpg`);
+          .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/not.jpg`);
         return Promise.reject(new Error('No permission denied error'));
       } catch (error) {
         error.code.should.equal('storage/unauthorized');
@@ -32,6 +32,16 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('downloads a file', async () => {
+      const meta = await firebase
+        .storage()
+        .ref('/ok.jpeg')
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
+
+      meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      meta.bytesTransferred.should.eql(meta.totalBytes);
+    });
+
+    it('downloads a file using deprecated downloadFile method', async () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -252,15 +262,15 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
       await firebase
         .storage()
         .ref('/cat.gif')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cat.gif`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cat.gif`);
       await firebase
         .storage()
         .ref('/hei.heic')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/hei.heic`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/hei.heic`);
     });
 
     it('errors if permission denied', async () => {
@@ -286,7 +296,8 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/uploadCat.gif')
-        .putFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cat.gif`);
+        // uri decode test
+        .putFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}%2Fcat.gif`);
 
       await firebase
         .storage()
@@ -315,7 +326,7 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
     });
 
     it('listens to download state', () => {
@@ -323,7 +334,7 @@ describe('storage() -> StorageTask', () => {
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/onDownload.jpeg`;
 
-      const unsubscribe = ref.downloadFile(path).on(
+      const unsubscribe = ref.getFile(path).on(
         'state_changed',
         snapshot => {
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
@@ -366,7 +377,7 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/cat.gif')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
     });
 
     it('successfully pauses and resumes an upload', () => {
@@ -421,12 +432,12 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully pauses and resumes a download', function testRunner() {
-      this.timeout(5000);
+      this.timeout(10000);
 
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseDownload.gif`;
-      const downloadTask = ref.downloadFile(path);
+      const downloadTask = ref.getFile(path);
 
       let hadRunningStatus = false;
       let hadPausedStatus = false;
@@ -436,7 +447,6 @@ describe('storage() -> StorageTask', () => {
         'state_changed',
         snapshot => {
           // TODO(salakar) validate snapshot props
-
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
             hadRunningStatus = true;
@@ -481,7 +491,7 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/cat.gif')
-        .downloadFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
+        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseUpload.gif`);
     });
 
     it('successfully cancels an upload', () => {
@@ -536,7 +546,7 @@ describe('storage() -> StorageTask', () => {
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/cancelDownload.gif`;
-      const downloadTask = ref.downloadFile(path);
+      const downloadTask = ref.getFile(path);
 
       let hadRunningStatus = false;
       let hadCancelledStatus = false;

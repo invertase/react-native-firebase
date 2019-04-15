@@ -78,9 +78,72 @@ describe('storage()', () => {
     });
   });
 
+  describe('ref', () => {
+    it('uses default path if none provided', async () => {
+      const ref = firebase.storage().ref();
+      ref.fullPath.should.equal('/');
+    });
+
+    it('accepts a custom path', async () => {
+      const ref = firebase.storage().ref('foo/bar/baz.png');
+      ref.fullPath.should.equal('foo/bar/baz.png');
+    });
+
+    it('strips leading / from custom path', async () => {
+      const ref = firebase.storage().ref('/foo/bar/baz.png');
+      ref.fullPath.should.equal('foo/bar/baz.png');
+    });
+
+    it('throws an error if custom path not a string', async () => {
+      try {
+        firebase.storage().ref({ derp: true });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'path' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('refFromURL', () => {
+    it('accepts a custom url', async () => {
+      const url = 'gs://foo/bar/baz.png';
+      const ref = firebase.storage().refFromURL(url);
+      ref.toString().should.equal(url);
+    });
+
+    it('accepts a custom url without a fullPath', async () => {
+      const url = 'gs://some-bucket';
+      const ref = firebase.storage().refFromURL(url);
+      ref.toString().should.equal(url);
+    });
+
+    it('throws an error if url is not a string', async () => {
+      try {
+        firebase.storage().refFromURL({ derp: true });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'url' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if url does not start with gs://', async () => {
+      try {
+        firebase.storage().refFromURL('bs://foo/bar/cat.gif');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`begin with 'gs://'`);
+        return Promise.resolve();
+      }
+    });
+  });
+
   describe('setMaxOperationRetryTime', () => {
     it('should set', async () => {
+      firebase.storage().maxOperationRetryTime.should.equal(120000);
       await firebase.storage().setMaxOperationRetryTime(100000);
+      firebase.storage().maxOperationRetryTime.should.equal(100000);
     });
 
     it('throws if time is not a number value', async () => {
@@ -96,7 +159,9 @@ describe('storage()', () => {
 
   describe('setMaxUploadRetryTime', () => {
     it('should set', async () => {
-      await firebase.storage().setMaxUploadRetryTime(100000);
+      firebase.storage().maxUploadRetryTime.should.equal(600000);
+      await firebase.storage().setMaxUploadRetryTime(120000);
+      firebase.storage().maxUploadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async () => {
@@ -112,7 +177,9 @@ describe('storage()', () => {
 
   describe('setMaxDownloadRetryTime', () => {
     it('should set', async () => {
-      await firebase.storage().setMaxDownloadRetryTime(100000);
+      firebase.storage().maxDownloadRetryTime.should.equal(600000);
+      await firebase.storage().setMaxDownloadRetryTime(120000);
+      firebase.storage().maxDownloadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async () => {
