@@ -11,8 +11,8 @@ description: Manually integrate Cloud Functions into your iOS application.
 yarn add @react-native-firebase/functions
 ```
 
-*The following steps are only required if your environment does not have access to React Native
-auto-linking.* 
+> The following steps are only required if your environment does not have access to React Native
+auto-linking. 
 
 # TODO
 
