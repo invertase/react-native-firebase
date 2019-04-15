@@ -9,6 +9,8 @@
     to: "/contributing"
   - text: Releases
     to: "/releases"
+  - text: Feedback
+    to: "/feedback"
     
 - group: Modules
   children:
@@ -44,20 +46,3 @@
     to: "/v6/config"
   - text: Performance Monitoring
     to: "/v6/perf"
-
-- group: Guides
-  action:
-    to: "/guides"
-    text: View more
-  children:
-  - text: Getting Started
-    to: "/guides/getting-started-with-react-native-firebase"
-  - text: Integrating Social & Phone Auth
-    to: "/guides/integrating-social-phone-auth"
-  - text: Notification deep dive
-    to: "/guides/notifications-deep-dive"
-    
-- group: Advanced
-  children:
-  - text: TODO
-    to: "/TODO"
