@@ -108,16 +108,25 @@ export default class StorageTask {
     this._storage = storageRef._storage;
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#then
+   */
   get then() {
     if (!this._promise) this._promise = this._beginTask(this);
     return this._promise.then.bind(this._promise);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
+   */
   get catch() {
     if (!this._promise) this._promise = this._beginTask(this);
     return this._promise.catch.bind(this._promise);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#on
+   */
   on(event, nextOrObserver, error, complete) {
     if (!this._promise) this._promise = this._beginTask(this);
 
@@ -141,14 +150,23 @@ export default class StorageTask {
     return subscribeToEvents(this, nextOrObserver, error, complete);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#pause
+   */
   pause() {
     return this._storage.native.setTaskStatus(this._id, 0);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#resume
+   */
   resume() {
     return this._storage.native.setTaskStatus(this._id, 1);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#cancel
+   */
   cancel() {
     return this._storage.native.setTaskStatus(this._id, 2);
   }

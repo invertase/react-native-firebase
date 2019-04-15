@@ -34,74 +34,80 @@ export default class StorageReference extends ReferenceBase {
     this._storage = storage;
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#bucket
+   */
   get bucket() {
     return this._storage._customUrlOrRegion.replace('gs://', '');
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#fullPath
+   */
+  get fullPath() {
+    return this.path;
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#name
+   */
   get name() {
     return this.path.substring(this.path.lastIndexOf('/') + 1, this.path.length);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#parent
+   */
   get parent() {
     if (this.path === '/') return null;
     return new StorageReference(this._storage, this.path.substring(0, this.path.lastIndexOf('/')));
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#root
+   */
   get root() {
     return new StorageReference(this._storage, '/');
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#storage
+   */
   get storage() {
     return this._storage;
   }
 
-  get fullPath() {
-    return this.path;
-  }
-
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#child
+   */
   child(path) {
     return new StorageReference(this._storage, `${this.path}/${path}`);
   }
 
-  toString() {
-    if (this.path.length <= 1) {
-      return this._storage._customUrlOrRegion;
-    }
-
-    return `${this._storage._customUrlOrRegion}/${this.path}`;
-  }
-
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
+   */
   delete() {
     return this._storage.native.delete(this.toString());
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
+   */
   getDownloadURL() {
     return this._storage.native.getDownloadURL(this.toString());
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
+   */
   getMetadata() {
     return this._storage.native.getMetadata(this.toString());
   }
 
-  updateMetadata(metadata) {
-    validateMetadata(metadata);
-    return this._storage.native.updateMetadata(this.toString(), metadata);
-  }
-
-  getFile(filePath) {
-    // TODO(salakar) validate arg
-    return new StorageDownloadTask(this, task =>
-      this._storage.native.getFile(this.toString(), filePath, task._id),
-    );
-  }
-
-  downloadFile(filePath) {
-    console.warn(
-      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'getFile()'",
-    );
-    return this.getFile(filePath);
-  }
-
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#put
+   */
   put(data, metadata) {
     // TODO(salakar) validate args
     return Base64.fromData(data).then(({ string, format }) =>
@@ -109,6 +115,9 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
+   */
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
     if (!isString(string)) {
       throw new Error(
@@ -159,6 +168,53 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#fullPath
+   */
+  toString() {
+    if (this.path.length <= 1) {
+      return this._storage._customUrlOrRegion;
+    }
+
+    return `${this._storage._customUrlOrRegion}/${this.path}`;
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
+   */
+  updateMetadata(metadata) {
+    validateMetadata(metadata);
+    return this._storage.native.updateMetadata(this.toString(), metadata);
+  }
+
+  /* ----------------------------------------
+   *   EXTRA APIS (DO NOT ON EXIST WEB SDK)
+   * ---------------------------------------- */
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
+   */
+  getFile(filePath) {
+    // TODO(salakar) validate arg
+    return new StorageDownloadTask(this, task =>
+      this._storage.native.getFile(this.toString(), filePath, task._id),
+    );
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
+   */
+  // TODO(deprecation) remove in 6.2.
+  downloadFile(filePath) {
+    console.warn(
+      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'getFile()'",
+    );
+    return this.getFile(filePath);
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
+   */
   putFile(filePath, metadata) {
     // TODO(salakar) validate args
     let _filePath = filePath.replace('file://', '');

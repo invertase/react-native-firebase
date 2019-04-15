@@ -40,7 +40,8 @@ const NativePaths = NativeModules.RNFBStorageModule
       FILE_TYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
       FILE_TYPE_DIRECTORY: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY),
 
-      // TODO(salakar) remove in 6.1.0 - deprecated but here for backwards compat
+      // TODO(deprecation) remove in 6.2.0
+      // TODO(salakar) add getter deprecation warning
       FILETYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
       FILETYPE_DIRECTORY: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY),
     }
