@@ -18,8 +18,7 @@ To get started, install the module using Yarn:
 yarn add @react-native-firebase/functions
 ```
 
-Integrating manually and not via React Native auto-linking? See the manual 
-install linking steps for [Android](/{{ version }}/functions/android) & [iOS](/{{ version }}/functions/ios).
+Integrating manually and not via React Native auto-linking? See the manual install linking steps for Android & iOS.
 
 ## Getting Started
 

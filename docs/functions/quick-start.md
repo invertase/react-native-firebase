@@ -7,9 +7,67 @@ description: Get to grips with the basics of Cloud Functions in React Native Fir
 
 ## Module usage
 
-TODO
+Once installed, import the Cloud Functions package into your project:
+
+```js
+import functions from '@react-native-firebase/functions';
+```
+
+The package also provides access to the firebase instance:
+
+```js
+import { firebase } from '@react-native-firebase/functions';
+```
+
+## Requesting a functions HTTPs endpoint
+
+To access a named functions HTTPs endpoint, use the `httpsCallable` method:
+
+```js
+import functions from '@react-native-firebase/functions';
+
+async function order() {
+  try {
+    const success = await functions().httpsCallable('orderPizza')({
+      id: '12345678',
+      size: 'large',
+    });
+    
+    if (success) {
+      console.log('Pizza is on the way!');
+    } else {
+      console.warn('Woops, looks like something went wrong!');
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+```
+
+Looking for a more in-depth explanation? Our [Cloud Functions](#) guide has you covered.
 
 ## Local emulator
 
+Cloud Functions can be emulated to run locally, or using your own custom domain. To switch the 
+emulator location, use the `useFunctionsEmulator` method:
+
+```js
+import functions from '@react-native-firebase/functions';
+
+const emulator = __DEV__ ?
+  'http://localhost:5000' :
+  'https://pizza-api.com';
+  
+functions().useFunctionsEmulator(emulator);
+```
+
 ## Cloud Functions Region
 
+Cloud functions can be deployed to multiple regions across the globe. To change the region, 
+initialize the functions instance with the region (note the default region is us-central1):
+
+```js
+import functions from '@react-native-firebase/functions';
+
+functions('europe-west1').httpsCallable(...);
+```
