@@ -23,7 +23,3 @@ menu:
     to: '/guides'
   - text: FAQs
     to: '/faqs'
-  - text: Feedback
-    to: '/feedback'
-  - text: Contributing
-    to: '/contributing'
