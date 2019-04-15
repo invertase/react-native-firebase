@@ -58,6 +58,11 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     super(reactContext, TAG);
   }
 
+  @Override
+  public void onCatalystInstanceDestroy() {
+    ReactNativeFirebaseStorageTask.destroyAllTasks();
+  }
+
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
    */
