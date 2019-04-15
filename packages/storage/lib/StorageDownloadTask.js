@@ -15,19 +15,14 @@
  *
  */
 
-import StorageTaskInternal from './StorageTaskInternal';
+import StorageTask from './StorageTask';
 
 const DOWNLOAD_TASK = 'download';
 
-export default class StorageDownloadTask extends StorageTaskInternal {
+export default class StorageDownloadTask extends StorageTask {
   constructor(storageRef, filePath) {
-    super(DOWNLOAD_TASK, storageRef);
-    this._beginTask = () =>
-      this._storage.native.downloadFile(storageRef.toString(), filePath, this._id);
-
-    // TODO(salakar) implement in Internals
-    const promise = this._beginTask();
-    this.then = promise.then.bind(promise);
-    this.catch = promise.catch.bind(promise);
+    super(DOWNLOAD_TASK, storageRef, () =>
+      this._storage.native.downloadFile(storageRef.toString(), filePath, this._id),
+    );
   }
 }

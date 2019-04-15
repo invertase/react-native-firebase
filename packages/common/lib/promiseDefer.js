@@ -15,14 +15,16 @@
  *
  */
 
-import StorageTask from './StorageTask';
+export default function promiseDefer() {
+  const deferred = {
+    resolve: null,
+    reject: null,
+  };
 
-const UPLOAD_TASK = 'upload';
+  deferred.promise = new Promise((resolve, reject) => {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
+  });
 
-export default class StorageUploadTask extends StorageTask {
-  constructor(storageRef, filePath, metadata) {
-    super(UPLOAD_TASK, storageRef, () =>
-      this._storage.native.putFile(storageRef.toString(), filePath, metadata, this._id),
-    );
-  }
+  return deferred;
 }

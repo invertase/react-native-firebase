@@ -20,6 +20,7 @@ import Base64 from './Base64';
 
 export * from './validate';
 export Base64 from './Base64';
+export promiseDefer from './promiseDefer';
 export ReferenceBase from './ReferenceBase';
 
 export function getDataUrlParts(dataUrlString) {
@@ -30,20 +31,6 @@ export function getDataUrlParts(dataUrlString) {
   if (base64String && base64String.includes('%')) base64String = decodeURIComponent(base64String);
   if (!isBase64) base64String = Base64.btoa(base64String);
   return { base64String, mediaType };
-}
-
-export function promiseDefer() {
-  const deferred = {
-    resolve: null,
-    reject: null,
-  };
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
 }
 
 export function once(fn, context) {

@@ -16,17 +16,16 @@
  */
 
 import {
-  createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-  NativeFirebaseError,
+  createModuleNamespace,
 } from '@react-native-firebase/app/lib/internal';
-
 import { isNumber, isString } from '@react-native-firebase/common';
 
 import version from './version';
 import StorageStatics from './StorageStatics';
 import StorageReference from './StorageReference';
+import { getUrlParts, handleStorageEvent } from './utils';
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -43,20 +42,65 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     this.emitter.addListener(
-      this.eventNameForApp('storage_event'),
-      this._handleStorageEvent.bind(this),
+      this.eventNameForApp(nativeEvents[0]),
+      handleStorageEvent.bind(null, this),
     );
+
+    this._maxUploadRetryTime = this.native.maxUploadRetryTime || 0;
+    this._maxDownloadRetryTime = this.native.maxDownloadRetryTime || 0;
+    this._maxOperationRetryTime = this.native.maxOperationRetryTime || 0;
   }
 
-  ref(path) {
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setmaxuploadretrytime
+   */
+  get maxUploadRetryTime() {
+    return this._maxUploadRetryTime;
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setmaxdownloadretrytime
+   */
+  get maxDownloadRetryTime() {
+    return this._maxDownloadRetryTime;
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#maxoperationretrytime
+   */
+  get maxOperationRetryTime() {
+    return this._maxOperationRetryTime;
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#ref
+   */
+  ref(path = '/') {
+    if (!isString(path)) {
+      throw new Error(`firebase.storage().ref(*) 'path' must be a string value.`);
+    }
+
     return new StorageReference(this, path);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#refFromURL
+   */
   refFromURL(url) {
-    // TODO(salakar) validate url starts with gs://    (<bucketName>/<pathToFile>)
-    return new StorageReference(this, url);
+    if (!isString(url) || !url.startsWith('gs://')) {
+      throw new Error(
+        `firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://'.`,
+      );
+    }
+
+    const { bucket, path } = getUrlParts(url);
+    const storageInstance = this.app.storage(bucket);
+    return new StorageReference(storageInstance, path);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
+   */
   setMaxOperationRetryTime(time) {
     if (!isNumber(time)) {
       throw new Error(
@@ -64,17 +108,25 @@ class FirebaseStorageModule extends FirebaseModule {
       );
     }
 
+    this._maxOperationRetryTime = time;
     return this.native.setMaxOperationRetryTime(time);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
+   */
   setMaxUploadRetryTime(time) {
     if (!isNumber(time)) {
       throw new Error(`firebase.storage().setMaxUploadRetryTime(*) 'time' must be a number value.`);
     }
 
+    this._maxUploadRetryTime = time;
     return this.native.setMaxUploadRetryTime(time);
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
+   */
   setMaxDownloadRetryTime(time) {
     if (!isNumber(time)) {
       throw new Error(
@@ -82,33 +134,8 @@ class FirebaseStorageModule extends FirebaseModule {
       );
     }
 
+    this._maxDownloadRetryTime = time;
     return this.native.setMaxDownloadRetryTime(time);
-  }
-
-  _getSubEventName(taskId, eventName) {
-    return this.eventNameForApp(`${taskId}-${eventName}`);
-  }
-
-  _handleStorageEvent(event) {
-    const { taskId, eventName } = event;
-    const body = event.body || {};
-
-    if (body.error) {
-      body.error = NativeFirebaseError.fromEvent(body.error, namespace);
-    }
-
-    this.emitter.emit(this._getSubEventName(taskId, eventName), body);
-  }
-
-  // _handleStorageError(error) {
-  //   const { path, eventName } = error;
-  //   const body = error.body || {};
-  //
-  //   this.emitter.emit(this._getSubEventName(path, eventName), body);
-  // }
-
-  _addListener(taskId, eventName, cb) {
-    return this.emitter.addListener(this._getSubEventName(taskId, eventName), cb);
   }
 }
 

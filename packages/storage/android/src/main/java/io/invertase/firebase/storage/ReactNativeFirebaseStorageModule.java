@@ -33,6 +33,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -288,6 +289,15 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     File externalDirectory = context.getExternalFilesDir(null);
     if (externalDirectory != null) {
       constants.put(KEY_EXTERNAL_DIRECTORY, externalDirectory.getAbsolutePath());
+    }
+
+    // a 'safe' way of checking if any apps have been initialized
+    List<FirebaseApp> apps = FirebaseApp.getApps(context);
+    if (apps.size() > 0) {
+      FirebaseStorage defaultStorageInstance = FirebaseStorage.getInstance();
+      constants.put("maxDownloadRetryTime", defaultStorageInstance.getMaxDownloadRetryTimeMillis());
+      constants.put("maxOperationRetryTime", defaultStorageInstance.getMaxOperationRetryTimeMillis());
+      constants.put("maxUploadRetryTime", defaultStorageInstance.getMaxUploadRetryTimeMillis());
     }
 
     return constants;

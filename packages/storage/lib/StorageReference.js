@@ -17,59 +17,16 @@
 
 import {
   Base64,
-  ReferenceBase,
+  getDataUrlParts,
+  isObject,
   isString,
   isUndefined,
-  isObject,
-  getDataUrlParts,
-  promiseDefer,
+  ReferenceBase,
 } from '@react-native-firebase/common';
+import { validateMetadata } from './utils';
 import StorageStatics from './StorageStatics';
-import { validateMetadata } from './StorageSettableMetadata';
-import StorageTaskInternal, { UPLOAD_TASK, DOWNLOAD_TASK } from './StorageTaskInternal';
 import StorageUploadTask from './StorageUploadTask';
 import StorageDownloadTask from './StorageDownloadTask';
-
-/**
- *
- * @param data
- * @returns {Promise<string>|Promise<string>}
- */
-function dataToBase64(data) {
-  if (data instanceof Blob) {
-    const fileReader = new FileReader();
-    const { resolve, reject, promise } = promiseDefer();
-
-    fileReader.readAsDataURL(data);
-
-    fileReader.onloadend = function onloadend() {
-      resolve({ string: fileReader.result, format: StorageStatics.StringFormat.DATA_URL });
-    };
-
-    fileReader.onerror = function onerror(event) {
-      fileReader.abort();
-      reject(event);
-    };
-
-    return promise;
-  }
-
-  if (data instanceof ArrayBuffer) {
-    return Promise.resolve({
-      string: Base64.fromArrayBuffer(data),
-      format: StorageStatics.StringFormat.BASE64,
-    });
-  }
-
-  if (data instanceof Uint8Array) {
-    return Promise.resolve({
-      string: Base64.fromUint8Array(data),
-      format: StorageStatics.StringFormat.BASE64,
-    });
-  }
-
-  return Promise.reject(new Error('Unknown data type for firebase.storage().put()'));
-}
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
@@ -132,9 +89,11 @@ export default class StorageReference extends ReferenceBase {
     return new StorageDownloadTask(this, filePath);
   }
 
-  async put(data, metadata) {
-    const { string, format } = await dataToBase64(data);
-    return this.putString(string, format, metadata);
+  put(data, metadata) {
+    // TODO(salakar) validate args
+    return Base64.fromData(data).then(({ string, format }) =>
+      this.putString(string, format, metadata),
+    );
   }
 
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {

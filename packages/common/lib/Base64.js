@@ -17,6 +17,7 @@
  */
 
 import binaryToBase64 from 'react-native/Libraries/Utilities/binaryToBase64';
+import promiseDefer from './promiseDefer';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -39,7 +40,7 @@ function btoa(input): string {
 
     if (charCode > 0xff) {
       throw new Error(
-        "'RNFirebase.utils.btoa' failed: The string to be encoded contains characters outside of the Latin1 range.",
+        "'RNFirebase.Base64.btoa' failed: The string to be encoded contains characters outside of the Latin1 range.",
       );
     }
 
@@ -63,7 +64,7 @@ function atob(input): string {
 
   if (str.length % 4 === 1) {
     throw new Error(
-      "'RNFirebase.utils.atob' failed: The string to be decoded is not correctly encoded.",
+      "'RNFirebase.Base64.atob' failed: The string to be decoded is not correctly encoded.",
     );
   }
 
@@ -81,9 +82,40 @@ function atob(input): string {
   return output;
 }
 
+/**
+ * Converts a Blob, ArrayBuffer or Uint8Array to a base64 string.
+ */
+function fromData(data) {
+  if (data instanceof Blob) {
+    const fileReader = new FileReader();
+    const { resolve, reject, promise } = promiseDefer();
+
+    fileReader.readAsDataURL(data);
+
+    fileReader.onloadend = function onloadend() {
+      resolve({ string: fileReader.result, format: 'data_url' });
+    };
+
+    fileReader.onerror = function onerror(event) {
+      fileReader.abort();
+      reject(event);
+    };
+
+    return promise;
+  }
+
+  if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+    return Promise.resolve({
+      string: binaryToBase64(data),
+      format: 'base64',
+    });
+  }
+
+  return Promise.reject(new Error("'RNFirebase.Base64.fromData' failed: Unknown data type."));
+}
+
 export default {
   btoa,
   atob,
-  fromUint8Array: binaryToBase64,
-  fromArrayBuffer: binaryToBase64,
+  fromData,
 };

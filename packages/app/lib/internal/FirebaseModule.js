@@ -34,8 +34,8 @@ export default class FirebaseModule {
     return SharedEventEmitter;
   }
 
-  eventNameForApp(eventName) {
-    return `${this.app.name}-${eventName}`;
+  eventNameForApp(...args) {
+    return `${this.app.name}-${args.join('-')}`;
   }
 
   get native() {

@@ -420,7 +420,9 @@ describe('storage() -> StorageTask', () => {
       return promise;
     });
 
-    it('successfully pauses and resumes a download', () => {
+    it('successfully pauses and resumes a download', function testRunner() {
+      this.timeout(5000);
+
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/pauseDownload.gif`;
