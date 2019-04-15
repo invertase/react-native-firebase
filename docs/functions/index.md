@@ -18,6 +18,9 @@ To get started, install the module using Yarn:
 yarn add @react-native-firebase/functions
 ```
 
+Integrating manually and not via React Native auto-linking? See the manual 
+install linking steps for [Android](/{{ version }}/functions/android) & [iOS](/{{ version }}/functions/ios).
+
 ## Getting Started
 
 <Grid>
@@ -27,7 +30,7 @@ yarn add @react-native-firebase/functions
 		title="Quick Start"
 		to="/{{ version }}/functions/quick-start"
 	>
-    Hook your application up with your Cloud Functions in our quick start guide.
+    Learn the basics of using Cloud Functions from within your application.
 	</Block>
 	<Block
 		icon="school"
