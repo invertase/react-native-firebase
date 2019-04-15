@@ -23,5 +23,11 @@
   children:
     - text: Overview
       to: "/"
+    - text: Android Installation
+      to: "/android"
+    - text: iOS Installation
+      to: "/ios"
     - text: Quick Start
       to: "/quick-start"
+    - text: Tutorial
+      to: "/tutorial"
