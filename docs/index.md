@@ -8,10 +8,10 @@ description: React Native Firebase version 6.x.x module index
 - [Admob](/admob): 
 - [Analytics](/analytics): 
 - [Authentication](/authentication): 
-- [Cloud Firestore](/Cloud Firestore): 
-- [Cloud Functions](/Cloud Functions): 
-- [Cloud Messaging](/Cloud Messaging): 
-- [Cloud Storage](/Cloud Storage): 
+- [Cloud Firestore](/firestore): 
+- [Cloud Functions](/functions): 
+- [Cloud Messaging](/messaging): 
+- [Cloud Storage](/storage): 
 - [Core / App](/app): 
 - [Crashlytics](/crashlytics): 
 - [Realtime Database](/database): 
