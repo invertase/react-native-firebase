@@ -5,6 +5,17 @@ description: Get to grips with the basics of Cloud Functions in React Native Fir
 
 # Cloud Functions Quick Start
 
+## Installation
+
+Install this module with Yarn:
+
+```bash
+yarn add @react-native-firebase/functions
+```
+
+> Integrating manually and not via React Native auto-linking? See the manual install 
+linking steps for Android & iOS. TODO LINKME
+
 ## Module usage
 
 Once installed, import the Cloud Functions package into your project:
@@ -19,7 +30,7 @@ The package also provides access to the firebase instance:
 import { firebase } from '@react-native-firebase/functions';
 ```
 
-## Requesting a functions HTTPs endpoint
+### Requesting a functions HTTPs endpoint
 
 To access a named functions HTTPs endpoint, use the `httpsCallable` method:
 
@@ -44,9 +55,9 @@ async function order() {
 }
 ```
 
-Looking for a more in-depth explanation? Our [Cloud Functions](#) guide has you covered.
+Looking for a more in-depth explanations? Our [Cloud Functions](/guides?tag=functions) guides have you covered.
 
-## Local emulator
+### Local emulator
 
 Cloud Functions can be emulated to run locally, or using your own custom domain. To switch the 
 emulator location, use the `useFunctionsEmulator` method:
@@ -54,14 +65,12 @@ emulator location, use the `useFunctionsEmulator` method:
 ```js
 import functions from '@react-native-firebase/functions';
 
-const emulator = __DEV__ ?
-  'http://localhost:5000' :
-  'https://pizza-api.com';
-  
-functions().useFunctionsEmulator(emulator);
+if (__DEV__) {
+  functions().useFunctionsEmulator('http://localhost:5000');
+}
 ```
 
-## Cloud Functions Region
+### Cloud Functions Region
 
 Cloud functions can be deployed to multiple regions across the globe. To change the region, 
 initialize the functions instance with the region (note the default region is us-central1):
