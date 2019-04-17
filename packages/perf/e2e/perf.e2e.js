@@ -81,6 +81,16 @@ describe('perf()', () => {
     });
   });
 
+  describe('startTrace()', () => {
+    it('resolves a started instance of Trace', async () => {
+      const trace = await firebase.perf().startTrace('invertase');
+      trace.constructor.name.should.be.equal('Trace');
+      trace._identifier.should.equal('invertase');
+      trace._started.should.equal(true);
+      await trace.stop();
+    });
+  });
+
   describe('newHttpMetric()', () => {
     it('returns an instance of HttpMetric', async () => {
       const metric = firebase.perf().newHttpMetric('https://invertase.io', 'GET');
