@@ -17,15 +17,9 @@ versions:
   branches:
     v6: master
 menu:
-  - text: Docs
-    to: '/'
   - text: Modules
     to: '/v6'
   - text: Guides
     to: '/guides'
   - text: FAQs
     to: '/faqs'
-  - text: Feedback
-    to: '/feedback'
-  - text: Contributing
-    to: '/contributing'
