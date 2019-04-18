@@ -11,11 +11,20 @@
     to: "/releases"
   - text: Feedback
     to: "/feedback"
-  - text: Resources
-    to: "/resources"
   - text: Migrating to v6
     to: "/migrating-to-v6"
-    
+
+- group: Resources
+  children:
+    - text: MacStadium
+      to: "/macstadium"
+    - text: Firebase Documentation
+      to: "https://firebase.google.com/docs/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
+    - text: Firebase Console
+      to: "https://console.firebase.google.com/u/0/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
+    - text: React Native
+      to: "https://facebook.github.io/react-native/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
+
 - group: Modules
   children:
   - text: Admob
