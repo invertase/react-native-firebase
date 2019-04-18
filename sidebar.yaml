@@ -29,34 +29,50 @@
   children:
   - text: Admob
     to: "/v6/admob"
+    asset: "//static.invertase.io/assets/firebase/google-admob.svg"
   - text: Analytics
     to: "/v6/analytics"
+    asset: "//static.invertase.io/assets/firebase/analytics.svg"
   - text: Authentication
     to: "/v6/auth"
+    asset: "//static.invertase.io/assets/firebase/authentication.svg"
   - text: Cloud Firestore
     to: "/v6/firestore"
+    asset: "//static.invertase.io/assets/firebase/cloud-firestore.svg"
   - text: Cloud Functions
     to: "/v6/functions"
     asset: "//static.invertase.io/assets/firebase/cloud-functions.svg"
   - text: Cloud Messaging
     to: "/v6/messaging"
+    asset: "//static.invertase.io/assets/firebase/cloud-messaging.svg"
   - text: Cloud Storage
     to: "/v6/storage"
+    asset: "//static.invertase.io/assets/firebase/cloud-storage.svg"
   - text: Core / App
     to: "/v6/app"
+    asset: "//static.invertase.io/assets/social/firebase-logo.png"
   - text: Crashlytics
     to: "/v6/crashlytics"
+    asset: "//static.invertase.io/assets/firebase/crashlytics.svg"
   - text: Realtime Database
     to: "/v6/database"
+    asset: "//static.invertase.io/assets/firebase/realtime-database.svg"
   - text: Dynamic Links
     to: "/v6/links"
+    asset: "//static.invertase.io/assets/firebase/dynamic-links.svg"
   - text: Instance ID
     to: "/v6/iid"
   - text: Invites
     to: "/v6/invites"
+    asset: "//static.invertase.io/assets/firebase/invites.svg"
+  - text: ML Kit
+    to: "/v6/ml-kit"
+    asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
   - text: Notifications
     to: "/v6/notifications"
   - text: Remote Config
     to: "/v6/config"
+    asset: "//static.invertase.io/assets/firebase/remote-config.svg"
   - text: Performance Monitoring
     to: "/v6/perf"
+    asset: "//static.invertase.io/assets/firebase/performance-monitoring.svg"
