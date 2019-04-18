@@ -11,6 +11,8 @@
     to: "/releases"
   - text: Feedback
     to: "/feedback"
+  - text: Resources
+    to: "/resources"
     
 - group: Modules
   children:
