@@ -5,7 +5,7 @@ description: Interested in contributing to the library but don't know where to s
 
 # Contributing
 
-First, thank you for considering contributing to React Native Firebase! It's people like you that make the open source community such a great community! 😊
+Thank you for considering contributing to React Native Firebase! It's people like you that make the open source community such a great community! 😊
 
 We welcome any type of contribution, not just code. You can help with;
 
