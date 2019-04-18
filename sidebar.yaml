@@ -20,10 +20,10 @@
       to: "/macstadium"
     - text: Firebase Documentation
       to: "https://firebase.google.com/docs/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
-    - text: Firebase Console
-      to: "https://console.firebase.google.com/u/0/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
+      asset: "//static.invertase.io/assets/social/firebase-logo.png"
     - text: React Native
       to: "https://facebook.github.io/react-native/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
+      asset: "//static.invertase.io/assets/social/react-native-logo.png"
 
 - group: Modules
   children:
