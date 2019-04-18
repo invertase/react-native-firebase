@@ -18,7 +18,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/functions/quick-start"
+		to="/{{ version }}/perf/quick-start"
 	>
     Install & start tracking key performance metrics within your application.
 	</Block>
