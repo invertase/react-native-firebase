@@ -3,7 +3,7 @@ title: Remote Config
 description: Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your app without requiring users to download an app update. 
 ---
 
-# Performance Monitoring
+# Remote Config
 
 React Native Firebase provides native integration with Remote Config, allowing you to change the appearance
 and/or functionality of your app without requiring an app update. Remote Config values added into the Firebase
