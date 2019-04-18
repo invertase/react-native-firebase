@@ -29,3 +29,15 @@
       to: "/android"
     - text: iOS Setup
       to: "/ios"
+
+- module: perf
+  group: Performance Monitoring
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Setup
+      to: "/android"
+    - text: iOS Setup
+      to: "/ios"
