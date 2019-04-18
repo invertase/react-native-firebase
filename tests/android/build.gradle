@@ -9,10 +9,10 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.4.0'
     classpath 'com.google.gms:google-services:4.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath 'com.google.firebase:firebase-plugins:1.1.5'
+    classpath 'com.google.firebase:firebase-plugins:1.2.0'
     classpath 'io.fabric.tools:gradle:1.26.1'
   }
 }
@@ -73,9 +73,9 @@ subprojects {
     }
   }
 }
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.10.2'
-  distributionUrl = distributionUrl.replace("bin", "all")
-}
-
+//
+//task wrapper(type: Wrapper) {
+//  gradleVersion = '5.1.1'
+//  distributionUrl = distributionUrl.replace("bin", "all")
+//}
+//
