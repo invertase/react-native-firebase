@@ -1,5 +1,5 @@
 ---
-title: Cloud Functions Quick Start
+title: Quick Start
 description: Get to grips with the basics of Cloud Functions in React Native Firebase
 ---
 
@@ -14,7 +14,8 @@ yarn add @react-native-firebase/functions
 ```
 
 > Integrating manually and not via React Native auto-linking? See the manual install 
-linking steps for Android & iOS. TODO LINKME
+  linking steps for <Anchor version group href="/android">Android</Anchor> &
+  <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
