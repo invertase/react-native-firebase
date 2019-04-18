@@ -3,20 +3,36 @@
   children:
   - text: Overview
     to: "/"
-  - text: Android Installation
+  - text: Quick Start
+    to: "/quick-start"
+  - text: Android Setup
     to: "/android"
-  - text: iOS Installation
+  - text: iOS Setup
     to: "/ios"
+  - text: Reserved Events
+    to: "/reserved-events"
 
 - module: auth
   group: Authentication
   children:
   - text: Overview
     to: "/"
-  - text: Android Installation
+  - text: Android Setup
     to: "/android"
-  - text: iOS Installation
+  - text: iOS Setup
     to: "/ios"
+
+- module: config
+  group: Remote Config
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Setup
+      to: "/android"
+    - text: iOS Setup
+      to: "/ios"
 
 - module: functions
   group: Cloud Functions
