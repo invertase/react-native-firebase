@@ -13,6 +13,8 @@
     to: "/feedback"
   - text: Resources
     to: "/resources"
+  - text: Migrating to v6
+    to: "/migrating-to-v6"
     
 - group: Modules
   children:
