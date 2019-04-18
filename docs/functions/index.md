@@ -43,7 +43,7 @@ React Native Firebase supports integration with production and locally emulated 
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/firestore/reference"
+		to="/{{ version }}/functions/reference"
 	>
     The API reference covers every aspect to successfully integrate your application with
     Cloud Firestore.
