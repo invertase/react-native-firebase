@@ -1,3 +1,17 @@
+- module: app
+  group: App
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Initialization
+      to: "/android"
+    - text: iOS Initialization
+      to: "/ios"
+    - text: Client Initialization
+      to: "/client"
+
 - module: analytics
   group: Analytics
   children:
