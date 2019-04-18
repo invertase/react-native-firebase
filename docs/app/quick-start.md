@@ -26,8 +26,7 @@ Native initialization is the preferred way of setting up React Native Firebase. 
 `google-services.json` and `GoogleService-Info.plist` file generated via the Firebase console. The native method
 is compatible with all other packages.
 
-For further platform installation guides, view the <Anchor version group href="/android">Android</Anchor> & 
-<Anchor version group href="/ios">iOS</Anchor> documentation.
+For further platform installation guides, view the <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor> documentation.
 
 #### Client initialization
 
