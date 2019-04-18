@@ -37,6 +37,7 @@
     to: "/v6/firestore"
   - text: Cloud Functions
     to: "/v6/functions"
+    asset: "//static.invertase.io/assets/firebase/cloud-functions.svg"
   - text: Cloud Messaging
     to: "/v6/messaging"
   - text: Cloud Storage
