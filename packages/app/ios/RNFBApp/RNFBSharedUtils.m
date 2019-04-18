@@ -23,11 +23,20 @@
 NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
+
 @implementation RNFBSharedUtils
   static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
+
+  + (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
+    if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
+      return DEFAULT_APP_DISPLAY_NAME;
+    }
+    return appDisplayName;
+  }
+
 
   + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
     FIROptions *firOptions = [firApp options];

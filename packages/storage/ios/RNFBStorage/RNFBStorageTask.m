@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,17 +16,31 @@
  *
  */
 
+#import "RNFBStorageTask.h"
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
 
-static NSString *const RNFB_STORAGE_EVENT = @"storage_event";
-static NSString *const RNFB_STORAGE_STATE_CHANGED = @"state_changed";
-static NSString *const RNFB_STORAGE_UPLOAD_SUCCESS = @"upload_success";
-static NSString *const RNFB_STORAGE_UPLOAD_FAILURE = @"upload_failure";
-static NSString *const RNFB_STORAGE_DOWNLOAD_SUCCESS = @"download_success";
-static NSString *const RNFB_STORAGE_DOWNLOAD_FAILURE = @"download_failure";
+@implementation RNFBStorageTask
 
-@interface RNFBStorageModule : NSObject <RCTBridgeModule>
+  static RNFBStorageTask *sharedInstance_;
+  static NSMutableDictionary *pendingTasks_;
+
+  + (void)load {
+    sharedInstance_ = [[RNFBStorageTask alloc] init];
+    pendingTasks_ = [[NSMutableDictionary alloc] init];
+  }
+
+  + (RNFBStorageTask *)shared {
+    return sharedInstance_;
+  }
+
+  - (void)pauseTaskById:(int)id {
+  }
+
+  - (void)resumeTaskById:(int)id {
+  }
+
+  -(void)cancelTaskById:(int)id {
+  }
 
 @end

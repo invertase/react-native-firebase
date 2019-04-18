@@ -99,7 +99,7 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
-  describe('delete', () => {
+  describe('delete()', () => {
     before(async () => {
       await firebase
         .storage()
@@ -202,20 +202,20 @@ describe('storage() -> StorageReference', () => {
     it('should return a metadata for a file', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       const metadata = await storageReference.getMetadata();
-      metadata.generation.should.be.a.String();
+      metadata.generation.should.be.a.String(); // TODO change ios
       metadata.fullPath.should.equal('ok.jpeg');
       metadata.name.should.equal('ok.jpeg');
       metadata.size.should.be.a.Number();
       should.equal(metadata.size > 0, true);
-      metadata.updated.should.be.a.Number();
+      metadata.updated.should.be.a.String(); // TODO change ios & android
       should.equal(metadata.updated > 0, true);
-      metadata.timeCreated.should.be.a.Number();
+      metadata.timeCreated.should.be.a.String(); // TODO change ios & android
       should.equal(metadata.timeCreated > 0, true);
       metadata.contentEncoding.should.be.a.String();
       metadata.contentDisposition.should.be.a.String();
       metadata.contentType.should.equal('image/jpeg');
       metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
-      metadata.metageneration.should.be.a.String();
+      metadata.metageneration.should.be.a.String(); // TODO change ios
       metadata.md5hash.should.be.a.String();
       metadata.cacheControl.should.be.a.String();
       metadata.contentLanguage.should.be.a.String();

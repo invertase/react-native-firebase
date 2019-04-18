@@ -31,7 +31,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('downloads a file', async () => {
+    it.only('downloads a file', async () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -41,7 +41,7 @@ describe('storage() -> StorageTask', () => {
       meta.bytesTransferred.should.eql(meta.totalBytes);
     });
 
-    it('downloads a file using deprecated downloadFile method', async () => {
+    it.only('downloads a file using deprecated downloadFile method', async () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -287,7 +287,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('uploads a file', async () => {
+    it.only('uploads a file', async () => {
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadOk.jpeg')
@@ -329,7 +329,7 @@ describe('storage() -> StorageTask', () => {
         .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`);
     });
 
-    it('listens to download state', () => {
+    it.only('listens to download state', () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/onDownload.jpeg`;

@@ -24,7 +24,7 @@ import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNati
 
 // import '@react-native-firebase/analytics';
 // import '@react-native-firebase/config';
-// import '@react-native-firebase/utils';
+import '@react-native-firebase/utils';
 // import '@react-native-firebase/crashlytics';
 // import '@react-native-firebase/fiam';
 // import '@react-native-firebase/functions';
@@ -32,7 +32,7 @@ import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNati
 import '@react-native-firebase/storage';
 // import '@react-native-firebase/iid';
 // import '@react-native-firebase/invites';
-import '@react-native-firebase/perf';
+// import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
