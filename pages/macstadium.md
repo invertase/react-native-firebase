@@ -18,4 +18,4 @@ Try a Mac mini for free for 24 hours and also get 50% off the first two months M
 
 - [Building React Native apps for iOS with MacStadium](#)
 
-*We're working on more guides on how you take take full advantage of MacStadium*
+*We're working on more guides on how you can take full advantage of your MacStadium subscription.*
