@@ -11,25 +11,6 @@ however provides a simple API to track custom trace and HTTP request metrics.
 
 <Youtube id="0EHSPFvH7vk" />
 
-## Install
-
-To get started, install the module on your platform:
-
-<Grid columns="2">
-	<Block
-		title="Android"
-		to="/{{ version }}/perf/installation#android"
-	>
-    Follow the Android installation guide.
-	</Block>
-	<Block
-		title="iOS"
-		to="/{{ version }}/perf/installation#ios"
-	>
-		Follow the iOS installation guide.
-	</Block>
-</Grid>
-
 ## Getting Started
 
 <Grid>
@@ -39,7 +20,7 @@ To get started, install the module on your platform:
 		title="Quick Start"
 		to="/{{ version }}/functions/quick-start"
 	>
-    Start tracking key performance metrics within your application.
+    Install & start tracking key performance metrics within your application.
 	</Block>
 	<Block
 		icon="school"
