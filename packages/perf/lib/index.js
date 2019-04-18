@@ -77,6 +77,11 @@ class FirebasePerfModule extends FirebaseModule {
     return new Trace(this.native, identifier);
   }
 
+  startTrace(identifier) {
+    const trace = this.newTrace(identifier);
+    return trace.start().then(() => trace);
+  }
+
   newHttpMetric(url, httpMethod) {
     if (!isString(url)) {
       throw new Error(`firebase.perf().newHttpMetric(*, _) 'url' must be a string.`);

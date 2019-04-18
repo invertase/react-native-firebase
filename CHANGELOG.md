@@ -167,6 +167,7 @@ await analytics().setUserId('12345678');
 - [NEW] Added support for `firebase.perf().isPerformanceCollectionEnabled: boolean`
 - [NEW] Added support for `firebase.perf.Trace.removeMetric(metricName: string)`
 - [NEW] Added support for `firebase.perf.Trace.getMetrics(): { [key: string]: number }`
+- [NEW] Added `firebase.perf().startTrace(identifier: string): Promise<Trace>;` as a convenience method to create and immediately start a Trace
 
 ## Remote Config (config)
 

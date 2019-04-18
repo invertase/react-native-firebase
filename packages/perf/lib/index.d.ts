@@ -210,11 +210,19 @@ export namespace Perf {
     setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
     /**
-     * Creates a Trace instance with given identifier.
+     * Creates a Trace instance with the given identifier.
      *
      * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
      */
     newTrace(identifier: string): Trace;
+
+
+    /**
+     * Creates a Trace instance with the given identifier and immediately starts it.
+     *
+     * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
+     */
+    startTrace(identifier: string): Promise<Trace>;
 
     /**
      * Creates a HttpMetric instance for collecting network performance data for a single request/response

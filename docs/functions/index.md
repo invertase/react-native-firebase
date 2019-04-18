@@ -10,14 +10,6 @@ React Native Firebase supports integration with production and locally emulated 
 
 <Youtube id="vr0Gfvp5v1A" />
 
-## Install
-
-To get started, install the module using Yarn:
-
-```bash
-yarn add @react-native-firebase/functions
-```
-
 ## Getting Started
 
 <Grid>
@@ -27,8 +19,17 @@ yarn add @react-native-firebase/functions
 		title="Quick Start"
 		to="/{{ version }}/functions/quick-start"
 	>
-    Hook your application up with your Cloud Functions in our quick start guide.
-	</Block>
+	  Install & get to grips with the basics of Cloud Functions.
+  </Block>
+  <Block
+    icon="assignment_turned_in"
+    color="#8e24aa"
+    title="Getting started with Cloud Functions"
+    to="/guides/getting-started-with-cloud-functions"
+  >
+    Our getting started guide builds a mock product API using Cloud Functions and covers how you can
+    best integrate this with your React Native application.
+  </Block>
 	<Block
 		icon="school"
 		color="#4CAF50"
