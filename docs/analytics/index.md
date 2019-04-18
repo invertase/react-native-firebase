@@ -11,36 +11,16 @@ device information, location, user actions and more.
 
 <Youtube id="8iZpH7O6zXo" />
 
-## Install
-
-To get started, install the module on your platform. Analytics works out of the box once installed!
-
-<Grid columns="2">
-	<Block
-		title="Android"
-		to="/{{ version }}/analytics/installation#android"
-	>
-    Follow the Android installation guide.
-	</Block>
-	<Block
-		title="iOS"
-		to="/{{ version }}/analytics/installation#ios"
-	>
-		Follow the iOS installation guide.
-	</Block>
-</Grid>
-
 ## Getting Started
 
 <Grid>
 	<Block
 		icon="multiline_chart"
 		color="#2196f3"
-		title="Tips & Recommendations"
-		to="/{{ version }}/analytics/tips-and-recommendations"
+		title="Quick Start"
+		to="/{{ version }}/analytics/quick-start"
 	>
-    Gaining insight into your users behaviour is critical to app success. We've collated a list of our
-    tips and recommendation for every app you build. 
+    Install & start gaining insight into your users behaviour throught your application.
 	</Block>
 	<Block
 		icon="block"
@@ -51,14 +31,22 @@ To get started, install the module on your platform. Analytics works out of the 
     Firebase Analytics automatically tracks certain events which cannot be overridden. Understanding 
     what events are provided out of the box is a great place to start.
 	</Block>
+	<Block
+		icon="school"
+		color="#4CAF50"
+		title="Guides"
+		to="/guides?tag=analytics"
+	>
+    Analytics works great out of the box, however provides a powerful API to gain full analytical insight into 
+    your application. Our guides cover topics from the basics to advanced integration techiques.
+	</Block>
   <Block
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
 		to="/{{ version }}/analytics/reference"
 	>
-    Take advantage of the simple reference API for analytics and gain more insight into your application and
-    users.
+    Take advantage of the simple reference API for analytics start integrating it into your application.
 	</Block>
 </Grid>
 
