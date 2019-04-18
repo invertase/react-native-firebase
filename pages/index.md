@@ -50,6 +50,7 @@ There are a number of ways to get started with React Native Firebase:
 
 The React Native Firebase documentation is a great place to get started, however if you're looking to learn more about the library, struggling to find what you're after or thinking about contributing, check out these resources:
 
+- **[Migrating to v6](/migrating-to-v6):** Using an older version of React Native Firebase? View the migration guide.
 - **[Github](https://github.com/invertase/react-native-firebase):** The Github repository contains all of the source code, current issues and pull requests for the library.
 - **[Frequently Asked Questions](/faqs):** There's a good chance your question has already been asked before.
 - **[Feedback](/feedback):** Your feedback, good or bad, is important to us. Our Canny board lets us prioritise what's important for you.
