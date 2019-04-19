@@ -48,13 +48,13 @@ There are a number of ways to get started with React Native Firebase:
 
 ## Learn More
 
-The React Native Firebase documentation is a great place to get started, however if you're looking to learn more about the library, struggling to find what you're after or thinking about contributing, check out these resources:
+The React Native Firebase documentation is a great place to get started, however if you're looking to learn more about the library or thinking about contributing check out these resources:
 
 - **[Migrating to v6](/migrating-to-v6):** Using an older version of React Native Firebase? View the migration guide.
 - **[Github](https://github.com/invertase/react-native-firebase):** The Github repository contains all of the source code, current issues and pull requests for the library.
 - **[Frequently Asked Questions](/faqs):** There's a good chance your question has already been asked before.
-- **[Feedback](/feedback):** Your feedback, good or bad, is important to us. Our Canny board lets us prioritise what's important for you.
-- **[Contributing](/contributing):** Contributing is a great way to improve your understanding of React Native Firebase and boosts your profile in the Open Source Community. Whether you're a beginner or advanced user, there are many ways to help contribute.
-- **[Search](/search):** Using [Algolia](https://www.algolia.com) powered search, every aspect of the library from guides to methods is only a letter way.
-- **[Releases](/releases):** Keep up to date with the latest changes and features with comprehensive release notes.
-- **[Community Chat](https://discordapp.com/invite/XsKpw4):** The active Discord server is a great place to discuss React Native Firebase.
+- **[Feedback](/feedback):** Your feedback, good or bad, is important to us. Our Canny board helps us prioritise what's important for you.
+- **[Contributing](/contributing):** Contributing is a great way to improve your understanding of React Native, Firebase and boost your profile in the Open Source Community. Whether you're a beginner or advanced user, there are many ways to help contribute.
+- **[Search](/search):** Using [Algolia](https://www.algolia.com) powered search; every aspect of the library from guides to methods is indexed.
+- **[Releases](/releases):** Keep up to date with the latest changes and features with our comprehensive release notes.
+- **[Community Chat](https://discordapp.com/invite/XsKpw4):** Our active Discord server is a great place to discuss React Native Firebase.
