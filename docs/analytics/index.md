@@ -46,7 +46,7 @@ device information, location, user actions and more.
 		title="Reference"
 		to="/{{ version }}/analytics/reference"
 	>
-    Take advantage of the simple reference API for analytics start integrating it into your application.
+    Take advantage of the simple reference API for Analytics start integrating it into your application.
 	</Block>
 </Grid>
 

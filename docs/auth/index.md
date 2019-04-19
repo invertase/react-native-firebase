@@ -10,25 +10,6 @@ React Native Firebase provides access to all Firebase authentication methods and
 
 <Youtube id="8sGY55yxicA" />
 
-## Install
-
-To get started, install the module on your platform:
-
-<Grid columns="2">
-	<Block
-		title="Android"
-		to="/<< version >>/auth/installation#android"
-	>
-    Follow the Android installation guide.
-	</Block>
-	<Block
-		title="iOS"
-		to="/{{ version }}/auth/installation#ios"
-	>
-		Follow the iOS installation guide.
-	</Block>
-</Grid>
-
 ## Getting Started
 
 <Grid>
@@ -38,7 +19,7 @@ To get started, install the module on your platform:
 		title="Quick Start"
 		to="/{{ version }}/auth/quick-start"
 	>
-    Getting started with authentication? The quick guide will have you up and running in minutes. 
+    Install & start authenticating your users with Firebase.
 	</Block>
 	<Block
 		icon="school"
