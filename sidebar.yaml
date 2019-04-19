@@ -9,6 +9,7 @@
     to: "/contributing"
   - text: Releases
     to: "/releases"
+    pill: "v6.0.0"
   - text: Feedback
     to: "/feedback"
   - text: Migrating to v6
