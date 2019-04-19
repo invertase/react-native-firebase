@@ -7,6 +7,7 @@ description: React Native Firebase is a light-weight javascript layer connecting
   Firebase Web SDK as closely as possible.
 theme:
   logo: '//static.invertase.io/assets/React-Native-Firebase.svg'
+  favicon: '//static.invertase.io/assets/react-native-firebase-favicon.png'
   primary: '#E57A2E'
   secondary: '#F8C449'
 social:
