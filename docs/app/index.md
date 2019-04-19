@@ -18,7 +18,7 @@ app to be installed.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/functions/quick-start"
+		to="/{{ version }}/app/quick-start"
 	>
 	  Install & connect your app to your Firebase project.
   </Block>
