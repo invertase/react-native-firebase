@@ -11,25 +11,6 @@ performance and offline capabilities.
 
 <Youtube id="QcsAb2RR52c" />
 
-## Install
-
-To get started, install the module on your platform:
-
-<Grid columns="2">
-	<Block
-		title="Android"
-		to="/{{ version }}/firestore/installation#android"
-	>
-    Follow the Android installation guide.
-	</Block>
-	<Block
-		title="iOS"
-		to="/{{ version }}/auth/installation#ios"
-	>
-		Follow the iOS installation guide.
-	</Block>
-</Grid>
-
 ## Getting Started
 
 <Grid>
@@ -39,7 +20,7 @@ To get started, install the module on your platform:
 		title="Quick Start"
 		to="/{{ version }}/firestore/quick-start"
 	>
-    Start syncing realtime data in minuties with our quick start guide. 
+    Install & start syncing realtime data in minuties with our quick start guide. 
 	</Block>
 	<Block
 		icon="school"
