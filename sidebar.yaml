@@ -18,6 +18,7 @@
   children:
     - text: MacStadium
       to: "/macstadium"
+      asset: "//static.invertase.io/assets/social/macstadium-logo-black.png"
     - text: Firebase Documentation
       to: "https://firebase.google.com/docs/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
       asset: "//static.invertase.io/assets/social/firebase-logo.png"
@@ -62,6 +63,7 @@
     asset: "//static.invertase.io/assets/firebase/dynamic-links.svg"
   - text: Instance ID
     to: "/v6/iid"
+    asset: "//static.invertase.io/assets/social/firebase-logo.png"
   - text: Invites
     to: "/v6/invites"
     asset: "//static.invertase.io/assets/firebase/invites.svg"
@@ -70,6 +72,7 @@
     asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
   - text: Notifications
     to: "/v6/notifications"
+    asset: "//static.invertase.io/assets/social/firebase-logo.png"
   - text: Remote Config
     to: "/v6/config"
     asset: "//static.invertase.io/assets/firebase/remote-config.svg"
