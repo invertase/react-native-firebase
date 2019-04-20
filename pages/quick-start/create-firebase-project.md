@@ -1,15 +1,13 @@
 ---
-title: 'Quick Start: Firebase Project'
-description: Creating a Firebase project on the Firebase Console
+title: Creating a new Firebase Project
+description: Creating a new Firebase project on the Firebase Console.
 ---
 
-# Quick Start: Firebase Project
+# Creating a new Firebase project
 
-The first thing you'll need to have to use Firebase is an active Firebase project.
+The first thing you'll need to have to use Firebase is an active Firebase project; let's quickly cover creating one.
 
-We'll quickly cover creating one below.
-
-## Creating a new Firebase project
+## Guide
 
 - Visit the [Firebase console](https://firebase.google.com/console?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=quick-start)
 - Click the `Add project` box as shown below:
@@ -28,13 +26,15 @@ We'll quickly cover creating one below.
 
 ![New Project Homepage](https://i.imgur.com/vebPTf1.png)
 
-## Continue Firebase integration
+## Next
 
-Now lets continue the integration of Firebase for React Native, choose your integration path:
+Now that you have a Firebase project; lets continue integrating Firebase for React Native.
+
+You can get started with Firebase in React Native using one of the following options:
 
 <Grid>
 	<Block
-		title="Quick Start: New Project"
+		title="New Projects"
 		to="/quick-start/new-project"
 		icon="fiber_new"
 		color="#4CAF50"
@@ -42,9 +42,9 @@ Now lets continue the integration of Firebase for React Native, choose your inte
 		Start a new React Native project with Firebase pre-integrated.
   	</Block>
 	<Block
-		title="Quick Start: Existing Project"
+		title="Existing Projects"
 		to="/quick-start/existing-project"
-		icon="explicit"
+		icon="forward"
 		color="#ffc107"
 	>
 		Integrate Firebase into an existing React Native project.
