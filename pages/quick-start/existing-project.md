@@ -7,7 +7,7 @@ description: Integrate Firebase into an existing React Native project
 
 This guide is for integrating Firebase into an existing React Native project.
 
-Creating a new React Native project? See the [`new projects guide`](/new-project) instead.
+Creating a new React Native project? See the [`new projects guide`](/quick-start/new-project) instead.
 
 ## Guide
 
