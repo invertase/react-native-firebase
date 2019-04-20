@@ -165,8 +165,6 @@ await analytics().setUserId('12345678');
 - [BREAKING] `firebase.perf.Trace.incrementMetric` will now create a metric if it could not be found
 - [BREAKING] `firebase.perf.Trace.getMetric` will now return 0 if a metric could not be found
 - [NEW] Added support for `firebase.perf().isPerformanceCollectionEnabled: boolean`
-- [NEW] Added support for `firebase.perf.Trace.removeMetric(metricName: string)`
-- [NEW] Added support for `firebase.perf.Trace.getMetrics(): { [key: string]: number }`
 - [NEW] Added `firebase.perf().startTrace(identifier: string): Promise<Trace>;` as a convenience method to create and immediately start a Trace
 
 ## Remote Config (config)
