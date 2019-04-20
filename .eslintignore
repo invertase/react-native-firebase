@@ -5,3 +5,4 @@ node_modules
 scripts/
 coverage
 docs
+packages/template/project/**
