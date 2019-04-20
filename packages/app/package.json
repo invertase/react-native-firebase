@@ -57,13 +57,6 @@
     "@react-native-firebase/common": "6.0.0-alpha.8",
     "opencollective-postinstall": "^2.0.1"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
-      "packageImportPath": "import io.invertase.firebase.modules.app.ReactNativeFirebaseAppPackage;",
-      "packageInstance": "new ReactNativeFirebaseAppPackage()"
-    }
-  },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
