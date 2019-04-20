@@ -1,5 +1,5 @@
 ---
-title: Existing Project
+title: 'Quick Start: Existing Project'
 description: Integrate Firebase into an existing React Native project
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: Quick Start: Firebase Project
+title: 'Quick Start: Firebase Project'
 description: Creating a Firebase project on the Firebase Console
 ---
 
