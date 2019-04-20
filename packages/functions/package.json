@@ -33,13 +33,6 @@
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_functions')",
-      "packageImportPath": "import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;",
-      "packageInstance": "new ReactNativeFirebaseFunctionsPackage()"
-    }
-  },
   "gitHead": "8c81b64c4961d0258eea34be4dee11e928080c4e",
   "publishConfig": {
     "access": "public"

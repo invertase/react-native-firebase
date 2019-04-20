@@ -28,13 +28,6 @@
     "@react-native-firebase/app-types": "6.0.0-alpha.8",
     "@react-native-firebase/common": "6.0.0-alpha.8"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_analytics')",
-      "packageImportPath": "import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;",
-      "packageInstance": "new ReactNativeFirebaseAnalyticsPackage()"
-    }
-  },
   "gitHead": "8c81b64c4961d0258eea34be4dee11e928080c4e",
   "publishConfig": {
     "access": "public"

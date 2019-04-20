@@ -28,13 +28,6 @@
     "@react-native-firebase/app-types": "_VERSION_",
     "@react-native-firebase/common": "_VERSION_"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase__template_')",
-      "packageImportPath": "import io.invertase.firebase._template_.ReactNativeFirebase_Template_Package;",
-      "packageInstance": "new ReactNativeFirebase_Template_Package()"
-    }
-  },
   "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
   "publishConfig": {
     "access": "public"

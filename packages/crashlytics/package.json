@@ -34,13 +34,6 @@
     "@react-native-firebase/common": "6.0.0-alpha.8",
     "stacktrace-js": "^2.0.0"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_crashlytics')",
-      "packageImportPath": "import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;",
-      "packageInstance": "new ReactNativeFirebaseCrashlyticsPackage()"
-    }
-  },
   "gitHead": "8c81b64c4961d0258eea34be4dee11e928080c4e",
   "publishConfig": {
     "access": "public"
