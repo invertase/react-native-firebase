@@ -9,6 +9,10 @@ This guide is for integrating Firebase into an existing React Native project.
 
 Creating a new React Native project? See the [`new projects guide`](/quick-start/new-project) instead.
 
+## Before you begin
+
+// TODO(salakar) React Native version requirements
+
 ## Guide
 
 ```bash
