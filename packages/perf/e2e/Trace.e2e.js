@@ -60,29 +60,29 @@ describe('perf()', () => {
       });
     });
 
-    describe('removeAttribute()', async () => {
-      it('errors if not a string', async () => {
-        const trace = firebase.perf().newTrace('invertase');
-        try {
-          trace.putAttribute('inver', 'tase');
-          trace.removeAttribute(13377331);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql('must be a string');
-          return Promise.resolve();
-        }
-      });
-
-      it('removes an attribute', async () => {
-        const trace = firebase.perf().newTrace('invertase');
-        trace.putAttribute('inver', 'tase');
-        const value = trace.getAttribute('inver');
-        should.equal(value, 'tase');
-        trace.removeAttribute('inver');
-        const value2 = trace.getAttribute('inver');
-        should.equal(value2, null);
-      });
-    });
+    // describe('removeAttribute()', async () => {
+    //   it('errors if not a string', async () => {
+    //     const trace = firebase.perf().newTrace('invertase');
+    //     try {
+    //       trace.putAttribute('inver', 'tase');
+    //       trace.removeAttribute(13377331);
+    //       return Promise.reject(new Error('Did not throw'));
+    //     } catch (e) {
+    //       e.message.should.containEql('must be a string');
+    //       return Promise.resolve();
+    //     }
+    //   });
+    //
+    //   it('removes an attribute', async () => {
+    //     const trace = firebase.perf().newTrace('invertase');
+    //     trace.putAttribute('inver', 'tase');
+    //     const value = trace.getAttribute('inver');
+    //     should.equal(value, 'tase');
+    //     trace.removeAttribute('inver');
+    //     const value2 = trace.getAttribute('inver');
+    //     should.equal(value2, null);
+    //   });
+    // });
 
     describe('getAttribute()', async () => {
       it('should return null if attribute does not exist', async () => {
@@ -181,16 +181,16 @@ describe('perf()', () => {
       });
     });
 
-    it('getAttributes()', async () => {
-      const trace = firebase.perf().newTrace('invertase');
-      trace.putAttribute('inver', 'tase');
-      trace.putAttribute('tase', 'baz');
-      const value = trace.getAttributes();
-      JSON.parse(JSON.stringify(value)).should.deepEqual({
-        inver: 'tase',
-        tase: 'baz',
-      });
-    });
+    // it('getAttributes()', async () => {
+    //   const trace = firebase.perf().newTrace('invertase');
+    //   trace.putAttribute('inver', 'tase');
+    //   trace.putAttribute('tase', 'baz');
+    //   const value = trace.getAttributes();
+    //   JSON.parse(JSON.stringify(value)).should.deepEqual({
+    //     inver: 'tase',
+    //     tase: 'baz',
+    //   });
+    // });
   });
 
   // -----------

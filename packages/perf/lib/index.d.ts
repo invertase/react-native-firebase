@@ -50,11 +50,6 @@ export namespace Perf {
     getAttribute(attribute: string): string | null;
 
     /**
-     * Returns an object of all the currently added attributes and their string values.
-     */
-    getAttributes(): { [key: string]: string };
-
-    /**
      * Sets a String value for the specified attribute. Updates the value of the attribute if it already exists.
      * The maximum number of attributes that can be added is 5.
      *
@@ -62,13 +57,6 @@ export namespace Perf {
      * @param value Value of the attribute. Max length is 100 chars.
      */
     putAttribute(attribute: string, value: string);
-
-    /**
-     * Removes an already added attribute. Does nothing if attribute does not exist.
-     *
-     * @param attribute Name of the attribute to be removed.
-     */
-    removeAttribute(attribute: string);
 
     /**
      * Gets the value of the metric with the given name in the current trace. If the metric doesn't exist, it will not be created and a 0 is returned.

@@ -64,29 +64,29 @@ describe('perf()', () => {
       });
     });
 
-    describe('removeAttribute()', async () => {
-      it('errors if not a string', async () => {
-        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-        try {
-          httpMetric.putAttribute('inver', 'tase');
-          httpMetric.removeAttribute(13377331);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql('must be a string');
-          return Promise.resolve();
-        }
-      });
-
-      it('removes an attribute', async () => {
-        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-        httpMetric.putAttribute('inver', 'tase');
-        const value = httpMetric.getAttribute('inver');
-        should.equal(value, 'tase');
-        httpMetric.removeAttribute('inver');
-        const value2 = httpMetric.getAttribute('inver');
-        should.equal(value2, null);
-      });
-    });
+    // describe('removeAttribute()', async () => {
+    //   it('errors if not a string', async () => {
+    //     const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+    //     try {
+    //       httpMetric.putAttribute('inver', 'tase');
+    //       httpMetric.removeAttribute(13377331);
+    //       return Promise.reject(new Error('Did not throw'));
+    //     } catch (e) {
+    //       e.message.should.containEql('must be a string');
+    //       return Promise.resolve();
+    //     }
+    //   });
+    //
+    //   it('removes an attribute', async () => {
+    //     const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+    //     httpMetric.putAttribute('inver', 'tase');
+    //     const value = httpMetric.getAttribute('inver');
+    //     should.equal(value, 'tase');
+    //     httpMetric.removeAttribute('inver');
+    //     const value2 = httpMetric.getAttribute('inver');
+    //     should.equal(value2, null);
+    //   });
+    // });
 
     describe('getAttribute()', async () => {
       it('should return null if attribute does not exist', async () => {
@@ -185,16 +185,16 @@ describe('perf()', () => {
       });
     });
 
-    it('getAttributes()', async () => {
-      const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
-      httpMetric.putAttribute('inver', 'tase');
-      httpMetric.putAttribute('tase', 'baz');
-      const value = httpMetric.getAttributes();
-      JSON.parse(JSON.stringify(value)).should.deepEqual({
-        inver: 'tase',
-        tase: 'baz',
-      });
-    });
+    // it('getAttributes()', async () => {
+    //   const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
+    //   httpMetric.putAttribute('inver', 'tase');
+    //   httpMetric.putAttribute('tase', 'baz');
+    //   const value = httpMetric.getAttributes();
+    //   JSON.parse(JSON.stringify(value)).should.deepEqual({
+    //     inver: 'tase',
+    //     tase: 'baz',
+    //   });
+    // });
 
     describe('setHttpResponseCode()', async () => {
       it('sets number value', async () => {

@@ -30,7 +30,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -121,6 +121,69 @@
 					"fileName": "analytics/lib/index.d.ts",
 					"line": 111,
 					"character": 49
+				}
+			]
+		},
+		{
+			"id": 50,
+			"name": "\"@react-native-firebase/app\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"comment": {
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "firebase\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 51,
+					"name": "ReactNativeFirebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "app/lib/index.d.ts",
+							"line": 25,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						51
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app/lib/index.d.ts",
+					"line": 23,
+					"character": 43
 				}
 			]
 		},
@@ -482,14 +545,14 @@
 							]
 						},
 						{
-							"id": 439,
+							"id": 434,
 							"name": "perf",
 							"kind": 2048,
 							"kindString": "Method",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 440,
+									"id": 435,
 									"name": "perf",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -500,14 +563,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 420
+										"id": 412
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 269,
+									"line": 265,
 									"character": 8
 								}
 							]
@@ -549,7 +612,7 @@
 									}
 								},
 								{
-									"id": 450,
+									"id": 445,
 									"name": "utils",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -560,7 +623,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 443
+										"id": 438
 									}
 								}
 							],
@@ -593,7 +656,7 @@
 								267,
 								334,
 								345,
-								439,
+								434,
 								56
 							]
 						}
@@ -656,7 +719,7 @@
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 265,
+							"line": 261,
 							"character": 23
 						},
 						{
@@ -692,7 +755,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -726,7 +789,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -760,7 +823,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -794,7 +857,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -828,7 +891,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -862,7 +925,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -896,7 +959,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 523,
+								"id": 518,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -931,7 +994,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 523,
+								"id": 518,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -965,7 +1028,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -999,7 +1062,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1015,7 +1078,7 @@
 							}
 						},
 						{
-							"id": 438,
+							"id": 433,
 							"name": "perf",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1026,24 +1089,24 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 262,
+									"line": 258,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 420
+										"id": 412
 									},
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 419
+										"id": 411
 									}
 								]
 							}
@@ -1074,17 +1137,17 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 517,
+								"id": 512,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 443
+										"id": 438
 									},
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 442
+										"id": 437
 									}
 								]
 							}
@@ -1105,7 +1168,7 @@
 								266,
 								333,
 								344,
-								438,
+								433,
 								52
 							]
 						}
@@ -1168,7 +1231,7 @@
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 258,
+							"line": 254,
 							"character": 40
 						},
 						{
@@ -1247,7 +1310,7 @@
 				},
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 257,
+					"line": 253,
 					"character": 49
 				},
 				{
@@ -1283,7 +1346,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1403,7 +1466,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1523,7 +1586,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1643,7 +1706,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1792,7 +1855,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1883,7 +1946,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 523,
+						"id": 518,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2042,7 +2105,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 523,
+						"id": 518,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2162,7 +2225,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2282,7 +2345,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2348,14 +2411,14 @@
 			]
 		},
 		{
-			"id": 434,
+			"id": 429,
 			"name": "\"@react-native-firebase/perf\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 435,
+					"id": 430,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2365,7 +2428,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 232,
+							"line": 228,
 							"character": 31
 						}
 					],
@@ -2384,7 +2447,7 @@
 					}
 				},
 				{
-					"id": 437,
+					"id": 432,
 					"name": "PerfDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2395,30 +2458,30 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 243,
+							"line": 239,
 							"character": 25
 						}
 					],
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 420
+								"id": 412
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 419
+								"id": 411
 							}
 						]
 					}
 				},
 				{
-					"id": 436,
+					"id": 431,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2437,7 +2500,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 241,
+							"line": 237,
 							"character": 23
 						}
 					],
@@ -2453,29 +2516,29 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						435,
-						437,
-						436
+						430,
+						432,
+						431
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 229,
+					"line": 225,
 					"character": 44
 				}
 			]
 		},
 		{
-			"id": 446,
+			"id": 441,
 			"name": "\"@react-native-firebase/utils\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 447,
+					"id": 442,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2504,7 +2567,7 @@
 					}
 				},
 				{
-					"id": 449,
+					"id": 444,
 					"name": "UtilsDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2522,23 +2585,23 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 517,
+						"id": 512,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 443
+								"id": 438
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 442
+								"id": 437
 							}
 						]
 					}
 				},
 				{
-					"id": 448,
+					"id": 443,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2573,9 +2636,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						447,
-						449,
-						448
+						442,
+						444,
+						443
 					]
 				}
 			],
@@ -2584,69 +2647,6 @@
 					"fileName": "utils/lib/index.d.ts",
 					"line": 42,
 					"character": 45
-				}
-			]
-		},
-		{
-			"id": 50,
-			"name": "\"react-native-firebase\"",
-			"kind": 2,
-			"kindString": "Module",
-			"flags": {},
-			"comment": {
-				"tags": [
-					{
-						"tag": "firebase",
-						"text": "firebase\n"
-					}
-				]
-			},
-			"children": [
-				{
-					"id": 51,
-					"name": "ReactNativeFirebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "app/lib/index.d.ts",
-							"line": 25,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseNamespace"
-							}
-						]
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Variables",
-					"kind": 32,
-					"children": [
-						51
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "app/lib/index.d.ts",
-					"line": 23,
-					"character": 38
 				}
 			]
 		},
@@ -3410,7 +3410,7 @@
 			]
 		},
 		{
-			"id": 498,
+			"id": 493,
 			"name": "App",
 			"kind": 2,
 			"kindString": "Module",
@@ -3427,7 +3427,7 @@
 			},
 			"children": [
 				{
-					"id": 499,
+					"id": 494,
 					"name": "FirebaseApp",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3436,7 +3436,7 @@
 					},
 					"children": [
 						{
-							"id": 500,
+							"id": 495,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3459,7 +3459,7 @@
 							}
 						},
 						{
-							"id": 501,
+							"id": 496,
 							"name": "options",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3479,11 +3479,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseOptions",
-								"id": 484
+								"id": 479
 							}
 						},
 						{
-							"id": 502,
+							"id": 497,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3492,7 +3492,7 @@
 							},
 							"signatures": [
 								{
-									"id": 503,
+									"id": 498,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3526,15 +3526,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								500,
-								501
+								495,
+								496
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								502
+								497
 							]
 						}
 					],
@@ -3547,7 +3547,7 @@
 					]
 				},
 				{
-					"id": 504,
+					"id": 499,
 					"name": "ReactNativeFirebaseNamespace",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3556,7 +3556,7 @@
 					},
 					"children": [
 						{
-							"id": 516,
+							"id": 511,
 							"name": "SDK_VERSION",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3579,7 +3579,7 @@
 							}
 						},
 						{
-							"id": 515,
+							"id": 510,
 							"name": "apps",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3601,12 +3601,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "FirebaseApp",
-									"id": 499
+									"id": 494
 								}
 							}
 						},
 						{
-							"id": 512,
+							"id": 507,
 							"name": "app",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3615,7 +3615,7 @@
 							},
 							"signatures": [
 								{
-									"id": 513,
+									"id": 508,
 									"name": "app",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3631,7 +3631,7 @@
 									},
 									"parameters": [
 										{
-											"id": 514,
+											"id": 509,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3659,7 +3659,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 499
+										"id": 494
 									}
 								}
 							],
@@ -3672,7 +3672,7 @@
 							]
 						},
 						{
-							"id": 505,
+							"id": 500,
 							"name": "initializeApp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3681,7 +3681,7 @@
 							},
 							"signatures": [
 								{
-									"id": 506,
+									"id": 501,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3691,7 +3691,7 @@
 									},
 									"parameters": [
 										{
-											"id": 507,
+											"id": 502,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3702,11 +3702,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 484
+												"id": 479
 											}
 										},
 										{
-											"id": 508,
+											"id": 503,
 											"name": "config",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3719,18 +3719,18 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppConfig",
-												"id": 460
+												"id": 455
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 499
+										"id": 494
 									}
 								},
 								{
-									"id": 509,
+									"id": 504,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3740,7 +3740,7 @@
 									},
 									"parameters": [
 										{
-											"id": 510,
+											"id": 505,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3751,11 +3751,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 484
+												"id": 479
 											}
 										},
 										{
-											"id": 511,
+											"id": 506,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3783,7 +3783,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 499
+										"id": 494
 									}
 								}
 							],
@@ -3806,16 +3806,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								516,
-								515
+								511,
+								510
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								512,
-								505
+								507,
+								500
 							]
 						}
 					],
@@ -3833,8 +3833,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						499,
-						504
+						494,
+						499
 					]
 				}
 			],
@@ -6206,7 +6206,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 19
 								}
@@ -6274,7 +6274,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 964,
 									"character": 11
 								}
@@ -6298,7 +6298,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 963,
 									"character": 8
 								}
@@ -6323,7 +6323,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 965,
 									"character": 9
 								}
@@ -8780,7 +8780,7 @@
 			},
 			"children": [
 				{
-					"id": 387,
+					"id": 379,
 					"name": "HttpMetric",
 					"kind": 256,
 					"kindString": "Interface",
@@ -8792,7 +8792,7 @@
 					},
 					"children": [
 						{
-							"id": 388,
+							"id": 380,
 							"name": "getAttribute",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8801,7 +8801,7 @@
 							},
 							"signatures": [
 								{
-									"id": 389,
+									"id": 381,
 									"name": "getAttribute",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8811,7 +8811,7 @@
 									},
 									"parameters": [
 										{
-											"id": 390,
+											"id": 382,
 											"name": "attribute",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8843,13 +8843,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 133,
+									"line": 121,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 391,
+							"id": 383,
 							"name": "getAttributes",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8858,7 +8858,7 @@
 							},
 							"signatures": [
 								{
-									"id": 392,
+									"id": 384,
 									"name": "getAttributes",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8869,21 +8869,21 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 393,
+											"id": 385,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 394,
+													"id": 386,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 395,
+															"id": 387,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -8903,7 +8903,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 138,
+													"line": 126,
 													"character": 20
 												}
 											]
@@ -8914,13 +8914,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 138,
+									"line": 126,
 									"character": 17
 								}
 							]
 						},
 						{
-							"id": 396,
+							"id": 388,
 							"name": "putAttribute",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8929,7 +8929,7 @@
 							},
 							"signatures": [
 								{
-									"id": 397,
+									"id": 389,
 									"name": "putAttribute",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8939,7 +8939,7 @@
 									},
 									"parameters": [
 										{
-											"id": 398,
+											"id": 390,
 											"name": "attribute",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8953,7 +8953,7 @@
 											}
 										},
 										{
-											"id": 399,
+											"id": 391,
 											"name": "value",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8976,13 +8976,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 147,
+									"line": 135,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 400,
+							"id": 392,
 							"name": "removeAttribute",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8991,7 +8991,7 @@
 							},
 							"signatures": [
 								{
-									"id": 401,
+									"id": 393,
 									"name": "removeAttribute",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9001,7 +9001,7 @@
 									},
 									"parameters": [
 										{
-											"id": 402,
+											"id": 394,
 											"name": "attribute",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9024,13 +9024,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 154,
+									"line": 142,
 									"character": 19
 								}
 							]
 						},
 						{
-							"id": 403,
+							"id": 395,
 							"name": "setHttpResponseCode",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9039,7 +9039,7 @@
 							},
 							"signatures": [
 								{
-									"id": 404,
+									"id": 396,
 									"name": "setHttpResponseCode",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9055,7 +9055,7 @@
 									},
 									"parameters": [
 										{
-											"id": 405,
+											"id": 397,
 											"name": "code",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9087,13 +9087,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 163,
+									"line": 151,
 									"character": 23
 								}
 							]
 						},
 						{
-							"id": 406,
+							"id": 398,
 							"name": "setRequestPayloadSize",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9102,7 +9102,7 @@
 							},
 							"signatures": [
 								{
-									"id": 407,
+									"id": 399,
 									"name": "setRequestPayloadSize",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9112,7 +9112,7 @@
 									},
 									"parameters": [
 										{
-											"id": 408,
+											"id": 400,
 											"name": "bytes",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9144,13 +9144,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 170,
+									"line": 158,
 									"character": 25
 								}
 							]
 						},
 						{
-							"id": 412,
+							"id": 404,
 							"name": "setResponseContentType",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9159,7 +9159,7 @@
 							},
 							"signatures": [
 								{
-									"id": 413,
+									"id": 405,
 									"name": "setResponseContentType",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9169,7 +9169,7 @@
 									},
 									"parameters": [
 										{
-											"id": 414,
+											"id": 406,
 											"name": "contentType",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9201,13 +9201,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 184,
+									"line": 172,
 									"character": 26
 								}
 							]
 						},
 						{
-							"id": 409,
+							"id": 401,
 							"name": "setResponsePayloadSize",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9216,7 +9216,7 @@
 							},
 							"signatures": [
 								{
-									"id": 410,
+									"id": 402,
 									"name": "setResponsePayloadSize",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9226,7 +9226,7 @@
 									},
 									"parameters": [
 										{
-											"id": 411,
+											"id": 403,
 											"name": "bytes",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9258,13 +9258,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 177,
+									"line": 165,
 									"character": 26
 								}
 							]
 						},
 						{
-							"id": 415,
+							"id": 407,
 							"name": "start",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9273,7 +9273,7 @@
 							},
 							"signatures": [
 								{
-									"id": 416,
+									"id": 408,
 									"name": "start",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9296,13 +9296,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 189,
+									"line": 177,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 417,
+							"id": 409,
 							"name": "stop",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9311,7 +9311,7 @@
 							},
 							"signatures": [
 								{
-									"id": 418,
+									"id": 410,
 									"name": "stop",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9334,7 +9334,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 194,
+									"line": 182,
 									"character": 8
 								}
 							]
@@ -9345,29 +9345,29 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
+								380,
+								383,
 								388,
-								391,
-								396,
-								400,
-								403,
-								406,
-								412,
-								409,
-								415,
-								417
+								392,
+								395,
+								398,
+								404,
+								401,
+								407,
+								409
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 127,
+							"line": 115,
 							"character": 29
 						}
 					]
 				},
 				{
-					"id": 420,
+					"id": 412,
 					"name": "Module",
 					"kind": 256,
 					"kindString": "Interface",
@@ -9376,7 +9376,7 @@
 					},
 					"children": [
 						{
-							"id": 432,
+							"id": 427,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -9400,7 +9400,7 @@
 							}
 						},
 						{
-							"id": 421,
+							"id": 413,
 							"name": "isPerformanceCollectionEnabled",
 							"kind": 1024,
 							"kindString": "Property",
@@ -9413,7 +9413,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 203,
+									"line": 191,
 									"character": 34
 								}
 							],
@@ -9423,7 +9423,7 @@
 							}
 						},
 						{
-							"id": 428,
+							"id": 423,
 							"name": "newHttpMetric",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9432,7 +9432,7 @@
 							},
 							"signatures": [
 								{
-									"id": 429,
+									"id": 424,
 									"name": "newHttpMetric",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9442,7 +9442,7 @@
 									},
 									"parameters": [
 										{
-											"id": 430,
+											"id": 425,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9456,7 +9456,7 @@
 											}
 										},
 										{
-											"id": 431,
+											"id": 426,
 											"name": "httpMethod",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9467,27 +9467,27 @@
 											"type": {
 												"type": "reference",
 												"name": "HttpMethod",
-												"id": 433
+												"id": 428
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "HttpMetric",
-										"id": 387
+										"id": 379
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 225,
+									"line": 221,
 									"character": 17
 								}
 							]
 						},
 						{
-							"id": 425,
+							"id": 417,
 							"name": "newTrace",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9496,17 +9496,17 @@
 							},
 							"signatures": [
 								{
-									"id": 426,
+									"id": 418,
 									"name": "newTrace",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates a Trace instance with given identifier."
+										"shortText": "Creates a Trace instance with the given identifier."
 									},
 									"parameters": [
 										{
-											"id": 427,
+											"id": 419,
 											"name": "identifier",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9530,13 +9530,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 217,
+									"line": 205,
 									"character": 12
 								}
 							]
 						},
 						{
-							"id": 422,
+							"id": 414,
 							"name": "setPerformanceCollectionEnabled",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9545,7 +9545,7 @@
 							},
 							"signatures": [
 								{
-									"id": 423,
+									"id": 415,
 									"name": "setPerformanceCollectionEnabled",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9555,7 +9555,7 @@
 									},
 									"parameters": [
 										{
-											"id": 424,
+											"id": 416,
 											"name": "enabled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9584,8 +9584,63 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 210,
+									"line": 198,
 									"character": 35
+								}
+							]
+						},
+						{
+							"id": 420,
+							"name": "startTrace",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 421,
+									"name": "startTrace",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Creates a Trace instance with the given identifier and immediately starts it."
+									},
+									"parameters": [
+										{
+											"id": 422,
+											"name": "identifier",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"name": "Trace",
+												"id": 348
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "perf/lib/index.d.ts",
+									"line": 213,
+									"character": 14
 								}
 							]
 						}
@@ -9595,24 +9650,25 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								432,
-								421
+								427,
+								413
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								428,
-								425,
-								422
+								423,
+								417,
+								414,
+								420
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 199,
+							"line": 187,
 							"character": 25
 						}
 					],
@@ -9624,7 +9680,7 @@
 					]
 				},
 				{
-					"id": 419,
+					"id": 411,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -9634,7 +9690,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 197,
+							"line": 185,
 							"character": 26
 						}
 					]
@@ -9709,78 +9765,7 @@
 							]
 						},
 						{
-							"id": 352,
-							"name": "getAttributes",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 353,
-									"name": "getAttributes",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Returns an object of all the currently added attributes and their string values."
-									},
-									"type": {
-										"type": "reflection",
-										"declaration": {
-											"id": 354,
-											"name": "__type",
-											"kind": 65536,
-											"kindString": "Type literal",
-											"flags": {},
-											"indexSignature": [
-												{
-													"id": 355,
-													"name": "__index",
-													"kind": 8192,
-													"kindString": "Index signature",
-													"flags": {},
-													"parameters": [
-														{
-															"id": 356,
-															"name": "key",
-															"kind": 32768,
-															"kindString": "Parameter",
-															"flags": {},
-															"type": {
-																"type": "intrinsic",
-																"name": "string"
-															}
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "string"
-													}
-												}
-											],
-											"sources": [
-												{
-													"fileName": "perf/lib/index.d.ts",
-													"line": 55,
-													"character": 20
-												}
-											]
-										}
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "perf/lib/index.d.ts",
-									"line": 55,
-									"character": 17
-								}
-							]
-						},
-						{
-							"id": 364,
+							"id": 356,
 							"name": "getMetric",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9789,7 +9774,7 @@
 							},
 							"signatures": [
 								{
-									"id": 365,
+									"id": 357,
 									"name": "getMetric",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9799,7 +9784,7 @@
 									},
 									"parameters": [
 										{
-											"id": 366,
+											"id": 358,
 											"name": "metricName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9822,13 +9807,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 78,
+									"line": 66,
 									"character": 13
 								}
 							]
 						},
 						{
-							"id": 367,
+							"id": 359,
 							"name": "getMetrics",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9837,7 +9822,7 @@
 							},
 							"signatures": [
 								{
-									"id": 368,
+									"id": 360,
 									"name": "getMetrics",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9848,21 +9833,21 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 369,
+											"id": 361,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 370,
+													"id": 362,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 371,
+															"id": 363,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -9882,7 +9867,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 83,
+													"line": 71,
 													"character": 17
 												}
 											]
@@ -9893,13 +9878,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 83,
+									"line": 71,
 									"character": 14
 								}
 							]
 						},
 						{
-							"id": 376,
+							"id": 368,
 							"name": "incrementMetric",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9908,7 +9893,7 @@
 							},
 							"signatures": [
 								{
-									"id": 377,
+									"id": 369,
 									"name": "incrementMetric",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9919,7 +9904,7 @@
 									},
 									"parameters": [
 										{
-											"id": 378,
+											"id": 370,
 											"name": "metricName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9933,7 +9918,7 @@
 											}
 										},
 										{
-											"id": 379,
+											"id": 371,
 											"name": "incrementBy",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9956,13 +9941,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 104,
+									"line": 92,
 									"character": 19
 								}
 							]
 						},
 						{
-							"id": 357,
+							"id": 352,
 							"name": "putAttribute",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9971,7 +9956,7 @@
 							},
 							"signatures": [
 								{
-									"id": 358,
+									"id": 353,
 									"name": "putAttribute",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9981,7 +9966,7 @@
 									},
 									"parameters": [
 										{
-											"id": 359,
+											"id": 354,
 											"name": "attribute",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9995,7 +9980,7 @@
 											}
 										},
 										{
-											"id": 360,
+											"id": 355,
 											"name": "value",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10018,13 +10003,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 64,
+									"line": 59,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 372,
+							"id": 364,
 							"name": "putMetric",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10033,7 +10018,7 @@
 							},
 							"signatures": [
 								{
-									"id": 373,
+									"id": 365,
 									"name": "putMetric",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10044,7 +10029,7 @@
 									},
 									"parameters": [
 										{
-											"id": 374,
+											"id": 366,
 											"name": "metricName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10058,7 +10043,7 @@
 											}
 										},
 										{
-											"id": 375,
+											"id": 367,
 											"name": "value",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10081,61 +10066,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 94,
+									"line": 82,
 									"character": 13
 								}
 							]
 						},
 						{
-							"id": 361,
-							"name": "removeAttribute",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 362,
-									"name": "removeAttribute",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Removes an already added attribute. Does nothing if attribute does not exist."
-									},
-									"parameters": [
-										{
-											"id": 363,
-											"name": "attribute",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "Name of the attribute to be removed.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "perf/lib/index.d.ts",
-									"line": 71,
-									"character": 19
-								}
-							]
-						},
-						{
-							"id": 380,
+							"id": 372,
 							"name": "removeMetric",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10144,7 +10081,7 @@
 							},
 							"signatures": [
 								{
-									"id": 381,
+									"id": 373,
 									"name": "removeMetric",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10154,7 +10091,7 @@
 									},
 									"parameters": [
 										{
-											"id": 382,
+											"id": 374,
 											"name": "metricName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10177,13 +10114,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 111,
+									"line": 99,
 									"character": 16
 								}
 							]
 						},
 						{
-							"id": 383,
+							"id": 375,
 							"name": "start",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10192,7 +10129,7 @@
 							},
 							"signatures": [
 								{
-									"id": 384,
+									"id": 376,
 									"name": "start",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10215,13 +10152,13 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 116,
+									"line": 104,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 385,
+							"id": 377,
 							"name": "stop",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10230,7 +10167,7 @@
 							},
 							"signatures": [
 								{
-									"id": 386,
+									"id": 378,
 									"name": "stop",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10253,7 +10190,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 121,
+									"line": 109,
 									"character": 8
 								}
 							]
@@ -10265,16 +10202,14 @@
 							"kind": 2048,
 							"children": [
 								349,
+								356,
+								359,
+								368,
 								352,
 								364,
-								367,
-								376,
-								357,
 								372,
-								361,
-								380,
-								383,
-								385
+								375,
+								377
 							]
 						}
 					],
@@ -10287,7 +10222,7 @@
 					]
 				},
 				{
-					"id": 433,
+					"id": 428,
 					"name": "HttpMethod",
 					"kind": 4194304,
 					"kindString": "Type alias",
@@ -10349,9 +10284,9 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						387,
-						420,
-						419,
+						379,
+						412,
+						411,
 						348
 					]
 				},
@@ -10359,7 +10294,7 @@
 					"title": "Type aliases",
 					"kind": 4194304,
 					"children": [
-						433
+						428
 					]
 				}
 			],
@@ -10372,7 +10307,7 @@
 			]
 		},
 		{
-			"id": 441,
+			"id": 436,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -10390,7 +10325,7 @@
 			},
 			"children": [
 				{
-					"id": 443,
+					"id": 438,
 					"name": "Module",
 					"kind": 256,
 					"kindString": "Interface",
@@ -10399,7 +10334,7 @@
 					},
 					"children": [
 						{
-							"id": 445,
+							"id": 440,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10423,7 +10358,7 @@
 							}
 						},
 						{
-							"id": 444,
+							"id": 439,
 							"name": "isRunningInTestLab",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10457,8 +10392,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								445,
-								444
+								440,
+								439
 							]
 						}
 					],
@@ -10477,7 +10412,7 @@
 					]
 				},
 				{
-					"id": 442,
+					"id": 437,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -10498,8 +10433,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						443,
-						442
+						438,
+						437
 					]
 				}
 			],
@@ -10512,7 +10447,7 @@
 			]
 		},
 		{
-			"id": 464,
+			"id": 459,
 			"name": "FirebaseApp",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10521,7 +10456,7 @@
 			},
 			"children": [
 				{
-					"id": 465,
+					"id": 460,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10544,7 +10479,7 @@
 					}
 				},
 				{
-					"id": 466,
+					"id": 461,
 					"name": "options",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10564,11 +10499,11 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseOptions",
-						"id": 484
+						"id": 479
 					}
 				},
 				{
-					"id": 467,
+					"id": 462,
 					"name": "delete",
 					"kind": 2048,
 					"kindString": "Method",
@@ -10577,7 +10512,7 @@
 					},
 					"signatures": [
 						{
-							"id": 468,
+							"id": 463,
 							"name": "delete",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -10611,15 +10546,15 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						465,
-						466
+						460,
+						461
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						467
+						462
 					]
 				}
 			],
@@ -10632,7 +10567,7 @@
 			]
 		},
 		{
-			"id": 460,
+			"id": 455,
 			"name": "FirebaseAppConfig",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10641,7 +10576,7 @@
 			},
 			"children": [
 				{
-					"id": 462,
+					"id": 457,
 					"name": "automaticDataCollectionEnabled",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10676,7 +10611,7 @@
 					}
 				},
 				{
-					"id": 463,
+					"id": 458,
 					"name": "automaticResourceManagement",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10713,7 +10648,7 @@
 					}
 				},
 				{
-					"id": 461,
+					"id": 456,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10751,9 +10686,9 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						462,
-						463,
-						461
+						457,
+						458,
+						456
 					]
 				}
 			],
@@ -10766,7 +10701,7 @@
 			]
 		},
 		{
-			"id": 451,
+			"id": 446,
 			"name": "NativeFirebaseError",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10775,7 +10710,7 @@
 			},
 			"children": [
 				{
-					"id": 459,
+					"id": 454,
 					"name": "Error",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10784,7 +10719,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 974,
 							"character": 19
 						}
@@ -10795,7 +10730,7 @@
 					}
 				},
 				{
-					"id": 452,
+					"id": 447,
 					"name": "code",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10818,7 +10753,7 @@
 					}
 				},
 				{
-					"id": 453,
+					"id": 448,
 					"name": "message",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10845,7 +10780,7 @@
 					}
 				},
 				{
-					"id": 457,
+					"id": 452,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10854,7 +10789,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 963,
 							"character": 8
 						}
@@ -10869,7 +10804,7 @@
 					}
 				},
 				{
-					"id": 454,
+					"id": 449,
 					"name": "namespace",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10892,7 +10827,7 @@
 					}
 				},
 				{
-					"id": 455,
+					"id": 450,
 					"name": "nativeErrorCode",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10924,7 +10859,7 @@
 					}
 				},
 				{
-					"id": 456,
+					"id": 451,
 					"name": "nativeErrorMessage",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10947,7 +10882,7 @@
 					}
 				},
 				{
-					"id": 458,
+					"id": 453,
 					"name": "stack",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10957,7 +10892,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "/Volumes/Projects/Projects/mono-react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 965,
 							"character": 9
 						}
@@ -10990,14 +10925,14 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						459,
-						452,
-						453,
-						457,
 						454,
-						455,
-						456,
-						458
+						447,
+						448,
+						452,
+						449,
+						450,
+						451,
+						453
 					]
 				}
 			],
@@ -11016,7 +10951,7 @@
 			]
 		},
 		{
-			"id": 482,
+			"id": 477,
 			"name": "ReactNativeFirebaseModule",
 			"kind": 256,
 			"kindString": "Interface",
@@ -11025,7 +10960,7 @@
 			},
 			"children": [
 				{
-					"id": 483,
+					"id": 478,
 					"name": "app",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11042,7 +10977,7 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseApp",
-						"id": 464
+						"id": 459
 					}
 				}
 			],
@@ -11051,7 +10986,7 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						483
+						478
 					]
 				}
 			],
@@ -11064,7 +10999,7 @@
 			]
 		},
 		{
-			"id": 469,
+			"id": 464,
 			"name": "ReactNativeFirebaseNamespace",
 			"kind": 256,
 			"kindString": "Interface",
@@ -11073,7 +11008,7 @@
 			},
 			"children": [
 				{
-					"id": 481,
+					"id": 476,
 					"name": "SDK_VERSION",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11096,7 +11031,7 @@
 					}
 				},
 				{
-					"id": 480,
+					"id": 475,
 					"name": "apps",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11118,12 +11053,12 @@
 						"elementType": {
 							"type": "reference",
 							"name": "FirebaseApp",
-							"id": 464
+							"id": 459
 						}
 					}
 				},
 				{
-					"id": 477,
+					"id": 472,
 					"name": "app",
 					"kind": 2048,
 					"kindString": "Method",
@@ -11132,7 +11067,7 @@
 					},
 					"signatures": [
 						{
-							"id": 478,
+							"id": 473,
 							"name": "app",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11148,7 +11083,7 @@
 							},
 							"parameters": [
 								{
-									"id": 479,
+									"id": 474,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11176,7 +11111,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 464
+								"id": 459
 							}
 						}
 					],
@@ -11189,7 +11124,7 @@
 					]
 				},
 				{
-					"id": 470,
+					"id": 465,
 					"name": "initializeApp",
 					"kind": 2048,
 					"kindString": "Method",
@@ -11198,7 +11133,7 @@
 					},
 					"signatures": [
 						{
-							"id": 471,
+							"id": 466,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11208,7 +11143,7 @@
 							},
 							"parameters": [
 								{
-									"id": 472,
+									"id": 467,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11219,11 +11154,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 484
+										"id": 479
 									}
 								},
 								{
-									"id": 473,
+									"id": 468,
 									"name": "config",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11236,18 +11171,18 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseAppConfig",
-										"id": 460
+										"id": 455
 									}
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 464
+								"id": 459
 							}
 						},
 						{
-							"id": 474,
+							"id": 469,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11257,7 +11192,7 @@
 							},
 							"parameters": [
 								{
-									"id": 475,
+									"id": 470,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11268,11 +11203,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 484
+										"id": 479
 									}
 								},
 								{
-									"id": 476,
+									"id": 471,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11300,7 +11235,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 464
+								"id": 459
 							}
 						}
 					],
@@ -11323,16 +11258,16 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						481,
-						480
+						476,
+						475
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						477,
-						470
+						472,
+						465
 					]
 				}
 			],
@@ -11345,7 +11280,7 @@
 			]
 		},
 		{
-			"id": 484,
+			"id": 479,
 			"name": "FirebaseOptions",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11362,21 +11297,21 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 485,
+					"id": 480,
 					"name": "__type",
 					"kind": 65536,
 					"kindString": "Type literal",
 					"flags": {},
 					"indexSignature": [
 						{
-							"id": 496,
+							"id": 491,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 497,
+									"id": 492,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11395,7 +11330,7 @@
 					],
 					"children": [
 						{
-							"id": 494,
+							"id": 489,
 							"name": "androidClientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11427,7 +11362,7 @@
 							}
 						},
 						{
-							"id": 487,
+							"id": 482,
 							"name": "apiKey",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11459,7 +11394,7 @@
 							}
 						},
 						{
-							"id": 486,
+							"id": 481,
 							"name": "appId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11480,7 +11415,7 @@
 							}
 						},
 						{
-							"id": 493,
+							"id": 488,
 							"name": "clientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11512,7 +11447,7 @@
 							}
 						},
 						{
-							"id": 488,
+							"id": 483,
 							"name": "databaseURL",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11544,7 +11479,7 @@
 							}
 						},
 						{
-							"id": 495,
+							"id": 490,
 							"name": "deepLinkURLScheme",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11576,7 +11511,7 @@
 							}
 						},
 						{
-							"id": 490,
+							"id": 485,
 							"name": "gaTrackingId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11608,7 +11543,7 @@
 							}
 						},
 						{
-							"id": 492,
+							"id": 487,
 							"name": "messagingSenderId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11640,7 +11575,7 @@
 							}
 						},
 						{
-							"id": 489,
+							"id": 484,
 							"name": "projectId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11661,7 +11596,7 @@
 							}
 						},
 						{
-							"id": 491,
+							"id": 486,
 							"name": "storageBucket",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11698,16 +11633,16 @@
 							"title": "Variables",
 							"kind": 32,
 							"children": [
-								494,
-								487,
-								486,
-								493,
-								488,
-								495,
-								490,
-								492,
 								489,
-								491
+								482,
+								481,
+								488,
+								483,
+								490,
+								485,
+								487,
+								484,
+								486
 							]
 						}
 					],
@@ -11722,7 +11657,7 @@
 			}
 		},
 		{
-			"id": 517,
+			"id": 512,
 			"name": "ReactNativeFirebaseModuleAndStatics",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11731,14 +11666,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 518,
+					"id": 513,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 519,
+					"id": 514,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -11758,14 +11693,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 520,
+							"id": 515,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 521,
+									"id": 516,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -11778,7 +11713,7 @@
 							],
 							"children": [
 								{
-									"id": 522,
+									"id": 517,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -11804,7 +11739,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										522
+										517
 									]
 								}
 							],
@@ -11825,7 +11760,7 @@
 			}
 		},
 		{
-			"id": 523,
+			"id": 518,
 			"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11834,14 +11769,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 524,
+					"id": 519,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 525,
+					"id": 520,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -11861,21 +11796,21 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 526,
+							"id": 521,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 527,
+									"id": 522,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 528,
+											"id": 523,
 											"name": "app",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -11897,7 +11832,7 @@
 							],
 							"children": [
 								{
-									"id": 529,
+									"id": 524,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -11923,7 +11858,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										529
+										524
 									]
 								}
 							],
@@ -11950,6 +11885,7 @@
 			"kind": 2,
 			"children": [
 				40,
+				50,
 				44,
 				63,
 				117,
@@ -11960,11 +11896,10 @@
 				262,
 				329,
 				340,
-				434,
-				446,
-				50,
+				429,
+				441,
 				1,
-				498,
+				493,
 				59,
 				70,
 				124,
@@ -11975,27 +11910,27 @@
 				269,
 				336,
 				347,
-				441
+				436
 			]
 		},
 		{
 			"title": "Interfaces",
 			"kind": 256,
 			"children": [
-				464,
-				460,
-				451,
-				482,
-				469
+				459,
+				455,
+				446,
+				477,
+				464
 			]
 		},
 		{
 			"title": "Type aliases",
 			"kind": 4194304,
 			"children": [
-				484,
-				517,
-				523
+				479,
+				512,
+				518
 			]
 		}
 	]

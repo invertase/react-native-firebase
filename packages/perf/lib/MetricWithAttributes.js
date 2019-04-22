@@ -33,10 +33,6 @@ export default class MetricWithAttributes {
     return this._attributes[attribute] || null;
   }
 
-  getAttributes() {
-    return Object.assign({}, this._attributes);
-  }
-
   putAttribute(attribute, value) {
     // TODO(VALIDATION): attribute: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(attribute) || attribute.length > 40) {
@@ -58,13 +54,5 @@ export default class MetricWithAttributes {
     }
 
     this._attributes[attribute] = value;
-  }
-
-  removeAttribute(attribute) {
-    if (!isString(attribute)) {
-      throw new Error(`firebase.perf.*.removeAttribute(*) 'attribute' must be a string.`);
-    }
-
-    delete this._attributes[attribute];
   }
 }
