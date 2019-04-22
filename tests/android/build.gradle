@@ -35,11 +35,16 @@ allprojects {
 
   repositories {
     google()
-    jcenter()
     mavenLocal()
     maven {
-      url "$rootDir/../node_modules/react-native/android"
+      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+      url("$rootDir/../node_modules/react-native/android")
     }
+    maven {
+      // Android JSC is installed from npm
+      url("$rootDir/../node_modules/jsc-android/dist")
+    }
+    jcenter()
   }
 
 }
@@ -73,9 +78,3 @@ subprojects {
     }
   }
 }
-//
-//task wrapper(type: Wrapper) {
-//  gradleVersion = '5.1.1'
-//  distributionUrl = distributionUrl.replace("bin", "all")
-//}
-//

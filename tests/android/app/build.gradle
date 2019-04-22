@@ -57,6 +57,7 @@ android {
       include "armeabi-v7a", "x86"
     }
   }
+
   signingConfigs {
     release {
       storeFile file("keystore.jks")
@@ -65,6 +66,7 @@ android {
       keyPassword "12345678"
     }
   }
+
   buildTypes {
     release {
       minifyEnabled false
@@ -104,14 +106,21 @@ android {
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
+    pickFirst '**/armeabi-v7a/libc++_shared.so'
+    pickFirst '**/x86/libc++_shared.so'
+    pickFirst '**/arm64-v8a/libc++_shared.so'
+    pickFirst '**/x86_64/libc++_shared.so'
+    pickFirst '**/x86/libjsc.so'
+    pickFirst '**/armeabi-v7a/libjsc.so'
   }
 }
 
 dependencies {
+  implementation fileTree(dir: "libs", include: ["*.jar"])
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
-  implementation fileTree(dir: "libs", include: ["*.jar"])
-
+  //noinspection GradleDynamicVersion
+  implementation 'org.webkit:android-jsc:+'
   /* ----------------------------
    *    REACT NATIVE FIREBASE
    * ---------------------------- */
