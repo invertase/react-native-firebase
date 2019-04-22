@@ -19,7 +19,7 @@ package io.invertase.firebase.common;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
