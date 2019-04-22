@@ -4,4 +4,6 @@ description: Struggling to find what you're after? Our comprehensive search cove
 layout: blank
 ---
 
+# Search
+
 <Search />
