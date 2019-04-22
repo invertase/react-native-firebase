@@ -16,8 +16,35 @@
  *
  */
 
-#ifndef RNFBStorageCommon_h
-#define RNFBStorageCommon_h
+@interface RNFBStorageCommon : NSObject
 
++ (BOOL)isRemoteAsset:(NSString *)localFilePath;
 
-#endif /* RNFBStorageCommon_h */
++ (BOOL)isHeic:(NSString *)localFilePath;
+
++ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
+
++ (NSString *)utiToMimeType:(NSString *)dataUTI;
+
++ (NSURL *)createTempFileUrl;
+
++ (NSString *)mimeTypeForPath:(NSString *)localFilePath;
+
++ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(NSError *downloadError))completion;
+
++ (NSDictionary *)getStorageEventDictionary:(NSDictionary *)eventBody internalEventName:(NSString *)internalEventName appName:(NSString *)appName taskId:(NSNumber *)taskId;
+
++ (NSDictionary *)buildErrorSnapshotDict:(NSError *)error taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict;
+
++ (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task;
+
++ (NSMutableDictionary *)getDownloadTaskAsDictionary:(FIRStorageTaskSnapshot *)task;
+
++ (NSString *)getTaskStatus:(FIRStorageTaskStatus)status;
+
++ (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata;
+
++ (NSArray *)getErrorCodeMessage:(NSError *)error;
+
+@end
+
