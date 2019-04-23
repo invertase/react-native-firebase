@@ -22,12 +22,15 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Analytics integrates across Firebase features and provides
- * you with unlimited reporting for up to 500 distinct events
- * that you can define using the Firebase SDK. Analytics reports
- * help you understand clearly how your users behave, which enables
- * you to make informed decisions regarding app marketing and
- * performance optimizations.
+ * Gets the Analytics service for the default app only.
+ * `firebase.analytics()` must be called with no arguments to access the default app's Analytics service.
+ *
+ * #### Example
+ *
+ * ```js
+ * // Get the Auth service for the default app
+ * const defaultAppAnalytics = firebase.analytics();
+ * ```
  *
  * @firebase analytics
  */

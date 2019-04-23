@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 130,
+							"line": 133,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 119,
+							"line": 122,
 							"character": 31
 						}
 					],
@@ -94,7 +94,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 128,
+							"line": 131,
 							"character": 23
 						}
 					],
@@ -119,7 +119,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 116,
+					"line": 119,
 					"character": 49
 				}
 			]
@@ -230,7 +230,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 172,
+									"line": 175,
 									"character": 13
 								}
 							]
@@ -696,7 +696,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 163,
+							"line": 166,
 							"character": 23
 						},
 						{
@@ -785,7 +785,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 157,
+									"line": 160,
 									"character": 13
 								}
 							],
@@ -1248,7 +1248,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 148,
+							"line": 151,
 							"character": 40
 						},
 						{
@@ -1332,7 +1332,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 147,
+					"line": 150,
 					"character": 49
 				},
 				{
@@ -2861,7 +2861,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Analytics integrates across Firebase features and provides\nyou with unlimited reporting for up to 500 distinct events\nthat you can define using the Firebase SDK. Analytics reports\nhelp you understand clearly how your users behave, which enables\nyou to make informed decisions regarding app marketing and\nperformance optimizations.",
+				"shortText": "Gets the Analytics service for the default app only.\n`firebase.analytics()` must be called with no arguments to access the default app's Analytics service.",
+				"text": "#### Example\n\n```js\n// Get the Auth service for the default app\nconst defaultAppAnalytics = firebase.analytics();\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -2988,7 +2989,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 46,
+															"line": 49,
 															"character": 34
 														}
 													]
@@ -3011,7 +3012,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 46,
+									"line": 49,
 									"character": 12
 								}
 							]
@@ -3049,7 +3050,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 112,
+									"line": 115,
 									"character": 22
 								}
 							]
@@ -3109,7 +3110,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 56,
+									"line": 59,
 									"character": 33
 								}
 							]
@@ -3194,7 +3195,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 69,
+									"line": 72,
 									"character": 20
 								}
 							]
@@ -3248,7 +3249,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 76,
+									"line": 79,
 									"character": 29
 								}
 							]
@@ -3302,7 +3303,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 83,
+									"line": 86,
 									"character": 29
 								}
 							]
@@ -3365,7 +3366,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 91,
+									"line": 94,
 									"character": 13
 								}
 							]
@@ -3450,7 +3451,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 107,
+															"line": 110,
 															"character": 33
 														}
 													]
@@ -3473,7 +3474,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 107,
+									"line": 110,
 									"character": 21
 								}
 							]
@@ -3550,7 +3551,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 99,
+									"line": 102,
 									"character": 19
 								}
 							]
@@ -3583,7 +3584,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 37,
+							"line": 40,
 							"character": 21
 						}
 					],
@@ -3605,7 +3606,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 35,
+							"line": 38,
 							"character": 26
 						}
 					]
@@ -3630,7 +3631,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 34,
+					"line": 37,
 					"character": 26
 				}
 			]
