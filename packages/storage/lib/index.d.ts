@@ -27,7 +27,43 @@ import {
  * @firebase storage
  */
 export namespace Storage {
-  export interface Statics {}
+  export enum TaskEvent {
+    STATE_CHANGED = 'state_changed',
+  }
+
+  export enum TaskState {
+    CANCELLED = 'cancelled',
+    ERROR = 'error',
+    PAUSED = 'paused',
+    RUNNING = 'running',
+    SUCCESS = 'success',
+  }
+
+  export interface Statics {
+    TaskState: TaskState;
+    TaskEvent: TaskState;
+    Native: {
+      /**
+       * Main Bundle Path
+       */
+      MAIN_BUNDLE_PATH: string;
+
+      CACHES_DIRECTORY_PATH: string;
+      /**
+       * Document Directory Path
+       */
+      DOCUMENT_DIRECTORY_PATH: string;
+      EXTERNAL_DIRECTORY_PATH: string;
+      EXTERNAL_STORAGE_DIRECTORY_PATH: string;
+      /**
+       * Store Temp Files here
+       */
+      TEMP_DIRECTORY_PATH: string;
+      LIBRARY_DIRECTORY_PATH: string;
+      FILETYPE_REGULAR: string;
+      FILETYPE_DIRECTORY: string;
+    };
+  }
 
   export interface Module extends ReactNativeFirebaseModule {
 
