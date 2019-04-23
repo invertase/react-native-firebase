@@ -601,7 +601,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 184,
+									"line": 236,
 									"character": 11
 								}
 							]
@@ -756,7 +756,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 180,
+							"line": 232,
 							"character": 23
 						},
 						{
@@ -1160,7 +1160,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 174,
+									"line": 226,
 									"character": 11
 								}
 							],
@@ -1308,7 +1308,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 170,
+							"line": 222,
 							"character": 40
 						},
 						{
@@ -1392,7 +1392,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 169,
+					"line": 221,
 					"character": 49
 				},
 				{
@@ -2630,7 +2630,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 141,
+							"line": 193,
 							"character": 31
 						}
 					],
@@ -2660,7 +2660,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 152,
+							"line": 204,
 							"character": 28
 						}
 					],
@@ -2702,7 +2702,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 150,
+							"line": 202,
 							"character": 23
 						}
 					],
@@ -2727,7 +2727,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 138,
+					"line": 190,
 					"character": 47
 				}
 			]
@@ -10660,7 +10660,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 133,
+							"line": 185,
 							"character": 21
 						}
 					],
@@ -10691,7 +10691,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 109,
+									"line": 161,
 									"character": 10
 								}
 							],
@@ -10713,7 +10713,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 115,
+													"line": 167,
 													"character": 27
 												}
 											],
@@ -10734,7 +10734,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 120,
+													"line": 172,
 													"character": 29
 												}
 											],
@@ -10752,7 +10752,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 121,
+													"line": 173,
 													"character": 29
 												}
 											],
@@ -10770,7 +10770,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 122,
+													"line": 174,
 													"character": 37
 												}
 											],
@@ -10788,7 +10788,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 129,
+													"line": 181,
 													"character": 25
 												}
 											],
@@ -10806,7 +10806,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 128,
+													"line": 180,
 													"character": 23
 												}
 											],
@@ -10824,7 +10824,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 127,
+													"line": 179,
 													"character": 28
 												}
 											],
@@ -10845,7 +10845,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 113,
+													"line": 165,
 													"character": 22
 												}
 											],
@@ -10866,7 +10866,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 126,
+													"line": 178,
 													"character": 25
 												}
 											],
@@ -10896,7 +10896,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 109,
+											"line": 161,
 											"character": 11
 										}
 									]
@@ -10914,7 +10914,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 103,
+									"line": 155,
 									"character": 16
 								}
 							],
@@ -10935,7 +10935,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 107,
+									"line": 159,
 									"character": 13
 								}
 							],
@@ -10956,7 +10956,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 105,
+									"line": 157,
 									"character": 13
 								}
 							],
@@ -10982,7 +10982,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 102,
+							"line": 154,
 							"character": 26
 						}
 					]
@@ -10996,7 +10996,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Possible string formats used for uploading via `putString`",
+						"shortText": "Possible string formats used for uploading via `StorageReference.putString()`",
 						"text": "```js\nfirebase.storage.StringFormat;\n```\n"
 					},
 					"children": [
@@ -11009,12 +11009,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "```js\nfirebase.storage.StringFormat.BASE64;\n```"
+								"shortText": "Base64 string format.",
+								"text": "Learn more about Base64 [on the Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding)\n\n#### Usage\n\n```js\nfirebase.storage.StringFormat.BASE64;\n```\n\n#### Example String Format\n\n```js\nconst sampleString = 'PEZvbyBCYXI+';\n```\n\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 50,
+									"line": 73,
 									"character": 10
 								}
 							],
@@ -11032,12 +11033,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "```js\nfirebase.storage.StringFormat.BASE64URL;\n```"
+								"shortText": "Base64Url string format.",
+								"text": "#### Usage\n\n```js\nfirebase.storage.StringFormat.BASE64URL;\n```\n\n#### Example String Format\n\n```js\nconst sampleString = 'PEZvbyBCYXI-';\n```\n\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 57,
+									"line": 91,
 									"character": 13
 								}
 							],
@@ -11055,12 +11057,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "```js\nfirebase.storage.StringFormat.DATA_URL;\n```"
+								"shortText": "Data URL string format.",
+								"text": "#### Usage\n\n```js\nfirebase.storage.StringFormat.DATA_URL;\n```\n\n#### Example String Format\n\n```js\nconst sampleString = 'data:text/plain;base64,PEZvbyBCYXI+';\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 64,
+									"line": 108,
 									"character": 12
 								}
 							],
@@ -11078,12 +11081,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "```js\nfirebase.storage.StringFormat.RAW;\n```"
+								"shortText": "Raw string format.",
+								"text": "#### Usage\n\n```js\nfirebase.storage.StringFormat.RAW;\n```\n\n#### Example String Format\n\n```js\nconst sampleString = '<Foo Bar>';\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 43,
+									"line": 53,
 									"character": 7
 								}
 							],
@@ -11122,8 +11126,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An event to subscribe to that is triggered on a task.",
-						"text": "```js\nfirebase.storage.TaskEvent;\n```\n"
+						"shortText": "An event to subscribe to that is triggered on a Upload or Download task.",
+						"text": "Event subscription is created via `StorageTask.on()`.\n\n```js\nfirebase.storage.TaskEvent;\n```\n"
 					},
 					"children": [
 						{
@@ -11141,7 +11145,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 82,
+									"line": 128,
 									"character": 17
 								}
 							],
@@ -11163,7 +11167,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 74,
+							"line": 120,
 							"character": 28
 						}
 					]
@@ -11176,7 +11180,10 @@
 					"flags": {
 						"isExported": true
 					},
-					"comment": {},
+					"comment": {
+						"shortText": "A collection of properties that indicates the",
+						"text": "Event subscription is created via `StorageTask.on()`.\n\n```js\nfirebase.storage.TaskEvent;\n```\n"
+					},
 					"children": [
 						{
 							"id": 445,
@@ -11192,7 +11199,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 92,
+									"line": 144,
 									"character": 13
 								}
 							],
@@ -11212,7 +11219,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 93,
+									"line": 145,
 									"character": 9
 								}
 							],
@@ -11232,7 +11239,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 94,
+									"line": 146,
 									"character": 10
 								}
 							],
@@ -11255,7 +11262,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 98,
+									"line": 150,
 									"character": 11
 								}
 							],
@@ -11275,7 +11282,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 99,
+									"line": 151,
 									"character": 11
 								}
 							],
@@ -11301,7 +11308,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 88,
+							"line": 140,
 							"character": 28
 						}
 					]
