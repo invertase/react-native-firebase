@@ -28,7 +28,7 @@ import {
  * #### Example
  *
  * ```js
- * // Get the Auth service for the default app
+ * // Get the Analytics service for the default app
  * const defaultAppAnalytics = firebase.analytics();
  * ```
  *
