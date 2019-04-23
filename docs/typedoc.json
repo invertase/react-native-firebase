@@ -30,7 +30,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -576,6 +576,37 @@
 							]
 						},
 						{
+							"id": 445,
+							"name": "storage",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 446,
+									"name": "storage",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Storage"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Module",
+										"id": 438
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 83,
+									"character": 11
+								}
+							]
+						},
+						{
 							"id": 56,
 							"name": "utils",
 							"kind": 2048,
@@ -612,7 +643,7 @@
 									}
 								},
 								{
-									"id": 445,
+									"id": 456,
 									"name": "utils",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -623,7 +654,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 438
+										"id": 449
 									}
 								}
 							],
@@ -657,6 +688,7 @@
 								334,
 								345,
 								434,
+								445,
 								56
 							]
 						}
@@ -723,6 +755,11 @@
 							"character": 23
 						},
 						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 79,
+							"character": 23
+						},
+						{
 							"fileName": "utils/lib/index.d.ts",
 							"line": 86,
 							"character": 23
@@ -755,7 +792,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -789,7 +826,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -823,7 +860,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -857,7 +894,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -891,7 +928,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -925,7 +962,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -959,7 +996,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 518,
+								"id": 529,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -994,7 +1031,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 518,
+								"id": 529,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1028,7 +1065,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1062,7 +1099,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1096,7 +1133,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1107,6 +1144,40 @@
 										"type": "reference",
 										"name": "Statics",
 										"id": 411
+									}
+								]
+							}
+						},
+						{
+							"id": 444,
+							"name": "storage",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Storage"
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 73,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModuleAndStatics",
+								"id": 523,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"name": "Module",
+										"id": 438
+									},
+									{
+										"type": "reference",
+										"name": "Statics",
+										"id": 437
 									}
 								]
 							}
@@ -1137,17 +1208,17 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 512,
+								"id": 523,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 438
+										"id": 449
 									},
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 437
+										"id": 448
 									}
 								]
 							}
@@ -1169,6 +1240,7 @@
 								333,
 								344,
 								433,
+								444,
 								52
 							]
 						}
@@ -1232,6 +1304,11 @@
 						{
 							"fileName": "perf/lib/index.d.ts",
 							"line": 254,
+							"character": 40
+						},
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 69,
 							"character": 40
 						},
 						{
@@ -1314,6 +1391,11 @@
 					"character": 49
 				},
 				{
+					"fileName": "storage/lib/index.d.ts",
+					"line": 68,
+					"character": 49
+				},
+				{
 					"fileName": "utils/lib/index.d.ts",
 					"line": 73,
 					"character": 49
@@ -1346,7 +1428,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1466,7 +1548,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1586,7 +1668,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1706,7 +1788,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1855,7 +1937,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1946,7 +2028,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 518,
+						"id": 529,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2105,7 +2187,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 518,
+						"id": 529,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2225,7 +2307,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2345,7 +2427,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2465,7 +2547,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2531,14 +2613,134 @@
 			]
 		},
 		{
-			"id": 441,
+			"id": 440,
+			"name": "\"@react-native-firebase/storage\"",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {},
+			"children": [
+				{
+					"id": 441,
+					"name": "FirebaseNamespaceExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 40,
+							"character": 31
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseNamespace"
+							}
+						]
+					}
+				},
+				{
+					"id": 443,
+					"name": "StorageDefaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 51,
+							"character": 28
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseModuleAndStatics",
+						"id": 523,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 438
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 437
+							}
+						]
+					}
+				},
+				{
+					"id": 442,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"comment": {
+						"tags": [
+							{
+								"tag": "example",
+								"text": "\n```js\nimport { firebase } from '@react-native-firebase/storage';\nfirebase.storage().X(...);\n```\n"
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 49,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "ReactNativeFirebaseNamespace"
+					},
+					"defaultValue": " FirebaseNamespaceExport"
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						441,
+						443,
+						442
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "storage/lib/index.d.ts",
+					"line": 37,
+					"character": 47
+				}
+			]
+		},
+		{
+			"id": 452,
 			"name": "\"@react-native-firebase/utils\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 442,
+					"id": 453,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2567,7 +2769,7 @@
 					}
 				},
 				{
-					"id": 444,
+					"id": 455,
 					"name": "UtilsDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2585,23 +2787,23 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 512,
+						"id": 523,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 438
+								"id": 449
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 437
+								"id": 448
 							}
 						]
 					}
 				},
 				{
-					"id": 443,
+					"id": 454,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2636,9 +2838,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						442,
-						444,
-						443
+						453,
+						455,
+						454
 					]
 				}
 			],
@@ -3428,7 +3630,7 @@
 			]
 		},
 		{
-			"id": 493,
+			"id": 504,
 			"name": "App",
 			"kind": 2,
 			"kindString": "Module",
@@ -3445,7 +3647,7 @@
 			},
 			"children": [
 				{
-					"id": 494,
+					"id": 505,
 					"name": "FirebaseApp",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3454,7 +3656,7 @@
 					},
 					"children": [
 						{
-							"id": 495,
+							"id": 506,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3477,7 +3679,7 @@
 							}
 						},
 						{
-							"id": 496,
+							"id": 507,
 							"name": "options",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3497,11 +3699,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseOptions",
-								"id": 479
+								"id": 490
 							}
 						},
 						{
-							"id": 497,
+							"id": 508,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3510,7 +3712,7 @@
 							},
 							"signatures": [
 								{
-									"id": 498,
+									"id": 509,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3544,15 +3746,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								495,
-								496
+								506,
+								507
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								497
+								508
 							]
 						}
 					],
@@ -3565,7 +3767,7 @@
 					]
 				},
 				{
-					"id": 499,
+					"id": 510,
 					"name": "ReactNativeFirebaseNamespace",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3574,7 +3776,7 @@
 					},
 					"children": [
 						{
-							"id": 511,
+							"id": 522,
 							"name": "SDK_VERSION",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3597,7 +3799,7 @@
 							}
 						},
 						{
-							"id": 510,
+							"id": 521,
 							"name": "apps",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3619,12 +3821,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "FirebaseApp",
-									"id": 494
+									"id": 505
 								}
 							}
 						},
 						{
-							"id": 507,
+							"id": 518,
 							"name": "app",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3633,7 +3835,7 @@
 							},
 							"signatures": [
 								{
-									"id": 508,
+									"id": 519,
 									"name": "app",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3649,7 +3851,7 @@
 									},
 									"parameters": [
 										{
-											"id": 509,
+											"id": 520,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3677,7 +3879,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 494
+										"id": 505
 									}
 								}
 							],
@@ -3690,7 +3892,7 @@
 							]
 						},
 						{
-							"id": 500,
+							"id": 511,
 							"name": "initializeApp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3699,7 +3901,7 @@
 							},
 							"signatures": [
 								{
-									"id": 501,
+									"id": 512,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3709,7 +3911,7 @@
 									},
 									"parameters": [
 										{
-											"id": 502,
+											"id": 513,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3720,11 +3922,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 479
+												"id": 490
 											}
 										},
 										{
-											"id": 503,
+											"id": 514,
 											"name": "config",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3737,18 +3939,18 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppConfig",
-												"id": 455
+												"id": 466
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 494
+										"id": 505
 									}
 								},
 								{
-									"id": 504,
+									"id": 515,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3758,7 +3960,7 @@
 									},
 									"parameters": [
 										{
-											"id": 505,
+											"id": 516,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3769,11 +3971,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 479
+												"id": 490
 											}
 										},
 										{
-											"id": 506,
+											"id": 517,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3801,7 +4003,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 494
+										"id": 505
 									}
 								}
 							],
@@ -3824,16 +4026,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								511,
-								510
+								522,
+								521
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								507,
-								500
+								518,
+								511
 							]
 						}
 					],
@@ -3851,8 +4053,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						494,
-						499
+						505,
+						510
 					]
 				}
 			],
@@ -6236,7 +6438,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 19
 								}
@@ -6304,7 +6506,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 964,
 									"character": 11
 								}
@@ -6328,7 +6530,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 963,
 									"character": 8
 								}
@@ -6353,7 +6555,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 965,
 									"character": 9
 								}
@@ -10338,6 +10540,116 @@
 		},
 		{
 			"id": 436,
+			"name": "Storage",
+			"kind": 2,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"comment": {
+				"shortText": "Storage",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "storage\n"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 438,
+					"name": "Module",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 439,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								439
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 32,
+							"character": 25
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 437,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 30,
+							"character": 26
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						438,
+						437
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "storage/lib/index.d.ts",
+					"line": 29,
+					"character": 24
+				}
+			]
+		},
+		{
+			"id": 447,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -10355,7 +10667,7 @@
 			},
 			"children": [
 				{
-					"id": 438,
+					"id": 449,
 					"name": "Module",
 					"kind": 256,
 					"kindString": "Interface",
@@ -10364,7 +10676,7 @@
 					},
 					"children": [
 						{
-							"id": 440,
+							"id": 451,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10388,7 +10700,7 @@
 							}
 						},
 						{
-							"id": 439,
+							"id": 450,
 							"name": "isRunningInTestLab",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10422,8 +10734,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								440,
-								439
+								451,
+								450
 							]
 						}
 					],
@@ -10442,7 +10754,7 @@
 					]
 				},
 				{
-					"id": 437,
+					"id": 448,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -10463,8 +10775,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						438,
-						437
+						449,
+						448
 					]
 				}
 			],
@@ -10477,7 +10789,7 @@
 			]
 		},
 		{
-			"id": 459,
+			"id": 470,
 			"name": "FirebaseApp",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10486,7 +10798,7 @@
 			},
 			"children": [
 				{
-					"id": 460,
+					"id": 471,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10509,7 +10821,7 @@
 					}
 				},
 				{
-					"id": 461,
+					"id": 472,
 					"name": "options",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10529,11 +10841,11 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseOptions",
-						"id": 479
+						"id": 490
 					}
 				},
 				{
-					"id": 462,
+					"id": 473,
 					"name": "delete",
 					"kind": 2048,
 					"kindString": "Method",
@@ -10542,7 +10854,7 @@
 					},
 					"signatures": [
 						{
-							"id": 463,
+							"id": 474,
 							"name": "delete",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -10576,15 +10888,15 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						460,
-						461
+						471,
+						472
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						462
+						473
 					]
 				}
 			],
@@ -10597,7 +10909,7 @@
 			]
 		},
 		{
-			"id": 455,
+			"id": 466,
 			"name": "FirebaseAppConfig",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10606,7 +10918,7 @@
 			},
 			"children": [
 				{
-					"id": 457,
+					"id": 468,
 					"name": "automaticDataCollectionEnabled",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10641,7 +10953,7 @@
 					}
 				},
 				{
-					"id": 458,
+					"id": 469,
 					"name": "automaticResourceManagement",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10678,7 +10990,7 @@
 					}
 				},
 				{
-					"id": 456,
+					"id": 467,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10716,9 +11028,9 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						457,
-						458,
-						456
+						468,
+						469,
+						467
 					]
 				}
 			],
@@ -10731,7 +11043,7 @@
 			]
 		},
 		{
-			"id": 446,
+			"id": 457,
 			"name": "NativeFirebaseError",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10740,7 +11052,7 @@
 			},
 			"children": [
 				{
-					"id": 454,
+					"id": 465,
 					"name": "Error",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10749,7 +11061,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 974,
 							"character": 19
 						}
@@ -10760,7 +11072,7 @@
 					}
 				},
 				{
-					"id": 447,
+					"id": 458,
 					"name": "code",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10783,7 +11095,7 @@
 					}
 				},
 				{
-					"id": 448,
+					"id": 459,
 					"name": "message",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10810,7 +11122,7 @@
 					}
 				},
 				{
-					"id": 452,
+					"id": 463,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10819,7 +11131,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 963,
 							"character": 8
 						}
@@ -10834,7 +11146,7 @@
 					}
 				},
 				{
-					"id": 449,
+					"id": 460,
 					"name": "namespace",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10857,7 +11169,7 @@
 					}
 				},
 				{
-					"id": 450,
+					"id": 461,
 					"name": "nativeErrorCode",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10889,7 +11201,7 @@
 					}
 				},
 				{
-					"id": 451,
+					"id": 462,
 					"name": "nativeErrorMessage",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10912,7 +11224,7 @@
 					}
 				},
 				{
-					"id": 453,
+					"id": 464,
 					"name": "stack",
 					"kind": 1024,
 					"kindString": "Property",
@@ -10922,7 +11234,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "D:/Code/react-native-firebase/node_modules/typescript/lib/lib.es5.d.ts",
+							"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 							"line": 965,
 							"character": 9
 						}
@@ -10955,14 +11267,14 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						454,
-						447,
-						448,
-						452,
-						449,
-						450,
-						451,
-						453
+						465,
+						458,
+						459,
+						463,
+						460,
+						461,
+						462,
+						464
 					]
 				}
 			],
@@ -10981,7 +11293,7 @@
 			]
 		},
 		{
-			"id": 477,
+			"id": 488,
 			"name": "ReactNativeFirebaseModule",
 			"kind": 256,
 			"kindString": "Interface",
@@ -10990,7 +11302,7 @@
 			},
 			"children": [
 				{
-					"id": 478,
+					"id": 489,
 					"name": "app",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11007,7 +11319,7 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseApp",
-						"id": 459
+						"id": 470
 					}
 				}
 			],
@@ -11016,7 +11328,7 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						478
+						489
 					]
 				}
 			],
@@ -11029,7 +11341,7 @@
 			]
 		},
 		{
-			"id": 464,
+			"id": 475,
 			"name": "ReactNativeFirebaseNamespace",
 			"kind": 256,
 			"kindString": "Interface",
@@ -11038,7 +11350,7 @@
 			},
 			"children": [
 				{
-					"id": 476,
+					"id": 487,
 					"name": "SDK_VERSION",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11061,7 +11373,7 @@
 					}
 				},
 				{
-					"id": 475,
+					"id": 486,
 					"name": "apps",
 					"kind": 1024,
 					"kindString": "Property",
@@ -11083,12 +11395,12 @@
 						"elementType": {
 							"type": "reference",
 							"name": "FirebaseApp",
-							"id": 459
+							"id": 470
 						}
 					}
 				},
 				{
-					"id": 472,
+					"id": 483,
 					"name": "app",
 					"kind": 2048,
 					"kindString": "Method",
@@ -11097,7 +11409,7 @@
 					},
 					"signatures": [
 						{
-							"id": 473,
+							"id": 484,
 							"name": "app",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11113,7 +11425,7 @@
 							},
 							"parameters": [
 								{
-									"id": 474,
+									"id": 485,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11141,7 +11453,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 459
+								"id": 470
 							}
 						}
 					],
@@ -11154,7 +11466,7 @@
 					]
 				},
 				{
-					"id": 465,
+					"id": 476,
 					"name": "initializeApp",
 					"kind": 2048,
 					"kindString": "Method",
@@ -11163,7 +11475,7 @@
 					},
 					"signatures": [
 						{
-							"id": 466,
+							"id": 477,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11173,7 +11485,7 @@
 							},
 							"parameters": [
 								{
-									"id": 467,
+									"id": 478,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11184,11 +11496,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 479
+										"id": 490
 									}
 								},
 								{
-									"id": 468,
+									"id": 479,
 									"name": "config",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11201,18 +11513,18 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseAppConfig",
-										"id": 455
+										"id": 466
 									}
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 459
+								"id": 470
 							}
 						},
 						{
-							"id": 469,
+							"id": 480,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -11222,7 +11534,7 @@
 							},
 							"parameters": [
 								{
-									"id": 470,
+									"id": 481,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11233,11 +11545,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 479
+										"id": 490
 									}
 								},
 								{
-									"id": 471,
+									"id": 482,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11265,7 +11577,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 459
+								"id": 470
 							}
 						}
 					],
@@ -11288,16 +11600,16 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						476,
-						475
+						487,
+						486
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						472,
-						465
+						483,
+						476
 					]
 				}
 			],
@@ -11310,7 +11622,7 @@
 			]
 		},
 		{
-			"id": 479,
+			"id": 490,
 			"name": "FirebaseOptions",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11327,21 +11639,21 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 480,
+					"id": 491,
 					"name": "__type",
 					"kind": 65536,
 					"kindString": "Type literal",
 					"flags": {},
 					"indexSignature": [
 						{
-							"id": 491,
+							"id": 502,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 492,
+									"id": 503,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -11360,7 +11672,7 @@
 					],
 					"children": [
 						{
-							"id": 489,
+							"id": 500,
 							"name": "androidClientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11392,7 +11704,7 @@
 							}
 						},
 						{
-							"id": 482,
+							"id": 493,
 							"name": "apiKey",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11424,7 +11736,7 @@
 							}
 						},
 						{
-							"id": 481,
+							"id": 492,
 							"name": "appId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11445,7 +11757,7 @@
 							}
 						},
 						{
-							"id": 488,
+							"id": 499,
 							"name": "clientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11477,7 +11789,7 @@
 							}
 						},
 						{
-							"id": 483,
+							"id": 494,
 							"name": "databaseURL",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11509,7 +11821,7 @@
 							}
 						},
 						{
-							"id": 490,
+							"id": 501,
 							"name": "deepLinkURLScheme",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11541,7 +11853,7 @@
 							}
 						},
 						{
-							"id": 485,
+							"id": 496,
 							"name": "gaTrackingId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11573,7 +11885,7 @@
 							}
 						},
 						{
-							"id": 487,
+							"id": 498,
 							"name": "messagingSenderId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11605,7 +11917,7 @@
 							}
 						},
 						{
-							"id": 484,
+							"id": 495,
 							"name": "projectId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11626,7 +11938,7 @@
 							}
 						},
 						{
-							"id": 486,
+							"id": 497,
 							"name": "storageBucket",
 							"kind": 32,
 							"kindString": "Variable",
@@ -11663,16 +11975,16 @@
 							"title": "Variables",
 							"kind": 32,
 							"children": [
-								489,
-								482,
-								481,
-								488,
-								483,
-								490,
-								485,
-								487,
-								484,
-								486
+								500,
+								493,
+								492,
+								499,
+								494,
+								501,
+								496,
+								498,
+								495,
+								497
 							]
 						}
 					],
@@ -11687,7 +11999,7 @@
 			}
 		},
 		{
-			"id": 512,
+			"id": 523,
 			"name": "ReactNativeFirebaseModuleAndStatics",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11696,14 +12008,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 513,
+					"id": 524,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 514,
+					"id": 525,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -11723,14 +12035,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 515,
+							"id": 526,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 516,
+									"id": 527,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -11743,7 +12055,7 @@
 							],
 							"children": [
 								{
-									"id": 517,
+									"id": 528,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -11769,7 +12081,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										517
+										528
 									]
 								}
 							],
@@ -11790,7 +12102,7 @@
 			}
 		},
 		{
-			"id": 518,
+			"id": 529,
 			"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -11799,14 +12111,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 519,
+					"id": 530,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 520,
+					"id": 531,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -11826,21 +12138,21 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 521,
+							"id": 532,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 522,
+									"id": 533,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 523,
+											"id": 534,
 											"name": "app",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -11862,7 +12174,7 @@
 							],
 							"children": [
 								{
-									"id": 524,
+									"id": 535,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -11888,7 +12200,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										524
+										535
 									]
 								}
 							],
@@ -11927,9 +12239,10 @@
 				329,
 				340,
 				429,
-				441,
+				440,
+				452,
 				1,
-				493,
+				504,
 				59,
 				70,
 				124,
@@ -11940,27 +12253,28 @@
 				269,
 				336,
 				347,
-				436
+				436,
+				447
 			]
 		},
 		{
 			"title": "Interfaces",
 			"kind": 256,
 			"children": [
-				459,
-				455,
-				446,
-				477,
-				464
+				470,
+				466,
+				457,
+				488,
+				475
 			]
 		},
 		{
 			"title": "Type aliases",
 			"kind": 4194304,
 			"children": [
-				479,
-				512,
-				518
+				490,
+				523,
+				529
 			]
 		}
 	]
