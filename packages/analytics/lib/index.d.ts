@@ -34,7 +34,7 @@ import {
 export namespace Analytics {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Log a custom event with optional params.
      *

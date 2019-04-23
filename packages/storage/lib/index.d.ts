@@ -130,7 +130,7 @@ export namespace Storage {
     };
   }
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
 
   }
 }

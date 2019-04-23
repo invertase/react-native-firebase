@@ -29,7 +29,7 @@ import {
 export namespace Auth {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
 
   }
 }

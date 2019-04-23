@@ -76,7 +76,7 @@ export namespace Config {
     [key: string]: number | string | boolean;
   }
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Moves fetched data to the apps active config.
      * Resolves with a boolean value of whether the fetched config was moved successfully.

@@ -31,7 +31,7 @@ import {
 export namespace Fiam {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether messages are suppressed or not.
      */

@@ -508,7 +508,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 244,
+									"line": 242,
 									"character": 11
 								}
 							]
@@ -741,7 +741,7 @@
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 237,
+							"line": 235,
 							"character": 23
 						},
 						{
@@ -1058,7 +1058,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 234,
+									"line": 232,
 									"character": 11
 								}
 							],
@@ -1293,7 +1293,7 @@
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 228,
+							"line": 226,
 							"character": 40
 						},
 						{
@@ -1377,7 +1377,7 @@
 				},
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 227,
+					"line": 225,
 					"character": 49
 				},
 				{
@@ -2270,7 +2270,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 202,
+							"line": 200,
 							"character": 31
 						}
 					],
@@ -2300,7 +2300,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 213,
+							"line": 211,
 							"character": 28
 						}
 					],
@@ -2342,7 +2342,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 211,
+							"line": 209,
 							"character": 23
 						}
 					],
@@ -2367,7 +2367,7 @@
 			"sources": [
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 199,
+					"line": 197,
 					"character": 47
 				}
 			]
@@ -2873,8 +2873,8 @@
 				{
 					"id": 3,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -3584,7 +3584,7 @@
 						{
 							"fileName": "analytics/lib/index.d.ts",
 							"line": 37,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -3613,10 +3613,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						3
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						3,
 						2
 					]
 				}
@@ -4087,8 +4093,8 @@
 				{
 					"id": 61,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -4131,7 +4137,7 @@
 						{
 							"fileName": "auth/lib/index.d.ts",
 							"line": 32,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -4160,10 +4166,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						61
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						61,
 						60
 					]
 				}
@@ -4195,386 +4207,10 @@
 			},
 			"children": [
 				{
-					"id": 84,
-					"name": "ConfigDefaults",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "An Interface representing a Config Defaults object."
-					},
-					"indexSignature": [
-						{
-							"id": 85,
-							"name": "__index",
-							"kind": 8192,
-							"kindString": "Index signature",
-							"flags": {},
-							"comment": {
-								"shortText": "An Interface representing a Config Defaults object."
-							},
-							"parameters": [
-								{
-									"id": 86,
-									"name": "key",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "number"
-									},
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "boolean"
-									}
-								]
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "config/lib/index.d.ts",
-							"line": 75,
-							"character": 33
-						}
-					]
-				},
-				{
-					"id": 80,
-					"name": "ConfigSettingsRead",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "An Interface representing readable config settings."
-					},
-					"children": [
-						{
-							"id": 82,
-							"name": "isDeveloperModeEnabled",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 68,
-									"character": 26
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "boolean"
-							}
-						},
-						{
-							"id": 83,
-							"name": "lastFetchStatus",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 69,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "stringLiteral",
-										"value": "success"
-									},
-									{
-										"type": "stringLiteral",
-										"value": "failure"
-									},
-									{
-										"type": "stringLiteral",
-										"value": "no_fetch_yet"
-									},
-									{
-										"type": "stringLiteral",
-										"value": "throttled"
-									}
-								]
-							}
-						},
-						{
-							"id": 81,
-							"name": "lastFetchTime",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 67,
-									"character": 17
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "number"
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								82,
-								83,
-								81
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "config/lib/index.d.ts",
-							"line": 66,
-							"character": 37
-						}
-					]
-				},
-				{
-					"id": 78,
-					"name": "ConfigSettingsWrite",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "An Interface representing settable config settings."
-					},
-					"children": [
-						{
-							"id": 79,
-							"name": "isDeveloperModeEnabled",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 60,
-									"character": 26
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "boolean"
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								79
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "config/lib/index.d.ts",
-							"line": 59,
-							"character": 38
-						}
-					]
-				},
-				{
-					"id": 72,
-					"name": "ConfigValue",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "An Interface representing a Remote Config value"
-					},
-					"children": [
-						{
-							"id": 73,
-							"name": "source",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Where the value was retrieved from"
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 41,
-									"character": 10
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "stringLiteral",
-										"value": "remote"
-									},
-									{
-										"type": "stringLiteral",
-										"value": "default"
-									},
-									{
-										"type": "stringLiteral",
-										"value": "static"
-									}
-								]
-							}
-						},
-						{
-							"id": 74,
-							"name": "value",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "The value"
-							},
-							"sources": [
-								{
-									"fileName": "config/lib/index.d.ts",
-									"line": 46,
-									"character": 9
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "undefined"
-									},
-									{
-										"type": "intrinsic",
-										"name": "number"
-									},
-									{
-										"type": "intrinsic",
-										"name": "boolean"
-									},
-									{
-										"type": "intrinsic",
-										"name": "string"
-									}
-								]
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								73,
-								74
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "config/lib/index.d.ts",
-							"line": 37,
-							"character": 30
-						}
-					]
-				},
-				{
-					"id": 75,
-					"name": "ConfigValues",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "An Interface representing multiple Config Values"
-					},
-					"indexSignature": [
-						{
-							"id": 76,
-							"name": "__index",
-							"kind": 8192,
-							"kindString": "Index signature",
-							"flags": {},
-							"comment": {
-								"shortText": "An Interface representing multiple Config Values"
-							},
-							"parameters": [
-								{
-									"id": 77,
-									"name": "key",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "reference",
-								"name": "ConfigValue",
-								"id": 72
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "config/lib/index.d.ts",
-							"line": 52,
-							"character": 31
-						}
-					]
-				},
-				{
 					"id": 87,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -5201,13 +4837,389 @@
 						{
 							"fileName": "config/lib/index.d.ts",
 							"line": 79,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
 						{
 							"type": "reference",
 							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 84,
+					"name": "ConfigDefaults",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An Interface representing a Config Defaults object."
+					},
+					"indexSignature": [
+						{
+							"id": 85,
+							"name": "__index",
+							"kind": 8192,
+							"kindString": "Index signature",
+							"flags": {},
+							"comment": {
+								"shortText": "An Interface representing a Config Defaults object."
+							},
+							"parameters": [
+								{
+									"id": 86,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "number"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								]
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 75,
+							"character": 33
+						}
+					]
+				},
+				{
+					"id": 80,
+					"name": "ConfigSettingsRead",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An Interface representing readable config settings."
+					},
+					"children": [
+						{
+							"id": 82,
+							"name": "isDeveloperModeEnabled",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 68,
+									"character": 26
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						},
+						{
+							"id": 83,
+							"name": "lastFetchStatus",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 69,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "stringLiteral",
+										"value": "success"
+									},
+									{
+										"type": "stringLiteral",
+										"value": "failure"
+									},
+									{
+										"type": "stringLiteral",
+										"value": "no_fetch_yet"
+									},
+									{
+										"type": "stringLiteral",
+										"value": "throttled"
+									}
+								]
+							}
+						},
+						{
+							"id": 81,
+							"name": "lastFetchTime",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 67,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "number"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								82,
+								83,
+								81
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 66,
+							"character": 37
+						}
+					]
+				},
+				{
+					"id": 78,
+					"name": "ConfigSettingsWrite",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An Interface representing settable config settings."
+					},
+					"children": [
+						{
+							"id": 79,
+							"name": "isDeveloperModeEnabled",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 60,
+									"character": 26
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								79
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 59,
+							"character": 38
+						}
+					]
+				},
+				{
+					"id": 72,
+					"name": "ConfigValue",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An Interface representing a Remote Config value"
+					},
+					"children": [
+						{
+							"id": 73,
+							"name": "source",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Where the value was retrieved from"
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 41,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "stringLiteral",
+										"value": "remote"
+									},
+									{
+										"type": "stringLiteral",
+										"value": "default"
+									},
+									{
+										"type": "stringLiteral",
+										"value": "static"
+									}
+								]
+							}
+						},
+						{
+							"id": 74,
+							"name": "value",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The value"
+							},
+							"sources": [
+								{
+									"fileName": "config/lib/index.d.ts",
+									"line": 46,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "number"
+									},
+									{
+										"type": "intrinsic",
+										"name": "boolean"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								73,
+								74
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 37,
+							"character": 30
+						}
+					]
+				},
+				{
+					"id": 75,
+					"name": "ConfigValues",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "An Interface representing multiple Config Values"
+					},
+					"indexSignature": [
+						{
+							"id": 76,
+							"name": "__index",
+							"kind": 8192,
+							"kindString": "Index signature",
+							"flags": {},
+							"comment": {
+								"shortText": "An Interface representing multiple Config Values"
+							},
+							"parameters": [
+								{
+									"id": 77,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "ConfigValue",
+								"id": 72
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "config/lib/index.d.ts",
+							"line": 52,
+							"character": 31
 						}
 					]
 				},
@@ -5230,6 +5242,13 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						87
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
@@ -5238,7 +5257,6 @@
 						78,
 						72,
 						75,
-						87,
 						71
 					]
 				}
@@ -5272,8 +5290,8 @@
 				{
 					"id": 126,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -5863,7 +5881,7 @@
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
 							"line": 33,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -5892,10 +5910,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						126
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						126,
 						125
 					]
 				}
@@ -5929,8 +5953,8 @@
 				{
 					"id": 168,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -6139,7 +6163,7 @@
 						{
 							"fileName": "fiam/lib/index.d.ts",
 							"line": 34,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -6168,10 +6192,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						168
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						168,
 						167
 					]
 				}
@@ -6205,8 +6235,8 @@
 				{
 					"id": 187,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -6249,7 +6279,7 @@
 						{
 							"fileName": "firestore/lib/index.d.ts",
 							"line": 32,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -6278,10 +6308,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						187
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						187,
 						186
 					]
 				}
@@ -6312,6 +6348,173 @@
 				]
 			},
 			"children": [
+				{
+					"id": 229,
+					"name": "Module",
+					"kind": 128,
+					"kindString": "Class",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "firebase.functions().X"
+					},
+					"children": [
+						{
+							"id": 236,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						},
+						{
+							"id": 230,
+							"name": "httpsCallable",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 231,
+									"name": "httpsCallable",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Gets an `HttpsCallable` instance that refers to the function with the given\nname.",
+										"returns": "The `HttpsCallable` instance.\n"
+									},
+									"parameters": [
+										{
+											"id": 232,
+											"name": "name",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The name of the https callable function."
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "HttpsCallable",
+										"id": 199
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 159,
+									"character": 17
+								}
+							]
+						},
+						{
+							"id": 233,
+							"name": "useFunctionsEmulator",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 234,
+									"name": "useFunctionsEmulator",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Changes this instance to point to a Cloud Functions emulator running\nlocally.",
+										"text": "See https://firebase.google.com/docs/functions/local-emulator\n"
+									},
+									"parameters": [
+										{
+											"id": 235,
+											"name": "origin",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "the origin string of the local emulator started via firebase tools\n\"http://10.0.0.8:1337\".\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "functions/lib/index.d.ts",
+									"line": 170,
+									"character": 24
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								236
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								230,
+								233
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 151,
+							"character": 21
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
 				{
 					"id": 199,
 					"name": "HttpsCallable",
@@ -6995,173 +7198,6 @@
 					]
 				},
 				{
-					"id": 229,
-					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "firebase.functions().X"
-					},
-					"children": [
-						{
-							"id": 236,
-							"name": "app",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
-									"line": 179,
-									"character": 5
-								}
-							],
-							"type": {
-								"type": "reference",
-								"name": "FirebaseApp"
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule.app"
-							}
-						},
-						{
-							"id": 230,
-							"name": "httpsCallable",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 231,
-									"name": "httpsCallable",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Gets an `HttpsCallable` instance that refers to the function with the given\nname.",
-										"returns": "The `HttpsCallable` instance.\n"
-									},
-									"parameters": [
-										{
-											"id": 232,
-											"name": "name",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "The name of the https callable function."
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "HttpsCallable",
-										"id": 199
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "functions/lib/index.d.ts",
-									"line": 159,
-									"character": 17
-								}
-							]
-						},
-						{
-							"id": 233,
-							"name": "useFunctionsEmulator",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 234,
-									"name": "useFunctionsEmulator",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Changes this instance to point to a Cloud Functions emulator running\nlocally.",
-										"text": "See https://firebase.google.com/docs/functions/local-emulator\n"
-									},
-									"parameters": [
-										{
-											"id": 235,
-											"name": "origin",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "the origin string of the local emulator started via firebase tools\n\"http://10.0.0.8:1337\".\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "void"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "functions/lib/index.d.ts",
-									"line": 170,
-									"character": 24
-								}
-							]
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								236
-							]
-						},
-						{
-							"title": "Methods",
-							"kind": 2048,
-							"children": [
-								230,
-								233
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "functions/lib/index.d.ts",
-							"line": 151,
-							"character": 25
-						}
-					],
-					"extendedTypes": [
-						{
-							"type": "reference",
-							"name": "ReactNativeFirebaseModule"
-						}
-					]
-				},
-				{
 					"id": 227,
 					"name": "Statics",
 					"kind": 256,
@@ -7311,6 +7347,13 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						229
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
@@ -7318,7 +7361,6 @@
 						197,
 						202,
 						209,
-						229,
 						227
 					]
 				},
@@ -7360,8 +7402,8 @@
 				{
 					"id": 248,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -7672,7 +7714,7 @@
 						{
 							"fileName": "iid/lib/index.d.ts",
 							"line": 36,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -7701,10 +7743,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						248
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						248,
 						247
 					]
 				}
@@ -7736,58 +7784,10 @@
 			},
 			"children": [
 				{
-					"id": 272,
-					"name": "AdditionalReferralParameters",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameters\nTODO(ehesp) allow linking to named type above somehow?"
-					},
-					"indexSignature": [
-						{
-							"id": 273,
-							"name": "__index",
-							"kind": 8192,
-							"kindString": "Index signature",
-							"flags": {},
-							"comment": {
-								"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameters\nTODO(ehesp) allow linking to named type above somehow?"
-							},
-							"parameters": [
-								{
-									"id": 274,
-									"name": "key",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "invites/lib/index.d.ts",
-							"line": 41,
-							"character": 47
-						}
-					]
-				},
-				{
 					"id": 275,
 					"name": "AndroidInviteBuilder",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -7840,7 +7840,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 57,
+									"line": 55,
 									"character": 35
 								}
 							]
@@ -7895,7 +7895,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 73,
+									"line": 71,
 									"character": 23
 								}
 							]
@@ -7944,7 +7944,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 80,
+									"line": 78,
 									"character": 19
 								}
 							]
@@ -7993,7 +7993,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 89,
+									"line": 87,
 									"character": 32
 								}
 							]
@@ -8014,16 +8014,16 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 48,
-							"character": 39
+							"line": 46,
+							"character": 35
 						}
 					]
 				},
 				{
 					"id": 288,
 					"name": "InviteBuilder",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -8045,7 +8045,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 99,
+									"line": 97,
 									"character": 11
 								}
 							],
@@ -8099,7 +8099,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 106,
+									"line": 104,
 									"character": 22
 								}
 							]
@@ -8148,7 +8148,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 113,
+									"line": 111,
 									"character": 32
 								}
 							]
@@ -8203,7 +8203,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 122,
+									"line": 120,
 									"character": 23
 								}
 							]
@@ -8252,7 +8252,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 129,
+									"line": 127,
 									"character": 18
 								}
 							]
@@ -8301,7 +8301,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 138,
+									"line": 136,
 									"character": 15
 								}
 							]
@@ -8350,7 +8350,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 145,
+									"line": 143,
 									"character": 18
 								}
 							]
@@ -8380,16 +8380,16 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 95,
-							"character": 32
+							"line": 93,
+							"character": 28
 						}
 					]
 				},
 				{
 					"id": 311,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -8474,7 +8474,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 172,
+									"line": 170,
 									"character": 20
 								}
 							]
@@ -8513,7 +8513,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 186,
+									"line": 184,
 									"character": 24
 								}
 							]
@@ -8562,7 +8562,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 180,
+									"line": 178,
 									"character": 16
 								}
 							]
@@ -8620,7 +8620,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 195,
+									"line": 193,
 									"character": 18
 								}
 							]
@@ -8648,14 +8648,62 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 165,
-							"character": 25
+							"line": 163,
+							"character": 21
 						}
 					],
 					"extendedTypes": [
 						{
 							"type": "reference",
 							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
+					"id": 272,
+					"name": "AdditionalReferralParameters",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameter"
+					},
+					"indexSignature": [
+						{
+							"id": 273,
+							"name": "__index",
+							"kind": 8192,
+							"kindString": "Index signature",
+							"flags": {},
+							"comment": {
+								"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameter"
+							},
+							"parameters": [
+								{
+									"id": 274,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "invites/lib/index.d.ts",
+							"line": 39,
+							"character": 47
 						}
 					]
 				},
@@ -8685,7 +8733,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 155,
+									"line": 153,
 									"character": 12
 								}
 							],
@@ -8708,7 +8756,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 160,
+									"line": 158,
 									"character": 16
 								}
 							],
@@ -8731,7 +8779,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 151,
+							"line": 149,
 							"character": 31
 						}
 					]
@@ -8795,7 +8843,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 163,
+							"line": 161,
 							"character": 28
 						}
 					],
@@ -8837,7 +8885,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 163,
+									"line": 161,
 									"character": 30
 								}
 							]
@@ -8847,13 +8895,19 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						275,
+						288,
+						311
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
 						272,
-						275,
-						288,
-						311,
 						308,
 						270
 					]
@@ -8895,8 +8949,8 @@
 				{
 					"id": 338,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -8939,7 +8993,7 @@
 						{
 							"fileName": "mlkit/lib/index.d.ts",
 							"line": 32,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -8968,10 +9022,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						338
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						338,
 						337
 					]
 				}
@@ -9005,8 +9065,8 @@
 				{
 					"id": 379,
 					"name": "HttpMetric",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -9585,15 +9645,15 @@
 						{
 							"fileName": "perf/lib/index.d.ts",
 							"line": 115,
-							"character": 29
+							"character": 25
 						}
 					]
 				},
 				{
 					"id": 412,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -9892,7 +9952,7 @@
 						{
 							"fileName": "perf/lib/index.d.ts",
 							"line": 187,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -9903,26 +9963,10 @@
 					]
 				},
 				{
-					"id": 411,
-					"name": "Statics",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"sources": [
-						{
-							"fileName": "perf/lib/index.d.ts",
-							"line": 185,
-							"character": 26
-						}
-					]
-				},
-				{
 					"id": 348,
 					"name": "Trace",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -10440,7 +10484,23 @@
 						{
 							"fileName": "perf/lib/index.d.ts",
 							"line": 44,
-							"character": 24
+							"character": 20
+						}
+					]
+				},
+				{
+					"id": 411,
+					"name": "Statics",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 185,
+							"character": 26
 						}
 					]
 				},
@@ -10504,13 +10564,19 @@
 			],
 			"groups": [
 				{
-					"title": "Interfaces",
-					"kind": 256,
+					"title": "Classes",
+					"kind": 128,
 					"children": [
 						379,
 						412,
-						411,
 						348
+					]
+				},
+				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						411
 					]
 				},
 				{
@@ -10550,8 +10616,8 @@
 				{
 					"id": 465,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -10594,7 +10660,7 @@
 						{
 							"fileName": "storage/lib/index.d.ts",
 							"line": 133,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -11242,10 +11308,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						465
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						465,
 						450,
 						437,
 						442,
@@ -11282,8 +11354,8 @@
 				{
 					"id": 476,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -11356,7 +11428,7 @@
 						{
 							"fileName": "utils/lib/index.d.ts",
 							"line": 32,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -11385,10 +11457,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						476
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						476,
 						475
 					]
 				}
@@ -11398,6 +11476,54 @@
 					"fileName": "utils/lib/index.d.ts",
 					"line": 29,
 					"character": 22
+				}
+			]
+		},
+		{
+			"id": 515,
+			"name": "ReactNativeFirebaseModule",
+			"kind": 128,
+			"kindString": "Class",
+			"flags": {
+				"isExported": true
+			},
+			"children": [
+				{
+					"id": 516,
+					"name": "app",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "app-types/index.d.ts",
+							"line": 179,
+							"character": 5
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseApp",
+						"id": 497
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						516
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "app-types/index.d.ts",
+					"line": 178,
+					"character": 38
 				}
 			]
 		},
@@ -11902,54 +12028,6 @@
 				{
 					"type": "reference",
 					"name": "Error"
-				}
-			]
-		},
-		{
-			"id": 515,
-			"name": "ReactNativeFirebaseModule",
-			"kind": 256,
-			"kindString": "Interface",
-			"flags": {
-				"isExported": true
-			},
-			"children": [
-				{
-					"id": 516,
-					"name": "app",
-					"kind": 1024,
-					"kindString": "Property",
-					"flags": {
-						"isExported": true
-					},
-					"sources": [
-						{
-							"fileName": "app-types/index.d.ts",
-							"line": 179,
-							"character": 5
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseApp",
-						"id": 497
-					}
-				}
-			],
-			"groups": [
-				{
-					"title": "Properties",
-					"kind": 1024,
-					"children": [
-						516
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "app-types/index.d.ts",
-					"line": 178,
-					"character": 42
 				}
 			]
 		},
@@ -12871,13 +12949,19 @@
 			]
 		},
 		{
+			"title": "Classes",
+			"kind": 128,
+			"children": [
+				515
+			]
+		},
+		{
 			"title": "Interfaces",
 			"kind": 256,
 			"children": [
 				497,
 				493,
 				484,
-				515,
 				502
 			]
 		},

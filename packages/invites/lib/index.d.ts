@@ -34,9 +34,7 @@ export namespace Invites {
   }
 
   /**
-   * Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameters
-   * TODO(ehesp) allow linking to named type above somehow?
-   *
+   * Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameter
    */
   export interface AdditionalReferralParameters {
     [key: string]: string;
@@ -45,7 +43,7 @@ export namespace Invites {
   /**
    * Android Invite representation
    */
-  export interface AndroidInviteBuilder {
+  export class AndroidInviteBuilder {
     /**
      * Adds query parameters to the play store referral URL when the app needs additional referral parameters for other
      * application component referrals. These parameters are added to the referral URL sent from the play store and are
@@ -92,7 +90,7 @@ export namespace Invites {
   /**
    * Invite builder representation returned from `firebase.invite().createInvitation();`
    */
-  export interface InviteBuilder {
+  export class InviteBuilder {
     /**
      * Set Android specific Invite properties
      */
@@ -162,7 +160,7 @@ export namespace Invites {
 
   export type InviteListener = (nativeInvite: NativeInvite) => void;
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Create an invitation via an InvitationBuilder instance.
      *

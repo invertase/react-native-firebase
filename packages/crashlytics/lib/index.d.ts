@@ -30,7 +30,7 @@ import {
 export namespace Crashlytics {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.
      */

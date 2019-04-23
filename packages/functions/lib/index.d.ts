@@ -148,7 +148,7 @@ export namespace Functions {
   /**
    * firebase.functions().X
    */
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Gets an `HttpsCallable` instance that refers to the function with the given
      * name.

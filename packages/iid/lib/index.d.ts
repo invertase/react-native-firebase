@@ -33,7 +33,7 @@ import {
 export namespace Iid {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Returns a identifier that uniquely identifies the app instance.
      *

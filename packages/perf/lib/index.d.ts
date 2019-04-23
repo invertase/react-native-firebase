@@ -41,7 +41,7 @@ export namespace Perf {
   /**
    * Trace allows you to time the beginning to end of a certain action in your app with additional metric values and attributes.
    */
-  export interface Trace {
+  export class Trace {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -112,7 +112,7 @@ export namespace Perf {
   /**
    * Metric used to collect data for network requests/responses. A new instance must be used for every request/response.
    */
-  export interface HttpMetric {
+  export class HttpMetric {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -184,7 +184,7 @@ export namespace Perf {
 
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether performance monitoring is enabled or disabled.
      */

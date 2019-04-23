@@ -29,7 +29,7 @@ import {
 export namespace Utils {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
      *
