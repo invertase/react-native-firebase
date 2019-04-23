@@ -142,7 +142,7 @@ export namespace Functions {
     /**
      * Uppercase + underscored variables of @Functions.FunctionsErrorCode
      */
-    HttpsErrorCode: {} & HttpsErrorCode;
+    HttpsErrorCode: HttpsErrorCode;
   }
 
   /**

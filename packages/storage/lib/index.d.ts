@@ -17,8 +17,8 @@
 
 import {
   ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
   ReactNativeFirebaseModuleAndStatics,
+  ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -27,21 +27,85 @@ import {
  * @firebase storage
  */
 export namespace Storage {
-  export enum TaskEvent {
-    STATE_CHANGED = 'state_changed',
+  /**
+   * Possible string formats used for uploading via `putString`
+   *
+   * ```js
+   * firebase.storage.StringFormat;
+   * ```
+   */
+  export interface StringFormat {
+    /**
+     * ```js
+     * firebase.storage.StringFormat.RAW;
+     * ```
+     */
+    RAW: 'raw';
+
+    /**
+     * ```js
+     * firebase.storage.StringFormat.BASE64;
+     * ```
+     */
+    BASE64: 'base64';
+
+    /**
+     * ```js
+     * firebase.storage.StringFormat.BASE64URL;
+     * ```
+     */
+    BASE64URL: 'base64url';
+
+    /**
+     * ```js
+     * firebase.storage.StringFormat.DATA_URL;
+     * ```
+     */
+    DATA_URL: 'data_url';
   }
 
-  export enum TaskState {
-    CANCELLED = 'cancelled',
-    ERROR = 'error',
-    PAUSED = 'paused',
-    RUNNING = 'running',
-    SUCCESS = 'success',
+  /**
+   * An event to subscribe to that is triggered on a task.
+   *
+   * ```js
+   * firebase.storage.TaskEvent;
+   * ```
+   */
+  export interface TaskEvent {
+    /**
+     * An event that indicates that the tasks state has changed.
+     *
+     * ```js
+     * firebase.storage.TaskEvent.STATE_CHANGED;
+     * ```
+     */
+    STATE_CHANGED: 'state_changed',
+  }
+
+  /**
+   *
+   */
+  export interface TaskState {
+    /**
+     * Task has been cancelled.
+     */
+    CANCELLED: 'cancelled',
+    ERROR: 'error',
+    PAUSED: 'paused',
+    /**
+     * Task is running.
+     */
+    RUNNING: 'running',
+    SUCCESS: 'success',
   }
 
   export interface Statics {
+    StringFormat: StringFormat;
+
     TaskState: TaskState;
-    TaskEvent: TaskState;
+
+    TaskEvent: TaskEvent;
+
     Native: {
       /**
        * Main Bundle Path
@@ -49,6 +113,7 @@ export namespace Storage {
       MAIN_BUNDLE_PATH: string;
 
       CACHES_DIRECTORY_PATH: string;
+
       /**
        * Document Directory Path
        */
@@ -60,8 +125,8 @@ export namespace Storage {
        */
       TEMP_DIRECTORY_PATH: string;
       LIBRARY_DIRECTORY_PATH: string;
-      FILETYPE_REGULAR: string;
-      FILETYPE_DIRECTORY: string;
+      FILE_TYPE_REGULAR: string;
+      FILE_TYPE_DIRECTORY: string;
     };
   }
 
@@ -71,7 +136,7 @@ export namespace Storage {
 }
 
 declare module '@react-native-firebase/storage' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import {ReactNativeFirebaseNamespace} from '@react-native-firebase/app-types';
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
