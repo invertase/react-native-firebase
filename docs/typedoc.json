@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 125,
+							"line": 130,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 114,
+							"line": 119,
 							"character": 31
 						}
 					],
@@ -94,7 +94,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 123,
+							"line": 128,
 							"character": 23
 						}
 					],
@@ -119,7 +119,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 111,
+					"line": 116,
 					"character": 49
 				}
 			]
@@ -230,7 +230,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 167,
+									"line": 172,
 									"character": 13
 								}
 							]
@@ -292,7 +292,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 195,
+									"line": 199,
 									"character": 10
 								}
 							]
@@ -664,7 +664,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 158,
+							"line": 163,
 							"character": 23
 						},
 						{
@@ -679,7 +679,7 @@
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 189,
+							"line": 193,
 							"character": 23
 						},
 						{
@@ -748,7 +748,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 152,
+									"line": 157,
 									"character": 13
 								}
 							],
@@ -816,7 +816,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 186,
+									"line": 190,
 									"character": 10
 								}
 							],
@@ -1176,7 +1176,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 143,
+							"line": 148,
 							"character": 40
 						},
 						{
@@ -1191,7 +1191,7 @@
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 180,
+							"line": 184,
 							"character": 40
 						},
 						{
@@ -1255,7 +1255,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 142,
+					"line": 147,
 					"character": 49
 				},
 				{
@@ -1270,7 +1270,7 @@
 				},
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 179,
+					"line": 183,
 					"character": 49
 				},
 				{
@@ -1459,7 +1459,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 165,
+							"line": 169,
 							"character": 27
 						}
 					],
@@ -1492,7 +1492,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 154,
+							"line": 158,
 							"character": 31
 						}
 					],
@@ -1530,7 +1530,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 163,
+							"line": 167,
 							"character": 23
 						}
 					],
@@ -1555,7 +1555,7 @@
 			"sources": [
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 151,
+					"line": 155,
 					"character": 46
 				}
 			]
@@ -2732,7 +2732,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "Event name must not conflict with any Reserved Events."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -2745,7 +2747,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "Parameters to be sent and displayed with the event.\n"
 											},
 											"type": {
 												"type": "reflection",
@@ -2784,7 +2786,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 45,
+															"line": 46,
 															"character": 34
 														}
 													]
@@ -2807,7 +2809,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 45,
+									"line": 46,
 									"character": 12
 								}
 							]
@@ -2845,7 +2847,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 107,
+									"line": 112,
 									"character": 22
 								}
 							]
@@ -2866,7 +2868,13 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR."
+										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR.",
+										"tags": [
+											{
+												"tag": "note",
+												"text": "Analytics collection is enabled by default.\n"
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -2876,7 +2884,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A boolean value representing whether Analytics collection is enabled or disabled.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -2899,7 +2907,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 53,
+									"line": 56,
 									"character": 33
 								}
 							]
@@ -2935,7 +2943,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "A screen name, e.g. Product."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -2950,7 +2960,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "\n"
+												"text": "On Android, React Native runs in a single activity called\n'MainActivity'. Setting this parameter overrides the default name shown on logs.\n"
 											},
 											"type": {
 												"type": "union",
@@ -2982,7 +2992,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 65,
+									"line": 69,
 									"character": 20
 								}
 							]
@@ -3036,7 +3046,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 72,
+									"line": 76,
 									"character": 29
 								}
 							]
@@ -3090,7 +3100,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 79,
+									"line": 83,
 									"character": 29
 								}
 							]
@@ -3153,7 +3163,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 87,
+									"line": 91,
 									"character": 13
 								}
 							]
@@ -3174,7 +3184,13 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets multiple key/value pair of data on the current user."
+										"shortText": "Sets multiple key/value pair of data on the current user.",
+										"tags": [
+											{
+												"tag": "react-native-firebase",
+												"text": ""
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -3232,7 +3248,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 102,
+															"line": 107,
 															"character": 33
 														}
 													]
@@ -3255,7 +3271,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 102,
+									"line": 107,
 									"character": 21
 								}
 							]
@@ -3285,7 +3301,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "A user property identifier."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -3330,7 +3348,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 95,
+									"line": 99,
 									"character": 19
 								}
 							]
@@ -4399,7 +4417,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Moves fetched data to the apps active config.\nAlways successfully resolves with a boolean value of whether the fetched config was moved successfully."
+										"shortText": "Moves fetched data to the apps active config.\nResolves with a boolean value of whether the fetched config was moved successfully."
 									},
 									"type": {
 										"type": "reference",
@@ -4437,7 +4455,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration."
+										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration."
 									},
 									"parameters": [
 										{
@@ -4449,7 +4467,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "Duration in seconds to cache the data for. To force a cache use a duration of 0.\n"
+												"text": "Duration in seconds to cache the data for. To skip cache, use a duration of 0.\n"
 											},
 											"type": {
 												"type": "union",
@@ -4502,8 +4520,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
-										"text": "Once fetching is completely this method immediately calls activateFetched on native and returns a boolean value of activation status.\n"
+										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
+										"text": "Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.\n"
 									},
 									"parameters": [
 										{
@@ -4515,7 +4533,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "Duration in seconds to cache the data for. To force a cache use a duration of 0.\n"
+												"text": "Duration in seconds to cache the data for. To skip cache use a duration of 0.\n"
 											},
 											"type": {
 												"type": "union",
@@ -4619,7 +4637,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "\n"
+												"text": "A prefix value to match keys by. Leave blank to retrieve all keys.\n"
 											},
 											"type": {
 												"type": "union",
@@ -4685,7 +4703,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A key used to retrieve a specific value.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -4742,7 +4760,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "\n"
+												"text": "A prefix value to match values by. Leave blank to retrieve all values.\n"
 											},
 											"type": {
 												"type": "union",
@@ -4805,6 +4823,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "A ConfigSettingsWrite instance used to set Remote Config settings.\n"
+											},
 											"type": {
 												"type": "reference",
 												"name": "ConfigSettingsWrite",
@@ -4828,7 +4849,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 131,
+									"line": 133,
 									"character": 21
 								}
 							]
@@ -4858,6 +4879,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "A ConfigDefaults instance used to set default values.\n"
+											},
 											"type": {
 												"type": "reference",
 												"name": "ConfigDefaults",
@@ -4880,7 +4904,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 138,
+									"line": 141,
 									"character": 15
 								}
 							]
@@ -4901,7 +4925,13 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the default values from a resource file.\nOn iOS this is a plist file and on Android this is an XML defaultsMap file.\nTODO(ehesp): insert link to guide here somehow?"
+										"shortText": "Sets the default values from a resource file.\nOn iOS this is a plist file and on Android this is an XML defaultsMap file.",
+										"tags": [
+											{
+												"tag": "link",
+												"text": "/guides/todo\n"
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4934,7 +4964,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 147,
+									"line": 151,
 									"character": 27
 								}
 							]

@@ -79,23 +79,23 @@ export namespace Config {
   export interface Module extends ReactNativeFirebaseModule {
     /**
      * Moves fetched data to the apps active config.
-     * Always successfully resolves with a boolean value of whether the fetched config was moved successfully.
+     * Resolves with a boolean value of whether the fetched config was moved successfully.
      */
     activateFetched(): Promise<boolean>;
 
     /**
-     * Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
      *
-     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To force a cache use a duration of 0.
+     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
      */
     fetch(cacheExpirationSeconds?: number): Promise<null>;
 
     /**
-     * Fetches the remote config data from Firebase, defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
      *
-     * Once fetching is completely this method immediately calls activateFetched on native and returns a boolean value of activation status.
+     * Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.
      *
-     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To force a cache use a duration of 0.
+     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To skip cache use a duration of 0.
      */
     fetchAndActivate(cacheExpirationSeconds?: number): Promise<boolean>;
 
@@ -107,26 +107,28 @@ export namespace Config {
     /**
      * Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned.
      *
-     * @param prefix
+     * @param prefix A prefix value to match keys by. Leave blank to retrieve all keys.
      */
     getKeysByPrefix(prefix?: string): Promise<string[]>;
 
     /**
      * Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned.
      *
-     * @param prefix
+     * @param prefix A prefix value to match values by. Leave blank to retrieve all values.
      */
     getValuesByKeysPrefix(prefix?: string): Promise<ConfigValues>;
 
     /**
      * Gets a ConfigValue by key.
      *
-     * @param key
+     * @param key A key used to retrieve a specific value.
      */
     getValue(key: string): Promise<ConfigValue>;
 
     /**
      * Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.
+     *
+     * @param configSettings A ConfigSettingsWrite instance used to set Remote Config settings.
      */
     setConfigSettings(configSettings: ConfigSettingsWrite): Promise<ConfigSettingsRead>;
 
@@ -134,13 +136,15 @@ export namespace Config {
      * Sets default values for the app to use when accessing values.
      * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
      *
+     * @param defaults A ConfigDefaults instance used to set default values.
      */
     setDefaults(defaults: ConfigDefaults): Promise<null>;
 
     /**
      * Sets the default values from a resource file.
      * On iOS this is a plist file and on Android this is an XML defaultsMap file.
-     * TODO(ehesp): insert link to guide here somehow?
+     *
+     * @link /guides/todo
      *
      * @param resourceName The plist/xml file name with no extension.
      */
