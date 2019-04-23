@@ -16,7 +16,7 @@ social:
 versions:
   latest: v6
   branches:
-    v6: master
+    v6: '@salakar/v6/storage'
 menu:
   - text: Modules
     to: '/v6'
