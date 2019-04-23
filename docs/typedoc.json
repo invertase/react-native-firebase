@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 133,
+							"line": 136,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 122,
+							"line": 125,
 							"character": 31
 						}
 					],
@@ -94,7 +94,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 131,
+							"line": 134,
 							"character": 23
 						}
 					],
@@ -119,7 +119,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 119,
+					"line": 122,
 					"character": 49
 				}
 			]
@@ -230,7 +230,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 175,
+									"line": 178,
 									"character": 13
 								}
 							]
@@ -696,7 +696,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 166,
+							"line": 169,
 							"character": 23
 						},
 						{
@@ -785,7 +785,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 160,
+									"line": 163,
 									"character": 13
 								}
 							],
@@ -1248,7 +1248,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 151,
+							"line": 154,
 							"character": 40
 						},
 						{
@@ -1332,7 +1332,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 150,
+					"line": 153,
 					"character": 49
 				},
 				{
@@ -2879,6 +2879,9 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "TODO: Analytics Module Description Goes Here"
+					},
 					"children": [
 						{
 							"id": 39,
@@ -2989,7 +2992,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 49,
+															"line": 52,
 															"character": 34
 														}
 													]
@@ -3012,7 +3015,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 49,
+									"line": 52,
 									"character": 12
 								}
 							]
@@ -3050,7 +3053,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 115,
+									"line": 118,
 									"character": 22
 								}
 							]
@@ -3110,7 +3113,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 59,
+									"line": 62,
 									"character": 33
 								}
 							]
@@ -3195,7 +3198,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 72,
+									"line": 75,
 									"character": 20
 								}
 							]
@@ -3249,7 +3252,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 79,
+									"line": 82,
 									"character": 29
 								}
 							]
@@ -3303,7 +3306,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 86,
+									"line": 89,
 									"character": 29
 								}
 							]
@@ -3366,7 +3369,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 94,
+									"line": 97,
 									"character": 13
 								}
 							]
@@ -3451,7 +3454,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 110,
+															"line": 113,
 															"character": 33
 														}
 													]
@@ -3474,7 +3477,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 110,
+									"line": 113,
 									"character": 21
 								}
 							]
@@ -3551,7 +3554,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 102,
+									"line": 105,
 									"character": 19
 								}
 							]
@@ -3584,7 +3587,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 40,
+							"line": 43,
 							"character": 21
 						}
 					],
