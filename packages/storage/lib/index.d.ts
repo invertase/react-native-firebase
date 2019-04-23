@@ -22,7 +22,36 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Storage
+ * The Cloud Storage service is available for the default app, a given app or a specific storage bucket.
+ *
+ * #### Example 1
+ *
+ * Get the storage instance for the **default app**:
+ *
+ * ```js
+ * const storageForDefaultApp = firebase.storage();
+ * ```
+ *
+ * #### Example 2
+ *
+ * Get the storage instance for a **secondary app**:
+ *
+ * ```js
+ * const otherApp = firebase.app('otherApp');
+ * const storageForOtherApp = firebase.storage(otherApp);
+ * ```
+ *
+ * #### Example 3
+ *
+ * Get the storage instance for a **specific storage bucket**:
+ *
+ * ```js
+ * const defaultApp = firebase.app();
+ * const storageForBucket = defaultApp.storage('gs://another-bucket-url');
+ *
+ * const otherApp = firebase.app('otherApp');
+ * const storageForOtherAppBucket = otherApp.storage('gs://another-bucket-url');
+ * ```
  *
  * @firebase storage
  */

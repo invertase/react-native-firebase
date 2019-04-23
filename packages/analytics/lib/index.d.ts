@@ -22,13 +22,13 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Gets the Analytics service for the default app only.
- * `firebase.analytics()` must be called with no arguments to access the default app's Analytics service.
+ * The Google Analytics for Firebase service is available for the default app only.
  *
  * #### Example
  *
+ * Get the Analytics service for the default app.
+ * 
  * ```js
- * // Get the Analytics service for the default app
  * const defaultAppAnalytics = firebase.analytics();
  * ```
  *
