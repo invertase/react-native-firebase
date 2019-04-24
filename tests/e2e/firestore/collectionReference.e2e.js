@@ -94,6 +94,34 @@ describe('firestore()', () => {
       });
     });
 
+    describe('isEqual()', () => {
+      it(`returns true if two CollectionReference's are for the same location`, () => {
+        const ref1 = firebase.firestore().collection('foo');
+        const ref2 = firebase.firestore().collection('foo');
+        should.equal(ref1.isEqual(ref2), true);
+      });
+
+      it(`returns false if two CollectionReference's are for different paths`, () => {
+        const ref1 = firebase.firestore().collection('foo');
+        const ref2 = firebase.firestore().collection('bar');
+        should.equal(ref1.isEqual(ref2), false);
+      });
+
+      it(`throws if arg is not an instance of CollectionReference`, () => {
+        const ref1 = firebase.firestore().collection('foo');
+        const maybeRef2 = 'nope';
+        try {
+          ref1.isEqual(maybeRef2);
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql(
+            'expects an instance of CollectionReference'
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('doc()', () => {
       it('should create DocumentReference with correct path', async () => {
         const docRef = await testCollectionDoc(COL_DOC_1_PATH);
@@ -167,6 +195,7 @@ describe('firestore()', () => {
         } catch (e) {
           // do nothing
         }
+        
         return Promise.resolve();
       });
     });

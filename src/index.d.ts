@@ -2336,6 +2336,7 @@ declare module 'react-native-firebase' {
         readonly firestore: Firestore;
         readonly id: string;
         readonly parent: DocumentReference;
+        readonly path: string;
 
         add(data: object): Promise<DocumentReference>;
 
@@ -2352,6 +2353,8 @@ declare module 'react-native-firebase' {
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
 
         limit(limit: number): Query;
+
+        isEqual(otherCollectionReference: CollectionReference): boolean;
 
         onSnapshot(
           onNext: Query.ObserverOnNext,
