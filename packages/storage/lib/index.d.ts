@@ -299,7 +299,7 @@ export namespace Storage {
     cancel(): boolean;
 
     on(
-      event: TaskEvent,
+      event: 'state_changed',
       nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
       error?: ((a: Error) => any) | null,
       complete?: (() => void) | null,
@@ -318,10 +318,15 @@ export namespace Storage {
 
   export interface TaskSnapshot {
     bytesTransferred: number;
+
     metadata: FullMetadata;
+
     ref: Reference;
-    state: TaskState;
+
+    state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
+
     task: Task;
+
     totalBytes: number;
   }
 
@@ -361,15 +366,15 @@ export namespace Storage {
   export class Module extends ReactNativeFirebaseModule {
     maxUploadRetryTime: number;
 
-    setMaxUploadRetryTime(time: number): void;
+    setMaxUploadRetryTime(time: number): Promise<null>;
 
     maxDownloadRetryTime: number;
 
-    setMaxDownloadRetryTime(time: number): void;
+    setMaxDownloadRetryTime(time: number): Promise<null>;
 
     maxOperationRetryTime: number;
 
-    setMaxOperationRetryTime(time: number): void;
+    setMaxOperationRetryTime(time: number): Promise<null>;
 
     ref(path?: string): Reference;
 
@@ -382,23 +387,10 @@ declare module '@react-native-firebase/storage' {
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/storage';
-   * firebase.storage().X(...);
-   * ```
-   */
   export const firebase = FirebaseNamespaceExport;
 
   const StorageDefaultExport: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
-  /**
-   * @example
-   * ```js
-   * import storage from '@react-native-firebase/storage';
-   * storage().X(...);
-   * ```
-   */
+
   export default StorageDefaultExport;
 }
 
@@ -407,16 +399,10 @@ declare module '@react-native-firebase/storage' {
  */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    /**
-     * Storage
-     */
     storage: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
   }
 
   interface FirebaseApp {
-    /**
-     * Storage
-     */
-    storage(): Storage.Module;
+    storage?(bucket?: string): Storage.Module;
   }
 }
