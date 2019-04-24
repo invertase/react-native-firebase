@@ -60,6 +60,27 @@ import {
 export namespace Auth {
   export interface Statics {}
 
+  /**
+   * The Firebase Authentication service is available for the default app or a given app.
+   *
+   * #### Example 1
+   *
+   * Get the auth instance for the **default app**:
+   *
+   * ```js
+   * const authForDefaultApp = firebase.auth();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the auth instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const authForOtherApp = firebase.auth(otherApp);
+   * ```
+   *
+   */
   export class Module extends ReactNativeFirebaseModule {
 
   }

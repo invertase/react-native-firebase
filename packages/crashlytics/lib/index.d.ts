@@ -60,6 +60,19 @@ import {
 export namespace Crashlytics {
   export interface Statics {}
 
+  /**
+   * The Firebase Crashlytics service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Crashlytics service for the default app:
+   *
+   * ```js
+   * const defaultAppCrashlytics = firebase.crashlytics();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.

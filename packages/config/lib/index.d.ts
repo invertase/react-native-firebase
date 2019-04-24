@@ -105,6 +105,19 @@ export namespace Config {
     [key: string]: number | string | boolean;
   }
 
+  /**
+   * The Firebase Remote Config service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Remote Config service for the default app:
+   *
+   * ```js
+   * const defaultAppRemoteConfig = firebase.config();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Moves fetched data to the apps active config.

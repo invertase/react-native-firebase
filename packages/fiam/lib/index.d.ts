@@ -60,6 +60,19 @@ import {
 export namespace Fiam {
   export interface Statics {}
 
+  /**
+   * The Firebase In-App Messaging service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the  In-App Messaging service for the default app:
+   *
+   * ```js
+   * const defaultAppFiam = firebase.fiam();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether messages are suppressed or not.

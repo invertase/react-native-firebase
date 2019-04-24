@@ -60,6 +60,19 @@ import {
 export namespace Iid {
   export interface Statics {}
 
+  /**
+   * The Firebase Instance ID service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Instance ID service for the default app:
+   *
+   * ```js
+   * const defaultAppIid = firebase.iid();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Returns a identifier that uniquely identifies the app instance.

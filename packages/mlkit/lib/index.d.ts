@@ -60,6 +60,19 @@ import {
 export namespace Mlkit {
   export interface Statics {}
 
+  /**
+   * The Firebase ML Kit service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the ML Kit service for the default app:
+   *
+   * ```js
+   * const defaultAppMLKit = firebase.mlkit();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
 
   }

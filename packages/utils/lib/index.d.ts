@@ -60,6 +60,19 @@ import {
 export namespace Utils {
   export interface Statics {}
 
+  /**
+   * The React Native Firebase Utils service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Utils service for the default app:
+   *
+   * ```js
+   * const defaultAppUtils = firebase.utils();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.

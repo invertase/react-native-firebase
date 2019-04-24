@@ -58,54 +58,69 @@ import {
  * @firebase _template_
  */
 export namespace _Template_ {
-  export interface Statics {}
+  export interface Statics {
+    // firebase._template_.* static props go here
+  }
 
-  export interface Module extends ReactNativeFirebaseModule {}
+  /**
+   * // TODO CHOOSE THIS ---------------------------------------
+   *
+   * The Firebase _Template_ service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the _Template_ service for the default app:
+   *
+   * ```js
+   * const defaultApp_Template_ = firebase._template_();
+   * ```
+   *
+   * // TODO OR THIS -------------------------------------------
+   *
+   * The Firebase _Template_ service is available for the default app or a given app.
+   *
+   * #### Example 1
+   *
+   * Get the _template_ instance for the **default app**:
+   *
+   * ```js
+   * const _template_ForDefaultApp = firebase._template_();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the _template_ instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const _template_ForOtherApp = firebase._template_(otherApp);
+   * ```
+   *
+   */
+  export interface Module extends ReactNativeFirebaseModule {
+    // firebase._template_().* methods & props go here
+  }
 }
 
 declare module '@react-native-firebase/_template_' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/_template_';
-   * firebase._template_().X(...);
-   * ```
-   */
   export const firebase = FirebaseNamespaceExport;
-
   const _Template_DefaultExport: ReactNativeFirebaseModuleAndStatics<
     _Template_.Module,
     _Template_.Statics
   >;
-  /**
-   * @example
-   * ```js
-   * import _template_ from '@react-native-firebase/_template_';
-   * _template_().X(...);
-   * ```
-   */
   export default _Template_DefaultExport;
 }
 
-/**
- * Attach namespace to `firebase.` and `FirebaseApp.`.
- */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    /**
-     * _Template_
-     */
     _template_: ReactNativeFirebaseModuleAndStatics<_Template_.Module, _Template_.Statics>;
   }
 
   interface FirebaseApp {
-    /**
-     * _Template_
-     */
     _template_(): _Template_.Module;
   }
 }

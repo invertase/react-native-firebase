@@ -174,7 +174,39 @@ export namespace Functions {
   }
 
   /**
-   * firebase.functions().X
+   * The Firebase Cloud Functions service is available for the default app, a given app or a specified region.
+   *
+   * > The default functions region for all apps is `us-central1`.
+   *
+   * #### Example 1
+   *
+   * Get the functions instance for the **default app**:
+   *
+   * ```js
+   * const functionsForDefaultApp = firebase.functions();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the functions instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const functionsForOtherApp = firebase.functions(otherApp);
+   * ```
+   *
+   * #### Example 3
+   *
+   * Get the functions instance for a **specific functions region**:
+   *
+   * ```js
+   * const defaultApp = firebase.app();
+   * const functionsForRegion = defaultApp.functions('europe-west1');
+   *
+   * const otherApp = firebase.app('otherApp');
+   * const functionsForOtherAppRegion = otherApp.functions('europe-west1');
+   * ```
+   *
    */
   export class Module extends ReactNativeFirebaseModule {
     /**

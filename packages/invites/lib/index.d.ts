@@ -189,6 +189,19 @@ export namespace Invites {
 
   export type InviteListener = (nativeInvite: NativeInvite) => void;
 
+  /**
+   * The Firebase Invites service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Invites service for the default app:
+   *
+   * ```js
+   * const defaultAppInvites = firebase.invites();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Create an invitation via an InvitationBuilder instance.

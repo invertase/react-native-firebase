@@ -61,7 +61,7 @@ export namespace Analytics {
   export interface Statics {}
 
   /**
-   * The Google Analytics for Firebase service interface.
+   * The Firebase Analytics service interface.
    *
    * > This module is available for the default app only.
    *
@@ -72,7 +72,6 @@ export namespace Analytics {
    * ```js
    * const defaultAppAnalytics = firebase.analytics();
    * ```
-   *
    */
   export class Module extends ReactNativeFirebaseModule {
     /**

@@ -160,9 +160,9 @@ export namespace Storage {
   }
 
   /**
-   * A collection of properties that indicates the
+   * A collection of properties that indicates the current tasks state.
    *
-   * Event subscription is created via `StorageTask.on()`.
+   * An event subscription is created via `StorageTask.on()`.
    *
    * ```js
    * firebase.storage.TaskEvent;

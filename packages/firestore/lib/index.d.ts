@@ -60,6 +60,27 @@ import {
 export namespace Firestore {
   export interface Statics {}
 
+  /**
+   * The Firebase Cloud Firestore service is available for the default app or a given app.
+   *
+   * #### Example 1
+   *
+   * Get the firestore instance for the **default app**:
+   *
+   * ```js
+   * const firestoreForDefaultApp = firebase.firestore();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the firestore instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const firestoreForOtherApp = firebase.firestore(otherApp);
+   * ```
+   *
+   */
   export class Module extends ReactNativeFirebaseModule {
 
   }

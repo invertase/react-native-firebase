@@ -215,6 +215,19 @@ export namespace Perf {
 
   export interface Statics {}
 
+  /**
+   * The Firebase Performance Monitoring service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Performance Monitoring service for the default app:
+   *
+   * ```js
+   * const defaultAppPerf = firebase.perf();
+   * ```
+   */
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether performance monitoring is enabled or disabled.
