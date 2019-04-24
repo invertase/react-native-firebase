@@ -22,29 +22,37 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Google Analytics for Firebase package.
+ * Firebase Analytics package for React Native.
  *
  * #### Example 1
  *
+ * Access the firebase export from the `analytics` package:
+ *
  * ```js
  * import { firebase } from '@react-native-firebase/analytics';
- * firebase.analytics()
+ *
+ * // firebase.analytics().X
  * ```
  *
  * #### Example 2
  *
+ * Using the default export from the `analytics` package:
+ *
  * ```js
  * import analytics from '@react-native-firebase/analytics';
- * firebase.analytics()
+ *
+ * // analytics().X
  * ```
  *
  * #### Example 3
+ *
+ * Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/analytics';
  *
- * firebase.analytics()
+ * // firebase.analytics().X
  * ```
  *
  * @firebase analytics
@@ -59,7 +67,7 @@ export namespace Analytics {
    *
    * #### Example
    *
-   * Get the Analytics service for the default app.
+   * Get the Analytics service for the default app:
    *
    * ```js
    * const defaultAppAnalytics = firebase.analytics();

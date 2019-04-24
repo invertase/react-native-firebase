@@ -22,10 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * The Cloud Functions for Firebase client SDKs let you call functions
- * directly from a Firebase app. To call a function from your app in this way,
- * write and deploy an HTTPS Callable function in Cloud Functions,
- * and then add client logic to call the function from your app.
+ * Firebase Cloud Functions package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `functions` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/functions';
+ *
+ * // firebase.functions().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `functions` package:
+ *
+ * ```js
+ * import functions from '@react-native-firebase/functions';
+ *
+ * // functions().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/functions';
+ *
+ * // firebase.functions().X
+ * ```
  *
  * @firebase functions
  */

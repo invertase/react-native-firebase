@@ -22,16 +22,45 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * _Template_
+ * Firebase _Template_ package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `_template_` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/_template_';
+ *
+ * // firebase._template_().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `_template_` package:
+ *
+ * ```js
+ * import _template_ from '@react-native-firebase/_template_';
+ *
+ * // _template_().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/_template_';
+ *
+ * // firebase._template_().X
+ * ```
  *
  * @firebase _template_
  */
 export namespace _Template_ {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
-
-  }
+  export interface Module extends ReactNativeFirebaseModule {}
 }
 
 declare module '@react-native-firebase/_template_' {
@@ -70,10 +99,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * _Template_
      */
-    _template_: ReactNativeFirebaseModuleAndStatics<
-      _Template_.Module,
-      _Template_.Statics
-    >;
+    _template_: ReactNativeFirebaseModuleAndStatics<_Template_.Module, _Template_.Statics>;
   }
 
   interface FirebaseApp {

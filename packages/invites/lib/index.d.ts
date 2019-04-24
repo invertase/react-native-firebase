@@ -22,9 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
- * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
- * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
+ * Firebase Invites package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `invites` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/invites';
+ *
+ * // firebase.invites().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `invites` package:
+ *
+ * ```js
+ * import invites from '@react-native-firebase/invites';
+ *
+ * // invites().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/invites';
+ *
+ * // firebase.invites().X
+ * ```
  *
  * @firebase invites
  */

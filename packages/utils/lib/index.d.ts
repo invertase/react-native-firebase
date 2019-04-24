@@ -22,7 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Utils
+ * React Native Firebase Utilities package.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `utils` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/utils';
+ *
+ * // firebase.utils().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `utils` package:
+ *
+ * ```js
+ * import utils from '@react-native-firebase/utils';
+ *
+ * // utils().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/utils';
+ *
+ * // firebase.utils().X
+ * ```
  *
  * @firebase utils
  */

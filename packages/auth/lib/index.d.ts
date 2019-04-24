@@ -22,7 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Auth
+ * Firebase Authentication package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `auth` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/auth';
+ *
+ * // firebase.auth().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `auth` package:
+ *
+ * ```js
+ * import auth from '@react-native-firebase/auth';
+ *
+ * // auth().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/auth';
+ *
+ * // firebase.auth().X
+ * ```
  *
  * @firebase auth
  */

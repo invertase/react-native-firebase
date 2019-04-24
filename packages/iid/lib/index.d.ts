@@ -22,11 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
- * and authorize actions for it (for example: sending FCM messages).
+ * Firebase Instance ID package for React Native.
  *
- * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
- * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
+ * #### Example 1
+ *
+ * Access the firebase export from the `iid` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/iid';
+ *
+ * // firebase.iid().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `iid` package:
+ *
+ * ```js
+ * import iid from '@react-native-firebase/iid';
+ *
+ * // iid().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/iid';
+ *
+ * // firebase.iid().X
+ * ```
  *
  * @firebase iid
  */

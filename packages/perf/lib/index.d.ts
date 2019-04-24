@@ -22,7 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Get insights into how your app performs from your users’ point of view, with automatic and customized performance tracing.
+ * Firebase Performance Monitoring package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `perf` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/perf';
+ *
+ * // firebase.perf().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `perf` package:
+ *
+ * ```js
+ * import perf from '@react-native-firebase/perf';
+ *
+ * // perf().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/perf';
+ *
+ * // firebase.perf().X
+ * ```
  *
  * @firebase perf
  */

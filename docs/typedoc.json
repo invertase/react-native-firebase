@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 161,
+							"line": 169,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 151,
+							"line": 159,
 							"character": 31
 						}
 					],
@@ -89,7 +89,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 159,
+							"line": 167,
 							"character": 23
 						}
 					],
@@ -114,7 +114,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 148,
+					"line": 156,
 					"character": 49
 				}
 			]
@@ -222,7 +222,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 181,
+									"line": 189,
 									"character": 13
 								}
 							]
@@ -253,7 +253,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 83,
+									"line": 114,
 									"character": 8
 								}
 							]
@@ -284,7 +284,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 199,
+									"line": 228,
 									"character": 10
 								}
 							]
@@ -315,7 +315,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 158,
+									"line": 188,
 									"character": 15
 								}
 							]
@@ -346,7 +346,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 113,
+									"line": 142,
 									"character": 8
 								}
 							]
@@ -377,7 +377,7 @@
 							"sources": [
 								{
 									"fileName": "firestore/lib/index.d.ts",
-									"line": 83,
+									"line": 114,
 									"character": 13
 								}
 							]
@@ -437,7 +437,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 226,
+									"line": 254,
 									"character": 13
 								}
 							]
@@ -469,7 +469,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 123,
+									"line": 150,
 									"character": 7
 								}
 							]
@@ -500,7 +500,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 242,
+									"line": 271,
 									"character": 11
 								}
 							]
@@ -531,7 +531,7 @@
 							"sources": [
 								{
 									"fileName": "mlkit/lib/index.d.ts",
-									"line": 83,
+									"line": 114,
 									"character": 9
 								}
 							]
@@ -562,7 +562,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 265,
+									"line": 296,
 									"character": 8
 								}
 							]
@@ -593,7 +593,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 292,
+									"line": 300,
 									"character": 11
 								}
 							]
@@ -658,7 +658,7 @@
 								},
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 90,
+									"line": 121,
 									"character": 9
 								}
 							]
@@ -688,7 +688,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 180,
+							"line": 188,
 							"character": 23
 						},
 						{
@@ -698,62 +698,62 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 79,
+							"line": 110,
 							"character": 23
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 193,
+							"line": 222,
 							"character": 23
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 153,
+							"line": 183,
 							"character": 23
 						},
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 107,
+							"line": 136,
 							"character": 23
 						},
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 79,
+							"line": 110,
 							"character": 23
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 217,
+							"line": 245,
 							"character": 23
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 114,
+							"line": 141,
 							"character": 23
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 235,
+							"line": 264,
 							"character": 23
 						},
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 79,
+							"line": 110,
 							"character": 23
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 261,
+							"line": 292,
 							"character": 23
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 288,
+							"line": 296,
 							"character": 23
 						},
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 86,
+							"line": 117,
 							"character": 23
 						}
 					]
@@ -774,7 +774,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 174,
+									"line": 182,
 									"character": 13
 								}
 							],
@@ -808,7 +808,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 73,
+									"line": 104,
 									"character": 8
 								}
 							],
@@ -842,7 +842,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 190,
+									"line": 219,
 									"character": 10
 								}
 							],
@@ -876,7 +876,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 150,
+									"line": 180,
 									"character": 15
 								}
 							],
@@ -910,7 +910,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 104,
+									"line": 133,
 									"character": 8
 								}
 							],
@@ -944,7 +944,7 @@
 							"sources": [
 								{
 									"fileName": "firestore/lib/index.d.ts",
-									"line": 73,
+									"line": 104,
 									"character": 13
 								}
 							],
@@ -978,7 +978,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 214,
+									"line": 242,
 									"character": 13
 								}
 							],
@@ -1013,7 +1013,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 111,
+									"line": 138,
 									"character": 7
 								}
 							],
@@ -1047,7 +1047,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 232,
+									"line": 261,
 									"character": 11
 								}
 							],
@@ -1081,7 +1081,7 @@
 							"sources": [
 								{
 									"fileName": "mlkit/lib/index.d.ts",
-									"line": 73,
+									"line": 104,
 									"character": 9
 								}
 							],
@@ -1115,7 +1115,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 258,
+									"line": 289,
 									"character": 8
 								}
 							],
@@ -1149,7 +1149,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 282,
+									"line": 290,
 									"character": 11
 								}
 							],
@@ -1190,7 +1190,7 @@
 								},
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 80,
+									"line": 111,
 									"character": 9
 								}
 							],
@@ -1237,7 +1237,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 173,
+							"line": 181,
 							"character": 40
 						},
 						{
@@ -1247,62 +1247,62 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 69,
+							"line": 100,
 							"character": 40
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 184,
+							"line": 213,
 							"character": 40
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 145,
+							"line": 175,
 							"character": 40
 						},
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 98,
+							"line": 127,
 							"character": 40
 						},
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 69,
+							"line": 100,
 							"character": 40
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 207,
+							"line": 235,
 							"character": 40
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 103,
+							"line": 130,
 							"character": 40
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 226,
+							"line": 255,
 							"character": 40
 						},
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 69,
+							"line": 100,
 							"character": 40
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 254,
+							"line": 285,
 							"character": 40
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 278,
+							"line": 286,
 							"character": 40
 						},
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 74,
+							"line": 105,
 							"character": 40
 						}
 					]
@@ -1321,7 +1321,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 172,
+					"line": 180,
 					"character": 49
 				},
 				{
@@ -1331,62 +1331,62 @@
 				},
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 68,
+					"line": 99,
 					"character": 49
 				},
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 183,
+					"line": 212,
 					"character": 49
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 144,
+					"line": 174,
 					"character": 49
 				},
 				{
 					"fileName": "fiam/lib/index.d.ts",
-					"line": 97,
+					"line": 126,
 					"character": 49
 				},
 				{
 					"fileName": "firestore/lib/index.d.ts",
-					"line": 68,
+					"line": 99,
 					"character": 49
 				},
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 206,
+					"line": 234,
 					"character": 49
 				},
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 102,
+					"line": 129,
 					"character": 49
 				},
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 225,
+					"line": 254,
 					"character": 49
 				},
 				{
 					"fileName": "mlkit/lib/index.d.ts",
-					"line": 68,
+					"line": 99,
 					"character": 49
 				},
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 253,
+					"line": 284,
 					"character": 49
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 277,
+					"line": 285,
 					"character": 49
 				},
 				{
 					"fileName": "utils/lib/index.d.ts",
-					"line": 73,
+					"line": 104,
 					"character": 49
 				}
 			]
@@ -1410,7 +1410,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 51,
+							"line": 82,
 							"character": 25
 						}
 					],
@@ -1443,7 +1443,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 40,
+							"line": 71,
 							"character": 31
 						}
 					],
@@ -1481,7 +1481,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 49,
+							"line": 80,
 							"character": 23
 						}
 					],
@@ -1506,7 +1506,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 37,
+					"line": 68,
 					"character": 44
 				}
 			]
@@ -1530,7 +1530,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 169,
+							"line": 198,
 							"character": 27
 						}
 					],
@@ -1563,7 +1563,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 158,
+							"line": 187,
 							"character": 31
 						}
 					],
@@ -1601,7 +1601,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 167,
+							"line": 196,
 							"character": 23
 						}
 					],
@@ -1626,7 +1626,7 @@
 			"sources": [
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 155,
+					"line": 184,
 					"character": 46
 				}
 			]
@@ -1650,7 +1650,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 127,
+							"line": 157,
 							"character": 32
 						}
 					],
@@ -1683,7 +1683,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 116,
+							"line": 146,
 							"character": 31
 						}
 					],
@@ -1721,7 +1721,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 125,
+							"line": 155,
 							"character": 23
 						}
 					],
@@ -1746,7 +1746,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 113,
+					"line": 143,
 					"character": 51
 				}
 			]
@@ -1770,7 +1770,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 83,
+							"line": 112,
 							"character": 25
 						}
 					],
@@ -1803,7 +1803,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 72,
+							"line": 101,
 							"character": 31
 						}
 					],
@@ -1841,7 +1841,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 81,
+							"line": 110,
 							"character": 23
 						}
 					],
@@ -1866,7 +1866,7 @@
 			"sources": [
 				{
 					"fileName": "fiam/lib/index.d.ts",
-					"line": 69,
+					"line": 98,
 					"character": 44
 				}
 			]
@@ -1889,7 +1889,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 40,
+							"line": 71,
 							"character": 31
 						}
 					],
@@ -1919,7 +1919,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 51,
+							"line": 82,
 							"character": 30
 						}
 					],
@@ -1961,7 +1961,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 49,
+							"line": 80,
 							"character": 23
 						}
 					],
@@ -1986,7 +1986,7 @@
 			"sources": [
 				{
 					"fileName": "firestore/lib/index.d.ts",
-					"line": 37,
+					"line": 68,
 					"character": 49
 				}
 			]
@@ -2010,7 +2010,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 189,
+							"line": 217,
 							"character": 30
 						}
 					],
@@ -2044,7 +2044,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 178,
+							"line": 206,
 							"character": 29
 						}
 					],
@@ -2083,7 +2083,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 187,
+							"line": 215,
 							"character": 23
 						}
 					],
@@ -2116,7 +2116,7 @@
 			"sources": [
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 174,
+					"line": 202,
 					"character": 49
 				}
 			]
@@ -2139,7 +2139,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 77,
+							"line": 104,
 							"character": 31
 						}
 					],
@@ -2169,7 +2169,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 88,
+							"line": 115,
 							"character": 24
 						}
 					],
@@ -2211,7 +2211,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 86,
+							"line": 113,
 							"character": 23
 						}
 					],
@@ -2236,7 +2236,7 @@
 			"sources": [
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 71,
+					"line": 98,
 					"character": 43
 				}
 			]
@@ -2259,7 +2259,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 200,
+							"line": 229,
 							"character": 31
 						}
 					],
@@ -2289,7 +2289,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 211,
+							"line": 240,
 							"character": 28
 						}
 					],
@@ -2331,7 +2331,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 209,
+							"line": 238,
 							"character": 23
 						}
 					],
@@ -2356,7 +2356,7 @@
 			"sources": [
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 197,
+					"line": 226,
 					"character": 47
 				}
 			]
@@ -2379,7 +2379,7 @@
 					"sources": [
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 40,
+							"line": 71,
 							"character": 31
 						}
 					],
@@ -2409,7 +2409,7 @@
 					"sources": [
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 51,
+							"line": 82,
 							"character": 26
 						}
 					],
@@ -2451,7 +2451,7 @@
 					"sources": [
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 49,
+							"line": 80,
 							"character": 23
 						}
 					],
@@ -2476,7 +2476,7 @@
 			"sources": [
 				{
 					"fileName": "mlkit/lib/index.d.ts",
-					"line": 37,
+					"line": 68,
 					"character": 45
 				}
 			]
@@ -2499,7 +2499,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 228,
+							"line": 259,
 							"character": 31
 						}
 					],
@@ -2529,7 +2529,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 239,
+							"line": 270,
 							"character": 25
 						}
 					],
@@ -2571,7 +2571,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 237,
+							"line": 268,
 							"character": 23
 						}
 					],
@@ -2596,7 +2596,7 @@
 			"sources": [
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 225,
+					"line": 256,
 					"character": 44
 				}
 			]
@@ -2619,7 +2619,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 249,
+							"line": 257,
 							"character": 31
 						}
 					],
@@ -2649,7 +2649,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 260,
+							"line": 268,
 							"character": 28
 						}
 					],
@@ -2691,7 +2691,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 258,
+							"line": 266,
 							"character": 23
 						}
 					],
@@ -2716,7 +2716,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 246,
+					"line": 254,
 					"character": 47
 				}
 			]
@@ -2739,7 +2739,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 45,
+							"line": 76,
 							"character": 31
 						}
 					],
@@ -2769,7 +2769,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 56,
+							"line": 87,
 							"character": 26
 						}
 					],
@@ -2811,7 +2811,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 54,
+							"line": 85,
 							"character": 23
 						}
 					],
@@ -2836,7 +2836,7 @@
 			"sources": [
 				{
 					"fileName": "utils/lib/index.d.ts",
-					"line": 42,
+					"line": 73,
 					"character": 45
 				}
 			]
@@ -2850,8 +2850,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Google Analytics for Firebase package.",
-				"text": "#### Example 1\n\n```js\nimport { firebase } from '@react-native-firebase/analytics';\nfirebase.analytics()\n```\n\n#### Example 2\n\n```js\nimport analytics from '@react-native-firebase/analytics';\nfirebase.analytics()\n```\n\n#### Example 3\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/analytics';\n\nfirebase.analytics()\n```\n",
+				"shortText": "Firebase Analytics package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `analytics` package:\n\n```js\nimport { firebase } from '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n\n#### Example 2\n\nUsing the default export from the `analytics` package:\n\n```js\nimport analytics from '@react-native-firebase/analytics';\n\n// analytics().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -2870,7 +2870,7 @@
 					},
 					"comment": {
 						"shortText": "The Google Analytics for Firebase service interface.",
-						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the Analytics service for the default app.\n\n```js\nconst defaultAppAnalytics = firebase.analytics();\n```\n\n"
+						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the Analytics service for the default app:\n\n```js\nconst defaultAppAnalytics = firebase.analytics();\n```\n\n"
 					},
 					"children": [
 						{
@@ -2982,7 +2982,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 78,
+															"line": 86,
 															"character": 34
 														}
 													]
@@ -3005,7 +3005,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 78,
+									"line": 86,
 									"character": 12
 								}
 							]
@@ -3043,7 +3043,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 144,
+									"line": 152,
 									"character": 22
 								}
 							]
@@ -3103,7 +3103,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 88,
+									"line": 96,
 									"character": 33
 								}
 							]
@@ -3188,7 +3188,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 101,
+									"line": 109,
 									"character": 20
 								}
 							]
@@ -3242,7 +3242,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 108,
+									"line": 116,
 									"character": 29
 								}
 							]
@@ -3296,7 +3296,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 115,
+									"line": 123,
 									"character": 29
 								}
 							]
@@ -3359,7 +3359,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 123,
+									"line": 131,
 									"character": 13
 								}
 							]
@@ -3444,7 +3444,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 139,
+															"line": 147,
 															"character": 33
 														}
 													]
@@ -3467,7 +3467,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 139,
+									"line": 147,
 									"character": 21
 								}
 							]
@@ -3544,7 +3544,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 131,
+									"line": 139,
 									"character": 19
 								}
 							]
@@ -3577,7 +3577,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 69,
+							"line": 77,
 							"character": 21
 						}
 					],
@@ -3599,7 +3599,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 53,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -3624,7 +3624,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 52,
+					"line": 60,
 					"character": 26
 				}
 			]
@@ -4075,7 +4075,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Auth",
+				"shortText": "Firebase Authentication package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `auth` package:\n\n```js\nimport { firebase } from '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\n\n#### Example 2\n\nUsing the default export from the `auth` package:\n\n```js\nimport auth from '@react-native-firebase/auth';\n\n// auth().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -4130,7 +4131,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 32,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -4152,7 +4153,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 30,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -4177,7 +4178,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 29,
+					"line": 60,
 					"character": 21
 				}
 			]
@@ -4191,7 +4192,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your\napp without requiring users to download an app update. When using Remote Config, you create in-app default\nvalues that control the behavior and appearance of your app.",
+				"shortText": "Firebase Remote Config package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `config` package:\n\n```js\nimport { firebase } from '@react-native-firebase/config';\n\n// firebase.config().X\n```\n\n#### Example 2\n\nUsing the default export from the `config` package:\n\n```js\nimport config from '@react-native-firebase/config';\n\n// config().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/config';\n\n// firebase.config().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -4266,7 +4268,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 84,
+									"line": 113,
 									"character": 19
 								}
 							]
@@ -4331,7 +4333,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 91,
+									"line": 120,
 									"character": 9
 								}
 							]
@@ -4397,7 +4399,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 100,
+									"line": 129,
 									"character": 20
 								}
 							]
@@ -4436,7 +4438,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 105,
+									"line": 134,
 									"character": 21
 								}
 							]
@@ -4504,7 +4506,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 112,
+									"line": 141,
 									"character": 19
 								}
 							]
@@ -4559,7 +4561,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 126,
+									"line": 155,
 									"character": 12
 								}
 							]
@@ -4625,7 +4627,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 119,
+									"line": 148,
 									"character": 25
 								}
 							]
@@ -4681,7 +4683,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 133,
+									"line": 162,
 									"character": 21
 								}
 							]
@@ -4736,7 +4738,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 141,
+									"line": 170,
 									"character": 15
 								}
 							]
@@ -4796,7 +4798,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 151,
+									"line": 180,
 									"character": 27
 								}
 							]
@@ -4830,7 +4832,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 79,
+							"line": 108,
 							"character": 21
 						}
 					],
@@ -4897,7 +4899,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 75,
+							"line": 104,
 							"character": 33
 						}
 					]
@@ -4925,7 +4927,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 68,
+									"line": 97,
 									"character": 26
 								}
 							],
@@ -4945,7 +4947,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 69,
+									"line": 98,
 									"character": 19
 								}
 							],
@@ -4982,7 +4984,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 67,
+									"line": 96,
 									"character": 17
 								}
 							],
@@ -5006,7 +5008,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 66,
+							"line": 95,
 							"character": 37
 						}
 					]
@@ -5034,7 +5036,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 60,
+									"line": 89,
 									"character": 26
 								}
 							],
@@ -5056,7 +5058,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 59,
+							"line": 88,
 							"character": 38
 						}
 					]
@@ -5087,7 +5089,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 41,
+									"line": 70,
 									"character": 10
 								}
 							],
@@ -5123,7 +5125,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 46,
+									"line": 75,
 									"character": 9
 								}
 							],
@@ -5163,7 +5165,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 37,
+							"line": 66,
 							"character": 30
 						}
 					]
@@ -5212,7 +5214,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 52,
+							"line": 81,
 							"character": 31
 						}
 					]
@@ -5228,7 +5230,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 32,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -5258,7 +5260,7 @@
 			"sources": [
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 31,
+					"line": 60,
 					"character": 23
 				}
 			]
@@ -5272,7 +5274,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.\nSpend less time triaging and troubleshooting crashes and more time building app features that delight users.",
+				"shortText": "Firebase Crashlytics package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `crashlytics` package:\n\n```js\nimport { firebase } from '@react-native-firebase/crashlytics';\n\n// firebase.crashlytics().X\n```\n\n#### Example 2\n\nUsing the default export from the `crashlytics` package:\n\n```js\nimport crashlytics from '@react-native-firebase/crashlytics';\n\n// crashlytics().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/crashlytics';\n\n// firebase.crashlytics().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -5328,7 +5331,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 37,
+									"line": 67,
 									"character": 34
 								}
 							],
@@ -5364,7 +5367,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 42,
+									"line": 72,
 									"character": 9
 								}
 							]
@@ -5412,7 +5415,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 49,
+									"line": 79,
 									"character": 7
 								}
 							]
@@ -5461,7 +5464,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 58,
+									"line": 88,
 									"character": 15
 								}
 							]
@@ -5527,7 +5530,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 93,
+									"line": 123,
 									"character": 16
 								}
 							]
@@ -5597,7 +5600,7 @@
 													"sources": [
 														{
 															"fileName": "crashlytics/lib/index.d.ts",
-															"line": 100,
+															"line": 130,
 															"character": 29
 														}
 													]
@@ -5620,7 +5623,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 100,
+									"line": 130,
 									"character": 17
 								}
 							]
@@ -5675,7 +5678,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 109,
+									"line": 139,
 									"character": 35
 								}
 							]
@@ -5730,7 +5733,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 85,
+									"line": 115,
 									"character": 16
 								}
 							]
@@ -5785,7 +5788,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 67,
+									"line": 97,
 									"character": 13
 								}
 							]
@@ -5840,7 +5843,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 76,
+									"line": 106,
 									"character": 15
 								}
 							]
@@ -5874,7 +5877,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 33,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -5896,7 +5899,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 31,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -5921,7 +5924,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 30,
+					"line": 60,
 					"character": 28
 				}
 			]
@@ -5935,7 +5938,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firebase In-App Messaging helps you engage users who are actively using your app by sending\nthem targeted and contextual messages that nudge them to complete key in-app actions - like\nbeating a game level, buying an item, or subscribing to content.",
+				"shortText": "Firebase In-App Messaging package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `fiam` package:\n\n```js\nimport { firebase } from '@react-native-firebase/fiam';\n\n// firebase.fiam().X\n```\n\n#### Example 2\n\nUsing the default export from the `fiam` package:\n\n```js\nimport fiam from '@react-native-firebase/fiam';\n\n// fiam().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/fiam';\n\n// firebase.fiam().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -5991,7 +5995,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 53,
+									"line": 82,
 									"character": 36
 								}
 							],
@@ -6014,7 +6018,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 38,
+									"line": 67,
 									"character": 31
 								}
 							],
@@ -6073,7 +6077,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 65,
+									"line": 94,
 									"character": 37
 								}
 							]
@@ -6128,7 +6132,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 48,
+									"line": 77,
 									"character": 32
 								}
 							]
@@ -6156,7 +6160,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 34,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -6178,7 +6182,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 32,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -6203,7 +6207,7 @@
 			"sources": [
 				{
 					"fileName": "fiam/lib/index.d.ts",
-					"line": 31,
+					"line": 60,
 					"character": 21
 				}
 			]
@@ -6217,7 +6221,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firestore",
+				"shortText": "Firebase Cloud Firestore package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `firestore` package:\n\n```js\nimport { firebase } from '@react-native-firebase/firestore';\n\n// firebase.firestore().X\n```\n\n#### Example 2\n\nUsing the default export from the `firestore` package:\n\n```js\nimport firestore from '@react-native-firebase/firestore';\n\n// firestore().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/firestore';\n\n// firebase.firestore().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -6272,7 +6277,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 32,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -6294,7 +6299,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 30,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -6319,7 +6324,7 @@
 			"sources": [
 				{
 					"fileName": "firestore/lib/index.d.ts",
-					"line": 29,
+					"line": 60,
 					"character": 26
 				}
 			]
@@ -6333,7 +6338,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "The Cloud Functions for Firebase client SDKs let you call functions\ndirectly from a Firebase app. To call a function from your app in this way,\nwrite and deploy an HTTPS Callable function in Cloud Functions,\nand then add client logic to call the function from your app.",
+				"shortText": "Firebase Cloud Functions package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `functions` package:\n\n```js\nimport { firebase } from '@react-native-firebase/functions';\n\n// firebase.functions().X\n```\n\n#### Example 2\n\nUsing the default export from the `functions` package:\n\n```js\nimport functions from '@react-native-firebase/functions';\n\n// functions().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/functions';\n\n// firebase.functions().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -6423,7 +6429,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 159,
+									"line": 187,
 									"character": 17
 								}
 							]
@@ -6472,7 +6478,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 170,
+									"line": 198,
 									"character": 24
 								}
 							]
@@ -6498,7 +6504,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 151,
+							"line": 179,
 							"character": 21
 						}
 					],
@@ -6561,7 +6567,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 102,
+							"line": 130,
 							"character": 32
 						}
 					]
@@ -6589,7 +6595,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 95,
+									"line": 123,
 									"character": 17
 								}
 							],
@@ -6611,7 +6617,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 94,
+							"line": 122,
 							"character": 38
 						}
 					]
@@ -6659,7 +6665,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 111,
+									"line": 139,
 									"character": 17
 								}
 							],
@@ -6684,7 +6690,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 115,
+									"line": 143,
 									"character": 20
 								}
 							],
@@ -6797,7 +6803,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 106,
+							"line": 134,
 							"character": 29
 						}
 					],
@@ -6828,7 +6834,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 130,
+									"line": 158,
 									"character": 11
 								}
 							],
@@ -6848,7 +6854,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 125,
+									"line": 153,
 									"character": 18
 								}
 							],
@@ -6868,7 +6874,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 120,
+									"line": 148,
 									"character": 13
 								}
 							],
@@ -6888,7 +6894,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 135,
+									"line": 163,
 									"character": 13
 								}
 							],
@@ -6908,7 +6914,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 123,
+									"line": 151,
 									"character": 21
 								}
 							],
@@ -6928,7 +6934,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 129,
+									"line": 157,
 									"character": 23
 								}
 							],
@@ -6948,7 +6954,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 133,
+									"line": 161,
 									"character": 12
 								}
 							],
@@ -6968,7 +6974,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 122,
+									"line": 150,
 									"character": 20
 								}
 							],
@@ -6988,7 +6994,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 124,
+									"line": 152,
 									"character": 13
 								}
 							],
@@ -7008,7 +7014,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 119,
+									"line": 147,
 									"character": 6
 								}
 							],
@@ -7028,7 +7034,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 131,
+									"line": 159,
 									"character": 16
 								}
 							],
@@ -7048,7 +7054,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 126,
+									"line": 154,
 									"character": 21
 								}
 							],
@@ -7068,7 +7074,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 128,
+									"line": 156,
 									"character": 22
 								}
 							],
@@ -7088,7 +7094,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 127,
+									"line": 155,
 									"character": 19
 								}
 							],
@@ -7108,7 +7114,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 134,
+									"line": 162,
 									"character": 15
 								}
 							],
@@ -7128,7 +7134,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 132,
+									"line": 160,
 									"character": 17
 								}
 							],
@@ -7148,7 +7154,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 121,
+									"line": 149,
 									"character": 11
 								}
 							],
@@ -7186,7 +7192,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 118,
+							"line": 146,
 							"character": 33
 						}
 					]
@@ -7217,7 +7223,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 145,
+									"line": 173,
 									"character": 18
 								}
 							],
@@ -7240,7 +7246,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 141,
+							"line": 169,
 							"character": 26
 						}
 					]
@@ -7260,7 +7266,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 72,
+							"line": 100,
 							"character": 32
 						}
 					],
@@ -7369,7 +7375,7 @@
 			"sources": [
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 32,
+					"line": 60,
 					"character": 26
 				}
 			]
@@ -7383,8 +7389,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate\nand authorize actions for it (for example: sending FCM messages).",
-				"text": "An Instance ID is long lived except when you call delete, the app is restored on a new device, the user\nuninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).\n",
+				"shortText": "Firebase Instance ID package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `iid` package:\n\n```js\nimport { firebase } from '@react-native-firebase/iid';\n\n// firebase.iid().X\n```\n\n#### Example 2\n\nUsing the default export from the `iid` package:\n\n```js\nimport iid from '@react-native-firebase/iid';\n\n// iid().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/iid';\n\n// firebase.iid().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -7460,7 +7466,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 51,
+									"line": 78,
 									"character": 10
 								}
 							]
@@ -7550,7 +7556,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 67,
+									"line": 94,
 									"character": 15
 								}
 							]
@@ -7589,7 +7595,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 43,
+									"line": 70,
 									"character": 7
 								}
 							]
@@ -7679,7 +7685,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 59,
+									"line": 86,
 									"character": 12
 								}
 							]
@@ -7707,7 +7713,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 36,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -7729,7 +7735,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 34,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -7754,7 +7760,7 @@
 			"sources": [
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 33,
+					"line": 60,
 					"character": 20
 				}
 			]
@@ -7768,7 +7774,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "<b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.\nFirebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.\nTo customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.",
+				"shortText": "Firebase Invites package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `invites` package:\n\n```js\nimport { firebase } from '@react-native-firebase/invites';\n\n// firebase.invites().X\n```\n\n#### Example 2\n\nUsing the default export from the `invites` package:\n\n```js\nimport invites from '@react-native-firebase/invites';\n\n// invites().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/invites';\n\n// firebase.invites().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -7834,7 +7841,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 55,
+									"line": 84,
 									"character": 35
 								}
 							]
@@ -7889,7 +7896,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 71,
+									"line": 100,
 									"character": 23
 								}
 							]
@@ -7938,7 +7945,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 78,
+									"line": 107,
 									"character": 19
 								}
 							]
@@ -7987,7 +7994,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 87,
+									"line": 116,
 									"character": 32
 								}
 							]
@@ -8008,7 +8015,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 46,
+							"line": 75,
 							"character": 35
 						}
 					]
@@ -8039,7 +8046,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 97,
+									"line": 126,
 									"character": 11
 								}
 							],
@@ -8093,7 +8100,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 104,
+									"line": 133,
 									"character": 22
 								}
 							]
@@ -8142,7 +8149,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 111,
+									"line": 140,
 									"character": 32
 								}
 							]
@@ -8197,7 +8204,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 120,
+									"line": 149,
 									"character": 23
 								}
 							]
@@ -8246,7 +8253,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 127,
+									"line": 156,
 									"character": 18
 								}
 							]
@@ -8295,7 +8302,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 136,
+									"line": 165,
 									"character": 15
 								}
 							]
@@ -8344,7 +8351,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 143,
+									"line": 172,
 									"character": 18
 								}
 							]
@@ -8374,7 +8381,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 93,
+							"line": 122,
 							"character": 28
 						}
 					]
@@ -8468,7 +8475,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 170,
+									"line": 199,
 									"character": 20
 								}
 							]
@@ -8507,7 +8514,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 184,
+									"line": 213,
 									"character": 24
 								}
 							]
@@ -8556,7 +8563,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 178,
+									"line": 207,
 									"character": 16
 								}
 							]
@@ -8614,7 +8621,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 193,
+									"line": 222,
 									"character": 18
 								}
 							]
@@ -8642,7 +8649,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 163,
+							"line": 192,
 							"character": 21
 						}
 					],
@@ -8696,7 +8703,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 39,
+							"line": 68,
 							"character": 47
 						}
 					]
@@ -8727,7 +8734,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 153,
+									"line": 182,
 									"character": 12
 								}
 							],
@@ -8750,7 +8757,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 158,
+									"line": 187,
 									"character": 16
 								}
 							],
@@ -8773,7 +8780,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 149,
+							"line": 178,
 							"character": 31
 						}
 					]
@@ -8798,7 +8805,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 33,
+									"line": 62,
 									"character": 14
 								}
 							],
@@ -8821,7 +8828,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 32,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -8837,7 +8844,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 161,
+							"line": 190,
 							"character": 28
 						}
 					],
@@ -8879,7 +8886,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 161,
+									"line": 190,
 									"character": 30
 								}
 							]
@@ -8917,7 +8924,7 @@
 			"sources": [
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 31,
+					"line": 60,
 					"character": 24
 				}
 			]
@@ -8931,7 +8938,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Mlkit",
+				"shortText": "Firebase ML Kit package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `mlkit` package:\n\n```js\nimport { firebase } from '@react-native-firebase/mlkit';\n\n// firebase.mlkit().X\n```\n\n#### Example 2\n\nUsing the default export from the `mlkit` package:\n\n```js\nimport mlkit from '@react-native-firebase/mlkit';\n\n// mlkit().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/mlkit';\n\n// firebase.mlkit().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -8986,7 +8994,7 @@
 					"sources": [
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 32,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -9008,7 +9016,7 @@
 					"sources": [
 						{
 							"fileName": "mlkit/lib/index.d.ts",
-							"line": 30,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -9033,7 +9041,7 @@
 			"sources": [
 				{
 					"fileName": "mlkit/lib/index.d.ts",
-					"line": 29,
+					"line": 60,
 					"character": 22
 				}
 			]
@@ -9047,7 +9055,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Get insights into how your app performs from your users’ point of view, with automatic and customized performance tracing.",
+				"shortText": "Firebase Performance Monitoring package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `perf` package:\n\n```js\nimport { firebase } from '@react-native-firebase/perf';\n\n// firebase.perf().X\n```\n\n#### Example 2\n\nUsing the default export from the `perf` package:\n\n```js\nimport perf from '@react-native-firebase/perf';\n\n// perf().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/perf';\n\n// firebase.perf().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -9120,7 +9129,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 121,
+									"line": 152,
 									"character": 16
 								}
 							]
@@ -9180,7 +9189,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 126,
+													"line": 157,
 													"character": 20
 												}
 											]
@@ -9191,7 +9200,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 126,
+									"line": 157,
 									"character": 17
 								}
 							]
@@ -9253,7 +9262,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 135,
+									"line": 166,
 									"character": 16
 								}
 							]
@@ -9301,7 +9310,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 142,
+									"line": 173,
 									"character": 19
 								}
 							]
@@ -9364,7 +9373,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 151,
+									"line": 182,
 									"character": 23
 								}
 							]
@@ -9421,7 +9430,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 158,
+									"line": 189,
 									"character": 25
 								}
 							]
@@ -9478,7 +9487,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 172,
+									"line": 203,
 									"character": 26
 								}
 							]
@@ -9535,7 +9544,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 165,
+									"line": 196,
 									"character": 26
 								}
 							]
@@ -9573,7 +9582,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 177,
+									"line": 208,
 									"character": 9
 								}
 							]
@@ -9611,7 +9620,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 182,
+									"line": 213,
 									"character": 8
 								}
 							]
@@ -9638,7 +9647,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 115,
+							"line": 146,
 							"character": 25
 						}
 					]
@@ -9690,7 +9699,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 191,
+									"line": 222,
 									"character": 34
 								}
 							],
@@ -9758,7 +9767,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 221,
+									"line": 252,
 									"character": 17
 								}
 							]
@@ -9807,7 +9816,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 205,
+									"line": 236,
 									"character": 12
 								}
 							]
@@ -9861,7 +9870,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 198,
+									"line": 229,
 									"character": 35
 								}
 							]
@@ -9916,7 +9925,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 213,
+									"line": 244,
 									"character": 14
 								}
 							]
@@ -9945,7 +9954,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 187,
+							"line": 218,
 							"character": 21
 						}
 					],
@@ -10020,7 +10029,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 50,
+									"line": 81,
 									"character": 16
 								}
 							]
@@ -10068,7 +10077,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 66,
+									"line": 97,
 									"character": 13
 								}
 							]
@@ -10128,7 +10137,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 71,
+													"line": 102,
 													"character": 17
 												}
 											]
@@ -10139,7 +10148,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 71,
+									"line": 102,
 									"character": 14
 								}
 							]
@@ -10202,7 +10211,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 92,
+									"line": 123,
 									"character": 19
 								}
 							]
@@ -10264,7 +10273,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 59,
+									"line": 90,
 									"character": 16
 								}
 							]
@@ -10327,7 +10336,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 82,
+									"line": 113,
 									"character": 13
 								}
 							]
@@ -10375,7 +10384,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 99,
+									"line": 130,
 									"character": 16
 								}
 							]
@@ -10413,7 +10422,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 104,
+									"line": 135,
 									"character": 9
 								}
 							]
@@ -10451,7 +10460,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 109,
+									"line": 140,
 									"character": 8
 								}
 							]
@@ -10477,7 +10486,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 44,
+							"line": 75,
 							"character": 20
 						}
 					]
@@ -10493,7 +10502,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 185,
+							"line": 216,
 							"character": 26
 						}
 					]
@@ -10509,7 +10518,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 30,
+							"line": 61,
 							"character": 24
 						}
 					],
@@ -10584,7 +10593,7 @@
 			"sources": [
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 29,
+					"line": 60,
 					"character": 21
 				}
 			]
@@ -10598,8 +10607,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Firebase Cloud Storage package.",
-				"text": "#### Example 1\n\n```js\nimport { firebase } from '@react-native-firebase/storage';\nfirebase.storage()\n```\n\n#### Example 2\n\n```js\nimport storage from '@react-native-firebase/storage';\nfirebase.storage()\n```\n\n#### Example 3\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/storage';\n\nfirebase.storage()\n```\n",
+				"shortText": "Firebase Cloud Storage package for React Native.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `storage` package:\n\n```js\nimport { firebase } from '@react-native-firebase/storage';\n\n// firebase.storage().X\n```\n\n#### Example 2\n\nUsing the default export from the `storage` package:\n\n```js\nimport storage from '@react-native-firebase/storage';\n\n// storage().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/storage';\n\n// firebase.storage().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -10658,7 +10667,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 241,
+							"line": 249,
 							"character": 21
 						}
 					],
@@ -10689,7 +10698,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 184,
+									"line": 192,
 									"character": 10
 								}
 							],
@@ -10711,7 +10720,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 190,
+													"line": 198,
 													"character": 27
 												}
 											],
@@ -10732,7 +10741,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 195,
+													"line": 203,
 													"character": 29
 												}
 											],
@@ -10750,7 +10759,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 196,
+													"line": 204,
 													"character": 29
 												}
 											],
@@ -10768,7 +10777,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 197,
+													"line": 205,
 													"character": 37
 												}
 											],
@@ -10786,7 +10795,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 204,
+													"line": 212,
 													"character": 25
 												}
 											],
@@ -10804,7 +10813,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 203,
+													"line": 211,
 													"character": 23
 												}
 											],
@@ -10822,7 +10831,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 202,
+													"line": 210,
 													"character": 28
 												}
 											],
@@ -10843,7 +10852,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 188,
+													"line": 196,
 													"character": 22
 												}
 											],
@@ -10864,7 +10873,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 201,
+													"line": 209,
 													"character": 25
 												}
 											],
@@ -10894,7 +10903,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 184,
+											"line": 192,
 											"character": 11
 										}
 									]
@@ -10912,7 +10921,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 178,
+									"line": 186,
 									"character": 16
 								}
 							],
@@ -10933,7 +10942,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 182,
+									"line": 190,
 									"character": 13
 								}
 							],
@@ -10954,7 +10963,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 180,
+									"line": 188,
 									"character": 13
 								}
 							],
@@ -10980,7 +10989,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 177,
+							"line": 185,
 							"character": 26
 						}
 					]
@@ -11013,7 +11022,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 96,
+									"line": 104,
 									"character": 10
 								}
 							],
@@ -11037,7 +11046,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 114,
+									"line": 122,
 									"character": 13
 								}
 							],
@@ -11061,7 +11070,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 131,
+									"line": 139,
 									"character": 12
 								}
 							],
@@ -11085,7 +11094,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 76,
+									"line": 84,
 									"character": 7
 								}
 							],
@@ -11110,7 +11119,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 60,
+							"line": 68,
 							"character": 31
 						}
 					]
@@ -11143,7 +11152,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 151,
+									"line": 159,
 									"character": 17
 								}
 							],
@@ -11165,7 +11174,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 143,
+							"line": 151,
 							"character": 28
 						}
 					]
@@ -11197,7 +11206,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 167,
+									"line": 175,
 									"character": 13
 								}
 							],
@@ -11217,7 +11226,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 168,
+									"line": 176,
 									"character": 9
 								}
 							],
@@ -11237,7 +11246,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 169,
+									"line": 177,
 									"character": 10
 								}
 							],
@@ -11260,7 +11269,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 173,
+									"line": 181,
 									"character": 11
 								}
 							],
@@ -11280,7 +11289,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 174,
+									"line": 182,
 									"character": 11
 								}
 							],
@@ -11306,7 +11315,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 163,
+							"line": 171,
 							"character": 28
 						}
 					]
@@ -11334,7 +11343,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 52,
+					"line": 60,
 					"character": 24
 				}
 			]
@@ -11348,7 +11357,8 @@
 				"isExported": true
 			},
 			"comment": {
-				"shortText": "Utils",
+				"shortText": "React Native Firebase Utilities package.",
+				"text": "#### Example 1\n\nAccess the firebase export from the `utils` package:\n\n```js\nimport { firebase } from '@react-native-firebase/utils';\n\n// firebase.utils().X\n```\n\n#### Example 2\n\nUsing the default export from the `utils` package:\n\n```js\nimport utils from '@react-native-firebase/utils';\n\n// utils().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/utils';\n\n// firebase.utils().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -11410,7 +11420,7 @@
 							"sources": [
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 38,
+									"line": 69,
 									"character": 22
 								}
 							],
@@ -11433,7 +11443,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 32,
+							"line": 63,
 							"character": 21
 						}
 					],
@@ -11455,7 +11465,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 30,
+							"line": 61,
 							"character": 26
 						}
 					]
@@ -11480,7 +11490,7 @@
 			"sources": [
 				{
 					"fileName": "utils/lib/index.d.ts",
-					"line": 29,
+					"line": 60,
 					"character": 22
 				}
 			]

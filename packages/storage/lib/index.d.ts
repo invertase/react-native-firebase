@@ -22,29 +22,37 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firebase Cloud Storage package.
+ * Firebase Cloud Storage package for React Native.
  *
  * #### Example 1
  *
+ * Access the firebase export from the `storage` package:
+ *
  * ```js
  * import { firebase } from '@react-native-firebase/storage';
- * firebase.storage()
+ *
+ * // firebase.storage().X
  * ```
  *
  * #### Example 2
  *
+ * Using the default export from the `storage` package:
+ *
  * ```js
  * import storage from '@react-native-firebase/storage';
- * firebase.storage()
+ *
+ * // storage().X
  * ```
  *
  * #### Example 3
+ *
+ * Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/storage';
  *
- * firebase.storage()
+ * // firebase.storage().X
  * ```
  *
  * @firebase storage
