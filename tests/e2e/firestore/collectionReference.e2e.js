@@ -195,6 +195,7 @@ describe('firestore()', () => {
         } catch (e) {
           // do nothing
         }
+        
         return Promise.resolve();
       });
     });
