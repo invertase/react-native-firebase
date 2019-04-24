@@ -168,7 +168,7 @@ export namespace Functions {
    */
   export interface Statics {
     /**
-     * Uppercase + underscored variables of @Functions.FunctionsErrorCode
+     * Uppercase + underscored variables of {@link functions.FunctionsErrorCode}
      */
     HttpsErrorCode: HttpsErrorCode;
   }

@@ -7239,7 +7239,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Uppercase + underscored variables of @Functions.FunctionsErrorCode"
+								"shortText": "Uppercase + underscored variables of {@link functions.FunctionsErrorCode}"
 							},
 							"sources": [
 								{
