@@ -1,0 +1,36 @@
+---
+title: Quick Start
+description: Get to grips with the basics of Cloud Storage in React Native Firebase
+---
+
+# Cloud Storage Quick Start
+
+## Installation
+
+Install this module with Yarn:
+
+```bash
+yarn add @react-native-firebase/storage
+```
+
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+
+## Module usage
+
+Import the Cloud Storage package into your project:
+
+```js
+import storage from '@react-native-firebase/storage';
+```
+
+The package also provides access to the firebase instance:
+
+```js
+import { firebase } from '@react-native-firebase/storage';
+```
+
+### File uploading
+
+### File downloading
+
+### Changing bucket
