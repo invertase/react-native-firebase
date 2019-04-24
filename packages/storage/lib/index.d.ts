@@ -156,7 +156,7 @@ export namespace Storage {
      * firebase.storage.TaskEvent.STATE_CHANGED;
      * ```
      */
-    STATE_CHANGED: 'state_changed',
+    STATE_CHANGED: 'state_changed';
   }
 
   /**
@@ -172,14 +172,14 @@ export namespace Storage {
     /**
      * Task has been cancelled.
      */
-    CANCELLED: 'cancelled',
-    ERROR: 'error',
-    PAUSED: 'paused',
+    CANCELLED: 'cancelled';
+    ERROR: 'error';
+    PAUSED: 'paused';
     /**
      * Task is running.
      */
-    RUNNING: 'running',
-    SUCCESS: 'success',
+    RUNNING: 'running';
+    SUCCESS: 'success';
   }
 
   export interface Statics {
@@ -211,6 +211,118 @@ export namespace Storage {
       FILE_TYPE_REGULAR: string;
       FILE_TYPE_DIRECTORY: string;
     };
+  }
+
+  export interface SettableMetadata {
+    cacheControl?: string | null;
+
+    contentDisposition?: string | null;
+
+    contentEncoding?: string | null;
+
+    contentLanguage?: string | null;
+
+    contentType?: string | null;
+
+    customMetadata?: {
+      [key: string]: string;
+    } | null;
+  }
+
+  export interface UploadMetadata extends SettableMetadata {
+    md5Hash?: string | null;
+  }
+
+  export interface FullMetadata extends UploadMetadata {
+    bucket: string;
+
+    fullPath: string;
+
+    generation: string;
+
+    metageneration: string;
+
+    name: string;
+
+    size: number;
+
+    timeCreated: string;
+
+    updated: string;
+  }
+
+  export interface Reference {
+    bucket: string;
+
+    parent: Reference | null;
+
+    fullPath: string;
+
+    name: string;
+
+    root: Reference;
+
+    storage: Module;
+
+    toString(): string;
+
+    child(path: string): Reference;
+
+    delete(): Promise<void>;
+
+    getDownloadURL(): Promise<string>;
+
+    getMetadata(): Promise<FullMetadata>;
+
+    putFile(localFilePath: string, metadata?: UploadMetadata): Task;
+
+    put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task;
+
+    putString(data: string, format?: StringFormat, metadata?: UploadMetadata): Task;
+
+    updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
+  }
+
+  export interface TaskSnapshotObserver {
+    next: (taskSnapshot: TaskSnapshot) => void;
+
+    error: (error: Error) => void;
+
+    complete: () => void;
+  }
+
+  export interface Task {
+    pause(): boolean;
+
+    resume(): boolean;
+
+    cancel(): boolean;
+
+    on(
+      event: TaskEvent,
+      nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
+      error?: ((a: Error) => any) | null,
+      complete?: (() => void) | null,
+    ): Function;
+
+    // TODO not supported
+    // snapshot: TaskSnapshot;
+
+    then(
+      onFulfilled?: ((a: TaskSnapshot) => any) | null,
+      onRejected?: ((a: Error) => any) | null,
+    ): Promise<any>;
+
+    catch(onRejected: (a: Error) => any): Promise<any>;
+  }
+
+  export interface TaskSnapshot {
+    bytesTransferred: number;
+    metadata: FullMetadata;
+    ref: Reference;
+    state: TaskState;
+    task: Task;
+    totalBytes: number;
   }
 
   /**
@@ -247,12 +359,26 @@ export namespace Storage {
    *
    */
   export class Module extends ReactNativeFirebaseModule {
+    maxUploadRetryTime: number;
 
+    setMaxUploadRetryTime(time: number): void;
+
+    maxDownloadRetryTime: number;
+
+    setMaxDownloadRetryTime(time: number): void;
+
+    maxOperationRetryTime: number;
+
+    setMaxOperationRetryTime(time: number): void;
+
+    ref(path?: string): Reference;
+
+    refFromURL(url: string): Reference;
   }
 }
 
 declare module '@react-native-firebase/storage' {
-  import {ReactNativeFirebaseNamespace} from '@react-native-firebase/app-types';
+  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 
@@ -265,10 +391,7 @@ declare module '@react-native-firebase/storage' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const StorageDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Storage.Module,
-    Storage.Statics
-  >;
+  const StorageDefaultExport: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
   /**
    * @example
    * ```js
@@ -287,10 +410,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * Storage
      */
-    storage: ReactNativeFirebaseModuleAndStatics<
-      Storage.Module,
-      Storage.Statics
-    >;
+    storage: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
   }
 
   interface FirebaseApp {
