@@ -30,7 +30,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -568,7 +568,7 @@
 							]
 						},
 						{
-							"id": 632,
+							"id": 625,
 							"name": "storage",
 							"kind": 2048,
 							"kindString": "Method",
@@ -577,14 +577,14 @@
 							},
 							"signatures": [
 								{
-									"id": 633,
+									"id": 626,
 									"name": "storage",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 634,
+											"id": 627,
 											"name": "bucket",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -609,14 +609,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 607
+										"id": 600
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 483,
+									"line": 488,
 									"character": 11
 								}
 							]
@@ -658,7 +658,7 @@
 									}
 								},
 								{
-									"id": 644,
+									"id": 637,
 									"name": "utils",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -669,7 +669,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 637
+										"id": 630
 									}
 								}
 							],
@@ -703,7 +703,7 @@
 								334,
 								345,
 								434,
-								632,
+								625,
 								56
 							]
 						}
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 482,
+							"line": 487,
 							"character": 23
 						},
 						{
@@ -804,7 +804,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -838,7 +838,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -872,7 +872,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -906,7 +906,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -940,7 +940,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -974,7 +974,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1008,7 +1008,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 717,
+								"id": 710,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1043,7 +1043,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 717,
+								"id": 710,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1077,7 +1077,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1111,7 +1111,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1145,7 +1145,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1161,7 +1161,7 @@
 							}
 						},
 						{
-							"id": 631,
+							"id": 624,
 							"name": "storage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1169,19 +1169,19 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 479,
+									"line": 484,
 									"character": 11
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 607
+										"id": 600
 									},
 									{
 										"type": "reference",
@@ -1217,17 +1217,17 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 711,
+								"id": 704,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 637
+										"id": 630
 									},
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 636
+										"id": 629
 									}
 								]
 							}
@@ -1249,7 +1249,7 @@
 								333,
 								344,
 								433,
-								631,
+								624,
 								52
 							]
 						}
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 478,
+							"line": 483,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 477,
+					"line": 482,
 					"character": 49
 				},
 				{
@@ -1437,7 +1437,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1557,7 +1557,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1677,7 +1677,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1797,7 +1797,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1946,7 +1946,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2037,7 +2037,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 717,
+						"id": 710,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2196,7 +2196,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 717,
+						"id": 710,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2316,7 +2316,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2436,7 +2436,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2556,7 +2556,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2622,14 +2622,14 @@
 			]
 		},
 		{
-			"id": 627,
+			"id": 620,
 			"name": "\"@react-native-firebase/storage\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 628,
+					"id": 621,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 465,
+							"line": 470,
 							"character": 31
 						}
 					],
@@ -2658,7 +2658,7 @@
 					}
 				},
 				{
-					"id": 630,
+					"id": 623,
 					"name": "StorageDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2669,19 +2669,19 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 469,
+							"line": 474,
 							"character": 28
 						}
 					],
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 607
+								"id": 600
 							},
 							{
 								"type": "reference",
@@ -2692,7 +2692,7 @@
 					}
 				},
 				{
-					"id": 629,
+					"id": 622,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 467,
+							"line": 472,
 							"character": 23
 						}
 					],
@@ -2719,29 +2719,29 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						628,
-						630,
-						629
+						621,
+						623,
+						622
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 462,
+					"line": 467,
 					"character": 47
 				}
 			]
 		},
 		{
-			"id": 640,
+			"id": 633,
 			"name": "\"@react-native-firebase/utils\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 641,
+					"id": 634,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2770,7 +2770,7 @@
 					}
 				},
 				{
-					"id": 643,
+					"id": 636,
 					"name": "UtilsDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2788,23 +2788,23 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 711,
+						"id": 704,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 637
+								"id": 630
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 636
+								"id": 629
 							}
 						]
 					}
 				},
 				{
-					"id": 642,
+					"id": 635,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2839,9 +2839,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						641,
-						643,
-						642
+						634,
+						636,
+						635
 					]
 				}
 			],
@@ -3642,7 +3642,7 @@
 			]
 		},
 		{
-			"id": 692,
+			"id": 685,
 			"name": "App",
 			"kind": 2,
 			"kindString": "Module",
@@ -3659,7 +3659,7 @@
 			},
 			"children": [
 				{
-					"id": 693,
+					"id": 686,
 					"name": "FirebaseApp",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3668,7 +3668,7 @@
 					},
 					"children": [
 						{
-							"id": 694,
+							"id": 687,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3691,7 +3691,7 @@
 							}
 						},
 						{
-							"id": 695,
+							"id": 688,
 							"name": "options",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3711,11 +3711,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseOptions",
-								"id": 678
+								"id": 671
 							}
 						},
 						{
-							"id": 696,
+							"id": 689,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3724,7 +3724,7 @@
 							},
 							"signatures": [
 								{
-									"id": 697,
+									"id": 690,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3758,15 +3758,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								694,
-								695
+								687,
+								688
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								696
+								689
 							]
 						}
 					],
@@ -3779,7 +3779,7 @@
 					]
 				},
 				{
-					"id": 698,
+					"id": 691,
 					"name": "ReactNativeFirebaseNamespace",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3788,7 +3788,7 @@
 					},
 					"children": [
 						{
-							"id": 710,
+							"id": 703,
 							"name": "SDK_VERSION",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3811,7 +3811,7 @@
 							}
 						},
 						{
-							"id": 709,
+							"id": 702,
 							"name": "apps",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3833,12 +3833,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "FirebaseApp",
-									"id": 693
+									"id": 686
 								}
 							}
 						},
 						{
-							"id": 706,
+							"id": 699,
 							"name": "app",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3847,7 +3847,7 @@
 							},
 							"signatures": [
 								{
-									"id": 707,
+									"id": 700,
 									"name": "app",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3863,7 +3863,7 @@
 									},
 									"parameters": [
 										{
-											"id": 708,
+											"id": 701,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3891,7 +3891,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 693
+										"id": 686
 									}
 								}
 							],
@@ -3904,7 +3904,7 @@
 							]
 						},
 						{
-							"id": 699,
+							"id": 692,
 							"name": "initializeApp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3913,7 +3913,7 @@
 							},
 							"signatures": [
 								{
-									"id": 700,
+									"id": 693,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3923,7 +3923,7 @@
 									},
 									"parameters": [
 										{
-											"id": 701,
+											"id": 694,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3934,11 +3934,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 678
+												"id": 671
 											}
 										},
 										{
-											"id": 702,
+											"id": 695,
 											"name": "config",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3951,18 +3951,18 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppConfig",
-												"id": 654
+												"id": 647
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 693
+										"id": 686
 									}
 								},
 								{
-									"id": 703,
+									"id": 696,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3972,7 +3972,7 @@
 									},
 									"parameters": [
 										{
-											"id": 704,
+											"id": 697,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3983,11 +3983,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 678
+												"id": 671
 											}
 										},
 										{
-											"id": 705,
+											"id": 698,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -4015,7 +4015,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 693
+										"id": 686
 									}
 								}
 							],
@@ -4038,16 +4038,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								710,
-								709
+								703,
+								702
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								706,
-								699
+								699,
+								692
 							]
 						}
 					],
@@ -4065,8 +4065,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						693,
-						698
+						686,
+						691
 					]
 				}
 			],
@@ -10667,7 +10667,7 @@
 			},
 			"children": [
 				{
-					"id": 607,
+					"id": 600,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -10680,7 +10680,7 @@
 					},
 					"children": [
 						{
-							"id": 626,
+							"id": 619,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10704,7 +10704,7 @@
 							}
 						},
 						{
-							"id": 612,
+							"id": 605,
 							"name": "maxDownloadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10714,7 +10714,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 448,
+									"line": 453,
 									"character": 24
 								}
 							],
@@ -10724,7 +10724,7 @@
 							}
 						},
 						{
-							"id": 616,
+							"id": 609,
 							"name": "maxOperationRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10734,7 +10734,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 452,
+									"line": 457,
 									"character": 25
 								}
 							],
@@ -10744,7 +10744,7 @@
 							}
 						},
 						{
-							"id": 608,
+							"id": 601,
 							"name": "maxUploadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10754,7 +10754,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 444,
+									"line": 449,
 									"character": 22
 								}
 							],
@@ -10764,7 +10764,7 @@
 							}
 						},
 						{
-							"id": 620,
+							"id": 613,
 							"name": "ref",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10773,14 +10773,14 @@
 							},
 							"signatures": [
 								{
-									"id": 621,
+									"id": 614,
 									"name": "ref",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 622,
+											"id": 615,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10812,13 +10812,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 456,
+									"line": 461,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 623,
+							"id": 616,
 							"name": "refFromURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10827,14 +10827,14 @@
 							},
 							"signatures": [
 								{
-									"id": 624,
+									"id": 617,
 									"name": "refFromURL",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 625,
+											"id": 618,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10855,13 +10855,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 458,
+									"line": 463,
 									"character": 14
 								}
 							]
 						},
 						{
-							"id": 613,
+							"id": 606,
 							"name": "setMaxDownloadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10870,14 +10870,14 @@
 							},
 							"signatures": [
 								{
-									"id": 614,
+									"id": 607,
 									"name": "setMaxDownloadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 615,
+											"id": 608,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10903,13 +10903,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 450,
+									"line": 455,
 									"character": 27
 								}
 							]
 						},
 						{
-							"id": 617,
+							"id": 610,
 							"name": "setMaxOperationRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10918,14 +10918,14 @@
 							},
 							"signatures": [
 								{
-									"id": 618,
+									"id": 611,
 									"name": "setMaxOperationRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 619,
+											"id": 612,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10951,13 +10951,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 454,
+									"line": 459,
 									"character": 28
 								}
 							]
 						},
 						{
-							"id": 609,
+							"id": 602,
 							"name": "setMaxUploadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10966,14 +10966,14 @@
 							},
 							"signatures": [
 								{
-									"id": 610,
+									"id": 603,
 									"name": "setMaxUploadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 611,
+											"id": 604,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10999,7 +10999,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 446,
+									"line": 451,
 									"character": 25
 								}
 							]
@@ -11010,28 +11010,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								626,
-								612,
-								616,
-								608
+								619,
+								605,
+								609,
+								601
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								620,
-								623,
 								613,
-								617,
-								609
+								616,
+								606,
+								610,
+								602
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 443,
+							"line": 448,
 							"character": 21
 						}
 					],
@@ -11039,855 +11039,6 @@
 						{
 							"type": "reference",
 							"name": "ReactNativeFirebaseModule"
-						}
-					]
-				},
-				{
-					"id": 551,
-					"name": "Task",
-					"kind": 128,
-					"kindString": "Class",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "Storage Task used for Uploading or Downloading files.",
-						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .getFile(downloadTo);\n```\n"
-					},
-					"children": [
-						{
-							"id": 552,
-							"name": "constructor",
-							"kind": 512,
-							"kindString": "Constructor",
-							"flags": {
-								"isPrivate": true,
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 553,
-									"name": "new Task",
-									"kind": 16384,
-									"kindString": "Constructor signature",
-									"flags": {},
-									"type": {
-										"type": "reference",
-										"name": "Task",
-										"id": 551
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 323,
-									"character": 50
-								}
-							]
-						},
-						{
-							"id": 599,
-							"name": "__@toStringTag",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
-									"line": 169,
-									"character": 33
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "Promise.[Symbol.toStringTag]"
-							}
-						},
-						{
-							"id": 598,
-							"name": "Promise",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isStatic": true,
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es2015.promise.d.ts",
-									"line": 216,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "reference",
-								"name": "PromiseConstructor"
-							}
-						},
-						{
-							"id": 563,
-							"name": "cancel",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 564,
-									"name": "cancel",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Cancel the current Download or Upload task.",
-										"text": "#### Example\n\nCancel a task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  console.log('Cancelling my task!');\n  task.cancel();\n});\n```\n\n"
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "boolean"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 386,
-									"character": 10
-								}
-							]
-						},
-						{
-							"id": 591,
-							"name": "catch",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 592,
-									"name": "catch",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Attaches a callback for only the rejection of the Promise.",
-										"returns": "A Promise for the completion of the callback.\n"
-									},
-									"typeParameter": [
-										{
-											"id": 593,
-											"name": "TResult",
-											"kind": 131072,
-											"kindString": "Type parameter",
-											"flags": {}
-										}
-									],
-									"parameters": [
-										{
-											"id": 594,
-											"name": "onrejected",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"comment": {
-												"text": "The callback to execute when the Promise is rejected."
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 595,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 596,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"parameters": [
-																		{
-																			"id": 597,
-																			"name": "reason",
-																			"kind": 32768,
-																			"kindString": "Parameter",
-																			"flags": {},
-																			"type": {
-																				"type": "intrinsic",
-																				"name": "any"
-																			}
-																		}
-																	],
-																	"type": {
-																		"type": "union",
-																		"types": [
-																			{
-																				"type": "typeParameter",
-																				"name": "TResult"
-																			},
-																			{
-																				"type": "reference",
-																				"name": "PromiseLike",
-																				"typeArguments": [
-																					{
-																						"type": "typeParameter",
-																						"name": "TResult"
-																					}
-																				]
-																			}
-																		]
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
-																	"line": 1403,
-																	"character": 39
-																}
-															]
-														}
-													},
-													{
-														"type": "intrinsic",
-														"name": "undefined"
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													}
-												]
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "Promise",
-										"typeArguments": [
-											{
-												"type": "union",
-												"types": [
-													{
-														"type": "reference",
-														"name": "TaskSnapshot",
-														"id": 600
-													},
-													{
-														"type": "typeParameter",
-														"name": "TResult"
-													}
-												]
-											}
-										]
-									},
-									"inheritedFrom": {
-										"type": "reference",
-										"name": "Promise.catch"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
-									"line": 1403,
-									"character": 9
-								}
-							],
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "Promise.catch"
-							}
-						},
-						{
-							"id": 565,
-							"name": "on",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 566,
-									"name": "on",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"parameters": [
-										{
-											"id": 567,
-											"name": "event",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"type": {
-												"type": "stringLiteral",
-												"value": "state_changed"
-											}
-										},
-										{
-											"id": 568,
-											"name": "nextOrObserver",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reference",
-														"name": "TaskSnapshotObserver",
-														"id": 539
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													},
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 569,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 570,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"parameters": [
-																		{
-																			"id": 571,
-																			"name": "a",
-																			"kind": 32768,
-																			"kindString": "Parameter",
-																			"flags": {},
-																			"type": {
-																				"type": "reference",
-																				"name": "TaskSnapshot",
-																				"id": 600
-																			}
-																		}
-																	],
-																	"type": {
-																		"type": "intrinsic",
-																		"name": "any"
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "storage/lib/index.d.ts",
-																	"line": 390,
-																	"character": 52
-																}
-															]
-														}
-													}
-												]
-											}
-										},
-										{
-											"id": 572,
-											"name": "error",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 573,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 574,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"parameters": [
-																		{
-																			"id": 575,
-																			"name": "a",
-																			"kind": 32768,
-																			"kindString": "Parameter",
-																			"flags": {},
-																			"type": {
-																				"type": "reference",
-																				"name": "Error"
-																			}
-																		}
-																	],
-																	"type": {
-																		"type": "intrinsic",
-																		"name": "any"
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "storage/lib/index.d.ts",
-																	"line": 391,
-																	"character": 13
-																}
-															]
-														}
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													}
-												]
-											}
-										},
-										{
-											"id": 576,
-											"name": "complete",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 577,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 578,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"type": {
-																		"type": "intrinsic",
-																		"name": "void"
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "storage/lib/index.d.ts",
-																	"line": 392,
-																	"character": 16
-																}
-															]
-														}
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													}
-												]
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "Function"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 388,
-									"character": 6
-								}
-							]
-						},
-						{
-							"id": 559,
-							"name": "pause",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 560,
-									"name": "pause",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Pause the current Download or Upload task.",
-										"text": "#### Example\n\nPause a running task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {\n    console.log('Pausing my task!');\n    task.pause();\n  }\n});\n```\n\n"
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "boolean"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 348,
-									"character": 9
-								}
-							]
-						},
-						{
-							"id": 561,
-							"name": "resume",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 562,
-									"name": "resume",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Resume the current Download or Upload task.",
-										"text": "#### Example\n\nResume a previously paused task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  // ... pause me ...\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n\n"
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "boolean"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 368,
-									"character": 10
-								}
-							]
-						},
-						{
-							"id": 579,
-							"name": "then",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 580,
-									"name": "then",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Attaches callbacks for the resolution and/or rejection of the Promise.",
-										"returns": "A Promise for the completion of which ever callback is executed.\n"
-									},
-									"typeParameter": [
-										{
-											"id": 581,
-											"name": "TResult1",
-											"kind": 131072,
-											"kindString": "Type parameter",
-											"flags": {}
-										},
-										{
-											"id": 582,
-											"name": "TResult2",
-											"kind": 131072,
-											"kindString": "Type parameter",
-											"flags": {}
-										}
-									],
-									"parameters": [
-										{
-											"id": 583,
-											"name": "onfulfilled",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"comment": {
-												"text": "The callback to execute when the Promise is resolved."
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 584,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 585,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"parameters": [
-																		{
-																			"id": 586,
-																			"name": "value",
-																			"kind": 32768,
-																			"kindString": "Parameter",
-																			"flags": {},
-																			"type": {
-																				"type": "reference",
-																				"name": "TaskSnapshot",
-																				"id": 600
-																			}
-																		}
-																	],
-																	"type": {
-																		"type": "union",
-																		"types": [
-																			{
-																				"type": "typeParameter",
-																				"name": "TResult1"
-																			},
-																			{
-																				"type": "reference",
-																				"name": "PromiseLike",
-																				"typeArguments": [
-																					{
-																						"type": "typeParameter",
-																						"name": "TResult1"
-																					}
-																				]
-																			}
-																		]
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
-																	"line": 1396,
-																	"character": 54
-																}
-															]
-														}
-													},
-													{
-														"type": "intrinsic",
-														"name": "undefined"
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													}
-												]
-											}
-										},
-										{
-											"id": 587,
-											"name": "onrejected",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"comment": {
-												"text": "The callback to execute when the Promise is rejected."
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "reflection",
-														"declaration": {
-															"id": 588,
-															"name": "__type",
-															"kind": 65536,
-															"kindString": "Type literal",
-															"flags": {},
-															"signatures": [
-																{
-																	"id": 589,
-																	"name": "__call",
-																	"kind": 4096,
-																	"kindString": "Call signature",
-																	"flags": {},
-																	"parameters": [
-																		{
-																			"id": 590,
-																			"name": "reason",
-																			"kind": 32768,
-																			"kindString": "Parameter",
-																			"flags": {},
-																			"type": {
-																				"type": "intrinsic",
-																				"name": "any"
-																			}
-																		}
-																	],
-																	"type": {
-																		"type": "union",
-																		"types": [
-																			{
-																				"type": "typeParameter",
-																				"name": "TResult2"
-																			},
-																			{
-																				"type": "reference",
-																				"name": "PromiseLike",
-																				"typeArguments": [
-																					{
-																						"type": "typeParameter",
-																						"name": "TResult2"
-																					}
-																				]
-																			}
-																		]
-																	}
-																}
-															],
-															"sources": [
-																{
-																	"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
-																	"line": 1396,
-																	"character": 136
-																}
-															]
-														}
-													},
-													{
-														"type": "intrinsic",
-														"name": "undefined"
-													},
-													{
-														"type": "intrinsic",
-														"name": "null"
-													}
-												]
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "Promise",
-										"typeArguments": [
-											{
-												"type": "union",
-												"types": [
-													{
-														"type": "typeParameter",
-														"name": "TResult1"
-													},
-													{
-														"type": "typeParameter",
-														"name": "TResult2"
-													}
-												]
-											}
-										]
-									},
-									"inheritedFrom": {
-										"type": "reference",
-										"name": "Promise.then"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
-									"line": 1396,
-									"character": 8
-								}
-							],
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "Promise.then"
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Constructors",
-							"kind": 512,
-							"children": [
-								552
-							]
-						},
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								599,
-								598
-							]
-						},
-						{
-							"title": "Methods",
-							"kind": 2048,
-							"children": [
-								563,
-								591,
-								565,
-								559,
-								561,
-								579
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "storage/lib/index.d.ts",
-							"line": 323,
-							"character": 19
-						}
-					],
-					"extendedTypes": [
-						{
-							"type": "reference",
-							"name": "Promise",
-							"typeArguments": [
-								{
-									"type": "reference",
-									"name": "TaskSnapshot",
-									"id": 600
-								}
-							]
 						}
 					]
 				},
@@ -12521,7 +11672,7 @@
 							"type": {
 								"type": "reference",
 								"name": "Module",
-								"id": 607
+								"id": 600
 							}
 						},
 						{
@@ -13693,6 +12844,606 @@
 					]
 				},
 				{
+					"id": 551,
+					"name": "Task",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "Storage Task used for Uploading or Downloading files.",
+						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .getFile(downloadTo);\n```\n"
+					},
+					"children": [
+						{
+							"id": 556,
+							"name": "cancel",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 557,
+									"name": "cancel",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Cancel the current Download or Upload task.",
+										"text": "#### Example\n\nCancel a task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  console.log('Cancelling my task!');\n  task.cancel();\n});\n```\n\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 379,
+									"character": 10
+								}
+							]
+						},
+						{
+							"id": 587,
+							"name": "catch",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 588,
+									"name": "catch",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"parameters": [
+										{
+											"id": 589,
+											"name": "onRejected",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 590,
+													"name": "__type",
+													"kind": 65536,
+													"kindString": "Type literal",
+													"flags": {},
+													"signatures": [
+														{
+															"id": 591,
+															"name": "__call",
+															"kind": 4096,
+															"kindString": "Call signature",
+															"flags": {},
+															"parameters": [
+																{
+																	"id": 592,
+																	"name": "a",
+																	"kind": 32768,
+																	"kindString": "Parameter",
+																	"flags": {},
+																	"type": {
+																		"type": "reference",
+																		"name": "Error"
+																	}
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "any"
+															}
+														}
+													],
+													"sources": [
+														{
+															"fileName": "storage/lib/index.d.ts",
+															"line": 398,
+															"character": 21
+														}
+													]
+												}
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "any"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 398,
+									"character": 9
+								}
+							]
+						},
+						{
+							"id": 558,
+							"name": "on",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 559,
+									"name": "on",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"parameters": [
+										{
+											"id": 560,
+											"name": "event",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"type": {
+												"type": "stringLiteral",
+												"value": "state_changed"
+											}
+										},
+										{
+											"id": 561,
+											"name": "nextOrObserver",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reference",
+														"name": "TaskSnapshotObserver",
+														"id": 539
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													},
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 562,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 563,
+																	"name": "__call",
+																	"kind": 4096,
+																	"kindString": "Call signature",
+																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 564,
+																			"name": "a",
+																			"kind": 32768,
+																			"kindString": "Parameter",
+																			"flags": {},
+																			"type": {
+																				"type": "reference",
+																				"name": "TaskSnapshot",
+																				"id": 593
+																			}
+																		}
+																	],
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "any"
+																	}
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "storage/lib/index.d.ts",
+																	"line": 383,
+																	"character": 52
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										{
+											"id": 565,
+											"name": "error",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 566,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 567,
+																	"name": "__call",
+																	"kind": 4096,
+																	"kindString": "Call signature",
+																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 568,
+																			"name": "a",
+																			"kind": 32768,
+																			"kindString": "Parameter",
+																			"flags": {},
+																			"type": {
+																				"type": "reference",
+																				"name": "Error"
+																			}
+																		}
+																	],
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "any"
+																	}
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "storage/lib/index.d.ts",
+																	"line": 384,
+																	"character": 13
+																}
+															]
+														}
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										},
+										{
+											"id": 569,
+											"name": "complete",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 570,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 571,
+																	"name": "__call",
+																	"kind": 4096,
+																	"kindString": "Call signature",
+																	"flags": {},
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "void"
+																	}
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "storage/lib/index.d.ts",
+																	"line": 385,
+																	"character": 16
+																}
+															]
+														}
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Function"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 381,
+									"character": 6
+								}
+							]
+						},
+						{
+							"id": 552,
+							"name": "pause",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 553,
+									"name": "pause",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Pause the current Download or Upload task.",
+										"text": "#### Example\n\nPause a running task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {\n    console.log('Pausing my task!');\n    task.pause();\n  }\n});\n```\n\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 341,
+									"character": 9
+								}
+							]
+						},
+						{
+							"id": 554,
+							"name": "resume",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 555,
+									"name": "resume",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Resume the current Download or Upload task.",
+										"text": "#### Example\n\nResume a previously paused task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  // ... pause me ...\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "boolean"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 361,
+									"character": 10
+								}
+							]
+						},
+						{
+							"id": 577,
+							"name": "then",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 578,
+									"name": "then",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"parameters": [
+										{
+											"id": 579,
+											"name": "onFulfilled",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 580,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 581,
+																	"name": "__call",
+																	"kind": 4096,
+																	"kindString": "Call signature",
+																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 582,
+																			"name": "a",
+																			"kind": 32768,
+																			"kindString": "Parameter",
+																			"flags": {},
+																			"type": {
+																				"type": "reference",
+																				"name": "TaskSnapshot",
+																				"id": 593
+																			}
+																		}
+																	],
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "any"
+																	}
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "storage/lib/index.d.ts",
+																	"line": 394,
+																	"character": 19
+																}
+															]
+														}
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										},
+										{
+											"id": 583,
+											"name": "onRejected",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 584,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
+															"flags": {},
+															"signatures": [
+																{
+																	"id": 585,
+																	"name": "__call",
+																	"kind": 4096,
+																	"kindString": "Call signature",
+																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 586,
+																			"name": "a",
+																			"kind": 32768,
+																			"kindString": "Parameter",
+																			"flags": {},
+																			"type": {
+																				"type": "reference",
+																				"name": "Error"
+																			}
+																		}
+																	],
+																	"type": {
+																		"type": "intrinsic",
+																		"name": "any"
+																	}
+																}
+															],
+															"sources": [
+																{
+																	"fileName": "storage/lib/index.d.ts",
+																	"line": 395,
+																	"character": 18
+																}
+															]
+														}
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "any"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 393,
+									"character": 8
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								556,
+								587,
+								558,
+								552,
+								554,
+								577
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 323,
+							"character": 23
+						}
+					]
+				},
+				{
 					"id": 442,
 					"name": "TaskEvent",
 					"kind": 256,
@@ -13748,7 +13499,7 @@
 					]
 				},
 				{
-					"id": 600,
+					"id": 593,
 					"name": "TaskSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13757,7 +13508,7 @@
 					},
 					"children": [
 						{
-							"id": 601,
+							"id": 594,
 							"name": "bytesTransferred",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13767,7 +13518,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 397,
+									"line": 402,
 									"character": 20
 								}
 							],
@@ -13777,7 +13528,7 @@
 							}
 						},
 						{
-							"id": 602,
+							"id": 595,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13787,7 +13538,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 399,
+									"line": 404,
 									"character": 12
 								}
 							],
@@ -13798,7 +13549,7 @@
 							}
 						},
 						{
-							"id": 603,
+							"id": 596,
 							"name": "ref",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13808,7 +13559,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 401,
+									"line": 406,
 									"character": 7
 								}
 							],
@@ -13819,7 +13570,7 @@
 							}
 						},
 						{
-							"id": 604,
+							"id": 597,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13829,7 +13580,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 403,
+									"line": 408,
 									"character": 9
 								}
 							],
@@ -13860,7 +13611,7 @@
 							}
 						},
 						{
-							"id": 605,
+							"id": 598,
 							"name": "task",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13870,7 +13621,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 405,
+									"line": 410,
 									"character": 8
 								}
 							],
@@ -13881,7 +13632,7 @@
 							}
 						},
 						{
-							"id": 606,
+							"id": 599,
 							"name": "totalBytes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13891,7 +13642,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 407,
+									"line": 412,
 									"character": 14
 								}
 							],
@@ -13906,19 +13657,19 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								601,
-								602,
-								603,
-								604,
-								605,
-								606
+								594,
+								595,
+								596,
+								597,
+								598,
+								599
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 396,
+							"line": 401,
 							"character": 31
 						}
 					]
@@ -14077,7 +13828,7 @@
 													"type": {
 														"type": "reference",
 														"name": "TaskSnapshot",
-														"id": 600
+														"id": 593
 													}
 												}
 											],
@@ -14590,8 +14341,7 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						607,
-						551
+						600
 					]
 				},
 				{
@@ -14603,8 +14353,9 @@
 						465,
 						450,
 						437,
+						551,
 						442,
-						600,
+						593,
 						539,
 						444,
 						475
@@ -14620,7 +14371,7 @@
 			]
 		},
 		{
-			"id": 635,
+			"id": 628,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -14639,7 +14390,7 @@
 			},
 			"children": [
 				{
-					"id": 637,
+					"id": 630,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -14652,7 +14403,7 @@
 					},
 					"children": [
 						{
-							"id": 639,
+							"id": 632,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14676,7 +14427,7 @@
 							}
 						},
 						{
-							"id": 638,
+							"id": 631,
 							"name": "isRunningInTestLab",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14710,8 +14461,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								639,
-								638
+								632,
+								631
 							]
 						}
 					],
@@ -14730,7 +14481,7 @@
 					]
 				},
 				{
-					"id": 636,
+					"id": 629,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14751,14 +14502,14 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						637
+						630
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						636
+						629
 					]
 				}
 			],
@@ -14771,7 +14522,7 @@
 			]
 		},
 		{
-			"id": 676,
+			"id": 669,
 			"name": "ReactNativeFirebaseModule",
 			"kind": 128,
 			"kindString": "Class",
@@ -14780,7 +14531,7 @@
 			},
 			"children": [
 				{
-					"id": 677,
+					"id": 670,
 					"name": "app",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14797,7 +14548,7 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseApp",
-						"id": 658
+						"id": 651
 					}
 				}
 			],
@@ -14806,7 +14557,7 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						677
+						670
 					]
 				}
 			],
@@ -14819,7 +14570,7 @@
 			]
 		},
 		{
-			"id": 658,
+			"id": 651,
 			"name": "FirebaseApp",
 			"kind": 256,
 			"kindString": "Interface",
@@ -14828,7 +14579,7 @@
 			},
 			"children": [
 				{
-					"id": 659,
+					"id": 652,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14851,7 +14602,7 @@
 					}
 				},
 				{
-					"id": 660,
+					"id": 653,
 					"name": "options",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14871,11 +14622,11 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseOptions",
-						"id": 678
+						"id": 671
 					}
 				},
 				{
-					"id": 661,
+					"id": 654,
 					"name": "delete",
 					"kind": 2048,
 					"kindString": "Method",
@@ -14884,7 +14635,7 @@
 					},
 					"signatures": [
 						{
-							"id": 662,
+							"id": 655,
 							"name": "delete",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -14918,15 +14669,15 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						659,
-						660
+						652,
+						653
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						661
+						654
 					]
 				}
 			],
@@ -14939,7 +14690,7 @@
 			]
 		},
 		{
-			"id": 654,
+			"id": 647,
 			"name": "FirebaseAppConfig",
 			"kind": 256,
 			"kindString": "Interface",
@@ -14948,7 +14699,7 @@
 			},
 			"children": [
 				{
-					"id": 656,
+					"id": 649,
 					"name": "automaticDataCollectionEnabled",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14983,7 +14734,7 @@
 					}
 				},
 				{
-					"id": 657,
+					"id": 650,
 					"name": "automaticResourceManagement",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15020,7 +14771,7 @@
 					}
 				},
 				{
-					"id": 655,
+					"id": 648,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15058,9 +14809,9 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						656,
-						657,
-						655
+						649,
+						650,
+						648
 					]
 				}
 			],
@@ -15073,7 +14824,7 @@
 			]
 		},
 		{
-			"id": 645,
+			"id": 638,
 			"name": "NativeFirebaseError",
 			"kind": 256,
 			"kindString": "Interface",
@@ -15082,7 +14833,7 @@
 			},
 			"children": [
 				{
-					"id": 653,
+					"id": 646,
 					"name": "Error",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15102,7 +14853,7 @@
 					}
 				},
 				{
-					"id": 646,
+					"id": 639,
 					"name": "code",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15125,7 +14876,7 @@
 					}
 				},
 				{
-					"id": 647,
+					"id": 640,
 					"name": "message",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15152,7 +14903,7 @@
 					}
 				},
 				{
-					"id": 651,
+					"id": 644,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15176,7 +14927,7 @@
 					}
 				},
 				{
-					"id": 648,
+					"id": 641,
 					"name": "namespace",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15199,7 +14950,7 @@
 					}
 				},
 				{
-					"id": 649,
+					"id": 642,
 					"name": "nativeErrorCode",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15231,7 +14982,7 @@
 					}
 				},
 				{
-					"id": 650,
+					"id": 643,
 					"name": "nativeErrorMessage",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15254,7 +15005,7 @@
 					}
 				},
 				{
-					"id": 652,
+					"id": 645,
 					"name": "stack",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15297,14 +15048,14 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						653,
 						646,
-						647,
-						651,
-						648,
-						649,
-						650,
-						652
+						639,
+						640,
+						644,
+						641,
+						642,
+						643,
+						645
 					]
 				}
 			],
@@ -15323,7 +15074,7 @@
 			]
 		},
 		{
-			"id": 663,
+			"id": 656,
 			"name": "ReactNativeFirebaseNamespace",
 			"kind": 256,
 			"kindString": "Interface",
@@ -15332,7 +15083,7 @@
 			},
 			"children": [
 				{
-					"id": 675,
+					"id": 668,
 					"name": "SDK_VERSION",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15355,7 +15106,7 @@
 					}
 				},
 				{
-					"id": 674,
+					"id": 667,
 					"name": "apps",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15377,12 +15128,12 @@
 						"elementType": {
 							"type": "reference",
 							"name": "FirebaseApp",
-							"id": 658
+							"id": 651
 						}
 					}
 				},
 				{
-					"id": 671,
+					"id": 664,
 					"name": "app",
 					"kind": 2048,
 					"kindString": "Method",
@@ -15391,7 +15142,7 @@
 					},
 					"signatures": [
 						{
-							"id": 672,
+							"id": 665,
 							"name": "app",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15407,7 +15158,7 @@
 							},
 							"parameters": [
 								{
-									"id": 673,
+									"id": 666,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15435,7 +15186,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 658
+								"id": 651
 							}
 						}
 					],
@@ -15448,7 +15199,7 @@
 					]
 				},
 				{
-					"id": 664,
+					"id": 657,
 					"name": "initializeApp",
 					"kind": 2048,
 					"kindString": "Method",
@@ -15457,7 +15208,7 @@
 					},
 					"signatures": [
 						{
-							"id": 665,
+							"id": 658,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15467,7 +15218,7 @@
 							},
 							"parameters": [
 								{
-									"id": 666,
+									"id": 659,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15478,11 +15229,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 678
+										"id": 671
 									}
 								},
 								{
-									"id": 667,
+									"id": 660,
 									"name": "config",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15495,18 +15246,18 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseAppConfig",
-										"id": 654
+										"id": 647
 									}
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 658
+								"id": 651
 							}
 						},
 						{
-							"id": 668,
+							"id": 661,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15516,7 +15267,7 @@
 							},
 							"parameters": [
 								{
-									"id": 669,
+									"id": 662,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15527,11 +15278,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 678
+										"id": 671
 									}
 								},
 								{
-									"id": 670,
+									"id": 663,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15559,7 +15310,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 658
+								"id": 651
 							}
 						}
 					],
@@ -15582,16 +15333,16 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						675,
-						674
+						668,
+						667
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						671,
-						664
+						664,
+						657
 					]
 				}
 			],
@@ -15604,7 +15355,7 @@
 			]
 		},
 		{
-			"id": 678,
+			"id": 671,
 			"name": "FirebaseOptions",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -15621,21 +15372,21 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 679,
+					"id": 672,
 					"name": "__type",
 					"kind": 65536,
 					"kindString": "Type literal",
 					"flags": {},
 					"indexSignature": [
 						{
-							"id": 690,
+							"id": 683,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 691,
+									"id": 684,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15654,7 +15405,7 @@
 					],
 					"children": [
 						{
-							"id": 688,
+							"id": 681,
 							"name": "androidClientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15686,7 +15437,7 @@
 							}
 						},
 						{
-							"id": 681,
+							"id": 674,
 							"name": "apiKey",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15718,7 +15469,7 @@
 							}
 						},
 						{
-							"id": 680,
+							"id": 673,
 							"name": "appId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15739,7 +15490,7 @@
 							}
 						},
 						{
-							"id": 687,
+							"id": 680,
 							"name": "clientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15771,7 +15522,7 @@
 							}
 						},
 						{
-							"id": 682,
+							"id": 675,
 							"name": "databaseURL",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15803,7 +15554,7 @@
 							}
 						},
 						{
-							"id": 689,
+							"id": 682,
 							"name": "deepLinkURLScheme",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15835,7 +15586,7 @@
 							}
 						},
 						{
-							"id": 684,
+							"id": 677,
 							"name": "gaTrackingId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15867,7 +15618,7 @@
 							}
 						},
 						{
-							"id": 686,
+							"id": 679,
 							"name": "messagingSenderId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15899,7 +15650,7 @@
 							}
 						},
 						{
-							"id": 683,
+							"id": 676,
 							"name": "projectId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15920,7 +15671,7 @@
 							}
 						},
 						{
-							"id": 685,
+							"id": 678,
 							"name": "storageBucket",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15957,16 +15708,16 @@
 							"title": "Variables",
 							"kind": 32,
 							"children": [
-								688,
 								681,
+								674,
+								673,
 								680,
-								687,
+								675,
 								682,
-								689,
-								684,
-								686,
-								683,
-								685
+								677,
+								679,
+								676,
+								678
 							]
 						}
 					],
@@ -15981,7 +15732,7 @@
 			}
 		},
 		{
-			"id": 711,
+			"id": 704,
 			"name": "ReactNativeFirebaseModuleAndStatics",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -15990,14 +15741,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 712,
+					"id": 705,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 713,
+					"id": 706,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -16017,14 +15768,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 714,
+							"id": 707,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 715,
+									"id": 708,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -16037,7 +15788,7 @@
 							],
 							"children": [
 								{
-									"id": 716,
+									"id": 709,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -16063,7 +15814,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										716
+										709
 									]
 								}
 							],
@@ -16084,7 +15835,7 @@
 			}
 		},
 		{
-			"id": 717,
+			"id": 710,
 			"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -16093,14 +15844,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 718,
+					"id": 711,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 719,
+					"id": 712,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -16120,21 +15871,21 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 720,
+							"id": 713,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 721,
+									"id": 714,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 722,
+											"id": 715,
 											"name": "app",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -16156,7 +15907,7 @@
 							],
 							"children": [
 								{
-									"id": 723,
+									"id": 716,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -16182,7 +15933,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										723
+										716
 									]
 								}
 							],
@@ -16221,10 +15972,10 @@
 				329,
 				340,
 				429,
-				627,
-				640,
+				620,
+				633,
 				1,
-				692,
+				685,
 				59,
 				70,
 				124,
@@ -16236,33 +15987,33 @@
 				336,
 				347,
 				436,
-				635
+				628
 			]
 		},
 		{
 			"title": "Classes",
 			"kind": 128,
 			"children": [
-				676
+				669
 			]
 		},
 		{
 			"title": "Interfaces",
 			"kind": 256,
 			"children": [
-				658,
-				654,
-				645,
-				663
+				651,
+				647,
+				638,
+				656
 			]
 		},
 		{
 			"title": "Type aliases",
 			"kind": 4194304,
 			"children": [
-				678,
-				711,
-				717
+				671,
+				704,
+				710
 			]
 		}
 	]

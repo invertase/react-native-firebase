@@ -320,14 +320,7 @@ export namespace Storage {
    *  .getFile(downloadTo);
    * ```
    */
-  export class Task extends Promise<TaskSnapshot>{
-    private constructor();
-
-    /**
-     * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
-     */
-    finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
-
+  export interface Task {
     /**
      * Pause the current Download or Upload task.
      *
@@ -391,6 +384,18 @@ export namespace Storage {
       error?: ((a: Error) => any) | null,
       complete?: (() => void) | null,
     ): Function;
+
+    /**
+     * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
+     */
+    finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
+
+    then(
+      onFulfilled?: ((a: TaskSnapshot) => any) | null,
+      onRejected?: ((a: Error) => any) | null,
+    ): Promise<any>;
+
+    catch(onRejected: (a: Error) => any): Promise<any>;
   }
 
   export interface TaskSnapshot {
