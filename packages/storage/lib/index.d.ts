@@ -294,11 +294,30 @@ export namespace Storage {
   /**
    * Storage Task used for Uploading or Downloading files.
    *
-   * TODO
+   * #### Example 1
    *
+   * Get a Upload Storage task to upload a string:
    *
    * ```js
-   * const task = firebase.storage().ref('/foo/bar.json').putString('{ "foo": 1 }');
+   * const string = '{ "foo": 1 }';
+   * const task = firebase
+   *  .storage()
+   *  .ref('/foo/bar.json')
+   *  .putString(string);
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get a Download Storage task to download a file:
+   *
+   * ```js
+   * const string = '{ "foo": 1 }';
+   * const downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;
+   *
+   * const task = firebase
+   *  .storage()
+   *  .ref('/foo/bar.json')
+   *  .getFile(downloadTo);
    * ```
    */
   export class Task extends Promise<TaskSnapshot>{

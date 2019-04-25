@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 413,
+									"line": 432,
 									"character": 11
 								}
 							]
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 412,
+							"line": 431,
 							"character": 23
 						},
 						{
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 409,
+									"line": 428,
 									"character": 11
 								}
 							],
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 408,
+							"line": 427,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 407,
+					"line": 426,
 					"character": 49
 				},
 				{
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 395,
+							"line": 414,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 399,
+							"line": 418,
 							"character": 28
 						}
 					],
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 397,
+							"line": 416,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 392,
+					"line": 411,
 					"character": 47
 				}
 			]
@@ -10714,7 +10714,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 378,
+									"line": 397,
 									"character": 24
 								}
 							],
@@ -10734,7 +10734,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 382,
+									"line": 401,
 									"character": 25
 								}
 							],
@@ -10754,7 +10754,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 374,
+									"line": 393,
 									"character": 22
 								}
 							],
@@ -10812,7 +10812,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 386,
+									"line": 405,
 									"character": 7
 								}
 							]
@@ -10855,7 +10855,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 388,
+									"line": 407,
 									"character": 14
 								}
 							]
@@ -10903,7 +10903,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 380,
+									"line": 399,
 									"character": 27
 								}
 							]
@@ -10951,7 +10951,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 384,
+									"line": 403,
 									"character": 28
 								}
 							]
@@ -10999,7 +10999,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 376,
+									"line": 395,
 									"character": 25
 								}
 							]
@@ -11031,7 +11031,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 373,
+							"line": 392,
 							"character": 21
 						}
 					],
@@ -11052,7 +11052,7 @@
 					},
 					"comment": {
 						"shortText": "Storage Task used for Uploading or Downloading files.",
-						"text": "TODO\n\n\n```js\nconst task = firebase.storage().ref('/foo/bar.json').putString('{ \"foo\": 1 }');\n```\n"
+						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .getFile(downloadTo);\n```\n"
 					},
 					"children": [
 						{
@@ -11081,7 +11081,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 304,
+									"line": 323,
 									"character": 50
 								}
 							]
@@ -11155,7 +11155,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 316,
+									"line": 335,
 									"character": 10
 								}
 							]
@@ -11396,7 +11396,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 320,
+																	"line": 339,
 																	"character": 52
 																}
 															]
@@ -11453,7 +11453,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 321,
+																	"line": 340,
 																	"character": 13
 																}
 															]
@@ -11501,7 +11501,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 322,
+																	"line": 341,
 																	"character": 16
 																}
 															]
@@ -11524,7 +11524,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 318,
+									"line": 337,
 									"character": 6
 								}
 							]
@@ -11553,7 +11553,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 312,
+									"line": 331,
 									"character": 9
 								}
 							]
@@ -11582,7 +11582,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 314,
+									"line": 333,
 									"character": 10
 								}
 							]
@@ -11861,7 +11861,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 304,
+							"line": 323,
 							"character": 19
 						}
 					],
@@ -13755,7 +13755,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 327,
+									"line": 346,
 									"character": 20
 								}
 							],
@@ -13775,7 +13775,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 329,
+									"line": 348,
 									"character": 12
 								}
 							],
@@ -13796,7 +13796,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 331,
+									"line": 350,
 									"character": 7
 								}
 							],
@@ -13817,7 +13817,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 333,
+									"line": 352,
 									"character": 9
 								}
 							],
@@ -13858,7 +13858,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 335,
+									"line": 354,
 									"character": 8
 								}
 							],
@@ -13879,7 +13879,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 337,
+									"line": 356,
 									"character": 14
 								}
 							],
@@ -13906,7 +13906,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 326,
+							"line": 345,
 							"character": 31
 						}
 					]
