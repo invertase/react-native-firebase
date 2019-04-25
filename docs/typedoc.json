@@ -12643,7 +12643,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "TODO TaskEvent",
+								"shortText": "TODO Path",
 								"text": "#### Example\n\n```js\nfirebase.storage.Path;\n```\n"
 							},
 							"sources": [

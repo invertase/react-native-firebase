@@ -251,7 +251,7 @@ export namespace Storage {
     TaskEvent: TaskEvent;
 
     /**
-     * TODO TaskEvent
+     * TODO Path
      *
      * #### Example
      *
