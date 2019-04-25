@@ -387,7 +387,7 @@ export namespace Storage {
      * ```
      *
      */
-    pause(): boolean;
+    pause(): Promise<boolean>;
 
     /**
      * Resume the current Download or Upload task.
@@ -407,7 +407,7 @@ export namespace Storage {
      * ```
      *
      */
-    resume(): boolean;
+    resume(): Promise<boolean>;
 
     /**
      * Cancel the current Download or Upload task.
@@ -425,8 +425,15 @@ export namespace Storage {
      * ```
      *
      */
-    cancel(): boolean;
+    cancel(): Promise<boolean>;
 
+    /**
+     *
+     * @param event
+     * @param nextOrObserver
+     * @param error
+     * @param complete
+     */
     on(
       event: 'state_changed',
       nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
