@@ -182,35 +182,84 @@ export namespace Storage {
     SUCCESS: 'success';
   }
 
+
+  export interface Path {
+    /**
+     * Main Bundle Path
+     */
+    MAIN_BUNDLE: string;
+
+    CACHES_DIRECTORY: string;
+
+    /**
+     * Document Directory Path
+     */
+    DOCUMENT_DIRECTORY: string;
+    EXTERNAL_DIRECTORY: string;
+    EXTERNAL_STORAGE_DIRECTORY: string;
+
+    /**
+     * Store Temp Files here
+     */
+    TEMP_DIRECTORY: string;
+    LIBRARY_DIRECTORY: string;
+    FILE_TYPE_REGULAR: string;
+    FILE_TYPE_DIRECTORY: string;
+  }
+
+  /**
+   * Cloud Storage statics.
+   *
+   * #### Example
+   *
+   * ```js
+   * firebase.storage;
+   * ```
+   */
   export interface Statics {
+    /**
+     * TODO StringFormat
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.storage.StringFormat;
+     * ```
+     */
     StringFormat: StringFormat;
 
+    /**
+     * TODO TaskState
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.storage.TaskState;
+     * ```
+     */
     TaskState: TaskState;
 
+    /**
+     * TODO TaskEvent
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.storage.TaskEvent;
+     * ```
+     */
     TaskEvent: TaskEvent;
 
-    Native: {
-      /**
-       * Main Bundle Path
-       */
-      MAIN_BUNDLE_PATH: string;
-
-      CACHES_DIRECTORY_PATH: string;
-
-      /**
-       * Document Directory Path
-       */
-      DOCUMENT_DIRECTORY_PATH: string;
-      EXTERNAL_DIRECTORY_PATH: string;
-      EXTERNAL_STORAGE_DIRECTORY_PATH: string;
-      /**
-       * Store Temp Files here
-       */
-      TEMP_DIRECTORY_PATH: string;
-      LIBRARY_DIRECTORY_PATH: string;
-      FILE_TYPE_REGULAR: string;
-      FILE_TYPE_DIRECTORY: string;
-    };
+    /**
+     * TODO TaskEvent
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.storage.Path;
+     * ```
+     */
+    Path: Path,
   }
 
   export interface SettableMetadata {

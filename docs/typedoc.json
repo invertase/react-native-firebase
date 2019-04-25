@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 488,
+									"line": 537,
 									"character": 11
 								}
 							]
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 487,
+							"line": 536,
 							"character": 23
 						},
 						{
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 484,
+									"line": 533,
 									"character": 11
 								}
 							],
@@ -1186,7 +1186,7 @@
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 450
+										"id": 460
 									}
 								]
 							}
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 483,
+							"line": 532,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 482,
+					"line": 531,
 					"character": 49
 				},
 				{
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 470,
+							"line": 519,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 474,
+							"line": 523,
 							"character": 28
 						}
 					],
@@ -2686,7 +2686,7 @@
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 450
+								"id": 460
 							}
 						]
 					}
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 472,
+							"line": 521,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 467,
+					"line": 516,
 					"character": 47
 				}
 			]
@@ -10714,7 +10714,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 453,
+									"line": 502,
 									"character": 24
 								}
 							],
@@ -10734,7 +10734,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 457,
+									"line": 506,
 									"character": 25
 								}
 							],
@@ -10754,7 +10754,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 449,
+									"line": 498,
 									"character": 22
 								}
 							],
@@ -10812,7 +10812,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 461,
+									"line": 510,
 									"character": 7
 								}
 							]
@@ -10855,7 +10855,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 463,
+									"line": 512,
 									"character": 14
 								}
 							]
@@ -10903,7 +10903,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 455,
+									"line": 504,
 									"character": 27
 								}
 							]
@@ -10951,7 +10951,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 459,
+									"line": 508,
 									"character": 28
 								}
 							]
@@ -10999,7 +10999,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 451,
+									"line": 500,
 									"character": 25
 								}
 							]
@@ -11031,7 +11031,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 448,
+							"line": 497,
 							"character": 21
 						}
 					],
@@ -11062,7 +11062,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 237,
+									"line": 286,
 									"character": 10
 								}
 							],
@@ -11083,7 +11083,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 217,
+									"line": 266,
 									"character": 16
 								}
 							],
@@ -11118,7 +11118,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 219,
+									"line": 268,
 									"character": 22
 								}
 							],
@@ -11153,7 +11153,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 221,
+									"line": 270,
 									"character": 19
 								}
 							],
@@ -11188,7 +11188,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 223,
+									"line": 272,
 									"character": 19
 								}
 							],
@@ -11223,7 +11223,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 225,
+									"line": 274,
 									"character": 15
 								}
 							],
@@ -11258,7 +11258,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 227,
+									"line": 276,
 									"character": 18
 								}
 							],
@@ -11302,7 +11302,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 227,
+													"line": 276,
 													"character": 20
 												}
 											]
@@ -11331,7 +11331,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 239,
+									"line": 288,
 									"character": 12
 								}
 							],
@@ -11351,7 +11351,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 241,
+									"line": 290,
 									"character": 14
 								}
 							],
@@ -11372,7 +11372,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 233,
+									"line": 282,
 									"character": 11
 								}
 							],
@@ -11406,7 +11406,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 243,
+									"line": 292,
 									"character": 18
 								}
 							],
@@ -11426,7 +11426,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 245,
+									"line": 294,
 									"character": 8
 								}
 							],
@@ -11446,7 +11446,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 247,
+									"line": 296,
 									"character": 8
 								}
 							],
@@ -11466,7 +11466,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 249,
+									"line": 298,
 									"character": 15
 								}
 							],
@@ -11486,7 +11486,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 251,
+									"line": 300,
 									"character": 11
 								}
 							],
@@ -11522,7 +11522,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 236,
+							"line": 285,
 							"character": 31
 						}
 					],
@@ -11531,6 +11531,230 @@
 							"type": "reference",
 							"name": "UploadMetadata",
 							"id": 475
+						}
+					]
+				},
+				{
+					"id": 450,
+					"name": "Path",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 452,
+							"name": "CACHES_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 192,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 453,
+							"name": "DOCUMENT_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Document Directory Path"
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 197,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 454,
+							"name": "EXTERNAL_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 198,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 455,
+							"name": "EXTERNAL_STORAGE_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 199,
+									"character": 30
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 459,
+							"name": "FILE_TYPE_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 207,
+									"character": 23
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 458,
+							"name": "FILE_TYPE_REGULAR",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 206,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 457,
+							"name": "LIBRARY_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 205,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 451,
+							"name": "MAIN_BUNDLE",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Main Bundle Path"
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 190,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 456,
+							"name": "TEMP_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Store Temp Files here"
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 204,
+									"character": 18
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								452,
+								453,
+								454,
+								455,
+								459,
+								458,
+								457,
+								451,
+								456
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 186,
+							"character": 23
 						}
 					]
 				},
@@ -11554,7 +11778,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 255,
+									"line": 304,
 									"character": 10
 								}
 							],
@@ -11574,7 +11798,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 259,
+									"line": 308,
 									"character": 12
 								}
 							],
@@ -11594,7 +11818,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 261,
+									"line": 310,
 									"character": 8
 								}
 							],
@@ -11614,7 +11838,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 257,
+									"line": 306,
 									"character": 10
 								}
 							],
@@ -11644,7 +11868,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 263,
+									"line": 312,
 									"character": 8
 								}
 							],
@@ -11665,7 +11889,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 265,
+									"line": 314,
 									"character": 11
 								}
 							],
@@ -11713,7 +11937,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 269,
+									"line": 318,
 									"character": 9
 								}
 							]
@@ -11748,7 +11972,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 271,
+									"line": 320,
 									"character": 10
 								}
 							]
@@ -11783,7 +12007,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 273,
+									"line": 322,
 									"character": 18
 								}
 							]
@@ -11819,7 +12043,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 275,
+									"line": 324,
 									"character": 15
 								}
 							]
@@ -11889,7 +12113,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 279,
+									"line": 328,
 									"character": 7
 								}
 							]
@@ -11946,7 +12170,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 277,
+									"line": 326,
 									"character": 11
 								}
 							]
@@ -12017,7 +12241,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 281,
+									"line": 330,
 									"character": 13
 								}
 							]
@@ -12046,7 +12270,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 267,
+									"line": 316,
 									"character": 12
 								}
 							]
@@ -12096,7 +12320,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 332,
 									"character": 18
 								}
 							]
@@ -12134,7 +12358,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 254,
+							"line": 303,
 							"character": 28
 						}
 					]
@@ -12160,7 +12384,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 217,
+									"line": 266,
 									"character": 16
 								}
 							],
@@ -12190,7 +12414,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 219,
+									"line": 268,
 									"character": 22
 								}
 							],
@@ -12220,7 +12444,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 221,
+									"line": 270,
 									"character": 19
 								}
 							],
@@ -12250,7 +12474,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 223,
+									"line": 272,
 									"character": 19
 								}
 							],
@@ -12280,7 +12504,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 225,
+									"line": 274,
 									"character": 15
 								}
 							],
@@ -12310,7 +12534,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 227,
+									"line": 276,
 									"character": 18
 								}
 							],
@@ -12354,7 +12578,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 227,
+													"line": 276,
 													"character": 20
 												}
 											]
@@ -12385,7 +12609,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 216,
+							"line": 265,
 							"character": 35
 						}
 					],
@@ -12398,249 +12622,59 @@
 					]
 				},
 				{
-					"id": 450,
+					"id": 460,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "Cloud Storage statics.",
+						"text": "#### Example\n\n```js\nfirebase.storage;\n```\n"
+					},
 					"children": [
 						{
-							"id": 454,
-							"name": "Native",
+							"id": 464,
+							"name": "Path",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO TaskEvent",
+								"text": "#### Example\n\n```js\nfirebase.storage.Path;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 192,
-									"character": 10
+									"line": 262,
+									"character": 8
 								}
 							],
 							"type": {
-								"type": "reflection",
-								"declaration": {
-									"id": 455,
-									"name": "__type",
-									"kind": 65536,
-									"kindString": "Type literal",
-									"flags": {},
-									"children": [
-										{
-											"id": 457,
-											"name": "CACHES_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 198,
-													"character": 27
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 458,
-											"name": "DOCUMENT_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"comment": {
-												"shortText": "Document Directory Path"
-											},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 203,
-													"character": 29
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 459,
-											"name": "EXTERNAL_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 204,
-													"character": 29
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 460,
-											"name": "EXTERNAL_STORAGE_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 205,
-													"character": 37
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 464,
-											"name": "FILE_TYPE_DIRECTORY",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 212,
-													"character": 25
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 463,
-											"name": "FILE_TYPE_REGULAR",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 211,
-													"character": 23
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 462,
-											"name": "LIBRARY_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 210,
-													"character": 28
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 456,
-											"name": "MAIN_BUNDLE_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"comment": {
-												"shortText": "Main Bundle Path"
-											},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 196,
-													"character": 22
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										},
-										{
-											"id": 461,
-											"name": "TEMP_DIRECTORY_PATH",
-											"kind": 32,
-											"kindString": "Variable",
-											"flags": {},
-											"comment": {
-												"shortText": "Store Temp Files here"
-											},
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 209,
-													"character": 25
-												}
-											],
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"groups": [
-										{
-											"title": "Variables",
-											"kind": 32,
-											"children": [
-												457,
-												458,
-												459,
-												460,
-												464,
-												463,
-												462,
-												456,
-												461
-											]
-										}
-									],
-									"sources": [
-										{
-											"fileName": "storage/lib/index.d.ts",
-											"line": 192,
-											"character": 11
-										}
-									]
-								}
+								"type": "reference",
+								"name": "Path",
+								"id": 450
 							}
 						},
 						{
-							"id": 451,
+							"id": 461,
 							"name": "StringFormat",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO StringFormat",
+								"text": "#### Example\n\n```js\nfirebase.storage.StringFormat;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 186,
+									"line": 229,
 									"character": 16
 								}
 							],
@@ -12651,17 +12685,21 @@
 							}
 						},
 						{
-							"id": 453,
+							"id": 463,
 							"name": "TaskEvent",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO TaskEvent",
+								"text": "#### Example\n\n```js\nfirebase.storage.TaskEvent;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 190,
+									"line": 251,
 									"character": 13
 								}
 							],
@@ -12672,17 +12710,21 @@
 							}
 						},
 						{
-							"id": 452,
+							"id": 462,
 							"name": "TaskState",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO TaskState",
+								"text": "#### Example\n\n```js\nfirebase.storage.TaskState;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 188,
+									"line": 240,
 									"character": 13
 								}
 							],
@@ -12698,17 +12740,17 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								454,
-								451,
-								453,
-								452
+								464,
+								461,
+								463,
+								462
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 185,
+							"line": 219,
 							"character": 26
 						}
 					]
@@ -12884,7 +12926,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 379,
+									"line": 428,
 									"character": 10
 								}
 							]
@@ -12948,7 +12990,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 398,
+															"line": 447,
 															"character": 21
 														}
 													]
@@ -12971,7 +13013,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 398,
+									"line": 447,
 									"character": 9
 								}
 							]
@@ -13061,7 +13103,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 383,
+																	"line": 432,
 																	"character": 52
 																}
 															]
@@ -13118,7 +13160,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 384,
+																	"line": 433,
 																	"character": 13
 																}
 															]
@@ -13166,7 +13208,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 385,
+																	"line": 434,
 																	"character": 16
 																}
 															]
@@ -13189,7 +13231,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 381,
+									"line": 430,
 									"character": 6
 								}
 							]
@@ -13222,7 +13264,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 341,
+									"line": 390,
 									"character": 9
 								}
 							]
@@ -13255,7 +13297,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 361,
+									"line": 410,
 									"character": 10
 								}
 							]
@@ -13325,7 +13367,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 394,
+																	"line": 443,
 																	"character": 19
 																}
 															]
@@ -13386,7 +13428,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 395,
+																	"line": 444,
 																	"character": 18
 																}
 															]
@@ -13415,7 +13457,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 393,
+									"line": 442,
 									"character": 8
 								}
 							]
@@ -13438,7 +13480,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 323,
+							"line": 372,
 							"character": 23
 						}
 					]
@@ -13518,7 +13560,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 402,
+									"line": 451,
 									"character": 20
 								}
 							],
@@ -13538,7 +13580,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 404,
+									"line": 453,
 									"character": 12
 								}
 							],
@@ -13559,7 +13601,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 406,
+									"line": 455,
 									"character": 7
 								}
 							],
@@ -13580,7 +13622,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 408,
+									"line": 457,
 									"character": 9
 								}
 							],
@@ -13621,7 +13663,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 410,
+									"line": 459,
 									"character": 8
 								}
 							],
@@ -13642,7 +13684,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 412,
+									"line": 461,
 									"character": 14
 								}
 							],
@@ -13669,7 +13711,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 401,
+							"line": 450,
 							"character": 31
 						}
 					]
@@ -13694,7 +13736,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 291,
+									"line": 340,
 									"character": 12
 								}
 							],
@@ -13722,7 +13764,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 291,
+											"line": 340,
 											"character": 13
 										}
 									]
@@ -13740,7 +13782,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 289,
+									"line": 338,
 									"character": 9
 								}
 							],
@@ -13781,7 +13823,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 289,
+											"line": 338,
 											"character": 10
 										}
 									]
@@ -13799,7 +13841,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 336,
 									"character": 8
 								}
 							],
@@ -13841,7 +13883,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 287,
+											"line": 336,
 											"character": 9
 										}
 									]
@@ -13863,7 +13905,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 286,
+							"line": 335,
 							"character": 39
 						}
 					]
@@ -14030,7 +14072,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 217,
+									"line": 266,
 									"character": 16
 								}
 							],
@@ -14065,7 +14107,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 219,
+									"line": 268,
 									"character": 22
 								}
 							],
@@ -14100,7 +14142,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 221,
+									"line": 270,
 									"character": 19
 								}
 							],
@@ -14135,7 +14177,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 223,
+									"line": 272,
 									"character": 19
 								}
 							],
@@ -14170,7 +14212,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 225,
+									"line": 274,
 									"character": 15
 								}
 							],
@@ -14205,7 +14247,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 227,
+									"line": 276,
 									"character": 18
 								}
 							],
@@ -14249,7 +14291,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 227,
+													"line": 276,
 													"character": 20
 												}
 											]
@@ -14279,7 +14321,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 233,
+									"line": 282,
 									"character": 11
 								}
 							],
@@ -14316,7 +14358,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 232,
+							"line": 281,
 							"character": 33
 						}
 					],
@@ -14349,9 +14391,10 @@
 					"kind": 256,
 					"children": [
 						486,
+						450,
 						505,
 						465,
-						450,
+						460,
 						437,
 						551,
 						442,
