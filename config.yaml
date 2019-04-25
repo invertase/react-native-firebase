@@ -18,7 +18,7 @@ versions:
   branches:
     v6: '@salakar/v6/storage'
 menu:
-  - text: Modules
+  - text: v6.x.x
     to: '/v6'
   - text: Guides
     to: '/guides'
