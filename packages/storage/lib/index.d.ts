@@ -302,6 +302,16 @@ export namespace Storage {
    * ```
    */
   export class Task extends Promise<TaskSnapshot>{
+    /**
+     * @ignore
+     */
+    private constructor();
+
+    /**
+     * @ignore
+     */
+    '__@toStringTag': string;
+
     pause(): boolean;
 
     resume(): boolean;
