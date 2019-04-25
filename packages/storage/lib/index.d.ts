@@ -291,7 +291,17 @@ export namespace Storage {
     complete: () => void;
   }
 
-  export interface Task {
+  /**
+   * Storage Task used for Uploading or Downloading files.
+   *
+   * TODO
+   *
+   *
+   * ```js
+   * const task = firebase.storage().ref('/foo/bar.json').putString('{ "foo": 1 }');
+   * ```
+   */
+  export class Task extends Promise<TaskSnapshot>{
     pause(): boolean;
 
     resume(): boolean;
@@ -304,16 +314,6 @@ export namespace Storage {
       error?: ((a: Error) => any) | null,
       complete?: (() => void) | null,
     ): Function;
-
-    // TODO not supported
-    // snapshot: TaskSnapshot;
-
-    then(
-      onFulfilled?: ((a: TaskSnapshot) => any) | null,
-      onRejected?: ((a: Error) => any) | null,
-    ): Promise<any>;
-
-    catch(onRejected: (a: Error) => any): Promise<any>;
   }
 
   export interface TaskSnapshot {

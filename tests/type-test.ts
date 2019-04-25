@@ -18,6 +18,15 @@ const foo = async () => {
     }
   });
 
+  task.catch(e => {
+    return 'bar';
+  });
+
+  task.then(snapshot => {
+    snapshot.metadata.bucket;
+    return 'foo';
+  });
+
   firebase.storage.TaskState.CANCELLED;
   firebase.storage.TaskEvent.STATE_CHANGED;
   firebase.perf().newHttpMetric('', 'GET');
