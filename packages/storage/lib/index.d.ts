@@ -302,15 +302,12 @@ export namespace Storage {
    * ```
    */
   export class Task extends Promise<TaskSnapshot>{
-    /**
-     * @ignore
-     */
     private constructor();
 
     /**
-     * @ignore
+     * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
      */
-    '__@toStringTag': string;
+    finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
 
     pause(): boolean;
 

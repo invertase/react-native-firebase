@@ -125,6 +125,14 @@ export default class StorageTask {
   }
 
   /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#finally
+   */
+  get finally() {
+    if (!this._promise) this._promise = this._beginTask(this);
+    return this._promise.finally.bind(this._promise);
+  }
+
+  /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#on
    */
   on(event, nextOrObserver, error, complete) {

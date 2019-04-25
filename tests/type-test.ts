@@ -11,6 +11,8 @@ const foo = async () => {
     .ref('foo')
     .putFile('');
 
+  task.finally
+
   task.on(firebase.storage.TaskEvent.STATE_CHANGED, taskSnapshot => {
     if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {
       console.log('cancelling task!');
