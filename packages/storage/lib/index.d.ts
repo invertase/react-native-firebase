@@ -328,10 +328,61 @@ export namespace Storage {
      */
     finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
 
+    /**
+     * Pause the current Download or Upload task.
+     *
+     * #### Example
+     *
+     * Pause a running task inside a state changed listener:
+     *
+     * ```js
+     * task.on('state_changed', taskSnapshot => {
+     *   if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {
+     *     console.log('Pausing my task!');
+     *     task.pause();
+     *   }
+     * });
+     * ```
+     *
+     */
     pause(): boolean;
 
+    /**
+     * Resume the current Download or Upload task.
+     *
+     * #### Example
+     *
+     * Resume a previously paused task inside a state changed listener:
+     *
+     * ```js
+     * task.on('state_changed', taskSnapshot => {
+     *   // ... pause me ...
+     *   if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {
+     *     console.log('Resuming my task!');
+     *     task.resume();
+     *   }
+     * });
+     * ```
+     *
+     */
     resume(): boolean;
 
+    /**
+     * Cancel the current Download or Upload task.
+     *
+     *
+     * #### Example
+     *
+     * Cancel a task inside a state changed listener:
+     *
+     * ```js
+     * task.on('state_changed', taskSnapshot => {
+     *   console.log('Cancelling my task!');
+     *   task.cancel();
+     * });
+     * ```
+     *
+     */
     cancel(): boolean;
 
     on(

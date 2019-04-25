@@ -14,7 +14,7 @@ const foo = async () => {
   task.finally
 
   task.on(firebase.storage.TaskEvent.STATE_CHANGED, taskSnapshot => {
-    if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {
+    if (taskSnapshot.state === firebase.storage.TaskState.) {
       console.log('cancelling task!');
       taskSnapshot.task.cancel();
     }

@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 432,
+									"line": 483,
 									"character": 11
 								}
 							]
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 431,
+							"line": 482,
 							"character": 23
 						},
 						{
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 428,
+									"line": 479,
 									"character": 11
 								}
 							],
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 427,
+							"line": 478,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 426,
+					"line": 477,
 					"character": 49
 				},
 				{
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 414,
+							"line": 465,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 418,
+							"line": 469,
 							"character": 28
 						}
 					],
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 416,
+							"line": 467,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 411,
+					"line": 462,
 					"character": 47
 				}
 			]
@@ -10714,7 +10714,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 397,
+									"line": 448,
 									"character": 24
 								}
 							],
@@ -10734,7 +10734,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 401,
+									"line": 452,
 									"character": 25
 								}
 							],
@@ -10754,7 +10754,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 393,
+									"line": 444,
 									"character": 22
 								}
 							],
@@ -10812,7 +10812,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 405,
+									"line": 456,
 									"character": 7
 								}
 							]
@@ -10855,7 +10855,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 407,
+									"line": 458,
 									"character": 14
 								}
 							]
@@ -10903,7 +10903,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 399,
+									"line": 450,
 									"character": 27
 								}
 							]
@@ -10951,7 +10951,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 403,
+									"line": 454,
 									"character": 28
 								}
 							]
@@ -10999,7 +10999,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 395,
+									"line": 446,
 									"character": 25
 								}
 							]
@@ -11031,7 +11031,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 392,
+							"line": 443,
 							"character": 21
 						}
 					],
@@ -11146,6 +11146,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Cancel the current Download or Upload task.",
+										"text": "#### Example\n\nCancel a task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  console.log('Cancelling my task!');\n  task.cancel();\n});\n```\n\n"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "boolean"
@@ -11155,7 +11159,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 335,
+									"line": 386,
 									"character": 10
 								}
 							]
@@ -11396,7 +11400,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 339,
+																	"line": 390,
 																	"character": 52
 																}
 															]
@@ -11453,7 +11457,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 340,
+																	"line": 391,
 																	"character": 13
 																}
 															]
@@ -11501,7 +11505,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 341,
+																	"line": 392,
 																	"character": 16
 																}
 															]
@@ -11524,7 +11528,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 337,
+									"line": 388,
 									"character": 6
 								}
 							]
@@ -11544,6 +11548,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Pause the current Download or Upload task.",
+										"text": "#### Example\n\nPause a running task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {\n    console.log('Pausing my task!');\n    task.pause();\n  }\n});\n```\n\n"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "boolean"
@@ -11553,7 +11561,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 331,
+									"line": 348,
 									"character": 9
 								}
 							]
@@ -11573,6 +11581,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Resume the current Download or Upload task.",
+										"text": "#### Example\n\nResume a previously paused task inside a state changed listener:\n\n```js\ntask.on('state_changed', taskSnapshot => {\n  // ... pause me ...\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n\n"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "boolean"
@@ -11582,7 +11594,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 333,
+									"line": 368,
 									"character": 10
 								}
 							]
@@ -13755,7 +13767,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 346,
+									"line": 397,
 									"character": 20
 								}
 							],
@@ -13775,7 +13787,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 348,
+									"line": 399,
 									"character": 12
 								}
 							],
@@ -13796,7 +13808,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 350,
+									"line": 401,
 									"character": 7
 								}
 							],
@@ -13817,7 +13829,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 352,
+									"line": 403,
 									"character": 9
 								}
 							],
@@ -13858,7 +13870,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 354,
+									"line": 405,
 									"character": 8
 								}
 							],
@@ -13879,7 +13891,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 356,
+									"line": 407,
 									"character": 14
 								}
 							],
@@ -13906,7 +13918,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 345,
+							"line": 396,
 							"character": 31
 						}
 					]
