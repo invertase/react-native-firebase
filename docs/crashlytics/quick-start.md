@@ -54,7 +54,7 @@ function forceCrash() {
 
 Crashlytics supports sending JavaScript stack traces to the Firebase console. This can be used in any situations
 where an error occurs but is caught by your own code as a bailout method. To
-send a stack trace, pass a [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+send a stack trace, pass a [JavaScript Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
 to the `recordError` method.
 
  ```js
