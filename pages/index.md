@@ -7,7 +7,7 @@ description: React Native Firebase
   <LogoAnimated></LogoAnimated>
   <Heading el="h1">React Native Firebase</Heading>
   <p>
-    React Native Firebase is a well tested, feature rich modular Firebase implementation for React Native. Supporting both iOS & Android platforms with over 15 supported Firebase services.
+    React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
   </p>
 </div>
 
