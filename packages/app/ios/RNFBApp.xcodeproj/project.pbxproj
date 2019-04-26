@@ -269,10 +269,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}/**",
-					"${SRCROOT}/../../../ios/Firebase/**",
+					"${SRCROOT}/../../../../ios/Firebase/**",
 					"$(FIREBASE_SEARCH_PATH)/Firebase/**",
-					"$(SRCROOT)/../../../ios/Pods/FirebaseCore/Frameworks",
-					"$(SRCROOT)/../../../tests/ios/Pods/FirebaseCore/Frameworks",
+					"$(SRCROOT)/../../../../ios/Pods/FirebaseCore/Frameworks",
+					"$(SRCROOT)/../../../../tests/ios/Pods/FirebaseCore/Frameworks",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -284,12 +284,12 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(REACT_SEARCH_PATH)/React/**",
-					"$(SRCROOT)/../../react-native/React/**",
+					"${SRCROOT}/../../../react-native/React/**",
 					"$(FIREBASE_SEARCH_PATH)/Firebase/**",
-					"${SRCROOT}/../../../ios/Firebase/**",
-					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
-					"${SRCROOT}/../../../tests/ios/Pods/Headers/Public/**",
-					"$(SRCROOT)/../../../node_modules/react-native/React/**",
+					"${SRCROOT}/../../../../ios/Firebase/**",
+					"${SRCROOT}/../../../../ios/Pods/Headers/Public",
+					"${SRCROOT}/../../../../tests/ios/Pods/Headers/Public/**",
+					"${SRCROOT}/../../../../node_modules/react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -325,9 +325,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"${BUILT_PRODUCTS_DIR}/**",
-					"${SRCROOT}/../../../ios/Firebase/**",
+					"${SRCROOT}/../../../../ios/Firebase/**",
 					"$(FIREBASE_SEARCH_PATH)/Firebase/**",
-					"$(SRCROOT)/../../../ios/Pods/FirebaseCore/Frameworks",
+					"$(SRCROOT)/../../../../ios/Pods/FirebaseCore/Frameworks",
 				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -339,21 +339,12 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(REACT_SEARCH_PATH)/React/**",
-					"$(SRCROOT)/../../react-native/React/**",
+					"${SRCROOT}/../../../react-native/React/**",
 					"$(FIREBASE_SEARCH_PATH)/Firebase/**",
-					"${SRCROOT}/../../../ios/Firebase/**",
-					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
-					"$(SRCROOT)/../../../node_modules/react-native/React/**",
-					"${SRCROOT}/../../../tests/ios/Pods/Headers/Public/**",
-				);
-				"HEADER_SEARCH_PATHS[arch=*]" = (
-					"$(inherited)",
-					"$(REACT_SEARCH_PATH)/React/**",
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(FIREBASE_SEARCH_PATH)/Firebase/**",
-					"${SRCROOT}/../../../ios/Firebase/**",
-					"${SRCROOT}/../../../ios/Pods/Headers/Public/**",
-					"$(SRCROOT)/../../../node_modules/react-native/React/**",
+					"${SRCROOT}/../../../../ios/Firebase/**",
+					"${SRCROOT}/../../../../ios/Pods/Headers/Public",
+					"${SRCROOT}/../../../../node_modules/react-native/React/**",
+					"${SRCROOT}/../../../../tests/ios/Pods/Headers/Public/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
