@@ -182,29 +182,40 @@ export namespace Storage {
     SUCCESS: 'success';
   }
 
-
   export interface Path {
-    /**
-     * Main Bundle Path
-     */
-    MAIN_BUNDLE: string;
+    MainBundle: string;
 
-    CACHES_DIRECTORY: string;
+    CachesDirectory: string;
 
-    /**
-     * Document Directory Path
-     */
-    DOCUMENT_DIRECTORY: string;
-    EXTERNAL_DIRECTORY: string;
-    EXTERNAL_STORAGE_DIRECTORY: string;
+    DocumentDirectory: string;
+
+    TempDirectory: string;
+
+    LibraryDirectory: string;
 
     /**
-     * Store Temp Files here
+     *
+     * @android Android only - iOS return `DocumentDirectory`
      */
-    TEMP_DIRECTORY: string;
-    LIBRARY_DIRECTORY: string;
-    FILE_TYPE_REGULAR: string;
-    FILE_TYPE_DIRECTORY: string;
+    ExternalDirectory: string;
+
+    /**
+     *
+     * @android Android only - iOS return `DocumentDirectory`
+     */
+    ExternalStorageDirectory: string;
+
+    /**
+     *
+     * @android Android only - iOS return `DocumentDirectory`
+     */
+    PicturesDirectory: string;
+
+    /**
+     *
+     * @android Android only - iOS return `DocumentDirectory`
+     */
+    MoviesDirectory: string;
   }
 
   /**
@@ -259,7 +270,7 @@ export namespace Storage {
      * firebase.storage.Path;
      * ```
      */
-    Path: Path,
+    Path: Path;
   }
 
   export interface SettableMetadata {
@@ -361,7 +372,7 @@ export namespace Storage {
    *
    * ```js
    * const string = '{ "foo": 1 }';
-   * const downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;
+   * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/bar.json`;
    *
    * const task = firebase
    *  .storage()

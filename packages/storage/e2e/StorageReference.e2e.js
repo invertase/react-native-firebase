@@ -104,11 +104,11 @@ describe('storage() -> StorageReference', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .getFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
+        .getFile(`${firebase.storage.Path.DocumentDirectory}/deleteMe.jpeg`);
       await firebase
         .storage()
         .ref('/deleteMe.jpeg')
-        .putFile(`${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/deleteMe.jpeg`);
+        .putFile(`${firebase.storage.Path.DocumentDirectory}/deleteMe.jpeg`);
     });
 
     it('should delete a file', async () => {

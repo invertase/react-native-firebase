@@ -377,15 +377,15 @@ RCT_EXPORT_METHOD(putFile:
 - (NSDictionary *)constantsToExport {
   // TODO(salakar) clean me
   return @{
-      @"MAIN_BUNDLE_PATH": [[NSBundle mainBundle] bundlePath],
-      @"CACHES_DIRECTORY_PATH": [self getPathForDirectory:NSCachesDirectory],
-      @"DOCUMENT_DIRECTORY_PATH": [self getPathForDirectory:NSDocumentDirectory],
-      @"EXTERNAL_DIRECTORY_PATH": [NSNull null],
-      @"EXTERNAL_STORAGE_DIRECTORY_PATH": [NSNull null],
-      @"TEMP_DIRECTORY_PATH": NSTemporaryDirectory(),
-      @"LIBRARY_DIRECTORY_PATH": [self getPathForDirectory:NSLibraryDirectory],
-      @"FILETYPE_REGULAR": NSFileTypeRegular,
-      @"FILETYPE_DIRECTORY": NSFileTypeDirectory
+    @"MainBundle": [[NSBundle mainBundle] bundlePath],
+    @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
+    @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
+    @"PicturesDirectory": [self getPathForDirectory:NSDocumentDirectory],
+    @"MoviesDirectory": [self getPathForDirectory:NSDocumentDirectory],
+    @"ExternalDirectory": [self getPathForDirectory:NSDocumentDirectory],
+    @"ExternalStorageDirectory": [self getPathForDirectory:NSDocumentDirectory],
+    @"TempDirectory": NSTemporaryDirectory(),
+    @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
   };
 }
 

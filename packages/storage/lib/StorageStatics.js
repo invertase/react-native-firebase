@@ -18,34 +18,62 @@
 import { NativeModules } from 'react-native';
 import { stripTrailingSlash } from '@react-native-firebase/common';
 
-const NativePaths = NativeModules.RNFBStorageModule
-  ? {
-      MAIN_BUNDLE_PATH: stripTrailingSlash(NativeModules.RNFBStorageModule.MAIN_BUNDLE_PATH),
-      CACHES_DIRECTORY_PATH: stripTrailingSlash(
-        NativeModules.RNFBStorageModule.CACHES_DIRECTORY_PATH,
-      ),
-      DOCUMENT_DIRECTORY_PATH: stripTrailingSlash(
-        NativeModules.RNFBStorageModule.DOCUMENT_DIRECTORY_PATH,
-      ),
-      EXTERNAL_DIRECTORY_PATH: stripTrailingSlash(
-        NativeModules.RNFBStorageModule.EXTERNAL_DIRECTORY_PATH || null,
-      ),
-      EXTERNAL_STORAGE_DIRECTORY_PATH: stripTrailingSlash(
-        NativeModules.RNFBStorageModule.EXTERNAL_STORAGE_DIRECTORY_PATH || null,
-      ),
-      TEMP_DIRECTORY_PATH: stripTrailingSlash(NativeModules.RNFBStorageModule.TEMP_DIRECTORY_PATH),
-      LIBRARY_DIRECTORY_PATH: stripTrailingSlash(
-        NativeModules.RNFBStorageModule.LIBRARY_DIRECTORY_PATH,
-      ),
-      FILE_TYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
-      FILE_TYPE_DIRECTORY: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY),
+// TODO(salakar) refactor once deprecations have been removed
 
-      // TODO(deprecation) remove in 6.2.0
-      // TODO(salakar) add getter deprecation warning
-      FILETYPE_REGULAR: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_REGULAR),
-      FILETYPE_DIRECTORY: stripTrailingSlash(NativeModules.RNFBStorageModule.FILE_TYPE_DIRECTORY),
+const PATH_NAMES = {
+  MainBundle: 'MAIN_BUNDLE_PATH',
+  CachesDirectory: 'CACHES_DIRECTORY_PATH',
+  DocumentDirectory: 'DOCUMENT_DIRECTORY_PATH',
+  ExternalDirectory: 'EXTERNAL_DIRECTORY_PATH',
+  ExternalStorageDirectory: 'EXTERNAL_STORAGE_DIRECTORY_PATH',
+  TempDirectory: 'TEMP_DIRECTORY_PATH',
+  LibraryDirectory: 'LIBRARY_DIRECTORY_PATH',
+  PicturesDirectory: false,
+  MoviesDirectory: false,
+};
+
+const PATH_FILE_TYPES = ['FILE_TYPE_REGULAR', 'FILE_TYPE_DIRECTORY'];
+
+const path = {};
+let processedPathConstants = false;
+
+function processPathConstants(nativeModule) {
+  if (!nativeModule) return {};
+  processedPathConstants = true;
+
+  const entries = Object.entries(PATH_NAMES);
+  for (let i = 0; i < entries.length; i++) {
+    const [newName, oldName] = entries[i];
+    path[newName] = stripTrailingSlash(nativeModule[newName]);
+
+    // TODO(salakar) deprecated remove in 6.1.0:
+    if (oldName) {
+      Object.defineProperty(path, `${oldName}`, {
+        // eslint-disable-next-line no-loop-func
+        get() {
+          console.warn(
+            `'firebase.storage.Native.${oldName}' is deprecated and will be removed in 6.1.0 please use 'firebase.storage.Path.${newName}' instead`,
+          );
+
+          return path[newName];
+        },
+      });
     }
-  : {};
+  }
+
+  for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
+    const pathFileType = PATH_FILE_TYPES[i];
+    path[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
+
+    // TODO(salakar) deprecated remove in 6.1.0:
+    const deprecatedFileTypeName = pathFileType.replace('_', '');
+    path[deprecatedFileTypeName] = path[pathFileType];
+  }
+
+  Object.freeze(path);
+
+  return path;
+}
 
 export default {
   StringFormat: {
@@ -64,5 +92,13 @@ export default {
     CANCELLED: 'cancelled',
     ERROR: 'error',
   },
-  Native: NativePaths,
+  get Path() {
+    if (processedPathConstants) return path;
+    return processPathConstants(NativeModules.RNFBStorageModule);
+  },
+  // TODO(salakar) deprecated remove in 6.1.0:
+  get Native() {
+    if (processedPathConstants) return path;
+    return processPathConstants(NativeModules.RNFBStorageModule);
+  },
 };
