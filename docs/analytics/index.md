@@ -18,7 +18,7 @@ device information, location, user actions and more.
 		icon="multiline_chart"
 		color="#2196f3"
 		title="Quick Start"
-		to="/{{ version }}/analytics/quick-start"
+		to="/quick-start"
 	>
     Install & start gaining insight into your users behaviour throught your application.
 	</Block>
@@ -26,7 +26,7 @@ device information, location, user actions and more.
 		icon="block"
 		color="#f44336"
 		title="Reserved Events"
-		to="/{{ version }}/analytics/reserved-events"
+		to="/reserved-events"
 	>
     Firebase Analytics automatically tracks certain events which cannot be overridden. Understanding 
     what events are provided out of the box is a great place to start.
@@ -35,6 +35,7 @@ device information, location, user actions and more.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=analytics"
 	>
     Analytics works great out of the box, however provides a powerful API to gain full analytical insight into 
@@ -44,7 +45,7 @@ device information, location, user actions and more.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/analytics/reference"
+		to="/reference"
 	>
     Take advantage of the simple reference API for Analytics start integrating it into your application.
 	</Block>

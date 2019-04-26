@@ -15,7 +15,7 @@ your app's server side managed resources, for example sending FCM messages.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/iid/quick-start"
+		to="/quick-start"
 	>
     Install & start using Instance ID with your application.
 	</Block>
@@ -23,6 +23,7 @@ your app's server side managed resources, for example sending FCM messages.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=perf"
 	>
 	  Understand how Instance ID can be used with your application and server side systems.
@@ -31,7 +32,7 @@ your app's server side managed resources, for example sending FCM messages.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/iid/reference"
+		to="/reference"
 	>
     The API reference covers everything required to successfully start using Instance ID.
 	</Block>

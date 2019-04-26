@@ -22,7 +22,7 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
 		icon="attach_money"
 		color="#2196f3"
 		title="Quick Start"
-		to="/{{ version }}/admob/quick-start"
+		to="quick-start"
 	>
     Install & start monetizing your React Native application with AdMob.
 	</Block>
@@ -30,6 +30,7 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=admob"
 	>
     The AdMob package provides a simple API to get started. Learn how to take full advantage of AdMob with our guides.
@@ -38,7 +39,7 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/admob/reference"
+		to="/reference"
 	>
     The reference API for AdMob covers all aspects of the package, from component props to advert lifecycle events.
 	</Block>
