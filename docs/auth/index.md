@@ -17,7 +17,7 @@ React Native Firebase provides access to all Firebase authentication methods and
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/auth/quick-start"
+		to="/quick-start"
 	>
     Install & start authenticating your users with Firebase.
 	</Block>
@@ -25,6 +25,7 @@ React Native Firebase provides access to all Firebase authentication methods and
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=auth"
 	>
     Looking for advanced authentication help? Our indepth guides cover topics such as social integration.
@@ -33,7 +34,7 @@ React Native Firebase provides access to all Firebase authentication methods and
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/auth/reference"
+		to="/reference"
 	>
     The authentication API reference documentation provides detailed information for each of the classes and methods.
 	</Block>

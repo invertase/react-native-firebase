@@ -18,7 +18,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/perf/quick-start"
+		to="/quick-start"
 	>
     Install & start tracking key performance metrics within your application.
 	</Block>
@@ -26,6 +26,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=perf"
 	>
 	  Our guides walk you through some of the ways Performance Monitoring can be to gain deeper insight into your applications 
@@ -35,7 +36,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/perf/reference"
+		to="/reference"
 	>
     The API reference covers everything required to successfully monitor your apps performance.
 	</Block>

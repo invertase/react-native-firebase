@@ -17,7 +17,7 @@ React Native Firebase supports integration with production and locally emulated 
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/functions/quick-start"
+		to="/quick-start"
 	>
 	  Install & get to grips with the basics of Cloud Functions.
   </Block>
@@ -25,6 +25,7 @@ React Native Firebase supports integration with production and locally emulated 
     icon="assignment_turned_in"
     color="#8e24aa"
     title="Getting started with Cloud Functions"
+    version={false}
     to="/guides/getting-started-with-cloud-functions"
   >
     Our getting started guide builds a mock product API using Cloud Functions and covers how you can
@@ -34,6 +35,7 @@ React Native Firebase supports integration with production and locally emulated 
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=functions"
 	>
     Combining an application with Cloud Functions allows for rapid development cycles. Our guides
@@ -43,7 +45,7 @@ React Native Firebase supports integration with production and locally emulated 
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/functions/reference"
+		to="/reference"
 	>
     The API reference covers every aspect to successfully integrate your application with
     Cloud Firestore.
