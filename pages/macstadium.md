@@ -1,6 +1,6 @@
 ---
 title: MacStadium
-description: MacStadium allows you to build iOS apps without needing to your own Mac.
+description: MacStadium allows you to build iOS apps without needing to own a Mac.
 ---
 
 # MacStadium
