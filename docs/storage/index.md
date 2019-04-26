@@ -17,7 +17,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 		icon="cloud_queue"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/storage/quick-start"
+		to="/quick-start"
 	>
     Install & manage your files with your Firebase storage bucket.
 	</Block>
@@ -25,6 +25,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=storage"
 	>
 	  TODO
@@ -33,7 +34,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/perf/reference"
+		to="/reference"
 	>
     The API reference covers everything required to successfully integrate Cloud Storage with your application.
 	</Block>

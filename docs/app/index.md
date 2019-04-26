@@ -18,7 +18,7 @@ app to be installed.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/app/quick-start"
+		to="/quick-start"
 	>
 	  Install & connect your app to your Firebase project.
   </Block>
@@ -26,6 +26,7 @@ app to be installed.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=app"
 	>
     Our guides explian how to take advantage of multiple app instances with Firebase.
@@ -34,7 +35,7 @@ app to be installed.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/app/reference"
+		to="/reference"
 	>
     The API reference covers every aspect of the app package.
 	</Block>

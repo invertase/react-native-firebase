@@ -19,7 +19,7 @@ application.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/crashlytics/quick-start"
+		to="/quick-start"
 	>
 	  Install & start capturing any errors your application throws.
   </Block>
@@ -27,6 +27,7 @@ application.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=crashlytics"
 	>
     Ensuring crash reports contain the right information to help you debug and fix the issue is crtical to providing
@@ -36,7 +37,7 @@ application.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/crashlytics/reference"
+		to="/reference"
 	>
     The API reference covers every aspect to successfully integrate your application with
     Crashlyics.

@@ -18,7 +18,7 @@ performance and offline capabilities.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/firestore/quick-start"
+		to="/quick-start"
 	>
     Install & start syncing realtime data in minuties with our quick start guide. 
 	</Block>
@@ -26,6 +26,7 @@ performance and offline capabilities.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=firestore"
 	>
     Cloud Firestore offers a range of powerful features. Our guides cover both beginner and advanced topics
@@ -35,7 +36,7 @@ performance and offline capabilities.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/firestore/reference"
+		to="/reference"
 	>
     The Cloud Firestore reference API mimics that of the Firebase Web SDK. Our reference documentation covers
     every aspect of the module.

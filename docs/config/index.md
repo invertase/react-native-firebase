@@ -19,7 +19,7 @@ effect within your application.
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
-		to="/{{ version }}/config/quick-start"
+		to="/quick-start"
 	>
     Install & begin integrating your Remote Config settings into your application.
 	</Block>
@@ -27,6 +27,7 @@ effect within your application.
 		icon="school"
 		color="#4CAF50"
 		title="Guides"
+		version={false}
 		to="/guides?tag=config"
 	>
 	  Remote Config has a wide range of use-cases. Our guides cover various scenarios on how to integrate it into your
@@ -36,7 +37,7 @@ effect within your application.
 		icon="layers"
 		color="#03A9F4"
 		title="Reference"
-		to="/{{ version }}/config/reference"
+		to="/reference"
 	>
     The API reference covers everything required to successfully intgerate Remote Config into your apps.
 	</Block>
