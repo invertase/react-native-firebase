@@ -80,3 +80,6 @@
   - text: Performance Monitoring
     to: "/v6/perf"
     asset: "//static.invertase.io/assets/firebase/performance-monitoring.svg"
+  - text: Utils
+    to: "/v6/utils"
+    asset: "//static.invertase.io/assets/social/firebase-logo.png"
