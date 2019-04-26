@@ -7,7 +7,7 @@ description: Create a new React Native project with Firebase pre-integrated
 
 This guide is for starting a **new** React Native app with Firebase pre-integrated.
 
-For pre-existing React Native projects see the [`existing projects guide`](/quick-start/existing-project)
+For pre-existing React Native projects see the [`existing projects guide`](./quick-start/existing-project)
 
 ## Guide
 
