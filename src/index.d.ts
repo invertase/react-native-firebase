@@ -1225,7 +1225,7 @@ declare module 'react-native-firebase' {
          */
         getToken(): Promise<string>;
 
-        deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
+        deleteToken(): Promise<void>;
 
         /**
          * On a new message,
