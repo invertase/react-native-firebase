@@ -24,3 +24,5 @@ menu:
     to: '/guides'
   - text: FAQs
     to: '/faqs'
+  - text: Showcase
+    to: '/showcase'
