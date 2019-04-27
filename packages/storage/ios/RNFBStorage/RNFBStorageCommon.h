@@ -15,6 +15,7 @@
  * limitations under the License.
  *
  */
+#import <Photos/Photos.h>
 
 @interface RNFBStorageCommon : NSObject
 
@@ -30,7 +31,18 @@
 
 + (NSString *)mimeTypeForPath:(NSString *)localFilePath;
 
-+ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(NSError *downloadError))completion;
++ (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format;
+
++ (void)NSURLForLocalFilePath:(NSString *)localFilePath completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    NSURL *temporaryFileUrl,
+    NSString *contentType
+))completion;
+
++ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    NSString *contentType
+))completion;
 
 + (NSDictionary *)getStorageEventDictionary:(NSDictionary *)eventBody internalEventName:(NSString *)internalEventName appName:(NSString *)appName taskId:(NSNumber *)taskId;
 

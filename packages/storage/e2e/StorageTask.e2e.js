@@ -31,7 +31,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it.only('downloads a file', async () => {
+    it('downloads a file', async () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -41,7 +41,7 @@ describe('storage() -> StorageTask', () => {
       meta.bytesTransferred.should.eql(meta.totalBytes);
     });
 
-    it.only('downloads a file using deprecated downloadFile method', async () => {
+    it('downloads a file using deprecated downloadFile method', async () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -131,7 +131,7 @@ describe('storage() -> StorageTask', () => {
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/putStringBase64Url.json')
-        .putString(base64UrlString, firebase.storage.StringFormat.BASE64, {
+        .putString(base64UrlString, firebase.storage.StringFormat.BASE64URL, {
           contentType: 'application/json',
         });
 
@@ -287,7 +287,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it.only('uploads a file', async () => {
+    it('uploads a file', async () => {
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadOk.jpeg')
@@ -329,7 +329,7 @@ describe('storage() -> StorageTask', () => {
         .getFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
     });
 
-    it.only('listens to download state', () => {
+    it('listens to download state', () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
@@ -372,7 +372,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe('pause() resume()', () => {
+  describe.only('pause() resume()', () => {
     before(async () => {
       await firebase
         .storage()
@@ -393,14 +393,18 @@ describe('storage() -> StorageTask', () => {
       uploadTask.on(
         'state_changed',
         snapshot => {
+          console.log('---->      ', snapshot.state);
+          console.dir(snapshot.error);
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            console.log('-->   Pausing');
             hadRunningStatus = true;
             uploadTask.pause();
           }
 
           // 2) resume when we receive first paused event
           if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+            console.log('-->   Resuming');
             hadPausedStatus = true;
             uploadTask.resume();
           }
@@ -412,11 +416,13 @@ describe('storage() -> StorageTask', () => {
             hadPausedStatus &&
             !hadResumedStatus
           ) {
+            console.log('-->   Resumed');
             hadResumedStatus = true;
           }
 
           // 4) finally confirm we received all statuses
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            console.log('-->   Success');
             should.equal(hadRunningStatus, true);
             should.equal(hadPausedStatus, true);
             should.equal(hadResumedStatus, true);
@@ -486,7 +492,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe('cancel()', () => {
+  describe.only('cancel()', () => {
     before(async () => {
       await firebase
         .storage()

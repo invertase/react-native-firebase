@@ -16,7 +16,6 @@
  */
 
 #import <React/RCTUtils.h>
-#import <Photos/Photos.h>
 #import <Firebase/Firebase.h>
 
 #import "RNFBStorageModule.h"
@@ -24,11 +23,46 @@
 #import "RNFBStorageCommon.h"
 #import "RNFBSharedUtils.h"
 
+static NSString *const RNFB_STORAGE_EVENT = @"storage_event";
+static NSString *const RNFB_STORAGE_STATE_CHANGED = @"state_changed";
+static NSString *const RNFB_STORAGE_UPLOAD_SUCCESS = @"upload_success";
+static NSString *const RNFB_STORAGE_UPLOAD_FAILURE = @"upload_failure";
+static NSString *const RNFB_STORAGE_DOWNLOAD_SUCCESS = @"download_success";
+static NSString *const RNFB_STORAGE_DOWNLOAD_FAILURE = @"download_failure";
+
+static NSMutableDictionary *PENDING_TASKS;
+
 @implementation RNFBStorageModule
 #pragma mark -
 #pragma mark Module Setup
-
 RCT_EXPORT_MODULE();
+
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+- (id)init {
+  self = [super init];
+
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    PENDING_TASKS = [[NSMutableDictionary alloc] init];
+  });
+
+  return self;
+}
+
+- (void)dealloc {
+  // TODO
+  for (NSString *key in PENDING_TASKS) {
+    // TODO
+    [PENDING_TASKS removeObjectForKey:key];
+  }
+}
+
+- (void)invalidate {
+  // TODO
+}
 
 #pragma mark -
 #pragma mark Firebase Storage Methods
@@ -46,7 +80,6 @@ RCT_EXPORT_METHOD(delete:
 
   [storageReference deleteWithCompletion:^(NSError *_Nullable error) {
     if (error != nil) {
-      // TODO(salakar): move to new error rejection utils
       [self promiseRejectStorageException:reject error:error];
     } else {
       resolve([NSNull null]);
@@ -67,7 +100,6 @@ RCT_EXPORT_METHOD(getDownloadURL:
 
   [storageReference downloadURLWithCompletion:^(NSURL *_Nullable URL, NSError *_Nullable error) {
     if (error != nil) {
-      // TODO(salakar): move to new error rejection utils
       [self promiseRejectStorageException:reject error:error];
     } else {
       resolve([URL absoluteString]);
@@ -88,7 +120,6 @@ RCT_EXPORT_METHOD(getMetadata:
 
   [storageReference metadataWithCompletion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
     if (error != nil) {
-      // TODO(salakar): move to new error rejection utils
       [self promiseRejectStorageException:reject error:error];
     } else {
       resolve([metadata dictionaryRepresentation]);
@@ -180,6 +211,8 @@ RCT_EXPORT_METHOD(getFile:
     downloadTask = [storageReference writeToFile:localFile];
   });
 
+  PENDING_TASKS[taskId] = downloadTask;
+
   // download started or resumed
   [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
     NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
@@ -206,6 +239,8 @@ RCT_EXPORT_METHOD(getFile:
 
   // download completed successfully
   [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
+    [PENDING_TASKS removeObjectForKey:taskId];
+
     // state_changed
     NSDictionary *stateChangedEventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
     NSDictionary *stateChangedEvent =
@@ -222,6 +257,8 @@ RCT_EXPORT_METHOD(getFile:
 
   // download task failed
   [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
+    [PENDING_TASKS removeObjectForKey:taskId];
+
     // state_changed
     NSDictionary *stateChangedEventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
     NSDictionary *stateChangedEvent =
@@ -236,10 +273,7 @@ RCT_EXPORT_METHOD(getFile:
         [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_DOWNLOAD_FAILURE appName:firebaseApp.name taskId:taskId];
     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
-    // TODO sendJSError event
-    if (snapshot.error != nil) {
-      [self promiseRejectStorageException:reject error:snapshot.error];
-    }
+    [self promiseRejectStorageException:reject error:snapshot.error];
   }];
 }
 
@@ -259,46 +293,99 @@ RCT_EXPORT_METHOD(putFile:
   FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
-  if ([RNFBStorageCommon isRemoteAsset:localFilePath]) {
-    PHAsset *asset = [RNFBStorageCommon fetchAssetForPath:localFilePath];
-    NSURL *temporaryFileUrl = [RNFBStorageCommon createTempFileUrl];
-    [RNFBStorageCommon downloadAsset:asset toURL:temporaryFileUrl completion:^(NSError *downloadError) {
-      [self uploadFile:storageReference storageMetadata:storageMetadata localFilePath:temporaryFileUrl taskId:taskId resolver:resolve rejecter:reject];
-    }];
-  } else {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:localFilePath]) {
-      reject(@"storage/file-not-found", @"File specified at path does not exist.", nil);
-    } else {
-      NSURL *fileUrl = [NSURL fileURLWithPath:localFilePath];
-
-      if ([storageMetadata valueForKey:@"contentType"] == nil) {
-        storageMetadata.contentType = [RNFBStorageCommon mimeTypeForPath:localFilePath];
-      }
-
-      [self uploadFile:storageReference storageMetadata:storageMetadata localFilePath:fileUrl taskId:taskId resolver:resolve rejecter:reject];
+  [RNFBStorageCommon NSURLForLocalFilePath:localFilePath completion:^(
+      NSArray *errorCodeMessageArray,
+      NSURL *temporaryFileUrl,
+      NSString *contentType
+  ) {
+    if (errorCodeMessageArray != nil) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": errorCodeMessageArray[0],
+          @"message": errorCodeMessageArray[1],
+      }];
+      return;
     }
+
+    storageMetadata.contentType = contentType;
+
+    if ([storageMetadata valueForKey:@"contentType"] == nil) {
+      storageMetadata.contentType = [RNFBStorageCommon mimeTypeForPath:localFilePath];
+    }
+
+    __block FIRStorageUploadTask *uploadTask;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      uploadTask = [storageReference putFile:temporaryFileUrl metadata:storageMetadata];
+    });
+
+    [self addUploadTaskObservers:uploadTask appDisplayName:[[[storageReference storage] app] name] taskId:taskId resolver:resolve rejecter:reject];
+  }];
+}
+
+/**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
+ */
+RCT_EXPORT_METHOD(putString:
+  (FIRApp *) firebaseApp
+    : (NSString *) url
+    : (NSString *) string
+    : (NSString *) format
+    : (NSDictionary *) metadata
+    : (nonnull NSNumber *) taskId
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
+  FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+
+  __block FIRStorageUploadTask *uploadTask;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    uploadTask =
+        [storageReference putData:[RNFBStorageCommon NSDataFromUploadString:string format:format] metadata:storageMetadata];
+  });
+
+  [self addUploadTaskObservers:uploadTask appDisplayName:[[[storageReference storage] app] name] taskId:taskId resolver:resolve rejecter:reject];
+}
+
+/**
+ * @url N/A - RNFB Specific
+ */
+RCT_EXPORT_METHOD(setTaskStatus:
+  (FIRApp *) firebaseApp
+    : (nonnull NSNumber *) taskId
+    : (nonnull NSNumber *) status
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+
+  id task = PENDING_TASKS[taskId];
+  if (task == nil) {
+    resolve(@(NO));
+    return;
+  }
+
+  switch ([status integerValue]) {
+  case 0:[task pause];
+    break;
+  case 1:[task resume];
+    break;
+  case 2:[task cancel];
+    break;
+  default:break;
   }
 }
 
 #pragma mark -
 #pragma mark Firebase Storage Internals
 
-- (void)uploadFile:(FIRStorageReference *)storageReference storageMetadata:(FIRStorageMetadata *)storageMetadata localFilePath:(NSURL *)localFilePath taskId:(NSNumber *)taskId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-  __block FIRStorageUploadTask *uploadTask;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    uploadTask = [storageReference putFile:localFilePath metadata:storageMetadata];
-  });
-  [self addUploadTaskObservers:uploadTask appDisplayName:[[[storageReference storage] app] name] taskId:taskId resolver:resolve rejecter:reject];
-}
-
 - (void)addUploadTaskObservers:(FIRStorageUploadTask *)uploadTask appDisplayName:(NSString *)appDisplayName taskId:(NSNumber *)taskId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+  PENDING_TASKS[taskId] = uploadTask;
+
   // upload started or resumed
   [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
     NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
     NSDictionary *event =
         [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-
   }];
 
   // upload paused
@@ -320,6 +407,8 @@ RCT_EXPORT_METHOD(putFile:
 
   // upload completed successfully
   [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
+    [PENDING_TASKS removeObjectForKey:taskId];
+
     NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
 
     // state_changed
@@ -335,6 +424,8 @@ RCT_EXPORT_METHOD(putFile:
   }];
 
   [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
+    [PENDING_TASKS removeObjectForKey:taskId];
+
     // state_changed
     NSDictionary *stateChangedEventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
     NSDictionary *stateChangedEvent =
@@ -349,9 +440,7 @@ RCT_EXPORT_METHOD(putFile:
         [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_UPLOAD_FAILURE appName:appDisplayName taskId:taskId];
     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
-    if (snapshot.error != nil) {
-      [self promiseRejectStorageException:reject error:snapshot.error];
-    }
+    [self promiseRejectStorageException:reject error:snapshot.error];
   }];
 }
 
@@ -364,8 +453,8 @@ RCT_EXPORT_METHOD(putFile:
 - (void)promiseRejectStorageException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBStorageCommon getErrorCodeMessage:error];
   [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-      @"code": codeAndMessage[0],
-      @"message": codeAndMessage[1],
+      @"code": (NSString *) codeAndMessage[0],
+      @"message": (NSString *) codeAndMessage[1],
   }];
 }
 
@@ -375,17 +464,16 @@ RCT_EXPORT_METHOD(putFile:
 }
 
 - (NSDictionary *)constantsToExport {
-  // TODO(salakar) clean me
   return @{
-    @"MainBundle": [[NSBundle mainBundle] bundlePath],
-    @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
-    @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
-    @"PicturesDirectory": [self getPathForDirectory:NSDocumentDirectory],
-    @"MoviesDirectory": [self getPathForDirectory:NSDocumentDirectory],
-    @"ExternalDirectory": [self getPathForDirectory:NSDocumentDirectory],
-    @"ExternalStorageDirectory": [self getPathForDirectory:NSDocumentDirectory],
-    @"TempDirectory": NSTemporaryDirectory(),
-    @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
+      @"MainBundle": [[NSBundle mainBundle] bundlePath],
+      @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
+      @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"PicturesDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"MoviesDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"ExternalDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"ExternalStorageDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"TempDirectory": NSTemporaryDirectory(),
+      @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
   };
 }
 

@@ -17,7 +17,6 @@
  */
 
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <Photos/Photos.h>
 #import <Firebase/Firebase.h>
 
 #import "RNFBStorageCommon.h"
@@ -35,14 +34,47 @@
 
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
   PHAsset *asset;
+
   if ([localFilePath hasPrefix:@"assets-library://"]) {
     NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
     asset = [[PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil] firstObject];
   } else {
-    NSString *assetId = [localFilePath substringFromIndex:@"ph://".length];
+    NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
+    NSArray *queryItems = components.queryItems;
+    NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
     asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil] firstObject];
   }
+
   return asset;
+}
+
++ (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format {
+  if ([format isEqualToString:@"base64"]) {
+    return [[NSData alloc] initWithBase64EncodedString:string options:0];
+  }
+
+  // convert to base64
+  if ([format isEqualToString:@"base64url"]) {
+    NSString *base64Encoded = string;
+
+    base64Encoded = [base64Encoded stringByReplacingOccurrencesOfString:@"-" withString:@"+"];
+    base64Encoded = [base64Encoded stringByReplacingOccurrencesOfString:@"_" withString:@"/"];
+
+    // add mandatory base64 encoding padding
+    while (base64Encoded.length % 4 != 0) {
+      base64Encoded = [base64Encoded stringByAppendingString:@"="];
+    }
+
+    return [[NSData alloc] initWithBase64EncodedString:base64Encoded options:0];
+  }
+
+  return nil;
+}
+
++ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
+  return queryItem.value;
 }
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI {
@@ -69,7 +101,33 @@
   return (__bridge_transfer NSString *) mimeType;
 }
 
-+ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(NSError *downloadError))completion {
++ (void)NSURLForLocalFilePath:(NSString *)localFilePath completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    NSURL *temporaryFileUrl,
+    NSString *contentType
+))completion {
+  if ([RNFBStorageCommon isRemoteAsset:localFilePath]) {
+    PHAsset *asset = [RNFBStorageCommon fetchAssetForPath:localFilePath];
+    NSURL *temporaryFileUrl = [RNFBStorageCommon createTempFileUrl];
+    [RNFBStorageCommon downloadAsset:asset toURL:temporaryFileUrl completion:^(
+        NSArray *errorCodeMessageArray,
+        NSString *contentType
+    ) {
+      completion(errorCodeMessageArray, temporaryFileUrl, contentType);
+    }];
+  } else {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:localFilePath]) {
+      completion(@[@"file-not-found", @"File specified at path does not exist."], nil, nil);
+    } else {
+      completion(nil, [NSURL fileURLWithPath:localFilePath], [RNFBStorageCommon mimeTypeForPath:localFilePath]);
+    }
+  }
+}
+
++ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    NSString *contentType
+))completion {
   if (asset.mediaType == PHAssetMediaTypeImage && (asset.mediaSubtypes & PHAssetMediaSubtypePhotoLive)) {
     PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
     options.networkAccessAllowed = YES;
@@ -77,56 +135,97 @@
         PHLivePhoto *_Nullable livePhoto,
         NSDictionary *_Nullable info
     ) {
-      if (info[PHImageErrorKey] == nil) {
-        NSData *livePhotoData = [NSKeyedArchiver archivedDataWithRootObject:livePhoto];
-        if ([[NSFileManager defaultManager] createFileAtPath:url.path contents:livePhotoData attributes:nil]) {
-          NSLog(@"downloaded live photo:%@", url.path);
-          completion(nil);
-        }
+      if (info[PHImageErrorKey] != nil) {
+        completion(@[@"ios-asset-failure", @"Live photo request failed."], nil);
+        return;
+      }
+
+      NSData *livePhotoData = [NSKeyedArchiver archivedDataWithRootObject:livePhoto];
+      if ([[NSFileManager defaultManager] createFileAtPath:url.path contents:livePhotoData attributes:nil]) {
+        // TODO(salakar) figure out how to get the content type?
+        completion(nil, nil);
+      } else {
+        completion(@[@"ios-asset-failure", @"Failed to create temporary live photo file."], nil);
       }
     }];
   } else if (asset.mediaType == PHAssetMediaTypeImage) {
     PHImageRequestOptions *options = [PHImageRequestOptions new];
     options.networkAccessAllowed = YES;
+
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(
         NSData *_Nullable imageData,
         NSString *_Nullable dataUTI,
         UIImageOrientation orientation,
         NSDictionary *_Nullable info
     ) {
-      if (info[PHImageErrorKey] == nil
-          && [[NSFileManager defaultManager] createFileAtPath:url.path contents:imageData attributes:nil]) {
-        NSLog(@"downloaded photo:%@", url.path);
-        completion(nil);
+      if (info[PHImageErrorKey] != nil) {
+        completion(@[@"ios-asset-failure", @"Image request failed."], nil);
+        return;
+      }
+
+      NSString *contentType = nil;
+      NSData *finalData = nil;
+
+      // TODO(salakar) handle ALL image types in UTCoreTypes, e.g. kUTTypeTIFF & kUTTypeBMP missing
+      // TODO(salakar) so their original types are preserved to match Android behaviour
+      if (
+          UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypeJPEG) ||
+              UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypePNG) ||
+              UTTypeConformsTo((__bridge CFStringRef) dataUTI, kUTTypeGIF)
+          ) {
+        contentType = [self utiToMimeType:dataUTI];
+        finalData = imageData;
+      } else {
+        // all other types are converted to JPEG, e.g. HEIC
+        CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef) imageData, NULL);
+        NSDictionary *imageInfo = (__bridge NSDictionary *) CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
+        NSDictionary *imageMetadata = [imageInfo copy];
+        NSMutableData *imageDataJPEG = [NSMutableData data];
+        CGImageDestinationRef destination =
+            CGImageDestinationCreateWithData((__bridge CFMutableDataRef) imageDataJPEG, kUTTypeJPEG, 1, NULL);
+        CGImageDestinationAddImageFromSource(destination, source, 0, (__bridge CFDictionaryRef) imageMetadata);
+        CGImageDestinationFinalize(destination);
+        contentType = @"image/jpeg";
+        finalData = imageDataJPEG;
+      }
+
+      if ([[NSFileManager defaultManager] createFileAtPath:url.path contents:finalData attributes:nil]) {
+        completion(nil, contentType);
+      } else {
+        completion(@[@"ios-asset-failure", @"Failed to create image file."], nil);
       }
     }];
   } else if (asset.mediaType == PHAssetMediaTypeVideo) {
     PHVideoRequestOptions *options = [PHVideoRequestOptions new];
     options.networkAccessAllowed = YES;
-    [[PHImageManager defaultManager] requestExportSessionForVideo:asset options:options exportPreset:AVAssetExportPresetHighestQuality resultHandler:^(
+    [[PHImageManager defaultManager] requestExportSessionForVideo:asset options:options exportPreset:AVAssetExportPresetMediumQuality resultHandler:^(
         AVAssetExportSession *_Nullable exportSession,
         NSDictionary *_Nullable info
     ) {
-      if (info[PHImageErrorKey] == nil) {
-        exportSession.outputURL = url;
-
-        NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
-        for (PHAssetResource *resource in resources) {
-          exportSession.outputFileType = resource.uniformTypeIdentifier;
-          if (exportSession.outputFileType != nil)
-            break;
-        }
-
-        [exportSession exportAsynchronouslyWithCompletionHandler:^{
-          if (exportSession.status == AVAssetExportSessionStatusCompleted) {
-            NSLog(@"downloaded video:%@", url.path);
-            completion(nil);
-          }
-        }];
+      if (info[PHImageErrorKey] != nil) {
+        completion(@[@"ios-asset-failure", @"Video export request failed."], nil);
+        return;
       }
+
+      exportSession.outputURL = url;
+
+      NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
+      for (PHAssetResource *resource in resources) {
+        exportSession.outputFileType = resource.uniformTypeIdentifier;
+        if (exportSession.outputFileType != nil)
+          break;
+      }
+
+      [exportSession exportAsynchronouslyWithCompletionHandler:^{
+        if (exportSession.status == AVAssetExportSessionStatusCompleted) {
+          completion(nil, [self utiToMimeType:exportSession.outputFileType]);
+        } else {
+          completion(@[@"ios-asset-failure", @"Video export request session failed."], nil);
+        }
+      }];
     }];
   } else {
-    // TODO(salakar) unknown media type
+    completion(@[@"ios-asset-failure", @"Unknown or unsupported asset media type."], nil);
   }
 }
 
@@ -142,23 +241,22 @@
 + (NSDictionary *)buildErrorSnapshotDict:(NSError *)error taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
   NSArray *codeAndMessage = [self getErrorCodeMessage:error];
   taskSnapshotDict[@"error"] = @{
-      @"code": codeAndMessage[0],
-      @"message": codeAndMessage[1],
+      @"code": (NSString *) codeAndMessage[0],
+      @"message": (NSString *) codeAndMessage[1],
       @"nativeErrorMessage": [error localizedDescription]
   };
-  taskSnapshotDict[@"state"] = @"error";
   return taskSnapshotDict;
 }
 
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
   NSDictionary *storageMetadata = [task.metadata dictionaryRepresentation];
 
-  return (NSMutableDictionary *) @{
+  return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
       @"metadata": storageMetadata != nil ? storageMetadata : [NSNull null],
       @"state": [self getTaskStatus:task.status],
       @"totalBytes": @(task.progress.totalUnitCount)
-  };
+  } mutableCopy];
 }
 
 + (NSMutableDictionary *)getDownloadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
@@ -203,8 +301,12 @@
 
 + (NSArray *)getErrorCodeMessage:(NSError *)error {
   NSString *code = @"unknown";
-  NSString *message = [error localizedDescription];
 
+  if (error == nil) {
+    return @[code, @"An unknown error has occurred."];
+  }
+
+  NSString *message = [error localizedDescription];
   NSDictionary *userInfo = [error userInfo];
   NSError *underlyingError = userInfo[NSUnderlyingErrorKey];
   NSString *underlyingErrorDescription = [underlyingError localizedDescription];
