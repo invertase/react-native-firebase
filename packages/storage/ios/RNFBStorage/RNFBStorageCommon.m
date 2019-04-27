@@ -28,7 +28,7 @@
   return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
 }
 
-+ (BOOL)isHeic:(NSString *)localFilePath {
++ (BOOL)unused_isHeic:(NSString *)localFilePath {
   return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
 }
 

@@ -21,7 +21,7 @@
 
 + (BOOL)isRemoteAsset:(NSString *)localFilePath;
 
-+ (BOOL)isHeic:(NSString *)localFilePath;
++ (BOOL)unused_isHeic:(NSString *)localFilePath;
 
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
 
