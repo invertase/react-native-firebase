@@ -4,6 +4,7 @@
 
 # Ignore tests project
 .*/tests/.*
+.*/packages/template/.*
 
 [include]
 packages/**/lib/*.js.flow
