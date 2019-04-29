@@ -85,6 +85,21 @@ export interface HttpsCallableResult {
 /**
  * An HttpsCallable is a reference to a "callable" http trigger in
  * Google Cloud Functions.
+ *
+ * #### Example
+ *
+ * ```js
+ * // Create a HttpsCallable instance
+ * const instance = functions().httpsCallable('order');
+ *
+ * try {
+ *  const response = await instance({
+ *    id: '12345',
+ *  });
+ * } catch (e) {
+ *  console.error(e);
+ * }
+ * ```
  */
 export interface HttpsCallable {
   (data?: any): Promise<HttpsCallableResult>;
@@ -128,6 +143,12 @@ interface HttpsErrorCode {
 export interface Statics {
   /**
    * Uppercase + underscored variables of @Functions.FunctionsErrorCode
+   *
+   * #### Example
+   *
+   * ```js
+   * firebase.functions.HttpsErrorCode.OK;
+   * ```
    */
   HttpsErrorCode: {} & HttpsErrorCode;
 }
@@ -140,6 +161,20 @@ interface Module extends ReactNativeFirebaseModule {
    * Gets an `HttpsCallable` instance that refers to the function with the given
    * name.
    *
+   * #### Example
+   *
+   * ```js
+   * const instance = functions().httpsCallable('order');
+   *
+   * try {
+   *  const response = await instance({
+   *    id: '12345',
+   *  });
+   * } catch (e) {
+   *  console.error(e);
+   * }
+   * ```
+   *
    * @param name The name of the https callable function.
    * @return The `HttpsCallable` instance.
    */
@@ -151,7 +186,15 @@ interface Module extends ReactNativeFirebaseModule {
    *
    * See https://firebase.google.com/docs/functions/local-emulator
    *
-   * @param origin the origin string of the local emulator started via firebase tools
+   * #### Example
+   *
+   * ```js
+   * if (__DEV__) {
+   *   functions().useFunctionsEmulator('http://10.0.0.8:1337');
+   * }
+   * ```
+   *
+   * @param origin The origin string of the local emulator started via firebase tools
    * "http://10.0.0.8:1337".
    */
   useFunctionsEmulator(origin: string): void;

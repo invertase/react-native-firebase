@@ -98,6 +98,21 @@ export namespace Functions {
   /**
    * An HttpsCallable is a reference to a "callable" http trigger in
    * Google Cloud Functions.
+   *
+   * #### Example
+   *
+   * ```js
+   * // Create a HttpsCallable instance
+   * const instance = functions().httpsCallable('order');
+   *
+   * try {
+   *  const response = await instance({
+   *    id: '12345',
+   *  });
+   * } catch (e) {
+   *  console.error(e);
+   * }
+   * ```
    */
   export interface HttpsCallable {
     (data?: any): Promise<HttpsCallableResult>;
@@ -141,6 +156,12 @@ export namespace Functions {
   export interface Statics {
     /**
      * Uppercase + underscored variables of @Functions.FunctionsErrorCode
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.functions.HttpsErrorCode.OK;
+     * ```
      */
     HttpsErrorCode: {} & HttpsErrorCode;
   }
@@ -153,6 +174,20 @@ export namespace Functions {
      * Gets an `HttpsCallable` instance that refers to the function with the given
      * name.
      *
+     * #### Example
+     *
+     * ```js
+     * const instance = functions().httpsCallable('order');
+     *
+     * try {
+     *  const response = await instance({
+     *    id: '12345',
+     *  });
+     * } catch (e) {
+     *  console.error(e);
+     * }
+     * ```
+     *
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
@@ -164,7 +199,15 @@ export namespace Functions {
      *
      * See https://firebase.google.com/docs/functions/local-emulator
      *
-     * @param origin the origin string of the local emulator started via firebase tools
+     * #### Example
+     *
+     * ```js
+     * if (__DEV__) {
+     *   functions().useFunctionsEmulator('http://10.0.0.8:1337');
+     * }
+     * ```
+     *
+     * @param origin The origin string of the local emulator started via firebase tools
      * "http://10.0.0.8:1337".
      */
     useFunctionsEmulator(origin: string): void;
@@ -221,7 +264,7 @@ declare module '@react-native-firebase/app-types' {
      * write and deploy an HTTPS Callable function in Cloud Functions,
      * and then add client logic to call the function from your app.
      *
-     * @param region The  region you deployed your functions to. Defaults to 'us-central1'.
+     * @param region The region you deployed your functions to. Defaults to 'us-central1'.
      */
     functions?(region?: string): Functions.Module;
   }
