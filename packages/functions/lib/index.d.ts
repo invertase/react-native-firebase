@@ -31,9 +31,10 @@ import {
  */
 export namespace Functions {
   /**
-   * The set of Firebase Functions status codes. The codes are the same at the
-   * ones exposed by gRPC here:
-   * https://github.com/grpc/grpc/blob/master/doc/statuscodes.md
+   * The set of Firebase Functions status codes.
+   *
+   * @note
+   * The codes are the same at the ones exposed by [gRPC](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md).
    *
    * Possible values:
    * - `cancelled`: The operation was cancelled (typically by the caller).
