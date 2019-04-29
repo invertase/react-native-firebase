@@ -29,21 +29,34 @@ import {
  * @firebase invites
  */
 export namespace Invites {
+  /**
+   * firebase.invites.X
+   */
   export interface Statics {
+    /**
+     * Invitation returns an `InviteBuilder` instance used to send new invites.
+     */
     Invitation: InviteBuilder;
   }
 
   /**
-   * Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameters
-   * TODO(ehesp) allow linking to named type above somehow?
+   * Additional referral parameters for {@link invites.AndroidInviteBuilder#setAdditionalReferralParameters}.
    *
+   * #### Example
+   *
+   * ```js
+   * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+   * invite.android.setAdditionalReferralParameters({
+   *   screen: 'Profile',
+   * });
+   * ```
    */
   export interface AdditionalReferralParameters {
     [key: string]: string;
   }
 
   /**
-   * Android Invite representation
+   * Android Invite representation. Instance is returned from {@link links.InviteBuilder#android}.
    */
   export interface AndroidInviteBuilder {
     /**
@@ -51,6 +64,15 @@ export namespace Invites {
      * application component referrals. These parameters are added to the referral URL sent from the play store and are
      * available to be processed by other application components, for example Google Analytics. The parameters are set
      * as name, value pairs that will be set as query parameter name and value on the referral URL.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.android.setAdditionalReferralParameters({
+     *   screen: 'Profile',
+     * });
+     * ```
      *
      * @param additionalReferralParameters Referral parameters defined as string name value pairs.
      */
@@ -61,12 +83,20 @@ export namespace Invites {
     /**
      * Sets the HTML-formatted (UTF-8 encoded, no JavaScript) content for invites sent through email. If set, this will
      * be sent instead of the default email.
-     * emailHtmlContent must be valid HTML for standard email processing. The pattern %%APPINVITE_LINK_PLACEHOLDER%%
+     *
+     * emailHtmlContent must be valid HTML for standard email processing. The pattern `%%APPINVITE_LINK_PLACEHOLDER%%`
      * should be embedded in your htmlContent and will be replaced with the invitation URL.
      * This url is a link that will launch the app if already installed or take the user to the appropriate app store
      * if not. In both cases the deep link will be available if provided using setDeepLink(Uri).
      *
-     * @warning Cannot be used with InviteBuilder.setCallToActionText
+     * @warning Cannot be used with {@link invites.InviteBuilder#setCallToActionText}
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');
+     * ```
      *
      * @param emailHtmlContent The html-formatted content for the email.
      */
@@ -74,6 +104,13 @@ export namespace Invites {
 
     /**
      * Sets the subject for invites sent by email.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.android.emailSubject(`Hey ${user.name}, joint my app!`);
+     * ```
      *
      * @param emailSubject The subject for the email.
      */
@@ -84,22 +121,43 @@ export namespace Invites {
      * Google Analytics. See more about how to get a tracking id . The tracking id is recommended so that invitations
      * sent from the calling application are available in Google Analytics.
      *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.android.setGoogleAnalyticsTrackingId('UA-1234-5');
+     * ```
+     *
      * @param gaTrackingId String of the form UA-xxxx-y
      */
     setGoogleAnalyticsTrackingId(gaTrackingId: string): InviteBuilder;
   }
 
   /**
-   * Invite builder representation returned from `firebase.invite().createInvitation();`
+   * Invite builder representation returned from {@link invites#createInvitation}.
    */
   export interface InviteBuilder {
     /**
      * Set Android specific Invite properties
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.android.setGoogleAnalyticsTrackingId('UA-1234-5');
+     * ```
      */
     android: AndroidInviteBuilder;
 
     /**
      * Set the Android target client ID for the invitation.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.setAndroidClientId('xxxxxxxxxxxx');
+     * ```
      *
      * @param androidClientId The android client ID.
      */
@@ -108,6 +166,13 @@ export namespace Invites {
     /**
      * Sets the minimum version of the android app installed on the receiving device. If this minimum version is not installed then the install flow will be triggered.
      *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.setAndroidMinimumVersionCode(18);
+     * ```
+     *
      * @param androidMinimumVersionCode Minimum version of the android app.
      */
     setAndroidMinimumVersionCode(androidMinimumVersionCode: number): InviteBuilder;
@@ -115,7 +180,14 @@ export namespace Invites {
     /**
      * Text shown on the email invitation for the user to accept the invitation. Default install text used if not set.
      *
-     * @warning Cannot be used with AndroidInviteBuilder.setEmailHtmlContent.
+     * @warning Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.setCallToActionText('Join the app!');
+     * ```
      *
      * @param callToActionText Text to use on the invitation button.
      */
@@ -123,6 +195,13 @@ export namespace Invites {
 
     /**
      * Sets an image for invitations.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.setCustomImage('https://my-cdn.com/assets/invites.png');
+     * ```
      *
      * @param customImage The image Uri. The Uri is required to be in absolute format. The supported image formats are "jpg", "jpeg" and "png".
      */
@@ -133,12 +212,26 @@ export namespace Invites {
      * available both to a newly installed application and an already installed application. The deep link can be sent
      * to Android and other platforms so should be formatted to support deep links across platforms.
      *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.deepLink('/invites');
+     * ```
+     *
      * @param deepLink The app deep link.
      */
     setDeepLink(deepLink: string): InviteBuilder;
 
     /**
      * Set the iOS target client ID for the invitation.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * invite.setIOSClientId('xxxxxxxxxxxx');
+     * ```
      *
      * @param iOSClientId The iOS client ID.
      */
@@ -147,6 +240,32 @@ export namespace Invites {
 
   /**
    * A native invite representation returned from getInitialInvite and onInvite.
+   *
+   * #### Example 1
+   *
+   * When an invitation has been opened from a closed/terminated app.
+   *
+   * ```js
+   * const invite = invites().getInitialInvitation();
+   *
+   * if (invite) {
+   *   console.log('Deeplink: ', invite.deepLink);
+   *   console.log('ID: ', invite.invitationId);
+   * }
+   * ```
+   *
+   * #### Example 2
+   *
+   * When an invite has been opened and the app is running.
+   *
+   * ```js
+   *  function handleInvitation({ deepLink, invitationId}) {
+   *   console.log('Deeplink: ', deepLink);
+   *   console.log('ID: ', invitationId);
+   *  }
+   *
+   *  invites().onInvitation(handleInvitation);
+   * ```
    */
   export interface NativeInvite {
     /**
@@ -160,14 +279,32 @@ export namespace Invites {
     invitationId: string;
   }
 
+  /**
+   * A type alias for an invite listener used with {@link invites#onInvitation}
+   *
+   * #### Example
+   *
+   * ```js
+   * invites().onInvitation((invite) => {
+   *   console.log('Deeplink: ', invite.deepLink);
+   *   console.log('ID: ', invite.invitationId);
+   * });
+   * ```
+   */
   export type InviteListener = (nativeInvite: NativeInvite) => void;
 
   export interface Module extends ReactNativeFirebaseModule {
     /**
      * Create an invitation via an InvitationBuilder instance.
      *
-     * @param title
-     * @param message
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app and share content');
+     * ```
+     *
+     * @param title The title displayed in the invitation.
+     * @param message The message displayed in the invitation.
      */
     createInvitation(title: string, message: string): InviteBuilder;
 
@@ -175,13 +312,38 @@ export namespace Invites {
      * When an invitation is opened whilst the app is open, the listener is invoked with the invitation.
      * Returns a function that when called unsubscribes the listener from further events.
      *
-     * @param listener
+     * #### Example
+     *
+     * ```js
+     * function handleInvitation({ deepLink, invitationId}) {
+     *   console.log('Deeplink: ', deepLink);
+     *   console.log('ID: ', invitationId);
+     * }
+     *
+     * const subscriber = invites().onInvitation(handleInvitation);
+     *
+     * // Unsubscribe from invitation listener
+     * subscriber();
+     * ```
+     *
+     * @param listener A function called when an invitation is opened.
      */
     onInvitation(listener: InviteListener): Function;
 
     /**
      * Returns the Invitation that the app has been launched from. If the app was not launched from an Invitation the
      * return value will be null.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().getInitialInvitation();
+     *
+     * if (invite) {
+     *  console.log('Deeplink: ', invite.deepLink);
+     *  console.log('ID: ', invite.invitationId);
+     * }
+     * ```
      */
     getInitialInvitation(): Promise<NativeInvite>;
 
@@ -189,6 +351,13 @@ export namespace Invites {
      * Displays the invitation dialog which allows the user to select who received the invitation.
      * Returns a promise that resolves with the created invitation IDs if the invitation is sent, otherwise it is
      * rejected with an error.
+     *
+     * #### Example
+     *
+     * ```js
+     * const invite = invites().createInvitation('Join my app', 'Join my app and share content');
+     * const ids = await invites().sendInvitation(invite);
+     * ```
      *
      * @param invite The invitation to send. Must be an instance of InviteBuilder
      */
