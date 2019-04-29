@@ -37,6 +37,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.common.SharedUtils;
 
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 
@@ -57,7 +58,7 @@ class ReactNativeFirebaseStorageCommon {
   private static final String KEY_SIZE = "size";
   private static final String KEY_TIME_CREATED = "timeCreated";
   private static final String KEY_UPDATED = "updated";
-  private static final String KEY_MD5_HASH = "md5hash";
+  private static final String KEY_MD5_HASH = "md5Hash";
   private static final String STATUS_UNKNOWN = "unknown";
   private static final String STATUS_RUNNING = "running";
   private static final String STATUS_PAUSED = "paused";
@@ -158,8 +159,8 @@ class ReactNativeFirebaseStorageCommon {
     metadata.putString(KEY_FULL_PATH, storageMetadata.getPath());
     metadata.putString(KEY_NAME, storageMetadata.getName());
     metadata.putDouble(KEY_SIZE, storageMetadata.getSizeBytes());
-    metadata.putDouble(KEY_TIME_CREATED, storageMetadata.getCreationTimeMillis());
-    metadata.putDouble(KEY_UPDATED, storageMetadata.getUpdatedTimeMillis());
+    metadata.putString(KEY_TIME_CREATED, SharedUtils.timestampToUTC(storageMetadata.getCreationTimeMillis()));
+    metadata.putString(KEY_UPDATED, SharedUtils.timestampToUTC(storageMetadata.getUpdatedTimeMillis()));
     metadata.putString(KEY_MD5_HASH, storageMetadata.getMd5Hash());
     metadata.putString(KEY_CACHE_CONTROL, storageMetadata.getCacheControl());
     metadata.putString(KEY_CONTENT_DISPOSITION, storageMetadata.getContentDisposition());

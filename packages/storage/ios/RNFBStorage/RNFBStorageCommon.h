@@ -23,6 +23,8 @@
 
 + (BOOL)unused_isHeic:(NSString *)localFilePath;
 
++ (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata;
+
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI;

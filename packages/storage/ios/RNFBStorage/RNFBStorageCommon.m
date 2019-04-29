@@ -248,12 +248,51 @@
   return taskSnapshotDict;
 }
 
++ (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata {
+  NSMutableDictionary *storageMetadata = [[metadata dictionaryRepresentation] mutableCopy];
+  if (storageMetadata == nil) {
+    return nil;
+  }
+
+  storageMetadata[@"fullPath"] = metadata.path;
+
+  if (metadata.cacheControl == nil) {
+    storageMetadata[@"cacheControl"] = [NSNull null];
+  }
+
+  if (metadata.contentLanguage == nil) {
+    storageMetadata[@"contentLanguage"] = [NSNull null];
+  }
+
+  if (metadata.contentEncoding == nil) {
+    storageMetadata[@"contentEncoding"] = [NSNull null];
+  }
+
+  if (metadata.contentDisposition == nil) {
+    storageMetadata[@"contentDisposition"] = [NSNull null];
+  }
+
+  if (metadata.contentType == nil) {
+    storageMetadata[@"contentType"] = [NSNull null];
+  }
+
+  if (metadata.md5Hash == nil) {
+    storageMetadata[@"md5Hash"] = [NSNull null];
+  }
+
+  if (metadata.customMetadata == nil) {
+    storageMetadata[@"customMetadata"] = [NSNull null];
+  }
+
+  return storageMetadata;
+}
+
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
-  NSDictionary *storageMetadata = [task.metadata dictionaryRepresentation];
+  NSDictionary *storageMetadata = [self metadataToDict:task.metadata];
 
   return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
-      @"metadata": storageMetadata != nil ? storageMetadata : [NSNull null],
+      @"metadata": storageMetadata,
       @"state": [self getTaskStatus:task.status],
       @"totalBytes": @(task.progress.totalUnitCount)
   } mutableCopy];
@@ -292,8 +331,6 @@
 }
 
 + (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {
-  // TODO(salakar): update to use specific getters/setters rather than blanket initing with a dictionary
-  // TODO(salakar): to fix conversion issues with timeCreated & updated, generation & metageneration
   FIRStorageMetadata *storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
   storageMetadata.customMetadata = [metadata[@"customMetadata"] mutableCopy];
   return storageMetadata;

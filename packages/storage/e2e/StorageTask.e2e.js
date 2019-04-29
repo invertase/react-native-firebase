@@ -372,7 +372,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe.only('pause() resume()', () => {
+  describe('pause() resume()', () => {
     before(async () => {
       await firebase
         .storage()
@@ -492,7 +492,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe.only('cancel()', () => {
+  describe('cancel()', () => {
     before(async () => {
       await firebase
         .storage()

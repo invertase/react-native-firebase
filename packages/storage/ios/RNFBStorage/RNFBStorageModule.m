@@ -122,7 +122,7 @@ RCT_EXPORT_METHOD(getMetadata:
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
-      resolve([metadata dictionaryRepresentation]);
+      resolve([RNFBStorageCommon metadataToDict:metadata]);
     }
   }];
 }
