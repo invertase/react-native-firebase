@@ -146,6 +146,18 @@
     - text: iOS Setup
       to: "/ios"
 
+- module: indexing
+  group: App Indexing
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Setup
+      to: "/android"
+    - text: iOS Setup
+      to: "/ios"
+
 - module: iid
   group: Instance ID
   children:
@@ -169,6 +181,8 @@
       to: "/android"
     - text: iOS Setup
       to: "/ios"
+    - text: Migrating to Dynamic Links
+      to: "/migrating-to-dynamic-links"
 
 - module: ml-kit
   group: ML Kit
