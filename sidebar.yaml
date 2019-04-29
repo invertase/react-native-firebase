@@ -65,6 +65,9 @@
   - text: Instance ID
     to: "/v6/iid"
     asset: "//static.invertase.io/assets/social/firebase-logo.png"
+  - text: In-App Messaging
+    to: "/v6/fiam"
+    asset: "//static.invertase.io/assets/firebase/in-app-messaging.svg"
   - text: Invites
     to: "/v6/invites"
     asset: "//static.invertase.io/assets/firebase/invites.svg"
