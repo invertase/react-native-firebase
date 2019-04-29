@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 168,
+							"line": 232,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 158,
+							"line": 222,
 							"character": 31
 						}
 					],
@@ -89,7 +89,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 166,
+							"line": 230,
 							"character": 23
 						}
 					],
@@ -114,7 +114,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 155,
+					"line": 219,
 					"character": 49
 				}
 			]
@@ -222,7 +222,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 188,
+									"line": 252,
 									"character": 13
 								}
 							]
@@ -284,7 +284,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 241,
+									"line": 395,
 									"character": 10
 								}
 							]
@@ -315,7 +315,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 201,
+									"line": 276,
 									"character": 15
 								}
 							]
@@ -410,7 +410,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "The  region you deployed your functions to. Defaults to 'us-central1'.\n"
+												"text": "The region you deployed your functions to. Defaults to 'us-central1'.\n"
 											},
 											"type": {
 												"type": "union",
@@ -437,7 +437,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 286,
+									"line": 397,
 									"character": 13
 								}
 							]
@@ -469,7 +469,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 163,
+									"line": 187,
 									"character": 7
 								}
 							]
@@ -562,7 +562,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 309,
+									"line": 484,
 									"character": 8
 								}
 							]
@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 544,
+									"line": 555,
 									"character": 11
 								}
 							]
@@ -711,7 +711,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 187,
+							"line": 251,
 							"character": 23
 						},
 						{
@@ -726,12 +726,12 @@
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 235,
+							"line": 389,
 							"character": 23
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 196,
+							"line": 271,
 							"character": 23
 						},
 						{
@@ -746,12 +746,12 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 277,
+							"line": 388,
 							"character": 23
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 154,
+							"line": 178,
 							"character": 23
 						},
 						{
@@ -766,12 +766,12 @@
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 305,
+							"line": 480,
 							"character": 23
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 543,
+							"line": 554,
 							"character": 23
 						},
 						{
@@ -797,7 +797,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 181,
+									"line": 245,
 									"character": 13
 								}
 							],
@@ -865,7 +865,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 232,
+									"line": 386,
 									"character": 10
 								}
 							],
@@ -899,7 +899,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 193,
+									"line": 268,
 									"character": 15
 								}
 							],
@@ -1001,7 +1001,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 274,
+									"line": 385,
 									"character": 13
 								}
 							],
@@ -1036,7 +1036,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 151,
+									"line": 175,
 									"character": 7
 								}
 							],
@@ -1138,7 +1138,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 302,
+									"line": 477,
 									"character": 8
 								}
 							],
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 540,
+									"line": 551,
 									"character": 11
 								}
 							],
@@ -1257,7 +1257,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 180,
+							"line": 244,
 							"character": 40
 						},
 						{
@@ -1272,12 +1272,12 @@
 						},
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 226,
+							"line": 380,
 							"character": 40
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 188,
+							"line": 263,
 							"character": 40
 						},
 						{
@@ -1292,12 +1292,12 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 267,
+							"line": 378,
 							"character": 40
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 143,
+							"line": 167,
 							"character": 40
 						},
 						{
@@ -1312,12 +1312,12 @@
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 298,
+							"line": 473,
 							"character": 40
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 539,
+							"line": 550,
 							"character": 40
 						},
 						{
@@ -1341,7 +1341,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 179,
+					"line": 243,
 					"character": 49
 				},
 				{
@@ -1356,12 +1356,12 @@
 				},
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 225,
+					"line": 379,
 					"character": 49
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 187,
+					"line": 262,
 					"character": 49
 				},
 				{
@@ -1376,12 +1376,12 @@
 				},
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 266,
+					"line": 377,
 					"character": 49
 				},
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 142,
+					"line": 166,
 					"character": 49
 				},
 				{
@@ -1396,12 +1396,12 @@
 				},
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 297,
+					"line": 472,
 					"character": 49
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 538,
+					"line": 549,
 					"character": 49
 				},
 				{
@@ -1550,7 +1550,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 211,
+							"line": 365,
 							"character": 27
 						}
 					],
@@ -1583,7 +1583,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 200,
+							"line": 354,
 							"character": 31
 						}
 					],
@@ -1621,7 +1621,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 209,
+							"line": 363,
 							"character": 23
 						}
 					],
@@ -1646,7 +1646,7 @@
 			"sources": [
 				{
 					"fileName": "config/lib/index.d.ts",
-					"line": 197,
+					"line": 351,
 					"character": 46
 				}
 			]
@@ -1670,7 +1670,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 170,
+							"line": 245,
 							"character": 32
 						}
 					],
@@ -1703,7 +1703,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 159,
+							"line": 234,
 							"character": 31
 						}
 					],
@@ -1741,7 +1741,7 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 168,
+							"line": 243,
 							"character": 23
 						}
 					],
@@ -1766,7 +1766,7 @@
 			"sources": [
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 156,
+					"line": 231,
 					"character": 51
 				}
 			]
@@ -2030,7 +2030,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 249,
+							"line": 360,
 							"character": 30
 						}
 					],
@@ -2064,7 +2064,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 238,
+							"line": 349,
 							"character": 29
 						}
 					],
@@ -2103,7 +2103,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 247,
+							"line": 358,
 							"character": 23
 						}
 					],
@@ -2136,7 +2136,7 @@
 			"sources": [
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 234,
+					"line": 345,
 					"character": 49
 				}
 			]
@@ -2159,7 +2159,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 117,
+							"line": 141,
 							"character": 31
 						}
 					],
@@ -2189,7 +2189,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 128,
+							"line": 152,
 							"character": 24
 						}
 					],
@@ -2231,7 +2231,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 126,
+							"line": 150,
 							"character": 23
 						}
 					],
@@ -2256,7 +2256,7 @@
 			"sources": [
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 111,
+					"line": 135,
 					"character": 43
 				}
 			]
@@ -2519,7 +2519,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 272,
+							"line": 447,
 							"character": 31
 						}
 					],
@@ -2549,7 +2549,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 283,
+							"line": 458,
 							"character": 25
 						}
 					],
@@ -2591,7 +2591,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 281,
+							"line": 456,
 							"character": 23
 						}
 					],
@@ -2616,7 +2616,7 @@
 			"sources": [
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 269,
+					"line": 444,
 					"character": 44
 				}
 			]
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 526,
+							"line": 537,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 530,
+							"line": 541,
 							"character": 28
 						}
 					],
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 528,
+							"line": 539,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 523,
+					"line": 534,
 					"character": 47
 				}
 			]
@@ -2929,7 +2929,7 @@
 										"tags": [
 											{
 												"tag": "note",
-												"text": "100 characters is the maximum length for param key names.\n"
+												"text": "100 characters is the maximum length for param key names.\n\n#### Example\n\n```js\nawait analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n"
 											}
 										]
 									},
@@ -2994,7 +2994,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 85,
+															"line": 93,
 															"character": 34
 														}
 													]
@@ -3017,7 +3017,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 85,
+									"line": 93,
 									"character": 12
 								}
 							]
@@ -3038,7 +3038,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Clears all analytics data for this instance from the device and resets the app instance ID."
+										"shortText": "Clears all analytics data for this instance from the device and resets the app instance ID.",
+										"text": "#### Example\n\n```js\nawait analytics().resetAnalyticsData();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -3055,7 +3056,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 151,
+									"line": 215,
 									"character": 22
 								}
 							]
@@ -3080,7 +3081,7 @@
 										"tags": [
 											{
 												"tag": "note",
-												"text": "Analytics collection is enabled by default.\n"
+												"text": "Analytics collection is enabled by default.\n\n#### Example\n\n```js\n// Disable collection\nawait analytics().setAnalyticsCollectionEnabled(false);\n```\n"
 											}
 										]
 									},
@@ -3115,7 +3116,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 95,
+									"line": 110,
 									"character": 33
 								}
 							]
@@ -3140,7 +3141,7 @@
 										"tags": [
 											{
 												"tag": "note",
-												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n"
+												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n\n#### Example\n\n```js\nawait analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n"
 											}
 										]
 									},
@@ -3200,7 +3201,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 108,
+									"line": 129,
 									"character": 20
 								}
 							]
@@ -3221,7 +3222,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the minimum engagement time required before starting a session."
+										"shortText": "Sets the minimum engagement time required before starting a session.",
+										"text": "#### Example\n\n```js\n// 20 seconds\nawait analytics().setMinimumSessionDuration(20000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3254,7 +3256,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 115,
+									"line": 143,
 									"character": 29
 								}
 							]
@@ -3275,7 +3277,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the duration of inactivity that terminates the current session."
+										"shortText": "Sets the duration of inactivity that terminates the current session.",
+										"text": "#### Example\n\n```js\n// 20 minutes\nawait analytics().setMinimumSessionDuration(900000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3308,7 +3311,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 122,
+									"line": 157,
 									"character": 29
 								}
 							]
@@ -3329,7 +3332,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Gives a user a unique identification."
+										"shortText": "Gives a user a unique identification.",
+										"text": "#### Example\n\n```js\n// Set User\nawait analytics().setUserId('123456789');\n// Remove User\nawait analytics().setUserId(null);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3371,7 +3375,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 130,
+									"line": 173,
 									"character": 13
 								}
 							]
@@ -3393,6 +3397,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets multiple key/value pair of data on the current user.",
+										"text": "#### Example\n\n```js\nawait analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
 										"tags": [
 											{
 												"tag": "react-native-firebase",
@@ -3456,7 +3461,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 146,
+															"line": 204,
 															"character": 33
 														}
 													]
@@ -3479,7 +3484,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 146,
+									"line": 204,
 									"character": 21
 								}
 							]
@@ -3500,7 +3505,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets a key/value pair of data on the current user."
+										"shortText": "Sets a key/value pair of data on the current user.",
+										"text": "#### Example\n\n```js\nawait analytics().setUserProperty('account_type', 'gold');\n```\n"
 									},
 									"parameters": [
 										{
@@ -3556,7 +3562,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 138,
+									"line": 187,
 									"character": 19
 								}
 							]
@@ -4271,7 +4277,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Moves fetched data to the apps active config.\nResolves with a boolean value of whether the fetched config was moved successfully."
+										"shortText": "Moves fetched data to the apps active config.\nResolves with a boolean value of whether the fetched config was moved successfully.",
+										"text": "#### Example\n\n```js\n// Fetch values\nawait config().fetch();\nconst activated = await config().activateFetched();\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -4288,7 +4295,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 126,
+									"line": 210,
 									"character": 19
 								}
 							]
@@ -4309,7 +4316,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration."
+										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
+										"text": "#### Example\n\n```js\n// Fetch and cache for 5 minutes\nawait config().fetch(300);\n```\n"
 									},
 									"parameters": [
 										{
@@ -4353,7 +4361,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 133,
+									"line": 224,
 									"character": 9
 								}
 							]
@@ -4375,7 +4383,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
-										"text": "Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.\n"
+										"text": "Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.\n\n#### Example\n\n```js\n// Fetch, cache for 5 minutes and activate\nconst activated = await config().fetchAndActivate(300);\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
 									},
 									"parameters": [
 										{
@@ -4419,7 +4427,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 142,
+									"line": 246,
 									"character": 20
 								}
 							]
@@ -4440,7 +4448,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Retrieve the configuration settings and status for Remote Config."
+										"shortText": "Retrieve the configuration settings and status for Remote Config.",
+										"text": "### Example\n\n```js\nconst settings = await config().getConfigSettings();\nconsole.log('Developer mode enabled: ', settings.isDeveloperModeEnabled);\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -4458,7 +4467,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 147,
+									"line": 258,
 									"character": 21
 								}
 							]
@@ -4479,7 +4488,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned."
+										"shortText": "Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned.",
+										"text": "#### Example\n\n```js\n const keys = await config().getKeysByPrefix('feature_');\n```\n"
 									},
 									"parameters": [
 										{
@@ -4526,7 +4536,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 154,
+									"line": 271,
 									"character": 19
 								}
 							]
@@ -4547,7 +4557,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Gets a ConfigValue by key."
+										"shortText": "Gets a ConfigValue by key.",
+										"text": "#### Example\n\n```js\nconst configValue = await config().getValue('experiment');\nconsole.log('Source: ', configValue.source);\nconsole.log('Value: ', configValue.value);\n```\n"
 									},
 									"parameters": [
 										{
@@ -4581,7 +4592,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 168,
+									"line": 304,
 									"character": 12
 								}
 							]
@@ -4602,7 +4613,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned."
+										"shortText": "Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned.",
+										"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4647,7 +4659,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 161,
+									"line": 289,
 									"character": 25
 								}
 							]
@@ -4668,7 +4680,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag."
+										"shortText": "Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.",
+										"text": "#### Example\n\n```js\nawait config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4703,7 +4716,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 175,
+									"line": 319,
 									"character": 21
 								}
 							]
@@ -4724,7 +4737,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets default values for the app to use when accessing values.\nAny data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched."
+										"shortText": "Sets default values for the app to use when accessing values.\nAny data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.",
+										"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4758,7 +4772,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 183,
+									"line": 335,
 									"character": 15
 								}
 							]
@@ -4780,12 +4794,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the default values from a resource file.\nOn iOS this is a plist file and on Android this is an XML defaultsMap file.",
-										"tags": [
-											{
-												"tag": "link",
-												"text": "/guides/todo\n"
-											}
-										]
+										"text": "```js\n // TODO @ehesp\n```\n"
 									},
 									"parameters": [
 										{
@@ -4818,7 +4827,7 @@
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 193,
+									"line": 347,
 									"character": 27
 								}
 							]
@@ -4852,7 +4861,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 121,
+							"line": 191,
 							"character": 21
 						}
 					],
@@ -4872,7 +4881,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An Interface representing a Config Defaults object."
+						"shortText": "An Interface representing a Config Defaults object.",
+						"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -4882,7 +4892,8 @@
 							"kindString": "Index signature",
 							"flags": {},
 							"comment": {
-								"shortText": "An Interface representing a Config Defaults object."
+								"shortText": "An Interface representing a Config Defaults object.",
+								"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -4919,7 +4930,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 104,
+							"line": 174,
 							"character": 33
 						}
 					]
@@ -4933,7 +4944,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An Interface representing readable config settings."
+						"shortText": "An Interface representing readable config settings.",
+						"text": "#### Example\n\n```js\nconst settings = await config().getConfigSettings();\nconsole.log('Last fetched time: ', settings.lastFetchTime);\nconsole.log('Developer mode enabled': settings.isDeveloperModeEnabled);\nconsole.log('Last fetch status: ', settings.lastFetchStatus);\n```\n"
 					},
 					"children": [
 						{
@@ -4944,10 +4956,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Whether developer mode is enabled. This is set manually via {@link config#setConfigSettings}"
+							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 97,
+									"line": 156,
 									"character": 26
 								}
 							],
@@ -4964,10 +4979,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The status of the latest Remote Config fetch action."
+							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 98,
+									"line": 160,
 									"character": 19
 								}
 							],
@@ -5001,10 +5019,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The number of milliseconds since the last Remote Config fetch was performed."
+							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 96,
+									"line": 152,
 									"character": 17
 								}
 							],
@@ -5028,7 +5049,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 95,
+							"line": 148,
 							"character": 37
 						}
 					]
@@ -5042,7 +5063,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An Interface representing settable config settings."
+						"shortText": "An Interface representing settable config settings.",
+						"text": "#### Example\n\nThe example below makes use of the React Native `__DEV__` global JavaScript variable which\nis exposed.\n\n```js\nawait config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
 					},
 					"children": [
 						{
@@ -5053,10 +5075,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "If enabled, default behaviour such as caching is disabled for a better debugging\nexperience."
+							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 89,
+									"line": 133,
 									"character": 26
 								}
 							],
@@ -5078,7 +5103,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 88,
+							"line": 128,
 							"character": 38
 						}
 					]
@@ -5092,7 +5117,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An Interface representing a Remote Config value"
+						"shortText": "An Interface representing a Remote Config value."
 					},
 					"children": [
 						{
@@ -5104,12 +5129,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Where the value was retrieved from"
+								"shortText": "Where the value was retrieved from.",
+								"text": "- `remote`:  If the value was retrieved from the server.\n- `default`: If the value was set as a default value.\n- `static`: If no value was found and a static default value was returned instead.\n\n#### Example\n\n```js\nconst configValue = await config().getValue('beta_enabled');\nconsole.log('Value source: ', configValue.source);\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 70,
+									"line": 81,
 									"character": 10
 								}
 							],
@@ -5140,12 +5166,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The value"
+								"shortText": "The returned value.",
+								"text": "#### Example\n\n```js\nconst configValue = await config().getValue('beta_enabled');\nconsole.log('Value: ', configValue.value);\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "config/lib/index.d.ts",
-									"line": 75,
+									"line": 93,
 									"character": 9
 								}
 							],
@@ -5199,7 +5226,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An Interface representing multiple Config Values"
+						"shortText": "An Interface representing multiple Config Values.",
+						"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -5209,7 +5237,8 @@
 							"kindString": "Index signature",
 							"flags": {},
 							"comment": {
-								"shortText": "An Interface representing multiple Config Values"
+								"shortText": "An Interface representing multiple Config Values.",
+								"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -5234,7 +5263,7 @@
 					"sources": [
 						{
 							"fileName": "config/lib/index.d.ts",
-							"line": 81,
+							"line": 110,
 							"character": 31
 						}
 					]
@@ -5350,12 +5379,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Whether Crashlytics reporting is enabled."
+								"shortText": "Whether Crashlytics reporting is enabled.",
+								"text": "#### Example\n\n```js\nconst isEnabled = crashlytics().isCrashlyticsCollectionEnabled;\n```\n\n"
 							},
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 80,
+									"line": 87,
 									"character": 34
 								}
 							],
@@ -5380,7 +5410,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Cause your app to crash for testing purposes."
+										"shortText": "Cause your app to crash for testing purposes.",
+										"text": "#### Example\n\n```js\ncrashlytics().crash();\n```\n\n"
 									},
 									"type": {
 										"type": "intrinsic",
@@ -5391,7 +5422,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 85,
+									"line": 99,
 									"character": 9
 								}
 							]
@@ -5412,7 +5443,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Log a message that will appear in any subsequent Crash or Non-fatal error reports."
+										"shortText": "Log a message that will appear in any subsequent Crash or Non-fatal error reports.",
+										"text": "#### Example\n\n```js\ncrashlytics().logEvent('Testing a crash');\ncrashlytics().crash();\n```\n"
 									},
 									"parameters": [
 										{
@@ -5439,7 +5471,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 92,
+									"line": 113,
 									"character": 7
 								}
 							]
@@ -5461,7 +5493,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Record a JavaScript Error.",
-										"text": "The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.\n"
+										"text": "The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.\n\n#### Example\n\n```js\ncrashlytics().recordError(\n new Error('An error was caught')\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5488,7 +5520,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 101,
+									"line": 130,
 									"character": 15
 								}
 							]
@@ -5509,7 +5541,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console."
+										"shortText": "Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.",
+										"text": "#### Example\n\n```js\nawait crashlytics().setAttribute('role', 'admin');\n```\n"
 									},
 									"parameters": [
 										{
@@ -5518,7 +5551,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "The name of the attribute to set."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -5531,7 +5566,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A string value for the given attribute.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -5554,7 +5589,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 136,
+									"line": 195,
 									"character": 16
 								}
 							]
@@ -5575,7 +5610,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Like `setAttribute` but for multiple attributes."
+										"shortText": "Like `setAttribute` but for multiple attributes.",
+										"text": "#### Example\n\n```js\nawait crashlytics().setAttributes({\n  role: 'admin',\n  followers: '13',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -5585,7 +5621,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "An object of key/value attribute name and values.\n"
 											},
 											"type": {
 												"type": "reflection",
@@ -5624,7 +5660,7 @@
 													"sources": [
 														{
 															"fileName": "crashlytics/lib/index.d.ts",
-															"line": 143,
+															"line": 211,
 															"character": 29
 														}
 													]
@@ -5647,7 +5683,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 143,
+									"line": 211,
 									"character": 17
 								}
 							]
@@ -5669,7 +5705,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enable/disable Crashlytics reporting.",
-										"text": "Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.\n"
+										"text": "Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.\n\n#### Example\n\n```js\n// Disable crash reporting\nawait crashlytics().setCrashlyticsCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5679,7 +5715,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A boolean value representing whether to enable Crashlytics error collection.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -5702,7 +5738,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 152,
+									"line": 227,
 									"character": 35
 								}
 							]
@@ -5724,7 +5760,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Optionally specify a user email which will be visible in the Firebase Crashlytics console.",
-										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n"
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\ncrashlytics().setUserEmail('user@gmail.com');\n```\n"
 									},
 									"parameters": [
 										{
@@ -5734,7 +5770,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A users email address.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -5757,7 +5793,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 128,
+									"line": 181,
 									"character": 16
 								}
 							]
@@ -5779,7 +5815,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Specify a user identifier which will be visible in the Firebase Crashlytics console.",
-										"text": "It is recommended for privacy purposes that this value be a value that's meaningless to a third-party observer; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n"
+										"text": "It is recommended for privacy purposes that this value be a value that's meaningless to a third-party\nobserver; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n\n#### Example\n\n```js\n// Custom user id\nawait crashlytics().setUserId('123456789');\n// Firebase auth uid\nawait crashlytics().setUserId(\n firebase.auth().currentUser.uid\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5812,7 +5848,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 110,
+									"line": 151,
 									"character": 13
 								}
 							]
@@ -5834,7 +5870,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Optionally specify a user name which will be visible in the Firebase Crashlytics console.",
-										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n"
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\nawait crashlytics().setUserName('Alias');\n```\n"
 									},
 									"parameters": [
 										{
@@ -5867,7 +5903,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 119,
+									"line": 166,
 									"character": 15
 								}
 							]
@@ -6434,6 +6470,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Gets an `HttpsCallable` instance that refers to the function with the given\nname.",
+										"text": "#### Example\n\n```js\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n",
 										"returns": "The `HttpsCallable` instance.\n"
 									},
 									"parameters": [
@@ -6462,7 +6499,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 219,
+									"line": 322,
 									"character": 17
 								}
 							]
@@ -6484,7 +6521,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Changes this instance to point to a Cloud Functions emulator running\nlocally.",
-										"text": "See https://firebase.google.com/docs/functions/local-emulator\n"
+										"text": "See https://firebase.google.com/docs/functions/local-emulator\n\n#### Example\n\n```js\nif (__DEV__) {\n  functions().useFunctionsEmulator('http://10.0.0.8:1337');\n}\n```\n"
 									},
 									"parameters": [
 										{
@@ -6494,7 +6531,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "the origin string of the local emulator started via firebase tools\n\"http://10.0.0.8:1337\".\n"
+												"text": "The origin string of the local emulator started via firebase tools\n\"http://10.0.0.8:1337\".\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -6511,7 +6548,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 230,
+									"line": 341,
 									"character": 24
 								}
 							]
@@ -6537,7 +6574,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 211,
+							"line": 300,
 							"character": 21
 						}
 					],
@@ -6557,7 +6594,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions."
+						"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions.",
+						"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
 					},
 					"signatures": [
 						{
@@ -6567,7 +6605,8 @@
 							"kindString": "Call signature",
 							"flags": {},
 							"comment": {
-								"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions."
+								"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions.",
+								"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
 							},
 							"parameters": [
 								{
@@ -6600,7 +6639,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 130,
+							"line": 146,
 							"character": 32
 						}
 					]
@@ -6628,7 +6667,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 123,
+									"line": 124,
 									"character": 17
 								}
 							],
@@ -6650,7 +6689,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 122,
+							"line": 123,
 							"character": 38
 						}
 					]
@@ -6662,6 +6701,10 @@
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
+					},
+					"comment": {
+						"shortText": "An HttpsError wraps a single error from a function call.",
+						"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.log('Message', httpsError.message);\n\n  // Check code\n  if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {\n    console.error('Functions endpoint \"order\" not found');\n  }\n}\n```\n"
 					},
 					"children": [
 						{
@@ -6693,12 +6736,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "A standard error code that will be returned to the client. This also\ndetermines the HTTP status code of the response, as defined in code.proto."
+								"shortText": "A standard error code that will be returned to the client. This also\ndetermines the HTTP status code of the response, as defined in code.proto.",
+								"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.error(httpsError.code);\n}\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 139,
+									"line": 183,
 									"character": 17
 								}
 							],
@@ -6718,12 +6762,13 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Extra data to be converted to JSON and included in the error response."
+								"shortText": "Extra data to be converted to JSON and included in the error response.",
+								"text": "```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  if (httpsError.details) {\n    console.error(httpsError.details);\n  }\n}\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 143,
+									"line": 197,
 									"character": 20
 								}
 							],
@@ -6836,7 +6881,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 134,
+							"line": 168,
 							"character": 29
 						}
 					],
@@ -6855,6 +6900,10 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "The HttpsErrorCode interface provides access to all FunctionsErrorCode\ntype aliases.",
+						"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n switch(httpsError.code) {\n   case firebase.functions.HttpsErrorCode.NOT_FOUND:\n     console.error('Functions endpoint not found');\n     break;\n   case firebase.functions.HttpsErrorCode.CANCELLED:\n     console.error('The operation was cancelled');\n     break;\n   default:\n     console.error('An error occurred');\n     break;\n }\n  // Check code\n  if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {\n    console.error('Functions endpoint \"order\" not found');\n  }\n}\n```\n"
+					},
 					"children": [
 						{
 							"id": 221,
@@ -6867,7 +6916,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 158,
+									"line": 240,
 									"character": 11
 								}
 							],
@@ -6887,7 +6936,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 153,
+									"line": 235,
 									"character": 18
 								}
 							],
@@ -6907,7 +6956,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 148,
+									"line": 230,
 									"character": 13
 								}
 							],
@@ -6927,7 +6976,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 163,
+									"line": 245,
 									"character": 13
 								}
 							],
@@ -6947,7 +6996,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 151,
+									"line": 233,
 									"character": 21
 								}
 							],
@@ -6967,7 +7016,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 157,
+									"line": 239,
 									"character": 23
 								}
 							],
@@ -6987,7 +7036,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 161,
+									"line": 243,
 									"character": 12
 								}
 							],
@@ -7007,7 +7056,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 150,
+									"line": 232,
 									"character": 20
 								}
 							],
@@ -7027,7 +7076,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 152,
+									"line": 234,
 									"character": 13
 								}
 							],
@@ -7047,7 +7096,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 147,
+									"line": 229,
 									"character": 6
 								}
 							],
@@ -7067,7 +7116,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 159,
+									"line": 241,
 									"character": 16
 								}
 							],
@@ -7087,7 +7136,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 154,
+									"line": 236,
 									"character": 21
 								}
 							],
@@ -7107,7 +7156,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 156,
+									"line": 238,
 									"character": 22
 								}
 							],
@@ -7127,7 +7176,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 155,
+									"line": 237,
 									"character": 19
 								}
 							],
@@ -7147,7 +7196,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 162,
+									"line": 244,
 									"character": 15
 								}
 							],
@@ -7167,7 +7216,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 160,
+									"line": 242,
 									"character": 17
 								}
 							],
@@ -7187,7 +7236,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 149,
+									"line": 231,
 									"character": 11
 								}
 							],
@@ -7225,7 +7274,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 146,
+							"line": 228,
 							"character": 33
 						}
 					]
@@ -7251,12 +7300,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Uppercase + underscored variables of {@link functions.FunctionsErrorCode}"
+								"shortText": "Uppercase + underscored variables of {@link functions.FunctionsErrorCode}",
+								"text": "#### Example\n\n```js\nfirebase.functions.HttpsErrorCode.OK;\nfirebase.functions.HttpsErrorCode.NOT_FOUND;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 173,
+									"line": 262,
 									"character": 18
 								}
 							],
@@ -7279,7 +7329,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 169,
+							"line": 251,
 							"character": 26
 						}
 					]
@@ -7293,13 +7343,18 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "The set of Firebase Functions status codes. The codes are the same at the\nones exposed by gRPC here:\nhttps://github.com/grpc/grpc/blob/master/doc/statuscodes.md",
-						"text": "Possible values:\n- 'cancelled': The operation was cancelled (typically by the caller).\n- 'unknown': Unknown error or an error from a different error domain.\n- 'invalid-argument': Client specified an invalid argument. Note that this\n  differs from 'failed-precondition'. 'invalid-argument' indicates\n  arguments that are problematic regardless of the state of the system\n  (e.g. an invalid field name).\n- 'deadline-exceeded': Deadline expired before operation could complete.\n  For operations that change the state of the system, this error may be\n  returned even if the operation has completed successfully. For example,\n  a successful response from a server could have been delayed long enough\n  for the deadline to expire.\n- 'not-found': Some requested document was not found.\n- 'already-exists': Some document that we attempted to create already\n  exists.\n- 'permission-denied': The caller does not have permission to execute the\n  specified operation.\n- 'resource-exhausted': Some resource has been exhausted, perhaps a\n  per-user quota, or perhaps the entire file system is out of space.\n- 'failed-precondition': Operation was rejected because the system is not\n  in a state required for the operation's execution.\n- 'aborted': The operation was aborted, typically due to a concurrency\n  issue like transaction aborts, etc.\n- 'out-of-range': Operation was attempted past the valid range.\n- 'unimplemented': Operation is not implemented or not supported/enabled.\n- 'internal': Internal errors. Means some invariants expected by\n  underlying system has been broken. If you see one of these errors,\n  something is very broken.\n- 'unavailable': The service is currently unavailable. This is most likely\n  a transient condition and may be corrected by retrying with a backoff.\n- 'data-loss': Unrecoverable data loss or corruption.\n- 'unauthenticated': The request does not have valid authentication\n  credentials for the operation.\n"
+						"shortText": "The set of Firebase Functions status codes.",
+						"tags": [
+							{
+								"tag": "note",
+								"text": "\nThe codes are the same at the ones exposed by [gRPC](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md).\n\nPossible values:\n- `cancelled`: The operation was cancelled (typically by the caller).\n- `unknown`: Unknown error or an error from a different error domain.\n- `invalid-argument`: Client specified an invalid argument. Note that this\n  differs from `failed-precondition`. `invalid-argument` indicates\n  arguments that are problematic regardless of the state of the system\n  (e.g. an invalid field name).\n- `deadline-exceeded`: Deadline expired before operation could complete.\n  For operations that change the state of the system, this error may be\n  returned even if the operation has completed successfully. For example,\n  a successful response from a server could have been delayed long enough\n  for the deadline to expire.\n- `not-found`: Some requested document was not found.\n- `already-exists`: Some document that we attempted to create already\n  exists.\n- `permission-denied`: The caller does not have permission to execute the\n  specified operation.\n- `resource-exhausted`: Some resource has been exhausted, perhaps a\n  per-user quota, or perhaps the entire file system is out of space.\n- `failed-precondition`: Operation was rejected because the system is not\n  in a state required for the operation's execution.\n- `aborted`: The operation was aborted, typically due to a concurrency\n  issue like transaction aborts, etc.\n- `out-of-range`: Operation was attempted past the valid range.\n- `unimplemented`: Operation is not implemented or not supported/enabled.\n- `internal`: Internal errors. Means some invariants expected by\n  underlying system has been broken. If you see one of these errors,\n  something is very broken.\n- `unavailable`: The service is currently unavailable. This is most likely\n  a transient condition and may be corrected by retrying with a backoff.\n- `data-loss`: Unrecoverable data loss or corruption.\n- `unauthenticated`: The request does not have valid authentication\n  credentials for the operation.\n"
+							}
+						]
 					},
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 100,
+							"line": 101,
 							"character": 32
 						}
 					],
@@ -7486,7 +7541,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Delete the Instance ID and all data associated with it. This stops the periodic sending of data to the Firebase\nbackend that was started when the Instance ID was generated.",
-										"text": "A new Instance ID is asynchronously generated unless auto initialisation is turned off.\n"
+										"text": "A new Instance ID is asynchronously generated unless auto initialisation is turned off.\n\n#### Example\n\n```js\nawait iid().delete();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -7503,7 +7558,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 91,
+									"line": 103,
 									"character": 10
 								}
 							]
@@ -7524,7 +7579,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Revokes access to a scope for an entity previously authorized by `getToken()`."
+										"shortText": "Revokes access to a scope for an entity previously authorized by `getToken()`.",
+										"text": "#### Example\n\n```js\nawait iid().deleteToken(firebase.app().options.storageBucket, '*');\n```\n"
 									},
 									"parameters": [
 										{
@@ -7593,7 +7649,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 107,
+									"line": 131,
 									"character": 15
 								}
 							]
@@ -7615,7 +7671,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a identifier that uniquely identifies the app instance.",
-										"text": "Once an Instance ID is generated, Firebase periodically sends information about the application\nand the device it's running on to the Firebase backend. To stop this, see `delete()`.\n"
+										"text": "Once an Instance ID is generated, Firebase periodically sends information about the application\nand the device it's running on to the Firebase backend. To stop this, see `delete()`.\n\n#### Example\n\n```js\nconst id = iid().get();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -7632,7 +7688,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 83,
+									"line": 89,
 									"character": 7
 								}
 							]
@@ -7653,7 +7709,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns a token that authorizes an Entity to perform an action on behalf of the application."
+										"shortText": "Returns a token that authorizes an Entity to perform an action on behalf of the application.",
+										"text": "#### Example\n\n```js\nconst token = await iid().getToken(firebase.app().options.storageBucket, '*');\n```\n"
 									},
 									"parameters": [
 										{
@@ -7722,7 +7779,7 @@
 							"sources": [
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 99,
+									"line": 117,
 									"character": 12
 								}
 							]
@@ -9138,7 +9195,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns the value of an attribute. Returns null if it does not exist."
+										"shortText": "Returns the value of an attribute. Returns null if it does not exist.",
+										"text": "#### Example\n\n```js\nconst attribute = metric.getAttribute('user_role');\n```\n"
 									},
 									"parameters": [
 										{
@@ -9174,7 +9232,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 152,
+									"line": 228,
 									"character": 16
 								}
 							]
@@ -9195,7 +9253,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns an object of all the currently added attributes."
+										"shortText": "Returns an object of all the currently added attributes.",
+										"text": "#### Example\n\n```js\nconst attributes = metric.getAttributes();\n\nattributes.forEach(($) => {\n  console.log($);\n});\n```\n"
 									},
 									"type": {
 										"type": "reflection",
@@ -9234,7 +9293,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 157,
+													"line": 243,
 													"character": 20
 												}
 											]
@@ -9245,7 +9304,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 157,
+									"line": 243,
 									"character": 17
 								}
 							]
@@ -9266,7 +9325,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets a String value for the specified attribute. Updates the value of the attribute if it already exists.\nThe maximum number of attributes that can be added is 5."
+										"shortText": "Sets a String value for the specified attribute. Updates the value of the attribute if it already exists.\nThe maximum number of attributes that can be added is 5.",
+										"text": "#### Example\n\n```js\nmetric.putAttribute('user_role', 'admin');\n```\n"
 									},
 									"parameters": [
 										{
@@ -9307,7 +9367,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 166,
+									"line": 258,
 									"character": 16
 								}
 							]
@@ -9328,7 +9388,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Removes an already added attribute. Does nothing if attribute does not exist."
+										"shortText": "Removes an already added attribute. Does nothing if attribute does not exist.",
+										"text": "#### Example\n\n```js\nmetric.removeAttribute('user_role');\n```\n"
 									},
 									"parameters": [
 										{
@@ -9355,7 +9416,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 173,
+									"line": 271,
 									"character": 19
 								}
 							]
@@ -9380,7 +9441,7 @@
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "This is required for every request, if you do not provide this your metric will not be captured.\n"
+												"text": "This is required for every request, if you do not provide this your metric will not be captured.\n\n#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setHttpResponseCode(response.status);\n```\n"
 											}
 										]
 									},
@@ -9418,7 +9479,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 182,
+									"line": 287,
 									"character": 23
 								}
 							]
@@ -9439,7 +9500,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the size of the request payload"
+										"shortText": "Sets the size of the request payload.",
+										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setRequestPayloadSize(response.headers.get('Content-Type'));\n```\n"
 									},
 									"parameters": [
 										{
@@ -9475,7 +9537,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 189,
+									"line": 301,
 									"character": 25
 								}
 							]
@@ -9496,7 +9558,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Content type of the response e.g. `text/html` or `application/json`."
+										"shortText": "Content type of the response e.g. `text/html` or `application/json`.",
+										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setResponsePayloadSize(response.headers.get('Content-Type'));\n```\n"
 									},
 									"parameters": [
 										{
@@ -9532,7 +9595,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 203,
+									"line": 329,
 									"character": 26
 								}
 							]
@@ -9553,7 +9616,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the size of the response payload"
+										"shortText": "Sets the size of the response payload.",
+										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setResponsePayloadSize(response.headers.get('Content-Length'));\n```\n"
 									},
 									"parameters": [
 										{
@@ -9589,7 +9653,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 196,
+									"line": 315,
 									"character": 26
 								}
 							]
@@ -9610,7 +9674,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Marks the start time of the request. Does nothing if already started."
+										"shortText": "Marks the start time of the request. Does nothing if already started.",
+										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9627,7 +9692,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 208,
+									"line": 341,
 									"character": 9
 								}
 							]
@@ -9648,7 +9713,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Marks the end time of the response and queues the network request metric on the device for transmission. Does nothing if already stopped."
+										"shortText": "Marks the end time of the response and queues the network request metric on the device for transmission. Does nothing if already stopped.",
+										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\nmetric.putAttribute('user_role', 'admin');\nawait metric.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9665,7 +9731,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 213,
+									"line": 355,
 									"character": 8
 								}
 							]
@@ -9692,7 +9758,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 146,
+							"line": 216,
 							"character": 25
 						}
 					]
@@ -9743,12 +9809,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Determines whether performance monitoring is enabled or disabled."
+								"shortText": "Determines whether performance monitoring is enabled or disabled.",
+								"text": "#### Example\n\n```js\nconst isEnabled = config().isPerformanceCollectionEnabled;\nconsole.log('Performance collection enabled: ', isEnabled);\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 235,
+									"line": 384,
 									"character": 34
 								}
 							],
@@ -9773,7 +9840,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates a HttpMetric instance for collecting network performance data for a single request/response"
+										"shortText": "Creates a HttpMetric instance for collecting network performance data for a single request/response",
+										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/user/1', 'GET');\nawait metric.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9816,7 +9884,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 265,
+									"line": 440,
 									"character": 17
 								}
 							]
@@ -9837,7 +9905,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates a Trace instance with the given identifier."
+										"shortText": "Creates a Trace instance with the given identifier.",
+										"text": "#### Example\n\n```js\nconst trace = config().newTrace('user_profile');\nawait trace.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9865,7 +9934,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 249,
+									"line": 412,
 									"character": 12
 								}
 							]
@@ -9886,7 +9955,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Enables or disables performance monitoring."
+										"shortText": "Enables or disables performance monitoring.",
+										"text": "#### Example\n\n```js\n// Disable performance monitoring collection\nawait config().setPerformanceCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -9919,7 +9989,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 242,
+									"line": 398,
 									"character": 35
 								}
 							]
@@ -9940,7 +10010,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates a Trace instance with the given identifier and immediately starts it."
+										"shortText": "Creates a Trace instance with the given identifier and immediately starts it.",
+										"text": "#### Example\n\n```js\nconst trace = await config().startTrace('user_profile');\n```\n"
 									},
 									"parameters": [
 										{
@@ -9974,7 +10045,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 257,
+									"line": 425,
 									"character": 14
 								}
 							]
@@ -10003,7 +10074,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 231,
+							"line": 373,
 							"character": 21
 						}
 					],
@@ -10042,7 +10113,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns the value of an attribute. Returns null if it does not exist."
+										"shortText": "Returns the value of an attribute. Returns null if it does not exist.",
+										"text": "#### Example\n\n```js\nconst attribute = trace.getAttribute('userId');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10052,7 +10124,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "Name of the attribute to fetch the value of\n"
+												"text": "Name of the attribute to fetch the value of.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -10078,7 +10150,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 81,
+									"line": 96,
 									"character": 16
 								}
 							]
@@ -10099,7 +10171,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Gets the value of the metric with the given name in the current trace. If the metric doesn't exist, it will not be created and a 0 is returned."
+										"shortText": "Gets the value of the metric with the given name in the current trace. If the metric\ndoesn't exist, it will not be created and a 0 is returned.",
+										"text": "#### Example\n\n```js\nconst metric = trace.getMetric('hits');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10126,7 +10199,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 97,
+									"line": 125,
 									"character": 13
 								}
 							]
@@ -10147,7 +10220,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns an object of all the currently added metrics and their number values."
+										"shortText": "Returns an object of all the currently added metrics and their number values.",
+										"text": "#### Example\n\n```js\nconst metrics = trace.getMetrics();\n\nmetrics.forEach(($) => {\n  console.log($);\n});\n```\n"
 									},
 									"type": {
 										"type": "reflection",
@@ -10186,7 +10260,7 @@
 											"sources": [
 												{
 													"fileName": "perf/lib/index.d.ts",
-													"line": 102,
+													"line": 140,
 													"character": 17
 												}
 											]
@@ -10197,7 +10271,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 102,
+									"line": 140,
 									"character": 14
 								}
 							]
@@ -10219,7 +10293,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Increments the named metric by the `incrementBy` value.",
-										"text": "If a metric with the given name doesn't exist, a new one will be created starting with the value of `incrementBy`.\n"
+										"text": "If a metric with the given name doesn't exist, a new one will be created starting with the value of `incrementBy`.\n\n```js\ntrace.incrementMetric('hits', 1);\n```\n"
 									},
 									"parameters": [
 										{
@@ -10260,7 +10334,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 123,
+									"line": 171,
 									"character": 19
 								}
 							]
@@ -10281,7 +10355,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets a String value for the specified attribute. Updates the value of the attribute if it already exists.\nThe maximum number of attributes that can be added is 5."
+										"shortText": "Sets a String value for the specified attribute. Updates the value of the attribute if it already exists.\nThe maximum number of attributes that can be added is 5.",
+										"text": "#### Example\n\n```js\ntrace.putAttribute('userId', '123456789');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10322,7 +10397,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 90,
+									"line": 111,
 									"character": 16
 								}
 							]
@@ -10344,7 +10419,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the value of the named metric with the provided number.",
-										"text": "If a metric with the given name exists it will be overwritten.\nIf a metric with the given name doesn't exist, a new one will be created.\n"
+										"text": "If a metric with the given name exists it will be overwritten.\nIf a metric with the given name doesn't exist, a new one will be created.\n\n#### Example\n\n```js\ntrace.putMetric('hits', 1);\n```\n"
 									},
 									"parameters": [
 										{
@@ -10385,7 +10460,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 113,
+									"line": 157,
 									"character": 13
 								}
 							]
@@ -10406,7 +10481,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Removes a metric by name if it exists."
+										"shortText": "Removes a metric by name if it exists.",
+										"text": "#### Example\n\n```js\ntrace.removeMetric('hits');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10433,7 +10509,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 130,
+									"line": 184,
 									"character": 16
 								}
 							]
@@ -10454,7 +10530,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Marks the start time of the trace. Does nothing if already started."
+										"shortText": "Marks the start time of the trace. Does nothing if already started.",
+										"text": "#### Example\n\n```js\nconst trace = config().newTrace('example');\nawait trace.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -10471,7 +10548,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 135,
+									"line": 196,
 									"character": 9
 								}
 							]
@@ -10492,7 +10569,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Marks the end time of the trace and queues the metric on the device for transmission. Does nothing if already stopped."
+										"shortText": "Marks the end time of the trace and queues the metric on the device for transmission. Does nothing if already stopped.",
+										"text": "* #### Example\n\n```js\nconst trace = config().newTrace('example');\nawait trace.start();\ntrace.putMetric('hits', 1);\nawait trace.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -10509,7 +10587,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 140,
+									"line": 210,
 									"character": 8
 								}
 							]
@@ -10535,7 +10613,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 75,
+							"line": 84,
 							"character": 20
 						}
 					]
@@ -10551,7 +10629,7 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 216,
+							"line": 358,
 							"character": 26
 						}
 					]
@@ -10564,10 +10642,14 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "Type alias describing the valid HTTP methods accepted when creating a new {@link perf.HttpMetric} instance.",
+						"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/user', 'PATCH');\n```\n"
+					},
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 61,
+							"line": 70,
 							"character": 24
 						}
 					],
@@ -10714,7 +10796,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 509,
+									"line": 520,
 									"character": 24
 								}
 							],
@@ -10734,7 +10816,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 513,
+									"line": 524,
 									"character": 25
 								}
 							],
@@ -10754,7 +10836,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 505,
+									"line": 516,
 									"character": 22
 								}
 							],
@@ -10812,7 +10894,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 517,
+									"line": 528,
 									"character": 7
 								}
 							]
@@ -10855,7 +10937,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 519,
+									"line": 530,
 									"character": 14
 								}
 							]
@@ -10903,7 +10985,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 511,
+									"line": 522,
 									"character": 27
 								}
 							]
@@ -10951,7 +11033,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 515,
+									"line": 526,
 									"character": 28
 								}
 							]
@@ -10999,7 +11081,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 507,
+									"line": 518,
 									"character": 25
 								}
 							]
@@ -11031,7 +11113,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 504,
+							"line": 515,
 							"character": 21
 						}
 					],
@@ -11062,7 +11144,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 286,
+									"line": 297,
 									"character": 10
 								}
 							],
@@ -11083,7 +11165,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 266,
+									"line": 277,
 									"character": 16
 								}
 							],
@@ -11118,7 +11200,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 268,
+									"line": 279,
 									"character": 22
 								}
 							],
@@ -11153,7 +11235,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 270,
+									"line": 281,
 									"character": 19
 								}
 							],
@@ -11188,7 +11270,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 272,
+									"line": 283,
 									"character": 19
 								}
 							],
@@ -11223,7 +11305,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 274,
+									"line": 285,
 									"character": 15
 								}
 							],
@@ -11258,7 +11340,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 276,
+									"line": 287,
 									"character": 18
 								}
 							],
@@ -11302,7 +11384,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 276,
+													"line": 287,
 													"character": 20
 												}
 											]
@@ -11331,7 +11413,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 288,
+									"line": 299,
 									"character": 12
 								}
 							],
@@ -11351,7 +11433,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 290,
+									"line": 301,
 									"character": 14
 								}
 							],
@@ -11372,7 +11454,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 282,
+									"line": 293,
 									"character": 11
 								}
 							],
@@ -11406,7 +11488,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 292,
+									"line": 303,
 									"character": 18
 								}
 							],
@@ -11426,7 +11508,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 294,
+									"line": 305,
 									"character": 8
 								}
 							],
@@ -11446,7 +11528,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 296,
+									"line": 307,
 									"character": 8
 								}
 							],
@@ -11466,7 +11548,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 298,
+									"line": 309,
 									"character": 15
 								}
 							],
@@ -11486,7 +11568,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 300,
+									"line": 311,
 									"character": 11
 								}
 							],
@@ -11522,7 +11604,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 285,
+							"line": 296,
 							"character": 31
 						}
 					],
@@ -11545,7 +11627,7 @@
 					"children": [
 						{
 							"id": 452,
-							"name": "CACHES_DIRECTORY",
+							"name": "CachesDirectory",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -11554,8 +11636,8 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 192,
-									"character": 20
+									"line": 188,
+									"character": 19
 								}
 							],
 							"type": {
@@ -11565,99 +11647,44 @@
 						},
 						{
 							"id": 453,
-							"name": "DOCUMENT_DIRECTORY",
+							"name": "DocumentDirectory",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 190,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 456,
+							"name": "ExternalDirectory",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Document Directory Path"
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS return `DocumentDirectory`\n"
+									}
+								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 197,
-									"character": 22
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 454,
-							"name": "EXTERNAL_DIRECTORY",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 198,
-									"character": 22
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 455,
-							"name": "EXTERNAL_STORAGE_DIRECTORY",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 199,
-									"character": 30
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 459,
-							"name": "FILE_TYPE_DIRECTORY",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 207,
-									"character": 23
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 458,
-							"name": "FILE_TYPE_REGULAR",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 206,
+									"line": 200,
 									"character": 21
 								}
 							],
@@ -11668,7 +11695,35 @@
 						},
 						{
 							"id": 457,
-							"name": "LIBRARY_DIRECTORY",
+							"name": "ExternalStorageDirectory",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS return `DocumentDirectory`\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 206,
+									"character": 28
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 455,
+							"name": "LibraryDirectory",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -11677,8 +11732,8 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 205,
-									"character": 21
+									"line": 194,
+									"character": 20
 								}
 							],
 							"type": {
@@ -11688,20 +11743,17 @@
 						},
 						{
 							"id": 451,
-							"name": "MAIN_BUNDLE",
+							"name": "MainBundle",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
-							"comment": {
-								"shortText": "Main Bundle Path"
-							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 190,
-									"character": 15
+									"line": 186,
+									"character": 14
 								}
 							],
 							"type": {
@@ -11710,21 +11762,74 @@
 							}
 						},
 						{
-							"id": 456,
-							"name": "TEMP_DIRECTORY",
+							"id": 459,
+							"name": "MoviesDirectory",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Store Temp Files here"
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS return `DocumentDirectory`\n"
+									}
+								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 204,
-									"character": 18
+									"line": 218,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 458,
+							"name": "PicturesDirectory",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS return `DocumentDirectory`\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 212,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 454,
+							"name": "TempDirectory",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 192,
+									"character": 17
 								}
 							],
 							"type": {
@@ -11740,20 +11845,20 @@
 							"children": [
 								452,
 								453,
-								454,
+								456,
+								457,
 								455,
+								451,
 								459,
 								458,
-								457,
-								451,
-								456
+								454
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 186,
+							"line": 185,
 							"character": 23
 						}
 					]
@@ -11778,7 +11883,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 304,
+									"line": 315,
 									"character": 10
 								}
 							],
@@ -11798,7 +11903,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 308,
+									"line": 319,
 									"character": 12
 								}
 							],
@@ -11818,7 +11923,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 310,
+									"line": 321,
 									"character": 8
 								}
 							],
@@ -11838,7 +11943,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 306,
+									"line": 317,
 									"character": 10
 								}
 							],
@@ -11868,7 +11973,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 312,
+									"line": 323,
 									"character": 8
 								}
 							],
@@ -11889,7 +11994,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 314,
+									"line": 325,
 									"character": 11
 								}
 							],
@@ -11937,7 +12042,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 318,
+									"line": 329,
 									"character": 9
 								}
 							]
@@ -11972,7 +12077,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 320,
+									"line": 331,
 									"character": 10
 								}
 							]
@@ -12007,7 +12112,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 322,
+									"line": 333,
 									"character": 18
 								}
 							]
@@ -12043,7 +12148,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 324,
+									"line": 335,
 									"character": 15
 								}
 							]
@@ -12113,7 +12218,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 328,
+									"line": 339,
 									"character": 7
 								}
 							]
@@ -12170,7 +12275,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 326,
+									"line": 337,
 									"character": 11
 								}
 							]
@@ -12241,7 +12346,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 330,
+									"line": 341,
 									"character": 13
 								}
 							]
@@ -12270,7 +12375,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 316,
+									"line": 327,
 									"character": 12
 								}
 							]
@@ -12320,7 +12425,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 332,
+									"line": 343,
 									"character": 18
 								}
 							]
@@ -12358,7 +12463,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 303,
+							"line": 314,
 							"character": 28
 						}
 					]
@@ -12384,7 +12489,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 266,
+									"line": 277,
 									"character": 16
 								}
 							],
@@ -12414,7 +12519,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 268,
+									"line": 279,
 									"character": 22
 								}
 							],
@@ -12444,7 +12549,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 270,
+									"line": 281,
 									"character": 19
 								}
 							],
@@ -12474,7 +12579,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 272,
+									"line": 283,
 									"character": 19
 								}
 							],
@@ -12504,7 +12609,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 274,
+									"line": 285,
 									"character": 15
 								}
 							],
@@ -12534,7 +12639,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 276,
+									"line": 287,
 									"character": 18
 								}
 							],
@@ -12578,7 +12683,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 276,
+													"line": 287,
 													"character": 20
 												}
 											]
@@ -12609,7 +12714,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 265,
+							"line": 276,
 							"character": 35
 						}
 					],
@@ -12649,7 +12754,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 262,
+									"line": 273,
 									"character": 8
 								}
 							],
@@ -12674,7 +12779,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 229,
+									"line": 240,
 									"character": 16
 								}
 							],
@@ -12699,7 +12804,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 251,
+									"line": 262,
 									"character": 13
 								}
 							],
@@ -12724,7 +12829,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 240,
+									"line": 251,
 									"character": 13
 								}
 							],
@@ -12750,7 +12855,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 219,
+							"line": 230,
 							"character": 26
 						}
 					]
@@ -12895,7 +13000,7 @@
 					},
 					"comment": {
 						"shortText": "Storage Task used for Uploading or Downloading files.",
-						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst downloadTo = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .getFile(downloadTo);\n```\n"
+						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst downloadTo = `${firebase.storage.Path.DocumentDirectory}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .getFile(downloadTo);\n```\n"
 					},
 					"children": [
 						{
@@ -12932,7 +13037,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 428,
+									"line": 439,
 									"character": 10
 								}
 							]
@@ -12996,7 +13101,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 454,
+															"line": 465,
 															"character": 21
 														}
 													]
@@ -13019,7 +13124,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 454,
+									"line": 465,
 									"character": 9
 								}
 							]
@@ -13112,7 +13217,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 439,
+																	"line": 450,
 																	"character": 52
 																}
 															]
@@ -13170,7 +13275,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 440,
+																	"line": 451,
 																	"character": 13
 																}
 															]
@@ -13221,7 +13326,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 441,
+																	"line": 452,
 																	"character": 16
 																}
 															]
@@ -13244,7 +13349,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 437,
+									"line": 448,
 									"character": 6
 								}
 							]
@@ -13283,7 +13388,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 390,
+									"line": 401,
 									"character": 9
 								}
 							]
@@ -13322,7 +13427,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 410,
+									"line": 421,
 									"character": 10
 								}
 							]
@@ -13392,7 +13497,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 450,
+																	"line": 461,
 																	"character": 19
 																}
 															]
@@ -13453,7 +13558,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 451,
+																	"line": 462,
 																	"character": 18
 																}
 															]
@@ -13482,7 +13587,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 449,
+									"line": 460,
 									"character": 8
 								}
 							]
@@ -13505,7 +13610,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 372,
+							"line": 383,
 							"character": 23
 						}
 					]
@@ -13585,7 +13690,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 458,
+									"line": 469,
 									"character": 20
 								}
 							],
@@ -13605,7 +13710,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 460,
+									"line": 471,
 									"character": 12
 								}
 							],
@@ -13626,7 +13731,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 462,
+									"line": 473,
 									"character": 7
 								}
 							],
@@ -13647,7 +13752,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 464,
+									"line": 475,
 									"character": 9
 								}
 							],
@@ -13688,7 +13793,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 466,
+									"line": 477,
 									"character": 8
 								}
 							],
@@ -13709,7 +13814,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 468,
+									"line": 479,
 									"character": 14
 								}
 							],
@@ -13736,7 +13841,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 457,
+							"line": 468,
 							"character": 31
 						}
 					]
@@ -13761,7 +13866,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 340,
+									"line": 351,
 									"character": 12
 								}
 							],
@@ -13789,7 +13894,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 340,
+											"line": 351,
 											"character": 13
 										}
 									]
@@ -13807,7 +13912,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 338,
+									"line": 349,
 									"character": 9
 								}
 							],
@@ -13848,7 +13953,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 338,
+											"line": 349,
 											"character": 10
 										}
 									]
@@ -13866,7 +13971,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 336,
+									"line": 347,
 									"character": 8
 								}
 							],
@@ -13908,7 +14013,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 336,
+											"line": 347,
 											"character": 9
 										}
 									]
@@ -13930,7 +14035,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 335,
+							"line": 346,
 							"character": 39
 						}
 					]
@@ -14097,7 +14202,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 266,
+									"line": 277,
 									"character": 16
 								}
 							],
@@ -14132,7 +14237,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 268,
+									"line": 279,
 									"character": 22
 								}
 							],
@@ -14167,7 +14272,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 270,
+									"line": 281,
 									"character": 19
 								}
 							],
@@ -14202,7 +14307,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 272,
+									"line": 283,
 									"character": 19
 								}
 							],
@@ -14237,7 +14342,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 274,
+									"line": 285,
 									"character": 15
 								}
 							],
@@ -14272,7 +14377,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 276,
+									"line": 287,
 									"character": 18
 								}
 							],
@@ -14316,7 +14421,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 276,
+													"line": 287,
 													"character": 20
 												}
 											]
@@ -14346,7 +14451,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 282,
+									"line": 293,
 									"character": 11
 								}
 							],
@@ -14383,7 +14488,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 281,
+							"line": 292,
 							"character": 33
 						}
 					],
