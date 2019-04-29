@@ -33,16 +33,37 @@ export namespace Crashlytics {
   export interface Module extends ReactNativeFirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isEnabled = crashlytics().isCrashlyticsCollectionEnabled;
+     * ```
+     *
      */
     isCrashlyticsCollectionEnabled: true;
 
     /**
      * Cause your app to crash for testing purposes.
+     *
+     * #### Example
+     *
+     * ```js
+     * crashlytics().crash();
+     * ```
+     *
      */
     crash(): void;
 
     /**
      * Log a message that will appear in any subsequent Crash or Non-fatal error reports.
+     *
+     * #### Example
+     *
+     * ```js
+     * crashlytics().logEvent('Testing a crash');
+     * crashlytics().crash();
+     * ```
      *
      * @param message
      */
@@ -53,6 +74,14 @@ export namespace Crashlytics {
      *
      * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
      *
+     * #### Example
+     *
+     * ```js
+     * crashlytics().recordError(
+     *  new Error('An error was caught')
+     * );
+     * ```
+     *
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
      */
     recordError(error: Error): void;
@@ -60,7 +89,19 @@ export namespace Crashlytics {
     /**
      * Specify a user identifier which will be visible in the Firebase Crashlytics console.
      *
-     * It is recommended for privacy purposes that this value be a value that's meaningless to a third-party observer; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.
+     * It is recommended for privacy purposes that this value be a value that's meaningless to a third-party
+     * observer; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Custom user id
+     * await crashlytics().setUserId('123456789');
+     * // Firebase auth uid
+     * await crashlytics().setUserId(
+     *  firebase.auth().currentUser.uid
+     * );
+     * ```
      *
      * @param userId An arbitrary string that ties an end-user to a record in your system e.g. a database record id.
      */
@@ -71,6 +112,12 @@ export namespace Crashlytics {
      *
      * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
      *
+     * #### Example
+     *
+     * ```js
+     * await crashlytics().setUserName('Alias');
+     * ```
+     *
      * @param userName A string representing an end-user's name or app username
      */
     setUserName(userName: string): Promise<null>;
@@ -80,22 +127,43 @@ export namespace Crashlytics {
      *
      * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
      *
-     * @param userEmail
+     * #### Example
+     *
+     * ```js
+     * crashlytics().setUserEmail('user@gmail.com');
+     * ```
+     *
+     * @param userEmail A users email address.
      */
     setUserEmail(userEmail: string): Promise<null>;
 
     /**
      * Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.
      *
-     * @param name
-     * @param value
+     * #### Example
+     *
+     * ```js
+     * await crashlytics().setAttribute('role', 'admin');
+     * ```
+     *
+     * @param name The name of the attribute to set.
+     * @param value A string value for the given attribute.
      */
     setAttribute(name: string, value: string): Promise<null>;
 
     /**
      * Like `setAttribute` but for multiple attributes.
      *
-     * @param attributes
+     * #### Example
+     *
+     * ```js
+     * await crashlytics().setAttributes({
+     *   role: 'admin',
+     *   followers: '13',
+     * });
+     * ```
+     *
+     * @param attributes An object of key/value attribute name and values.
      */
     setAttributes(attributes: { [key: string]: string }): Promise<null>;
 
@@ -104,7 +172,14 @@ export namespace Crashlytics {
      *
      * Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.
      *
-     * @param enabled
+     * #### Example
+     *
+     * ```js
+     * // Disable crash reporting
+     * await crashlytics().setCrashlyticsCollectionEnabled(false);
+     * ```
+     *
+     * @param enabled A boolean value representing whether to enable Crashlytics error collection.
      */
     setCrashlyticsCollectionEnabled(enabled: boolean): Promise<null>;
   }
