@@ -1,11 +1,11 @@
 ---
-title: Cloud Messaging (FCM)
-description: Firebase Cloud Messaging (FCM) is a cross-platform messaging solution that lets you reliably deliver messages at no cost. 
+title: Dynamic Links
+description: Firebase Dynamic Links are links that work the way you want, whether or not your app is already installed. 
 ---
 
-# Cloud Messaging
+# Dynamic Links
 
-React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a 
+React Native Firebase provides native integration Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a 
 cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging
 module provides a simple JavaScript API to interact with FCM.
 
