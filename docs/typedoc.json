@@ -2926,10 +2926,11 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Log a custom event with optional params.",
+										"text": "#### Example\n\n```js\nawait firebase().analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n",
 										"tags": [
 											{
 												"tag": "note",
-												"text": "100 characters is the maximum length for param key names.\n\n#### Example\n\n```js\nawait analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n"
+												"text": "100 characters is the maximum length for param key names.\n"
 											}
 										]
 									},
@@ -3039,7 +3040,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Clears all analytics data for this instance from the device and resets the app instance ID.",
-										"text": "#### Example\n\n```js\nawait analytics().resetAnalyticsData();\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase().analytics().resetAnalyticsData();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -3078,10 +3079,11 @@
 									"flags": {},
 									"comment": {
 										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR.",
+										"text": "#### Example\n\n```js\n// Disable collection\nawait firebase().analytics().setAnalyticsCollectionEnabled(false);\n```\n",
 										"tags": [
 											{
 												"tag": "note",
-												"text": "Analytics collection is enabled by default.\n\n#### Example\n\n```js\n// Disable collection\nawait analytics().setAnalyticsCollectionEnabled(false);\n```\n"
+												"text": "Analytics collection is enabled by default.\n"
 											}
 										]
 									},
@@ -3138,10 +3140,11 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the current screen name.",
+										"text": "#### Example\n\n```js\nawait firebase().analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n",
 										"tags": [
 											{
 												"tag": "note",
-												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n\n#### Example\n\n```js\nawait analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n"
+												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n"
 											}
 										]
 									},
@@ -3223,7 +3226,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the minimum engagement time required before starting a session.",
-										"text": "#### Example\n\n```js\n// 20 seconds\nawait analytics().setMinimumSessionDuration(20000);\n```\n"
+										"text": "#### Example\n\n```js\n// 20 seconds\nawait firebase().analytics().setMinimumSessionDuration(20000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3278,7 +3281,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the duration of inactivity that terminates the current session.",
-										"text": "#### Example\n\n```js\n// 20 minutes\nawait analytics().setMinimumSessionDuration(900000);\n```\n"
+										"text": "#### Example\n\n```js\n// 20 minutes\nawait firebase().analytics().setMinimumSessionDuration(900000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3333,7 +3336,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Gives a user a unique identification.",
-										"text": "#### Example\n\n```js\n// Set User\nawait analytics().setUserId('123456789');\n// Remove User\nawait analytics().setUserId(null);\n```\n"
+										"text": "#### Example\n\n```js\n// Set User\nawait firebase().analytics().setUserId('123456789');\n// Remove User\nawait firebase().analytics().setUserId(null);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3397,7 +3400,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets multiple key/value pair of data on the current user.",
-										"text": "#### Example\n\n```js\nawait analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
+										"text": "#### Example\n\n```js\nawait firebase().analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
 										"tags": [
 											{
 												"tag": "react-native-firebase",
@@ -3506,7 +3509,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets a key/value pair of data on the current user.",
-										"text": "#### Example\n\n```js\nawait analytics().setUserProperty('account_type', 'gold');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase().analytics().setUserProperty('account_type', 'gold');\n```\n"
 									},
 									"parameters": [
 										{
@@ -9467,10 +9470,11 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the httpResponse code of the request.",
+										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setHttpResponseCode(response.status);\n```",
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "This is required for every request, if you do not provide this your metric will not be captured.\n\n#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setHttpResponseCode(response.status);\n```\n"
+												"text": "This is required for every request, if you do not provide this your metric will not be captured.\n\n"
 											}
 										]
 									},
@@ -9704,7 +9708,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the start time of the request. Does nothing if already started.",
-										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9743,7 +9747,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the end time of the response and queues the network request metric on the device for transmission. Does nothing if already stopped.",
-										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\nmetric.putAttribute('user_role', 'admin');\nawait metric.stop();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\nmetric.putAttribute('user_role', 'admin');\nawait metric.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9839,7 +9843,7 @@
 							},
 							"comment": {
 								"shortText": "Determines whether performance monitoring is enabled or disabled.",
-								"text": "#### Example\n\n```js\nconst isEnabled = config().isPerformanceCollectionEnabled;\nconsole.log('Performance collection enabled: ', isEnabled);\n```\n"
+								"text": "#### Example\n\n```js\nconst isEnabled = firebase().config().isPerformanceCollectionEnabled;\nconsole.log('Performance collection enabled: ', isEnabled);\n```\n"
 							},
 							"sources": [
 								{
@@ -9870,7 +9874,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a HttpMetric instance for collecting network performance data for a single request/response",
-										"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/user/1', 'GET');\nawait metric.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/user/1', 'GET');\nawait metric.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9935,7 +9939,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a Trace instance with the given identifier.",
-										"text": "#### Example\n\n```js\nconst trace = config().newTrace('user_profile');\nawait trace.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = firebase().config().newTrace('user_profile');\nawait trace.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9985,7 +9989,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enables or disables performance monitoring.",
-										"text": "#### Example\n\n```js\n// Disable performance monitoring collection\nawait config().setPerformanceCollectionEnabled(false);\n```\n"
+										"text": "#### Example\n\n```js\n// Disable performance monitoring collection\nawait firebase().config().setPerformanceCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -10040,7 +10044,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a Trace instance with the given identifier and immediately starts it.",
-										"text": "#### Example\n\n```js\nconst trace = await config().startTrace('user_profile');\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = await firebase().config().startTrace('user_profile');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10560,7 +10564,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the start time of the trace. Does nothing if already started.",
-										"text": "#### Example\n\n```js\nconst trace = config().newTrace('example');\nawait trace.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = firebase().config().newTrace('example');\nawait trace.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -10599,7 +10603,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the end time of the trace and queues the metric on the device for transmission. Does nothing if already stopped.",
-										"text": "* #### Example\n\n```js\nconst trace = config().newTrace('example');\nawait trace.start();\ntrace.putMetric('hits', 1);\nawait trace.stop();\n```\n"
+										"text": "* #### Example\n\n```js\nconst trace = firebase().config().newTrace('example');\nawait trace.start();\ntrace.putMetric('hits', 1);\nawait trace.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
