@@ -134,6 +134,18 @@
     - text: iOS Setup
       to: "/ios"
 
+- module: fiam
+  group: In-App Messaging
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Setup
+      to: "/android"
+    - text: iOS Setup
+      to: "/ios"
+
 - module: iid
   group: Instance ID
   children:
