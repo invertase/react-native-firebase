@@ -13,8 +13,6 @@ description: React Native Firebase
 
 ## Getting Started
 
-There are a number of ways to get started with React Native Firebase:
-
 <Grid>
 	<Block
 		title="Quick Start"
