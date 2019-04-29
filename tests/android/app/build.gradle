@@ -1,10 +1,10 @@
 apply plugin: "com.android.application"
+apply plugin: 'io.fabric'
 apply plugin: "com.google.firebase.firebase-perf"
-//apply plugin: 'io.fabric'
 
-//crashlytics {
-//  enableNdk true
-//}
+crashlytics {
+  enableNdk true
+}
 
 import com.android.build.OutputFile
 
@@ -45,8 +45,7 @@ android {
     }
 
     testBuildType System.getProperty('testBuildType', 'debug')
-    missingDimensionStrategy "minReactNative", "minReactNative46"
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     multiDexEnabled true
   }
   splits {
@@ -69,8 +68,9 @@ android {
 
   buildTypes {
     release {
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+      proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
       signingConfig signingConfigs.release
       matchingFallbacks = ['release']
     }
@@ -136,10 +136,8 @@ dependencies {
     transitive = false
   }
 
-  androidTestImplementation project(path: ":detox")
+  androidTestImplementation('com.wix:detox:+') { transitive = true }
   androidTestImplementation 'junit:junit:4.12'
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test:rules:1.0.2'
 }
 
 // Run this once to be able to run the application with BUCK

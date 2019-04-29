@@ -159,20 +159,35 @@ class ReactNativeFirebaseStorageCommon {
     metadata.putString(KEY_FULL_PATH, storageMetadata.getPath());
     metadata.putString(KEY_NAME, storageMetadata.getName());
     metadata.putDouble(KEY_SIZE, storageMetadata.getSizeBytes());
-    metadata.putString(KEY_TIME_CREATED, SharedUtils.timestampToUTC(storageMetadata.getCreationTimeMillis()));
-    metadata.putString(KEY_UPDATED, SharedUtils.timestampToUTC(storageMetadata.getUpdatedTimeMillis()));
+    metadata.putString(KEY_TIME_CREATED, SharedUtils.timestampToUTC(storageMetadata.getCreationTimeMillis() / 1000));
+    metadata.putString(KEY_UPDATED, SharedUtils.timestampToUTC(storageMetadata.getUpdatedTimeMillis() / 1000));
     metadata.putString(KEY_MD5_HASH, storageMetadata.getMd5Hash());
-    metadata.putString(KEY_CACHE_CONTROL, storageMetadata.getCacheControl());
+
+    if (storageMetadata.getCacheControl() != null && storageMetadata.getCacheControl().length() > 0)  {
+      metadata.putString(KEY_CACHE_CONTROL, storageMetadata.getCacheControl());
+    } else {
+      metadata.putNull(KEY_CACHE_CONTROL);
+    }
+
+    if (storageMetadata.getContentLanguage() != null && storageMetadata.getContentLanguage().length() > 0)  {
+      metadata.putString(KEY_CONTENT_LANG, storageMetadata.getContentLanguage());
+    } else {
+      metadata.putNull(KEY_CONTENT_LANG);
+    }
+
     metadata.putString(KEY_CONTENT_DISPOSITION, storageMetadata.getContentDisposition());
     metadata.putString(KEY_CONTENT_ENCODING, storageMetadata.getContentEncoding());
-    metadata.putString(KEY_CONTENT_LANG, storageMetadata.getContentLanguage());
     metadata.putString(KEY_CONTENT_TYPE, storageMetadata.getContentType());
 
-    WritableMap customMetadata = Arguments.createMap();
-    for (String key : storageMetadata.getCustomMetadataKeys()) {
-      customMetadata.putString(key, storageMetadata.getCustomMetadata(key));
+    if (storageMetadata.getCustomMetadataKeys().size() > 0) {
+      WritableMap customMetadata = Arguments.createMap();
+      for (String key : storageMetadata.getCustomMetadataKeys()) {
+        customMetadata.putString(key, storageMetadata.getCustomMetadata(key));
+      }
+      metadata.putMap(KEY_CUSTOM_META, customMetadata);
+    } else {
+      metadata.putNull(KEY_CUSTOM_META);
     }
-    metadata.putMap(KEY_CUSTOM_META, customMetadata);
 
     return metadata;
   }

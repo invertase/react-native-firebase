@@ -12,8 +12,16 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
+import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
+import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
+import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
+import io.invertase.firebase.invites.ReactNativeFirebaseInvitesPackage;
+import io.invertase.firebase.mlkit.ReactNativeFirebaseMlkitPackage;
 import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
 import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;
@@ -32,15 +40,15 @@ public class MainApplication extends Application implements ReactApplication {
         new MainReactPackage(),
         new JetPackage(),
         new ReactNativeFirebaseAppPackage(),
-//        new ReactNativeFirebaseInvitesPackage(),
-//        new ReactNativeFirebaseCrashlyticsPackage(),
-//        new ReactNativeFirebaseConfigPackage(),
-//        new ReactNativeFirebaseMlkitPackage(),
+        new ReactNativeFirebaseInvitesPackage(),
+        new ReactNativeFirebaseCrashlyticsPackage(),
+        new ReactNativeFirebaseConfigPackage(),
+        new ReactNativeFirebaseMlkitPackage(),
         new ReactNativeFirebaseStoragePackage(),
-//        new ReactNativeFirebaseAnalyticsPackage(),
-//        new ReactNativeFirebaseFunctionsPackage(),
-//        new ReactNativeFirebaseFiamPackage(),
-//        new ReactNativeFirebaseIidPackage(),
+        new ReactNativeFirebaseAnalyticsPackage(),
+        new ReactNativeFirebaseFunctionsPackage(),
+        new ReactNativeFirebaseFiamPackage(),
+        new ReactNativeFirebaseIidPackage(),
         new ReactNativeFirebasePerfPackage(),
         new ReactNativeFirebaseUtilsPackage()
       );

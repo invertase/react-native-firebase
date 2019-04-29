@@ -282,6 +282,10 @@
 
   if (metadata.customMetadata == nil) {
     storageMetadata[@"customMetadata"] = [NSNull null];
+  } else {
+    // name comes through as 'metadata'
+    storageMetadata[@"customMetadata"] = metadata.customMetadata;
+    [storageMetadata removeObjectForKey:@"metadata"];
   }
 
   return storageMetadata;

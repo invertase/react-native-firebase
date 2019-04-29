@@ -198,11 +198,10 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
-  describe.only('getMetadata', () => {
+  describe('getMetadata', () => {
     it('should return a metadata for a file', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       const metadata = await storageReference.getMetadata();
-      console.dir(metadata);
       metadata.generation.should.be.a.String();
       metadata.fullPath.should.equal('ok.jpeg');
       metadata.name.should.equal('ok.jpeg');
@@ -238,19 +237,17 @@ describe('storage() -> StorageReference', () => {
       metadata.name.should.equal('writeOnly.jpeg');
       metadata.size.should.be.a.Number();
       should.equal(metadata.size > 0, true);
-      metadata.updated.should.be.a.Number();
-      should.equal(metadata.updated > 0, true);
-      metadata.timeCreated.should.be.a.Number();
-      should.equal(metadata.timeCreated > 0, true);
+      metadata.updated.should.be.a.String();
+      metadata.timeCreated.should.be.a.String();
       metadata.contentEncoding.should.be.a.String();
       metadata.contentDisposition.should.be.a.String();
       metadata.contentType.should.equal('image/jpeg');
       metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
       metadata.metageneration.should.be.a.String();
       metadata.md5Hash.should.be.a.String();
-      metadata.cacheControl.should.be.a.String();
-      metadata.contentLanguage.should.be.a.String();
-      metadata.customMetadata.should.be.a.Object();
+      should.equal(metadata.cacheControl, null);
+      should.equal(metadata.contentLanguage, null);
+      metadata.customMetadata.should.be.an.Object();
     });
 
     it('should remove customMetadata properties by setting the value to null', async () => {

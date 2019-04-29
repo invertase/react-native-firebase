@@ -231,7 +231,7 @@
     NSDate *lastFetchTime = remoteConfig.lastFetchTime;
     return @{
         @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
-        @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970])),
+        @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
         @"lastFetchStatus": lastFetchStatus
     };
   }
