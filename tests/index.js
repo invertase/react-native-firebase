@@ -15,4 +15,5 @@
  *
  */
 
-require('./app');
+// require('./app');
+require('./app.playground');
