@@ -62,6 +62,9 @@
   - text: Dynamic Links
     to: "/v6/links"
     asset: "//static.invertase.io/assets/firebase/dynamic-links.svg"
+  - text: App Indexing
+    to: "/v6/indexing"
+    asset: "//static.invertase.io/assets/firebase/app-indexing.svg"
   - text: Instance ID
     to: "/v6/iid"
     asset: "//static.invertase.io/assets/social/firebase-logo.png"
