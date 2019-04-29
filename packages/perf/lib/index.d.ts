@@ -189,7 +189,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const trace = config().newTrace('example');
+     * const trace = firebase().config().newTrace('example');
      * await trace.start();
      * ```
      */
@@ -201,7 +201,7 @@ export namespace Perf {
      * * #### Example
      *
      * ```js
-     * const trace = config().newTrace('example');
+     * const trace = firebase().config().newTrace('example');
      * await trace.start();
      * trace.putMetric('hits', 1);
      * await trace.stop();
@@ -273,14 +273,14 @@ export namespace Perf {
     /**
      * Sets the httpResponse code of the request.
      *
-     * @warning This is required for every request, if you do not provide this your metric will not be captured.
-     *
      * #### Example
      *
      * ```js
      * const response = await fetch(url);
      * metric.setHttpResponseCode(response.status);
      * ```
+     * @warning This is required for every request, if you do not provide this your metric will not be captured.
+     *
      *
      * @param code Value must be greater than 0. Set to null to remove. Invalid usage will be logged natively.
      */
@@ -334,7 +334,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const metric = config().newHttpMetric('https://api.com/login', 'POST');
+     * const metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');
      * await metric.start();
      * ```
      */
@@ -346,7 +346,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const metric = config().newHttpMetric('https://api.com/login', 'POST');
+     * const metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');
      * await metric.start();
      * metric.putAttribute('user_role', 'admin');
      * await metric.stop();
@@ -377,7 +377,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const isEnabled = config().isPerformanceCollectionEnabled;
+     * const isEnabled = firebase().config().isPerformanceCollectionEnabled;
      * console.log('Performance collection enabled: ', isEnabled);
      * ```
      */
@@ -390,7 +390,7 @@ export namespace Perf {
      *
      * ```js
      * // Disable performance monitoring collection
-     * await config().setPerformanceCollectionEnabled(false);
+     * await firebase().config().setPerformanceCollectionEnabled(false);
      * ```
      *
      * @param enabled Should performance monitoring be enabled
@@ -403,7 +403,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const trace = config().newTrace('user_profile');
+     * const trace = firebase().config().newTrace('user_profile');
      * await trace.start();
      * ```
      *
@@ -417,7 +417,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const trace = await config().startTrace('user_profile');
+     * const trace = await firebase().config().startTrace('user_profile');
      * ```
      *
      * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
@@ -430,7 +430,7 @@ export namespace Perf {
      * #### Example
      *
      * ```js
-     * const metric = config().newHttpMetric('https://api.com/user/1', 'GET');
+     * const metric = firebase().config().newHttpMetric('https://api.com/user/1', 'GET');
      * await metric.start();
      * ```
      *
