@@ -500,7 +500,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 284,
+									"line": 455,
 									"character": 11
 								}
 							]
@@ -756,7 +756,7 @@
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 277,
+							"line": 448,
 							"character": 23
 						},
 						{
@@ -1070,7 +1070,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 274,
+									"line": 445,
 									"character": 11
 								}
 							],
@@ -1302,7 +1302,7 @@
 						},
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 268,
+							"line": 439,
 							"character": 40
 						},
 						{
@@ -1386,7 +1386,7 @@
 				},
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 267,
+					"line": 438,
 					"character": 49
 				},
 				{
@@ -2279,7 +2279,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 242,
+							"line": 413,
 							"character": 31
 						}
 					],
@@ -2309,7 +2309,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 253,
+							"line": 424,
 							"character": 28
 						}
 					],
@@ -2351,7 +2351,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 251,
+							"line": 422,
 							"character": 23
 						}
 					],
@@ -2376,7 +2376,7 @@
 			"sources": [
 				{
 					"fileName": "invites/lib/index.d.ts",
-					"line": 239,
+					"line": 410,
 					"character": 47
 				}
 			]
@@ -7887,7 +7887,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Android Invite representation"
+						"shortText": "Android Invite representation. Instance is returned from {@link links.InviteBuilder#android}."
 					},
 					"children": [
 						{
@@ -7906,7 +7906,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Adds query parameters to the play store referral URL when the app needs additional referral parameters for other\napplication component referrals. These parameters are added to the referral URL sent from the play store and are\navailable to be processed by other application components, for example Google Analytics. The parameters are set\nas name, value pairs that will be set as query parameter name and value on the referral URL."
+										"shortText": "Adds query parameters to the play store referral URL when the app needs additional referral parameters for other\napplication component referrals. These parameters are added to the referral URL sent from the play store and are\navailable to be processed by other application components, for example Google Analytics. The parameters are set\nas name, value pairs that will be set as query parameter name and value on the referral URL.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -7935,7 +7936,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 84,
+									"line": 108,
 									"character": 35
 								}
 							]
@@ -7956,11 +7957,12 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the HTML-formatted (UTF-8 encoded, no JavaScript) content for invites sent through email. If set, this will\nbe sent instead of the default email.\nemailHtmlContent must be valid HTML for standard email processing. The pattern %%APPINVITE_LINK_PLACEHOLDER%%\nshould be embedded in your htmlContent and will be replaced with the invitation URL.\nThis url is a link that will launch the app if already installed or take the user to the appropriate app store\nif not. In both cases the deep link will be available if provided using setDeepLink(Uri).",
+										"shortText": "Sets the HTML-formatted (UTF-8 encoded, no JavaScript) content for invites sent through email. If set, this will\nbe sent instead of the default email.",
+										"text": "emailHtmlContent must be valid HTML for standard email processing. The pattern `%%APPINVITE_LINK_PLACEHOLDER%%`\nshould be embedded in your htmlContent and will be replaced with the invitation URL.\nThis url is a link that will launch the app if already installed or take the user to the appropriate app store\nif not. In both cases the deep link will be available if provided using setDeepLink(Uri).\n",
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "Cannot be used with InviteBuilder.setCallToActionText\n"
+												"text": "Cannot be used with {@link invites.InviteBuilder#setCallToActionText}\n\n#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');\n```\n"
 											}
 										]
 									},
@@ -7990,7 +7992,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 100,
+									"line": 132,
 									"character": 23
 								}
 							]
@@ -8011,7 +8013,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the subject for invites sent by email."
+										"shortText": "Sets the subject for invites sent by email.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.emailSubject(`Hey ${user.name}, joint my app!`);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8039,7 +8042,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 107,
+									"line": 146,
 									"character": 19
 								}
 							]
@@ -8060,7 +8063,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the Google Analytics Tracking id. The tracking id should be created for the calling application under\nGoogle Analytics. See more about how to get a tracking id . The tracking id is recommended so that invitations\nsent from the calling application are available in Google Analytics."
+										"shortText": "Sets the Google Analytics Tracking id. The tracking id should be created for the calling application under\nGoogle Analytics. See more about how to get a tracking id . The tracking id is recommended so that invitations\nsent from the calling application are available in Google Analytics.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8088,7 +8092,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 116,
+									"line": 162,
 									"character": 32
 								}
 							]
@@ -8109,7 +8113,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 75,
+							"line": 90,
 							"character": 35
 						}
 					]
@@ -8123,7 +8127,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Invite builder representation returned from `firebase.invite().createInvitation();`"
+						"shortText": "Invite builder representation returned from {@link invites#createInvitation}."
 					},
 					"children": [
 						{
@@ -8135,12 +8139,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Set Android specific Invite properties"
+								"shortText": "Set Android specific Invite properties",
+								"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 126,
+									"line": 179,
 									"character": 11
 								}
 							],
@@ -8166,7 +8171,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Set the Android target client ID for the invitation."
+										"shortText": "Set the Android target client ID for the invitation.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidClientId('xxxxxxxxxxxx');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8194,7 +8200,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 133,
+									"line": 193,
 									"character": 22
 								}
 							]
@@ -8215,7 +8221,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the minimum version of the android app installed on the receiving device. If this minimum version is not installed then the install flow will be triggered."
+										"shortText": "Sets the minimum version of the android app installed on the receiving device. If this minimum version is not installed then the install flow will be triggered.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidMinimumVersionCode(18);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8243,7 +8250,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 140,
+									"line": 207,
 									"character": 32
 								}
 							]
@@ -8268,7 +8275,7 @@
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "Cannot be used with AndroidInviteBuilder.setEmailHtmlContent.\n"
+												"text": "Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.\n\n#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCallToActionText('Join the app!');\n```\n"
 											}
 										]
 									},
@@ -8298,7 +8305,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 149,
+									"line": 223,
 									"character": 23
 								}
 							]
@@ -8319,7 +8326,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets an image for invitations."
+										"shortText": "Sets an image for invitations.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCustomImage('https://my-cdn.com/assets/invites.png');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8347,7 +8355,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 156,
+									"line": 237,
 									"character": 18
 								}
 							]
@@ -8368,7 +8376,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the deep link that is made available to the app when opened from the invitation. This deep link is made\navailable both to a newly installed application and an already installed application. The deep link can be sent\nto Android and other platforms so should be formatted to support deep links across platforms."
+										"shortText": "Sets the deep link that is made available to the app when opened from the invitation. This deep link is made\navailable both to a newly installed application and an already installed application. The deep link can be sent\nto Android and other platforms so should be formatted to support deep links across platforms.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.deepLink('/invites');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8396,7 +8405,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 165,
+									"line": 253,
 									"character": 15
 								}
 							]
@@ -8417,7 +8426,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Set the iOS target client ID for the invitation."
+										"shortText": "Set the iOS target client ID for the invitation.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setIOSClientId('xxxxxxxxxxxx');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8445,7 +8455,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 172,
+									"line": 267,
 									"character": 18
 								}
 							]
@@ -8475,7 +8485,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 122,
+							"line": 168,
 							"character": 28
 						}
 					]
@@ -8533,7 +8543,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Create an invitation via an InvitationBuilder instance."
+										"shortText": "Create an invitation via an InvitationBuilder instance.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app and share content');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8542,7 +8553,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "The title displayed in the invitation."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -8555,7 +8568,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "The message displayed in the invitation.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -8573,7 +8586,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 212,
+									"line": 351,
 									"character": 20
 								}
 							]
@@ -8594,7 +8607,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Returns the Invitation that the app has been launched from. If the app was not launched from an Invitation the\nreturn value will be null."
+										"shortText": "Returns the Invitation that the app has been launched from. If the app was not launched from an Invitation the\nreturn value will be null.",
+										"text": "#### Example\n\n```js\nconst invite = invites().getInitialInvitation();\n\nif (invite) {\n console.log('Deeplink: ', invite.deepLink);\n console.log('ID: ', invite.invitationId);\n}\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -8612,7 +8626,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 226,
+									"line": 390,
 									"character": 24
 								}
 							]
@@ -8633,7 +8647,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "When an invitation is opened whilst the app is open, the listener is invoked with the invitation.\nReturns a function that when called unsubscribes the listener from further events."
+										"shortText": "When an invitation is opened whilst the app is open, the listener is invoked with the invitation.\nReturns a function that when called unsubscribes the listener from further events.",
+										"text": "#### Example\n\n```js\nfunction handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n}\n\nconst subscriber = invites().onInvitation(handleInvitation);\n\n// Unsubscribe from invitation listener\nsubscriber();\n```\n"
 									},
 									"parameters": [
 										{
@@ -8643,7 +8658,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "\n"
+												"text": "A function called when an invitation is opened.\n"
 											},
 											"type": {
 												"type": "reference",
@@ -8661,7 +8676,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 220,
+									"line": 373,
 									"character": 16
 								}
 							]
@@ -8682,7 +8697,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Displays the invitation dialog which allows the user to select who received the invitation.\nReturns a promise that resolves with the created invitation IDs if the invitation is sent, otherwise it is\nrejected with an error."
+										"shortText": "Displays the invitation dialog which allows the user to select who received the invitation.\nReturns a promise that resolves with the created invitation IDs if the invitation is sent, otherwise it is\nrejected with an error.",
+										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app and share content');\nconst ids = await invites().sendInvitation(invite);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8719,7 +8735,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 235,
+									"line": 406,
 									"character": 18
 								}
 							]
@@ -8747,7 +8763,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 205,
+							"line": 338,
 							"character": 21
 						}
 					],
@@ -8767,7 +8783,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameter"
+						"shortText": "Additional referral parameters for {@link invites.AndroidInviteBuilder#setAdditionalReferralParameters}.",
+						"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -8777,7 +8794,8 @@
 							"kindString": "Index signature",
 							"flags": {},
 							"comment": {
-								"shortText": "Additional referral parameters for AndroidInviteBuilder.setAdditionalReferralParameter"
+								"shortText": "Additional referral parameters for {@link invites.AndroidInviteBuilder#setAdditionalReferralParameters}.",
+								"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -8801,7 +8819,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 68,
+							"line": 83,
 							"character": 47
 						}
 					]
@@ -8815,7 +8833,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "A native invite representation returned from getInitialInvite and onInvite."
+						"shortText": "A native invite representation returned from getInitialInvite and onInvite.",
+						"text": "#### Example 1\n\nWhen an invitation has been opened from a closed/terminated app.\n\n```js\nconst invite = invites().getInitialInvitation();\n\nif (invite) {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n}\n```\n\n#### Example 2\n\nWhen an invite has been opened and the app is running.\n\n```js\n function handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n }\n\n invites().onInvitation(handleInvitation);\n```\n"
 					},
 					"children": [
 						{
@@ -8832,7 +8851,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 182,
+									"line": 303,
 									"character": 12
 								}
 							],
@@ -8855,7 +8874,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 187,
+									"line": 308,
 									"character": 16
 								}
 							],
@@ -8878,7 +8897,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 178,
+							"line": 299,
 							"character": 31
 						}
 					]
@@ -8891,6 +8910,9 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "firebase.invites.X"
+					},
 					"children": [
 						{
 							"id": 271,
@@ -8900,10 +8922,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Invitation returns an `InviteBuilder` instance used to send new invites."
+							},
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 62,
+									"line": 68,
 									"character": 14
 								}
 							],
@@ -8926,7 +8951,7 @@
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 61,
+							"line": 64,
 							"character": 26
 						}
 					]
@@ -8939,10 +8964,14 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "A type alias for an invite listener used with {@link invites#onInvitation}",
+						"text": "#### Example\n\n```js\ninvites().onInvitation((invite) => {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n});\n```\n"
+					},
 					"sources": [
 						{
 							"fileName": "invites/lib/index.d.ts",
-							"line": 190,
+							"line": 323,
 							"character": 28
 						}
 					],
@@ -8984,7 +9013,7 @@
 							"sources": [
 								{
 									"fileName": "invites/lib/index.d.ts",
-									"line": 190,
+									"line": 323,
 									"character": 30
 								}
 							]
