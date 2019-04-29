@@ -43,7 +43,9 @@ RCT_EXPORT_MODULE();
 
 - (id)init {
   self = [super init];
+  [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
 
+  }];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     PENDING_TASKS = [[NSMutableDictionary alloc] init];
@@ -299,6 +301,19 @@ RCT_EXPORT_METHOD(putFile:
       NSString *contentType
   ) {
     if (errorCodeMessageArray != nil) {
+      // state_changed
+      NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getUploadTaskAsDictionary:nil];
+      NSDictionary *eventBody =
+          [RNFBStorageCommon buildErrorSnapshotDictFromCodeAndMessage:errorCodeMessageArray taskSnapshotDict:taskSnapshotDict];
+      NSDictionary *stateChangedEvent =
+          [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:[[[storageReference storage] app] name] taskId:taskId];
+      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
+
+      // upload_failed
+      NSDictionary *event =
+          [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_UPLOAD_FAILURE appName:[[[storageReference storage] app] name] taskId:taskId];
+      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
           @"code": errorCodeMessageArray[0],
           @"message": errorCodeMessageArray[1],
@@ -427,13 +442,14 @@ RCT_EXPORT_METHOD(setTaskStatus:
     [PENDING_TASKS removeObjectForKey:taskId];
 
     // state_changed
-    NSDictionary *stateChangedEventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+    NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+    NSDictionary *stateChangedEvtBody =
+        [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error taskSnapshotDict:taskSnapshotDict];
     NSDictionary *stateChangedEvent =
-        [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
+        [RNFBStorageCommon getStorageEventDictionary:stateChangedEvtBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
 
     // upload_failed
-    NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
     NSDictionary
         *eventBody = [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error taskSnapshotDict:taskSnapshotDict];
     NSDictionary *event =

@@ -248,6 +248,14 @@
   return taskSnapshotDict;
 }
 
++ (NSDictionary *)buildErrorSnapshotDictFromCodeAndMessage:(NSArray *)codeAndMessage taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
+  taskSnapshotDict[@"error"] = @{
+      @"code": (NSString *) codeAndMessage[0],
+      @"message": (NSString *) codeAndMessage[1],
+  };
+  return taskSnapshotDict;
+}
+
 + (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata {
   NSMutableDictionary *storageMetadata = [[metadata dictionaryRepresentation] mutableCopy];
   if (storageMetadata == nil) {
@@ -292,29 +300,47 @@
 }
 
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
+  if (task == nil) {
+    return [@{
+        @"metadata": [NSNull null],
+        @"bytesTransferred": @(0),
+        @"state": @"error",
+        @"totalBytes": @(0)
+    } mutableCopy];
+  }
+
   NSDictionary *storageMetadata = [self metadataToDict:task.metadata];
+
+  NSString* state = [self getTaskStatus:task.status];
+  if (task.error != nil && task.error.code == FIRStorageErrorCodeCancelled) {
+    state = @"cancelled";
+  }
 
   return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
       @"metadata": storageMetadata,
-      @"state": [self getTaskStatus:task.status],
+      @"state": state,
       @"totalBytes": @(task.progress.totalUnitCount)
   } mutableCopy];
 }
 
 + (NSMutableDictionary *)getDownloadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
   if (task != nil) {
-    return (NSMutableDictionary *) @{
+    NSString* state = [self getTaskStatus:task.status];
+    if (task.error != nil && task.error.code == FIRStorageErrorCodeCancelled) {
+      state = @"cancelled";
+    }
+    return [@{
         @"bytesTransferred": @(task.progress.completedUnitCount),
-        @"state": [self getTaskStatus:task.status],
+        @"state": state,
         @"totalBytes": @(task.progress.totalUnitCount)
-    };
+    } mutableCopy];
   } else {
-    return (NSMutableDictionary *) @{
+    return [@{
         @"bytesTransferred": @(0),
         @"state": [self getTaskStatus:nil],
         @"totalBytes": @(0)
-    };
+    } mutableCopy];
   }
 }
 

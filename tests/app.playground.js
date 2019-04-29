@@ -39,17 +39,65 @@ class Root extends Component {
   }
 
   async runSingleTest() {
-    try {
-      await firebase
-        .storage()
-        .ref('/not.jpg')
-        .getFile(`${firebase.storage.Path.DocumentDirectory}/not.jpg`);
-      return Promise.reject(new Error('No permission denied error'));
-    } catch (error) {
-      error.code.should.equal('storage/unauthorized');
-      error.message.includes('not authorized').should.be.true();
-      return Promise.resolve();
-    }
+    await firebase
+      .storage()
+      .ref('/cat.gif')
+      .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
+
+    const ref = firebase.storage().ref('/uploadCat.gif');
+    const path = `${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`;
+    const uploadTask = ref.putFile(path);
+
+    let hadRunningStatus = false;
+    let hadPausedStatus = false;
+    let hadResumedStatus = false;
+
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        console.log('---->      ', snapshot.state);
+        console.dir(snapshot.error);
+        // 1) pause when we receive first running event
+        if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+          console.log('-->   Pausing');
+          hadRunningStatus = true;
+          setTimeout(() => {
+            uploadTask.pause();
+          }, 1000)
+        }
+
+        // 2) resume when we receive first paused event
+        if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+          hadPausedStatus = true;
+          setTimeout(() => {
+            console.log('-->   Resuming');
+            uploadTask.resume();
+          }, 1000)
+        }
+
+        // 3) track that we resumed on 2nd running status whilst paused
+        if (
+          snapshot.state === firebase.storage.TaskState.RUNNING &&
+          hadRunningStatus &&
+          hadPausedStatus &&
+          !hadResumedStatus
+        ) {
+          console.log('-->   Resumed');
+          hadResumedStatus = true;
+        }
+
+        // 4) finally confirm we received all statuses
+        if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          console.log('-->   Success');
+          console.log('FINISH');
+        }
+      },
+      error => {
+        console.log('ERROR');
+      },
+    );
+
+    return Promise.resolve();
   }
 
   render() {

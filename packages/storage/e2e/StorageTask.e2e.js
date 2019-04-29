@@ -376,7 +376,7 @@ describe('storage() -> StorageTask', () => {
     before(async () => {
       await firebase
         .storage()
-        .ref('/cat.gif')
+        .ref('/1mbTestFile.gif')
         .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
     });
 
@@ -393,18 +393,16 @@ describe('storage() -> StorageTask', () => {
       uploadTask.on(
         'state_changed',
         snapshot => {
-          console.log('---->      ', snapshot.state);
-          console.dir(snapshot.error);
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-            console.log('-->   Pausing');
             hadRunningStatus = true;
-            uploadTask.pause();
+            setTimeout(() => {
+              uploadTask.pause();
+            }, 750);
           }
 
           // 2) resume when we receive first paused event
           if (snapshot.state === firebase.storage.TaskState.PAUSED) {
-            console.log('-->   Resuming');
             hadPausedStatus = true;
             uploadTask.resume();
           }
@@ -416,13 +414,11 @@ describe('storage() -> StorageTask', () => {
             hadPausedStatus &&
             !hadResumedStatus
           ) {
-            console.log('-->   Resumed');
             hadResumedStatus = true;
           }
 
           // 4) finally confirm we received all statuses
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            console.log('-->   Success');
             should.equal(hadRunningStatus, true);
             should.equal(hadPausedStatus, true);
             should.equal(hadResumedStatus, true);
@@ -438,9 +434,9 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully pauses and resumes a download', function testRunner() {
-      this.timeout(10000);
+      this.timeout(25000);
 
-      const ref = firebase.storage().ref('/cat.gif');
+      const ref = firebase.storage().ref('/1mbTestFile.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/pauseDownload.gif`;
       const downloadTask = ref.getFile(path);
@@ -496,7 +492,7 @@ describe('storage() -> StorageTask', () => {
     before(async () => {
       await firebase
         .storage()
-        .ref('/cat.gif')
+        .ref('/1mbTestFile.gif')
         .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
     });
 
@@ -508,7 +504,6 @@ describe('storage() -> StorageTask', () => {
 
       let hadRunningStatus = false;
       let hadCancelledStatus = false;
-      let hadErrorStatus = false;
 
       uploadTask.on(
         'state_changed',
@@ -526,9 +521,8 @@ describe('storage() -> StorageTask', () => {
             hadCancelledStatus = true;
           }
 
-          // 3) confirm we receive an error event
           if (snapshot.state === firebase.storage.TaskState.ERROR) {
-            hadErrorStatus = true;
+            throw new Error('Should not error if cancelled?');
           }
 
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
@@ -536,7 +530,6 @@ describe('storage() -> StorageTask', () => {
           }
         },
         error => {
-          should.equal(hadErrorStatus, true);
           should.equal(hadRunningStatus, true);
           should.equal(hadCancelledStatus, true);
           error.code.should.equal('storage/cancelled');
@@ -556,7 +549,6 @@ describe('storage() -> StorageTask', () => {
 
       let hadRunningStatus = false;
       let hadCancelledStatus = false;
-      let hadErrorStatus = false;
 
       downloadTask.on(
         'state_changed',
@@ -574,9 +566,8 @@ describe('storage() -> StorageTask', () => {
             hadCancelledStatus = true;
           }
 
-          // 3) confirm we receive an error event
           if (snapshot.state === firebase.storage.TaskState.ERROR) {
-            hadErrorStatus = true;
+            throw new Error('Should not error if cancelled?');
           }
 
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
@@ -584,7 +575,6 @@ describe('storage() -> StorageTask', () => {
           }
         },
         error => {
-          should.equal(hadErrorStatus, true);
           should.equal(hadRunningStatus, true);
           should.equal(hadCancelledStatus, true);
           error.code.should.equal('storage/cancelled');
