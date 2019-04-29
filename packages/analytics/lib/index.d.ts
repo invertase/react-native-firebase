@@ -43,7 +43,7 @@ export namespace Analytics {
      * #### Example
      *
      * ```js
-     * await analytics().logEvent('product_view', {
+     * await firebase().analytics().logEvent('product_view', {
      *   id: '1234',
      * });
      * ```
@@ -63,7 +63,7 @@ export namespace Analytics {
      *
      * ```js
      * // Disable collection
-     * await analytics().setAnalyticsCollectionEnabled(false);
+     * await firebase().analytics().setAnalyticsCollectionEnabled(false);
      * ```
      *
      * @param enabled A boolean value representing whether Analytics collection is enabled or disabled.
@@ -80,7 +80,7 @@ export namespace Analytics {
      * #### Example
      *
      * ```js
-     * await analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
+     * await firebase().analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
      * ```
      *
      * @param screenName A screen name, e.g. Product.
@@ -96,7 +96,7 @@ export namespace Analytics {
      *
      * ```js
      * // 20 seconds
-     * await analytics().setMinimumSessionDuration(20000);
+     * await firebase().analytics().setMinimumSessionDuration(20000);
      * ```
      *
      * @param milliseconds The default value is 10000 (10 seconds).
@@ -110,7 +110,7 @@ export namespace Analytics {
      *
      * ```js
      * // 20 minutes
-     * await analytics().setMinimumSessionDuration(900000);
+     * await firebase().analytics().setMinimumSessionDuration(900000);
      * ```
      *
      * @param milliseconds The default value is 1800000 (30 minutes).
@@ -124,9 +124,9 @@ export namespace Analytics {
      *
      * ```js
      * // Set User
-     * await analytics().setUserId('123456789');
+     * await firebase().analytics().setUserId('123456789');
      * // Remove User
-     * await analytics().setUserId(null);
+     * await firebase().analytics().setUserId(null);
      * ```
      *
      * @param id Set to null to remove a previously assigned id from analytics events
@@ -139,7 +139,7 @@ export namespace Analytics {
      * #### Example
      *
      * ```js
-     * await analytics().setUserProperty('account_type', 'gold');
+     * await firebase().analytics().setUserProperty('account_type', 'gold');
      * ```
      *
      * @param name A user property identifier.
@@ -153,7 +153,7 @@ export namespace Analytics {
      * #### Example
      *
      * ```js
-     * await analytics().setUserProperties({
+     * await firebase().analytics().setUserProperties({
      *   account_type: 'gold',
      *   account_name: 'Gold Badge',
      * });
@@ -170,7 +170,7 @@ export namespace Analytics {
      * #### Example
      *
      * ```js
-     * await analytics().resetAnalyticsData();
+     * await firebase().analytics().resetAnalyticsData();
      * ```
      */
     resetAnalyticsData(): Promise<void>;
