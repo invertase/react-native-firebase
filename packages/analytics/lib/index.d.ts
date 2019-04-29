@@ -38,8 +38,6 @@ export namespace Analytics {
     /**
      * Log a custom event with optional params.
      *
-     * @note 100 characters is the maximum length for param key names.
-     *
      * #### Example
      *
      * ```js
@@ -47,6 +45,8 @@ export namespace Analytics {
      *   id: '1234',
      * });
      * ```
+     *
+     * @note 100 characters is the maximum length for param key names.
      *
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
@@ -57,14 +57,14 @@ export namespace Analytics {
      * If true, allows the device to collect analytical data and send it to Firebase.
      * Useful for GDPR.
      *
-     * @note Analytics collection is enabled by default.
-     *
      * #### Example
      *
      * ```js
      * // Disable collection
      * await firebase().analytics().setAnalyticsCollectionEnabled(false);
      * ```
+     *
+     * @note Analytics collection is enabled by default.
      *
      * @param enabled A boolean value representing whether Analytics collection is enabled or disabled.
      */
@@ -73,15 +73,15 @@ export namespace Analytics {
     /**
      * Sets the current screen name.
      *
-     * @note Whilst screenClassOverride is optional, it is recommended it is
-     * always sent as your current class name. For example on Android it will always
-     * show as 'MainActivity' if you do not specify it.
-     *
      * #### Example
      *
      * ```js
      * await firebase().analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
      * ```
+     *
+     * @note Whilst screenClassOverride is optional, it is recommended it is
+     * always sent as your current class name. For example on Android it will always
+     * show as 'MainActivity' if you do not specify it.
      *
      * @param screenName A screen name, e.g. Product.
      * @param screenClassOverride On Android, React Native runs in a single activity called
