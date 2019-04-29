@@ -39,6 +39,12 @@ export namespace Iid {
      *
      * Once an Instance ID is generated, Firebase periodically sends information about the application
      * and the device it's running on to the Firebase backend. To stop this, see `delete()`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const id = iid().get();
+     * ```
      */
     get(): Promise<string>;
 
@@ -47,11 +53,23 @@ export namespace Iid {
      * backend that was started when the Instance ID was generated.
      *
      * A new Instance ID is asynchronously generated unless auto initialisation is turned off.
+     *
+     * #### Example
+     *
+     * ```js
+     * await iid().delete();
+     * ```
      */
     delete(): Promise<void>;
 
     /**
      * Returns a token that authorizes an Entity to perform an action on behalf of the application.
+     *
+     * #### Example
+     *
+     * ```js
+     * const token = await iid().getToken(firebase.app().options.storageBucket, '*');
+     * ```
      *
      * @param authorizedEntity Entity authorized by the token. Defaults to the apps `messagingSenderId` option.
      * @param scope Action authorized for authorizedEntity. Defaults to '*'.
@@ -60,6 +78,12 @@ export namespace Iid {
 
     /**
      * Revokes access to a scope for an entity previously authorized by `getToken()`.
+     *
+     * #### Example
+     *
+     * ```js
+     * await iid().deleteToken(firebase.app().options.storageBucket, '*');
+     * ```
      *
      * @param authorizedEntity Entity authorized by the token. Defaults to the apps' `messagingSenderId` option.
      * @param scope Action authorized for authorizedEntity. Defaults to '*'.
