@@ -48,7 +48,6 @@ const PACKAGES = [
 for (let i = 0; i < PACKAGES.length; i++) {
   requirePackageTests(PACKAGES[i]);
 }
-
 before(async () => {
   await detox.init(config);
   await jet.init();
