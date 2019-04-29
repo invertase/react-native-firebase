@@ -1,4 +1,4 @@
-/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies */
+/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies,no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from 'react';
-import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react-native';
+import { AppRegistry, Image, StyleSheet, View } from 'react-native';
 
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/config';
@@ -63,7 +63,7 @@ class Root extends Component {
           hadRunningStatus = true;
           setTimeout(() => {
             uploadTask.pause();
-          }, 1000)
+          }, 1000);
         }
 
         // 2) resume when we receive first paused event
@@ -72,7 +72,7 @@ class Root extends Component {
           setTimeout(() => {
             console.log('-->   Resuming');
             uploadTask.resume();
-          }, 1000)
+          }, 1000);
         }
 
         // 3) track that we resumed on 2nd running status whilst paused
@@ -93,7 +93,7 @@ class Root extends Component {
         }
       },
       error => {
-        console.log('ERROR');
+        console.log('ERROR', error);
       },
     );
 
