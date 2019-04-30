@@ -5,8 +5,10 @@ description: Manually integrate Analytics into your Android application.
 
 # Android Setup
 
+## Manual Android Integration
+
 > The following steps are only required if your environment does not have access to React Native
-auto-linking. 
+auto-linking.
 
 #### Add Analytics to Gradle Settings
 
