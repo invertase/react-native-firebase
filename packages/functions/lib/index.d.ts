@@ -190,10 +190,6 @@ export namespace Functions {
    *      console.error('An error occurred');
    *      break;
    *  }
-   *   // Check code
-   *   if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {
-   *     console.error('Functions endpoint "order" not found');
-   *   }
    * }
    * ```
    */
