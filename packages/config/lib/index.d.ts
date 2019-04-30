@@ -45,7 +45,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await config().getValue('beta_enabled');
+     * const configValue = await firebase().config().getValue('beta_enabled');
      * console.log('Value source: ', configValue.source);
      * ```
      */
@@ -57,7 +57,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await config().getValue('beta_enabled');
+     * const configValue = await firebase().config().getValue('beta_enabled');
      * console.log('Value: ', configValue.value);
      * ```
      */
@@ -70,7 +70,7 @@ export namespace Config {
    * #### Example
    *
    * ```js
-   * const values = await config().getValuesByKeysPrefix('feature_');
+   * const values = await firebase().config().getValuesByKeysPrefix('feature_');
    *
    * values.forEach(($) => {
    *   console.log('Source: ', $.source);
@@ -91,7 +91,7 @@ export namespace Config {
    * is exposed.
    *
    * ```js
-   * await config().setConfigSettings({
+   * await firebase().config().setConfigSettings({
    *   isDeveloperModeEnabled: __DEV__,
    * });
    * ```
@@ -110,7 +110,7 @@ export namespace Config {
    * #### Example
    *
    * ```js
-   * const settings = await config().getConfigSettings();
+   * const settings = await firebase().config().getConfigSettings();
    * console.log('Last fetched time: ', settings.lastFetchTime);
    * console.log('Developer mode enabled': settings.isDeveloperModeEnabled);
    * console.log('Last fetch status: ', settings.lastFetchStatus);
@@ -137,7 +137,7 @@ export namespace Config {
    * #### Example
    *
    * ```js
-   * await config().setDefaults({
+   * await firebase().config().setDefaults({
    *   experiment_enabled: false,
    * });
    * ```
@@ -155,8 +155,8 @@ export namespace Config {
      *
      * ```js
      * // Fetch values
-     * await config().fetch();
-     * const activated = await config().activateFetched();
+     * await firebase().config().fetch();
+     * const activated = await firebase().config().activateFetched();
      *
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
@@ -174,7 +174,7 @@ export namespace Config {
      *
      * ```js
      * // Fetch and cache for 5 minutes
-     * await config().fetch(300);
+     * await firebase().config().fetch(300);
      * ```
      *
      * @param cacheExpirationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
@@ -190,7 +190,7 @@ export namespace Config {
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await config().fetchAndActivate(300);
+     * const activated = await firebase().config().fetchAndActivate(300);
      *
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
@@ -209,7 +209,7 @@ export namespace Config {
      * ### Example
      *
      * ```js
-     * const settings = await config().getConfigSettings();
+     * const settings = await firebase().config().getConfigSettings();
      * console.log('Developer mode enabled: ', settings.isDeveloperModeEnabled);
      * ```
      */
@@ -221,7 +221,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     *  const keys = await config().getKeysByPrefix('feature_');
+     *  const keys = await firebase().config().getKeysByPrefix('feature_');
      * ```
      *
      * @param prefix A prefix value to match keys by. Leave blank to retrieve all keys.
@@ -234,7 +234,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const values = await config().getValuesByKeysPrefix('feature_');
+     * const values = await firebase().config().getValuesByKeysPrefix('feature_');
      *
      * values.forEach(($) => {
      *   console.log('Source: ', $.source);
@@ -252,7 +252,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await config().getValue('experiment');
+     * const configValue = await firebase().config().getValue('experiment');
      * console.log('Source: ', configValue.source);
      * console.log('Value: ', configValue.value);
      * ```
@@ -267,7 +267,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * await config().setConfigSettings({
+     * await firebase().config().setConfigSettings({
      *   isDeveloperModeEnabled: __DEV__,
      * });
      * ```
@@ -283,7 +283,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * await config().setDefaults({
+     * await firebase().config().setDefaults({
      *   experiment_enabled: false,
      * });
      * ```
