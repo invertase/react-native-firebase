@@ -104,7 +104,7 @@ export namespace Functions {
    *
    * ```js
    * // Create a HttpsCallable instance
-   * const instance = functions().httpsCallable('order');
+   * const instance = firebase.functions().httpsCallable('order');
    *
    * try {
    *  const response = await instance({
@@ -126,7 +126,7 @@ export namespace Functions {
    *
    * ```js
    * try {
-   *  await functions().httpsCallable('order')();
+   *  await firebase.functions().httpsCallable('order')();
    * } catch (httpsError) {
    *   console.log('Message', httpsError.message);
    *
@@ -146,7 +146,7 @@ export namespace Functions {
      *
      * ```js
      * try {
-     *  await functions().httpsCallable('order')();
+     *  await firebase.functions().httpsCallable('order')();
      * } catch (httpsError) {
      *   console.error(httpsError.code);
      * }
@@ -158,7 +158,7 @@ export namespace Functions {
      *
      * ```js
      * try {
-     *  await functions().httpsCallable('order')();
+     *  await firebase.functions().httpsCallable('order')();
      * } catch (httpsError) {
      *   if (httpsError.details) {
      *     console.error(httpsError.details);
@@ -177,7 +177,7 @@ export namespace Functions {
    *
    * ```js
    * try {
-   *  await functions().httpsCallable('order')();
+   *  await firebase.functions().httpsCallable('order')();
    * } catch (httpsError) {
    *  switch(httpsError.code) {
    *    case firebase.functions.HttpsErrorCode.NOT_FOUND:
@@ -245,7 +245,7 @@ export namespace Functions {
      * #### Example
      *
      * ```js
-     * const instance = functions().httpsCallable('order');
+     * const instance = firebase.functions().httpsCallable('order');
      *
      * try {
      *  const response = await instance({
@@ -271,7 +271,7 @@ export namespace Functions {
      *
      * ```js
      * if (__DEV__) {
-     *   functions().useFunctionsEmulator('http://10.0.0.8:1337');
+     *   firebase.functions().useFunctionsEmulator('http://10.0.0.8:1337');
      * }
      * ```
      *
