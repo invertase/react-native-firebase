@@ -37,7 +37,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * const isEnabled = crashlytics().isCrashlyticsCollectionEnabled;
+     * const isEnabled = firebase().crashlytics().isCrashlyticsCollectionEnabled;
      * ```
      *
      */
@@ -49,7 +49,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * crashlytics().crash();
+     * firebase().crashlytics().crash();
      * ```
      *
      */
@@ -61,8 +61,8 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * crashlytics().logEvent('Testing a crash');
-     * crashlytics().crash();
+     * firebase().crashlytics().logEvent('Testing a crash');
+     * firebase().crashlytics().crash();
      * ```
      *
      * @param message
@@ -77,7 +77,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * crashlytics().recordError(
+     * firebase().crashlytics().recordError(
      *  new Error('An error was caught')
      * );
      * ```
@@ -96,9 +96,9 @@ export namespace Crashlytics {
      *
      * ```js
      * // Custom user id
-     * await crashlytics().setUserId('123456789');
+     * await firebase().crashlytics().setUserId('123456789');
      * // Firebase auth uid
-     * await crashlytics().setUserId(
+     * await firebase().crashlytics().setUserId(
      *  firebase.auth().currentUser.uid
      * );
      * ```
@@ -115,7 +115,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * await crashlytics().setUserName('Alias');
+     * await firebase().crashlytics().setUserName('Alias');
      * ```
      *
      * @param userName A string representing an end-user's name or app username
@@ -130,7 +130,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * crashlytics().setUserEmail('user@gmail.com');
+     * firebase().crashlytics().setUserEmail('user@gmail.com');
      * ```
      *
      * @param userEmail A users email address.
@@ -143,7 +143,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * await crashlytics().setAttribute('role', 'admin');
+     * await firebase().crashlytics().setAttribute('role', 'admin');
      * ```
      *
      * @param name The name of the attribute to set.
@@ -157,7 +157,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * await crashlytics().setAttributes({
+     * await firebase().crashlytics().setAttributes({
      *   role: 'admin',
      *   followers: '13',
      * });
@@ -176,7 +176,7 @@ export namespace Crashlytics {
      *
      * ```js
      * // Disable crash reporting
-     * await crashlytics().setCrashlyticsCollectionEnabled(false);
+     * await firebase().crashlytics().setCrashlyticsCollectionEnabled(false);
      * ```
      *
      * @param enabled A boolean value representing whether to enable Crashlytics error collection.
