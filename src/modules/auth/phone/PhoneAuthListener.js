@@ -17,7 +17,7 @@ type PhoneAuthSnapshot = {
   state: 'sent' | 'timeout' | 'verified' | 'error',
   verificationId: string,
   code: string | null,
-  error: Error | null,
+  error: NativeError | null,
 };
 
 type PhoneAuthError = {
