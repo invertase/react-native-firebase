@@ -27,7 +27,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const isEnabled = crashlytics().isCrashlyticsCollectionEnabled;
+   * const isEnabled = firebase().crashlytics().isCrashlyticsCollectionEnabled;
    * ```
    *
    */
@@ -39,7 +39,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * crashlytics().crash();
+   * firebase().crashlytics().crash();
    * ```
    *
    */
@@ -51,8 +51,8 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * crashlytics().logEvent('Testing a crash');
-   * crashlytics().crash();
+   * firebase().crashlytics().logEvent('Testing a crash');
+   * firebase().crashlytics().crash();
    * ```
    *
    * @param message
@@ -67,7 +67,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * crashlytics().recordError(
+   * firebase().crashlytics().recordError(
    *  new Error('An error was caught')
    * );
    * ```
@@ -86,9 +86,9 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Custom user id
-   * await crashlytics().setUserId('123456789');
+   * await firebase().crashlytics().setUserId('123456789');
    * // Firebase auth uid
-   * await crashlytics().setUserId(
+   * await firebase().crashlytics().setUserId(
    *  firebase.auth().currentUser.uid
    * );
    * ```
@@ -105,7 +105,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * await crashlytics().setUserName('Alias');
+   * await firebase().crashlytics().setUserName('Alias');
    * ```
    *
    * @param userName A string representing an end-user's name or app username
@@ -120,7 +120,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * crashlytics().setUserEmail('user@gmail.com');
+   * firebase().crashlytics().setUserEmail('user@gmail.com');
    * ```
    *
    * @param userEmail A users email address.
@@ -133,7 +133,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * await crashlytics().setAttribute('role', 'admin');
+   * await firebase().crashlytics().setAttribute('role', 'admin');
    * ```
    *
    * @param name The name of the attribute to set.
@@ -147,7 +147,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * await crashlytics().setAttributes({
+   * await firebase().crashlytics().setAttributes({
    *   role: 'admin',
    *   followers: '13',
    * });
@@ -166,7 +166,7 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Disable crash reporting
-   * await crashlytics().setCrashlyticsCollectionEnabled(false);
+   * await firebase().crashlytics().setCrashlyticsCollectionEnabled(false);
    * ```
    *
    * @param enabled A boolean value representing whether to enable Crashlytics error collection.
