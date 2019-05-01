@@ -24,32 +24,32 @@ Please send as many details of the event as possible:
     success="Thanks, we aim to respond to all enquiries within 48 hours."
     required={['name', 'email', 'type', 'event', 'details']}
 >
-    <Form.Input 
+    <FormInput 
         name="name"
         label="Name"
     />
-    <Form.Input 
+    <FormInput 
         name="email"
         label="Email Address"
     />
-    <Form.Select 
+    <FormSelect 
         name="type"
         label="Your role"
     >
-        <Form.Select.Option value="host" label="Event Host" />
-        <Form.Select.Option value="speaker" label="Event Speaker" />
-        <Form.Select.Option value="attendee" label="Event Attendee" />
-    </Form.Select>
-    <Form.Input 
+        <FormSelectOption value="host" label="Event Host" />
+        <FormSelectOption value="speaker" label="Event Speaker" />
+        <FormSelectOption value="attendee" label="Event Attendee" />
+    </FormSelect>
+    <FormInput 
         name="event"
         label="Event Name"
     />
-    <Form.TextArea 
+    <FormTextArea 
         name="details"
         label="Event Details"
         placeholder="Please include details such as location, date, time, talk and anything else related to the event"
     />
-    <Form.Submit>
+    <FormSubmit>
         Send Enquiry
-    </Form.Submit>
+    </FormSubmit>
 </Form>

@@ -26,25 +26,25 @@ the appropriate area. Content will be 301 directed from the website to the exter
     success="Thank you for your submission. We'll let you know via email if your content has been accepted."
     required={['name', 'email', 'github', 'url']}
 >
-    <Form.Input 
+    <FormInput 
         name="name"
         label="Name"
     />
-    <Form.Input 
+    <FormInput 
         name="email"
         label="Email Address"
     />
-    <Form.Input 
+    <FormInput 
         name="github"
         label="Github Profile"
         placeholder="https://github.com"
     />
-    <Form.Input 
+    <FormInput 
         name="url"
         label="Content URL"
         placeholder="https://"
     />
-    <Form.Submit>Send Submission</Form.Submit>
+    <FormSubmit>Send Submission</FormSubmit>
 </Form>
 
 ### On-site content
