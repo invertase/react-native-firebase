@@ -6,20 +6,3 @@ description: Struggling to find what you're after? Our comprehensive search cove
 # Search
 
 <Search />
-
-<StaticQuery
-  query={graphql`
-    {
-      site {
-        siteMetadata {
-          siteUrl
-        }
-      }
-    }
-  `}
-  render={(data) => (
-    <div>
-      <p>{data.site.siteMetadata.siteUrl}</p>
-    </div>
-  )}
-/>
