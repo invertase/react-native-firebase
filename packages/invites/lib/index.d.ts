@@ -74,7 +74,7 @@ export namespace Invites {
    * #### Example
    *
    * ```js
-   * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+   * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
    * invite.android.setAdditionalReferralParameters({
    *   screen: 'Profile',
    * });
@@ -97,7 +97,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.android.setAdditionalReferralParameters({
      *   screen: 'Profile',
      * });
@@ -123,7 +123,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');
      * ```
      *
@@ -137,7 +137,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.android.emailSubject(`Hey ${user.name}, joint my app!`);
      * ```
      *
@@ -153,7 +153,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.android.setGoogleAnalyticsTrackingId('UA-1234-5');
      * ```
      *
@@ -172,7 +172,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.android.setGoogleAnalyticsTrackingId('UA-1234-5');
      * ```
      */
@@ -184,7 +184,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.setAndroidClientId('xxxxxxxxxxxx');
      * ```
      *
@@ -198,7 +198,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.setAndroidMinimumVersionCode(18);
      * ```
      *
@@ -214,7 +214,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.setCallToActionText('Join the app!');
      * ```
      *
@@ -228,7 +228,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.setCustomImage('https://my-cdn.com/assets/invites.png');
      * ```
      *
@@ -244,7 +244,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.deepLink('/invites');
      * ```
      *
@@ -258,7 +258,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');
      * invite.setIOSClientId('xxxxxxxxxxxx');
      * ```
      *
@@ -275,7 +275,7 @@ export namespace Invites {
    * When an invitation has been opened from a closed/terminated app.
    *
    * ```js
-   * const invite = invites().getInitialInvitation();
+   * const invite = firebase.invites().getInitialInvitation();
    *
    * if (invite) {
    *   console.log('Deeplink: ', invite.deepLink);
@@ -293,7 +293,7 @@ export namespace Invites {
    *   console.log('ID: ', invitationId);
    *  }
    *
-   *  invites().onInvitation(handleInvitation);
+   *  firebase.invites().onInvitation(handleInvitation);
    * ```
    */
   export interface NativeInvite {
@@ -314,7 +314,7 @@ export namespace Invites {
    * #### Example
    *
    * ```js
-   * invites().onInvitation((invite) => {
+   * firebase.invites().onInvitation((invite) => {
    *   console.log('Deeplink: ', invite.deepLink);
    *   console.log('ID: ', invite.invitationId);
    * });
@@ -342,7 +342,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app and share content');
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app and share content');
      * ```
      *
      * @param title The title displayed in the invitation.
@@ -362,7 +362,7 @@ export namespace Invites {
      *   console.log('ID: ', invitationId);
      * }
      *
-     * const subscriber = invites().onInvitation(handleInvitation);
+     * const subscriber = firebase.invites().onInvitation(handleInvitation);
      *
      * // Unsubscribe from invitation listener
      * subscriber();
@@ -379,7 +379,7 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().getInitialInvitation();
+     * const invite = firebase.invites().getInitialInvitation();
      *
      * if (invite) {
      *  console.log('Deeplink: ', invite.deepLink);
@@ -397,8 +397,8 @@ export namespace Invites {
      * #### Example
      *
      * ```js
-     * const invite = invites().createInvitation('Join my app', 'Join my app and share content');
-     * const ids = await invites().sendInvitation(invite);
+     * const invite = firebase.invites().createInvitation('Join my app', 'Join my app and share content');
+     * const ids = await firebase.invites().sendInvitation(invite);
      * ```
      *
      * @param invite The invitation to send. Must be an instance of InviteBuilder

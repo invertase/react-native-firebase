@@ -83,7 +83,7 @@ export namespace Iid {
      * #### Example
      *
      * ```js
-     * const id = iid().get();
+     * const id = firebase.iid().get();
      * ```
      */
     get(): Promise<string>;
@@ -97,7 +97,7 @@ export namespace Iid {
      * #### Example
      *
      * ```js
-     * await iid().delete();
+     * await firebase.iid().delete();
      * ```
      */
     delete(): Promise<void>;
@@ -108,7 +108,7 @@ export namespace Iid {
      * #### Example
      *
      * ```js
-     * const token = await iid().getToken(firebase.app().options.storageBucket, '*');
+     * const token = await firebase.iid().getToken(firebase.app().options.storageBucket, '*');
      * ```
      *
      * @param authorizedEntity Entity authorized by the token. Defaults to the apps `messagingSenderId` option.
@@ -122,7 +122,7 @@ export namespace Iid {
      * #### Example
      *
      * ```js
-     * await iid().deleteToken(firebase.app().options.storageBucket, '*');
+     * await firebase.iid().deleteToken(firebase.app().options.storageBucket, '*');
      * ```
      *
      * @param authorizedEntity Entity authorized by the token. Defaults to the apps' `messagingSenderId` option.

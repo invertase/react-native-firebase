@@ -76,6 +76,12 @@ export namespace Fiam {
   export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether messages are suppressed or not.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isSuppressed = firebase.fiam().isMessagesDisplaySuppressed;
+     * ```
      */
     isMessagesDisplaySuppressed: boolean;
 
@@ -85,12 +91,25 @@ export namespace Fiam {
      * When enabled, no in app messages will be rendered until either you disable suppression, or the app restarts.
      * This state is not persisted between app restarts.
      *
-     * @param enabled Whether messages should be suppressed
+     * #### Example
+     *
+     * ```js
+     * // Suppress messages
+     * await firebase.fiam().setMessagesDisplaySuppressed(true);
+     * ```
+     *
+     * @param enabled Whether messages should be suppressed.
      */
     setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;
 
     /**
      * Determines whether automatic data collection is enabled or not.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isDataCollectionEnabled = firebase.fiam().isAutomaticDataCollectionEnabled;
+     * ```
      */
     isAutomaticDataCollectionEnabled: boolean;
 
@@ -102,7 +121,14 @@ export namespace Fiam {
      *
      * This setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.
      *
-     * @param enabled Whether automatic data collection is enabled
+     * #### Example
+     *
+     * ```js
+     * // Disable data collection
+     * firebase.fiam().setAutomaticDataCollectionEnabled(false);
+     * ```
+     *
+     * @param enabled Whether automatic data collection is enabled.
      */
     setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;
   }
