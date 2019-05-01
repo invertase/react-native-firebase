@@ -346,7 +346,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 155,
+									"line": 181,
 									"character": 8
 								}
 							]
@@ -437,7 +437,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 397,
+									"line": 393,
 									"character": 13
 								}
 							]
@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 555,
+									"line": 561,
 									"character": 11
 								}
 							]
@@ -736,7 +736,7 @@
 						},
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 149,
+							"line": 175,
 							"character": 23
 						},
 						{
@@ -746,7 +746,7 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 388,
+							"line": 384,
 							"character": 23
 						},
 						{
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 554,
+							"line": 560,
 							"character": 23
 						},
 						{
@@ -933,7 +933,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 146,
+									"line": 172,
 									"character": 8
 								}
 							],
@@ -1001,7 +1001,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 385,
+									"line": 381,
 									"character": 13
 								}
 							],
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 551,
+									"line": 557,
 									"character": 11
 								}
 							],
@@ -1282,7 +1282,7 @@
 						},
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 140,
+							"line": 166,
 							"character": 40
 						},
 						{
@@ -1292,7 +1292,7 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 378,
+							"line": 374,
 							"character": 40
 						},
 						{
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 550,
+							"line": 556,
 							"character": 40
 						},
 						{
@@ -1366,7 +1366,7 @@
 				},
 				{
 					"fileName": "fiam/lib/index.d.ts",
-					"line": 139,
+					"line": 165,
 					"character": 49
 				},
 				{
@@ -1376,7 +1376,7 @@
 				},
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 377,
+					"line": 373,
 					"character": 49
 				},
 				{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 549,
+					"line": 555,
 					"character": 49
 				},
 				{
@@ -1790,7 +1790,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 125,
+							"line": 151,
 							"character": 25
 						}
 					],
@@ -1823,7 +1823,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 114,
+							"line": 140,
 							"character": 31
 						}
 					],
@@ -1861,7 +1861,7 @@
 					"sources": [
 						{
 							"fileName": "fiam/lib/index.d.ts",
-							"line": 123,
+							"line": 149,
 							"character": 23
 						}
 					],
@@ -1886,7 +1886,7 @@
 			"sources": [
 				{
 					"fileName": "fiam/lib/index.d.ts",
-					"line": 111,
+					"line": 137,
 					"character": 44
 				}
 			]
@@ -2030,7 +2030,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 360,
+							"line": 356,
 							"character": 30
 						}
 					],
@@ -2064,7 +2064,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 349,
+							"line": 345,
 							"character": 29
 						}
 					],
@@ -2103,7 +2103,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 358,
+							"line": 354,
 							"character": 23
 						}
 					],
@@ -2136,7 +2136,7 @@
 			"sources": [
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 345,
+					"line": 341,
 					"character": 49
 				}
 			]
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 537,
+							"line": 543,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 541,
+							"line": 547,
 							"character": 28
 						}
 					],
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 539,
+							"line": 545,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 534,
+					"line": 540,
 					"character": 47
 				}
 			]
@@ -2926,7 +2926,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Log a custom event with optional params.",
-										"text": "#### Example\n\n```js\nawait firebase().analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n",
+										"text": "#### Example\n\n```js\nawait firebase.analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n",
 										"tags": [
 											{
 												"tag": "note",
@@ -3040,7 +3040,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Clears all analytics data for this instance from the device and resets the app instance ID.",
-										"text": "#### Example\n\n```js\nawait firebase().analytics().resetAnalyticsData();\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.analytics().resetAnalyticsData();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -3079,7 +3079,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR.",
-										"text": "#### Example\n\n```js\n// Disable collection\nawait firebase().analytics().setAnalyticsCollectionEnabled(false);\n```\n",
+										"text": "#### Example\n\n```js\n// Disable collection\nawait firebase.analytics().setAnalyticsCollectionEnabled(false);\n```\n",
 										"tags": [
 											{
 												"tag": "note",
@@ -3140,7 +3140,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the current screen name.",
-										"text": "#### Example\n\n```js\nawait firebase().analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n",
+										"text": "#### Example\n\n```js\nawait firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n",
 										"tags": [
 											{
 												"tag": "note",
@@ -3226,7 +3226,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the minimum engagement time required before starting a session.",
-										"text": "#### Example\n\n```js\n// 20 seconds\nawait firebase().analytics().setMinimumSessionDuration(20000);\n```\n"
+										"text": "#### Example\n\n```js\n// 20 seconds\nawait firebase.analytics().setMinimumSessionDuration(20000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3281,7 +3281,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the duration of inactivity that terminates the current session.",
-										"text": "#### Example\n\n```js\n// 20 minutes\nawait firebase().analytics().setMinimumSessionDuration(900000);\n```\n"
+										"text": "#### Example\n\n```js\n// 20 minutes\nawait firebase.analytics().setMinimumSessionDuration(900000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3336,7 +3336,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Gives a user a unique identification.",
-										"text": "#### Example\n\n```js\n// Set User\nawait firebase().analytics().setUserId('123456789');\n// Remove User\nawait firebase().analytics().setUserId(null);\n```\n"
+										"text": "#### Example\n\n```js\n// Set User\nawait firebase.analytics().setUserId('123456789');\n// Remove User\nawait firebase.analytics().setUserId(null);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3400,7 +3400,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets multiple key/value pair of data on the current user.",
-										"text": "#### Example\n\n```js\nawait firebase().analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
+										"text": "#### Example\n\n```js\nawait firebase.analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
 										"tags": [
 											{
 												"tag": "react-native-firebase",
@@ -3509,7 +3509,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets a key/value pair of data on the current user.",
-										"text": "#### Example\n\n```js\nawait firebase().analytics().setUserProperty('account_type', 'gold');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.analytics().setUserProperty('account_type', 'gold');\n```\n"
 									},
 									"parameters": [
 										{
@@ -4281,7 +4281,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Moves fetched data to the apps active config.\nResolves with a boolean value of whether the fetched config was moved successfully.",
-										"text": "#### Example\n\n```js\n// Fetch values\nawait config().fetch();\nconst activated = await config().activateFetched();\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
+										"text": "#### Example\n\n```js\n// Fetch values\nawait firebase.config().fetch();\nconst activated = await firebase.config().activateFetched();\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -4320,7 +4320,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
-										"text": "#### Example\n\n```js\n// Fetch and cache for 5 minutes\nawait config().fetch(300);\n```\n"
+										"text": "#### Example\n\n```js\n// Fetch and cache for 5 minutes\nawait firebase.config().fetch(300);\n```\n"
 									},
 									"parameters": [
 										{
@@ -4386,7 +4386,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.",
-										"text": "Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.\n\n#### Example\n\n```js\n// Fetch, cache for 5 minutes and activate\nconst activated = await config().fetchAndActivate(300);\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
+										"text": "Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.\n\n#### Example\n\n```js\n// Fetch, cache for 5 minutes and activate\nconst activated = await firebase.config().fetchAndActivate(300);\n\nif (activated) {\n console.log('Fetched values successfully activated.');\n} else {\n  console.log('Fetched values failed to activate.');\n}\n```\n"
 									},
 									"parameters": [
 										{
@@ -4452,7 +4452,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Retrieve the configuration settings and status for Remote Config.",
-										"text": "### Example\n\n```js\nconst settings = await config().getConfigSettings();\nconsole.log('Developer mode enabled: ', settings.isDeveloperModeEnabled);\n```\n"
+										"text": "### Example\n\n```js\nconst settings = await firebase.config().getConfigSettings();\nconsole.log('Developer mode enabled: ', settings.isDeveloperModeEnabled);\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -4492,7 +4492,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned.",
-										"text": "#### Example\n\n```js\n const keys = await config().getKeysByPrefix('feature_');\n```\n"
+										"text": "#### Example\n\n```js\n const keys = await firebase.config().getKeysByPrefix('feature_');\n```\n"
 									},
 									"parameters": [
 										{
@@ -4561,7 +4561,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Gets a ConfigValue by key.",
-										"text": "#### Example\n\n```js\nconst configValue = await config().getValue('experiment');\nconsole.log('Source: ', configValue.source);\nconsole.log('Value: ', configValue.value);\n```\n"
+										"text": "#### Example\n\n```js\nconst configValue = await firebase.config().getValue('experiment');\nconsole.log('Source: ', configValue.source);\nconsole.log('Value: ', configValue.value);\n```\n"
 									},
 									"parameters": [
 										{
@@ -4617,7 +4617,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned.",
-										"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
+										"text": "#### Example\n\n```js\nconst values = await firebase.config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4684,7 +4684,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.",
-										"text": "#### Example\n\n```js\nawait config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4741,7 +4741,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets default values for the app to use when accessing values.\nAny data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.",
-										"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -4885,7 +4885,7 @@
 					},
 					"comment": {
 						"shortText": "An Interface representing a Config Defaults object.",
-						"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
+						"text": "#### Example\n\n```js\nawait firebase.config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -4896,7 +4896,7 @@
 							"flags": {},
 							"comment": {
 								"shortText": "An Interface representing a Config Defaults object.",
-								"text": "#### Example\n\n```js\nawait config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
+								"text": "#### Example\n\n```js\nawait firebase.config().setDefaults({\n  experiment_enabled: false,\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -4948,7 +4948,7 @@
 					},
 					"comment": {
 						"shortText": "An Interface representing readable config settings.",
-						"text": "#### Example\n\n```js\nconst settings = await config().getConfigSettings();\nconsole.log('Last fetched time: ', settings.lastFetchTime);\nconsole.log('Developer mode enabled': settings.isDeveloperModeEnabled);\nconsole.log('Last fetch status: ', settings.lastFetchStatus);\n```\n"
+						"text": "#### Example\n\n```js\nconst settings = await firebase.config().getConfigSettings();\nconsole.log('Last fetched time: ', settings.lastFetchTime);\nconsole.log('Developer mode enabled': settings.isDeveloperModeEnabled);\nconsole.log('Last fetch status: ', settings.lastFetchStatus);\n```\n"
 					},
 					"children": [
 						{
@@ -5067,7 +5067,7 @@
 					},
 					"comment": {
 						"shortText": "An Interface representing settable config settings.",
-						"text": "#### Example\n\nThe example below makes use of the React Native `__DEV__` global JavaScript variable which\nis exposed.\n\n```js\nawait config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
+						"text": "#### Example\n\nThe example below makes use of the React Native `__DEV__` global JavaScript variable which\nis exposed.\n\n```js\nawait firebase.config().setConfigSettings({\n  isDeveloperModeEnabled: __DEV__,\n});\n```\n"
 					},
 					"children": [
 						{
@@ -5133,7 +5133,7 @@
 							},
 							"comment": {
 								"shortText": "Where the value was retrieved from.",
-								"text": "- `remote`:  If the value was retrieved from the server.\n- `default`: If the value was set as a default value.\n- `static`: If no value was found and a static default value was returned instead.\n\n#### Example\n\n```js\nconst configValue = await config().getValue('beta_enabled');\nconsole.log('Value source: ', configValue.source);\n```\n"
+								"text": "- `remote`:  If the value was retrieved from the server.\n- `default`: If the value was set as a default value.\n- `static`: If no value was found and a static default value was returned instead.\n\n#### Example\n\n```js\nconst configValue = await firebase.config().getValue('beta_enabled');\nconsole.log('Value source: ', configValue.source);\n```\n"
 							},
 							"sources": [
 								{
@@ -5170,7 +5170,7 @@
 							},
 							"comment": {
 								"shortText": "The returned value.",
-								"text": "#### Example\n\n```js\nconst configValue = await config().getValue('beta_enabled');\nconsole.log('Value: ', configValue.value);\n```\n"
+								"text": "#### Example\n\n```js\nconst configValue = await firebase.config().getValue('beta_enabled');\nconsole.log('Value: ', configValue.value);\n```\n"
 							},
 							"sources": [
 								{
@@ -5230,7 +5230,7 @@
 					},
 					"comment": {
 						"shortText": "An Interface representing multiple Config Values.",
-						"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
+						"text": "#### Example\n\n```js\nconst values = await firebase.config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -5241,7 +5241,7 @@
 							"flags": {},
 							"comment": {
 								"shortText": "An Interface representing multiple Config Values.",
-								"text": "#### Example\n\n```js\nconst values = await config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
+								"text": "#### Example\n\n```js\nconst values = await firebase.config().getValuesByKeysPrefix('feature_');\n\nvalues.forEach(($) => {\n  console.log('Source: ', $.source);\n  console.log('Value: ', $.value);\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -5383,7 +5383,7 @@
 							},
 							"comment": {
 								"shortText": "Whether Crashlytics reporting is enabled.",
-								"text": "#### Example\n\n```js\nconst isEnabled = crashlytics().isCrashlyticsCollectionEnabled;\n```\n\n"
+								"text": "#### Example\n\n```js\nconst isEnabled = firebase.crashlytics().isCrashlyticsCollectionEnabled;\n```\n\n"
 							},
 							"sources": [
 								{
@@ -5414,7 +5414,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Cause your app to crash for testing purposes.",
-										"text": "#### Example\n\n```js\ncrashlytics().crash();\n```\n\n"
+										"text": "#### Example\n\n```js\nfirebase.crashlytics().crash();\n```\n\n"
 									},
 									"type": {
 										"type": "intrinsic",
@@ -5447,7 +5447,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Log a message that will appear in any subsequent Crash or Non-fatal error reports.",
-										"text": "#### Example\n\n```js\ncrashlytics().logEvent('Testing a crash');\ncrashlytics().crash();\n```\n"
+										"text": "#### Example\n\n```js\nfirebase.crashlytics().logEvent('Testing a crash');\nfirebase.crashlytics().crash();\n```\n"
 									},
 									"parameters": [
 										{
@@ -5496,7 +5496,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Record a JavaScript Error.",
-										"text": "The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.\n\n#### Example\n\n```js\ncrashlytics().recordError(\n new Error('An error was caught')\n);\n```\n"
+										"text": "The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.\n\n#### Example\n\n```js\nfirebase.crashlytics().recordError(\n new Error('An error was caught')\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5545,7 +5545,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.",
-										"text": "#### Example\n\n```js\nawait crashlytics().setAttribute('role', 'admin');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.crashlytics().setAttribute('role', 'admin');\n```\n"
 									},
 									"parameters": [
 										{
@@ -5614,7 +5614,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Like `setAttribute` but for multiple attributes.",
-										"text": "#### Example\n\n```js\nawait crashlytics().setAttributes({\n  role: 'admin',\n  followers: '13',\n});\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.crashlytics().setAttributes({\n  role: 'admin',\n  followers: '13',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -5708,7 +5708,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enable/disable Crashlytics reporting.",
-										"text": "Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.\n\n#### Example\n\n```js\n// Disable crash reporting\nawait crashlytics().setCrashlyticsCollectionEnabled(false);\n```\n"
+										"text": "Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.\n\n#### Example\n\n```js\n// Disable crash reporting\nawait firebase.crashlytics().setCrashlyticsCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5763,7 +5763,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Optionally specify a user email which will be visible in the Firebase Crashlytics console.",
-										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\ncrashlytics().setUserEmail('user@gmail.com');\n```\n"
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\nfirebase.crashlytics().setUserEmail('user@gmail.com');\n```\n"
 									},
 									"parameters": [
 										{
@@ -5818,7 +5818,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Specify a user identifier which will be visible in the Firebase Crashlytics console.",
-										"text": "It is recommended for privacy purposes that this value be a value that's meaningless to a third-party\nobserver; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n\n#### Example\n\n```js\n// Custom user id\nawait crashlytics().setUserId('123456789');\n// Firebase auth uid\nawait crashlytics().setUserId(\n firebase.auth().currentUser.uid\n);\n```\n"
+										"text": "It is recommended for privacy purposes that this value be a value that's meaningless to a third-party\nobserver; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.\n\n#### Example\n\n```js\n// Custom user id\nawait firebase.crashlytics().setUserId('123456789');\n// Firebase auth uid\nawait firebase.crashlytics().setUserId(\n firebase.auth().currentUser.uid\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5873,7 +5873,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Optionally specify a user name which will be visible in the Firebase Crashlytics console.",
-										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\nawait crashlytics().setUserName('Alias');\n```\n"
+										"text": "If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.\n\n#### Example\n\n```js\nawait firebase.crashlytics().setUserName('Alias');\n```\n"
 									},
 									"parameters": [
 										{
@@ -6057,12 +6057,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Determines whether automatic data collection is enabled or not."
+								"shortText": "Determines whether automatic data collection is enabled or not.",
+								"text": "#### Example\n\n```js\nconst isDataCollectionEnabled = firebase.fiam().isAutomaticDataCollectionEnabled;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 95,
+									"line": 114,
 									"character": 36
 								}
 							],
@@ -6080,12 +6081,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Determines whether messages are suppressed or not."
+								"shortText": "Determines whether messages are suppressed or not.",
+								"text": "#### Example\n\n```js\nconst isSuppressed = firebase.fiam().isMessagesDisplaySuppressed;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 80,
+									"line": 86,
 									"character": 31
 								}
 							],
@@ -6111,7 +6113,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enable or disable automatic data collection for Firebase In-App Messaging.",
-										"text": "When enabled, generates a registration token on app startup if there is no valid one and generates a new token\nwhen it is deleted (which prevents deleteInstanceId() from stopping the periodic sending of data).\n\nThis setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.\n"
+										"text": "When enabled, generates a registration token on app startup if there is no valid one and generates a new token\nwhen it is deleted (which prevents deleteInstanceId() from stopping the periodic sending of data).\n\nThis setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.\n\n#### Example\n\n```js\n// Disable data collection\nfirebase.fiam().setAutomaticDataCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -6121,7 +6123,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "Whether automatic data collection is enabled\n"
+												"text": "Whether automatic data collection is enabled.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -6144,7 +6146,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 107,
+									"line": 133,
 									"character": 37
 								}
 							]
@@ -6166,7 +6168,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enable or disable suppression of Firebase In App Messaging messages.",
-										"text": "When enabled, no in app messages will be rendered until either you disable suppression, or the app restarts.\nThis state is not persisted between app restarts.\n"
+										"text": "When enabled, no in app messages will be rendered until either you disable suppression, or the app restarts.\nThis state is not persisted between app restarts.\n\n#### Example\n\n```js\n// Suppress messages\nawait firebase.fiam().setMessagesDisplaySuppressed(true);\n```\n"
 									},
 									"parameters": [
 										{
@@ -6176,7 +6178,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "Whether messages should be suppressed\n"
+												"text": "Whether messages should be suppressed.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -6199,7 +6201,7 @@
 							"sources": [
 								{
 									"fileName": "fiam/lib/index.d.ts",
-									"line": 90,
+									"line": 103,
 									"character": 32
 								}
 							]
@@ -6473,7 +6475,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Gets an `HttpsCallable` instance that refers to the function with the given\nname.",
-										"text": "#### Example\n\n```js\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n",
+										"text": "#### Example\n\n```js\nconst instance = firebase.functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n",
 										"returns": "The `HttpsCallable` instance.\n"
 									},
 									"parameters": [
@@ -6502,7 +6504,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 322,
+									"line": 318,
 									"character": 17
 								}
 							]
@@ -6524,7 +6526,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Changes this instance to point to a Cloud Functions emulator running\nlocally.",
-										"text": "See https://firebase.google.com/docs/functions/local-emulator\n\n#### Example\n\n```js\nif (__DEV__) {\n  functions().useFunctionsEmulator('http://10.0.0.8:1337');\n}\n```\n"
+										"text": "See https://firebase.google.com/docs/functions/local-emulator\n\n#### Example\n\n```js\nif (__DEV__) {\n  firebase.functions().useFunctionsEmulator('http://10.0.0.8:1337');\n}\n```\n"
 									},
 									"parameters": [
 										{
@@ -6551,7 +6553,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 341,
+									"line": 337,
 									"character": 24
 								}
 							]
@@ -6577,7 +6579,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 300,
+							"line": 296,
 							"character": 21
 						}
 					],
@@ -6598,7 +6600,7 @@
 					},
 					"comment": {
 						"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions.",
-						"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
+						"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = firebase.functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
 					},
 					"signatures": [
 						{
@@ -6609,7 +6611,7 @@
 							"flags": {},
 							"comment": {
 								"shortText": "An HttpsCallable is a reference to a \"callable\" http trigger in\nGoogle Cloud Functions.",
-								"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
+								"text": "#### Example\n\n```js\n// Create a HttpsCallable instance\nconst instance = firebase.functions().httpsCallable('order');\n\ntry {\n const response = await instance({\n   id: '12345',\n });\n} catch (e) {\n console.error(e);\n}\n```\n"
 							},
 							"parameters": [
 								{
@@ -6707,7 +6709,7 @@
 					},
 					"comment": {
 						"shortText": "An HttpsError wraps a single error from a function call.",
-						"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.log('Message', httpsError.message);\n\n  // Check code\n  if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {\n    console.error('Functions endpoint \"order\" not found');\n  }\n}\n```\n"
+						"text": "#### Example\n\n```js\ntry {\n await firebase.functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.log('Message', httpsError.message);\n\n  // Check code\n  if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {\n    console.error('Functions endpoint \"order\" not found');\n  }\n}\n```\n"
 					},
 					"children": [
 						{
@@ -6740,7 +6742,7 @@
 							},
 							"comment": {
 								"shortText": "A standard error code that will be returned to the client. This also\ndetermines the HTTP status code of the response, as defined in code.proto.",
-								"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.error(httpsError.code);\n}\n```\n"
+								"text": "#### Example\n\n```js\ntry {\n await firebase.functions().httpsCallable('order')();\n} catch (httpsError) {\n  console.error(httpsError.code);\n}\n```\n"
 							},
 							"sources": [
 								{
@@ -6766,7 +6768,7 @@
 							},
 							"comment": {
 								"shortText": "Extra data to be converted to JSON and included in the error response.",
-								"text": "```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n  if (httpsError.details) {\n    console.error(httpsError.details);\n  }\n}\n```\n"
+								"text": "```js\ntry {\n await firebase.functions().httpsCallable('order')();\n} catch (httpsError) {\n  if (httpsError.details) {\n    console.error(httpsError.details);\n  }\n}\n```\n"
 							},
 							"sources": [
 								{
@@ -6905,7 +6907,7 @@
 					},
 					"comment": {
 						"shortText": "The HttpsErrorCode interface provides access to all FunctionsErrorCode\ntype aliases.",
-						"text": "#### Example\n\n```js\ntry {\n await functions().httpsCallable('order')();\n} catch (httpsError) {\n switch(httpsError.code) {\n   case firebase.functions.HttpsErrorCode.NOT_FOUND:\n     console.error('Functions endpoint not found');\n     break;\n   case firebase.functions.HttpsErrorCode.CANCELLED:\n     console.error('The operation was cancelled');\n     break;\n   default:\n     console.error('An error occurred');\n     break;\n }\n  // Check code\n  if (httpsError.code === firebase.functions.HttpsErrorCode.NOT_FOUND) {\n    console.error('Functions endpoint \"order\" not found');\n  }\n}\n```\n"
+						"text": "#### Example\n\n```js\ntry {\n await firebase.functions().httpsCallable('order')();\n} catch (httpsError) {\n switch(httpsError.code) {\n   case firebase.functions.HttpsErrorCode.NOT_FOUND:\n     console.error('Functions endpoint not found');\n     break;\n   case firebase.functions.HttpsErrorCode.CANCELLED:\n     console.error('The operation was cancelled');\n     break;\n   default:\n     console.error('An error occurred');\n     break;\n }\n}\n```\n"
 					},
 					"children": [
 						{
@@ -6919,7 +6921,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 240,
+									"line": 236,
 									"character": 11
 								}
 							],
@@ -6939,7 +6941,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 235,
+									"line": 231,
 									"character": 18
 								}
 							],
@@ -6959,7 +6961,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 230,
+									"line": 226,
 									"character": 13
 								}
 							],
@@ -6979,7 +6981,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 245,
+									"line": 241,
 									"character": 13
 								}
 							],
@@ -6999,7 +7001,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 233,
+									"line": 229,
 									"character": 21
 								}
 							],
@@ -7019,7 +7021,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 239,
+									"line": 235,
 									"character": 23
 								}
 							],
@@ -7039,7 +7041,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 243,
+									"line": 239,
 									"character": 12
 								}
 							],
@@ -7059,7 +7061,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 232,
+									"line": 228,
 									"character": 20
 								}
 							],
@@ -7079,7 +7081,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 234,
+									"line": 230,
 									"character": 13
 								}
 							],
@@ -7099,7 +7101,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 229,
+									"line": 225,
 									"character": 6
 								}
 							],
@@ -7119,7 +7121,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 241,
+									"line": 237,
 									"character": 16
 								}
 							],
@@ -7139,7 +7141,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 236,
+									"line": 232,
 									"character": 21
 								}
 							],
@@ -7159,7 +7161,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 238,
+									"line": 234,
 									"character": 22
 								}
 							],
@@ -7179,7 +7181,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 237,
+									"line": 233,
 									"character": 19
 								}
 							],
@@ -7199,7 +7201,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 244,
+									"line": 240,
 									"character": 15
 								}
 							],
@@ -7219,7 +7221,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 242,
+									"line": 238,
 									"character": 17
 								}
 							],
@@ -7239,7 +7241,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 231,
+									"line": 227,
 									"character": 11
 								}
 							],
@@ -7277,7 +7279,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 228,
+							"line": 224,
 							"character": 33
 						}
 					]
@@ -7309,7 +7311,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 262,
+									"line": 258,
 									"character": 18
 								}
 							],
@@ -7332,7 +7334,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 251,
+							"line": 247,
 							"character": 26
 						}
 					]
@@ -7544,7 +7546,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Delete the Instance ID and all data associated with it. This stops the periodic sending of data to the Firebase\nbackend that was started when the Instance ID was generated.",
-										"text": "A new Instance ID is asynchronously generated unless auto initialisation is turned off.\n\n#### Example\n\n```js\nawait iid().delete();\n```\n"
+										"text": "A new Instance ID is asynchronously generated unless auto initialisation is turned off.\n\n#### Example\n\n```js\nawait firebase.iid().delete();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -7583,7 +7585,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Revokes access to a scope for an entity previously authorized by `getToken()`.",
-										"text": "#### Example\n\n```js\nawait iid().deleteToken(firebase.app().options.storageBucket, '*');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.iid().deleteToken(firebase.app().options.storageBucket, '*');\n```\n"
 									},
 									"parameters": [
 										{
@@ -7674,7 +7676,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a identifier that uniquely identifies the app instance.",
-										"text": "Once an Instance ID is generated, Firebase periodically sends information about the application\nand the device it's running on to the Firebase backend. To stop this, see `delete()`.\n\n#### Example\n\n```js\nconst id = iid().get();\n```\n"
+										"text": "Once an Instance ID is generated, Firebase periodically sends information about the application\nand the device it's running on to the Firebase backend. To stop this, see `delete()`.\n\n#### Example\n\n```js\nconst id = firebase.iid().get();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -7713,7 +7715,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a token that authorizes an Entity to perform an action on behalf of the application.",
-										"text": "#### Example\n\n```js\nconst token = await iid().getToken(firebase.app().options.storageBucket, '*');\n```\n"
+										"text": "#### Example\n\n```js\nconst token = await firebase.iid().getToken(firebase.app().options.storageBucket, '*');\n```\n"
 									},
 									"parameters": [
 										{
@@ -7910,7 +7912,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Adds query parameters to the play store referral URL when the app needs additional referral parameters for other\napplication component referrals. These parameters are added to the referral URL sent from the play store and are\navailable to be processed by other application components, for example Google Analytics. The parameters are set\nas name, value pairs that will be set as query parameter name and value on the referral URL.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -7965,7 +7967,7 @@
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "Cannot be used with {@link invites.InviteBuilder#setCallToActionText}\n\n#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');\n```\n"
+												"text": "Cannot be used with {@link invites.InviteBuilder#setCallToActionText}\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');\n```\n"
 											}
 										]
 									},
@@ -8017,7 +8019,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the subject for invites sent by email.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.emailSubject(`Hey ${user.name}, joint my app!`);\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.emailSubject(`Hey ${user.name}, joint my app!`);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8067,7 +8069,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the Google Analytics Tracking id. The tracking id should be created for the calling application under\nGoogle Analytics. See more about how to get a tracking id . The tracking id is recommended so that invitations\nsent from the calling application are available in Google Analytics.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8143,7 +8145,7 @@
 							},
 							"comment": {
 								"shortText": "Set Android specific Invite properties",
-								"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
+								"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setGoogleAnalyticsTrackingId('UA-1234-5');\n```\n"
 							},
 							"sources": [
 								{
@@ -8175,7 +8177,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Set the Android target client ID for the invitation.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidClientId('xxxxxxxxxxxx');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidClientId('xxxxxxxxxxxx');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8225,7 +8227,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the minimum version of the android app installed on the receiving device. If this minimum version is not installed then the install flow will be triggered.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidMinimumVersionCode(18);\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setAndroidMinimumVersionCode(18);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8278,7 +8280,7 @@
 										"tags": [
 											{
 												"tag": "warning",
-												"text": "Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.\n\n#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCallToActionText('Join the app!');\n```\n"
+												"text": "Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCallToActionText('Join the app!');\n```\n"
 											}
 										]
 									},
@@ -8330,7 +8332,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets an image for invitations.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCustomImage('https://my-cdn.com/assets/invites.png');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCustomImage('https://my-cdn.com/assets/invites.png');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8380,7 +8382,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the deep link that is made available to the app when opened from the invitation. This deep link is made\navailable both to a newly installed application and an already installed application. The deep link can be sent\nto Android and other platforms so should be formatted to support deep links across platforms.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.deepLink('/invites');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.deepLink('/invites');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8430,7 +8432,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Set the iOS target client ID for the invitation.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setIOSClientId('xxxxxxxxxxxx');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setIOSClientId('xxxxxxxxxxxx');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8547,7 +8549,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Create an invitation via an InvitationBuilder instance.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app and share content');\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app and share content');\n```\n"
 									},
 									"parameters": [
 										{
@@ -8611,7 +8613,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns the Invitation that the app has been launched from. If the app was not launched from an Invitation the\nreturn value will be null.",
-										"text": "#### Example\n\n```js\nconst invite = invites().getInitialInvitation();\n\nif (invite) {\n console.log('Deeplink: ', invite.deepLink);\n console.log('ID: ', invite.invitationId);\n}\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().getInitialInvitation();\n\nif (invite) {\n console.log('Deeplink: ', invite.deepLink);\n console.log('ID: ', invite.invitationId);\n}\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -8651,7 +8653,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "When an invitation is opened whilst the app is open, the listener is invoked with the invitation.\nReturns a function that when called unsubscribes the listener from further events.",
-										"text": "#### Example\n\n```js\nfunction handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n}\n\nconst subscriber = invites().onInvitation(handleInvitation);\n\n// Unsubscribe from invitation listener\nsubscriber();\n```\n"
+										"text": "#### Example\n\n```js\nfunction handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n}\n\nconst subscriber = firebase.invites().onInvitation(handleInvitation);\n\n// Unsubscribe from invitation listener\nsubscriber();\n```\n"
 									},
 									"parameters": [
 										{
@@ -8701,7 +8703,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Displays the invitation dialog which allows the user to select who received the invitation.\nReturns a promise that resolves with the created invitation IDs if the invitation is sent, otherwise it is\nrejected with an error.",
-										"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app and share content');\nconst ids = await invites().sendInvitation(invite);\n```\n"
+										"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app and share content');\nconst ids = await firebase.invites().sendInvitation(invite);\n```\n"
 									},
 									"parameters": [
 										{
@@ -8787,7 +8789,7 @@
 					},
 					"comment": {
 						"shortText": "Additional referral parameters for {@link invites.AndroidInviteBuilder#setAdditionalReferralParameters}.",
-						"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
+						"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 					},
 					"indexSignature": [
 						{
@@ -8798,7 +8800,7 @@
 							"flags": {},
 							"comment": {
 								"shortText": "Additional referral parameters for {@link invites.AndroidInviteBuilder#setAdditionalReferralParameters}.",
-								"text": "#### Example\n\n```js\nconst invite = invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
+								"text": "#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setAdditionalReferralParameters({\n  screen: 'Profile',\n});\n```\n"
 							},
 							"parameters": [
 								{
@@ -8837,7 +8839,7 @@
 					},
 					"comment": {
 						"shortText": "A native invite representation returned from getInitialInvite and onInvite.",
-						"text": "#### Example 1\n\nWhen an invitation has been opened from a closed/terminated app.\n\n```js\nconst invite = invites().getInitialInvitation();\n\nif (invite) {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n}\n```\n\n#### Example 2\n\nWhen an invite has been opened and the app is running.\n\n```js\n function handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n }\n\n invites().onInvitation(handleInvitation);\n```\n"
+						"text": "#### Example 1\n\nWhen an invitation has been opened from a closed/terminated app.\n\n```js\nconst invite = firebase.invites().getInitialInvitation();\n\nif (invite) {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n}\n```\n\n#### Example 2\n\nWhen an invite has been opened and the app is running.\n\n```js\n function handleInvitation({ deepLink, invitationId}) {\n  console.log('Deeplink: ', deepLink);\n  console.log('ID: ', invitationId);\n }\n\n firebase.invites().onInvitation(handleInvitation);\n```\n"
 					},
 					"children": [
 						{
@@ -8969,7 +8971,7 @@
 					},
 					"comment": {
 						"shortText": "A type alias for an invite listener used with {@link invites#onInvitation}",
-						"text": "#### Example\n\n```js\ninvites().onInvitation((invite) => {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n});\n```\n"
+						"text": "#### Example\n\n```js\nfirebase.invites().onInvitation((invite) => {\n  console.log('Deeplink: ', invite.deepLink);\n  console.log('ID: ', invite.invitationId);\n});\n```\n"
 					},
 					"sources": [
 						{
@@ -9708,7 +9710,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the start time of the request. Does nothing if already started.",
-										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase.perf().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9747,7 +9749,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the end time of the response and queues the network request metric on the device for transmission. Does nothing if already stopped.",
-										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\nmetric.putAttribute('user_role', 'admin');\nawait metric.stop();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase.perf().newHttpMetric('https://api.com/login', 'POST');\nawait metric.start();\nmetric.putAttribute('user_role', 'admin');\nawait metric.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9843,7 +9845,7 @@
 							},
 							"comment": {
 								"shortText": "Determines whether performance monitoring is enabled or disabled.",
-								"text": "#### Example\n\n```js\nconst isEnabled = firebase().config().isPerformanceCollectionEnabled;\nconsole.log('Performance collection enabled: ', isEnabled);\n```\n"
+								"text": "#### Example\n\n```js\nconst isEnabled = firebase.perf().isPerformanceCollectionEnabled;\nconsole.log('Performance collection enabled: ', isEnabled);\n```\n"
 							},
 							"sources": [
 								{
@@ -9874,7 +9876,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a HttpMetric instance for collecting network performance data for a single request/response",
-										"text": "#### Example\n\n```js\nconst metric = firebase().config().newHttpMetric('https://api.com/user/1', 'GET');\nawait metric.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst metric = firebase.perf().newHttpMetric('https://api.com/user/1', 'GET');\nawait metric.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9939,7 +9941,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a Trace instance with the given identifier.",
-										"text": "#### Example\n\n```js\nconst trace = firebase().config().newTrace('user_profile');\nawait trace.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = firebase.perf().newTrace('user_profile');\nawait trace.start();\n```\n"
 									},
 									"parameters": [
 										{
@@ -9989,7 +9991,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Enables or disables performance monitoring.",
-										"text": "#### Example\n\n```js\n// Disable performance monitoring collection\nawait firebase().config().setPerformanceCollectionEnabled(false);\n```\n"
+										"text": "#### Example\n\n```js\n// Disable performance monitoring collection\nawait firebase.perf().setPerformanceCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -10044,7 +10046,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a Trace instance with the given identifier and immediately starts it.",
-										"text": "#### Example\n\n```js\nconst trace = await firebase().config().startTrace('user_profile');\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = await firebase.perf().startTrace('user_profile');\n```\n"
 									},
 									"parameters": [
 										{
@@ -10564,7 +10566,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the start time of the trace. Does nothing if already started.",
-										"text": "#### Example\n\n```js\nconst trace = firebase().config().newTrace('example');\nawait trace.start();\n```\n"
+										"text": "#### Example\n\n```js\nconst trace = firebase.perf().newTrace('example');\nawait trace.start();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -10603,7 +10605,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Marks the end time of the trace and queues the metric on the device for transmission. Does nothing if already stopped.",
-										"text": "* #### Example\n\n```js\nconst trace = firebase().config().newTrace('example');\nawait trace.start();\ntrace.putMetric('hits', 1);\nawait trace.stop();\n```\n"
+										"text": "* #### Example\n\n```js\nconst trace = firebase.perf().newTrace('example');\nawait trace.start();\ntrace.putMetric('hits', 1);\nawait trace.stop();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -10677,7 +10679,7 @@
 					},
 					"comment": {
 						"shortText": "Type alias describing the valid HTTP methods accepted when creating a new {@link perf.HttpMetric} instance.",
-						"text": "#### Example\n\n```js\nconst metric = config().newHttpMetric('https://api.com/user', 'PATCH');\n```\n"
+						"text": "#### Example\n\n```js\nconst metric = perf().newHttpMetric('https://api.com/user', 'PATCH');\n```\n"
 					},
 					"sources": [
 						{
@@ -10829,7 +10831,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 520,
+									"line": 526,
 									"character": 24
 								}
 							],
@@ -10849,7 +10851,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 524,
+									"line": 530,
 									"character": 25
 								}
 							],
@@ -10869,7 +10871,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 516,
+									"line": 522,
 									"character": 22
 								}
 							],
@@ -10927,7 +10929,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 528,
+									"line": 534,
 									"character": 7
 								}
 							]
@@ -10970,7 +10972,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 530,
+									"line": 536,
 									"character": 14
 								}
 							]
@@ -11018,7 +11020,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 522,
+									"line": 528,
 									"character": 27
 								}
 							]
@@ -11066,7 +11068,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 526,
+									"line": 532,
 									"character": 28
 								}
 							]
@@ -11114,7 +11116,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 518,
+									"line": 524,
 									"character": 25
 								}
 							]
@@ -11146,7 +11148,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 515,
+							"line": 521,
 							"character": 21
 						}
 					],
@@ -11177,7 +11179,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 297,
+									"line": 303,
 									"character": 10
 								}
 							],
@@ -11198,7 +11200,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 277,
+									"line": 283,
 									"character": 16
 								}
 							],
@@ -11233,7 +11235,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 279,
+									"line": 285,
 									"character": 22
 								}
 							],
@@ -11268,7 +11270,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 281,
+									"line": 287,
 									"character": 19
 								}
 							],
@@ -11303,7 +11305,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 289,
 									"character": 19
 								}
 							],
@@ -11338,7 +11340,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
+									"line": 291,
 									"character": 15
 								}
 							],
@@ -11373,7 +11375,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 293,
 									"character": 18
 								}
 							],
@@ -11417,7 +11419,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 287,
+													"line": 293,
 													"character": 20
 												}
 											]
@@ -11446,7 +11448,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 299,
+									"line": 305,
 									"character": 12
 								}
 							],
@@ -11466,7 +11468,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 301,
+									"line": 307,
 									"character": 14
 								}
 							],
@@ -11487,7 +11489,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 293,
+									"line": 299,
 									"character": 11
 								}
 							],
@@ -11521,7 +11523,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 303,
+									"line": 309,
 									"character": 18
 								}
 							],
@@ -11541,7 +11543,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 305,
+									"line": 311,
 									"character": 8
 								}
 							],
@@ -11561,7 +11563,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 307,
+									"line": 313,
 									"character": 8
 								}
 							],
@@ -11581,7 +11583,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 309,
+									"line": 315,
 									"character": 15
 								}
 							],
@@ -11601,7 +11603,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 311,
+									"line": 317,
 									"character": 11
 								}
 							],
@@ -11637,7 +11639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 296,
+							"line": 302,
 							"character": 31
 						}
 					],
@@ -11669,7 +11671,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 188,
+									"line": 191,
 									"character": 19
 								}
 							],
@@ -11689,7 +11691,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 190,
+									"line": 193,
 									"character": 21
 								}
 							],
@@ -11710,14 +11712,14 @@
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS return `DocumentDirectory`\n"
+										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 200,
+									"line": 206,
 									"character": 21
 								}
 							],
@@ -11738,14 +11740,14 @@
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS return `DocumentDirectory`\n"
+										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 206,
+									"line": 212,
 									"character": 28
 								}
 							],
@@ -11762,10 +11764,18 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"tags": [
+									{
+										"tag": "ios",
+										"text": "iOS only - Android returns the `DocumentDirectory` path\n"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 194,
+									"line": 200,
 									"character": 20
 								}
 							],
@@ -11782,10 +11792,18 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"tags": [
+									{
+										"tag": "ios",
+										"text": "iOS only\n"
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 186,
+									"line": 189,
 									"character": 14
 								}
 							],
@@ -11806,14 +11824,14 @@
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS return `DocumentDirectory`\n"
+										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 218,
+									"line": 224,
 									"character": 19
 								}
 							],
@@ -11834,14 +11852,14 @@
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS return `DocumentDirectory`\n"
+										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 212,
+									"line": 218,
 									"character": 21
 								}
 							],
@@ -11861,7 +11879,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 192,
+									"line": 195,
 									"character": 17
 								}
 							],
@@ -11916,7 +11934,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 315,
+									"line": 321,
 									"character": 10
 								}
 							],
@@ -11936,7 +11954,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 319,
+									"line": 325,
 									"character": 12
 								}
 							],
@@ -11956,7 +11974,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 321,
+									"line": 327,
 									"character": 8
 								}
 							],
@@ -11976,7 +11994,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 317,
+									"line": 323,
 									"character": 10
 								}
 							],
@@ -12006,7 +12024,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 323,
+									"line": 329,
 									"character": 8
 								}
 							],
@@ -12027,7 +12045,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 325,
+									"line": 331,
 									"character": 11
 								}
 							],
@@ -12075,7 +12093,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 329,
+									"line": 335,
 									"character": 9
 								}
 							]
@@ -12110,7 +12128,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 331,
+									"line": 337,
 									"character": 10
 								}
 							]
@@ -12145,7 +12163,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 333,
+									"line": 339,
 									"character": 18
 								}
 							]
@@ -12181,7 +12199,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 335,
+									"line": 341,
 									"character": 15
 								}
 							]
@@ -12251,7 +12269,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 339,
+									"line": 345,
 									"character": 7
 								}
 							]
@@ -12308,7 +12326,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 337,
+									"line": 343,
 									"character": 11
 								}
 							]
@@ -12379,7 +12397,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 341,
+									"line": 347,
 									"character": 13
 								}
 							]
@@ -12408,7 +12426,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 327,
+									"line": 333,
 									"character": 12
 								}
 							]
@@ -12458,7 +12476,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 343,
+									"line": 349,
 									"character": 18
 								}
 							]
@@ -12496,7 +12514,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 314,
+							"line": 320,
 							"character": 28
 						}
 					]
@@ -12522,7 +12540,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 277,
+									"line": 283,
 									"character": 16
 								}
 							],
@@ -12552,7 +12570,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 279,
+									"line": 285,
 									"character": 22
 								}
 							],
@@ -12582,7 +12600,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 281,
+									"line": 287,
 									"character": 19
 								}
 							],
@@ -12612,7 +12630,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 289,
 									"character": 19
 								}
 							],
@@ -12642,7 +12660,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
+									"line": 291,
 									"character": 15
 								}
 							],
@@ -12672,7 +12690,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 293,
 									"character": 18
 								}
 							],
@@ -12716,7 +12734,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 287,
+													"line": 293,
 													"character": 20
 												}
 											]
@@ -12747,7 +12765,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 276,
+							"line": 282,
 							"character": 35
 						}
 					],
@@ -12787,7 +12805,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 273,
+									"line": 279,
 									"character": 8
 								}
 							],
@@ -12812,7 +12830,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 240,
+									"line": 246,
 									"character": 16
 								}
 							],
@@ -12837,7 +12855,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 262,
+									"line": 268,
 									"character": 13
 								}
 							],
@@ -12862,7 +12880,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 251,
+									"line": 257,
 									"character": 13
 								}
 							],
@@ -12888,7 +12906,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 230,
+							"line": 236,
 							"character": 26
 						}
 					]
@@ -13070,7 +13088,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 439,
+									"line": 445,
 									"character": 10
 								}
 							]
@@ -13134,7 +13152,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 465,
+															"line": 471,
 															"character": 21
 														}
 													]
@@ -13157,7 +13175,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 465,
+									"line": 471,
 									"character": 9
 								}
 							]
@@ -13250,7 +13268,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 450,
+																	"line": 456,
 																	"character": 52
 																}
 															]
@@ -13308,7 +13326,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 451,
+																	"line": 457,
 																	"character": 13
 																}
 															]
@@ -13359,7 +13377,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 452,
+																	"line": 458,
 																	"character": 16
 																}
 															]
@@ -13382,7 +13400,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 448,
+									"line": 454,
 									"character": 6
 								}
 							]
@@ -13421,7 +13439,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 401,
+									"line": 407,
 									"character": 9
 								}
 							]
@@ -13460,7 +13478,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 421,
+									"line": 427,
 									"character": 10
 								}
 							]
@@ -13530,7 +13548,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 461,
+																	"line": 467,
 																	"character": 19
 																}
 															]
@@ -13591,7 +13609,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 462,
+																	"line": 468,
 																	"character": 18
 																}
 															]
@@ -13620,7 +13638,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 460,
+									"line": 466,
 									"character": 8
 								}
 							]
@@ -13643,7 +13661,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 383,
+							"line": 389,
 							"character": 23
 						}
 					]
@@ -13723,7 +13741,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 469,
+									"line": 475,
 									"character": 20
 								}
 							],
@@ -13743,7 +13761,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 471,
+									"line": 477,
 									"character": 12
 								}
 							],
@@ -13764,7 +13782,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 473,
+									"line": 479,
 									"character": 7
 								}
 							],
@@ -13785,7 +13803,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 475,
+									"line": 481,
 									"character": 9
 								}
 							],
@@ -13826,7 +13844,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 477,
+									"line": 483,
 									"character": 8
 								}
 							],
@@ -13847,7 +13865,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 479,
+									"line": 485,
 									"character": 14
 								}
 							],
@@ -13874,7 +13892,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 468,
+							"line": 474,
 							"character": 31
 						}
 					]
@@ -13899,7 +13917,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 351,
+									"line": 357,
 									"character": 12
 								}
 							],
@@ -13927,7 +13945,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 351,
+											"line": 357,
 											"character": 13
 										}
 									]
@@ -13945,7 +13963,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 349,
+									"line": 355,
 									"character": 9
 								}
 							],
@@ -13986,7 +14004,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 349,
+											"line": 355,
 											"character": 10
 										}
 									]
@@ -14004,7 +14022,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 347,
+									"line": 353,
 									"character": 8
 								}
 							],
@@ -14046,7 +14064,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 347,
+											"line": 353,
 											"character": 9
 										}
 									]
@@ -14068,7 +14086,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 346,
+							"line": 352,
 							"character": 39
 						}
 					]
@@ -14235,7 +14253,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 277,
+									"line": 283,
 									"character": 16
 								}
 							],
@@ -14270,7 +14288,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 279,
+									"line": 285,
 									"character": 22
 								}
 							],
@@ -14305,7 +14323,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 281,
+									"line": 287,
 									"character": 19
 								}
 							],
@@ -14340,7 +14358,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 289,
 									"character": 19
 								}
 							],
@@ -14375,7 +14393,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
+									"line": 291,
 									"character": 15
 								}
 							],
@@ -14410,7 +14428,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 293,
 									"character": 18
 								}
 							],
@@ -14454,7 +14472,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 287,
+													"line": 293,
 													"character": 20
 												}
 											]
@@ -14484,7 +14502,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 293,
+									"line": 299,
 									"character": 11
 								}
 							],
@@ -14521,7 +14539,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 292,
+							"line": 298,
 							"character": 33
 						}
 					],

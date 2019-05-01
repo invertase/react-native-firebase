@@ -18,7 +18,6 @@
 
 import {
   Base64,
-  isObject,
   isString,
   pathChild,
   pathParent,
