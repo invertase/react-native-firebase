@@ -64,6 +64,7 @@ class ReactNativeFirebaseStorageCommon {
   private static final String STATUS_PAUSED = "paused";
   private static final String STATUS_SUCCESS = "success";
   private static final String CODE_OBJECT_NOT_FOUND = "object-not-found";
+  private static final String CODE_FILE_NOT_FOUND = "file-not-found";
   private static final String CODE_BUCKET_NOT_FOUND = "bucket-not-found";
   private static final String CODE_PROJECT_NOT_FOUND = "project-not-found";
   private static final String CODE_QUOTA_EXCEEDED = "quota-exceeded";
@@ -200,6 +201,7 @@ class ReactNativeFirebaseStorageCommon {
       message = exception.getMessage();
       if (exception instanceof StorageException) {
         StorageException storageException = (StorageException) exception;
+        Throwable throwable = storageException.getCause();
         switch (storageException.getErrorCode()) {
           case StorageException.ERROR_OBJECT_NOT_FOUND:
             code = CODE_OBJECT_NOT_FOUND;
@@ -238,6 +240,11 @@ class ReactNativeFirebaseStorageCommon {
             message = "User cancelled the operation.";
             break;
         }
+
+       if (throwable != null && throwable.getMessage().contains("No such file or directory")) {
+         code = CODE_FILE_NOT_FOUND;
+         message = "The local file specified does not exist on the device.";
+       }
       }
     }
 
