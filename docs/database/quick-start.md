@@ -82,7 +82,7 @@ data changing, being added, being removed or moved to another location.
 
 ```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, FlatList } from 'react-native';
+import { Text } from 'react-native';
 import database from '@react-native-firebase/database';
 
 function Role({ uid }) {
@@ -128,7 +128,7 @@ a performant, scrollable list simple:
 
 ```jsx
 import React, { useState, useEffect } from 'react';
-import { Text } from 'react-native';
+import { Text, FlatList } from 'react-native';
 import database from '@react-native-firebase/database';
 
 function Games() {
