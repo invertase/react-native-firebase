@@ -18,7 +18,7 @@ include ':@react-native-firebase_analytics'
 project(':@react-native-firebase_analytics').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/analytics/android')
 ```
 
-#### Add Analytics to App Gradle Dependancies
+#### Add Analytics to App Gradle Dependencies
 
 **`android/app/build.gradle`**:
 ```groovy{4}
