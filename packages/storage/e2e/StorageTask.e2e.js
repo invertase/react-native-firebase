@@ -287,6 +287,19 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
+    it('supports thenable .catch()', async () => {
+      const out = await firebase
+        .storage()
+        .ref('/uploadNope.jpeg')
+        .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`)
+        .catch(error => {
+          error.code.should.equal('storage/unauthorized');
+          error.message.includes('not authorized').should.be.true();
+          return 1;
+        });
+      should.equal(out, 1);
+    });
+
     it('uploads a file', async () => {
       let uploadTaskSnapshot = await firebase
         .storage()
@@ -307,13 +320,15 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
       uploadTaskSnapshot.metadata.contentType.should.equal('image/gif');
 
-      uploadTaskSnapshot = await firebase
-        .storage()
-        .ref('/uploadHei.heic')
-        .putFile(`${firebase.storage.Path.DocumentDirectory}/hei.heic`);
+      if (device.getPlatform() === 'ios') {
+        uploadTaskSnapshot = await firebase
+          .storage()
+          .ref('/uploadHei.heic')
+          .putFile(`${firebase.storage.Path.DocumentDirectory}/hei.heic`);
 
-      uploadTaskSnapshot.metadata.should.be.an.Object();
-      uploadTaskSnapshot.metadata.contentType.should.equal('image/heic');
+        uploadTaskSnapshot.metadata.should.be.an.Object();
+        uploadTaskSnapshot.metadata.contentType.should.equal('image/heic');
+      }
     });
 
     it('uploads a file without read permission', async () => {
@@ -336,7 +351,7 @@ describe('storage() -> StorageTask', () => {
         .getFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
     });
 
-    it('errors if event is invalid', async () => {
+    it('throws an Error if event is invalid', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         const task = storageReference.putFile('abc');
@@ -348,6 +363,178 @@ describe('storage() -> StorageTask', () => {
         );
         return Promise.resolve();
       }
+    });
+
+    it('throws an Error if nextOrObserver is invalid', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        const task = storageReference.putFile('abc');
+        task.on('state_changed', 'not a fn');
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`'nextOrObserver' must be a Function, an Object or Null`);
+        return Promise.resolve();
+      }
+    });
+
+    it('observer calls error callback', async () => {
+      const ref = firebase.storage().ref('/uploadOk.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/notFoundFooFile.bar`;
+      const task = ref.putFile(path);
+
+      task.on('state_changed', {
+        error: error => {
+          error.code.should.equal('storage/file-not-found');
+          resolve();
+        },
+      });
+
+      try {
+        await task;
+      } catch (error) {
+        error.code.should.equal('storage/file-not-found');
+      }
+
+      await promise;
+    });
+
+    it('observer: calls next callback', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      task.on('state_changed', {
+        next: snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            resolve();
+          }
+        },
+      });
+
+      await task;
+      await promise;
+    });
+
+    it('observer: calls completion callback', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      task.on('state_changed', {
+        complete: snapshot => {
+          snapshot.state.should.equal(firebase.storage.TaskState.SUCCESS);
+          resolve();
+        },
+      });
+
+      await task;
+      await promise;
+    });
+
+    // ----
+    // ----
+    // ----
+    // ----
+    // ----
+    // ----
+    // ----
+    // ----
+
+    it('calls error callback', async () => {
+      const ref = firebase.storage().ref('/uploadOk.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/notFoundFooFile.bar`;
+      const task = ref.putFile(path);
+
+      task.on(
+        'state_changed',
+        null,
+        error => {
+          error.code.should.equal('storage/file-not-found');
+          resolve();
+        },
+        null,
+      );
+
+      try {
+        await task;
+      } catch (error) {
+        error.code.should.equal('storage/file-not-found');
+      }
+
+      await promise;
+    });
+
+    it('calls next callback', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      task.on('state_changed', snapshot => {
+        if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          resolve();
+        }
+      });
+
+      await task;
+      await promise;
+    });
+
+    it('calls completion callback', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      task.on('state_changed', null, null, snapshot => {
+        snapshot.state.should.equal(firebase.storage.TaskState.SUCCESS);
+        resolve();
+      });
+
+      await task;
+      await promise;
+    });
+
+    it('returns a subscribe fn', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      const subscribe = task.on('state_changed');
+
+      subscribe(null, null, snapshot => {
+        if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          resolve();
+        }
+      });
+
+      await task;
+      await promise;
+    });
+
+    it('returns a subscribe fn supporting observer usage syntax', async () => {
+      const ref = firebase.storage().ref('/ok.jpeg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const task = ref.getFile(path);
+
+      const subscribe = task.on('state_changed');
+
+      subscribe({
+        complete: snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            resolve();
+          }
+        },
+      });
+
+      await task;
+      await promise;
     });
 
     it('listens to download state', () => {
