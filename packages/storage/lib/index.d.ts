@@ -183,6 +183,9 @@ export namespace Storage {
   }
 
   export interface Path {
+    /**
+     * @ios iOS only
+     */
     MainBundle: string;
 
     CachesDirectory: string;
@@ -191,29 +194,32 @@ export namespace Storage {
 
     TempDirectory: string;
 
+    /**
+     * @ios iOS only - Android returns the `DocumentDirectory` path
+     */
     LibraryDirectory: string;
 
     /**
      *
-     * @android Android only - iOS return `DocumentDirectory`
+     * @android Android only - iOS returns the `DocumentDirectory` path
      */
     ExternalDirectory: string;
 
     /**
      *
-     * @android Android only - iOS return `DocumentDirectory`
+     * @android Android only - iOS returns the `DocumentDirectory` path
      */
     ExternalStorageDirectory: string;
 
     /**
      *
-     * @android Android only - iOS return `DocumentDirectory`
+     * @android Android only - iOS returns the `DocumentDirectory` path
      */
     PicturesDirectory: string;
 
     /**
      *
-     * @android Android only - iOS return `DocumentDirectory`
+     * @android Android only - iOS returns the `DocumentDirectory` path
      */
     MoviesDirectory: string;
   }
