@@ -19,7 +19,7 @@ description: Struggling to find what you're after? Our comprehensive search cove
   `}
   render={(data) => (
     <div>
-      <p>{data.site.siteMetadata.siteUrl}</h1>
+      <p>{data.site.siteMetadata.siteUrl}</p>
     </div>
   )}
 />
