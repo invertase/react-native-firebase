@@ -18,10 +18,13 @@
 
 import {
   Base64,
-  getDataUrlParts,
   isObject,
   isString,
+  pathChild,
+  pathParent,
   isUndefined,
+  getDataUrlParts,
+  pathLastComponent,
   ReferenceBase,
 } from '@react-native-firebase/common';
 import { validateMetadata } from './utils';
@@ -53,15 +56,16 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#name
    */
   get name() {
-    return this.path.substring(this.path.lastIndexOf('/') + 1, this.path.length);
+    return pathLastComponent(this.path);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#parent
    */
   get parent() {
-    if (this.path === '/') return null;
-    return new StorageReference(this._storage, this.path.substring(0, this.path.lastIndexOf('/')));
+    const parentPath = pathParent(this.path);
+    if (parentPath === null) return parentPath;
+    return new StorageReference(this._storage, parentPath);
   }
 
   /**
@@ -82,7 +86,8 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#child
    */
   child(path) {
-    return new StorageReference(this._storage, `${this.path}/${path}`);
+    const childPath = pathChild(this.path, path);
+    return new StorageReference(this._storage, childPath);
   }
 
   /**

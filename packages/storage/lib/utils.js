@@ -46,53 +46,6 @@ export function getUrlParts(url) {
   return { bucket, path };
 }
 
-/**
- * Returns the next parent of the path e.g. /foo/bar/car -> /foo/bar
- */
-export function pathParent(path) {
-  if (path.length === 0) {
-    return null;
-  }
-
-  const index = path.lastIndexOf('/');
-  if (index === -1) {
-    return '';
-  }
-
-  return path.slice(0, index);
-}
-
-/**
- * Joins a parent and a child path
- */
-export function pathChild(path, childPath) {
-  const canonicalChildPath = childPath
-    .split('/')
-    .filter($ => $.length > 0)
-    .join('/');
-
-  if (path.length === 0) {
-    return canonicalChildPath;
-  }
-
-  return `${path}/${canonicalChildPath}`;
-}
-
-/**
- * Returns the last component of a path, e.g /foo/bar.jpeg -> bar.jpeg
- */
-export function pathLastComponent(path) {
-  const index = path.lastIndexOf('/', path.length - 2);
-  if (index === -1) {
-    return path;
-  }
-
-  return path.slice(index + 1);
-}
-
-/**
- *
- */
 export function validateMetadata(metadata) {
   const metadataEntries = Object.entries(metadata);
 

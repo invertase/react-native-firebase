@@ -18,6 +18,7 @@ import { Platform } from 'react-native';
 import { isString } from './validate';
 import Base64 from './Base64';
 
+export * from './path';
 export * from './validate';
 export Base64 from './Base64';
 export promiseDefer from './promiseDefer';
