@@ -39,7 +39,7 @@ const path = {};
 let processedPathConstants = false;
 
 function processPathConstants(nativeModule) {
-  if (!nativeModule) return {};
+  if (processedPathConstants || !nativeModule) return path;
   processedPathConstants = true;
 
   const entries = Object.entries(PATH_NAMES);
@@ -94,12 +94,10 @@ export default {
     ERROR: 'error',
   },
   get Path() {
-    if (processedPathConstants) return path;
     return processPathConstants(NativeModules.RNFBStorageModule);
   },
   // TODO(salakar) deprecated remove in 6.1.0:
   get Native() {
-    if (processedPathConstants) return path;
     return processPathConstants(NativeModules.RNFBStorageModule);
   },
 };
