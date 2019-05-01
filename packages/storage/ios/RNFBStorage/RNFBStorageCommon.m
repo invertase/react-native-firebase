@@ -117,7 +117,7 @@
     }];
   } else {
     if (![[NSFileManager defaultManager] fileExistsAtPath:localFilePath]) {
-      completion(@[@"file-not-found", @"File specified at path does not exist."], nil, nil);
+      completion(@[@"file-not-found", @"The local file specified does not exist on the device."], nil, nil);
     } else {
       completion(nil, [NSURL fileURLWithPath:localFilePath], [RNFBStorageCommon mimeTypeForPath:localFilePath]);
     }
