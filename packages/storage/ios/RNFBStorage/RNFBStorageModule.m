@@ -480,7 +480,7 @@ RCT_EXPORT_METHOD(setTaskStatus:
 }
 
 - (NSDictionary *)constantsToExport {
-  return @{
+  NSMutableDictionary *constants = [@{
       @"MainBundle": [[NSBundle mainBundle] bundlePath],
       @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
       @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
@@ -490,7 +490,16 @@ RCT_EXPORT_METHOD(setTaskStatus:
       @"ExternalStorageDirectory": [self getPathForDirectory:NSDocumentDirectory],
       @"TempDirectory": NSTemporaryDirectory(),
       @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
-  };
+  } mutableCopy];
+
+  if ([[[FIRApp allApps] allKeys] count] > 0) {
+    FIRStorage *storageInstance = [FIRStorage storage];
+    constants[@"maxDownloadRetryTime"] = @((NSInteger) [storageInstance maxDownloadRetryTime]);
+    constants[@"maxOperationRetryTime"] = @((NSInteger) [storageInstance maxOperationRetryTime]);
+    constants[@"maxUploadRetryTime"] = @((NSInteger) [storageInstance maxUploadRetryTime]);
+  }
+
+  return constants;
 }
 
 @end
