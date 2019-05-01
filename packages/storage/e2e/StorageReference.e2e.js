@@ -271,4 +271,159 @@ describe('storage() -> StorageReference', () => {
       should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
     });
   });
+
+  describe('putFile', () => {
+    it('errors if file path is not a string', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putFile(1337);
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql('expects a string value');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putFile('foo', 123);
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql('must be an object value');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata contains an unsupported property', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putFile('foo', { foo: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`unknown property 'foo'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata property value is not a string or null value', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putFile('foo', { contentType: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`should be a string or null value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata.customMetadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putFile('foo', { customMetadata: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(
+          `customMetadata must be an object of keys and string values`,
+        );
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('putString', () => {
+    it('errors if metadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putString('foo', 'raw', 123);
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql('must be an object value');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata contains an unsupported property', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putString('foo', 'raw', { foo: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`unknown property 'foo'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata property value is not a string or null value', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putString('foo', 'raw', { contentType: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`should be a string or null value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata.customMetadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.putString('foo', 'raw', { customMetadata: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(
+          `customMetadata must be an object of keys and string values`,
+        );
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('put', () => {
+    it('errors if metadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.put(new jet.context.window.ArrayBuffer(), 123);
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql('must be an object value');
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata contains an unsupported property', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`unknown property 'foo'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata property value is not a string or null value', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(`should be a string or null value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if metadata.customMetadata is not an object', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        storageReference.put(new jet.context.window.ArrayBuffer(), { customMetadata: true });
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(
+          `customMetadata must be an object of keys and string values`,
+        );
+        return Promise.resolve();
+      }
+    });
+  });
 });

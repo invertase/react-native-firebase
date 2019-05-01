@@ -226,6 +226,12 @@ export default class StorageReference extends ReferenceBase {
       validateMetadata(metadata);
     }
 
+    if (!isString(filePath)) {
+      throw new Error(
+        `firebase.storage.StorageReference.putFile(*, _) 'filePath' expects a string value.`,
+      );
+    }
+
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
     return new StorageUploadTask(this, task =>
