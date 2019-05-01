@@ -72,7 +72,7 @@ class ReactNativeFirebaseStorageCommon {
   private static final String CODE_UNAUTHORIZED = "unauthorized";
   private static final String CODE_RETRY_LIMIT_EXCEEDED = "retry-limit-exceeded";
   private static final String CODE_NON_MATCHING_CHECKSUM = "non-matching-checksum";
-  private static final String CODE_CANCELLED = "cancelled";
+  static final String CODE_CANCELLED = "cancelled";
 
   /**
    * Returns the task status as string
@@ -241,9 +241,14 @@ class ReactNativeFirebaseStorageCommon {
             break;
         }
 
-       if (throwable != null && throwable.getMessage().contains("No such file or directory")) {
-         code = CODE_FILE_NOT_FOUND;
-         message = "The local file specified does not exist on the device.";
+       if (code.equals(STATUS_UNKNOWN) && throwable != null) {
+         if (throwable.getMessage().contains("No such file or directory")) {
+           code = CODE_FILE_NOT_FOUND;
+           message = "The local file specified does not exist on the device.";
+         } else if (throwable.getMessage().contains("Not Found.  Could not get object")) {
+           code = CODE_OBJECT_NOT_FOUND;
+           message = "No object exists at the desired reference.";
+         }
        }
       }
     }

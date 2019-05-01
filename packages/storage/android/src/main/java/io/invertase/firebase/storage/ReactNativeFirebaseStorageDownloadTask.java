@@ -105,20 +105,28 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
       } else {
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          buildErrorSnapshotMap(
-            task.getException(),
-            buildDownloadSnapshotMap(fileDownloadTask.getSnapshot())
-          ),
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
+        WritableMap errorSnapshot = buildErrorSnapshotMap(
+          task.getException(),
+          buildDownloadSnapshotMap(fileDownloadTask.getSnapshot()),
+          true
+        );
+
+        // we force it to be null if Error code is 'cancelled' to match ios & web sdk behaviour
+        // we only send a 'cancelled' state changed event and ignore the 'error' state_changed event
+        if (errorSnapshot != null) {
+          emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+            errorSnapshot,
+            ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+            appName,
+            taskId
+          ));
+        }
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           buildErrorSnapshotMap(
             task.getException(),
-            buildDownloadSnapshotMap(fileDownloadTask.getSnapshot())
+            buildDownloadSnapshotMap(fileDownloadTask.getSnapshot()),
+            false
           ),
           ReactNativeFirebaseStorageEvent.EVENT_DOWNLOAD_FAILURE,
           appName,

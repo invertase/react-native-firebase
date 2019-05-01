@@ -434,15 +434,6 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    // ----
-    // ----
-    // ----
-    // ----
-    // ----
-    // ----
-    // ----
-    // ----
-
     it('calls error callback', async () => {
       const ref = firebase.storage().ref('/uploadOk.jpeg');
       const { resolve, promise } = Promise.defer();
@@ -537,7 +528,9 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    it('listens to download state', () => {
+    it('listens to download state', function testRunner() {
+      this.timeout(25000);
+
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
@@ -558,7 +551,9 @@ describe('storage() -> StorageTask', () => {
       return promise;
     });
 
-    it('listens to upload state', () => {
+    it('listens to upload state', function testRunner() {
+      this.timeout(25000);
+
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
@@ -588,7 +583,9 @@ describe('storage() -> StorageTask', () => {
         .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
     });
 
-    it('successfully pauses and resumes an upload', () => {
+    it('successfully pauses and resumes an upload', function testRunner() {
+      this.timeout(25000);
+
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`;
@@ -604,9 +601,14 @@ describe('storage() -> StorageTask', () => {
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
             hadRunningStatus = true;
-            setTimeout(() => {
+            if (device.getPlatform() === 'android') {
               uploadTask.pause();
-            }, 750);
+            } else {
+              // TODO (salakar) submit bug report to Firebase iOS SDK repo (pausing immediately after the first progress event will fail the upload with an unknown error)
+              setTimeout(() => {
+                uploadTask.pause();
+              }, 750);
+            }
           }
 
           // 2) resume when we receive first paused event
@@ -644,7 +646,10 @@ describe('storage() -> StorageTask', () => {
     it('successfully pauses and resumes a download', function testRunner() {
       this.timeout(25000);
 
-      const ref = firebase.storage().ref('/1mbTestFile.gif');
+      const ref = firebase
+        .storage()
+        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : 'cat.gif');
+
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.storage.Path.DocumentDirectory}/pauseDownload.gif`;
       const downloadTask = ref.getFile(path);

@@ -27,6 +27,7 @@ import com.google.firebase.storage.StorageTask;
 
 import javax.annotation.Nullable;
 
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.CODE_CANCELLED;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_CANCELLED;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_ERROR;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getExceptionCodeAndMessage;
@@ -94,9 +95,10 @@ class ReactNativeFirebaseStorageTask {
     return snapshot;
   }
 
-  static WritableMap buildErrorSnapshotMap(@Nullable Exception exception, WritableMap taskMap) {
+  static WritableMap buildErrorSnapshotMap(@Nullable Exception exception, WritableMap taskMap, boolean skipCancelled) {
     WritableMap errorMap = Arguments.createMap();
     String[] exceptionCodeAndMessage = getExceptionCodeAndMessage(exception);
+    if (skipCancelled && exceptionCodeAndMessage[0].equals(CODE_CANCELLED)) return null;
     errorMap.putString(KEY_CODE, exceptionCodeAndMessage[0]);
     errorMap.putString(KEY_MESSAGE, exceptionCodeAndMessage[1]);
     if (exception != null) errorMap.putString(KEY_NATIVE_ERROR_MESSAGE, exception.getMessage());

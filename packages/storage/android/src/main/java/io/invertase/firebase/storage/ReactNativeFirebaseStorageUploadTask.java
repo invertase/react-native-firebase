@@ -165,21 +165,28 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
         promise.resolve(taskSnapshotMap);
       } else {
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+        WritableMap errorSnapshot = buildErrorSnapshotMap(
+          task.getException(),
+          buildUploadSnapshotMap(uploadTask.getSnapshot()),
+          true
+        );
+
+        // we force it to be null if Error code is 'cancelled' to match ios & web sdk behaviour
+        // we only send a 'cancelled' state changed event and ignore the 'error' state_changed event
+        if (errorSnapshot != null) {
+          emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+            errorSnapshot,
+            ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+            appName,
+            taskId
+          ));
+        }
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           buildErrorSnapshotMap(
             task.getException(),
-            buildUploadSnapshotMap(uploadTask.getSnapshot())
-          ),
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
-
-        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          buildErrorSnapshotMap(
-            task.getException(),
-            buildUploadSnapshotMap(uploadTask.getSnapshot())
+            buildUploadSnapshotMap(uploadTask.getSnapshot()),
+            false
           ),
           ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
           appName,
