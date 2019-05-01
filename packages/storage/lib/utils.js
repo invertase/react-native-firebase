@@ -16,7 +16,7 @@
  */
 
 import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
-import { isNull, isString } from '@react-native-firebase/common';
+import { isNull, isString, isObject } from '@react-native-firebase/common';
 
 const SETTABLE_FIELDS = [
   'cacheControl',
@@ -47,24 +47,32 @@ export function getUrlParts(url) {
 }
 
 export function validateMetadata(metadata) {
+  if (!isObject(metadata)) {
+    throw new Error(`firebase.storage.SettableMetadata must be an object value if provided.`);
+  }
+
   const metadataEntries = Object.entries(metadata);
 
   for (let i = 0; i < metadataEntries.length; i++) {
     const [key, value] = metadataEntries[i];
+    // validate keys
     if (!SETTABLE_FIELDS.includes(key)) {
       throw new Error(
-        `firebase.storage.StorageReference.updateMetadata(*) unknown property '${key}' provided for metadata.`,
+        `firebase.storage.SettableMetadata unknown property '${key}' provided for metadata.`,
       );
     }
 
+    // validate values
     if (key !== 'customMetadata') {
       if (!isString(value) && !isNull(value)) {
         throw new Error(
-          `firebase.storage.StorageReference.updateMetadata(*) property '${key}' should be a string or null value.`,
+          `firebase.storage.SettableMetadata invalid property '${key}' should be a string or null value.`,
         );
       }
-    } else {
-      // TODO(salakar) customMetadata validate
+    } else if (!isObject(value)) {
+      throw new Error(
+        `firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.`,
+      );
     }
   }
 

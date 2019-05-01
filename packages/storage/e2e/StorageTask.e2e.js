@@ -188,7 +188,7 @@ describe('storage() -> StorageTask', () => {
           .putString('fooby', 'raw', 1234);
         return Promise.reject(new Error('Did not throw!'));
       } catch (error) {
-        error.message.should.containEql(`'metadata' must be an object value if provided`);
+        error.message.should.containEql(`must be an object value if provided`);
         return Promise.resolve();
       }
     });

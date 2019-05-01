@@ -115,7 +115,10 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#put
    */
   put(data, metadata) {
-    // TODO(salakar) validate args
+    if (!isUndefined(metadata)) {
+      validateMetadata(metadata);
+    }
+
     return Base64.fromData(data).then(({ string, format }) =>
       this.putString(string, format, metadata),
     );
@@ -139,11 +142,8 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    // TODO(salakar) change to use SettableMetadata validator
-    if (!isUndefined(metadata) && !isObject(metadata)) {
-      throw new Error(
-        `firebase.storage.StorageReference.putString(_, _, *) 'metadata' must be an object value if provided.`,
-      );
+    if (!isUndefined(metadata)) {
+      validateMetadata(metadata);
     }
 
     let _string = string;
@@ -222,7 +222,10 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
   putFile(filePath, metadata) {
-    // TODO(salakar) validate args
+    if (!isUndefined(metadata)) {
+      validateMetadata(metadata);
+    }
+
     let _filePath = filePath.replace('file://', '');
     if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
     return new StorageUploadTask(this, task =>

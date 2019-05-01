@@ -111,7 +111,7 @@ function fromData(data) {
     });
   }
 
-  return Promise.reject(new Error("'RNFirebase.Base64.fromData' failed: Unknown data type."));
+  throw new Error("'RNFirebase.Base64.fromData' failed: Unknown data type.");
 }
 
 export default {
