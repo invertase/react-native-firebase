@@ -43,9 +43,7 @@ RCT_EXPORT_MODULE();
 
 - (id)init {
   self = [super init];
-  [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
 
-  }];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     PENDING_TASKS = [[NSMutableDictionary alloc] init];
@@ -55,15 +53,15 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)dealloc {
-  // TODO
   for (NSString *key in PENDING_TASKS) {
-    // TODO
     [PENDING_TASKS removeObjectForKey:key];
   }
 }
 
 - (void)invalidate {
-  // TODO
+  for (NSString *key in PENDING_TASKS) {
+    [PENDING_TASKS removeObjectForKey:key];
+  }
 }
 
 #pragma mark -

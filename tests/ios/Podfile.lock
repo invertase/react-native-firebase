@@ -4,9 +4,6 @@ PODS:
     - Fabric (~> 1.9.0)
   - DoubleConversion (1.1.6)
   - Fabric (1.9.0)
-  - Firebase/Auth (5.20.2):
-    - Firebase/CoreOnly
-    - FirebaseAuth (= 5.4.2)
   - Firebase/Core (5.20.2):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.8.1)
@@ -43,11 +40,6 @@ PODS:
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
   - FirebaseAnalyticsInterop (1.2.0)
-  - FirebaseAuth (5.4.2):
-    - FirebaseAuthInterop (~> 1.0)
-    - FirebaseCore (~> 5.2)
-    - GoogleUtilities/Environment (~> 5.2)
-    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseAuthInterop (1.0.0)
   - FirebaseCore (5.4.1):
     - GoogleUtilities/Environment (~> 5.2)
@@ -272,7 +264,6 @@ PODS:
     - React
     - RNFBApp
   - RNFBStorage (6.0.0-alpha.9):
-    - Firebase/Auth (~> 5.20.2)
     - Firebase/Core (~> 5.20.2)
     - Firebase/Storage (~> 5.20.2)
     - React
@@ -318,7 +309,6 @@ SPEC REPOS:
     - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
-    - FirebaseAuth
     - FirebaseAuthInterop
     - FirebaseCore
     - FirebaseDynamicLinks
@@ -387,7 +377,6 @@ SPEC CHECKSUMS:
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: ece1aa57a4f43c64d53a648b5a5e05151aae947b
   FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
-  FirebaseAuth: dd7bbf03a5aee0eafb3a1aee4d2812bd74bac890
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
   FirebaseDynamicLinks: f7a8717e2c7ea652923882a2d60b0045d6fd99d5
@@ -422,7 +411,7 @@ SPEC CHECKSUMS:
   RNFBIid: 71ee72f27c7c9003fac4a9d7e8cebd27d91ebe7b
   RNFBInvites: 283a94ed89ae0210a1ce08ad687b54427a910841
   RNFBPerf: 4b4bbb4c75f0ba8ae0a98c7a450dd5a957bc8846
-  RNFBStorage: 3f75ed1808ef6284e5be9f5b788811de950eb652
+  RNFBStorage: c6bf6f33461b37147fe363d9e37c3d659f8aa421
   RNFBUtils: 22defc76007a822b3367a2ed4aec6582842e9109
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
