@@ -136,19 +136,15 @@ export default class StorageTask {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#on
    */
   on(event, nextOrObserver, error, complete) {
-    if (!this._promise) this._promise = this._beginTask(this);
-
-    if (!event) {
-      throw new Error("StorageTask.on listener is missing required string argument 'event'.");
-    }
-
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `StorageTask.on event argument must be a string with a value of '${
+        `firebase.storage.StorageTask.on event argument must be a string with a value of '${
           StorageStatics.TaskEvent.STATE_CHANGED
         }'`,
       );
     }
+
+    if (!this._promise) this._promise = this._beginTask(this);
 
     // if only event provided return the subscriber function
     if (!nextOrObserver && !error && !complete) {

@@ -288,25 +288,32 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('uploads a file', async () => {
-      const uploadTaskSnapshot = await firebase
+      let uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadOk.jpeg')
         .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
 
-      await firebase
+      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+      uploadTaskSnapshot.metadata.contentType.should.equal('image/jpeg');
+
+      uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadCat.gif')
         // uri decode test
         .putFile(`${firebase.storage.Path.DocumentDirectory}%2Fcat.gif`);
 
-      await firebase
+      uploadTaskSnapshot.metadata.should.be.an.Object();
+      uploadTaskSnapshot.metadata.contentType.should.equal('image/gif');
+
+      uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadHei.heic')
         .putFile(`${firebase.storage.Path.DocumentDirectory}/hei.heic`);
 
-      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
-      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
+      uploadTaskSnapshot.metadata.contentType.should.equal('image/heic');
     });
 
     it('uploads a file without read permission', async () => {
@@ -327,6 +334,20 @@ describe('storage() -> StorageTask', () => {
         .storage()
         .ref('/ok.jpeg')
         .getFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+    });
+
+    it('errors if event is invalid', async () => {
+      const storageReference = firebase.storage().ref('/ok.jpeg');
+      try {
+        const task = storageReference.putFile('abc');
+        task.on('foo');
+        return Promise.reject(new Error('Did not error!'));
+      } catch (error) {
+        error.message.should.containEql(
+          `event argument must be a string with a value of 'state_changed'`,
+        );
+        return Promise.resolve();
+      }
     });
 
     it('listens to download state', () => {

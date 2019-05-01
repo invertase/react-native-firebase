@@ -140,10 +140,7 @@ describe('storage()', () => {
   });
 
   describe('setMaxOperationRetryTime', () => {
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    xit('should set', async () => {
+    it('should set', async () => {
       firebase.storage().maxOperationRetryTime.should.equal(120000);
       await firebase.storage().setMaxOperationRetryTime(100000);
       firebase.storage().maxOperationRetryTime.should.equal(100000);
@@ -161,10 +158,7 @@ describe('storage()', () => {
   });
 
   describe('setMaxUploadRetryTime', () => {
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    xit('should set', async () => {
+    it('should set', async () => {
       firebase.storage().maxUploadRetryTime.should.equal(600000);
       await firebase.storage().setMaxUploadRetryTime(120000);
       firebase.storage().maxUploadRetryTime.should.equal(120000);
@@ -182,10 +176,7 @@ describe('storage()', () => {
   });
 
   describe('setMaxDownloadRetryTime', () => {
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    // TODO ios constantsToExport
-    xit('should set', async () => {
+    it('should set', async () => {
       firebase.storage().maxDownloadRetryTime.should.equal(600000);
       await firebase.storage().setMaxDownloadRetryTime(120000);
       firebase.storage().maxDownloadRetryTime.should.equal(120000);

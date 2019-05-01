@@ -161,7 +161,7 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:[milliseconds doubleValue]];
+  [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
 
@@ -175,7 +175,7 @@ RCT_EXPORT_METHOD(setMaxOperationRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:[milliseconds doubleValue]];
+  [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
 
@@ -188,7 +188,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:[milliseconds doubleValue]];
+  [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
 
@@ -492,9 +492,9 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {
     FIRStorage *storageInstance = [FIRStorage storage];
-    constants[@"maxDownloadRetryTime"] = @((NSInteger) [storageInstance maxDownloadRetryTime]);
-    constants[@"maxOperationRetryTime"] = @((NSInteger) [storageInstance maxOperationRetryTime]);
-    constants[@"maxUploadRetryTime"] = @((NSInteger) [storageInstance maxUploadRetryTime]);
+    constants[@"maxDownloadRetryTime"] = @((NSInteger) [storageInstance maxDownloadRetryTime] * 1000);
+    constants[@"maxOperationRetryTime"] = @((NSInteger) [storageInstance maxOperationRetryTime] * 1000);
+    constants[@"maxUploadRetryTime"] = @((NSInteger) [storageInstance maxUploadRetryTime] * 1000);
   }
 
   return constants;
