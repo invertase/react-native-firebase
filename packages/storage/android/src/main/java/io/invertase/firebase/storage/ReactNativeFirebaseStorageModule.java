@@ -46,7 +46,9 @@ import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.pro
 
 public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Storage";
+  private static final String KEY_MAIN_BUNDLE = "MainBundle";
   private static final String KEY_DOCUMENT_DIRECTORY = "DocumentDirectory";
+  private static final String KEY_LIBRARY_DIRECTORY = "LibraryDirectory";
   private static final String KEY_EXTERNAL_DIRECTORY = "ExternalDirectory";
   private static final String KEY_EXT_STORAGE_DIRECTORY = "ExternalStorageDirectory";
   private static final String KEY_PICS_DIRECTORY = "PicturesDirectory";
@@ -274,7 +276,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     Map<String, Object> constants = new HashMap<>();
 
     Context context = getReactApplicationContext();
+    constants.put(KEY_MAIN_BUNDLE, "");
     constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
+    constants.put(KEY_LIBRARY_DIRECTORY, context.getFilesDir().getAbsolutePath());
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());
     constants.put(KEY_CACHE_DIRECTORY, context.getCacheDir().getAbsolutePath());
 
