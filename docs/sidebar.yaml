@@ -35,6 +35,10 @@
       to: "/android"
     - text: iOS Setup
       to: "/ios"
+    - text: Social Auth
+      to: "/social-auth"
+    - text: Phone Auth
+      to: "/phone-auth"
 
 - module: firestore
   group: Cloud Firestore
