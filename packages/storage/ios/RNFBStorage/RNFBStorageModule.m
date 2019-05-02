@@ -482,10 +482,8 @@ RCT_EXPORT_METHOD(setTaskStatus:
       @"MainBundle": [[NSBundle mainBundle] bundlePath],
       @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
       @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"PicturesDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"MoviesDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"ExternalDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"ExternalStorageDirectory": [self getPathForDirectory:NSDocumentDirectory],
+      @"PicturesDirectory": [self getPathForDirectory:NSPicturesDirectory],
+      @"MoviesDirectory": [self getPathForDirectory:NSMoviesDirectory],
       @"TempDirectory": NSTemporaryDirectory(),
       @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
   } mutableCopy];

@@ -45,7 +45,7 @@ function processPathConstants(nativeModule) {
   const entries = Object.entries(PATH_NAMES);
   for (let i = 0; i < entries.length; i++) {
     const [newName, oldName] = entries[i];
-    path[newName] = stripTrailingSlash(nativeModule[newName]);
+    path[newName] = nativeModule[newName] ? stripTrailingSlash(nativeModule[newName]) : null;
 
     // TODO(salakar) deprecated remove in 6.1.0:
     if (oldName) {

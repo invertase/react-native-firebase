@@ -531,9 +531,9 @@ describe('storage() -> StorageTask', () => {
     it('listens to download state', function testRunner() {
       this.timeout(25000);
 
-      const ref = firebase.storage().ref('/ok.jpeg');
+      const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.gif`;
 
       const unsubscribe = ref.getFile(path).on(
         'state_changed',
@@ -576,15 +576,13 @@ describe('storage() -> StorageTask', () => {
   });
 
   describe('pause() resume()', () => {
-    before(async () => {
+    it('successfully pauses and resumes an upload', async function testRunner() {
+      this.timeout(25000);
+
       await firebase
         .storage()
-        .ref('/1mbTestFile.gif')
+        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif')
         .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
-    });
-
-    it('successfully pauses and resumes an upload', function testRunner() {
-      this.timeout(25000);
 
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
@@ -640,7 +638,7 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
 
     it('successfully pauses and resumes a download', function testRunner() {
@@ -648,10 +646,14 @@ describe('storage() -> StorageTask', () => {
 
       const ref = firebase
         .storage()
-        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : 'cat.gif');
+        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
 
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/pauseDownload.gif`;
+
+      // random file name as Android does not allow overriding if file already exists
+      const path = `${firebase.storage.Path.DocumentDirectory}/invertase/pauseDownload${Math.round(
+        Math.random() * 1000,
+      )}.gif`;
       const downloadTask = ref.getFile(path);
 
       let hadRunningStatus = false;

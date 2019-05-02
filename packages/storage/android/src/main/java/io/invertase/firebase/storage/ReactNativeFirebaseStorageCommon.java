@@ -21,6 +21,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
@@ -248,6 +249,8 @@ class ReactNativeFirebaseStorageCommon {
          } else if (throwable.getMessage().contains("Not Found.  Could not get object")) {
            code = CODE_OBJECT_NOT_FOUND;
            message = "No object exists at the desired reference.";
+         } else {
+           message = throwable.getMessage();
          }
        }
       }

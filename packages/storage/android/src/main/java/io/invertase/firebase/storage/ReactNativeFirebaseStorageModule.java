@@ -19,6 +19,7 @@ package io.invertase.firebase.storage;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 
 import com.facebook.react.bridge.Promise;
@@ -178,7 +179,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     int taskId,
     Promise promise
   ) {
+    // TODO(salakar) only need to check this if using external storage?
     if (!isExternalStorageWritable()) {
+      // TODO(salakar) send failure event
       rejectPromiseWithCodeAndMessage(
         promise,
         "invalid-device-file-path",
@@ -277,10 +280,17 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
 
     Context context = getReactApplicationContext();
     constants.put(KEY_MAIN_BUNDLE, "");
-    constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     constants.put(KEY_LIBRARY_DIRECTORY, context.getFilesDir().getAbsolutePath());
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());
     constants.put(KEY_CACHE_DIRECTORY, context.getCacheDir().getAbsolutePath());
+
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+      constants.put(KEY_DOCUMENT_DIRECTORY, folder.getAbsolutePath());
+    } else {
+      constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
+    }
 
     constants.put(KEY_PICS_DIRECTORY, Environment
       .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
@@ -305,7 +315,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     if (apps.size() > 0) {
       FirebaseStorage defaultStorageInstance = FirebaseStorage.getInstance();
       constants.put("maxDownloadRetryTime", defaultStorageInstance.getMaxDownloadRetryTimeMillis());
-      constants.put("maxOperationRetryTime", defaultStorageInstance.getMaxOperationRetryTimeMillis());
+      constants.put(
+        "maxOperationRetryTime",
+        defaultStorageInstance.getMaxOperationRetryTimeMillis()
+      );
       constants.put("maxUploadRetryTime", defaultStorageInstance.getMaxUploadRetryTimeMillis());
     }
 

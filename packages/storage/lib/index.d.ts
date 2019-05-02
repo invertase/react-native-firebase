@@ -16,6 +16,7 @@
  */
 
 import {
+  NativeFirebaseError,
   ReactNativeFirebaseModule,
   ReactNativeFirebaseModuleAndStatics,
   ReactNativeFirebaseNamespace,
@@ -170,56 +171,141 @@ export namespace Storage {
    */
   export interface TaskState {
     /**
-     * Task has been cancelled.
+     * Task has been cancelled by the user.
      */
     CANCELLED: 'cancelled';
-    ERROR: 'error';
-    PAUSED: 'paused';
+
     /**
-     * Task is running.
+     * An Error occurred, see TaskSnapshot.error for details.
+     */
+    ERROR: 'error';
+
+    /**
+     * Task has been paused. Resume the task via `StorageTask.resume()`.
+     */
+    PAUSED: 'paused';
+
+    /**
+     * Task is running. Pause the task via `StorageTask.pause()`
      */
     RUNNING: 'running';
+
+    /**
+     * Task has completed successfully.
+     */
     SUCCESS: 'success';
   }
 
+  /**
+   * A collection of native device file paths to aid in the usage of file path based storage methods.
+   *
+   * Concatenate a file path with your target file name when using `putFile` or `getFile`.
+   *
+   * ```js
+   * firebase.storage.Path;
+   * ```
+   */
   export interface Path {
     /**
+     * Returns an absolute path to the applications main bundle.
+     *
+     * ```js
+     * firebase.storage.Path.MainBundle;
+     * ```
+     *
      * @ios iOS only
      */
     MainBundle: string;
 
+    /**
+     * Returns an absolute path to the application specific cache directory on the filesystem.
+     *
+     * The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+     *
+     * ```js
+     * firebase.storage.Path.CachesDirectory;
+     * ```
+     */
     CachesDirectory: string;
 
+    /**
+     * Returns an absolute path to the users Documents directory.
+     *
+     * Use this directory to place documents that have been created by the user.
+     *
+     * ```js
+     * firebase.storage.Path.DocumentDirectory;
+     * ```
+     */
     DocumentDirectory: string;
 
+    /**
+     * Returns an absolute path to a temporary directory.
+     *
+     * Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+     *
+     * ```js
+     * firebase.storage.Path.TempDirectory;
+     * ```
+     */
     TempDirectory: string;
 
     /**
-     * @ios iOS only - Android returns the `DocumentDirectory` path
+     * Returns an absolute path to the apps library/resources directory.
+     *
+     * E.g. this can be used for things like documentation, support files, and configuration files and generic resources.
+     *
+     * ```js
+     * firebase.storage.Path.LibraryDirectory;
+     * ```
      */
     LibraryDirectory: string;
 
     /**
+     * Returns an absolute path to the directory on the primary shared/external storage device.
      *
-     * @android Android only - iOS returns the `DocumentDirectory` path
+     * Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
+     *
+     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+     *
+     * ```js
+     * firebase.storage.Path.ExternalDirectory;
+     * ```
+     *
+     * @android Android only - iOS returns null
      */
-    ExternalDirectory: string;
+    ExternalDirectory: string | null;
 
     /**
+     * Returns an absolute path to the primary shared/external storage directory.
      *
-     * @android Android only - iOS returns the `DocumentDirectory` path
+     * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
+     *
+     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+     *
+     * ```js
+     * firebase.storage.Path.ExternalStorageDirectory;
+     * ```
+     *
+     * @android Android only - iOS returns null
      */
-    ExternalStorageDirectory: string;
+    ExternalStorageDirectory: string | null;
 
     /**
+     * Returns an absolute path to a directory in which to place pictures that are available to the user.
      *
-     * @android Android only - iOS returns the `DocumentDirectory` path
+     * ```js
+     * firebase.storage.Path.PicturesDirectory;
+     * ```
      */
     PicturesDirectory: string;
 
     /**
+     * Returns an absolute path to a directory in which to place movies that are available to the user.
      *
-     * @android Android only - iOS returns the `DocumentDirectory` path
+     * ```js
+     * firebase.storage.Path.MoviesDirectory;
+     * ```
      */
     MoviesDirectory: string;
   }
@@ -235,7 +321,7 @@ export namespace Storage {
    */
   export interface Statics {
     /**
-     * TODO StringFormat
+     * Possible string formats used for uploading via `StorageReference.putString()`
      *
      * #### Example
      *
@@ -246,7 +332,7 @@ export namespace Storage {
     StringFormat: StringFormat;
 
     /**
-     * TODO TaskState
+     * A collection of properties that indicates the current tasks state.
      *
      * #### Example
      *
@@ -257,7 +343,7 @@ export namespace Storage {
     TaskState: TaskState;
 
     /**
-     * TODO TaskEvent
+     * An event to subscribe to that is triggered on a Upload or Download task.
      *
      * #### Example
      *
@@ -268,7 +354,7 @@ export namespace Storage {
     TaskEvent: TaskEvent;
 
     /**
-     * TODO Path
+     * A collection of native device file paths to aid in the usage of file path based storage methods.
      *
      * #### Example
      *
@@ -279,45 +365,220 @@ export namespace Storage {
     Path: Path;
   }
 
+  /**
+   * An interface representing all the metadata properties that can be set.
+   *
+   * This is used in updateMetadata, put, putString & putFile.
+   */
   export interface SettableMetadata {
+    /**
+     * The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.
+     *
+     * #### Example 1
+     *
+     * To turn off caching, you can set the following cacheControl value.
+     *
+     * ```js
+     * {
+     *     cacheControl: 'no-store',
+     * }
+     * ```
+     *
+     * #### Example 2
+     *
+     * To aggressively cache an object, e.g. static assets, you can set the following cacheControl value.
+     *
+     * ```js
+     * {
+     *     cacheControl: 'public, max-age=31536000',
+     * }
+     * ```
+     *
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+     */
     cacheControl?: string | null;
 
+    /**
+     * The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.
+     *
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+     */
     contentDisposition?: string | null;
 
+    /**
+     * The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.
+     *
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+     */
     contentEncoding?: string | null;
 
+    /**
+     * The 'Content-Language' HTTP header that will be set on the storage object when it's requested.
+     *
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)
+     */
     contentLanguage?: string | null;
 
+    /**
+     * The 'Content-Type' HTTP header that will be set on the object when it's requested.
+     *
+     * This is used to indicate the media type (or MIME type) of the object. When uploading a file
+     * Firebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`
+     * is not already set, if it fails to detect a media type it will default to `application/octet-stream`.
+     *
+     * For `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.
+     *
+     * #### Example
+     *
+     * Setting the content type as JSON, e.g. for when uploading a JSON string via `putString`.
+     *
+     * ```js
+     * {
+     *     contentType: 'application/json',
+     * }
+     * ```
+     *
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+     */
     contentType?: string | null;
 
+    /**
+     * Additional user-defined custom metadata for this storage object.
+     *
+     * String values only are supported for custom metadata property values.
+     *
+     * #### Example
+     *
+     * Adding a user controlled NSFW meta data field.
+     *
+     * ```js
+     * {
+     *     customMetadata: {
+     *         'nsfw': 'true'
+     *     },
+     * }
+     */
     customMetadata?: {
       [key: string]: string;
     } | null;
   }
 
-  export interface UploadMetadata extends SettableMetadata {
-    md5Hash?: string | null;
-  }
+  /**
+   * The full readable metadata returned by `TaskSnapshot.metadata` or `StorageReference.getMetadata()`.
+   */
+  export interface FullMetadata extends SettableMetadata {
+    /**
+     * A Base64-encoded MD5 hash of the storage object being uploaded.
+     */
+    md5Hash: string | null;
 
-  export interface FullMetadata extends UploadMetadata {
+    /**
+     * The bucket this storage object is contained in.
+     *
+     * #### Example Value
+     *
+     * ```
+     * gs://my-project-storage-bucket
+     * ```
+     */
     bucket: string;
 
+    /**
+     * The full path to this storage object in its bucket.
+     *
+     * #### Example Value
+     *
+     * ```
+     * invertase/logo.png
+     * ```
+     */
     fullPath: string;
 
+    /**
+     * Storage object generation values enable users to uniquely identify data resources, e.g. object versioning.
+     *
+     * Read more on generation on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).
+     */
     generation: string;
 
+    /**
+     * Storage object metageneration values enable users to uniquely identify data resources, e.g. object versioning.
+     *
+     * Read more on metageneration on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).
+     */
     metageneration: string;
 
+    /**
+     * The short name of storage object in its bucket, e.g. it's file name.
+     *
+     * #### Example Value
+     *
+     * ```
+     * logo.png
+     * ```
+     */
     name: string;
 
+    /**
+     * The size of this storage object in bytes.
+     */
     size: number;
 
+    /**
+     * A date string representing when this storage object was created.
+     *
+     * #### Example Value
+     *
+     * ```
+     * 2019-05-02T00:34:56.264Z
+     * ```
+     */
     timeCreated: string;
 
+    /**
+     * A date string representing when this storage object was last updated.
+     *
+     * #### Example Value
+     *
+     * ```
+     * 2019-05-02T00:35:56.264Z
+     * ```
+     */
     updated: string;
   }
 
+  /**
+   * Represents a reference to a Google Cloud Storage object in React Native Firebase.
+   *
+   * A reference can be used to upload and download storage objects, get/set storage object metadata, retrieve storage object download urls and delete storage objects.
+   *
+   * #### Example 1
+   *
+   * Get a reference to a specific storage path.
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/logo.png');
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get a reference to a specific storage path on another bucket in the same firebase project.
+   *
+   * ```js
+   * const ref = firebase.storage().refFromURL('gs://other-bucket/invertase/logo.png');
+   * ```
+   */
   export interface Reference {
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
+    // TODO(salakar) -----\/
     bucket: string;
 
     parent: Reference | null;
@@ -340,11 +601,11 @@ export namespace Storage {
 
     getMetadata(): Promise<FullMetadata>;
 
-    putFile(localFilePath: string, metadata?: UploadMetadata): Task;
+    putFile(localFilePath: string, metadata?: SettableMetadata): Task;
 
-    put(data: Blob | Uint8Array | ArrayBuffer, metadata?: UploadMetadata): Task;
+    put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
 
-    putString(data: string, format?: StringFormat, metadata?: UploadMetadata): Task;
+    putString(data: string, format?: StringFormat, metadata?: SettableMetadata): Task;
 
     updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
   }
@@ -458,10 +719,10 @@ export namespace Storage {
       complete?: (() => void) | null,
     ): Function;
 
-    /**
-     * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
-     */
-    finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
+    // /**
+    //  * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
+    //  */
+    // finally(onFinally?: (() => void) | undefined | null): Promise<TaskSnapshot>;
 
     then(
       onFulfilled?: ((a: TaskSnapshot) => any) | null,
@@ -483,6 +744,8 @@ export namespace Storage {
     task: Task;
 
     totalBytes: number;
+
+    error?: NativeFirebaseError;
   }
 
   /**

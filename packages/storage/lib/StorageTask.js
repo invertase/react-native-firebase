@@ -22,7 +22,7 @@ let TASK_ID = 0;
 
 function wrapErrorEventListener(listenerFn, unsubscribe) {
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0);
+    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       listenerFn(event.error);
     }
@@ -32,7 +32,7 @@ function wrapErrorEventListener(listenerFn, unsubscribe) {
 function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
   if (!isFunction(listenerFn)) return null;
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0);
+    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       const snapshot = Object.assign({}, event);
       snapshot.task = task;

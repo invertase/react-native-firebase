@@ -75,6 +75,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
 
   void addOnCompleteListener(Promise promise) {
     if (fileDownloadTask == null) {
+      // TODO(salakar) send failure event
       rejectPromiseWithCodeAndMessage(
         promise,
         "error-creating-directory",
@@ -88,8 +89,18 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
       destroyTask();
 
       if (task.isSuccessful()) {
+        Log.d(TAG, "onComplete:success " + storageReference.toString());
         WritableMap taskSnapshot = buildDownloadSnapshotMap(task.getResult());
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
+          taskSnapshot,
+          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+          appName,
+          taskId
+        ));
+
+        taskSnapshot = buildDownloadSnapshotMap(task.getResult());
 
         emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
           taskSnapshot,
@@ -103,6 +114,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
 
         promise.resolve(taskSnapshot);
       } else {
+        Log.d(TAG, "onComplete:failure " + storageReference.toString());
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
         WritableMap errorSnapshot = buildErrorSnapshotMap(

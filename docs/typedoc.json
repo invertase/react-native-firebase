@@ -30,7 +30,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -568,7 +568,7 @@
 							]
 						},
 						{
-							"id": 625,
+							"id": 610,
 							"name": "storage",
 							"kind": 2048,
 							"kindString": "Method",
@@ -577,14 +577,14 @@
 							},
 							"signatures": [
 								{
-									"id": 626,
+									"id": 611,
 									"name": "storage",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 627,
+											"id": 612,
 											"name": "bucket",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -609,14 +609,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 600
+										"id": 585
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 561,
+									"line": 824,
 									"character": 11
 								}
 							]
@@ -658,7 +658,7 @@
 									}
 								},
 								{
-									"id": 637,
+									"id": 622,
 									"name": "utils",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -669,7 +669,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Module",
-										"id": 630
+										"id": 615
 									}
 								}
 							],
@@ -703,7 +703,7 @@
 								334,
 								345,
 								434,
-								625,
+								610,
 								56
 							]
 						}
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 560,
+							"line": 823,
 							"character": 23
 						},
 						{
@@ -804,7 +804,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -838,7 +838,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -872,7 +872,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -906,7 +906,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -940,7 +940,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -974,7 +974,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1008,7 +1008,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 710,
+								"id": 695,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1043,7 +1043,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-								"id": 710,
+								"id": 695,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1077,7 +1077,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1111,7 +1111,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1145,7 +1145,7 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
@@ -1161,7 +1161,7 @@
 							}
 						},
 						{
-							"id": 624,
+							"id": 609,
 							"name": "storage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -1169,19 +1169,19 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 557,
+									"line": 820,
 									"character": 11
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 600
+										"id": 585
 									},
 									{
 										"type": "reference",
@@ -1217,17 +1217,17 @@
 							"type": {
 								"type": "reference",
 								"name": "ReactNativeFirebaseModuleAndStatics",
-								"id": 704,
+								"id": 689,
 								"typeArguments": [
 									{
 										"type": "reference",
 										"name": "Module",
-										"id": 630
+										"id": 615
 									},
 									{
 										"type": "reference",
 										"name": "Statics",
-										"id": 629
+										"id": 614
 									}
 								]
 							}
@@ -1249,7 +1249,7 @@
 								333,
 								344,
 								433,
-								624,
+								609,
 								52
 							]
 						}
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 556,
+							"line": 819,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 555,
+					"line": 818,
 					"character": 49
 				},
 				{
@@ -1437,7 +1437,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1557,7 +1557,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1677,7 +1677,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1797,7 +1797,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -1946,7 +1946,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2037,7 +2037,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 710,
+						"id": 695,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2196,7 +2196,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
-						"id": 710,
+						"id": 695,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2316,7 +2316,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2436,7 +2436,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2556,7 +2556,7 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
@@ -2622,14 +2622,14 @@
 			]
 		},
 		{
-			"id": 620,
+			"id": 605,
 			"name": "\"@react-native-firebase/storage\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 621,
+					"id": 606,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 543,
+							"line": 806,
 							"character": 31
 						}
 					],
@@ -2658,7 +2658,7 @@
 					}
 				},
 				{
-					"id": 623,
+					"id": 608,
 					"name": "StorageDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2669,19 +2669,19 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 547,
+							"line": 810,
 							"character": 28
 						}
 					],
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 600
+								"id": 585
 							},
 							{
 								"type": "reference",
@@ -2692,7 +2692,7 @@
 					}
 				},
 				{
-					"id": 622,
+					"id": 607,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 545,
+							"line": 808,
 							"character": 23
 						}
 					],
@@ -2719,29 +2719,29 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						621,
-						623,
-						622
+						606,
+						608,
+						607
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 540,
+					"line": 803,
 					"character": 47
 				}
 			]
 		},
 		{
-			"id": 633,
+			"id": 618,
 			"name": "\"@react-native-firebase/utils\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 634,
+					"id": 619,
 					"name": "FirebaseNamespaceExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2770,7 +2770,7 @@
 					}
 				},
 				{
-					"id": 636,
+					"id": 621,
 					"name": "UtilsDefaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2788,23 +2788,23 @@
 					"type": {
 						"type": "reference",
 						"name": "ReactNativeFirebaseModuleAndStatics",
-						"id": 704,
+						"id": 689,
 						"typeArguments": [
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 630
+								"id": 615
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 629
+								"id": 614
 							}
 						]
 					}
 				},
 				{
-					"id": 635,
+					"id": 620,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -2839,9 +2839,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						634,
-						636,
-						635
+						619,
+						621,
+						620
 					]
 				}
 			],
@@ -3651,7 +3651,7 @@
 			]
 		},
 		{
-			"id": 685,
+			"id": 670,
 			"name": "App",
 			"kind": 2,
 			"kindString": "Module",
@@ -3668,7 +3668,7 @@
 			},
 			"children": [
 				{
-					"id": 686,
+					"id": 671,
 					"name": "FirebaseApp",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3677,7 +3677,7 @@
 					},
 					"children": [
 						{
-							"id": 687,
+							"id": 672,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3700,7 +3700,7 @@
 							}
 						},
 						{
-							"id": 688,
+							"id": 673,
 							"name": "options",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3720,11 +3720,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseOptions",
-								"id": 671
+								"id": 656
 							}
 						},
 						{
-							"id": 689,
+							"id": 674,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3733,7 +3733,7 @@
 							},
 							"signatures": [
 								{
-									"id": 690,
+									"id": 675,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3767,15 +3767,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								687,
-								688
+								672,
+								673
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								689
+								674
 							]
 						}
 					],
@@ -3788,7 +3788,7 @@
 					]
 				},
 				{
-					"id": 691,
+					"id": 676,
 					"name": "ReactNativeFirebaseNamespace",
 					"kind": 256,
 					"kindString": "Interface",
@@ -3797,7 +3797,7 @@
 					},
 					"children": [
 						{
-							"id": 703,
+							"id": 688,
 							"name": "SDK_VERSION",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3820,7 +3820,7 @@
 							}
 						},
 						{
-							"id": 702,
+							"id": 687,
 							"name": "apps",
 							"kind": 1024,
 							"kindString": "Property",
@@ -3842,12 +3842,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "FirebaseApp",
-									"id": 686
+									"id": 671
 								}
 							}
 						},
 						{
-							"id": 699,
+							"id": 684,
 							"name": "app",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3856,7 +3856,7 @@
 							},
 							"signatures": [
 								{
-									"id": 700,
+									"id": 685,
 									"name": "app",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3872,7 +3872,7 @@
 									},
 									"parameters": [
 										{
-											"id": 701,
+											"id": 686,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3900,7 +3900,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 686
+										"id": 671
 									}
 								}
 							],
@@ -3913,7 +3913,7 @@
 							]
 						},
 						{
-							"id": 692,
+							"id": 677,
 							"name": "initializeApp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -3922,7 +3922,7 @@
 							},
 							"signatures": [
 								{
-									"id": 693,
+									"id": 678,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3932,7 +3932,7 @@
 									},
 									"parameters": [
 										{
-											"id": 694,
+											"id": 679,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3943,11 +3943,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 671
+												"id": 656
 											}
 										},
 										{
-											"id": 695,
+											"id": 680,
 											"name": "config",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3960,18 +3960,18 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppConfig",
-												"id": 647
+												"id": 632
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 686
+										"id": 671
 									}
 								},
 								{
-									"id": 696,
+									"id": 681,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -3981,7 +3981,7 @@
 									},
 									"parameters": [
 										{
-											"id": 697,
+											"id": 682,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -3992,11 +3992,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseOptions",
-												"id": 671
+												"id": 656
 											}
 										},
 										{
-											"id": 698,
+											"id": 683,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -4024,7 +4024,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 686
+										"id": 671
 									}
 								}
 							],
@@ -4047,16 +4047,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								703,
-								702
+								688,
+								687
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								699,
-								692
+								684,
+								677
 							]
 						}
 					],
@@ -4074,8 +4074,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						686,
-						691
+						671,
+						676
 					]
 				}
 			],
@@ -10784,7 +10784,7 @@
 			},
 			"children": [
 				{
-					"id": 600,
+					"id": 585,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -10797,7 +10797,7 @@
 					},
 					"children": [
 						{
-							"id": 619,
+							"id": 604,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10821,7 +10821,7 @@
 							}
 						},
 						{
-							"id": 605,
+							"id": 590,
 							"name": "maxDownloadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10831,7 +10831,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 526,
+									"line": 789,
 									"character": 24
 								}
 							],
@@ -10841,7 +10841,7 @@
 							}
 						},
 						{
-							"id": 609,
+							"id": 594,
 							"name": "maxOperationRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10851,7 +10851,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 530,
+									"line": 793,
 									"character": 25
 								}
 							],
@@ -10861,7 +10861,7 @@
 							}
 						},
 						{
-							"id": 601,
+							"id": 586,
 							"name": "maxUploadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10871,7 +10871,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 522,
+									"line": 785,
 									"character": 22
 								}
 							],
@@ -10881,7 +10881,7 @@
 							}
 						},
 						{
-							"id": 613,
+							"id": 598,
 							"name": "ref",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10890,14 +10890,14 @@
 							},
 							"signatures": [
 								{
-									"id": 614,
+									"id": 599,
 									"name": "ref",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 615,
+											"id": 600,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10922,20 +10922,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 505
+										"id": 494
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 534,
+									"line": 797,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 616,
+							"id": 601,
 							"name": "refFromURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10944,14 +10944,14 @@
 							},
 							"signatures": [
 								{
-									"id": 617,
+									"id": 602,
 									"name": "refFromURL",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 618,
+											"id": 603,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10965,20 +10965,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 505
+										"id": 494
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 536,
+									"line": 799,
 									"character": 14
 								}
 							]
 						},
 						{
-							"id": 606,
+							"id": 591,
 							"name": "setMaxDownloadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10987,14 +10987,14 @@
 							},
 							"signatures": [
 								{
-									"id": 607,
+									"id": 592,
 									"name": "setMaxDownloadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 608,
+											"id": 593,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -11020,13 +11020,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 528,
+									"line": 791,
 									"character": 27
 								}
 							]
 						},
 						{
-							"id": 610,
+							"id": 595,
 							"name": "setMaxOperationRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -11035,14 +11035,14 @@
 							},
 							"signatures": [
 								{
-									"id": 611,
+									"id": 596,
 									"name": "setMaxOperationRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 612,
+											"id": 597,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -11068,13 +11068,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 532,
+									"line": 795,
 									"character": 28
 								}
 							]
 						},
 						{
-							"id": 602,
+							"id": 587,
 							"name": "setMaxUploadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -11083,14 +11083,14 @@
 							},
 							"signatures": [
 								{
-									"id": 603,
+									"id": 588,
 									"name": "setMaxUploadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 604,
+											"id": 589,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -11116,7 +11116,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 524,
+									"line": 787,
 									"character": 25
 								}
 							]
@@ -11127,28 +11127,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								619,
-								605,
-								609,
-								601
+								604,
+								590,
+								594,
+								586
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								613,
-								616,
-								606,
-								610,
-								602
+								598,
+								601,
+								591,
+								595,
+								587
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 521,
+							"line": 784,
 							"character": 21
 						}
 					],
@@ -11160,26 +11160,33 @@
 					]
 				},
 				{
-					"id": 486,
+					"id": 475,
 					"name": "FullMetadata",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "The full readable metadata returned by `TaskSnapshot.metadata` or `StorageReference.getMetadata()`."
+					},
 					"children": [
 						{
-							"id": 487,
+							"id": 477,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The bucket this storage object is contained in.",
+								"text": "#### Example Value\n\n```\ngs://my-project-storage-bucket\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 303,
+									"line": 484,
 									"character": 10
 								}
 							],
@@ -11189,7 +11196,7 @@
 							}
 						},
 						{
-							"id": 496,
+							"id": 485,
 							"name": "cacheControl",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11197,10 +11204,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.",
+								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 399,
 									"character": 16
 								}
 							],
@@ -11224,7 +11235,7 @@
 							}
 						},
 						{
-							"id": 497,
+							"id": 486,
 							"name": "contentDisposition",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11232,10 +11243,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
+									"line": 406,
 									"character": 22
 								}
 							],
@@ -11259,7 +11274,7 @@
 							}
 						},
 						{
-							"id": 498,
+							"id": 487,
 							"name": "contentEncoding",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11267,10 +11282,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 413,
 									"character": 19
 								}
 							],
@@ -11294,7 +11313,7 @@
 							}
 						},
 						{
-							"id": 499,
+							"id": 488,
 							"name": "contentLanguage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11302,10 +11321,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Language' HTTP header that will be set on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 289,
+									"line": 420,
 									"character": 19
 								}
 							],
@@ -11329,7 +11352,7 @@
 							}
 						},
 						{
-							"id": 500,
+							"id": 489,
 							"name": "contentType",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11337,10 +11360,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Type' HTTP header that will be set on the object when it's requested.",
+								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n    contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 291,
+									"line": 443,
 									"character": 15
 								}
 							],
@@ -11364,7 +11391,7 @@
 							}
 						},
 						{
-							"id": 501,
+							"id": 490,
 							"name": "customMetadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11372,10 +11399,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "Additional user-defined custom metadata for this storage object.",
+								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n    customMetadata: {\n        'nsfw': 'true'\n    },\n}\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 293,
+									"line": 461,
 									"character": 18
 								}
 							],
@@ -11385,21 +11416,21 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 502,
+											"id": 491,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 503,
+													"id": 492,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 504,
+															"id": 493,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -11419,7 +11450,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 293,
+													"line": 461,
 													"character": 20
 												}
 											]
@@ -11438,17 +11469,21 @@
 							}
 						},
 						{
-							"id": 488,
+							"id": 478,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The full path to this storage object in its bucket.",
+								"text": "#### Example Value\n\n```\ninvertase/logo.png\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 305,
+									"line": 495,
 									"character": 12
 								}
 							],
@@ -11458,17 +11493,21 @@
 							}
 						},
 						{
-							"id": 489,
+							"id": 479,
 							"name": "generation",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Storage object generation values enable users to uniquely identify data resources, e.g. object versioning.",
+								"text": "Read more on generation on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 307,
+									"line": 502,
 									"character": 14
 								}
 							],
@@ -11478,18 +11517,20 @@
 							}
 						},
 						{
-							"id": 495,
+							"id": 476,
 							"name": "md5Hash",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
-								"isExported": true,
-								"isOptional": true
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "A Base64-encoded MD5 hash of the storage object being uploaded."
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 299,
+									"line": 473,
 									"character": 11
 								}
 							],
@@ -11505,25 +11546,24 @@
 										"name": "null"
 									}
 								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "UploadMetadata.md5Hash",
-								"id": 476
 							}
 						},
 						{
-							"id": 490,
+							"id": 480,
 							"name": "metageneration",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Storage object metageneration values enable users to uniquely identify data resources, e.g. object versioning.",
+								"text": "Read more on metageneration on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 309,
+									"line": 509,
 									"character": 18
 								}
 							],
@@ -11533,17 +11573,21 @@
 							}
 						},
 						{
-							"id": 491,
+							"id": 481,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The short name of storage object in its bucket, e.g. it's file name.",
+								"text": "#### Example Value\n\n```\nlogo.png\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 311,
+									"line": 520,
 									"character": 8
 								}
 							],
@@ -11553,17 +11597,20 @@
 							}
 						},
 						{
-							"id": 492,
+							"id": 482,
 							"name": "size",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The size of this storage object in bytes."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 313,
+									"line": 525,
 									"character": 8
 								}
 							],
@@ -11573,17 +11620,21 @@
 							}
 						},
 						{
-							"id": 493,
+							"id": 483,
 							"name": "timeCreated",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "A date string representing when this storage object was created.",
+								"text": "#### Example Value\n\n```\n2019-05-02T00:34:56.264Z\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 315,
+									"line": 536,
 									"character": 15
 								}
 							],
@@ -11593,17 +11644,21 @@
 							}
 						},
 						{
-							"id": 494,
+							"id": 484,
 							"name": "updated",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "A date string representing when this storage object was last updated.",
+								"text": "#### Example Value\n\n```\n2019-05-02T00:35:56.264Z\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 317,
+									"line": 547,
 									"character": 11
 								}
 							],
@@ -11618,36 +11673,36 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
+								477,
+								485,
+								486,
 								487,
-								496,
-								497,
-								498,
-								499,
-								500,
-								501,
 								488,
 								489,
-								495,
 								490,
-								491,
-								492,
-								493,
-								494
+								478,
+								479,
+								476,
+								480,
+								481,
+								482,
+								483,
+								484
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 302,
+							"line": 469,
 							"character": 31
 						}
 					],
 					"extendedTypes": [
 						{
 							"type": "reference",
-							"name": "UploadMetadata",
-							"id": 475
+							"name": "SettableMetadata",
+							"id": 465
 						}
 					]
 				},
@@ -11659,6 +11714,10 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "A collection of native device file paths to aid in the usage of file path based storage methods.",
+						"text": "Concatenate a file path with your target file name when using `putFile` or `getFile`.\n\n```js\nfirebase.storage.Path;\n```\n"
+					},
 					"children": [
 						{
 							"id": 452,
@@ -11668,10 +11727,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Returns an absolute path to the application specific cache directory on the filesystem.",
+								"text": "The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.storage.Path.CachesDirectory;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 191,
+									"line": 229,
 									"character": 19
 								}
 							],
@@ -11688,10 +11751,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Returns an absolute path to the users Documents directory.",
+								"text": "Use this directory to place documents that have been created by the user.\n\n```js\nfirebase.storage.Path.DocumentDirectory;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 193,
+									"line": 240,
 									"character": 21
 								}
 							],
@@ -11709,23 +11776,34 @@
 								"isExported": true
 							},
 							"comment": {
+								"shortText": "Returns an absolute path to the directory on the primary shared/external storage device.",
+								"text": "Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.storage.Path.ExternalDirectory;\n```\n",
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
+										"text": "Android only - iOS returns null\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 206,
+									"line": 277,
 									"character": 21
 								}
 							],
 							"type": {
-								"type": "intrinsic",
-								"name": "string"
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
 							}
 						},
 						{
@@ -11737,23 +11815,34 @@
 								"isExported": true
 							},
 							"comment": {
+								"shortText": "Returns an absolute path to the primary shared/external storage directory.",
+								"text": "Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.storage.Path.ExternalStorageDirectory;\n```\n",
 								"tags": [
 									{
 										"tag": "android",
-										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
+										"text": "Android only - iOS returns null\n"
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 212,
+									"line": 292,
 									"character": 28
 								}
 							],
 							"type": {
-								"type": "intrinsic",
-								"name": "string"
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
 							}
 						},
 						{
@@ -11765,17 +11854,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"tags": [
-									{
-										"tag": "ios",
-										"text": "iOS only - Android returns the `DocumentDirectory` path\n"
-									}
-								]
+								"shortText": "Returns an absolute path to the apps library/resources directory.",
+								"text": "E.g. this can be used for things like documentation, support files, and configuration files and generic resources.\n\n```js\nfirebase.storage.Path.LibraryDirectory;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 200,
+									"line": 262,
 									"character": 20
 								}
 							],
@@ -11793,6 +11878,8 @@
 								"isExported": true
 							},
 							"comment": {
+								"shortText": "Returns an absolute path to the applications main bundle.",
+								"text": "```js\nfirebase.storage.Path.MainBundle;\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -11803,7 +11890,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 189,
+									"line": 218,
 									"character": 14
 								}
 							],
@@ -11821,17 +11908,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"tags": [
-									{
-										"tag": "android",
-										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
-									}
-								]
+								"shortText": "Returns an absolute path to a directory in which to place movies that are available to the user.",
+								"text": "```js\nfirebase.storage.Path.MoviesDirectory;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 224,
+									"line": 310,
 									"character": 19
 								}
 							],
@@ -11849,17 +11932,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"tags": [
-									{
-										"tag": "android",
-										"text": "Android only - iOS returns the `DocumentDirectory` path\n"
-									}
-								]
+								"shortText": "Returns an absolute path to a directory in which to place pictures that are available to the user.",
+								"text": "```js\nfirebase.storage.Path.PicturesDirectory;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 218,
+									"line": 301,
 									"character": 21
 								}
 							],
@@ -11876,10 +11955,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Returns an absolute path to a temporary directory.",
+								"text": "Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.storage.Path.TempDirectory;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 195,
+									"line": 251,
 									"character": 17
 								}
 							],
@@ -11909,22 +11992,26 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 185,
+							"line": 208,
 							"character": 23
 						}
 					]
 				},
 				{
-					"id": 505,
+					"id": 494,
 					"name": "Reference",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "Represents a reference to a Google Cloud Storage object in React Native Firebase.",
+						"text": "A reference can be used to upload and download storage objects, get/set storage object metadata, retrieve storage object download urls and delete storage objects.\n\n#### Example 1\n\nGet a reference to a specific storage path.\n\n```js\nconst ref = firebase.storage().ref('invertase/logo.png');\n```\n\n#### Example 2\n\nGet a reference to a specific storage path on another bucket in the same firebase project.\n\n```js\nconst ref = firebase.storage().refFromURL('gs://other-bucket/invertase/logo.png');\n```\n"
+					},
 					"children": [
 						{
-							"id": 506,
+							"id": 495,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11934,7 +12021,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 321,
+									"line": 582,
 									"character": 10
 								}
 							],
@@ -11944,7 +12031,7 @@
 							}
 						},
 						{
-							"id": 508,
+							"id": 497,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11954,7 +12041,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 325,
+									"line": 586,
 									"character": 12
 								}
 							],
@@ -11964,7 +12051,7 @@
 							}
 						},
 						{
-							"id": 509,
+							"id": 498,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11974,7 +12061,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 327,
+									"line": 588,
 									"character": 8
 								}
 							],
@@ -11984,7 +12071,7 @@
 							}
 						},
 						{
-							"id": 507,
+							"id": 496,
 							"name": "parent",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11994,7 +12081,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 323,
+									"line": 584,
 									"character": 10
 								}
 							],
@@ -12004,7 +12091,7 @@
 									{
 										"type": "reference",
 										"name": "Reference",
-										"id": 505
+										"id": 494
 									},
 									{
 										"type": "intrinsic",
@@ -12014,7 +12101,7 @@
 							}
 						},
 						{
-							"id": 510,
+							"id": 499,
 							"name": "root",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12024,18 +12111,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 329,
+									"line": 590,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 505
+								"id": 494
 							}
 						},
 						{
-							"id": 511,
+							"id": 500,
 							"name": "storage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12045,18 +12132,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 331,
+									"line": 592,
 									"character": 11
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Module",
-								"id": 600
+								"id": 585
 							}
 						},
 						{
-							"id": 514,
+							"id": 503,
 							"name": "child",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12065,14 +12152,14 @@
 							},
 							"signatures": [
 								{
-									"id": 515,
+									"id": 504,
 									"name": "child",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 516,
+											"id": 505,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12086,20 +12173,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 505
+										"id": 494
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 335,
+									"line": 596,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 517,
+							"id": 506,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12108,7 +12195,7 @@
 							},
 							"signatures": [
 								{
-									"id": 518,
+									"id": 507,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -12128,13 +12215,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 337,
+									"line": 598,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 519,
+							"id": 508,
 							"name": "getDownloadURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12143,7 +12230,7 @@
 							},
 							"signatures": [
 								{
-									"id": 520,
+									"id": 509,
 									"name": "getDownloadURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -12163,13 +12250,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 339,
+									"line": 600,
 									"character": 18
 								}
 							]
 						},
 						{
-							"id": 521,
+							"id": 510,
 							"name": "getMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12178,7 +12265,7 @@
 							},
 							"signatures": [
 								{
-									"id": 522,
+									"id": 511,
 									"name": "getMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -12190,7 +12277,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 486
+												"id": 475
 											}
 										]
 									}
@@ -12199,13 +12286,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 341,
+									"line": 602,
 									"character": 15
 								}
 							]
 						},
 						{
-							"id": 527,
+							"id": 516,
 							"name": "put",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12214,14 +12301,14 @@
 							},
 							"signatures": [
 								{
-									"id": 528,
+									"id": 517,
 									"name": "put",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 529,
+											"id": 518,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12245,7 +12332,7 @@
 											}
 										},
 										{
-											"id": 530,
+											"id": 519,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12254,28 +12341,28 @@
 											},
 											"type": {
 												"type": "reference",
-												"name": "UploadMetadata",
-												"id": 475
+												"name": "SettableMetadata",
+												"id": 465
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 551
+										"id": 540
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 345,
+									"line": 606,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 523,
+							"id": 512,
 							"name": "putFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12284,14 +12371,14 @@
 							},
 							"signatures": [
 								{
-									"id": 524,
+									"id": 513,
 									"name": "putFile",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 525,
+											"id": 514,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12302,7 +12389,7 @@
 											}
 										},
 										{
-											"id": 526,
+											"id": 515,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12311,28 +12398,28 @@
 											},
 											"type": {
 												"type": "reference",
-												"name": "UploadMetadata",
-												"id": 475
+												"name": "SettableMetadata",
+												"id": 465
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 551
+										"id": 540
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 343,
+									"line": 604,
 									"character": 11
 								}
 							]
 						},
 						{
-							"id": 531,
+							"id": 520,
 							"name": "putString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12341,14 +12428,14 @@
 							},
 							"signatures": [
 								{
-									"id": 532,
+									"id": 521,
 									"name": "putString",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 533,
+											"id": 522,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12359,7 +12446,7 @@
 											}
 										},
 										{
-											"id": 534,
+											"id": 523,
 											"name": "format",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12373,7 +12460,7 @@
 											}
 										},
 										{
-											"id": 535,
+											"id": 524,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12382,28 +12469,28 @@
 											},
 											"type": {
 												"type": "reference",
-												"name": "UploadMetadata",
-												"id": 475
+												"name": "SettableMetadata",
+												"id": 465
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 551
+										"id": 540
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 347,
+									"line": 608,
 									"character": 13
 								}
 							]
 						},
 						{
-							"id": 512,
+							"id": 501,
 							"name": "toString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12412,7 +12499,7 @@
 							},
 							"signatures": [
 								{
-									"id": 513,
+									"id": 502,
 									"name": "toString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -12426,13 +12513,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 333,
+									"line": 594,
 									"character": 12
 								}
 							]
 						},
 						{
-							"id": 536,
+							"id": 525,
 							"name": "updateMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -12441,14 +12528,14 @@
 							},
 							"signatures": [
 								{
-									"id": 537,
+									"id": 526,
 									"name": "updateMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 538,
+											"id": 527,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -12467,7 +12554,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 486
+												"id": 475
 											}
 										]
 									}
@@ -12476,7 +12563,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 349,
+									"line": 610,
 									"character": 18
 								}
 							]
@@ -12487,34 +12574,34 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								506,
-								508,
-								509,
-								507,
-								510,
-								511
+								495,
+								497,
+								498,
+								496,
+								499,
+								500
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								514,
-								517,
-								519,
-								521,
-								527,
-								523,
-								531,
+								503,
+								506,
+								508,
+								510,
+								516,
 								512,
-								536
+								520,
+								501,
+								525
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 320,
+							"line": 571,
 							"character": 28
 						}
 					]
@@ -12527,6 +12614,10 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "An interface representing all the metadata properties that can be set.",
+						"text": "This is used in updateMetadata, put, putString & putFile.\n"
+					},
 					"children": [
 						{
 							"id": 466,
@@ -12537,10 +12628,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.",
+								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
+									"line": 399,
 									"character": 16
 								}
 							],
@@ -12567,10 +12662,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
+									"line": 406,
 									"character": 22
 								}
 							],
@@ -12597,10 +12696,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
+									"line": 413,
 									"character": 19
 								}
 							],
@@ -12627,10 +12730,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Language' HTTP header that will be set on the storage object when it's requested.",
+								"text": "[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 289,
+									"line": 420,
 									"character": 19
 								}
 							],
@@ -12657,10 +12764,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "The 'Content-Type' HTTP header that will be set on the object when it's requested.",
+								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n    contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 291,
+									"line": 443,
 									"character": 15
 								}
 							],
@@ -12687,10 +12798,14 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "Additional user-defined custom metadata for this storage object.",
+								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n    customMetadata: {\n        'nsfw': 'true'\n    },\n}\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 293,
+									"line": 461,
 									"character": 18
 								}
 							],
@@ -12734,7 +12849,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 293,
+													"line": 461,
 													"character": 20
 												}
 											]
@@ -12765,14 +12880,14 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 282,
+							"line": 373,
 							"character": 35
 						}
 					],
 					"extendedBy": [
 						{
 							"type": "reference",
-							"name": "UploadMetadata",
+							"name": "FullMetadata",
 							"id": 475
 						}
 					]
@@ -12799,13 +12914,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "TODO Path",
+								"shortText": "A collection of native device file paths to aid in the usage of file path based storage methods.",
 								"text": "#### Example\n\n```js\nfirebase.storage.Path;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 279,
+									"line": 365,
 									"character": 8
 								}
 							],
@@ -12824,13 +12939,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "TODO StringFormat",
+								"shortText": "Possible string formats used for uploading via `StorageReference.putString()`",
 								"text": "#### Example\n\n```js\nfirebase.storage.StringFormat;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 246,
+									"line": 332,
 									"character": 16
 								}
 							],
@@ -12849,13 +12964,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "TODO TaskEvent",
+								"shortText": "An event to subscribe to that is triggered on a Upload or Download task.",
 								"text": "#### Example\n\n```js\nfirebase.storage.TaskEvent;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 268,
+									"line": 354,
 									"character": 13
 								}
 							],
@@ -12874,13 +12989,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "TODO TaskState",
+								"shortText": "A collection of properties that indicates the current tasks state.",
 								"text": "#### Example\n\n```js\nfirebase.storage.TaskState;\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 257,
+									"line": 343,
 									"character": 13
 								}
 							],
@@ -12906,7 +13021,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 236,
+							"line": 322,
 							"character": 26
 						}
 					]
@@ -12939,7 +13054,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 104,
+									"line": 105,
 									"character": 10
 								}
 							],
@@ -12963,7 +13078,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 122,
+									"line": 123,
 									"character": 13
 								}
 							],
@@ -12987,7 +13102,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 139,
+									"line": 140,
 									"character": 12
 								}
 							],
@@ -13011,7 +13126,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 84,
+									"line": 85,
 									"character": 7
 								}
 							],
@@ -13036,13 +13151,13 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 68,
+							"line": 69,
 							"character": 31
 						}
 					]
 				},
 				{
-					"id": 551,
+					"id": 540,
 					"name": "Task",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13055,7 +13170,7 @@
 					},
 					"children": [
 						{
-							"id": 556,
+							"id": 545,
 							"name": "cancel",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13064,7 +13179,7 @@
 							},
 							"signatures": [
 								{
-									"id": 557,
+									"id": 546,
 									"name": "cancel",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -13088,13 +13203,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 445,
+									"line": 706,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 587,
+							"id": 571,
 							"name": "catch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13103,14 +13218,14 @@
 							},
 							"signatures": [
 								{
-									"id": 588,
+									"id": 572,
 									"name": "catch",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 589,
+											"id": 573,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13118,21 +13233,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 590,
+													"id": 574,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 591,
+															"id": 575,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 592,
+																	"id": 576,
 																	"name": "a",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -13152,7 +13267,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 471,
+															"line": 732,
 															"character": 21
 														}
 													]
@@ -13175,13 +13290,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 471,
+									"line": 732,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 558,
+							"id": 547,
 							"name": "on",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13190,7 +13305,7 @@
 							},
 							"signatures": [
 								{
-									"id": 559,
+									"id": 548,
 									"name": "on",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -13198,7 +13313,7 @@
 									"comment": {},
 									"parameters": [
 										{
-											"id": 560,
+											"id": 549,
 											"name": "event",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13210,7 +13325,7 @@
 											}
 										},
 										{
-											"id": 561,
+											"id": 550,
 											"name": "nextOrObserver",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13224,7 +13339,7 @@
 													{
 														"type": "reference",
 														"name": "TaskSnapshotObserver",
-														"id": 539
+														"id": 528
 													},
 													{
 														"type": "intrinsic",
@@ -13233,21 +13348,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 562,
+															"id": 551,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 563,
+																	"id": 552,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 564,
+																			"id": 553,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -13255,7 +13370,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 593
+																				"id": 577
 																			}
 																		}
 																	],
@@ -13268,7 +13383,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 456,
+																	"line": 717,
 																	"character": 52
 																}
 															]
@@ -13278,7 +13393,7 @@
 											}
 										},
 										{
-											"id": 565,
+											"id": 554,
 											"name": "error",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13292,21 +13407,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 566,
+															"id": 555,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 567,
+																	"id": 556,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 568,
+																			"id": 557,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -13326,7 +13441,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 457,
+																	"line": 718,
 																	"character": 13
 																}
 															]
@@ -13340,7 +13455,7 @@
 											}
 										},
 										{
-											"id": 569,
+											"id": 558,
 											"name": "complete",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13356,14 +13471,14 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 570,
+															"id": 559,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 571,
+																	"id": 560,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
@@ -13377,7 +13492,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 458,
+																	"line": 719,
 																	"character": 16
 																}
 															]
@@ -13400,13 +13515,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 454,
+									"line": 715,
 									"character": 6
 								}
 							]
 						},
 						{
-							"id": 552,
+							"id": 541,
 							"name": "pause",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13415,7 +13530,7 @@
 							},
 							"signatures": [
 								{
-									"id": 553,
+									"id": 542,
 									"name": "pause",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -13439,13 +13554,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 407,
+									"line": 668,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 554,
+							"id": 543,
 							"name": "resume",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13454,7 +13569,7 @@
 							},
 							"signatures": [
 								{
-									"id": 555,
+									"id": 544,
 									"name": "resume",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -13478,13 +13593,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 427,
+									"line": 688,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 577,
+							"id": 561,
 							"name": "then",
 							"kind": 2048,
 							"kindString": "Method",
@@ -13493,14 +13608,14 @@
 							},
 							"signatures": [
 								{
-									"id": 578,
+									"id": 562,
 									"name": "then",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 579,
+											"id": 563,
 											"name": "onFulfilled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13513,21 +13628,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 580,
+															"id": 564,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 581,
+																	"id": 565,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 582,
+																			"id": 566,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -13535,7 +13650,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 593
+																				"id": 577
 																			}
 																		}
 																	],
@@ -13548,7 +13663,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 467,
+																	"line": 728,
 																	"character": 19
 																}
 															]
@@ -13562,7 +13677,7 @@
 											}
 										},
 										{
-											"id": 583,
+											"id": 567,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -13575,21 +13690,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 584,
+															"id": 568,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 585,
+																	"id": 569,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 586,
+																			"id": 570,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -13609,7 +13724,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 468,
+																	"line": 729,
 																	"character": 18
 																}
 															]
@@ -13638,7 +13753,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 466,
+									"line": 727,
 									"character": 8
 								}
 							]
@@ -13649,19 +13764,19 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								556,
-								587,
-								558,
-								552,
-								554,
-								577
+								545,
+								571,
+								547,
+								541,
+								543,
+								561
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 389,
+							"line": 650,
 							"character": 23
 						}
 					]
@@ -13694,7 +13809,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 159,
+									"line": 160,
 									"character": 17
 								}
 							],
@@ -13716,13 +13831,13 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 151,
+							"line": 152,
 							"character": 28
 						}
 					]
 				},
 				{
-					"id": 593,
+					"id": 577,
 					"name": "TaskSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13731,7 +13846,7 @@
 					},
 					"children": [
 						{
-							"id": 594,
+							"id": 578,
 							"name": "bytesTransferred",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13741,7 +13856,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 475,
+									"line": 736,
 									"character": 20
 								}
 							],
@@ -13751,7 +13866,29 @@
 							}
 						},
 						{
-							"id": 595,
+							"id": 584,
+							"name": "error",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 748,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "NativeFirebaseError",
+								"id": 623
+							}
+						},
+						{
+							"id": 579,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13761,18 +13898,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 477,
+									"line": 738,
 									"character": 12
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FullMetadata",
-								"id": 486
+								"id": 475
 							}
 						},
 						{
-							"id": 596,
+							"id": 580,
 							"name": "ref",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13782,18 +13919,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 479,
+									"line": 740,
 									"character": 7
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 505
+								"id": 494
 							}
 						},
 						{
-							"id": 597,
+							"id": 581,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13803,7 +13940,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 481,
+									"line": 742,
 									"character": 9
 								}
 							],
@@ -13834,7 +13971,7 @@
 							}
 						},
 						{
-							"id": 598,
+							"id": 582,
 							"name": "task",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13844,18 +13981,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 483,
+									"line": 744,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Task",
-								"id": 551
+								"id": 540
 							}
 						},
 						{
-							"id": 599,
+							"id": 583,
 							"name": "totalBytes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13865,7 +14002,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 485,
+									"line": 746,
 									"character": 14
 								}
 							],
@@ -13880,25 +14017,26 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								594,
-								595,
-								596,
-								597,
-								598,
-								599
+								578,
+								584,
+								579,
+								580,
+								581,
+								582,
+								583
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 474,
+							"line": 735,
 							"character": 31
 						}
 					]
 				},
 				{
-					"id": 539,
+					"id": 528,
 					"name": "TaskSnapshotObserver",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13907,7 +14045,7 @@
 					},
 					"children": [
 						{
-							"id": 548,
+							"id": 537,
 							"name": "complete",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13917,21 +14055,21 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 357,
+									"line": 618,
 									"character": 12
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 549,
+									"id": 538,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 550,
+											"id": 539,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -13945,7 +14083,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 357,
+											"line": 618,
 											"character": 13
 										}
 									]
@@ -13953,7 +14091,7 @@
 							}
 						},
 						{
-							"id": 544,
+							"id": 533,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13963,28 +14101,28 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 355,
+									"line": 616,
 									"character": 9
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 545,
+									"id": 534,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 546,
+											"id": 535,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 547,
+													"id": 536,
 													"name": "error",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -14004,7 +14142,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 355,
+											"line": 616,
 											"character": 10
 										}
 									]
@@ -14012,7 +14150,7 @@
 							}
 						},
 						{
-							"id": 540,
+							"id": 529,
 							"name": "next",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14022,28 +14160,28 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 353,
+									"line": 614,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 541,
+									"id": 530,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 542,
+											"id": 531,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 543,
+													"id": 532,
 													"name": "taskSnapshot",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -14051,7 +14189,7 @@
 													"type": {
 														"type": "reference",
 														"name": "TaskSnapshot",
-														"id": 593
+														"id": 577
 													}
 												}
 											],
@@ -14064,7 +14202,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 353,
+											"line": 614,
 											"character": 9
 										}
 									]
@@ -14077,16 +14215,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								548,
-								544,
-								540
+								537,
+								533,
+								529
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 352,
+							"line": 613,
 							"character": 39
 						}
 					]
@@ -14113,12 +14251,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Task has been cancelled."
+								"shortText": "Task has been cancelled by the user."
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 175,
+									"line": 176,
 									"character": 13
 								}
 							],
@@ -14135,10 +14273,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "An Error occurred, see TaskSnapshot.error for details."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 176,
+									"line": 181,
 									"character": 9
 								}
 							],
@@ -14155,10 +14296,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Task has been paused. Resume the task via `StorageTask.resume()`."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 177,
+									"line": 186,
 									"character": 10
 								}
 							],
@@ -14176,12 +14320,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Task is running."
+								"shortText": "Task is running. Pause the task via `StorageTask.pause()`"
 							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 181,
+									"line": 191,
 									"character": 11
 								}
 							],
@@ -14198,10 +14342,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Task has completed successfully."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 182,
+									"line": 196,
 									"character": 11
 								}
 							],
@@ -14227,334 +14374,8 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 171,
+							"line": 172,
 							"character": 28
-						}
-					]
-				},
-				{
-					"id": 475,
-					"name": "UploadMetadata",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"children": [
-						{
-							"id": 477,
-							"name": "cacheControl",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 283,
-									"character": 16
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.cacheControl",
-								"id": 466
-							}
-						},
-						{
-							"id": 478,
-							"name": "contentDisposition",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 285,
-									"character": 22
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.contentDisposition",
-								"id": 467
-							}
-						},
-						{
-							"id": 479,
-							"name": "contentEncoding",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 287,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.contentEncoding",
-								"id": 468
-							}
-						},
-						{
-							"id": 480,
-							"name": "contentLanguage",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 289,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.contentLanguage",
-								"id": 469
-							}
-						},
-						{
-							"id": 481,
-							"name": "contentType",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 291,
-									"character": 15
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.contentType",
-								"id": 470
-							}
-						},
-						{
-							"id": 482,
-							"name": "customMetadata",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 293,
-									"character": 18
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "reflection",
-										"declaration": {
-											"id": 483,
-											"name": "__type",
-											"kind": 65536,
-											"kindString": "Type literal",
-											"flags": {},
-											"indexSignature": [
-												{
-													"id": 484,
-													"name": "__index",
-													"kind": 8192,
-													"kindString": "Index signature",
-													"flags": {},
-													"parameters": [
-														{
-															"id": 485,
-															"name": "key",
-															"kind": 32768,
-															"kindString": "Parameter",
-															"flags": {},
-															"type": {
-																"type": "intrinsic",
-																"name": "string"
-															}
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "string"
-													}
-												}
-											],
-											"sources": [
-												{
-													"fileName": "storage/lib/index.d.ts",
-													"line": 293,
-													"character": 20
-												}
-											]
-										}
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "SettableMetadata.customMetadata",
-								"id": 471
-							}
-						},
-						{
-							"id": 476,
-							"name": "md5Hash",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true,
-								"isOptional": true
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 299,
-									"character": 11
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								477,
-								478,
-								479,
-								480,
-								481,
-								482,
-								476
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "storage/lib/index.d.ts",
-							"line": 298,
-							"character": 33
-						}
-					],
-					"extendedTypes": [
-						{
-							"type": "reference",
-							"name": "SettableMetadata",
-							"id": 465
-						}
-					],
-					"extendedBy": [
-						{
-							"type": "reference",
-							"name": "FullMetadata",
-							"id": 486
 						}
 					]
 				}
@@ -14564,38 +14385,37 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						600
+						585
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						486,
+						475,
 						450,
-						505,
+						494,
 						465,
 						460,
 						437,
-						551,
+						540,
 						442,
-						593,
-						539,
-						444,
-						475
+						577,
+						528,
+						444
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 60,
+					"line": 61,
 					"character": 24
 				}
 			]
 		},
 		{
-			"id": 628,
+			"id": 613,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -14614,7 +14434,7 @@
 			},
 			"children": [
 				{
-					"id": 630,
+					"id": 615,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -14627,7 +14447,7 @@
 					},
 					"children": [
 						{
-							"id": 632,
+							"id": 617,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14651,7 +14471,7 @@
 							}
 						},
 						{
-							"id": 631,
+							"id": 616,
 							"name": "isRunningInTestLab",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14685,8 +14505,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								632,
-								631
+								617,
+								616
 							]
 						}
 					],
@@ -14705,7 +14525,7 @@
 					]
 				},
 				{
-					"id": 629,
+					"id": 614,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14726,14 +14546,14 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						630
+						615
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						629
+						614
 					]
 				}
 			],
@@ -14746,7 +14566,7 @@
 			]
 		},
 		{
-			"id": 669,
+			"id": 654,
 			"name": "ReactNativeFirebaseModule",
 			"kind": 128,
 			"kindString": "Class",
@@ -14755,7 +14575,7 @@
 			},
 			"children": [
 				{
-					"id": 670,
+					"id": 655,
 					"name": "app",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14772,7 +14592,7 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseApp",
-						"id": 651
+						"id": 636
 					}
 				}
 			],
@@ -14781,7 +14601,7 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						670
+						655
 					]
 				}
 			],
@@ -14794,7 +14614,7 @@
 			]
 		},
 		{
-			"id": 651,
+			"id": 636,
 			"name": "FirebaseApp",
 			"kind": 256,
 			"kindString": "Interface",
@@ -14803,7 +14623,7 @@
 			},
 			"children": [
 				{
-					"id": 652,
+					"id": 637,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14826,7 +14646,7 @@
 					}
 				},
 				{
-					"id": 653,
+					"id": 638,
 					"name": "options",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14846,11 +14666,11 @@
 					"type": {
 						"type": "reference",
 						"name": "FirebaseOptions",
-						"id": 671
+						"id": 656
 					}
 				},
 				{
-					"id": 654,
+					"id": 639,
 					"name": "delete",
 					"kind": 2048,
 					"kindString": "Method",
@@ -14859,7 +14679,7 @@
 					},
 					"signatures": [
 						{
-							"id": 655,
+							"id": 640,
 							"name": "delete",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -14893,15 +14713,15 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						652,
-						653
+						637,
+						638
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						654
+						639
 					]
 				}
 			],
@@ -14914,7 +14734,7 @@
 			]
 		},
 		{
-			"id": 647,
+			"id": 632,
 			"name": "FirebaseAppConfig",
 			"kind": 256,
 			"kindString": "Interface",
@@ -14923,7 +14743,7 @@
 			},
 			"children": [
 				{
-					"id": 649,
+					"id": 634,
 					"name": "automaticDataCollectionEnabled",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14958,7 +14778,7 @@
 					}
 				},
 				{
-					"id": 650,
+					"id": 635,
 					"name": "automaticResourceManagement",
 					"kind": 1024,
 					"kindString": "Property",
@@ -14995,7 +14815,7 @@
 					}
 				},
 				{
-					"id": 648,
+					"id": 633,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15033,9 +14853,9 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						649,
-						650,
-						648
+						634,
+						635,
+						633
 					]
 				}
 			],
@@ -15048,7 +14868,7 @@
 			]
 		},
 		{
-			"id": 638,
+			"id": 623,
 			"name": "NativeFirebaseError",
 			"kind": 256,
 			"kindString": "Interface",
@@ -15057,7 +14877,7 @@
 			},
 			"children": [
 				{
-					"id": 646,
+					"id": 631,
 					"name": "Error",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15077,7 +14897,7 @@
 					}
 				},
 				{
-					"id": 639,
+					"id": 624,
 					"name": "code",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15100,7 +14920,7 @@
 					}
 				},
 				{
-					"id": 640,
+					"id": 625,
 					"name": "message",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15127,7 +14947,7 @@
 					}
 				},
 				{
-					"id": 644,
+					"id": 629,
 					"name": "name",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15151,7 +14971,7 @@
 					}
 				},
 				{
-					"id": 641,
+					"id": 626,
 					"name": "namespace",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15174,7 +14994,7 @@
 					}
 				},
 				{
-					"id": 642,
+					"id": 627,
 					"name": "nativeErrorCode",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15206,7 +15026,7 @@
 					}
 				},
 				{
-					"id": 643,
+					"id": 628,
 					"name": "nativeErrorMessage",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15229,7 +15049,7 @@
 					}
 				},
 				{
-					"id": 645,
+					"id": 630,
 					"name": "stack",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15272,14 +15092,14 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						646,
-						639,
-						640,
-						644,
-						641,
-						642,
-						643,
-						645
+						631,
+						624,
+						625,
+						629,
+						626,
+						627,
+						628,
+						630
 					]
 				}
 			],
@@ -15298,7 +15118,7 @@
 			]
 		},
 		{
-			"id": 656,
+			"id": 641,
 			"name": "ReactNativeFirebaseNamespace",
 			"kind": 256,
 			"kindString": "Interface",
@@ -15307,7 +15127,7 @@
 			},
 			"children": [
 				{
-					"id": 668,
+					"id": 653,
 					"name": "SDK_VERSION",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15330,7 +15150,7 @@
 					}
 				},
 				{
-					"id": 667,
+					"id": 652,
 					"name": "apps",
 					"kind": 1024,
 					"kindString": "Property",
@@ -15352,12 +15172,12 @@
 						"elementType": {
 							"type": "reference",
 							"name": "FirebaseApp",
-							"id": 651
+							"id": 636
 						}
 					}
 				},
 				{
-					"id": 664,
+					"id": 649,
 					"name": "app",
 					"kind": 2048,
 					"kindString": "Method",
@@ -15366,7 +15186,7 @@
 					},
 					"signatures": [
 						{
-							"id": 665,
+							"id": 650,
 							"name": "app",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15382,7 +15202,7 @@
 							},
 							"parameters": [
 								{
-									"id": 666,
+									"id": 651,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15410,7 +15230,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 651
+								"id": 636
 							}
 						}
 					],
@@ -15423,7 +15243,7 @@
 					]
 				},
 				{
-					"id": 657,
+					"id": 642,
 					"name": "initializeApp",
 					"kind": 2048,
 					"kindString": "Method",
@@ -15432,7 +15252,7 @@
 					},
 					"signatures": [
 						{
-							"id": 658,
+							"id": 643,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15442,7 +15262,7 @@
 							},
 							"parameters": [
 								{
-									"id": 659,
+									"id": 644,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15453,11 +15273,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 671
+										"id": 656
 									}
 								},
 								{
-									"id": 660,
+									"id": 645,
 									"name": "config",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15470,18 +15290,18 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseAppConfig",
-										"id": 647
+										"id": 632
 									}
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 651
+								"id": 636
 							}
 						},
 						{
-							"id": 661,
+							"id": 646,
 							"name": "initializeApp",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -15491,7 +15311,7 @@
 							},
 							"parameters": [
 								{
-									"id": 662,
+									"id": 647,
 									"name": "options",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15502,11 +15322,11 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseOptions",
-										"id": 671
+										"id": 656
 									}
 								},
 								{
-									"id": 663,
+									"id": 648,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15534,7 +15354,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 651
+								"id": 636
 							}
 						}
 					],
@@ -15557,16 +15377,16 @@
 					"title": "Properties",
 					"kind": 1024,
 					"children": [
-						668,
-						667
+						653,
+						652
 					]
 				},
 				{
 					"title": "Methods",
 					"kind": 2048,
 					"children": [
-						664,
-						657
+						649,
+						642
 					]
 				}
 			],
@@ -15579,7 +15399,7 @@
 			]
 		},
 		{
-			"id": 671,
+			"id": 656,
 			"name": "FirebaseOptions",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -15596,21 +15416,21 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 672,
+					"id": 657,
 					"name": "__type",
 					"kind": 65536,
 					"kindString": "Type literal",
 					"flags": {},
 					"indexSignature": [
 						{
-							"id": 683,
+							"id": 668,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 684,
+									"id": 669,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -15629,7 +15449,7 @@
 					],
 					"children": [
 						{
-							"id": 681,
+							"id": 666,
 							"name": "androidClientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15661,7 +15481,7 @@
 							}
 						},
 						{
-							"id": 674,
+							"id": 659,
 							"name": "apiKey",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15693,7 +15513,7 @@
 							}
 						},
 						{
-							"id": 673,
+							"id": 658,
 							"name": "appId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15714,7 +15534,7 @@
 							}
 						},
 						{
-							"id": 680,
+							"id": 665,
 							"name": "clientId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15746,7 +15566,7 @@
 							}
 						},
 						{
-							"id": 675,
+							"id": 660,
 							"name": "databaseURL",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15778,7 +15598,7 @@
 							}
 						},
 						{
-							"id": 682,
+							"id": 667,
 							"name": "deepLinkURLScheme",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15810,7 +15630,7 @@
 							}
 						},
 						{
-							"id": 677,
+							"id": 662,
 							"name": "gaTrackingId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15842,7 +15662,7 @@
 							}
 						},
 						{
-							"id": 679,
+							"id": 664,
 							"name": "messagingSenderId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15874,7 +15694,7 @@
 							}
 						},
 						{
-							"id": 676,
+							"id": 661,
 							"name": "projectId",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15895,7 +15715,7 @@
 							}
 						},
 						{
-							"id": 678,
+							"id": 663,
 							"name": "storageBucket",
 							"kind": 32,
 							"kindString": "Variable",
@@ -15932,16 +15752,16 @@
 							"title": "Variables",
 							"kind": 32,
 							"children": [
-								681,
-								674,
-								673,
-								680,
-								675,
-								682,
-								677,
-								679,
-								676,
-								678
+								666,
+								659,
+								658,
+								665,
+								660,
+								667,
+								662,
+								664,
+								661,
+								663
 							]
 						}
 					],
@@ -15956,7 +15776,7 @@
 			}
 		},
 		{
-			"id": 704,
+			"id": 689,
 			"name": "ReactNativeFirebaseModuleAndStatics",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -15965,14 +15785,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 705,
+					"id": 690,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 706,
+					"id": 691,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -15992,14 +15812,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 707,
+							"id": 692,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 708,
+									"id": 693,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -16012,7 +15832,7 @@
 							],
 							"children": [
 								{
-									"id": 709,
+									"id": 694,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -16038,7 +15858,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										709
+										694
 									]
 								}
 							],
@@ -16059,7 +15879,7 @@
 			}
 		},
 		{
-			"id": 710,
+			"id": 695,
 			"name": "ReactNativeFirebaseModuleAndStaticsWithApp",
 			"kind": 4194304,
 			"kindString": "Type alias",
@@ -16068,14 +15888,14 @@
 			},
 			"typeParameter": [
 				{
-					"id": 711,
+					"id": 696,
 					"name": "M",
 					"kind": 131072,
 					"kindString": "Type parameter",
 					"flags": {}
 				},
 				{
-					"id": 712,
+					"id": 697,
 					"name": "S",
 					"kind": 131072,
 					"kindString": "Type parameter",
@@ -16095,21 +15915,21 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 713,
+							"id": 698,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 714,
+									"id": 699,
 									"name": "__call",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 715,
+											"id": 700,
 											"name": "app",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -16131,7 +15951,7 @@
 							],
 							"children": [
 								{
-									"id": 716,
+									"id": 701,
 									"name": "SDK_VERSION",
 									"kind": 32,
 									"kindString": "Variable",
@@ -16157,7 +15977,7 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										716
+										701
 									]
 								}
 							],
@@ -16196,10 +16016,10 @@
 				329,
 				340,
 				429,
-				620,
-				633,
+				605,
+				618,
 				1,
-				685,
+				670,
 				59,
 				70,
 				124,
@@ -16211,33 +16031,33 @@
 				336,
 				347,
 				436,
-				628
+				613
 			]
 		},
 		{
 			"title": "Classes",
 			"kind": 128,
 			"children": [
-				669
+				654
 			]
 		},
 		{
 			"title": "Interfaces",
 			"kind": 256,
 			"children": [
-				651,
-				647,
-				638,
-				656
+				636,
+				632,
+				623,
+				641
 			]
 		},
 		{
 			"title": "Type aliases",
 			"kind": 4194304,
 			"children": [
-				671,
-				704,
-				710
+				656,
+				689,
+				695
 			]
 		}
 	]
