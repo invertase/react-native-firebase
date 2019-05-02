@@ -380,7 +380,7 @@ export namespace Storage {
      *
      * ```js
      * {
-     *     cacheControl: 'no-store',
+     *   cacheControl: 'no-store',
      * }
      * ```
      *
@@ -390,7 +390,7 @@ export namespace Storage {
      *
      * ```js
      * {
-     *     cacheControl: 'public, max-age=31536000',
+     *   cacheControl: 'public, max-age=31536000',
      * }
      * ```
      *
@@ -434,7 +434,7 @@ export namespace Storage {
      *
      * ```js
      * {
-     *     contentType: 'application/json',
+     *   contentType: 'application/json',
      * }
      * ```
      *
@@ -453,9 +453,9 @@ export namespace Storage {
      *
      * ```js
      * {
-     *     customMetadata: {
-     *         'nsfw': 'true'
-     *     },
+     *   customMetadata: {
+     *     'nsfw': 'true'
+     *   },
      * }
      */
     customMetadata?: {
