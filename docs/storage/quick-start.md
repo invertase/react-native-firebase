@@ -29,6 +29,8 @@ The package also provides access to the firebase instance:
 import { firebase } from '@react-native-firebase/storage';
 ```
 
+### Choosing a storage bucket
+
 ### File uploading
 
 ### File downloading

@@ -35,9 +35,9 @@ react-native link @react-native-firebase/crashlytics
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=crashlytics)
+ - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/crashlytics)
+ - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/crashlytics/reference)
 
 ## License
 
