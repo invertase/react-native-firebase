@@ -741,7 +741,7 @@ export namespace Storage {
    * firebase
    *   .storage()
    *   .ref('/foo/bar.json')
-   *   .putString({ foo: 'bar' })
+   *   .putString(JSON.stringify({ foo: 'bar' }))
    *   .then((taskSnapshot) => {
    *     if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {
    *       console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);
@@ -755,7 +755,7 @@ export namespace Storage {
    * const task = firebase
    *   .storage()
    *   .ref('/foo/bar.json')
-   *   .putString({ foo: 'bar' });
+   *   .putString(JSON.stringify({ foo: 'bar' }));
    *
    * task.on('state_changed', taskSnapshot => {
    *   if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {

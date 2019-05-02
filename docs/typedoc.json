@@ -616,7 +616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 824,
+									"line": 963,
 									"character": 11
 								}
 							]
@@ -771,7 +771,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 823,
+							"line": 962,
 							"character": 23
 						},
 						{
@@ -1169,7 +1169,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 820,
+									"line": 959,
 									"character": 11
 								}
 							],
@@ -1317,7 +1317,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 819,
+							"line": 958,
 							"character": 40
 						},
 						{
@@ -1401,7 +1401,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 818,
+					"line": 957,
 					"character": 49
 				},
 				{
@@ -2639,7 +2639,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 806,
+							"line": 945,
 							"character": 31
 						}
 					],
@@ -2669,7 +2669,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 810,
+							"line": 949,
 							"character": 28
 						}
 					],
@@ -2703,7 +2703,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 808,
+							"line": 947,
 							"character": 23
 						}
 					],
@@ -2728,7 +2728,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 803,
+					"line": 942,
 					"character": 47
 				}
 			]
@@ -10828,10 +10828,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO.",
+								"text": "#### Example\n\n```js\nconst downloadRetryTime = firebase.storage().maxUploadRetryTime;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 789,
+									"line": 873,
 									"character": 24
 								}
 							],
@@ -10848,10 +10852,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO.",
+								"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 793,
+									"line": 897,
 									"character": 25
 								}
 							],
@@ -10868,10 +10876,14 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "TODO.",
+								"text": "#### Example\n\n```js\nconst uploadRetryTime = firebase.storage().maxUploadRetryTime;\n```\n"
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 785,
+									"line": 849,
 									"character": 22
 								}
 							],
@@ -10895,6 +10907,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Returns a new {@link storage.Reference} instance.",
+										"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
+									},
 									"parameters": [
 										{
 											"id": 600,
@@ -10903,6 +10919,9 @@
 											"kindString": "Parameter",
 											"flags": {
 												"isOptional": true
+											},
+											"comment": {
+												"text": "An optional string pointing to a location on the storage bucket. If no path\nis provided, the returned reference will be the bucket root path.\n"
 											},
 											"type": {
 												"type": "union",
@@ -10929,7 +10948,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 797,
+									"line": 924,
 									"character": 7
 								}
 							]
@@ -10949,6 +10968,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Returns a new {@link storage.Reference} instance from a storage bucket URL.",
+										"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
+									},
 									"parameters": [
 										{
 											"id": 603,
@@ -10956,6 +10979,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "A storage bucket URL pointing to a single file or location. Must start with `gs://`,\ne.g. `gs://assets/logo.png` or `gs://assets`.\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -10972,7 +10998,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 799,
+									"line": 938,
 									"character": 14
 								}
 							]
@@ -10992,6 +11018,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "TODO.",
+										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxDownloadRetryTime(5000);\n```\n"
+									},
 									"parameters": [
 										{
 											"id": 593,
@@ -10999,6 +11029,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "Number of miliseconds.... TODO\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "number"
@@ -11020,7 +11053,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 791,
+									"line": 886,
 									"character": 27
 								}
 							]
@@ -11040,6 +11073,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "TODO.",
+										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxOperationRetryTime(5000);\n```\n"
+									},
 									"parameters": [
 										{
 											"id": 597,
@@ -11047,6 +11084,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "Number of miliseconds.... TODO\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "number"
@@ -11068,7 +11108,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 795,
+									"line": 910,
 									"character": 28
 								}
 							]
@@ -11088,6 +11128,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "TODO.",
+										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxUploadRetryTime(5000);\n```\n"
+									},
 									"parameters": [
 										{
 											"id": 589,
@@ -11095,6 +11139,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
+											"comment": {
+												"text": "Number of miliseconds.... TODO\n"
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "number"
@@ -11116,7 +11163,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 787,
+									"line": 862,
 									"character": 25
 								}
 							]
@@ -11148,7 +11195,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 784,
+							"line": 839,
 							"character": 21
 						}
 					],
@@ -11206,7 +11253,7 @@
 							},
 							"comment": {
 								"shortText": "The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.",
-								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n  cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n  cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
 							},
 							"sources": [
 								{
@@ -11362,7 +11409,7 @@
 							},
 							"comment": {
 								"shortText": "The 'Content-Type' HTTP header that will be set on the object when it's requested.",
-								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n    contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
+								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n  contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
 							},
 							"sources": [
 								{
@@ -11401,7 +11448,7 @@
 							},
 							"comment": {
 								"shortText": "Additional user-defined custom metadata for this storage object.",
-								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n    customMetadata: {\n        'nsfw': 'true'\n    },\n}\n"
+								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n  customMetadata: {\n    'nsfw': 'true'\n  },\n}\n"
 							},
 							"sources": [
 								{
@@ -12630,7 +12677,7 @@
 							},
 							"comment": {
 								"shortText": "The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.",
-								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n    cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
+								"text": "#### Example 1\n\nTo turn off caching, you can set the following cacheControl value.\n\n```js\n{\n  cacheControl: 'no-store',\n}\n```\n\n#### Example 2\n\nTo aggressively cache an object, e.g. static assets, you can set the following cacheControl value.\n\n```js\n{\n  cacheControl: 'public, max-age=31536000',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)\n"
 							},
 							"sources": [
 								{
@@ -12766,7 +12813,7 @@
 							},
 							"comment": {
 								"shortText": "The 'Content-Type' HTTP header that will be set on the object when it's requested.",
-								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n    contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
+								"text": "This is used to indicate the media type (or MIME type) of the object. When uploading a file\nFirebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`\nis not already set, if it fails to detect a media type it will default to `application/octet-stream`.\n\nFor `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.\n\n#### Example\n\nSetting the content type as JSON, e.g. for when uploading a JSON string via `putString`.\n\n```js\n{\n  contentType: 'application/json',\n}\n```\n\n[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)\n"
 							},
 							"sources": [
 								{
@@ -12800,7 +12847,7 @@
 							},
 							"comment": {
 								"shortText": "Additional user-defined custom metadata for this storage object.",
-								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n    customMetadata: {\n        'nsfw': 'true'\n    },\n}\n"
+								"text": "String values only are supported for custom metadata property values.\n\n#### Example\n\nAdding a user controlled NSFW meta data field.\n\n```js\n{\n  customMetadata: {\n    'nsfw': 'true'\n  },\n}\n"
 							},
 							"sources": [
 								{
@@ -13844,6 +13891,10 @@
 					"flags": {
 						"isExported": true
 					},
+					"comment": {
+						"shortText": "A TaskSnapshot provides information about a storage tasks state.",
+						"text": "#### Example 1\n\n```\nfirebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }))\n  .then((taskSnapshot) => {\n    if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {\n      console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);\n    }\n  });\n```\n\n#### Example 2\n\n```\nconst task = firebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }));\n\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n"
+					},
 					"children": [
 						{
 							"id": 578,
@@ -13853,10 +13904,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The number of bytes currently transferred."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 736,
+									"line": 772,
 									"character": 20
 								}
 							],
@@ -13874,10 +13928,13 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "If the {@link storage.TaskSnapshot#state} is `error`, returns a JavaScript error of the\ncurrent task snapshot."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 748,
+									"line": 803,
 									"character": 9
 								}
 							],
@@ -13895,10 +13952,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The metadata of the tasks via a {@link storage.FullMetadata} interface."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 738,
+									"line": 777,
 									"character": 12
 								}
 							],
@@ -13916,10 +13976,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The {@link storage.Reference} of the task."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 740,
+									"line": 782,
 									"character": 7
 								}
 							],
@@ -13937,10 +14000,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The current state of the task snapshot."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 742,
+									"line": 787,
 									"character": 9
 								}
 							],
@@ -13978,10 +14044,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The parent {@link storage.Task} of this snapshot."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 744,
+									"line": 792,
 									"character": 8
 								}
 							],
@@ -13999,10 +14068,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The total amount of bytes for this task."
+							},
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 746,
+									"line": 797,
 									"character": 14
 								}
 							],
@@ -14030,7 +14102,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 735,
+							"line": 768,
 							"character": 31
 						}
 					]
