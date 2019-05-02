@@ -35,9 +35,9 @@ react-native link @react-native-firebase/auth
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=auth)
+ - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/auth)
+ - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/auth/reference)
 
 ## License
 

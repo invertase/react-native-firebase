@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://dev.invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h4 align="center">React Native Firebase</h2>
@@ -78,18 +78,25 @@ React Native Firebase also publishes several other packages, some only used inte
 
 ## Documentation
 
-- [Guides](#TODO)
-- [Installation](#TODO)
+ - [Overview](https://dev.invertase.io/oss/react-native-firebase)
+ - [Quick Start](https://dev.invertase.io/oss/react-native-firebase/quick-start)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides)
+ - [Modules](https://dev.invertase.io/oss/react-native-firebase/v6)
 
 ## Contributing
 
-- [Contributing](/CONTRIBUTING.md)
-- [Code of Conduct](/CODE_OF_CONDUCT.md)
-- [Testing](/tests/README.md)
+ - [Overview](https://dev.invertase.io/oss/react-native-firebase/contributing)
+ - [Issues & PRs](https://dev.invertase.io/oss/react-native-firebase/contributing/issues-prs)
+ - [Documentation](https://dev.invertase.io/oss/react-native-firebase/contributing/documentation)
+ - [Code & Testing](https://dev.invertase.io/oss/react-native-firebase/contributing/code-testing)
+ - [Marketing & Content](https://dev.invertase.io/oss/react-native-firebase/contributing/marketing-content)
+ - [Community](https://dev.invertase.io/oss/react-native-firebase/contributing/community)
+ - [Donating](https://dev.invertase.io/oss/react-native-firebase/contributing/donating)
+ - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
 
-- See [LICENSE](/LICENSE)
+ - See [LICENSE](/LICENSE)
 
 ---
 
@@ -97,4 +104,4 @@ Built and maintained with 💛 by [Invertase](https://invertase.io).
 
 - [💼 Hire Us](https://invertase.io/hire-us)
 - [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
-- [👩‍💻 Work With Us](https://invertase.io/jobs)
+
