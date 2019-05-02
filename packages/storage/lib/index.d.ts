@@ -732,19 +732,74 @@ export namespace Storage {
     catch(onRejected: (a: Error) => any): Promise<any>;
   }
 
+  /**
+   * A TaskSnapshot provides information about a storage tasks state.
+   *
+   * #### Example 1
+   *
+   * ```
+   * firebase
+   *   .storage()
+   *   .ref('/foo/bar.json')
+   *   .putString({ foo: 'bar' })
+   *   .then((taskSnapshot) => {
+   *     if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {
+   *       console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);
+   *     }
+   *   });
+   * ```
+   *
+   * #### Example 2
+   *
+   * ```
+   * const task = firebase
+   *   .storage()
+   *   .ref('/foo/bar.json')
+   *   .putString({ foo: 'bar' });
+   *
+   * task.on('state_changed', taskSnapshot => {
+   *   if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {
+   *     console.log('Resuming my task!');
+   *     task.resume();
+   *   }
+   * });
+   * ```
+   */
   export interface TaskSnapshot {
+    /**
+     * The number of bytes currently transferred.
+     */
     bytesTransferred: number;
 
+    /**
+     * The metadata of the tasks via a {@link storage.FullMetadata} interface.
+     */
     metadata: FullMetadata;
 
+    /**
+     * The {@link storage.Reference} of the task.
+     */
     ref: Reference;
 
+    /**
+     * The current state of the task snapshot.
+     */
     state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
 
+    /**
+     * The parent {@link storage.Task} of this snapshot.
+     */
     task: Task;
 
+    /**
+     * The total amount of bytes for this task.
+     */
     totalBytes: number;
 
+    /**
+     * If the {@link storage.TaskSnapshot#state} is `error`, returns a JavaScript error of the
+     * current task snapshot.
+     */
     error?: NativeFirebaseError;
   }
 
@@ -782,20 +837,104 @@ export namespace Storage {
    *
    */
   export class Module extends ReactNativeFirebaseModule {
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * const uploadRetryTime = firebase.storage().maxUploadRetryTime;
+     * ```
+     */
     maxUploadRetryTime: number;
 
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.storage().setMaxUploadRetryTime(5000);
+     * ```
+     *
+     * @param time Number of miliseconds.... TODO
+     */
     setMaxUploadRetryTime(time: number): Promise<null>;
 
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * const downloadRetryTime = firebase.storage().maxUploadRetryTime;
+     * ```
+     */
     maxDownloadRetryTime: number;
 
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.storage().setMaxDownloadRetryTime(5000);
+     * ```
+     *
+     * @param time Number of miliseconds.... TODO
+     */
     setMaxDownloadRetryTime(time: number): Promise<null>;
 
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * ```
+     */
     maxOperationRetryTime: number;
 
+    /**
+     * TODO.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.storage().setMaxOperationRetryTime(5000);
+     * ```
+     *
+     * @param time Number of miliseconds.... TODO
+     */
     setMaxOperationRetryTime(time: number): Promise<null>;
 
+    /**
+     * Returns a new {@link storage.Reference} instance.
+     *
+     * #### Example
+     *
+     * ```js
+     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * ```
+     *
+     * @param path An optional string pointing to a location on the storage bucket. If no path
+     * is provided, the returned reference will be the bucket root path.
+     */
     ref(path?: string): Reference;
 
+    /**
+     * Returns a new {@link storage.Reference} instance from a storage bucket URL.
+     *
+     * #### Example
+     *
+     * ```js
+     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * ```
+     *
+     * @param url A storage bucket URL pointing to a single file or location. Must start with `gs://`,
+     * e.g. `gs://assets/logo.png` or `gs://assets`.
+     */
     refFromURL(url: string): Reference;
   }
 }
