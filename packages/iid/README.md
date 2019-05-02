@@ -40,9 +40,9 @@ react-native link @react-native-firebase/iid
 
 ## Documentation
 
-- [Guides](#TODO)
-- [Installation](#TODO)
-- [Reference](#TODO)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=iid)
+ - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/iid)
+ - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/iid/reference)
 
 ## License
 

@@ -37,9 +37,9 @@ react-native link @react-native-firebase/invites
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=invites)
+ - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/invites)
+ - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/invites/reference)
 
 ## License
 
