@@ -49,8 +49,8 @@
     "crashlytics"
   ],
   "peerDependencies": {
-    "react": ">= 16.6.3",
-    "react-native": ">= 0.58.1"
+    "react": "*",
+    "react-native": "*"
   },
   "dependencies": {
     "@react-native-firebase/app-types": "6.0.0-alpha.9",

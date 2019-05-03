@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlinVersion = '1.3.20'
+  ext.kotlinVersion = '1.3.21'
   repositories {
     google()
     jcenter()
@@ -9,11 +9,11 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.4.0'
     classpath 'com.google.gms:google-services:4.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath 'com.google.firebase:firebase-plugins:1.1.5'
-    classpath 'io.fabric.tools:gradle:1.26.1'
+    classpath 'com.google.firebase:firebase-plugins:1.2.0'
+    classpath 'io.fabric.tools:gradle:1.28.1'
   }
 }
 
@@ -35,11 +35,19 @@ allprojects {
 
   repositories {
     google()
-    jcenter()
     mavenLocal()
     maven {
-      url "$rootDir/../node_modules/react-native/android"
+      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+      url("$rootDir/../node_modules/react-native/android")
     }
+    maven {
+      // Android JSC is installed from npm
+      url("$rootDir/../node_modules/jsc-android/dist")
+    }
+    maven {
+      url "$rootDir/../node_modules/detox/Detox-android"
+    }
+    jcenter()
   }
 
 }
@@ -49,7 +57,7 @@ subprojects {
   ext {
     compileSdk = 28
     buildTools = "28.0.3"
-    minSdk = 18
+    minSdk = 16
     targetSdk = 28
   }
 
@@ -73,9 +81,3 @@ subprojects {
     }
   }
 }
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.10.2'
-  distributionUrl = distributionUrl.replace("bin", "all")
-}
-

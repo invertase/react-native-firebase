@@ -22,7 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Get insights into how your app performs from your users’ point of view, with automatic and customized performance tracing.
+ * Firebase Performance Monitoring package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `perf` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/perf';
+ *
+ * // firebase.perf().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `perf` package:
+ *
+ * ```js
+ * import perf from '@react-native-firebase/perf';
+ *
+ * // perf().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/perf';
+ *
+ * // firebase.perf().X
+ * ```
  *
  * @firebase perf
  */
@@ -50,7 +81,7 @@ export namespace Perf {
   /**
    * Trace allows you to time the beginning to end of a certain action in your app with additional metric values and attributes.
    */
-  export interface Trace {
+  export class Trace {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -182,7 +213,7 @@ export namespace Perf {
   /**
    * Metric used to collect data for network requests/responses. A new instance must be used for every request/response.
    */
-  export interface HttpMetric {
+  export class HttpMetric {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -326,7 +357,20 @@ export namespace Perf {
 
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase Performance Monitoring service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Performance Monitoring service for the default app:
+   *
+   * ```js
+   * const defaultAppPerf = firebase.perf();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether performance monitoring is enabled or disabled.
      *

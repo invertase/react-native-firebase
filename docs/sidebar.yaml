@@ -185,8 +185,8 @@
       to: "/android"
     - text: iOS Setup
       to: "/ios"
-    - text: Migrating to Dynamic Links
-      to: "/migrating-to-dynamic-links"
+    - text: Migrate to Dynamic Links
+      to: "/migrate-to-dynamic-links"
 
 - module: ml-kit
   group: ML Kit

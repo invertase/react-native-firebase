@@ -27,7 +27,7 @@
     "fiam"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.4"
+    "@react-native-firebase/app": "6.0.0-alpha.9"
   },
   "dependencies": {
     "@react-native-firebase/app-types": "6.0.0-alpha.9",

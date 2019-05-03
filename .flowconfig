@@ -4,6 +4,7 @@
 
 # Ignore tests project
 .*/tests/.*
+.*/packages/template/.*
 
 [include]
 packages/**/lib/*.js.flow
@@ -42,4 +43,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-^0.93.0
+^0.96.0

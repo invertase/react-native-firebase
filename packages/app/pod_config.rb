@@ -28,7 +28,7 @@ end
 
 def react_native_firebase!(config = {})
   react_native_firebase_path = config.fetch(:react_native_firebase_path, '../node_modules/@react-native-firebase')
-  known_firebase_modules = %w(app analytics config crashlytics fiam functions firestore iid invites perf utils)
+  known_firebase_modules = %w(app analytics config crashlytics fiam functions firestore iid invites perf utils storage)
 
   # TODO(salakar): validate versions / set pod versions
   app_package = JSON.parse(File.read("#{react_native_firebase_path}/#{known_firebase_modules[0]}/package.json"))

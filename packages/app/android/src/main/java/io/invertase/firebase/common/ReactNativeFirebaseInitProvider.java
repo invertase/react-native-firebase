@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 

@@ -22,15 +22,58 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
- * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
+ * Firebase Crashlytics package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `crashlytics` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/crashlytics';
+ *
+ * // firebase.crashlytics().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `crashlytics` package:
+ *
+ * ```js
+ * import crashlytics from '@react-native-firebase/crashlytics';
+ *
+ * // crashlytics().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/crashlytics';
+ *
+ * // firebase.crashlytics().X
+ * ```
  *
  * @firebase crashlytics
  */
 export namespace Crashlytics {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase Crashlytics service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Crashlytics service for the default app:
+   *
+   * ```js
+   * const defaultAppCrashlytics = firebase.crashlytics();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.
      *

@@ -22,9 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
- * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
- * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
+ * Firebase Invites package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `invites` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/invites';
+ *
+ * // firebase.invites().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `invites` package:
+ *
+ * ```js
+ * import invites from '@react-native-firebase/invites';
+ *
+ * // invites().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/invites';
+ *
+ * // firebase.invites().X
+ * ```
  *
  * @firebase invites
  */
@@ -58,7 +87,7 @@ export namespace Invites {
   /**
    * Android Invite representation. Instance is returned from {@link links.InviteBuilder#android}.
    */
-  export interface AndroidInviteBuilder {
+  export class AndroidInviteBuilder {
     /**
      * Adds query parameters to the play store referral URL when the app needs additional referral parameters for other
      * application component referrals. These parameters are added to the referral URL sent from the play store and are
@@ -136,7 +165,7 @@ export namespace Invites {
   /**
    * Invite builder representation returned from {@link invites#createInvitation}.
    */
-  export interface InviteBuilder {
+  export class InviteBuilder {
     /**
      * Set Android specific Invite properties
      *
@@ -293,7 +322,20 @@ export namespace Invites {
    */
   export type InviteListener = (nativeInvite: NativeInvite) => void;
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase Invites service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Invites service for the default app:
+   *
+   * ```js
+   * const defaultAppInvites = firebase.invites();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Create an invitation via an InvitationBuilder instance.
      *

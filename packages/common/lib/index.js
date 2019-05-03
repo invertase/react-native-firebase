@@ -15,21 +15,23 @@
  *
  */
 import { Platform } from 'react-native';
+import { isString } from './validate';
+import Base64 from './Base64';
 
+export * from './path';
 export * from './validate';
+export Base64 from './Base64';
+export promiseDefer from './promiseDefer';
+export ReferenceBase from './ReferenceBase';
 
-export function promiseDefer() {
-  const deferred = {
-    resolve: null,
-    reject: null,
-  };
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
+export function getDataUrlParts(dataUrlString) {
+  const isBase64 = dataUrlString.includes(`;base64`);
+  let [mediaType, base64String] = dataUrlString.split(',');
+  if (!mediaType || !base64String) return { base64String: undefined, mediaType: undefined };
+  mediaType = mediaType.replace('data:', '').replace(';base64', '');
+  if (base64String && base64String.includes('%')) base64String = decodeURIComponent(base64String);
+  if (!isBase64) base64String = Base64.btoa(base64String);
+  return { base64String, mediaType };
 }
 
 export function once(fn, context) {
@@ -56,6 +58,17 @@ export function isError(value) {
 
 export function hasOwnProperty(target, property) {
   return Object.hasOwnProperty.call(target, property);
+}
+
+/**
+ * Remove a trailing forward slash from a string if it exists
+ *
+ * @param string
+ * @returns {*}
+ */
+export function stripTrailingSlash(string) {
+  if (!isString(string)) return string;
+  return string.endsWith('/') ? string.slice(0, -1) : string;
 }
 
 export const isIOS = Platform.OS === 'ios';
