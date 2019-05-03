@@ -17,7 +17,7 @@ package io.invertase.firebase.app;
  *
  */
 
-import androidx.annotation.Keep
+import androidx.annotation.Keep;
 
 import com.google.firebase.components.Component;
 import com.google.firebase.components.ComponentRegistrar;
