@@ -1,6 +1,6 @@
 {
   "name": "HelloWorld",
-  "version": "0.0.1",
+  "version": "6.0.0-alpha.10",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -11,21 +11,21 @@
     "prepare": "patch-package"
   },
   "dependencies": {
+    "@react-native-firebase/analytics": "6.0.0-alpha.10",
+    "@react-native-firebase/app": "6.0.0-alpha.10",
     "react": "16.8.1",
-    "react-native": "0.59.5",
-    "@react-native-firebase/app": "6.0.0-alpha.8",
-    "@react-native-firebase/analytics": "6.0.0-alpha.8"
+    "react-native": "0.59.5"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/runtime": "^7.3.1",
-    "@react-native-community/eslint-config": "^0.0.3",
     "@react-native-community/cli": "2.0.0-alpha.13",
+    "@react-native-community/eslint-config": "^0.0.3",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
     "metro-react-native-babel-preset": "^0.51.1",
-    "react-test-renderer": "16.8.1",
-    "patch-package": "^6.1.0"
+    "patch-package": "^6.1.0",
+    "react-test-renderer": "16.8.1"
   },
   "jest": {
     "preset": "react-native"
