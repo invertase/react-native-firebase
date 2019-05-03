@@ -35,9 +35,9 @@ react-native link @react-native-firebase/utils
 
 ## Documentation
 
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=utils)
- - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/utils)
- - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/utils/reference)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=utils)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/utils)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/utils/reference)
 
 ## License
 
