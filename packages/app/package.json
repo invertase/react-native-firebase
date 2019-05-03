@@ -61,7 +61,7 @@
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
   },
-  "gitHead": "bfe0f05ab36fdd20df3470a71a9ee8c5a938baf6",
+  "gitHead": "832835bc23987d794520996b23468870f343ef80",
   "publishConfig": {
     "access": "public"
   }
