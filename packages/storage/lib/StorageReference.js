@@ -200,7 +200,7 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
   getFile(filePath) {
-    // TODO(salakar) validate arg
+    // TODO(salakar) validate arg?
     return new StorageDownloadTask(this, task =>
       this._storage.native.getFile(this.toString(), filePath, task._id),
     );

@@ -570,15 +570,7 @@ export namespace Storage {
    */
   export interface Reference {
     // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
-    // TODO(salakar) -----\/
+
     bucket: string;
 
     parent: Reference | null;
@@ -857,7 +849,7 @@ export namespace Storage {
      * await firebase.storage().setMaxUploadRetryTime(5000);
      * ```
      *
-     * @param time Number of miliseconds.... TODO
+     * @param time Number of milliseconds.... TODO
      */
     setMaxUploadRetryTime(time: number): Promise<null>;
 
