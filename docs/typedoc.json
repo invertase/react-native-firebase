@@ -13893,7 +13893,7 @@
 					},
 					"comment": {
 						"shortText": "A TaskSnapshot provides information about a storage tasks state.",
-						"text": "#### Example 1\n\n```\nfirebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }))\n  .then((taskSnapshot) => {\n    if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {\n      console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);\n    }\n  });\n```\n\n#### Example 2\n\n```\nconst task = firebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }));\n\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n"
+						"text": "#### Example 1\n\n```js\nfirebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }))\n  .then((taskSnapshot) => {\n    if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {\n      console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);\n    }\n  });\n```\n\n#### Example 2\n\n```js\nconst task = firebase\n  .storage()\n  .ref('/foo/bar.json')\n  .putString(JSON.stringify({ foo: 'bar' }));\n\ntask.on('state_changed', taskSnapshot => {\n  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {\n    console.log('Resuming my task!');\n    task.resume();\n  }\n});\n```\n"
 					},
 					"children": [
 						{

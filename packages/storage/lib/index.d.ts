@@ -729,7 +729,7 @@ export namespace Storage {
    *
    * #### Example 1
    *
-   * ```
+   * ```js
    * firebase
    *   .storage()
    *   .ref('/foo/bar.json')
@@ -743,7 +743,7 @@ export namespace Storage {
    *
    * #### Example 2
    *
-   * ```
+   * ```js
    * const task = firebase
    *   .storage()
    *   .ref('/foo/bar.json')
