@@ -54,7 +54,7 @@ async function order() {
 }
 ```
 
-Looking for a more in-depth explanations? Our [Cloud Functions](/guides?tag=functions) guides have you covered.
+Looking for a more in-depth explanations? Our [Cloud Functions](/guides?tags=functions) guides have you covered.
 
 ### Local emulator
 

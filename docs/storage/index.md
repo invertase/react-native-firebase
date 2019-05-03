@@ -26,7 +26,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=storage"
+		to="/guides?tags=storage"
 	>
 	  TODO
 	</Block>

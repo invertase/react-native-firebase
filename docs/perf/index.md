@@ -27,7 +27,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=perf"
+		to="/guides?tags=perf"
 	>
 	  Our guides walk you through some of the ways Performance Monitoring can be to gain deeper insight into your applications 
     performance.

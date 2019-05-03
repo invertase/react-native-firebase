@@ -27,7 +27,7 @@ performance and offline capabilities.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=firestore"
+		to="/guides?tags=firestore"
 	>
     Cloud Firestore offers a range of powerful features. Our guides cover both beginner and advanced topics
     to get started with.

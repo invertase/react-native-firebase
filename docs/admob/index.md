@@ -31,7 +31,7 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=admob"
+		to="/guides?tags=admob"
 	>
     The AdMob package provides a simple API to get started. Learn how to take full advantage of AdMob with our guides.
 	</Block>

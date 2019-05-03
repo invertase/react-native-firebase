@@ -23,7 +23,7 @@ TODO
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=notifications"
+		to="/guides?tags=notifications"
 	>
 	  TODO
 	</Block>

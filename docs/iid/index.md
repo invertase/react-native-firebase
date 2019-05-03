@@ -24,7 +24,7 @@ your app's server side managed resources, for example sending FCM messages.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=perf"
+		to="/guides?tags=perf"
 	>
 	  Understand how Instance ID can be used with your application and server side systems.
 	</Block>

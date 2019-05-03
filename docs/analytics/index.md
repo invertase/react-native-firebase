@@ -36,7 +36,7 @@ device information, location, user actions and more.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=analytics"
+		to="/guides?tags=analytics"
 	>
     Analytics works great out of the box, however provides a powerful API to gain full analytical insight into 
     your application. Our guides cover topics from the basics to advanced integration techiques.

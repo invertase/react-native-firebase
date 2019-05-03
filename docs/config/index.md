@@ -28,7 +28,7 @@ effect within your application.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=config"
+		to="/guides?tags=config"
 	>
 	  Remote Config has a wide range of use-cases. Our guides cover various scenarios on how to integrate it into your
 	  application with real-world application.
