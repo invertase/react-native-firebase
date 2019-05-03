@@ -41,6 +41,8 @@ extern NSString *const DEFAULT_APP_NAME;
 #pragma mark -
 #pragma mark Methods
 
++ (NSString *)getAppJavaScriptName:(NSString *)appDisplayName;
+
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp;
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;

@@ -22,16 +22,58 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firebase In-App Messaging helps you engage users who are actively using your app by sending
- * them targeted and contextual messages that nudge them to complete key in-app actions - like
- * beating a game level, buying an item, or subscribing to content.
+ * Firebase In-App Messaging package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `fiam` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/fiam';
+ *
+ * // firebase.fiam().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `fiam` package:
+ *
+ * ```js
+ * import fiam from '@react-native-firebase/fiam';
+ *
+ * // fiam().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/fiam';
+ *
+ * // firebase.fiam().X
+ * ```
  *
  * @firebase fiam
  */
 export namespace Fiam {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase In-App Messaging service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the  In-App Messaging service for the default app:
+   *
+   * ```js
+   * const defaultAppFiam = firebase.fiam();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Determines whether messages are suppressed or not.
      *

@@ -21,25 +21,26 @@
     "@react-native-firebase/mlkit": "6.0.0-alpha.9",
     "@react-native-firebase/perf": "6.0.0-alpha.9",
     "@react-native-firebase/utils": "6.0.0-alpha.9",
-    "detox": "10.0.13",
-    "jet": "^0.3.0",
-    "mocha": "^5.2.0",
-    "prop-types": "^15.6.1",
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
-    "react-native": "0.59.0",
-    "react-native-camera": "^1.10.1",
-    "require-all": "3.0.0",
-    "should": "^13.2.3",
-    "should-sinon": "0.0.6",
-    "sinon": "^6.2.0"
+    "@react-native-firebase/storage": "6.0.0-alpha.9",
+    "prop-types": "^15.7.2",
+    "react": "16.8.1",
+    "react-dom": "16.8.1",
+    "react-native": "0.59.5",
+    "react-native-camera": "^2.2.0"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-helpers": "^0.0.8",
+    "jet": "^0.3.0",
+    "mocha": "^6.0.2",
+    "detox": "12.5.0",
+    "sinon": "^7.3.1",
+    "should-sinon": "0.0.6",
+    "should": "^13.2.3",
+    "require-all": "3.0.0",
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.1.1",
-    "nyc": "^13.1.0",
-    "patch-package": "^5.1.2"
+    "nyc": "^13.3.0",
+    "patch-package": "^6.1.0"
   },
   "nyc": {
     "check-coverage": false,
@@ -52,6 +53,7 @@
     ],
     "exclude": [
       "node_modules",
+      "packages/**/node_modules/**",
       "**/common/lib/**",
       "**/internal/registry/**",
       "**/lib/handlers.js"
@@ -85,7 +87,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X"
       },

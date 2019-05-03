@@ -22,9 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
- * app without requiring users to download an app update. When using Remote Config, you create in-app default
- * values that control the behavior and appearance of your app.
+ * Firebase Remote Config package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `config` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/config';
+ *
+ * // firebase.config().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `config` package:
+ *
+ * ```js
+ * import config from '@react-native-firebase/config';
+ *
+ * // config().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/config';
+ *
+ * // firebase.config().X
+ * ```
  *
  * @firebase config
  */
@@ -146,7 +175,20 @@ export namespace Config {
     [key: string]: number | string | boolean;
   }
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase Remote Config service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the Remote Config service for the default app:
+   *
+   * ```js
+   * const defaultAppRemoteConfig = firebase.config();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Moves fetched data to the apps active config.
      * Resolves with a boolean value of whether the fetched config was moved successfully.

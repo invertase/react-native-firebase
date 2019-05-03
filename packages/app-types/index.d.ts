@@ -175,7 +175,7 @@ export interface ReactNativeFirebaseNamespace {
   readonly SDK_VERSION: string;
 }
 
-export interface ReactNativeFirebaseModule {
+export class ReactNativeFirebaseModule {
   app: FirebaseApp;
 }
 

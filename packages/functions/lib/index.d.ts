@@ -22,10 +22,38 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * The Cloud Functions for Firebase client SDKs let you call functions
- * directly from a Firebase app. To call a function from your app in this way,
- * write and deploy an HTTPS Callable function in Cloud Functions,
- * and then add client logic to call the function from your app.
+ * Firebase Cloud Functions package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `functions` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/functions';
+ *
+ * // firebase.functions().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `functions` package:
+ *
+ * ```js
+ * import functions from '@react-native-firebase/functions';
+ *
+ * // functions().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/functions';
+ *
+ * // firebase.functions().X
+ * ```
  *
  * @firebase functions
  */
@@ -218,7 +246,7 @@ export namespace Functions {
    */
   export interface Statics {
     /**
-     * Uppercase + underscored variables of @Functions.FunctionsErrorCode
+     * Uppercase + underscored variables of {@link functions.FunctionsErrorCode}
      *
      * #### Example
      *
@@ -227,13 +255,45 @@ export namespace Functions {
      * firebase.functions.HttpsErrorCode.NOT_FOUND;
      * ```
      */
-    HttpsErrorCode: {} & HttpsErrorCode;
+    HttpsErrorCode: HttpsErrorCode;
   }
 
   /**
-   * firebase.functions().X
+   * The Firebase Cloud Functions service is available for the default app, a given app or a specified region.
+   *
+   * > The default functions region for all apps is `us-central1`.
+   *
+   * #### Example 1
+   *
+   * Get the functions instance for the **default app**:
+   *
+   * ```js
+   * const functionsForDefaultApp = firebase.functions();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the functions instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const functionsForOtherApp = firebase.functions(otherApp);
+   * ```
+   *
+   * #### Example 3
+   *
+   * Get the functions instance for a **specific functions region**:
+   *
+   * ```js
+   * const defaultApp = firebase.app();
+   * const functionsForRegion = defaultApp.functions('europe-west1');
+   *
+   * const otherApp = firebase.app('otherApp');
+   * const functionsForOtherAppRegion = otherApp.functions('europe-west1');
+   * ```
+   *
    */
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Gets an `HttpsCallable` instance that refers to the function with the given
      * name.

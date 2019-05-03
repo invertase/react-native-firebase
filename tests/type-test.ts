@@ -1,17 +1,38 @@
-import '@react-native-firebase/config';
+import '@react-native-firebase/storage';
+import '@react-native-firebase/perf';
 import '@react-native-firebase/functions';
-import '@react-native-firebase/invites';
+
 import { firebase } from '@react-native-firebase/analytics';
 
 const foo = async () => {
-  await firebase.config().activateFetched();
-  await firebase.config().fetch(0);
-  await firebase.config().fetch();
-  const settings = await firebase.config().getConfigSettings();
-  console.log(settings.isDeveloperModeEnabled);
-  console.log(settings.lastFetchStatus);
-  console.log(settings.lastFetchTime);
-  await firebase.config().setConfigSettings({ isDeveloperModeEnabled: false });
+  const task = firebase
+    .app()
+    .storage('gs://foo')
+    .ref('foo')
+    .putFile('');
+
+  task.finally
+
+  task.on(firebase.storage.TaskEvent.STATE_CHANGED, taskSnapshot => {
+    if (taskSnapshot.state === firebase.storage.TaskState.) {
+      console.log('cancelling task!');
+      taskSnapshot.task.cancel();
+    }
+  });
+
+  task.catch(e => {
+    return 'bar';
+  });
+
+  task.then(snapshot => {
+    snapshot.metadata.bucket;
+    return 'foo';
+  });
+
+  firebase.storage.TaskState.CANCELLED;
+  firebase.storage.TaskEvent.STATE_CHANGED;
+  firebase.perf().newHttpMetric('', 'GET');
+  // firebase.functions.HttpsErrorCode.ABORTED;
 };
 
 foo();
