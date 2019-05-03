@@ -36,7 +36,7 @@ React Native Firebase supports integration with production and locally emulated 
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=functions"
+		to="/guides?tags=functions"
 	>
     Combining an application with Cloud Functions allows for rapid development cycles. Our guides
     cover how to best utilize Cloud Firestore with other Firebase modules.

@@ -27,7 +27,7 @@ app to be installed.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=app"
+		to="/guides?tags=app"
 	>
     Our guides explian how to take advantage of multiple app instances with Firebase.
 	</Block>

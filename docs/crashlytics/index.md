@@ -28,7 +28,7 @@ application.
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=crashlytics"
+		to="/guides?tags=crashlytics"
 	>
     Ensuring crash reports contain the right information to help you debug and fix the issue is crtical to providing
     a stable application. Our guides cover tips and tricks for integrating Crashlytics sucessfully.

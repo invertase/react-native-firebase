@@ -26,7 +26,7 @@ React Native Firebase provides access to all Firebase authentication methods and
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=auth"
+		to="/guides?tags=auth"
 	>
     Looking for advanced authentication help? Our indepth guides cover topics such as social integration.
 	</Block>

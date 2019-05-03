@@ -30,7 +30,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=messaging"
+		to="/guides?tags=messaging"
 	>
 	  Firebase Cloud Messaging is powerful tool to empower your application. Our guides cover various ways it can be integrated
 	  on your application and backend systems.

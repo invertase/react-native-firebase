@@ -86,7 +86,7 @@ The user is able to clear their state by deleting the apps data/cache from the d
 React Native Firebase provides access to the majority of authentication providers available, including social providers
 including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
 
-*Our [guides](/guides?tag=auth) provide more in-depth explanations on provides and how to integrate them into your application.* 
+*Our [guides](/guides?tags=auth) provide more in-depth explanations on provides and how to integrate them into your application.* 
 
 #### Anonymous Sign In
 

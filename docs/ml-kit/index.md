@@ -25,7 +25,7 @@ Firebase ML Kit brings the power of machine learning to your React Native applic
 		color="#4CAF50"
 		title="Guides"
 		version={false}
-		to="/guides?tag=mlkit"
+		to="/guides?tags=mlkit"
 	>
 	  Our guides 
 	</Block>
