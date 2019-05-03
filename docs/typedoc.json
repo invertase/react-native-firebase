@@ -13301,7 +13301,7 @@
 																	"flags": {},
 																	"type": {
 																		"type": "reference",
-																		"name": "Error"
+																		"name": "NativeFirebaseError"
 																	}
 																}
 															],
@@ -13475,7 +13475,7 @@
 																			"flags": {},
 																			"type": {
 																				"type": "reference",
-																				"name": "Error"
+																				"name": "NativeFirebaseError"
 																			}
 																		}
 																	],
@@ -13758,7 +13758,7 @@
 																			"flags": {},
 																			"type": {
 																				"type": "reference",
-																				"name": "Error"
+																				"name": "NativeFirebaseError"
 																			}
 																		}
 																	],
@@ -14201,7 +14201,7 @@
 													"flags": {},
 													"type": {
 														"type": "reference",
-														"name": "Error"
+														"name": "NativeFirebaseError"
 													}
 												}
 											],

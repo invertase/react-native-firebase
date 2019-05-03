@@ -605,7 +605,7 @@ export namespace Storage {
   export interface TaskSnapshotObserver {
     next: (taskSnapshot: TaskSnapshot) => void;
 
-    error: (error: Error) => void;
+    error: (error: NativeFirebaseError) => void;
 
     complete: () => void;
   }
@@ -707,7 +707,7 @@ export namespace Storage {
     on(
       event: 'state_changed',
       nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
-      error?: ((a: Error) => any) | null,
+      error?: ((a: NativeFirebaseError) => any) | null,
       complete?: (() => void) | null,
     ): Function;
 
@@ -718,10 +718,10 @@ export namespace Storage {
 
     then(
       onFulfilled?: ((a: TaskSnapshot) => any) | null,
-      onRejected?: ((a: Error) => any) | null,
+      onRejected?: ((a: NativeFirebaseError) => any) | null,
     ): Promise<any>;
 
-    catch(onRejected: (a: Error) => any): Promise<any>;
+    catch(onRejected: (a: NativeFirebaseError) => any): Promise<any>;
   }
 
   /**
