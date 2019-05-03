@@ -5,6 +5,7 @@
   ],
   "packages": [
     "packages/*",
+    "packages/template/project",
     "tests"
   ],
   "useWorkspaces": true,
@@ -15,5 +16,5 @@
       ]
     }
   },
-  "version": "6.0.0-alpha.9"
+  "version": "6.0.0-alpha.10"
 }
