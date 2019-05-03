@@ -928,11 +928,18 @@ declare module 'react-native-firebase' {
       verificationId: string | null;
     }
 
+    interface NativeError extends Error {
+      code: string;
+      message: string;
+      nativeErrorCode?: string;
+      nativeErrorMessage?: string;
+    }
+
     type PhoneAuthSnapshot = {
       state: 'sent' | 'timeout' | 'verified' | 'error';
       verificationId: string;
       code: string | null;
-      error: Error | null;
+      error: NativeError | null;
     };
 
     type PhoneAuthError = {

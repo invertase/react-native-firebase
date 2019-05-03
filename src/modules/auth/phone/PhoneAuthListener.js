@@ -12,12 +12,13 @@ import {
 import { getNativeModule } from '../../../utils/native';
 
 import type Auth from '..';
+import type { NativeErrorInterface } from '../../../common/commonTypes.flow';
 
 type PhoneAuthSnapshot = {
   state: 'sent' | 'timeout' | 'verified' | 'error',
   verificationId: string,
   code: string | null,
-  error: Error | null,
+  error: NativeErrorInterface | null,
 };
 
 type PhoneAuthError = {
