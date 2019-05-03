@@ -35,9 +35,9 @@ react-native link @react-native-firebase/perf
 
 ## Documentation
 
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=perf)
- - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/perf)
- - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/perf/reference)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=perf)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/perf)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/perf/reference)
 
 ## License
 

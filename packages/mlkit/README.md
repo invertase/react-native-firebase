@@ -41,9 +41,9 @@ react-native link @react-native-firebase/mlkit
 
 ## Documentation
 
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=ml-kit)
- - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/ml-kit)
- - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/ml-kit/reference)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=ml-kit)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/ml-kit)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/ml-kit/reference)
 
 ## License
 

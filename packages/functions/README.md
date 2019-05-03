@@ -37,9 +37,9 @@ react-native link @react-native-firebase/functions
 
 ## Documentation
 
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=functions)
- - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/functions)
- - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/functions/reference)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=functions)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/functions)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/functions/reference)
 
 ## License
 

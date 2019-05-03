@@ -40,9 +40,9 @@ react-native link @react-native-firebase/analytics
 
 ## Documentation
 
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=analytics)
- - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/analytics)
- - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/analytics/reference)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=analytics)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/analytics)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/analytics/reference)
 
 ## License
 

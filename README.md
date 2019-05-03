@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://dev.invertase.io/oss/react-native-firebase">
+  <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h4 align="center">React Native Firebase</h2>
@@ -78,20 +78,20 @@ React Native Firebase also publishes several other packages, some only used inte
 
 ## Documentation
 
- - [Overview](https://dev.invertase.io/oss/react-native-firebase)
- - [Quick Start](https://dev.invertase.io/oss/react-native-firebase/quick-start)
- - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides)
- - [Modules](https://dev.invertase.io/oss/react-native-firebase/v6)
+ - [Overview](https://invertase.io/oss/react-native-firebase)
+ - [Quick Start](https://invertase.io/oss/react-native-firebase/quick-start)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides)
+ - [Modules](https://invertase.io/oss/react-native-firebase/v6)
 
 ## Contributing
 
- - [Overview](https://dev.invertase.io/oss/react-native-firebase/contributing)
- - [Issues & PRs](https://dev.invertase.io/oss/react-native-firebase/contributing/issues-prs)
- - [Documentation](https://dev.invertase.io/oss/react-native-firebase/contributing/documentation)
- - [Code & Testing](https://dev.invertase.io/oss/react-native-firebase/contributing/code-testing)
- - [Marketing & Content](https://dev.invertase.io/oss/react-native-firebase/contributing/marketing-content)
- - [Community](https://dev.invertase.io/oss/react-native-firebase/contributing/community)
- - [Donating](https://dev.invertase.io/oss/react-native-firebase/contributing/donating)
+ - [Overview](https://invertase.io/oss/react-native-firebase/contributing)
+ - [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs)
+ - [Documentation](https://invertase.io/oss/react-native-firebase/contributing/documentation)
+ - [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing)
+ - [Marketing & Content](https://invertase.io/oss/react-native-firebase/contributing/marketing-content)
+ - [Community](https://invertase.io/oss/react-native-firebase/contributing/community)
+ - [Donating](https://invertase.io/oss/react-native-firebase/contributing/donating)
  - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
