@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -38,6 +39,12 @@ function requirePackageTests(packageName) {
   }
 }
 
+Object.defineProperty(global, 'A2A', {
+  get() {
+    return require('a2a');
+  },
+});
+
 Object.defineProperty(global, 'firebase', {
   get() {
     return jet.module;
@@ -55,5 +62,7 @@ Object.defineProperty(global, 'NativeEventEmitter', {
     return jet.NativeEventEmitter;
   },
 });
+
+global.isCI = !!process.env.CI;
 
 module.exports.requirePackageTests = requirePackageTests;

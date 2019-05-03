@@ -29,7 +29,9 @@ import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/fiam';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/mlkit';
+import '@react-native-firebase/storage';
 import '@react-native-firebase/iid';
+import '@react-native-firebase/invites';
 import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
 
@@ -49,6 +51,7 @@ class Root extends Component {
 
   render() {
     const { currentTest } = this.state;
+
     if (!currentTest) {
       return (
         <View style={[styles.container, styles.horizontal]}>

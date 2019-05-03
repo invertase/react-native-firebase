@@ -29,9 +29,7 @@ const namespace = 'firestore';
 
 const nativeModuleName = 'RNFBFirestoreModule';
 
-class FirebaseFirestoreModule extends FirebaseModule {
-
-}
+class FirebaseFirestoreModule extends FirebaseModule {}
 
 // import { SDK_VERSION } from '@react-native-firebase/firestore';
 export const SDK_VERSION = version;

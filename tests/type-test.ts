@@ -1,28 +1,38 @@
-import firebase from 'react-native-firebase';
-import '@react-native-firebase/iid';
-import analytics, { Analytics } from '@react-native-firebase/analytics';
-import functions, {
-  firebase as boopy,
-  Functions,
-  HttpsErrorCode,
-} from '@react-native-firebase/functions';
+import '@react-native-firebase/storage';
+import '@react-native-firebase/perf';
+import '@react-native-firebase/functions';
 
-boopy.apps[0].options.projectId;
-analytics.SDK_VERSION;
-functions.SDK_VERSION;
-const httpsCallable = firebase.functions(firebase.app()).httpsCallable('foo');
-functions;
+import { firebase } from '@react-native-firebase/analytics';
 
-firebase.iid().get();
-firebase.analytics().resetAnalyticsData();
+const foo = async () => {
+  const task = firebase
+    .app()
+    .storage('gs://foo')
+    .ref('foo')
+    .putFile('');
 
-httpsCallable({ foo: 1 })
-  .then(result => {
-    result.data;
-  })
-  .catch((error: Functions.HttpsError) => {
-    const foo = {} as Analytics.Module;
-    error.details;
-    foo.logEvent('shoopy', {});
-    HttpsErrorCode.NOT_FOUND;
+  task.finally
+
+  task.on(firebase.storage.TaskEvent.STATE_CHANGED, taskSnapshot => {
+    if (taskSnapshot.state === firebase.storage.TaskState.) {
+      console.log('cancelling task!');
+      taskSnapshot.task.cancel();
+    }
   });
+
+  task.catch(e => {
+    return 'bar';
+  });
+
+  task.then(snapshot => {
+    snapshot.metadata.bucket;
+    return 'foo';
+  });
+
+  firebase.storage.TaskState.CANCELLED;
+  firebase.storage.TaskEvent.STATE_CHANGED;
+  firebase.perf().newHttpMetric('', 'GET');
+  // firebase.functions.HttpsErrorCode.ABORTED;
+};
+
+foo();

@@ -22,14 +22,58 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Mlkit
+ * Firebase ML Kit package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `mlkit` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/mlkit';
+ *
+ * // firebase.mlkit().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `mlkit` package:
+ *
+ * ```js
+ * import mlkit from '@react-native-firebase/mlkit';
+ *
+ * // mlkit().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/mlkit';
+ *
+ * // firebase.mlkit().X
+ * ```
  *
  * @firebase mlkit
  */
 export namespace Mlkit {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase ML Kit service interface.
+   *
+   * > This module is available for the default app only.
+   *
+   * #### Example
+   *
+   * Get the ML Kit service for the default app:
+   *
+   * ```js
+   * const defaultAppMLKit = firebase.mlkit();
+   * ```
+   */
+  export class Module extends ReactNativeFirebaseModule {
 
   }
 }

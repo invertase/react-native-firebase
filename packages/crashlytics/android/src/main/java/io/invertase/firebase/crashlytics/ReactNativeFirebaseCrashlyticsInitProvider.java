@@ -34,7 +34,6 @@ import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_AUTO_C
 import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_DEBUG_ENABLED;
 import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_NDK_ENABLED;
 
-@SuppressWarnings("NullableProblems")
 public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFirebaseInitProvider {
   private static final String TAG = "RNFBCrashlyticsInit";
 
@@ -72,14 +71,14 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
       try {
         Fabric.Builder builder = new Fabric.Builder(getContext());
 
-        CrashlyticsCore crashlyticsCore = new CrashlyticsCore.Builder()
-          .disabled(false)
+        Crashlytics crashlyticsCore = new Crashlytics.Builder()
+          .core(new CrashlyticsCore.Builder().disabled(!debug && BuildConfig.DEBUG).build())
           .build();
 
         if (useNdk) {
-          builder.kits(new Crashlytics.Builder().core(crashlyticsCore).build(), new CrashlyticsNdk());
+          builder.kits(crashlyticsCore, new CrashlyticsNdk());
         } else {
-          builder.kits(new Crashlytics.Builder().core(crashlyticsCore).build());
+          builder.kits(crashlyticsCore);
         }
 
         builder.debuggable(debug);

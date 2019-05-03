@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,13 +16,14 @@
  *
  */
 
-// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE BEEN WARNED 🙃
+// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE
+// BEEN WARNED 🙃
 require('@react-native-firebase/private-tests-helpers');
 
 const detox = require('detox');
+const jet = require('jet/platform/node');
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
-const jet = require('jet/platform/node');
 
 const PACKAGES = [
   'app',
@@ -33,19 +35,19 @@ const PACKAGES = [
   'config',
   'crashlytics',
   'utils',
-  'mlkit',
+  // 'mlkit',
+  'invites',
+  'fiam',
   // 'auth',
   // 'firestore',
-  // 'fiam',
   // 'links',
   // 'messaging',
-  // 'storage',
+  'storage',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
   requirePackageTests(PACKAGES[i]);
 }
-
 before(async () => {
   await detox.init(config);
   await jet.init();
@@ -63,7 +65,7 @@ beforeEach(async function beforeEach() {
   if (retry > 0) {
     if (retry === 1) {
       console.log('');
-      console.warn(`⚠️ A test failed:`);
+      console.warn('⚠️ A test failed:');
       console.warn(`️   ->  ${this.currentTest.title}`);
     }
 

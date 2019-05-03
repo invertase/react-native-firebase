@@ -23,11 +23,20 @@
 NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
+
 @implementation RNFBSharedUtils
   static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
+
+  + (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
+    if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
+      return DEFAULT_APP_DISPLAY_NAME;
+    }
+    return appDisplayName;
+  }
+
 
   + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
     FIROptions *firOptions = [firApp options];
@@ -72,16 +81,11 @@ NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
     NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
 
-    // TODO hook into crashlytics - report as handled exception?
-
     reject(exception.name, exception.reason, error);
   }
 
   + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo; {
     NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-
-    // TODO hook into crashlytics - report as handled exception?
-
     reject(userInfo[@"code"], userInfo[@"message"], error);
   }
 @end

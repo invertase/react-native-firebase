@@ -20,7 +20,7 @@ import {ReactNativeFirebaseNamespace} from "@react-native-firebase/app-types";
 /**
  * @firebase firebase
  */
-declare module 'react-native-firebase' {
+declare module '@react-native-firebase/app' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
   const ReactNativeFirebase: {} & ReactNativeFirebaseNamespace;
   export default ReactNativeFirebase;

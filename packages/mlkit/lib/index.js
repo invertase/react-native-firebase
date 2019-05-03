@@ -29,9 +29,7 @@ const namespace = 'mlkit';
 
 const nativeModuleName = 'RNFBMlkitModule';
 
-class FirebaseMlkitModule extends FirebaseModule {
-
-}
+class FirebaseMlkitModule extends FirebaseModule {}
 
 // import { SDK_VERSION } from '@react-native-firebase/mlkit';
 export const SDK_VERSION = version;

@@ -35,8 +35,8 @@ describe('config', () => {
   });
 
   describe('prefs', () => {
-    beforeEach(async ()=> {
-      await NativeModules.RNFBAppModule.preferencesClearAll()
+    beforeEach(async () => {
+      await NativeModules.RNFBAppModule.preferencesClearAll();
     });
 
     it('should set bool values', async () => {
@@ -65,5 +65,4 @@ describe('config', () => {
       should.equal(prefsAfter.invertase_oss, undefined);
     });
   });
-
 });

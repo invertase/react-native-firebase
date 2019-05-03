@@ -19,6 +19,7 @@ export * from './constants';
 export * from './registry/app';
 export * from './registry/namespace';
 export * from './registry/nativeModule';
-export { default as FirebaseModule } from './FirebaseModule';
 export { default as FirebaseApp } from '../FirebaseApp';
+export { default as FirebaseModule } from './FirebaseModule';
 export { default as SharedEventEmitter } from './SharedEventEmitter';
+export { default as NativeFirebaseError } from './NativeFirebaseError';

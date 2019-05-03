@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/utils",
-  "version": "6.0.0-alpha.5",
+  "version": "6.0.0-alpha.9",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Utils",
   "main": "lib/index.js",
@@ -29,17 +29,10 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.5",
-    "@react-native-firebase/common": "6.0.0-alpha.5"
+    "@react-native-firebase/app-types": "6.0.0-alpha.9",
+    "@react-native-firebase/common": "6.0.0-alpha.9"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_utils')",
-      "packageImportPath": "import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;",
-      "packageInstance": "new ReactNativeFirebaseUtilsPackage()"
-    }
-  },
-  "gitHead": "5639356e43de05f7d558e7594d26b7d1c90ec586",
+  "gitHead": "bfe0f05ab36fdd20df3470a71a9ee8c5a938baf6",
   "publishConfig": {
     "access": "public"
   }

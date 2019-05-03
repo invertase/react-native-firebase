@@ -20,6 +20,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
+#import <RNFBInvites/RNFBInvitesModule.h>
 
 @import Firebase;
 
@@ -43,13 +44,21 @@
     [self.window makeKeyAndVisible];
     return YES;
   }
-//
-//- (BOOL)application:(UIApplication *)application
-//continueUserActivity:(NSUserActivity *)userActivity
-// restorationHandler:(void (^)(NSArray *))restorationHandler {
-//  return [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-//}
-//
+
+  - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
+    return [RNFBInvitesModule application:application openURL:url options:options];
+  }
+
+  - (BOOL)application:(nonnull UIApplication *)application continueUserActivity :(nonnull NSUserActivity *)userActivity restorationHandler:
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+      (nonnull void (^)(NSArray<id <UIUserActivityRestoring>> *_Nullable))restorationHandler {
+    #else
+      (nonnull void (^)(NSArray *_Nullable))restorationHandler {
+    #endif
+    return [RNFBInvitesModule application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+  }
+
+
 //- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 //fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 //  [[RNFirebaseNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];

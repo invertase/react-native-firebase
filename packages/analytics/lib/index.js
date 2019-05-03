@@ -20,14 +20,13 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
 import {
+  isAlphaNumericUnderscore,
   isNull,
   isObject,
-  isUndefined,
-  isString,
   isOneOf,
-  isAlphaNumericUnderscore,
+  isString,
+  isUndefined,
 } from '@react-native-firebase/common';
 
 import version from './version';
@@ -84,11 +83,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     // maximum number of allowed params check
     if (params && Object.keys(params).length > 25)
-      throw new Error('firebase.analytics().logEvent(_, *): Maximum number of parameters exceeded (25).');
+      throw new Error(
+        'firebase.analytics().logEvent(_, *): Maximum number of parameters exceeded (25).',
+      );
 
-    // Parameter names can be up to 24 characters long and must start with an alphabetic character
-    // and contain only alphanumeric characters and underscores. Only String, long and double param
-    // types are supported. String parameter values can be up to 36 characters long. The "firebase_"
+    // Parameter names can be up to 24 characters long and must start with an
+    // alphabetic character and contain only alphanumeric characters and
+    // underscores. Only String, long and double param types are supported.
+    // String parameter values can be up to 36 characters long. The "firebase_"
     // prefix is reserved and should not be used for parameter names.
     return this.native.logEvent(name, params);
   }
@@ -121,7 +123,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
-      throw new Error('firebase.analytics().setUserId(*): The supplied userId must be a string value or null.');
+      throw new Error(
+        'firebase.analytics().setUserId(*): The supplied userId must be a string value or null.',
+      );
     }
 
     return this.native.setUserId(id);
@@ -129,7 +133,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperty(name, value) {
     if (!isString(name)) {
-      throw new Error('firebase.analytics().setUserProperty(*): The supplied property name must be a string.');
+      throw new Error(
+        'firebase.analytics().setUserProperty(*): The supplied property name must be a string.',
+      );
     }
 
     if (value !== null && !isString(value)) {

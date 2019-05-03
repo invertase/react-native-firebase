@@ -22,14 +22,66 @@ import {
 } from '@react-native-firebase/app-types';
 
 /**
- * Firestore
+ * Firebase Cloud Firestore package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `firestore` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/firestore';
+ *
+ * // firebase.firestore().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `firestore` package:
+ *
+ * ```js
+ * import firestore from '@react-native-firebase/firestore';
+ *
+ * // firestore().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/firestore';
+ *
+ * // firebase.firestore().X
+ * ```
  *
  * @firebase firestore
  */
 export namespace Firestore {
   export interface Statics {}
 
-  export interface Module extends ReactNativeFirebaseModule {
+  /**
+   * The Firebase Cloud Firestore service is available for the default app or a given app.
+   *
+   * #### Example 1
+   *
+   * Get the firestore instance for the **default app**:
+   *
+   * ```js
+   * const firestoreForDefaultApp = firebase.firestore();
+   * ```
+   *
+   * #### Example 2
+   *
+   * Get the firestore instance for a **secondary app**:
+   *
+   * ```js
+   * const otherApp = firebase.app('otherApp');
+   * const firestoreForOtherApp = firebase.firestore(otherApp);
+   * ```
+   *
+   */
+  export class Module extends ReactNativeFirebaseModule {
 
   }
 }

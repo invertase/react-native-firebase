@@ -29,9 +29,9 @@ react-native link @react-native-firebase/app
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://dev.invertase.io/oss/react-native-firebase/guides?tags=app)
+ - [Installation](https://dev.invertase.io/oss/react-native-firebase/v6/app)
+ - [Reference](https://dev.invertase.io/oss/react-native-firebase/v6/app/reference)
 
 ## License
 

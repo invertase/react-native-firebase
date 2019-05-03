@@ -64,7 +64,9 @@ const config = {
     ),
   },
   serializer: {
-    getModulesRunBeforeMainModule: () => [require.resolve(join(reactNativePath, 'Libraries/Core/InitializeCore'))],
+    getModulesRunBeforeMainModule: () => [
+      require.resolve(join(reactNativePath, 'Libraries/Core/InitializeCore')),
+    ],
     getPolyfills: () => require(join(reactNativePath, 'rn-get-polyfills'))(),
   },
   server: {
