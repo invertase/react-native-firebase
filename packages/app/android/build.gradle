@@ -29,7 +29,8 @@ project.ext {
       ],
 
       firebase          : [
-        core: "16.0.8"
+        core: "16.0.8",
+        common: "16.1.0"
       ],
     ],
   ])
@@ -56,6 +57,7 @@ repositories {
 
 dependencies {
   implementation "com.google.firebase:firebase-core:${ReactNative.ext.getVersion("firebase", "core")}"
+  implementation "com.google.firebase:firebase-common:${ReactNative.ext.getVersion("firebase", "common")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 
