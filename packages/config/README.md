@@ -35,9 +35,9 @@ react-native link @react-native-firebase/config
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=config)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/config)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/config/reference)
 
 ## License
 

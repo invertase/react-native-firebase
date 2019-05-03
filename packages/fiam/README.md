@@ -35,9 +35,9 @@ react-native link @react-native-firebase/fiam
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=fiam)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/fiam)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/fiam/reference)
 
 ## License
 

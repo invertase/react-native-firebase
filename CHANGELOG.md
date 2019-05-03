@@ -13,6 +13,7 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | ---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: |
 | [Analytics](/packages/analytics)         |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics)   |   [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail)   |
 | [App](/packages/app)                     |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)         |         [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)         |
+| [App Invites](/packages/invites)         |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)     |     [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)     |
 | [Cloud Functions](/packages/functions)   |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)   |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
 | [Crashlytics](/packages/crashlytics)     | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics) | [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail) |
 | [In-app Messaging](/packages/fiam)       |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)        |        [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)        |
@@ -105,6 +106,11 @@ await analytics().setUserId('12345678');
 - [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
 - [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
 
+## App Invites
+
+- [NEW] Added `createInvitation(title: string, message: string)` method to replace construction an Invite from `new firebase.invites.Invitation` (this is still supported for now)
+- [WARNING] Deprecation notice printed when using Invites - it's now deprecated by Firebase and will be removed by January 2020 - the suggested migration path is switching to Dynamic Links and handling the sending of the link yourself.
+
 ## Analytics
 
 - [NEW] Added support for `resetAnalyticsData()`
@@ -112,6 +118,9 @@ await analytics().setUserId('12345678');
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
 
 ## Crashlytics
+
+> **Blog post announcement**: [[Firebase Crashlytics for React Native](https://invertase.io/blog/firebase-crashlytics-for-react-native?utm_source=github&utm_medium=changelog)]
+
 
 - [NEW] JavaScript stack traces now automatically captured and parsed
   ![js stack trace preview](https://pbs.twimg.com/media/D07RPDMW0AA7TTv.jpg:large)
@@ -135,7 +144,7 @@ await analytics().setUserId('12345678');
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
-## Functions <a href="https://api.rnfirebase.io/coverage/functions/detail"><img src="https://api.rnfirebase.io/coverage/functions/badge?style=flat-square" alt="Coverage"></a>
+## Functions
 
 - [BUGFIX] Fixed an issue where `useFunctionsEmulator` does not persist natively (Firebase iOS SDK requires chaining this method before other calls and does not modify the instance, Android however persists this)
 
@@ -156,8 +165,7 @@ await analytics().setUserId('12345678');
 - [BREAKING] `firebase.perf.Trace.incrementMetric` will now create a metric if it could not be found
 - [BREAKING] `firebase.perf.Trace.getMetric` will now return 0 if a metric could not be found
 - [NEW] Added support for `firebase.perf().isPerformanceCollectionEnabled: boolean`
-- [NEW] Added support for `firebase.perf.Trace.removeMetric(metricName: string)`
-- [NEW] Added support for `firebase.perf.Trace.getMetrics(): { [key: string]: number }`
+- [NEW] Added `firebase.perf().startTrace(identifier: string): Promise<Trace>;` as a convenience method to create and immediately start a Trace
 
 ## Remote Config (config)
 
@@ -170,6 +178,26 @@ await analytics().setUserId('12345678');
   - We're writing up a guide for this on the new documentation website, showing how to use the plist/xml defaults files on each platform
 - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
 - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
+
+## Storage
+
+<!-- TODO(salakar) change link -->
+> **Blog post announcement (NOT LIVE YET)**: [[Firebase Cloud Storage for React Native](https://invertase.io/blog?utm_source=github&utm_medium=changelog)]
+
+- [NEW] Added support for `put` (`Blob` | `ArrayBuffer` | `Uint8Array`)
+  - `contentType` mime type is automatically inferred from `Blob`
+- [NEW] Added support for `putString` and all StringFormat's (raw, base64, base64url & data_url)
+  - `contentType` mime type is automatically inferred from `data_url` strings
+- [NEW] Added support multiple buckets, e.g. `firebase.app().storage('gs://my-other-bucket')`
+- [NEW] Added support `pause()`, `resume()` & `cancel()` for Upload & Download Storage tasks
+- [NEW] Added an `error` property to TaskSnapshot's for `error` state events - this is an instance of `NativeFirebaseError` (with `code` & `message`)
+- [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
+- [BREAKING] `StorageReference.downloadFile()` is now deprecated and will be removed in a later release, please rename usages of this to `getFile()` - renamed to match Native SDKs
+- [BREAKING] `firebase.storage.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.storage.Path`
+- [BREAKING] `firebase.storage.Native.*` properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate
+- [BUGFIX][ANDROID] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
+- [BUGFIX][ANDROID] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
+- [INTERNAL][ANDROID] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
 
 ## Messaging
 

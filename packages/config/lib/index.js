@@ -22,13 +22,14 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import {
   hasOwnProperty,
-  isNumber,
-  isString,
-  isBoolean,
   isArray,
-  isUndefined,
+  isBoolean,
+  isNumber,
   isObject,
+  isString,
+  isUndefined,
 } from '@react-native-firebase/common';
+
 import version from './version';
 
 const statics = {};
@@ -187,7 +188,8 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
-   * Gets the FirebaseRemoteConfigValue array corresponding to the specified keys.
+   * Gets the FirebaseRemoteConfigValue array corresponding to the specified
+   * keys.
    *
    * @param keys
    */

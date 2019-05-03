@@ -11,13 +11,13 @@
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg?style=flat-square" alt="Backers on Open Collective"></a>
   <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg?style=flat-square" alt="Sponsors on Open Collective"></a>
-  <a href="https://discord.gg/C9aK28N"><img src="https://img.shields.io/discord/295953187817521152.svg?logo=discord&style=flat-square&colorA=7289da&label=discord" alt="Chat"></a>
+  <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?logo=discord&style=flat-square&colorA=7289da&label=discord" alt="Chat"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
 ---
 
-> **WARNING**: Master branch is the work in progress v6.0.0 version of React Native Firebase, you're probably looking for the current [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead, please send all PRs for the live version to that branch. You can [learn more about this here](https://blog.invertase.io/react-native-firebase-2019-7e334ca9bcc6).
+> **WARNING**: Master branch is the work in progress v6.0.0 version of React Native Firebase, you're probably looking for the current [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead, please send all PRs for the live version to that branch. You can [learn more about this here](https://invertase.io/blog/react-native-firebase-2019).
 
 ---
 
@@ -78,18 +78,25 @@ React Native Firebase also publishes several other packages, some only used inte
 
 ## Documentation
 
-- [Guides](#TODO)
-- [Installation](#TODO)
+ - [Overview](https://invertase.io/oss/react-native-firebase)
+ - [Quick Start](https://invertase.io/oss/react-native-firebase/quick-start)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides)
+ - [Modules](https://invertase.io/oss/react-native-firebase/v6)
 
 ## Contributing
 
-- [Contributing](/CONTRIBUTING.md)
-- [Code of Conduct](/CODE_OF_CONDUCT.md)
-- [Testing](/tests/README.md)
+ - [Overview](https://invertase.io/oss/react-native-firebase/contributing)
+ - [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs)
+ - [Documentation](https://invertase.io/oss/react-native-firebase/contributing/documentation)
+ - [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing)
+ - [Marketing & Content](https://invertase.io/oss/react-native-firebase/contributing/marketing-content)
+ - [Community](https://invertase.io/oss/react-native-firebase/contributing/community)
+ - [Donating](https://invertase.io/oss/react-native-firebase/contributing/donating)
+ - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
 
-- See [LICENSE](/LICENSE)
+ - See [LICENSE](/LICENSE)
 
 ---
 
@@ -97,4 +104,4 @@ Built and maintained with 💛 by [Invertase](https://invertase.io).
 
 - [💼 Hire Us](https://invertase.io/hire-us)
 - [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
-- [👩‍💻 Work With Us](https://invertase.io/jobs)
+

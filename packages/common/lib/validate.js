@@ -17,6 +17,19 @@
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
+export function objectKeyValuesAreStrings(object) {
+  if (!isObject(object)) return false;
+
+  const entries = Object.entries(object);
+
+  for (let i = 0; i < entries.length; i++) {
+    const [key, value] = entries[i];
+    if (!isString(key) || !isString(value)) return false;
+  }
+
+  return true;
+}
+
 /**
  * Simple is null check.
  *

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -61,5 +62,7 @@ Object.defineProperty(global, 'NativeEventEmitter', {
     return jet.NativeEventEmitter;
   },
 });
+
+global.isCI = !!process.env.CI;
 
 module.exports.requirePackageTests = requirePackageTests;

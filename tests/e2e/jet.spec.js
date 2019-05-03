@@ -107,10 +107,9 @@ describe('jet', () => {
 
   it('timing.setInterval', cb => {
     let times = 0;
-    let interval;
     const start = Date.now();
 
-    interval = jet.context.setInterval(() => {
+    const interval = jet.context.setInterval(() => {
       const timeTaken = Date.now() - start;
 
       times++;

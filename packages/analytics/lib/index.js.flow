@@ -23,10 +23,19 @@ export interface Statics {}
 export interface Module extends ReactNativeFirebaseModule {
   /**
    * Log a custom event with optional params.
+   *
+   * #### Example
+   *
+   * ```js
+   * await firebase.analytics().logEvent('product_view', {
+   *   id: '1234',
+   * });
+   * ```
+   *
    * @note 100 characters is the maximum length for param key names.
    *
-   * @param name
-   * @param params
+   * @param name Event name must not conflict with any Reserved Events.
+   * @param params Parameters to be sent and displayed with the event.
    */
   logEvent(name: string, params: { [key: string]: string }): Promise<void>;
 
@@ -34,24 +43,47 @@ export interface Module extends ReactNativeFirebaseModule {
    * If true, allows the device to collect analytical data and send it to Firebase.
    * Useful for GDPR.
    *
-   * @param enabled
+   * #### Example
+   *
+   * ```js
+   * // Disable collection
+   * await firebase.analytics().setAnalyticsCollectionEnabled(false);
+   * ```
+   *
+   * @note Analytics collection is enabled by default.
+   *
+   * @param enabled A boolean value representing whether Analytics collection is enabled or disabled.
    */
   setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
 
   /**
    * Sets the current screen name.
    *
+   * #### Example
+   *
+   * ```js
+   * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
+   * ```
+   *
    * @note Whilst screenClassOverride is optional, it is recommended it is
    * always sent as your current class name. For example on Android it will always
    * show as 'MainActivity' if you do not specify it.
    *
-   * @param screenName
-   * @param screenClassOverride
+   * @param screenName A screen name, e.g. Product.
+   * @param screenClassOverride On Android, React Native runs in a single activity called
+   * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
    */
   setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
 
   /**
    * Sets the minimum engagement time required before starting a session.
+   *
+   * #### Example
+   *
+   * ```js
+   * // 20 seconds
+   * await firebase.analytics().setMinimumSessionDuration(20000);
+   * ```
    *
    * @param milliseconds The default value is 10000 (10 seconds).
    */
@@ -60,6 +92,13 @@ export interface Module extends ReactNativeFirebaseModule {
   /**
    * Sets the duration of inactivity that terminates the current session.
    *
+   * #### Example
+   *
+   * ```js
+   * // 20 minutes
+   * await firebase.analytics().setMinimumSessionDuration(900000);
+   * ```
+   *
    * @param milliseconds The default value is 1800000 (30 minutes).
    */
   setSessionTimeoutDuration(milliseconds: number): Promise<void>;
@@ -67,6 +106,14 @@ export interface Module extends ReactNativeFirebaseModule {
   /**
    * Gives a user a unique identification.
    *
+   * #### Example
+   *
+   * ```js
+   * // Set User
+   * await firebase.analytics().setUserId('123456789');
+   * // Remove User
+   * await firebase.analytics().setUserId(null);
+   * ```
    *
    * @param id Set to null to remove a previously assigned id from analytics events
    */
@@ -75,13 +122,28 @@ export interface Module extends ReactNativeFirebaseModule {
   /**
    * Sets a key/value pair of data on the current user.
    *
-   * @param name
+   * #### Example
+   *
+   * ```js
+   * await firebase.analytics().setUserProperty('account_type', 'gold');
+   * ```
+   *
+   * @param name A user property identifier.
    * @param value Set to null to remove a previously assigned id from analytics events.
    */
   setUserProperty(name: string, value: string | null): Promise<void>;
 
   /**
    * Sets multiple key/value pair of data on the current user.
+   *
+   * #### Example
+   *
+   * ```js
+   * await firebase.analytics().setUserProperties({
+   *   account_type: 'gold',
+   *   account_name: 'Gold Badge',
+   * });
+   * ```
    *
    * @react-native-firebase
    * @param properties Set a property value to null to remove it.
@@ -90,6 +152,12 @@ export interface Module extends ReactNativeFirebaseModule {
 
   /**
    * Clears all analytics data for this instance from the device and resets the app instance ID.
+   *
+   * #### Example
+   *
+   * ```js
+   * await firebase.analytics().resetAnalyticsData();
+   * ```
    */
   resetAnalyticsData(): Promise<void>;
 }

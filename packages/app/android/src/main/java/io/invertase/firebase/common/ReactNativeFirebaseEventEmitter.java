@@ -19,7 +19,8 @@ package io.invertase.firebase.common;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -46,33 +47,24 @@ public class ReactNativeFirebaseEventEmitter {
   }
 
   public void attachReactContext(final ReactContext reactContext) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
-        sendQueuedEvents();
-      }
+    handler.post(() -> {
+      ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
+      sendQueuedEvents();
     });
   }
 
   public void notifyJsReady(Boolean ready) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        jsReady = ready;
-        sendQueuedEvents();
-      }
+    handler.post(() -> {
+      jsReady = ready;
+      sendQueuedEvents();
     });
   }
 
   public void sendEvent(final NativeEvent event) {
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        synchronized (jsListeners) {
-          if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
-            queuedEvents.add(event);
-          }
+    handler.post(() -> {
+      synchronized (jsListeners) {
+        if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
+          queuedEvents.add(event);
         }
       }
     });
@@ -89,12 +81,7 @@ public class ReactNativeFirebaseEventEmitter {
       }
     }
 
-    handler.post(new Runnable() {
-      @Override
-      public void run() {
-        sendQueuedEvents();
-      }
-    });
+    handler.post(this::sendQueuedEvents);
   }
 
   public void removeListener(String eventName, Boolean all) {
@@ -154,6 +141,7 @@ public class ReactNativeFirebaseEventEmitter {
         DeviceEventManagerModule.RCTDeviceEventEmitter.class
       ).emit("rnfb_" + event.getEventName(), event.getEventBody());
     } catch (Exception e) {
+      Log.wtf("RNFB_EMITTER", "Error sending Event " + event.getEventName(), e);
       return false;
     }
 

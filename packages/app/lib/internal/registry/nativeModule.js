@@ -91,6 +91,7 @@ function initialiseNativeModule(module) {
     nativeModuleName,
     hasMultiAppSupport,
     hasCustomUrlOrRegionSupport,
+    disablePrependCustomUrlOrRegion,
   } = config;
   const nativeModule = NativeModules[nativeModuleName];
 
@@ -104,7 +105,7 @@ function initialiseNativeModule(module) {
     argToPrepend.push(module.app.name);
   }
 
-  if (hasCustomUrlOrRegionSupport) {
+  if (hasCustomUrlOrRegionSupport && !disablePrependCustomUrlOrRegion) {
     argToPrepend.push(module._customUrlOrRegion);
   }
 
