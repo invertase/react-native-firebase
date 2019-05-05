@@ -218,57 +218,57 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0-alpha.9):
+  - RNFBAnalytics (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBApp (6.0.0-alpha.9):
+  - RNFBApp (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
-  - RNFBConfig (6.0.0-alpha.9):
+  - RNFBConfig (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/RemoteConfig (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.0.0-alpha.9):
+  - RNFBCrashlytics (6.0.0-alpha.10):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFiam (6.0.0-alpha.9):
+  - RNFBFiam (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/InAppMessagingDisplay (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFirestore (6.0.0-alpha.9):
+  - RNFBFirestore (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFunctions (6.0.0-alpha.9):
+  - RNFBFunctions (6.0.0-alpha.10):
     - Firebase/Functions (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBIid (6.0.0-alpha.9):
+  - RNFBIid (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBInvites (6.0.0-alpha.9):
+  - RNFBInvites (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Invites (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBPerf (6.0.0-alpha.9):
+  - RNFBPerf (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Performance (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBStorage (6.0.0-alpha.9):
+  - RNFBStorage (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Storage (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBUtils (6.0.0-alpha.9):
+  - RNFBUtils (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp

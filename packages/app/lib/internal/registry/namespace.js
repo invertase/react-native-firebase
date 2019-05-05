@@ -158,18 +158,19 @@ function getOrCreateModuleForRoot(moduleNamespace) {
       );
     }
 
-    if (!ROOT_MODULE_INSTANCE[_app.name]) {
-      ROOT_MODULE_INSTANCE[_app.name] = {};
+    if (!APP_MODULE_INSTANCE[_app.name]) {
+      APP_MODULE_INSTANCE[_app.name] = {};
     }
 
-    if (!ROOT_MODULE_INSTANCE[_app.name][moduleNamespace]) {
-      ROOT_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
+    if (!APP_MODULE_INSTANCE[_app.name][moduleNamespace]) {
+      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
         _app,
         NAMESPACE_REGISTRY[moduleNamespace],
+        null,
       );
     }
 
-    return ROOT_MODULE_INSTANCE[_app.name][moduleNamespace];
+    return APP_MODULE_INSTANCE[_app.name][moduleNamespace];
   }
 
   Object.assign(firebaseModuleWithApp, statics || {});

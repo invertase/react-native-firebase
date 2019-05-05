@@ -45,6 +45,7 @@ const config = {
       /.*\/__fixtures__\/.*/,
       new RegExp(`^${escape(resolve(rootDir, 'docs'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/ios'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'packages/template/project'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
