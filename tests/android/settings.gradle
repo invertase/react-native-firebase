@@ -1,11 +1,26 @@
-rootProject.name = 'RNFTests'
-include ':jet'
-project(':jet').projectDir = new File(rootProject.projectDir, '../node_modules/jet/android')
+rootProject.name = '@react-native-firebase_tests'
 
-include ':react-native-firebase'
-project(':react-native-firebase').projectDir = new File(rootProject.projectDir, './../../android')
+def firebasePackages = [
+  'app',
+  'analytics',
+  'config',
+  'crashlytics',
+  'functions',
+  'fiam',
+  'iid',
+  'invites',
+  'mlkit',
+  'storage',
+  'perf',
+  'utils'
+]
+
+firebasePackages.each { firebasePackage ->
+  include ":@react-native-firebase_${firebasePackage}"
+  project(":@react-native-firebase_${firebasePackage}").projectDir = new File(rootProject.projectDir, "./../../packages/${firebasePackage}/android")
+}
+
+include ':jet'
+project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
 
 include ':app'
-
-include ':detox'
-project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')

@@ -1,53 +1,46 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "0.0.1",
+  "version": "6.0.0-alpha.10",
   "private": true,
   "scripts": {
-    "packager-chrome": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-    "packager-jet": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start",
-    "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' node node_modules/react-native/local-cli/cli.js start --reset-cache",
-    "build-ios": "detox build --configuration ios.sim.debug",
-    "build-ios-release": "detox build --configuration ios.sim.release",
-    "build-android": "detox build --configuration android.emu.debug",
-    "test-android": "detox test --configuration android.emu.debug",
-    "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
-    "test-android-cover": "nyc detox test --configuration android.emu.debug",
-    "test-android-cover-reuse": "nyc detox test --configuration android.emu.debug --reuse",
-    "test-ios": "detox test --configuration ios.sim.debug --loglevel warn",
-    "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
-    "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
+    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
+    "prepare": "patch-package"
   },
   "dependencies": {
-    "detox": "^9.0.1",
-    "fbjs": "^0.8.16",
-    "firebase-admin": "^5.12.0",
-    "jet": "^0.1.0",
-    "jsonwebtoken": "^8.2.1",
-    "mocha": "^5.2.0",
-    "prop-types": "^15.6.1",
-    "react": "^16.5.0",
-    "react-native": "^0.57.0",
-    "should": "^13.2.1",
-    "should-sinon": "0.0.6",
-    "sinon": "^6.2.0"
+    "@react-native-firebase/analytics": "6.0.0-alpha.10",
+    "@react-native-firebase/app": "6.0.0-alpha.10",
+    "@react-native-firebase/app-types": "6.0.0-alpha.10",
+    "@react-native-firebase/auth": "6.0.0-alpha.10",
+    "@react-native-firebase/config": "6.0.0-alpha.10",
+    "@react-native-firebase/crashlytics": "6.0.0-alpha.10",
+    "@react-native-firebase/fiam": "6.0.0-alpha.10",
+    "@react-native-firebase/firestore": "6.0.0-alpha.10",
+    "@react-native-firebase/functions": "6.0.0-alpha.10",
+    "@react-native-firebase/iid": "6.0.0-alpha.10",
+    "@react-native-firebase/invites": "6.0.0-alpha.10",
+    "@react-native-firebase/mlkit": "6.0.0-alpha.10",
+    "@react-native-firebase/perf": "6.0.0-alpha.10",
+    "@react-native-firebase/storage": "6.0.0-alpha.10",
+    "@react-native-firebase/utils": "6.0.0-alpha.10",
+    "prop-types": "^15.7.2",
+    "react": "16.8.1",
+    "react-dom": "16.8.1",
+    "react-native": "0.59.5",
+    "react-native-camera": "^2.2.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-plugin-istanbul": "^5.1.0",
-    "babel-plugin-module-resolver": "^3.1.1",
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-flowtype": "^2.46.3",
-    "eslint-plugin-import": "^2.11.0",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.78.0",
-    "nyc": "^13.1.0",
-    "rimraf": "^2.6.2"
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
+    "a2a": "^0.2.0",
+    "babel-plugin-istanbul": "^5.1.1",
+    "detox": "12.5.0",
+    "jet": "^0.3.0",
+    "mocha": "^6.0.2",
+    "nyc": "^13.3.0",
+    "patch-package": "^6.1.0",
+    "require-all": "3.0.0",
+    "should": "^13.2.3",
+    "should-sinon": "0.0.6",
+    "sinon": "^7.3.1"
   },
   "nyc": {
     "check-coverage": false,
@@ -56,16 +49,14 @@
     "functions": 95,
     "branches": 95,
     "include": [
-      "src/**"
+      "packages/**"
     ],
     "exclude": [
       "node_modules",
-      "src/modules/admob**",
-      "src/modules/auth/phone**",
-      "src/modules/messaging**",
-      "src/modules/notifications**",
-      "src/types**",
-      "**/types.js"
+      "packages/**/node_modules/**",
+      "**/common/lib/**",
+      "**/internal/registry/**",
+      "**/lib/handlers.js"
     ],
     "cwd": "..",
     "all": true,
@@ -73,6 +64,7 @@
     "instrument": false,
     "reporter": [
       "lcov",
+      "html",
       "text-summary"
     ]
   },
@@ -83,22 +75,21 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus",
-        "logLevel": "error"
+        "name": "iPhone X"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
+        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false && popd",
         "type": "android.emulator",
         "name": "TestingAVD"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone 7 Plus"
+        "name": "iPhone X"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",

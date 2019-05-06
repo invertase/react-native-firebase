@@ -1,0 +1,40 @@
+{
+  "name": "@react-native-firebase/functions",
+  "version": "6.0.0-alpha.10",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Cloud Functions",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/functions"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "https",
+    "callable",
+    "functions"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "*"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "6.0.0-alpha.10",
+    "@react-native-firebase/common": "6.0.0-alpha.10"
+  },
+  "devDependencies": {
+    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
+  },
+  "gitHead": "832835bc23987d794520996b23468870f343ef80",
+  "publishConfig": {
+    "access": "public"
+  }
+}

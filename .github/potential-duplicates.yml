@@ -3,7 +3,7 @@ issueLabel: potential-duplicate
 labelColor: cfd3d7
 
 # If similarity is higher than this threshold, issue will be marked as duplicate
-threshold: 0.65
+threshold: 0.50
 
 # Comment to post when potential duplicates are detected
 referenceComment: >

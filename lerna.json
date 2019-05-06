@@ -1,0 +1,20 @@
+{
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--no-lockfile"
+  ],
+  "packages": [
+    "packages/*",
+    "packages/template/project",
+    "tests"
+  ],
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "*.md"
+      ]
+    }
+  },
+  "version": "6.0.0-alpha.10"
+}

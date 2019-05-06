@@ -1,11 +1,56 @@
-const detox = require('detox');
-const config = require('../package.json').detox;
+/* eslint-disable no-console */
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
+// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE
+// BEEN WARNED 🙃
+require('@react-native-firebase/private-tests-helpers');
+
+const detox = require('detox');
+const jet = require('jet/platform/node');
+const { requirePackageTests } = require('./helpers');
+const { detox: config } = require('../package.json');
+
+const PACKAGES = [
+  'app',
+  'iid',
+  'perf',
+  'fiam',
+  'functions',
+  'analytics',
+  'config',
+  'crashlytics',
+  'utils',
+  // 'mlkit',
+  'invites',
+  'fiam',
+  // 'auth',
+  // 'firestore',
+  // 'links',
+  // 'messaging',
+  'storage',
+];
+
+for (let i = 0; i < PACKAGES.length; i++) {
+  requirePackageTests(PACKAGES[i]);
+}
 before(async () => {
   await detox.init(config);
-  // needs to be called before any usage of firestore
-  // await firebase.firestore().settings({ persistence: true });
-  // await firebase.firestore().settings({ persistence: false });
+  await jet.init();
 });
 
 beforeEach(async function beforeEach() {
@@ -20,7 +65,7 @@ beforeEach(async function beforeEach() {
   if (retry > 0) {
     if (retry === 1) {
       console.log('');
-      console.warn(`⚠️ A test failed:`);
+      console.warn('⚠️ A test failed:');
       console.warn(`️   ->  ${this.currentTest.title}`);
     }
 
@@ -29,14 +74,11 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying... (${retry})`);
-    await sleep(3000);
+    await Utils.sleep(3000);
   }
 });
 
 after(async () => {
   console.log('Cleaning up...');
-  await TestHelpers.firestore.cleanup();
-  console.log('Firestore cleaned up...');
-  // await detox.cleanup(); // TODO hangs - most likely jet internals interfering
-  console.log('Detox cleaned up...');
+  await device.terminateApp();
 });

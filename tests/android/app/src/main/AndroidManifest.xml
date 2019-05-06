@@ -1,61 +1,69 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  package="com.testing">
+  package="com.invertase.testing">
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
 
   <application
-    android:name="com.testing.MainApplication"
+    android:name="com.invertase.testing.MainApplication"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
     android:launchMode="singleTask"
-    android:theme="@style/AppTheme">
-    <service
-      android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"
-      android:enabled="true"
-      android:exported="true"
-      tools:ignore="ExportedService">
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="true"
+    tools:targetApi="m">
+    <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
+    <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
+    <meta-data android:name="rnfirebase_meta_testing_boolean_true" android:value="true" />
+    <!--<provider-->
+    <!--android:name="com.google.firebase.provider.FirebaseInitProvider"-->
+    <!--android:authorities="${applicationId}.firebaseinitprovider"-->
+    <!--tools:node="remove"-->
+    <!--/>-->
 
-    <service
-      android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-      </intent-filter>
-    </service>
+    <!--<service-->
+    <!--android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"-->
+    <!--android:enabled="true"-->
+    <!--android:exported="true"-->
+    <!--tools:ignore="ExportedService">-->
+    <!--<intent-filter>-->
+    <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+    <!--</intent-filter>-->
+    <!--</service>-->
 
-    <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
+    <!--<service-->
+    <!--android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"-->
+    <!--android:exported="false">-->
+    <!--<intent-filter>-->
+    <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
+    <!--</intent-filter>-->
+    <!--</service>-->
 
-    <receiver android:name="io.invertase.firebase.notifications.RNFirebaseNotificationReceiver" />
-    <receiver
-      android:name="io.invertase.firebase.notifications.RNFirebaseNotificationsRebootReceiver"
-      android:enabled="true"
-      android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED" />
-        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-        <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+    <!--<service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />-->
 
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </receiver>
+    <!--<receiver android:name="io.invertase.firebase.notifications.RNFirebaseNotificationReceiver" />-->
+    <!--<receiver-->
+    <!--android:name="io.invertase.firebase.notifications.RNFirebaseNotificationsRebootReceiver"-->
+    <!--android:enabled="true"-->
+    <!--android:exported="true">-->
+    <!--<intent-filter>-->
+    <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+    <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+    <!--<action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />-->
+
+    <!--<category android:name="android.intent.category.DEFAULT" />-->
+    <!--</intent-filter>-->
+    <!--</receiver>-->
 
 
     <activity
-      android:name="com.testing.MainActivity"
+      android:name="com.invertase.testing.MainActivity"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
       android:label="@string/app_name"
       android:launchMode="singleTop"
@@ -72,8 +80,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data
-          android:scheme="http"
-          android:host="je786.app.goo.gl" />
+          android:host="je786.app.goo.gl"
+          android:scheme="http" />
       </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
@@ -82,8 +90,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data
-          android:scheme="http"
-          android:host="je786.app.goo.gl" />
+          android:host="je786.app.goo.gl"
+          android:scheme="http" />
       </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
@@ -92,8 +100,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data
-          android:scheme="https"
-          android:host="je786.app.goo.gl" />
+          android:host="je786.app.goo.gl"
+          android:scheme="https" />
       </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
@@ -102,8 +110,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data
-          android:scheme="https"
-          android:host="je786.app.goo.gl" />
+          android:host="je786.app.goo.gl"
+          android:scheme="https" />
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
