@@ -5,7 +5,7 @@ description: Hosting a meeting or event which features React Native Firebase? Le
 
 # Community
 
-We always love to hear about React Native Firebase being featured at community events. Whether you're 
+We always love to hear about React Native Firebase being featured at community events. Whether you're
 hosting, speaking or attending an event which involves the library, please let us know using the form below.
 
 We'd love to help promote the event via:

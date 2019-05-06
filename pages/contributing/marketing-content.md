@@ -49,5 +49,5 @@ the appropriate area. Content will be 301 directed from the website to the exter
 
 ### On-site content
 
-Our documentation is Open Source. If you'd like to write content on our website which we host, 
+Our documentation is Open Source. If you'd like to write content on our website which we host,
 please send a pull request to the repository.

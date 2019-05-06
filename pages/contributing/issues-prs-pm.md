@@ -1,5 +1,5 @@
 ---
-title: Issues & Pull Requests
+title: Issues, Pull Requests & Project Management
 description: Contributing to Issues & Pull Requests is a great place to get started with contributing.
 ---
 
@@ -11,7 +11,7 @@ manage our repository. If you'd like to help, the following areas are a great pl
 ## Issues
 
 - If users have not followed the [issue template](https://github.com/invertase/react-native-firebase/blob/master/.github/ISSUE_TEMPLATE.md)
-reminding them this is required information for us to be able to quickly identify and replicate the problem.
+  reminding them this is required information for us to be able to quickly identify and replicate the problem.
 - Linking other related issues, or commenting with a linked duplicate issue.
 - Pointing any features requests in the direction of our [Feedback](/feedback) page.
 

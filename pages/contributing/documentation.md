@@ -14,8 +14,8 @@ to provide powerful functionality on-top of Markdown.
 The documentation source exists in a number of places:
 
 - Versioned: Any versioned content is contained within the `docs/` directory of the main branch that version works from.
-- Non-versioned: Any content which is not specific to a version of the library (e.g. [this page](https://github.com/invertase/react-native-firebase/blob/docs/pages/contributing/documentation.md)), 
-is contained within the [docs](https://github.com/invertase/react-native-firebase/tree/docs) branch of the main repository.
+- Non-versioned: Any content which is not specific to a version of the library (e.g. [this page](https://github.com/invertase/react-native-firebase/blob/docs/pages/contributing/documentation.md)),
+  is contained within the [docs](https://github.com/invertase/react-native-firebase/tree/docs) branch of the main repository.
 
 ## Reference
 
@@ -29,11 +29,9 @@ file using [Typedoc](https://typedoc.org/), which is then parsed into a consumab
 
 The MDX plugin allows us to use custom JSX components within our documentation pages where Markdown is not suitable.
 
-*We're working on providing full API docs for each usable MDX component*
+_We're working on providing full API docs for each usable MDX component_
 
 ## Deploying changes
 
 Changes are automatically deployed to our servers when merged with the main repository. Deployed changes can take a few
 minutes to deploy.
-
-

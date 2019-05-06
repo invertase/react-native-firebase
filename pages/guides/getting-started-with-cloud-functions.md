@@ -8,11 +8,11 @@ tags:
 
 # Getting started with Cloud Functions
 
-Firebase Cloud Functions provides the ability to write and deploy HTTPS endpoints to a managed 
-environment. This tutorial will cover setting up the Firebase CLI on your machine, writing 
+Firebase Cloud Functions provides the ability to write and deploy HTTPS endpoints to a managed
+environment. This tutorial will cover setting up the Firebase CLI on your machine, writing
 a HTTPS function and querying the response in your React Native application.
 
-To find out more about Cloud Functions, view [Firebase's documentation](https://firebase.google.com/docs/functions/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=tutorial). 
+To find out more about Cloud Functions, view [Firebase's documentation](https://firebase.google.com/docs/functions/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=tutorial).
 
 ## What are we building?
 
@@ -28,22 +28,22 @@ package globally on your computer from your terminal:
 npm install -g firebase-tools
 ```
 
-Once installed, login to Firebase with the CLI. This process will automatically open a browser instance giving you 
+Once installed, login to Firebase with the CLI. This process will automatically open a browser instance giving you
 the ability to login to your Firebase account.
 
 ```bash
 firebase login
 ```
 
-Once logged in, create a new directory on your computer called `product-api`. This will be used as our working 
+Once logged in, create a new directory on your computer called `product-api`. This will be used as our working
 directory where our Cloud Functions will be written and deployed from. Within this directory, run the following
 command from your terminal to initialize a new project structure:
 
 ```bash
-firebase init functions 
+firebase init functions
 ```
 
-You will be offered two options for language support, for this tutorial select *JavaScript*. Allow the CLI to install
+You will be offered two options for language support, for this tutorial select _JavaScript_. Allow the CLI to install
 dependencies using npm. Once complete your project structure will look like this:
 
 ```
@@ -77,10 +77,10 @@ cd functions/
 npm install --save faker
 ```
 
-Now it's time to write your first Cloud Function! Open up the generated `functions/index.js` file in your chosen 
+Now it's time to write your first Cloud Function! Open up the generated `functions/index.js` file in your chosen
 editor. The CLI has already imported the `firebase-functions` package required to build a Cloud Function. Firebase
 used [named exports](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export) to help
-identify functions. These exports are used to build the API endpoint name which will be accessible from our 
+identify functions. These exports are used to build the API endpoint name which will be accessible from our
 React Native application.
 
 For this tutorial, we are creating a product listing API. Go ahead and create a new HTTPS callable named function called
@@ -91,7 +91,7 @@ For this tutorial, we are creating a product listing API. Go ahead and create a 
 const functions = require('firebase-functions');
 
 exports.products = functions.https.onRequest((request, response) => {
-    // TODO
+  // TODO
 });
 ```
 
@@ -119,14 +119,14 @@ const LIMIT = 100;
 
 // Push a new product to the array
 for (let i = 0; i < LIMIT; i++) {
-    products.push({
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(), 
-    });
+  products.push({
+    name: faker.commerce.productName(),
+    price: faker.commerce.price(),
+  });
 }
 
 exports.products = functions.https.onRequest((request, response) => {
-    return response.json(products);
+  return response.json(products);
 });
 ```
 
@@ -151,23 +151,23 @@ In your terminal (or browser), access the endpoint provided. Our list of generat
 curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET  http://localhost:5000/rnfirebase-demo/us-central1/products
 ```
 
-*Note: we use `response.json()` to automatically apply headers so our request can expect a valid JSON Content-Type
-response.*
+_Note: we use `response.json()` to automatically apply headers so our request can expect a valid JSON Content-Type
+response._
 
 ### Handling pagination
 
 Our HTTPS endpoint currently returns all 100 results. Whilst this is ok for demo purposes, in a real life application
 it's important to think about the user. More data requires more bandwidth and longer response times (especially when
-used with a real database!). Paginating the data allows us to only return a subset of the entire dataset, and is 
+used with a real database!). Paginating the data allows us to only return a subset of the entire dataset, and is
 achievable with our own Cloud Function using request parameters.
 
 Lets setup the API to accept `page` & `limit` parameters, which will be used to limit and skip our dataset:
 
 ```js
 exports.products = functions.https.onRequest((request, response) => {
-    const { page = 1, limit = 10 } = request.query;
+  const { page = 1, limit = 10 } = request.query;
 
-    return response.json(products);
+  return response.json(products);
 });
 ```
 
@@ -176,14 +176,12 @@ are set in-case the incoming request mitigates them. Using our query parameters 
 
 ```js
 exports.products = functions.https.onRequest((request, response) => {
-    const { page = 1, limit = 10 } = request.query;
+  const { page = 1, limit = 10 } = request.query;
 
-    const startAt = (page - 1) * limit;
-    const endAt = startAt + limit;
-    
-    return response.json(
-        products.slice(startAt, endAt)
-    );
+  const startAt = (page - 1) * limit;
+  const endAt = startAt + limit;
+
+  return response.json(products.slice(startAt, endAt));
 });
 ```
 
@@ -199,15 +197,15 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET
 With the HTTPS endpoint now ready for use, lets go ahead and integrate our dataset into a React Native application
 using the Cloud Functions module.
 
-> If you haven't already, install the `@react-native-firebase/functions` package by following the instructions on the 
-[overview page](#). TODO LINKME
+> If you haven't already, install the `@react-native-firebase/functions` package by following the instructions on the
+> [overview page](#). TODO LINKME
 
 TODO
 
 ### Deploying your Cloud Functions to production
 
-With our app successfully integrating with our HTTPS callable Cloud Function, we can deploy our project to a 
-production ready instance on Firebase. Back in our `product-api` project, run the following command from your 
+With our app successfully integrating with our HTTPS callable Cloud Function, we can deploy our project to a
+production ready instance on Firebase. Back in our `product-api` project, run the following command from your
 terminal, inside of the `functions/` directory:
 
 ```bash
@@ -218,7 +216,7 @@ Once complete, your Cloud Function will be available from a publicly accessible 
 
 ```
 https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/products
-``` 
+```
 
 #### Updating the functions emulator
 
@@ -228,10 +226,10 @@ practice is to interchange the functions emulator based on whether the React Nat
 ```js
 import functions from '@react-native-firebase/functions';
 
-const emulator = __DEV__ ?
-  'http://localhost:5000' :
-  'https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net';
-  
+const emulator = __DEV__
+  ? 'http://localhost:5000'
+  : 'https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net';
+
 functions().useFunctionsEmulator(emulator);
 ```
 
