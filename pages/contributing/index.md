@@ -18,7 +18,7 @@ You can learn more about the various ways of contributing to this project by vis
 		title="Issues, PRs & Project Management"
 		to="/contributing/issues-prs"
 	>
-		Helping out with GitHub Issues, answering help requests on Discord and GitHub Pull Requests is a great place to start, this helps maintainers focus more on the the code aspects.
+		Help out with GitHub Issues, answering help requests on Discord and reviewing GitHub Pull Requests. This helps maintainers focus more on programming.
 	</Block>
 	<Block
 		icon="library_books"
@@ -26,7 +26,7 @@ You can learn more about the various ways of contributing to this project by vis
 		title="Documentation"
 		to="/contributing/documentation"
 	>
-		Add some new guides, new examples, update references or new FAQs. We also welcome grammatical improvements, e.g. fixing spelling mistakes.
+		Adding new guides, examples, updating references or new FAQs. We also welcome grammatical improvements, e.g. fixing spelling mistakes.
 	</Block>
 	<Block
 		icon="code"
@@ -58,7 +58,7 @@ You can learn more about the various ways of contributing to this project by vis
 		title="Donations & Expenses"
 		to="/contributing/donations-expenses"
 	>
-		Donating through our Open Collective exclusively supports all the maintainers and collaborators of the Project. We also welcome contributors to submit expenses for work done.
+		Donating through our Open Collective exclusively helps to support all the maintainers and collaborators. We also encourage contributors to submit expenses for work done.
 	</Block>
 </Grid>
 
