@@ -10,11 +10,7 @@ Please describe your documentation issue or suggested improvement in detail here
 
 ---
 
-Think `react-native-firebase` is great? Please consider supporting the project with any of the below:
+Think `react-native-firebase` is great? Please consider supporting all of the project maintainers and contributors by donating via our [Open Collective](https://opencollective.com/react-native-firebase/donate) where all contributors can submit expenses. [[Learn More]](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
 
-- 👉 Donate via [Open Collective](https://opencollective.com/react-native-firebase/donate)
-- 👉 Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter
-- 👉 Star this repo on GitHub ⭐️
-- 👉 Contribute; see our [contributing guide](./../../CONTRIBUTING.md)
-
+- 👉 Check out [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter for updates on the library.
 
