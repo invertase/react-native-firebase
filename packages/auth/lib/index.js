@@ -20,7 +20,9 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-// providers
+
+import { isAndroid } from '@react-native-firebase/common';
+
 import EmailAuthProvider from './providers/EmailAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import GoogleAuthProvider from './providers/GoogleAuthProvider';
@@ -29,8 +31,11 @@ import OAuthProvider from './providers/OAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
 
-import version from './version';
 import User from './User';
+import version from './version';
+import Settings from './Settings';
+import PhoneAuthListener from './PhoneAuthListener';
+import ConfirmationResult from './ConfirmationResult';
 
 const statics = {
   EmailAuthProvider,
@@ -40,6 +45,12 @@ const statics = {
   TwitterAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
+  PhoneAuthState: {
+    CODE_SENT: 'sent',
+    AUTO_VERIFY_TIMEOUT: 'timeout',
+    AUTO_VERIFIED: 'verified',
+    ERROR: 'error',
+  },
 };
 
 const namespace = 'auth';
@@ -79,6 +90,24 @@ class FirebaseAuthModule extends FirebaseModule {
 
     this.native.addAuthStateListener();
     this.native.addIdTokenListener();
+  }
+
+  get languageCode() {
+    return this._languageCode;
+  }
+
+  set languageCode(code) {
+    this._languageCode = code;
+    this.native.setLanguageCode(code);
+  }
+
+  get settings() {
+    if (!this._settings) this._settings = new Settings(this);
+    return this._settings;
+  }
+
+  get currentUser() {
+    return this._user;
   }
 
   _setUser(user) {
@@ -140,6 +169,31 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
+  signInWithPhoneNumber(phoneNumber, forceResend) {
+    if (isAndroid) {
+      return this.native
+        .signInWithPhoneNumber(phoneNumber, forceResend || false)
+        .then(result => new ConfirmationResult(this, result.verificationId));
+    }
+
+    return this.native
+      .signInWithPhoneNumber(phoneNumber)
+      .then(result => new ConfirmationResult(this, result.verificationId));
+  }
+
+  verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+    let _forceResend = forceResend;
+    let _autoVerifyTimeout = 60;
+
+    if (isBoolean(autoVerifyTimeoutOrForceResend)) {
+      _forceResend = autoVerifyTimeoutOrForceResend;
+    } else {
+      _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
+    }
+
+    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+  }
+
   createUserWithEmailAndPassword(email, password) {
     return this.native
       .createUserWithEmailAndPassword(email, password)
@@ -163,32 +217,6 @@ class FirebaseAuthModule extends FirebaseModule {
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._setUserCredential(userCredential));
   }
-
-  // TODO(salakar) migrate classes
-  // signInWithPhoneNumber(phoneNumber, forceResend) {
-  //   if (isAndroid) {
-  //     return this.native
-  //       .signInWithPhoneNumber(phoneNumber, forceResend || false)
-  //       .then(result => new ConfirmationResult(this, result.verificationId));
-  //   }
-  //
-  //   return this.native
-  //     .signInWithPhoneNumber(phoneNumber)
-  //     .then(result => new ConfirmationResult(this, result.verificationId));
-  // }
-  //
-  // verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
-  //   let _forceResend = forceResend;
-  //   let _autoVerifyTimeout = 60;
-  //
-  //   if (isBoolean(autoVerifyTimeoutOrForceResend)) {
-  //     _forceResend = autoVerifyTimeoutOrForceResend;
-  //   } else {
-  //     _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
-  //   }
-  //
-  //   return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
-  // }
 
   sendPasswordResetEmail(email, actionCodeSettings) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
@@ -234,48 +262,33 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native.verifyPasswordResetCode(code);
   }
 
-  set languageCode(code) {
-    this._languageCode = code;
-    this.native.setLanguageCode(code);
-  }
-
-  get languageCode() {
-    return this._languageCode;
-  }
-
-  get settings() {
-    if (!this._settings) {
-      // lazy initialize
-      this._settings = new AuthSettings(this);
-    }
-    return this._settings;
-  }
-
-  get currentUser() {
-    return this._user;
-  }
-
   getRedirectResult() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'getRedirectResult'));
+    throw new Error(
+      'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   setPersistence() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'setPersistence'));
+    throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
   signInWithPopup() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'signInWithPopup'));
+    throw new Error(
+      'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   signInWithRedirect() {
-    // throw new Error(
-    //   INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'signInWithRedirect'),
-    // );
+    throw new Error(
+      'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
   useDeviceLanguage() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_MODULE_METHOD('auth', 'useDeviceLanguage'));
+    throw new Error(
+      'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
+    );
   }
 }
 

@@ -694,7 +694,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     PhoneAuthCredential credential = getPhoneAuthCredential(authToken, authSecret);
 
     if (credential == null) {
-      rejectPromiseWithCodeAndMessage(promise,
+      rejectPromiseWithCodeAndMessage(
+        promise,
         "invalid-credential",
         "The supplied auth credential is malformed, has expired or is not currently supported."
       );
@@ -779,7 +780,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      rejectPromiseWithCodeAndMessage(promise,
+      rejectPromiseWithCodeAndMessage(
+        promise,
         "invalid-credential",
         "The supplied auth credential is malformed, has expired or is not currently supported."
       );
@@ -932,7 +934,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void _confirmVerificationCode(
+  public void confirmationResultConfirm(
     String appName,
     final String verificationCode,
     final Promise promise
@@ -945,28 +947,23 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       verificationCode
     );
 
-    firebaseAuth
-      .signInWithCredential(credential)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          Log.d(
-            TAG,
-            "_confirmVerificationCode:signInWithCredential:onComplete:success"
-          );
-          promiseWithUser(
-            Objects.requireNonNull(task.getResult()).getUser(),
-            promise
-          );
-        } else {
-          Exception exception = task.getException();
-          Log.e(
-            TAG,
-            "_confirmVerificationCode:signInWithCredential:onComplete:failure",
-            exception
-          );
-          promiseRejectAuthException(promise, exception);
-        }
-      });
+    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        Log.d(
+          TAG,
+          "confirmationResultConfirm:signInWithCredential:onComplete:success"
+        );
+        promiseWithUser(Objects.requireNonNull(task.getResult()).getUser(), promise);
+      } else {
+        Exception exception = task.getException();
+        Log.e(
+          TAG,
+          "confirmationResultConfirm:signInWithCredential:onComplete:failure",
+          exception
+        );
+        promiseRejectAuthException(promise, exception);
+      }
+    });
   }
 
   /**
@@ -1239,7 +1236,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      rejectPromiseWithCodeAndMessage(promise,
+      rejectPromiseWithCodeAndMessage(
+        promise,
         "invalid-credential",
         "The supplied auth credential is malformed, has expired or is not currently supported."
       );
@@ -1305,7 +1303,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
 
     if (credential == null) {
-      rejectPromiseWithCodeAndMessage(promise,
+      rejectPromiseWithCodeAndMessage(
+        promise,
         "invalid-credential",
         "The supplied auth credential is malformed, has expired or is not currently supported."
       );

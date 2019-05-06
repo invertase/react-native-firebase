@@ -67,11 +67,11 @@ export default class User {
     });
   }
 
-  getIdToken(forceRefresh) {
+  getIdToken(forceRefresh = false) {
     return this._auth.native.getIdToken(forceRefresh);
   }
 
-  getIdTokenResult(forceRefresh) {
+  getIdTokenResult(forceRefresh = false) {
     return this._auth.native.getIdTokenResult(forceRefresh);
   }
 
@@ -138,39 +138,42 @@ export default class User {
    */
 
   linkWithPhoneNumber() {
-    // throw new Error(
-    //   INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'linkWithPhoneNumber'),
-    // );
+    throw new Error(
+      'firebase.auth.User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   linkWithPopup() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'linkWithPopup'));
+    throw new Error(
+      'firebase.auth.User.linkWithPopup() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   linkWithRedirect() {
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'linkWithRedirect'));
+    throw new Error(
+      'firebase.auth.User.linkWithRedirect() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   reauthenticateWithPhoneNumber() {
-    // throw new Error(
-    //   INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'reauthenticateWithPhoneNumber'),
-    // );
+    throw new Error(
+      'firebase.auth.User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   reauthenticateWithPopup() {
-    // throw new Error(
-    //   INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'reauthenticateWithPopup'),
-    // );
+    throw new Error(
+      'firebase.auth.User.reauthenticateWithPopup() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   reauthenticateWithRedirect() {
-    // throw new Error(
-    //   INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_METHOD('User', 'reauthenticateWithRedirect'),
-    // );
+    throw new Error(
+      'firebase.auth.User.reauthenticateWithRedirect() is unsupported by the native Firebase SDKs.',
+    );
   }
 
   get refreshToken() {
-    return '';
-    // throw new Error(INTERNALS.STRINGS.ERROR_UNSUPPORTED_CLASS_PROPERTY('User', 'refreshToken'));
+    throw new Error('firebase.auth.User.refreshToken is unsupported by the native Firebase SDKs.');
   }
 }

@@ -6,19 +6,15 @@ describe('auth().currentUser', () => {
     }
   });
 
-  describe.only('getIdToken()', () => {
+  describe('getIdToken()', () => {
     it('should return a token', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
 
-      console.log('After create user', user);
-
       // Test
       const token = await user.getIdToken();
-
-      console.log('After create token', token);
 
       // Assertions
       token.should.be.a.String();
@@ -26,8 +22,6 @@ describe('auth().currentUser', () => {
 
       // Clean up
       await firebase.auth().currentUser.delete();
-
-      console.log('After delete user', token);
     });
   });
 
@@ -110,7 +104,7 @@ describe('auth().currentUser', () => {
       } catch (error) {
         // Assertions
         error.code.should.equal('auth/email-already-in-use');
-        error.message.should.equal('The email address is already in use by another account.');
+        error.message.should.containEql('The email address is already in use by another account.');
 
         // Clean up
         await firebase.auth().currentUser.delete();
@@ -293,7 +287,9 @@ describe('auth().currentUser', () => {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithPhoneNumber();
-      }).should.throw('User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.');
+      }).should.throw(
+        'firebase.auth.User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.',
+      );
       await firebase.auth().signOut();
     });
   });
@@ -303,7 +299,9 @@ describe('auth().currentUser', () => {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithPopup();
-      }).should.throw('User.linkWithPopup() is unsupported by the native Firebase SDKs.');
+      }).should.throw(
+        'firebase.auth.User.linkWithPopup() is unsupported by the native Firebase SDKs.',
+      );
       await firebase.auth().signOut();
     });
   });
@@ -313,7 +311,9 @@ describe('auth().currentUser', () => {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithRedirect();
-      }).should.throw('User.linkWithRedirect() is unsupported by the native Firebase SDKs.');
+      }).should.throw(
+        'firebase.auth.User.linkWithRedirect() is unsupported by the native Firebase SDKs.',
+      );
       await firebase.auth().signOut();
     });
   });
@@ -324,7 +324,7 @@ describe('auth().currentUser', () => {
       (() => {
         firebase.auth().currentUser.reauthenticateWithPhoneNumber();
       }).should.throw(
-        'User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.',
+        'firebase.auth.User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.',
       );
       await firebase.auth().signOut();
     });
@@ -335,7 +335,9 @@ describe('auth().currentUser', () => {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.reauthenticateWithPopup();
-      }).should.throw('User.reauthenticateWithPopup() is unsupported by the native Firebase SDKs.');
+      }).should.throw(
+        'firebase.auth.User.reauthenticateWithPopup() is unsupported by the native Firebase SDKs.',
+      );
       await firebase.auth().signOut();
     });
   });
@@ -346,7 +348,7 @@ describe('auth().currentUser', () => {
       (() => {
         firebase.auth().currentUser.reauthenticateWithRedirect();
       }).should.throw(
-        'User.reauthenticateWithRedirect() is unsupported by the native Firebase SDKs.',
+        'firebase.auth.User.reauthenticateWithRedirect() is unsupported by the native Firebase SDKs.',
       );
       await firebase.auth().signOut();
     });
@@ -356,7 +358,7 @@ describe('auth().currentUser', () => {
     it('should throw an unsupported error', async () => {
       await firebase.auth().signInAnonymously();
       (() => firebase.auth().currentUser.refreshToken).should.throw(
-        'User.refreshToken is unsupported by the native Firebase SDKs.',
+        'firebase.auth.User.refreshToken is unsupported by the native Firebase SDKs.',
       );
       await firebase.auth().signOut();
     });

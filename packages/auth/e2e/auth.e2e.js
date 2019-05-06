@@ -24,7 +24,7 @@ describe('auth()', () => {
     });
 
     // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
+    it('supports multiple apps', async () => {
       firebase.auth().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -38,82 +38,48 @@ describe('auth()', () => {
     });
   });
 
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-  // -----
-
   describe('applyActionCode()', () => {
-    xit('errors on invalid code', async () => {
+    it('errors on invalid code', async () => {
       try {
         await firebase.auth().applyActionCode('fooby shooby dooby');
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
     });
-
-    xit('accepts a valid code', async () => {
-      // todo not sure how to generate a code yet - maybe via admin sdk?
-    });
   });
 
   describe('checkActionCode()', () => {
-    xit('errors on invalid code', async () => {
+    it('errors on invalid code', async () => {
       try {
         await firebase.auth().checkActionCode('fooby shooby dooby');
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
     });
-
-    xit('accepts a valid code', async () => {
-      // todo not sure how to generate a code yet - maybe via admin sdk?
-    });
   });
 
   describe('verifyPasswordResetCode()', () => {
-    // todo Android has changed the format of the error response
-    xit('errors on invalid code', async () => {
+    it('errors on invalid code', async () => {
       try {
         await firebase.auth().verifyPasswordResetCode('fooby shooby dooby');
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
     });
-
-    xit('accepts a valid code', async () => {
-      // todo not sure how to generate a code yet - maybe via admin sdk?
-    });
   });
 
   describe('confirmPasswordReset()', () => {
-    // todo Android has changed the format of the error response
-    xit('errors on invalid code', async () => {
+    it('errors on invalid code', async () => {
       try {
         await firebase.auth().confirmPasswordReset('fooby shooby dooby', 'passwordthing');
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
     });
-
-    xit('accepts a valid code', async () => {
-      // todo not sure how to generate a code yet - maybe via admin sdk?
-    });
   });
 
   describe('signInWithCustomToken()', () => {
+    // TODO(salakar) use new testing api to create a custom token
     xit('signs in with a admin sdk created custom auth token', async () => {
       const customUID = `zdwHCjbpzraRoNK7d64FYWv5AH02`;
       const token = await firebaseAdmin.auth().createCustomToken(customUID, {
@@ -811,7 +777,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('getRedirectResult()', () => {
+  describe('getRedirectResult()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().getRedirectResult();
@@ -821,7 +787,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('setPersistence()', () => {
+  describe('setPersistence()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().setPersistence();
@@ -831,7 +797,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('signInWithPopup', () => {
+  describe('signInWithPopup', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().signInWithPopup();
@@ -841,7 +807,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('sendPasswordResetEmail()', () => {
+  describe('sendPasswordResetEmail()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -860,7 +826,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('signInWithRedirect()', () => {
+  describe('signInWithRedirect()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().signInWithRedirect();
@@ -870,7 +836,7 @@ describe('auth()', () => {
     });
   });
 
-  xdescribe('useDeviceLanguage()', () => {
+  describe('useDeviceLanguage()', () => {
     it('should throw an unsupported error', () => {
       (() => {
         firebase.auth().useDeviceLanguage();

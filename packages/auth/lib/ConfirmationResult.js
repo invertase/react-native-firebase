@@ -15,5 +15,19 @@
  *
  */
 
-require('./app');
-// require('./app.playground');
+export default class ConfirmationResult {
+  constructor(auth, verificationId) {
+    this._auth = auth;
+    this._verificationId = verificationId;
+  }
+
+  confirm(verificationCode) {
+    return this._auth.native
+      .confirmationResultConfirm(verificationCode)
+      .then(user => this._auth._setUser(user));
+  }
+
+  get verificationId(): string | null {
+    return this._verificationId;
+  }
+}
