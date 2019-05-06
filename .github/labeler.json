@@ -1,0 +1,20 @@
+{
+  "Service: AdMob": "packages/admob/*",
+  "Service: Analytics": "packages/analytics/*",
+  "Service: App/Core": "packages/app/*",
+  "Service: Authentication": "packages/auth/*",
+  "Service: Crashlytics": "packages/crashlytics/*",
+  "Service: Database": "packages/database/*",
+  "Service: Firestore": "packages/firestore/*",
+  "Service: Functions": "packages/functions/*",
+  "Service: Invites": "packages/invites/*",
+  "Service: Links": "packages/links/*",
+  "Service: Messaging": "packages/messaging/*",
+  "Service: Perf": "packages/perf/*",
+  "Service: Remote Config": "packages/config/*",
+  "Service: Storage": "packages/storage/*",
+  "Service: MLKit": "packages/mlkit/*",
+  "Platform: Android": "packages/**/android/*",
+  "Platform: iOS": "packages/**/ios/*",
+  "Platform: JavaScript": "packages/**/lib/*"
+}
