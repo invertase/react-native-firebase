@@ -1,6 +1,6 @@
 <!---
 Hello there you awesome person;
-This issue list of this repo is exclusively for bug reports.
+Please note that the issue list of this repo is exclusively for bug reports;
 
 1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
@@ -10,13 +10,17 @@ This issue list of this repo is exclusively for bug reports.
 <!-- NOTE: You can change any of the `[ ]` to `[x]` to mark an option(s) as selected -->
 
 <!-- PLEASE DO NOT REMOVE ANY SECTIONS FROM THIS ISSUE TEMPLATE   -->
-<!--   Leave them as they are if they're irrelevant to your issue -->
+<!--   Leave them as they are even if they're irrelevant to your issue -->
 
 ## Issue
 
 <!-- Please describe your issue here --^ and provide as much detail as you can. -->
 <!-- Include code snippets that show your usages of the library in the context of your project. -->
 <!-- Snippets that also show how and where the library is imported in JS are useful to debug issues relating to importing or methods not found issues -->
+
+
+Describe your issue here
+
 
 ---
 
@@ -86,6 +90,15 @@ This issue list of this repo is exclusively for bug reports.
 
 ## Environment
 
+
+**`react-native info` output:**
+
+<!-- Please run `react-native info` on your terminal and paste the contents into the code block below -->
+
+```
+ OUTPUT GOES HERE
+```
+
 <!-- change `[ ]` to `[x]` to select an option(s) -->
 
 - **Platform that you're experiencing the issue on**:
@@ -94,58 +107,20 @@ This issue list of this repo is exclusively for bug reports.
   - [ ] **iOS** but have not tested behavior on Android
   - [ ] **Android** but have not tested behavior on iOS
   - [ ] Both
-- **If known, the version of the platform are you experiencing the issue on:**
-  - `ADD_SOMETHING_HERE` e.g. iOS 10 or Android API 28
-- **Operating System:**
-  - [ ] MacOS, version: `N/A`
-  - [ ] Windows, version: `N/A`
-  - [ ] Other, please specify: `N/A`
-- **Build Tools:**
-  - `ADD_SOMETHING_HERE`
-- **`React Native` version:**
-  - `ADD_SOMETHING_HERE`
-- **`React Native Firebase` library version:**
-  - `ADD_SOMETHING_HERE`
 - **`Firebase` module(s) you're using that has the issue:**
-  - [x] **N/A**
-  - [ ] Authentication
-  - [ ] Analytics
-  - [ ] Cloud **Firestore**
-  - [ ] Cloud **Messaging** (FCM)
-  - [ ] Crashlytics
-  - [ ] Dynamic **Links**
-  - [ ] **Functions** Callable
-  - [ ] In App Messaging
-  - [ ] Indexing
-  - [ ] Invites
-  - [ ] Instance ID
-  - [ ] ML Kit
-  - [ ] Notifications
-  - [ ] Performance Monitoring
-  - [ ] Realtime **Database**
-  - [ ] Remote **Config**
-  - [ ] Storage
+  - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
-  - [ ] No
-  - [ ] Yes, version: `N/A`
-- **Are you using Expo, e.g. `ExpoKit`?**
-  - [x] No
-  - [ ] Yes, I've _not_ ejected
-  - [ ] Yes, but I **have** ejected to `ExpoKit`
-  - [ ] Yes, but I **have** ejected to vanilla React Native
-  - Expo version: `N/A`
+  - `Y/N`
 
 <!-- Thanks for reading this far down ❤️  -->
-<!-- High quality, detailed issues are much easier and quicker to triage for maintainers -->
+<!-- High quality, detailed issues are much easier to triage for maintainers -->
 
-<!-- For bonus points, if you put a 🔥 (:fire:) emojii in the issue title we'll know -->
-<!-- that you actually took the time to fill this out correctly, or at least read this far -->
+<!-- For bonus points, if you put a 🔥 (:fire:) emojii at the start of the issue title we'll know -->
+<!-- that you took the time to fill this out correctly, or, at least read this far -->
 
 ---
 
-Think `react-native-firebase` is great? Please consider supporting the project with any of the below:
+Think `react-native-firebase` is great? Please consider supporting all of the project maintainers and contributors by donating via our [Open Collective](https://opencollective.com/react-native-firebase/donate) where all contributors can submit expenses. [[Learn More]](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
 
-- 👉 Donate via [Open Collective](https://opencollective.com/react-native-firebase/donate)
-- 👉 Follow [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter
-- 👉 Star this repo on GitHub ⭐️
-- 👉 Contribute; see our [contributing guide](/CONTRIBUTING.md)
+- 👉 Check out [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter for updates on the library.
+
