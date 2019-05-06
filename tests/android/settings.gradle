@@ -4,16 +4,16 @@ def firebasePackages = [
   'app',
   'auth',
   'analytics',
-//  'config',
-//  'crashlytics',
-//  'functions',
-//  'fiam',
-//  'iid',
-//  'invites',
-//  'mlkit',
-//  'storage',
-//  'perf',
-//  'utils'
+  'config',
+  'crashlytics',
+  'functions',
+  'fiam',
+  'iid',
+  'invites',
+  'mlkit',
+  'storage',
+  'perf',
+  'utils'
 ]
 
 firebasePackages.each { firebasePackage ->
