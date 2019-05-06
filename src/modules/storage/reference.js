@@ -86,7 +86,7 @@ export default class StorageReference extends ReferenceBase {
    * Alias to putFile
    * @returns {StorageReference.putFile}
    */
-  get put(): (Object, Object) => StorageTask {
+  get put(): (string, Object) => StorageTask {
     return this.putFile;
   }
 
