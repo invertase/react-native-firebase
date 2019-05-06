@@ -4,7 +4,7 @@
   </a>
   <h4 align="center">React Native Firebase - Remote Config</h2>
 </p>
-
+foo
 <p align="center">
   <a href="https://api.rnfirebase.io/coverage/config/detail"><img src="https://api.rnfirebase.io/coverage/config/badge?style=flat-square" alt="Coverage"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/config"><img src="https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=flat-square" alt="NPM downloads"></a>
