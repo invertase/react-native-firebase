@@ -1,14 +1,15 @@
 ---
 title: Issues, Pull Requests & Project Management
-description: Contributing to Issues & Pull Requests is a great place to get started with contributing.
+description: Dealing with GitHub Issues, Pull Requests and assisting with general project management and planning.
 ---
 
-# Issues & PRs
+# Issues, Pull Requests & Project Management
 
-We regularly deal with Issues & Pull Requests via our Github repository. We appreciate all contributions to help
-manage our repository. If you'd like to help, the following areas are a great place to get started.
+A lot of time is spent handling GitHub Issues, GitHub Pull Requests and doing general project management and planning.
 
-## Issues
+We appreciate all contributions that help manage us this repository. If you'd like to help, the following areas are a great place to get started.
+
+## Issues Management
 
 - If users have not followed the [issue template](https://github.com/invertase/react-native-firebase/blob/master/.github/ISSUE_TEMPLATE.md)
   reminding them this is required information for us to be able to quickly identify and replicate the problem.

@@ -7,7 +7,9 @@ description: Interested in contributing to the library but don't know where to s
 
 Firstly, thanks for considering contributing to React Native Firebase! It's people like you that make the open source community such a great community! 😊
 
-We welcome any type of contribution, not just code. You can help with any of the following;
+We welcome **any** type of contribution, not just code.
+
+You can learn more about the various ways of contributing to this project by visiting any of the sections below.
 
 <Grid columns="2">
 	<Block
@@ -60,6 +62,18 @@ We welcome any type of contribution, not just code. You can help with any of the
 	</Block>
 </Grid>
 
+## Code of Conduct
+
+In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+
+[[Read the full Code of Conduct]](https://github.com/invertase/meta/blob/master/CODE_OF_CONDUCT.md)
+
+### Discord Server Code of Conduct
+
+When joining and interacting with our Open Source Discord server we kindly ask that you follow the above linked Code of Conduct at all times.
+
+[[Read the full Discord Guidelines]](https://github.com/invertase/meta/blob/master/DISCORD_GUIDELINES.md)
+
 ## Project Guidelines
 
 As the creators and maintainers of this project, we want to ensure that the project lives and continues to grow. Not blocked by any singular person's time.
@@ -88,9 +102,9 @@ This project is not continuously deployed, this leaves space for debate after re
 
 It is normal for a first pull request to be a potential fix for a problem but moving on from there to helping the project's direction can be difficult.
 
-We try to help contributors cross that barrier by offering good first step issues (labelled `good-first-issue`). These issues can be fixed without feeling like you are stepping on toes. Ideally, these are non-critical issues that are well defined. They will be purposely avoided by mature contributors to the project, to make space for others.
+We try to help contributors cross that barrier by offering good first step issues (labelled `Help: Good First Issue`). These issues can be fixed without feeling like you are stepping on toes. Ideally, these are non-critical issues that are well defined. They will be purposely avoided by mature contributors to the project, to make space for others.
 
-Additionally issues labelled `needs-triage` or `help-wanted` can also be picked up, these may not necessarily require code changes but rather help with debugging and finding the cause of the issue whether it's a bug or an users incorrect setup of the library or project.
+Additionally issues labelled `Help: Needs Triage` or `Help: General` can also be picked up, these may not necessarily require code changes but rather help with debugging and finding the cause of the issue whether it's a bug or an users incorrect setup of the library or project.
 
 We aim to keep all project discussion inside GitHub issues. This is to make sure valuable discussion is accessible via search. If you have questions about how to use the library, or how the project is running - GitHub issues are the goto tool for this project.
 
