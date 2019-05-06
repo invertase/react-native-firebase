@@ -28,7 +28,6 @@ let FIREBASE_ROOT = null;
 
 const NAMESPACE_REGISTRY = {};
 const APP_MODULE_INSTANCE = {};
-const ROOT_MODULE_INSTANCE = {};
 const MODULE_GETTER_FOR_APP = {};
 const MODULE_GETTER_FOR_ROOT = {};
 
