@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "genversion src/version.js && npm run build-src",
-    "build-src": "BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
+    "build-src": "cross-env BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
     "build-flow": "flow-copy-source -i */__tests__* src dist",
     "build-src-watch": "genversion src/version.js && BABEL_ENV=development babel src -d dist --ignore __tests__ --copy-files --watch",
     "lint": "eslint ./src",
@@ -81,6 +81,7 @@
     "axios": "^0.18.0",
     "babel-eslint": "^9.0.0",
     "codecov": "^3.1.0",
+    "cross-env": "^5.1.0",
     "eslint": "^5.5.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^3.0.1",
