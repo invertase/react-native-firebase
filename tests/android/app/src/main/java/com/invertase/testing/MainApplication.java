@@ -16,16 +16,16 @@ import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
-//import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;
-//import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
-//import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
-//import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
-//import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
-//import io.invertase.firebase.invites.ReactNativeFirebaseInvitesPackage;
-//import io.invertase.firebase.mlkit.ReactNativeFirebaseMlkitPackage;
-//import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
-//import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
-//import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;
+import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
+import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
+import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
+import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
+import io.invertase.firebase.invites.ReactNativeFirebaseInvitesPackage;
+import io.invertase.firebase.mlkit.ReactNativeFirebaseMlkitPackage;
+import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
+import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
+import io.invertase.firebase.utils.ReactNativeFirebaseUtilsPackage;
 import io.invertase.jet.JetPackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -42,17 +42,17 @@ public class MainApplication extends Application implements ReactApplication {
         new JetPackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAnalyticsPackage(),
-        new ReactNativeFirebaseAuthPackage()
-//        new ReactNativeFirebaseInvitesPackage(),
-//        new ReactNativeFirebaseCrashlyticsPackage(),
-//        new ReactNativeFirebaseConfigPackage(),
-//        new ReactNativeFirebaseMlkitPackage(),
-//        new ReactNativeFirebaseStoragePackage(),
-//        new ReactNativeFirebaseFunctionsPackage(),
-//        new ReactNativeFirebaseFiamPackage(),
-//        new ReactNativeFirebaseIidPackage(),
-//        new ReactNativeFirebasePerfPackage(),
-//        new ReactNativeFirebaseUtilsPackage()
+        new ReactNativeFirebaseAuthPackage(),
+        new ReactNativeFirebaseInvitesPackage(),
+        new ReactNativeFirebaseCrashlyticsPackage(),
+        new ReactNativeFirebaseConfigPackage(),
+        new ReactNativeFirebaseMlkitPackage(),
+        new ReactNativeFirebaseStoragePackage(),
+        new ReactNativeFirebaseFunctionsPackage(),
+        new ReactNativeFirebaseFiamPackage(),
+        new ReactNativeFirebaseIidPackage(),
+        new ReactNativeFirebasePerfPackage(),
+        new ReactNativeFirebaseUtilsPackage()
       );
     }
   };

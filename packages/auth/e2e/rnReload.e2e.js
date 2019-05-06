@@ -6,7 +6,8 @@ describe('auth()', () => {
     }
   });
 
-  describe('firebase.auth().currentUser', () => {
+  // TODO(salakar): Detox on iOS crashing app on reloads
+  android.describe('firebase.auth().currentUser', () => {
     it('exists after reload', async () => {
       let currentUser;
       // before reload
