@@ -28,7 +28,7 @@ The credential file is generated automatically from the Firebase [console](https
 
  Open the React Native iOS project with XCode. 
 
-If using Pods, open the `ios/<projectName>.xcworkspace` file, otherwise open the `ios/<projectName>.xcodeproj` file.
+If using Pods, open the `ios/{projectName}.xcworkspace` file, otherwise open the `ios/{projectName}.xcodeproj` file.
 
 > Do not copy the file manually. XCode must add the file to ensure it is correctly linked to the project.
 
@@ -44,7 +44,7 @@ If using Pods, open the `ios/<projectName>.xcworkspace` file, otherwise open the
 
 At the top of the following file, add:
 
-**`ios/<projectName>/AppDelegate.m`**:
+**`ios/{projectName}/AppDelegate.m`**:
 ```objecttivec
 @import Firebase.h;
 ```
