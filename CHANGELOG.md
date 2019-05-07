@@ -15,13 +15,24 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | [App](/packages/app)                     |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)         |         [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)         |
 | [App Invites](/packages/invites)         |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)     |     [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)     |
 | [Cloud Functions](/packages/functions)   |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)   |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
-| [Cloud Storage](/packages/storage)   |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)   |   [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)   |
+| [Cloud Storage](/packages/storage)       |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)     |     [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)     |
 | [Crashlytics](/packages/crashlytics)     | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics) | [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail) |
 | [In-app Messaging](/packages/fiam)       |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)        |        [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)        |
 | [Instance ID](/packages/iid)             |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)         |         [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)         |
 | [Performance Monitoring](/packages/perf) |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)        |        [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)        |
 | [Remote Config](/packages/config)        |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)      |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
 | [Utils](/packages/utils)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)       |       [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)       |
+
+The following modules are **migration only** (migrated from v5 to v6 with minimal changes), what this means:
+
+- no new work done on them
+- no new tests added for them
+- flow types missing
+- typescript types added, but no comments or examples
+
+| Name                             |                                                                             Downloads                                                                             |                                                 Coverage                                                  |
+| -------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------: |
+| [Authentication](/packages/auth) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/auth.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/auth) | [![badge](https://api.rnfirebase.io/coverage/auth/badge)](https://api.rnfirebase.io/coverage/auth/detail) |
 
 > If a module you use is not yet listed above please refrain from using v6 for now - attempting to use v6 alongside v5 can cause issues with dependencies.
 
@@ -122,7 +133,6 @@ await analytics().setUserId('12345678');
 
 > **Blog post announcement**: [[Firebase Crashlytics for React Native](https://invertase.io/blog/firebase-crashlytics-for-react-native?utm_source=github&utm_medium=changelog)]
 
-
 - [NEW] JavaScript stack traces now automatically captured and parsed
   ![js stack trace preview](https://pbs.twimg.com/media/D07RPDMW0AA7TTv.jpg:large)
 - [NEW] Optionally enable automatic reporting of JavaScript unhandled Promise rejections
@@ -183,6 +193,7 @@ await analytics().setUserId('12345678');
 ## Storage
 
 <!-- TODO(salakar) change link -->
+
 > **Blog post announcement (NOT LIVE YET)**: [[Firebase Cloud Storage for React Native](https://invertase.io/blog?utm_source=github&utm_medium=changelog)]
 
 - [NEW] Added support for `put` (`Blob` | `ArrayBuffer` | `Uint8Array`)
@@ -196,9 +207,9 @@ await analytics().setUserId('12345678');
 - [BREAKING] `StorageReference.downloadFile()` is now deprecated and will be removed in a later release, please rename usages of this to `getFile()` - renamed to match Native SDKs
 - [BREAKING] `firebase.storage.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.storage.Path`
 - [BREAKING] `firebase.storage.Native.*` properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate
-- [BUGFIX][ANDROID] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
-- [BUGFIX][ANDROID] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
-- [INTERNAL][ANDROID] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
+- [BUGFIX][android] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
+- [BUGFIX][android] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
+- [INTERNAL][android] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
 
 ## Messaging
 

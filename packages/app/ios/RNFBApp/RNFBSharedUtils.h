@@ -37,7 +37,6 @@ extern NSString *const DEFAULT_APP_NAME;
 
 @interface RNFBSharedUtils : NSObject
 
-
 #pragma mark -
 #pragma mark Methods
 
@@ -45,9 +44,14 @@ extern NSString *const DEFAULT_APP_NAME;
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp;
 
++ (void)sendJSEventForApp:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body;
+
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;
 
 + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo;
+
++ (NSString *)getISO8601String:(NSDate *)date;
+
 @end
 
 #endif

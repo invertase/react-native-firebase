@@ -19,85 +19,52 @@
 import React, { Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View } from 'react-native';
 
-import '@react-native-firebase/analytics';
-import '@react-native-firebase/config';
-import '@react-native-firebase/utils';
-import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/fiam';
-import '@react-native-firebase/functions';
-import '@react-native-firebase/mlkit';
-import '@react-native-firebase/storage';
-import '@react-native-firebase/iid';
-import '@react-native-firebase/invites';
-import '@react-native-firebase/perf';
+// import '@react-native-firebase/analytics';
+// import '@react-native-firebase/config';
+// import '@react-native-firebase/utils';
+// import '@react-native-firebase/crashlytics';
+// import '@react-native-firebase/fiam';
+// import '@react-native-firebase/functions';
+// import '@react-native-firebase/mlkit';
+// import '@react-native-firebase/storage';
+// import '@react-native-firebase/iid';
+// import '@react-native-firebase/invites';
+// import '@react-native-firebase/perf';
+import '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 
 class Root extends Component {
   constructor(props) {
     super(props);
-    this.runSingleTest();
+    try {
+      this.runSingleTest().catch(console.error);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async runSingleTest() {
-    await firebase
-      .storage()
-      .ref('/cat.gif')
-      .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
+    // const random = Utils.randString(12, '#aA');
+    const random = 'adsdgdfgh2612';
+    const email = `${random}@${random}.com`;
 
-    const ref = firebase.storage().ref('/uploadCat.gif');
-    const path = `${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`;
-    const uploadTask = ref.putFile(path);
+    const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
 
-    let hadRunningStatus = false;
-    let hadPausedStatus = false;
-    let hadResumedStatus = false;
+    console.log('After create user', user);
 
-    uploadTask.on(
-      'state_changed',
-      snapshot => {
-        console.log('---->      ', snapshot.state);
-        console.dir(snapshot.error);
-        // 1) pause when we receive first running event
-        if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-          console.log('-->   Pausing');
-          hadRunningStatus = true;
-          setTimeout(() => {
-            uploadTask.pause();
-          }, 1000);
-        }
+    // Test
+    const token = await user.getIdToken();
 
-        // 2) resume when we receive first paused event
-        if (snapshot.state === firebase.storage.TaskState.PAUSED) {
-          hadPausedStatus = true;
-          setTimeout(() => {
-            console.log('-->   Resuming');
-            uploadTask.resume();
-          }, 1000);
-        }
+    console.log('After create token', token);
 
-        // 3) track that we resumed on 2nd running status whilst paused
-        if (
-          snapshot.state === firebase.storage.TaskState.RUNNING &&
-          hadRunningStatus &&
-          hadPausedStatus &&
-          !hadResumedStatus
-        ) {
-          console.log('-->   Resumed');
-          hadResumedStatus = true;
-        }
+    // Assertions
+    // token.should.be.a.String();
+    // token.length.should.be.greaterThan(24);
 
-        // 4) finally confirm we received all statuses
-        if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-          console.log('-->   Success');
-          console.log('FINISH');
-        }
-      },
-      error => {
-        console.log('ERROR', error);
-      },
-    );
+    // Clean up
+    await firebase.auth().currentUser.delete();
 
-    return Promise.resolve();
+    console.log('After delete user', token);
   }
 
   render() {

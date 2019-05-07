@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        core: "16.0.8",
+        core: "16.0.9",
         common: "16.1.0"
       ],
     ],

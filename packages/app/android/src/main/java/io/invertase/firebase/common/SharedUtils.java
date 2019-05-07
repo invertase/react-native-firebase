@@ -235,7 +235,7 @@ public class SharedUtils {
 
             map.putMap(key, childMap);
           } else {
-            Log.d(TAG, "SharedUtils:mapPutValue:unknownType:" + type);
+            Log.d(TAG, "SharedUtils:SharedUtils:unknownType:" + type);
             map.putNull(key);
           }
       }

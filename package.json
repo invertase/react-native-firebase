@@ -87,7 +87,6 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "packages/template/project",
       "tests"
     ],
     "nohoist": [

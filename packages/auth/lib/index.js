@@ -21,15 +21,276 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import version from './version';
+import { isAndroid } from '@react-native-firebase/common';
 
-const statics = {};
+import EmailAuthProvider from './providers/EmailAuthProvider';
+import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import GoogleAuthProvider from './providers/GoogleAuthProvider';
+import GithubAuthProvider from './providers/GithubAuthProvider';
+import OAuthProvider from './providers/OAuthProvider';
+import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import FacebookAuthProvider from './providers/FacebookAuthProvider';
+
+import User from './User';
+import version from './version';
+import Settings from './Settings';
+import PhoneAuthListener from './PhoneAuthListener';
+import ConfirmationResult from './ConfirmationResult';
+
+const statics = {
+  EmailAuthProvider,
+  PhoneAuthProvider,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  TwitterAuthProvider,
+  FacebookAuthProvider,
+  OAuthProvider,
+  PhoneAuthState: {
+    CODE_SENT: 'sent',
+    AUTO_VERIFY_TIMEOUT: 'timeout',
+    AUTO_VERIFIED: 'verified',
+    ERROR: 'error',
+  },
+};
 
 const namespace = 'auth';
 
 const nativeModuleName = 'RNFBAuthModule';
 
-class FirebaseAuthModule extends FirebaseModule {}
+class FirebaseAuthModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    this._user = null;
+    this._settings = null;
+    this._authResult = false;
+    this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+    if (!this.languageCode) {
+      this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+    }
+
+    if (this.native.APP_USER[this.app._name]) {
+      this._setUser(this.native.APP_USER[this.app._name]);
+    }
+
+    this.emitter.addListener(this.eventNameForApp('auth_state_changed'), event => {
+      this._setUser(event.user);
+      this.emitter.emit(this.eventNameForApp('onAuthStateChanged'), this._user);
+    });
+
+    this.emitter.addListener(this.eventNameForApp('phone_auth_state_changed'), event => {
+      const eventKey = `phone:auth:${event.requestKey}:${event.type}`;
+      this.emitter.emit(eventKey, event.state);
+    });
+
+    this.emitter.addListener(this.eventNameForApp('auth_id_token_changed'), auth => {
+      this._setUser(auth.user);
+      this.emitter.emit(this.eventNameForApp('onIdTokenChanged'), this._user);
+    });
+
+    this.native.addAuthStateListener();
+    this.native.addIdTokenListener();
+  }
+
+  get languageCode() {
+    return this._languageCode;
+  }
+
+  set languageCode(code) {
+    this._languageCode = code;
+    this.native.setLanguageCode(code);
+  }
+
+  get settings() {
+    if (!this._settings) this._settings = new Settings(this);
+    return this._settings;
+  }
+
+  get currentUser() {
+    return this._user;
+  }
+
+  _setUser(user) {
+    this._user = user ? new User(this, user) : null;
+    this._authResult = true;
+    this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
+    return this._user;
+  }
+
+  _setUserCredential(userCredential) {
+    const user = new User(this, userCredential.user);
+    this._user = user;
+    this._authResult = true;
+    this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
+    return {
+      additionalUserInfo: userCredential.additionalUserInfo,
+      user,
+    };
+  }
+
+  onAuthStateChanged(listener) {
+    const subscription = this.emitter.addListener(
+      this.eventNameForApp('onAuthStateChanged'),
+      listener,
+    );
+
+    if (this._authResult) listener(this._user || null);
+    return () => subscription.remove();
+  }
+
+  onIdTokenChanged(listener) {
+    const subscription = this.emitter.addListener(
+      this.eventNameForApp('onIdTokenChanged'),
+      listener,
+    );
+
+    if (this._authResult) listener(this._user || null);
+    return () => subscription.remove();
+  }
+
+  onUserChanged(listener) {
+    const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
+    if (this._authResult) listener(this._user || null);
+
+    return () => {
+      subscription.remove();
+    };
+  }
+
+  signOut() {
+    return this.native.signOut().then(() => {
+      this._setUser();
+    });
+  }
+
+  signInAnonymously() {
+    return this.native
+      .signInAnonymously()
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  signInWithPhoneNumber(phoneNumber, forceResend) {
+    if (isAndroid) {
+      return this.native
+        .signInWithPhoneNumber(phoneNumber, forceResend || false)
+        .then(result => new ConfirmationResult(this, result.verificationId));
+    }
+
+    return this.native
+      .signInWithPhoneNumber(phoneNumber)
+      .then(result => new ConfirmationResult(this, result.verificationId));
+  }
+
+  verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+    let _forceResend = forceResend;
+    let _autoVerifyTimeout = 60;
+
+    if (isBoolean(autoVerifyTimeoutOrForceResend)) {
+      _forceResend = autoVerifyTimeoutOrForceResend;
+    } else {
+      _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
+    }
+
+    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+  }
+
+  createUserWithEmailAndPassword(email, password) {
+    return this.native
+      .createUserWithEmailAndPassword(email, password)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  signInWithEmailAndPassword(email, password) {
+    return this.native
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  signInWithCustomToken(customToken) {
+    return this.native
+      .signInWithCustomToken(customToken)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  signInWithCredential(credential) {
+    return this.native
+      .signInWithCredential(credential.providerId, credential.token, credential.secret)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  sendPasswordResetEmail(email, actionCodeSettings) {
+    return this.native.sendPasswordResetEmail(email, actionCodeSettings);
+  }
+
+  sendSignInLinkToEmail(email, actionCodeSettings) {
+    return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
+  }
+
+  isSignInWithEmailLink(emailLink) {
+    return (
+      typeof emailLink === 'string' &&
+      (emailLink.includes('mode=signIn') || emailLink.includes('mode%3DsignIn')) &&
+      (emailLink.includes('oobCode=') || emailLink.includes('oobCode%3D'))
+    );
+  }
+
+  signInWithEmailLink(email, emailLink) {
+    return this.native
+      .signInWithEmailLink(email, emailLink)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  confirmPasswordReset(code, newPassword) {
+    return this.native.confirmPasswordReset(code, newPassword);
+  }
+
+  applyActionCode(code) {
+    return this.native.applyActionCode(code).then(user => {
+      this._setUser(user);
+    });
+  }
+
+  checkActionCode(code) {
+    return this.native.checkActionCode(code);
+  }
+
+  fetchSignInMethodsForEmail(email) {
+    return this.native.fetchSignInMethodsForEmail(email);
+  }
+
+  verifyPasswordResetCode(code) {
+    return this.native.verifyPasswordResetCode(code);
+  }
+
+  getRedirectResult() {
+    throw new Error(
+      'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.',
+    );
+  }
+
+  setPersistence() {
+    throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
+  }
+
+  signInWithPopup() {
+    throw new Error(
+      'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
+    );
+  }
+
+  signInWithRedirect() {
+    throw new Error(
+      'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
+    );
+  }
+
+  // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
+  useDeviceLanguage() {
+    throw new Error(
+      'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
+    );
+  }
+}
 
 // import { SDK_VERSION } from '@react-native-firebase/auth';
 export const SDK_VERSION = version;
@@ -41,8 +302,8 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
-  hasMultiAppSupport: false,
+  nativeEvents: ['auth_state_changed', 'auth_id_token_changed', 'phone_auth_state_changed'],
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAuthModule,
 });
