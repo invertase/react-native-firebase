@@ -59,11 +59,11 @@ import {
  * @firebase auth
  */
 export namespace Auth {
-  export type AuthProviderCredential = {
+  export interface AuthProviderCredential {
     providerId: string;
     token: string;
     secret: string;
-  };
+  }
 
   export interface AuthProvider {
     PROVIDER_ID: string;
