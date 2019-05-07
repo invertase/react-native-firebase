@@ -58,6 +58,11 @@ import {
  * @firebase auth
  */
 export namespace Auth {
+  
+  export interface UserCredential {}
+
+  export interface ActionCodeSettings {}
+
   export interface Statics {}
 
   /**
@@ -81,7 +86,154 @@ export namespace Auth {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {}
+  export class Module extends ReactNativeFirebaseModule {
+    /**
+     *
+     */
+    get languageCode(): string;
+
+    /**
+     *
+     */
+    set languageCode(code: string): void;
+
+    /**
+     *
+     */
+    get settings(): Setting;
+
+    /**
+     *
+     */
+    get currentUser(): User | null;
+
+    /**
+     *
+     * @param listener
+     */
+    onAuthStateChanged(listener: Function): Function;
+
+    /**
+     *
+     * @param listener
+     */
+    onIdTokenChanged(listener: Function): Function;
+
+    /**
+     *
+     * @param listener
+     */
+    onUserChanged(listener: Function): Function;
+
+    /**
+     *
+     */
+    signOut(): Promise<void>;
+
+    /**
+     *
+     */
+    signInAnonymously(): Promise<UserCredential>;
+
+    /**
+     *
+     * @param phoneNumber
+     * @param forceResend
+     */
+    signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<ConfirmationResult>;
+
+    /**
+     *
+     * @param phoneNumber
+     * @param autoVerifyTimeoutOrForceResend
+     * @param forceResend
+     */
+    verifyPhoneNumber(phoneNumber: string, autoVerifyTimeoutOrForceResend?: number | boolean, forceResend?: boolean): PhoneAuthListener;
+
+    /**
+     *
+     * @param email
+     * @param password
+     */
+    createUserWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
+
+    /**
+     *
+     * @param email
+     * @param password
+     */
+    signInWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
+
+    /**
+     *
+     * @param customToken
+     */
+    signInWithCustomToken(customToken: string): Promise<UserCredential>;
+
+    /**
+     *
+     * @param credential
+     */
+    signInWithCredential(credential: string): Promise<UserCredential>;
+
+    /**
+     *
+     * @param email
+     * @param actionCodeSettings
+     */
+    sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
+
+    /**
+     *
+     * @param email
+     * @param actionCodeSettings
+     */
+    sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
+
+    /**
+     *
+     * @param emailLink
+     */
+    isSignInWithEmailLink(emailLink: string): boolean;
+
+    /**
+     *
+     * @param email
+     * @param emailLink
+     */
+    signInWithEmailLink(email: string, emailLink: string): Promise<UserCredential>;
+
+    /**
+     *
+     * @param code
+     * @param newPassword
+     */
+    confirmPasswordReset(code: string, newPassword: string): Promise<void>;
+
+    /**
+     *
+     * @param code
+     */
+    applyActionCode(code: string): Promise<void>;
+
+    /**
+     *
+     * @param code
+     */
+    checkActionCode(code: string): Promise<void>;
+
+    /**
+     *
+     * @param email
+     */
+    fetchSignInMethodsForEmail(email: string): Promise<[]>;
+
+    /**
+     *
+     * @param code
+     */
+    verifyPasswordResetCode(code: string): Promise<void>;
+  }
 }
 
 declare module '@react-native-firebase/auth' {
