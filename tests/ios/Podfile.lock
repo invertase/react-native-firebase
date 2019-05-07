@@ -4,6 +4,9 @@ PODS:
     - Fabric (~> 1.9.0)
   - DoubleConversion (1.1.6)
   - Fabric (1.9.0)
+  - Firebase/Auth (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseAuth (= 5.4.2)
   - Firebase/Core (5.20.2):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 5.8.1)
@@ -40,6 +43,11 @@ PODS:
     - "GoogleUtilities/NSData+zlib (~> 5.2)"
     - nanopb (~> 0.3)
   - FirebaseAnalyticsInterop (1.2.0)
+  - FirebaseAuth (5.4.2):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.2)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseAuthInterop (1.0.0)
   - FirebaseCore (5.4.1):
     - GoogleUtilities/Environment (~> 5.2)
@@ -218,57 +226,62 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0-alpha.9):
+  - RNFBAnalytics (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBApp (6.0.0-alpha.9):
+  - RNFBApp (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
-  - RNFBConfig (6.0.0-alpha.9):
+  - RNFBAuth (6.0.0-alpha.10):
+    - Firebase/Auth (~> 5.20.2)
+    - Firebase/Core (~> 5.20.2)
+    - React
+    - RNFBApp
+  - RNFBConfig (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/RemoteConfig (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.0.0-alpha.9):
+  - RNFBCrashlytics (6.0.0-alpha.10):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFiam (6.0.0-alpha.9):
+  - RNFBFiam (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/InAppMessagingDisplay (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFirestore (6.0.0-alpha.9):
+  - RNFBFirestore (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFunctions (6.0.0-alpha.9):
+  - RNFBFunctions (6.0.0-alpha.10):
     - Firebase/Functions (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBIid (6.0.0-alpha.9):
+  - RNFBIid (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBInvites (6.0.0-alpha.9):
+  - RNFBInvites (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Invites (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBPerf (6.0.0-alpha.9):
+  - RNFBPerf (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Performance (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBStorage (6.0.0-alpha.9):
+  - RNFBStorage (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Storage (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBUtils (6.0.0-alpha.9):
+  - RNFBUtils (6.0.0-alpha.10):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
@@ -288,6 +301,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
+  - "RNFBAuth (from `../node_modules/@react-native-firebase/auth/ios`)"
   - "RNFBConfig (from `../node_modules/@react-native-firebase/config/ios`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
   - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
@@ -309,6 +323,7 @@ SPEC REPOS:
     - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
+    - FirebaseAuth
     - FirebaseAuthInterop
     - FirebaseCore
     - FirebaseDynamicLinks
@@ -345,6 +360,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/analytics/ios"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app/ios"
+  RNFBAuth:
+    :path: "../node_modules/@react-native-firebase/auth/ios"
   RNFBConfig:
     :path: "../node_modules/@react-native-firebase/config/ios"
   RNFBCrashlytics:
@@ -377,6 +394,7 @@ SPEC CHECKSUMS:
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: ece1aa57a4f43c64d53a648b5a5e05151aae947b
   FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
+  FirebaseAuth: dd7bbf03a5aee0eafb3a1aee4d2812bd74bac890
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
   FirebaseDynamicLinks: f7a8717e2c7ea652923882a2d60b0045d6fd99d5
@@ -403,6 +421,7 @@ SPEC CHECKSUMS:
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   RNFBAnalytics: be645d8f36d6e10a896a12def49cc8c50928eb0e
   RNFBApp: 984fdd6860f51673f457c2f6b46d6e358342f037
+  RNFBAuth: 6e4622c6205d250cc7ff59c31f42312dd87ade0a
   RNFBConfig: 97f64346c7f2b7d6edddc1dd3dd40a863725b7d9
   RNFBCrashlytics: 7d35ecf98c4f8bb860ac743fb0d2c388f2e6b9d4
   RNFBFiam: 62de473923df3986f0dca93cddd856671fcdb5e5

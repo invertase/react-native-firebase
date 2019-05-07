@@ -81,9 +81,7 @@ export namespace Auth {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
-
-  }
+  export class Module extends ReactNativeFirebaseModule {}
 }
 
 declare module '@react-native-firebase/auth' {
@@ -100,10 +98,7 @@ declare module '@react-native-firebase/auth' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const AuthDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Auth.Module,
-    Auth.Statics
-  >;
+  const AuthDefaultExport: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
   /**
    * @example
    * ```js
@@ -122,10 +117,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * Auth
      */
-    auth: ReactNativeFirebaseModuleAndStatics<
-      Auth.Module,
-      Auth.Statics
-    >;
+    auth: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
   }
 
   interface FirebaseApp {

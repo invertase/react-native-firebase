@@ -38,9 +38,9 @@ const PACKAGES = [
   // 'mlkit',
   'invites',
   'fiam',
-  // 'auth',
+  'auth',
   // 'firestore',
-  // 'links',
+  'links',
   // 'messaging',
   'storage',
 ];

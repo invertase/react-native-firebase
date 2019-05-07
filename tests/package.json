@@ -7,10 +7,10 @@
     "prepare": "patch-package"
   },
   "dependencies": {
+    "@react-native-firebase/auth": "6.0.0-alpha.10",
     "@react-native-firebase/analytics": "6.0.0-alpha.10",
     "@react-native-firebase/app": "6.0.0-alpha.10",
     "@react-native-firebase/app-types": "6.0.0-alpha.10",
-    "@react-native-firebase/auth": "6.0.0-alpha.10",
     "@react-native-firebase/config": "6.0.0-alpha.10",
     "@react-native-firebase/crashlytics": "6.0.0-alpha.10",
     "@react-native-firebase/fiam": "6.0.0-alpha.10",

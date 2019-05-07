@@ -5,7 +5,6 @@
   ],
   "packages": [
     "packages/*",
-    "packages/template/project",
     "tests"
   ],
   "useWorkspaces": true,

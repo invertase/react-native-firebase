@@ -16,6 +16,7 @@
  */
 
 #import "RNFBSharedUtils.h"
+#import "RNFBRCTEventEmitter.h"
 
 #pragma mark -
 #pragma mark Constants
@@ -23,69 +24,90 @@
 NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
-
 @implementation RNFBSharedUtils
-  static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
+static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
 
-  + (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
-    if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
-      return DEFAULT_APP_DISPLAY_NAME;
-    }
-    return appDisplayName;
++ (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
+  if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
+    return DEFAULT_APP_DISPLAY_NAME;
+  }
+  return appDisplayName;
+}
+
++ (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
+  FIROptions *firOptions = [firApp options];
+  NSMutableDictionary *firAppDictionary = [NSMutableDictionary new];
+  NSMutableDictionary *firAppOptions = [NSMutableDictionary new];
+  NSMutableDictionary *firAppConfig = [NSMutableDictionary new];
+
+  NSString *name = [firApp name];
+  if ([name isEqualToString:DEFAULT_APP_NAME]) {
+    name = DEFAULT_APP_DISPLAY_NAME;
   }
 
+  firAppConfig[@"name"] = name;
+  firAppConfig[@"automaticDataCollectionEnabled"] = @([firApp isDataCollectionDefaultEnabled]);
 
-  + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
-    FIROptions *firOptions = [firApp options];
-    NSMutableDictionary *firAppDictionary = [NSMutableDictionary new];
-    NSMutableDictionary *firAppOptions = [NSMutableDictionary new];
-    NSMutableDictionary *firAppConfig = [NSMutableDictionary new];
+  firAppOptions[@"apiKey"] = firOptions.APIKey;
+  firAppOptions[@"appId"] = firOptions.googleAppID;
+  firAppOptions[@"projectId"] = firOptions.projectID;
+  firAppOptions[@"databaseURL"] = firOptions.databaseURL;
+  firAppOptions[@"gaTrackingId"] = firOptions.trackingID;
+  firAppOptions[@"storageBucket"] = firOptions.storageBucket;
+  firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
+  // missing from android sdk - ios only:
+  firAppOptions[@"clientId"] = firOptions.clientID;
+  firAppOptions[@"androidClientID"] = firOptions.androidClientID;
+  firAppOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
 
-    NSString *name = [firApp name];
-    if ([name isEqualToString:DEFAULT_APP_NAME]) {
-      name = DEFAULT_APP_DISPLAY_NAME;
-    }
+  firAppDictionary[@"options"] = firAppOptions;
+  firAppDictionary[@"appConfig"] = firAppConfig;
 
-    firAppConfig[@"name"] = name;
-    firAppConfig[@"automaticDataCollectionEnabled"] = @([firApp isDataCollectionDefaultEnabled]);
+  return firAppDictionary;
+}
 
-    firAppOptions[@"apiKey"] = firOptions.APIKey;
-    firAppOptions[@"appId"] = firOptions.googleAppID;
-    firAppOptions[@"projectId"] = firOptions.projectID;
-    firAppOptions[@"databaseURL"] = firOptions.databaseURL;
-    firAppOptions[@"gaTrackingId"] = firOptions.trackingID;
-    firAppOptions[@"storageBucket"] = firOptions.storageBucket;
-    firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
-    // missing from android sdk - ios only:
-    firAppOptions[@"clientId"] = firOptions.clientID;
-    firAppOptions[@"androidClientID"] = firOptions.androidClientID;
-    firAppOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
++ (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception; {
+  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 
-    firAppDictionary[@"options"] = firAppOptions;
-    firAppDictionary[@"appConfig"] = firAppConfig;
+  [userInfo setValue:@(YES) forKey:@"fatal"];
+  [userInfo setValue:@"unknown" forKey:@"code"];
+  [userInfo setValue:exception.reason forKey:@"message"];
+  [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
+  [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
 
-    return firAppDictionary;
+  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+
+  reject(exception.name, exception.reason, error);
+}
+
++ (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo; {
+  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+  reject(userInfo[@"code"], userInfo[@"message"], error);
+}
+
+// for easier v5 migration
++ (void)sendJSEventForApp:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body {
+  NSMutableDictionary *newBody = [body mutableCopy];
+  newBody[@"appName"] = [self getAppJavaScriptName:app.name];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:name body:newBody];
+}
+
++ (NSString *)getISO8601String:(NSDate *)date {
+  static NSDateFormatter *formatter = nil;
+
+  if (!formatter) {
+    formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss"];
   }
 
-  + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception; {
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+  NSString *iso8601String = [formatter stringFromDate:date];
 
-    [userInfo setValue:@(YES) forKey:@"fatal"];
-    [userInfo setValue:@"unknown" forKey:@"code"];
-    [userInfo setValue:exception.reason forKey:@"message"];
-    [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
-    [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
+  return [iso8601String stringByAppendingString:@"Z"];
+}
 
-    NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-
-    reject(exception.name, exception.reason, error);
-  }
-
-  + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo; {
-    NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-    reject(userInfo[@"code"], userInfo[@"message"], error);
-  }
 @end
