@@ -16,7 +16,7 @@ You can learn more about the various ways of contributing to this project by vis
 		icon="error_outline"
 		color="#2196f3"
 		title="Issues, PRs & Project Management"
-		to="/contributing/issues-prs"
+		to="/contributing/issues-prs-pm"
 	>
 		Help out with GitHub Issues, answering help requests on Discord and reviewing GitHub Pull Requests. This helps maintainers focus more on programming.
 	</Block>
