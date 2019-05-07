@@ -32,7 +32,7 @@ If using Pods, open the `ios/{projectName}.xcworkspace` file, otherwise open the
 
 > Do not copy the file manually. XCode must add the file to ensure it is correctly linked to the project.
 
-- Right click your project in XCode and select "Add Files to '<projectName>'".
+- Right click your project in XCode and select "Add Files to '{projectName}'".
 
 ![Add files](https://prismic-io.s3.amazonaws.com/invertase%2F140b5f1f-3cfa-4bc5-a5e8-f6f33cc43165_unknown+%281%29.png)
 
