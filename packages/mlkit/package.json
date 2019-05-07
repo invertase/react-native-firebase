@@ -34,7 +34,7 @@
     "@react-native-firebase/app-types": "6.0.0-alpha.11",
     "@react-native-firebase/common": "6.0.0-alpha.11"
   },
-  "gitHead": "832835bc23987d794520996b23468870f343ef80",
+  "gitHead": "664631546eb1775e1271f73235f9ace6c0f0c744",
   "publishConfig": {
     "access": "public"
   }
