@@ -165,7 +165,6 @@ function getOrCreateModuleForRoot(moduleNamespace) {
       APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
         _app,
         NAMESPACE_REGISTRY[moduleNamespace],
-        null,
       );
     }
 
