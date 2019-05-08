@@ -23,12 +23,16 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | [Remote Config](/packages/config)        |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)      |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
 | [Utils](/packages/utils)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)       |       [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)       |
 
-The following modules are **migration only** (migrated from v5 to v6 with minimal changes), what this means:
 
-- no new work done on them
-- no new tests added for them
-- flow types missing
-- typescript types added, but no comments or examples
+----
+
+The following modules are **migration only** for now (migrated from v5 to v6 with minimal changes), what this means:
+
+- no new work done on them (other than migrating to v6 internals)
+- no new tests added for them (but all existing tests pass)
+- flow types missing (but have TS types)
+
+More work on these will be done in a later alpha release.
 
 | Name                             |                                                                             Downloads                                                                             |                                                 Coverage                                                  |
 | -------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------: |

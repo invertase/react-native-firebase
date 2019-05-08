@@ -15,10 +15,12 @@
  *
  */
 
+const { readFileSync, writeFileSync } = require('fs');
 const path = require('path');
 const { Application } = require('typedoc');
 
 const output = path.resolve(process.cwd(), 'docs', 'typedoc.json');
+const outputMin = path.resolve(process.cwd(), 'docs', 'typedoc.min.json');
 
 const app = new Application();
 
@@ -31,3 +33,6 @@ const { inputFiles } = app.bootstrap({
 });
 
 app.generateJson(inputFiles, output);
+
+const sourceJson = readFileSync(output);
+writeFileSync(outputMin, JSON.stringify(JSON.parse(sourceJson)));
