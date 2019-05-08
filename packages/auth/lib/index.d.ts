@@ -55,6 +55,7 @@ import {
  *
  * // firebase.auth().X
  * ```
+ * TODO @salakar @ehesp missing auth providers (PhoneAuthProvider, Facebook etc)
  *
  * @firebase auth
  */
@@ -111,7 +112,7 @@ export namespace Auth {
      */
     PROVIDER_ID: string;
     /**
-     * This corresponds to the sign-in method identifier as returned in {@link auth.#fetchSignInMethodsForEmail}.
+     * This corresponds to the sign-in method identifier as returned in {@link auth#fetchSignInMethodsForEmail}.
      *
      * #### Example
      *
@@ -124,7 +125,7 @@ export namespace Auth {
      */
     EMAIL_LINK_SIGN_IN_METHOD: string;
     /**
-     * This corresponds to the sign-in method identifier as returned in {@link auth.#fetchSignInMethodsForEmail}.
+     * This corresponds to the sign-in method identifier as returned in {@link auth#fetchSignInMethodsForEmail}.
      *
      * #### Example
      *
@@ -376,14 +377,46 @@ export namespace Auth {
   }
 
   /**
-   * TODO
+   * Interface representing ID token result obtained from {@link auth.User#getIdTokenResult}.
+   * It contains the ID token JWT string and other helper properties for getting different data
+   * associated with the token as well as all the decoded payload claims.
+   *
+   * TODO @salakar validate timestamp types
+   *
+   * #### Example
+   *
+   * ```js
+   * const idTokenResult = await firebase.auth().currentUser.getIdTokenResult();
+   * console.log('User JWT: ', idTokenResult.token);
+   * ```
    */
   export interface IdTokenResult {
+    /**
+     * The Firebase Auth ID token JWT string.
+     */
     token: string;
+    /**
+     * The authentication time formatted as a UTC string. This is the time the user authenticated
+     * (signed in) and not the time the token was refreshed.
+     */
     authTime: string;
+    /**
+     * The ID token issued at time formatted as a UTC string.
+     */
     issuedAtTime: string;
+    /**
+     * The ID token expiration time formatted as a UTC string.
+     */
     expirationTime: string;
+    /**
+     * The sign-in provider through which the ID token was obtained (anonymous, custom,
+     * phone, password, etc). Note, this does not map to provider IDs.
+     */
     signInProvider: null | string;
+    /**
+     * The entire payload claims of the ID token including the standard reserved claims as well as
+     * the custom claims.
+     */
     claims: {
       [key: string]: any;
     };
@@ -415,24 +448,71 @@ export namespace Auth {
   }
 
   /**
-   * TODO
+   * A result from a {@link auth#signInWithPhoneNumber} call.
+   *
+   * #### Example
+   *
+   * ```js
+   * // Force a new message to be sent
+   * const result = await firebase.auth().signInWithPhoneNumber('#4423456789');
+   * const user = await result.confirm('12345');
+   * ```
    */
   export interface ConfirmationResult {
-    confirm(verificationCode: string): Promise<User | null>;
+    /**
+     * The phone number authentication operation's verification ID. This can be used along with
+     * the verification code to initialize a phone auth credential.
+     */
     verificationId: string | null;
+    /**
+     * Finishes the sign in flow. Validates a code that was sent to the users device.
+     *
+     * @param verificationCode The code sent to the users device from Firebase.
+     */
+    confirm(verificationCode: string): Promise<User | null>;
   }
 
   /**
+   * Android specific options which can be attached to the {@link auth.ActionCodeSettings} object
+   * to be sent with requests such as {@link auth.User#sendEmailVerification}.
    *
+   * #### Example
+   *
+   * ```js
+   * await firebase.auth().currentUser.sendEmailVerification({
+   *  android: {
+   *    installApp: true,
+   *    packageName: 'com.awesome.app',
+   *  },
+   * });
+   * ```
    */
   export interface ActionCodeSettingsAndroid {
-    installApp?: boolean;
-    minimumVersion?: string;
+    /**
+     * The Android Package Name.
+     */
     packageName: string;
+    /**
+     * The preference for whether to attempt to install the app if it is not present.
+     */
+    installApp?: boolean;
+    /**
+     * The minimum Android app version.
+     */
+    minimumVersion?: string;
   }
 
   /**
+   * Additional data returned from a {@link auth#checkActionCode} call.
    *
+   * #### Example
+   *
+   * ```js
+   * const actionCodeInfo = await firebase.auth().checkActionCode('ABCD');
+   *
+   * console.log('Action code email: ', actionCodeInfo.data.email);
+   * console.log('Action code from email: ', actionCodeInfo.data.fromEmail);
+   * ```
    */
   export interface ActionCodeInfoData {
     email?: string;
@@ -440,27 +520,75 @@ export namespace Auth {
   }
 
   /**
+   * The interface returned from a {@link auth#checkActionCode} call.
    *
+   * #### Example
+   *
+   * ```js
+   * const actionCodeInfo = await firebase.auth().checkActionCode('ABCD');
+   * console.log('Action code operation: ', actionCodeInfo.operation);
+   * ```
    */
   export interface ActionCodeInfo {
+    /**
+     * Additional action code data.
+     */
     data: ActionCodeInfoData;
+    /**
+     * The operation from where the action originated.
+     */
     operation: 'PASSWORD_RESET' | 'VERIFY_EMAIL' | 'RECOVER_EMAIL' | 'EMAIL_SIGNIN' | 'ERROR';
   }
 
   /**
+   * iOS specific options which can be attached to the {@link auth.ActionCodeSettings} object
+   * to be sent with requests such as {@link auth.User#sendEmailVerification}.
    *
+   * #### Example
+   *
+   * ```js
+   * await firebase.auth().currentUser.sendEmailVerification({
+   *  iOS: {
+   *    bundleId: '123456',
+   *  },
+   * });
+   * ```
    */
   export interface ActionCodeSettingsIos {
+    /**
+     * An iOS build ID.
+     */
     bundleId?: string;
   }
 
   /**
+   * Options to be sent with requests such as {@link auth.User#sendEmailVerification}.
    *
+   * #### Example
+   *
+   * ```js
+   * await firebase.auth().currentUser.sendEmailVerification({
+   *  handleCodeInApp: true,
+   *  url: 'app/email-verification',
+   * });
+   * ```
    */
   export interface ActionCodeSettings {
+    /**
+     * Android specific settings.
+     */
     android: ActionCodeSettingsAndroid;
+    /**
+     * Whether the code should be handled by the app.
+     */
     handleCodeInApp?: boolean;
+    /**
+     * iOS specific settings.
+     */
     iOS: ActionCodeSettingsIos;
+    /**
+     * Sets the URL for the action.
+     */
     url: string;
   }
 
@@ -484,29 +612,99 @@ export namespace Auth {
   export type AuthListenerCallback = (user: User | null) => void;
 
   /**
+   * A snapshot interface of the current phone auth state.
    *
+   * #### Example
+   *
+   * ```js
+   * firebase.auth().verifyPhoneNumber('+4423456789')
+   *  .on('state_changed', (phoneAuthSnapshot) => {
+   *    console.log('Snapshot state: ', phoneAuthSnapshot.state);
+   *  });
+   * ```
    */
   export interface PhoneAuthSnapshot {
+    /**
+     * The current phone auth verification state.
+     *
+     * - `sent`: On iOS, this is the final event received. Once sent, show a visible input box asking the user to enter the verification code.
+     * - `timeout`: Auto verification has timed out. Show a visible input box asking the user to enter the verification code.
+     * - `verified`: The verification code has automatically been verified by the Android device. The snapshot contains the verification ID & code to create a credential.
+     * - `error`: An error occurred. Handle or allow the promise to reject.
+     */
     state: 'sent' | 'timeout' | 'verified' | 'error';
+    /**
+     * The verification ID to build a `PhoneAuthProvider` credential.
+     */
     verificationId: string;
+    /**
+     * The verification code. Will only be available if auto verification has taken place.
+     */
     code: string | null;
+    /**
+     * A native JavaScript error if an error occurs.
+     */
     error: NativeFirebaseError | null;
   }
 
   /**
+   * A custom error in the event verifying a phone number failed.
    *
+   * #### Example
+   *
+   * ```js
+   * firebase.auth().verifyPhoneNumber('+4423456789')
+   *  .on('state_changed', (phoneAuthSnapshot) => {
+   *    console.log('Snapshot state: ', phoneAuthSnapshot.state);
+   *  }, (phoneAuthError) => {
+   *    console.error('Error: ', phoneAuthError.message);
+   *  });
+   * ```
    */
   export interface PhoneAuthError {
+    /**
+     * The code the verification failed with.
+     */
     code: string | null;
+    /**
+     * The verification ID which failed.
+     */
     verificationId: string;
+    /**
+     * JavaScript error message.
+     */
     message: string | null;
+    /**
+     * JavaScript error stack trace.
+     */
     stack: string | null;
   }
 
   /**
-   *
+   * The listener function returned from a {@link auth#verifyPhoneNumber} call.
    */
   export interface PhoneAuthListener {
+    /**
+     * The phone auth state listener. See {@link auth.PhoneAuthState} for different event state types.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth().verifyPhoneNumber('+4423456789')
+     *  .on('state_changed', (phoneAuthSnapshot) => {
+     *    console.log('State: ', phoneAuthSnapshot.state);
+     *  }, (error) => {
+     *    console.error(error);
+     *  }, (phoneAuthSnapshot) => {
+     *    console.log('Success');
+     *  });
+     * ```
+     *
+     * @param event The event to subscribe to. Currently only `state_changed` is available.
+     * @param observer The required observer function. Returns a new phone auth snapshot on each event.
+     * @param errorCb An optional error handler function. This is not required if the `error` snapshot state is being handled in the `observer`.
+     * @param successCb An optional success handler function. This is not required if the `sent` or `verified` snapshot state is being handled in the `observer`.
+     */
     on(
       event: string,
       observer: (snapshot: PhoneAuthSnapshot) => void,
@@ -514,20 +712,77 @@ export namespace Auth {
       successCb?: (snapshot: PhoneAuthSnapshot) => void,
     ): PhoneAuthListener;
 
+    /**
+     * A promise handler called once the `on` listener flow has succeeded or rejected.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth().verifyPhoneNumber('+4423456789')
+     *  .on('state_changed', (phoneAuthSnapshot) => {
+     *    if (phoneAuthSnapshot.state === firebase.auth.PhoneAuthState.CODE_SENT) {
+     *      return Promise.resolve();
+     *    } else {
+     *      return Promise.reject(
+     *        new Error('Code not sent!')
+     *      );
+     *    }
+     *  })
+     *  .then((phoneAuthSnapshot) => {
+     *    console.log(phoneAuthSnapshot.state);
+     *  }, (error) => {
+     *    console.error(error.message);
+     *  });
+     * ```
+     *
+     * @param onFulfilled Resolved promise handler.
+     * @param onRejected Rejected promise handler.
+     */
     then(
       onFulfilled?: ((a: PhoneAuthSnapshot) => any) | null,
       onRejected?: ((a: NativeFirebaseError) => any) | null,
     ): Promise<any>;
 
+    /**
+     * A promise handler called once the `on` listener flow has rejected.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth().verifyPhoneNumber('+4423456789')
+     *  .on('state_changed', (phoneAuthSnapshot) => {
+     *    return Promise.reject(
+     *      new Error('Code not sent!')
+     *    );
+     *  })
+     *  .catch((error) => {
+     *    console.error(error.message);
+     *  });
+     * ```
+     *
+     * > Used when no `onRejected` handler is passed to the `then`.
+     *
+     * @param onRejected Rejected promise handler.
+     */
     catch(onRejected: (a: NativeFirebaseError) => any): Promise<any>;
   }
 
+  /**
+   * Interface for module auth settings.
+   *
+   * #### Example
+   *
+   * ```js
+   * const settings = firebase.auth().settings;
+   * console.log(settings.appVerificationDisabledForTesting);
+   * ```
+   */
   export interface AuthSettings {
     /**
-     * Flag to determine whether app verification should be disabled for testing or not.
+     * iOS only flag to determine whether app verification should be disabled for testing or not.
      *
      * @platform iOS
-     * @param disabled
+     * @param disabled Boolean value representing whether app verification should be disabled for testing.
      */
     appVerificationDisabledForTesting: boolean;
 
@@ -538,10 +793,15 @@ export namespace Auth {
      * Calling this method a second time will overwrite the previously passed parameters.
      * Only one number can be configured at a given time.
      *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().settings.setAutoRetrievedSmsCodeForPhoneNumber('+4423456789', 'ABCDE');
+     * ```
+     *
      * @platform Android
-     * @param phoneNumber
-     * @param smsCode
-     * @return {*}
+     * @param phoneNumber The users phone number.
+     * @param smsCode The pre-set SMS code.
      */
     setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null>;
   }
@@ -715,7 +975,7 @@ export namespace Auth {
      * });
      * ```
      *
-     * > This will Promise reject is the user is anonymous.
+     * > This will Promise reject if the user is anonymous.
      *
      * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
      */
@@ -756,7 +1016,7 @@ export namespace Auth {
      * await firebase.auth().currentUser.updateEmail('joe.bloggs@new-email.com');
      * ```
      *
-     * > This will Promise reject is the user is anonymous.
+     * > This will Promise reject if the user is anonymous.
      *
      * @param email The users new email address.
      */
@@ -788,12 +1048,18 @@ export namespace Auth {
      * #### Example
      *
      * ```js
-     * TODO ehesp
+     * const snapshot = await firebase.auth().verifyPhoneNumber('+4423456789')
+     *  .on(...); // See PhoneAuthListener - wait for successful verification
+     *
+     * const credential = firebase.auth.PhoneAuthProvider.credential(snapshot.verificationId, snapshot.code);
+     *
+     * // Update user with new verified phone number
+     * await firebase.auth().currentUser.updatePhoneNumber(credential);
      * ```
      *
      * > This will Promise reject is the user is anonymous.
      *
-     * @param credential A created `AuthCredential`.
+     * @param credential A created `PhoneAuthCredential`.
      */
     updatePhoneNumber(credential: AuthCredential): Promise<void>;
 
