@@ -569,44 +569,207 @@ export namespace Storage {
    * ```
    */
   export interface Reference {
-    // TODO(salakar) -----\/
-
+    /**
+     * The name of the bucket containing this reference's object.
+     */
     bucket: string;
-
+    /**
+     * A reference pointing to the parent location of this reference, or null if this reference is the root.
+     */
     parent: Reference | null;
-
+    /**
+     * The full path of this object.
+     */
     fullPath: string;
-
+    /**
+     * The short name of this object, which is the last component of the full path. For example,
+     * if fullPath is 'full/path/image.png', name is 'image.png'.
+     */
     name: string;
-
+    /**
+     * A reference to the root of this reference's bucket.
+     */
     root: Reference;
-
+    /**
+     * The storage service associated with this reference.
+     */
     storage: Module;
 
+    /**
+     * Returns a gs:// URL for this object in the form `gs://<bucket>/<path>/<to>/<object>`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/logo.png');
+     * console.log('Full path: ', ref.toString()); // gs://invertase.io/invertase/logo.png
+     * ```
+     */
     toString(): string;
 
+    /**
+     * Returns a reference to a relative path from this reference.
+     *
+     * #### Example
+     *
+     * ```js
+     * const parent = firebase.storage().ref('invertase');
+     * const ref = parent.child('logo.png');
+     * ```
+     *
+     * @param path The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
+     */
     child(path: string): Reference;
 
+    /**
+     * Deletes the object at this reference's location.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/logo.png');
+     * await ref.delete();
+     * ```
+     */
     delete(): Promise<void>;
 
+    /**
+     * Fetches a long lived download URL for this object.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/logo.png');
+     * const url = await ref.getDownloadURL();
+     * ```
+     */
     getDownloadURL(): Promise<string>;
 
+    /**
+     * Fetches metadata for the object at this location, if one exists.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/logo.png');
+     * const metadata = await ref.getMetadata();
+     * console.log('Cache control: ', metadata.cacheControl);
+     * ```
+     */
     getMetadata(): Promise<FullMetadata>;
 
+    /**
+     * Puts a file from local disk onto the storage bucket.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/new-logo.png');
+     * const path = `${firebase.storage.Path.DocumentDirectory}/new-logo.png`;
+     * const task = ref.putFile(path, {
+     *   cacheControl: 'no-store', // disable caching
+     * });
+     * ```
+     *
+     * @param localFilePath The local file path to upload to the bucket at the reference location.
+     * @param metadata Any additional `SettableMetadata` for this task.
+     */
     putFile(localFilePath: string, metadata?: SettableMetadata): Task;
 
+    /**
+     * Puts data onto the storage bucket.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/new-logo.png');
+     * const task = ref.put(BLOB, {
+     *   cacheControl: 'no-store', // disable caching
+     * });
+     * ```
+     *
+     * @param data The data to upload to the storage bucket at the reference location.
+     * @param metadata
+     */
     put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
 
+    /**
+     * Puts a string on the storage bucket. Depending on the string type, set a {@link storage.StringFormat} type.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/new-logo.png');
+     * const task = ref.putString('PEZvbyBCYXI+', firebase.storage.StringFormat.BASE64, {
+     *   cacheControl: 'no-store', // disable caching
+     * });
+     * ```
+     *
+     * @param data The string data, must match the format provided.
+     * @param format The format type of the string, e.g. a Base64 format string.
+     * @param metadata Any additional `SettableMetadata` for this task.
+     */
     putString(data: string, format?: StringFormat, metadata?: SettableMetadata): Task;
 
+    /**
+     * Updates the metadata for this reference object on the storage bucket.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('invertase/nsfw-logo.png');
+     * const updatedMetadata = await ref.updateMetadata({
+     *   customMetadata: {
+     *     'nsfw': 'true',
+     *   }
+     * });
+     * ```
+     *
+     * @param metadata A `SettableMetadata` instance to update.
+     */
     updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
   }
 
+  /**
+   * The snapshot observer returned from a {@link storage.Task#on} listener.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref(...);
+   * const task = ref.put(...)
+   *
+   * task.on('state_changed', {
+   *   next(taskSnapshot) {
+   *     console.log(taskSnapshot.state);
+   *   },
+   *   error(error) {
+   *     console.error(error.message);
+   *   },
+   *   complete() {
+   *     console.log('Task complete');
+   *   },
+   * })
+   * ```
+   */
   export interface TaskSnapshotObserver {
+    /**
+     * Called when the task state changes.
+     *
+     * @param taskSnapshot A `TaskSnapshot` for the event.
+     */
     next: (taskSnapshot: TaskSnapshot) => void;
 
+    /**
+     * Called when the task errors.
+     *
+     * @param error A JavaScript error.
+     */
     error: (error: NativeFirebaseError) => void;
 
+    /**
+     * Called when the task has completed successfully.
+     */
     complete: () => void;
   }
 
@@ -698,11 +861,31 @@ export namespace Storage {
     cancel(): Promise<boolean>;
 
     /**
+     * Task event handler called when state has changed on the task.
      *
-     * @param event
-     * @param nextOrObserver
-     * @param error
-     * @param complete
+     * #### Example
+     *
+     * ```js
+     * const task = firebase
+     *  .storage()
+     *  .ref('/foo/bar.json')
+     *  .getFile(downloadTo);
+     *
+     * task.on('state_changed', (taskSnapshot) => {
+     *   console.log(taskSnapshot.state);
+     * })
+     * .then(() => {]
+     *   console.log('Task complete');
+     * })
+     * .catch((error) => {
+     *   console.error(error.message);
+     * });
+     * ```
+     *
+     * @param event The event name to handle, always `state_changed`.
+     * @param nextOrObserver The optional event observer function.
+     * @param error An optional JavaScript error handler.
+     * @param complete An optional complete handler function.
      */
     on(
       event: 'state_changed',
@@ -830,7 +1013,7 @@ export namespace Storage {
    */
   export class Module extends ReactNativeFirebaseModule {
     /**
-     * TODO.
+     * Returns the maximum time to retry an upload if a failure occurs.
      *
      * #### Example
      *
@@ -841,20 +1024,20 @@ export namespace Storage {
     maxUploadRetryTime: number;
 
     /**
-     * TODO.
+     * Sets the maximum time to retry an upload if a failure occurs.
      *
      * #### Example
      *
      * ```js
-     * await firebase.storage().setMaxUploadRetryTime(5000);
+     * await firebase.storage().setMaxUploadRetryTime(3);
      * ```
      *
-     * @param time Number of milliseconds.... TODO
+     * @param time The number of times to retry.
      */
     setMaxUploadRetryTime(time: number): Promise<null>;
 
     /**
-     * TODO.
+     * Returns the maximum time to retry a download if a failure occurs.
      *
      * #### Example
      *
@@ -865,7 +1048,7 @@ export namespace Storage {
     maxDownloadRetryTime: number;
 
     /**
-     * TODO.
+     * Sets the maximum time to retry a download if a failure occurs.
      *
      * #### Example
      *
@@ -873,12 +1056,12 @@ export namespace Storage {
      * await firebase.storage().setMaxDownloadRetryTime(5000);
      * ```
      *
-     * @param time Number of miliseconds.... TODO
+     * @param time The number of times to retry.
      */
     setMaxDownloadRetryTime(time: number): Promise<null>;
 
     /**
-     * TODO.
+     * Returns the maximum time to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -889,7 +1072,7 @@ export namespace Storage {
     maxOperationRetryTime: number;
 
     /**
-     * TODO.
+     * Sets the maximum time to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -897,7 +1080,7 @@ export namespace Storage {
      * await firebase.storage().setMaxOperationRetryTime(5000);
      * ```
      *
-     * @param time Number of miliseconds.... TODO
+     * @param time The number of times to retry.
      */
     setMaxOperationRetryTime(time: number): Promise<null>;
 
