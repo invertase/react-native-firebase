@@ -75,8 +75,8 @@ class RNFirebaseMLNaturalLanguageTranslateModule extends ReactNativeFirebaseModu
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseTranslateModelManager translateModelManager = FirebaseTranslateModelManager.getInstance();
 
-    translateModelManager.getAvailableModels(firebaseApp).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
+    translateModelManager.getAvailableModels(firebaseApp)
+      .continueWith(task -> {
         WritableArray modelsArray = Arguments.createArray();
         Set<FirebaseTranslateRemoteModel> modelsRaw = Objects.requireNonNull(task.getResult());
         for (FirebaseTranslateRemoteModel modelRaw : modelsRaw) {
@@ -87,12 +87,16 @@ class RNFirebaseMLNaturalLanguageTranslateModule extends ReactNativeFirebaseModu
           modelMap.putString("persistUniqueModelName", modelRaw.getUniqueModelNameForPersist());
           modelsArray.pushMap(modelMap);
         }
-        promise.resolve(modelsArray);
-      } else {
-        String[] errorCodeAndMessage = RNFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(task.getException());
-        rejectPromiseWithCodeAndMessage(promise, errorCodeAndMessage[0], errorCodeAndMessage[1], errorCodeAndMessage[2]);
-      }
-    });
+        return modelsArray;
+      })
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          String[] errorCodeAndMessage = RNFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(task.getException());
+          rejectPromiseWithCodeAndMessage(promise, errorCodeAndMessage[0], errorCodeAndMessage[1], errorCodeAndMessage[2]);
+        }
+      });
   }
 
   /**
