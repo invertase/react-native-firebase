@@ -271,6 +271,8 @@ export namespace Auth {
    * const userCredential = await firebase.auth().signInAnonymously();
    * console.log('Additional user info: ', userCredential.additionalUserInfo);
    * ```
+   *
+   * @error auth/operation-not-allowed Thrown if anonymous accounts are not enabled. Enable anonymous accounts in the Firebase Console, under the Auth tab.
    */
   export interface AdditionalUserInfo {
     /**
@@ -359,7 +361,7 @@ export namespace Auth {
      */
     email?: string;
     /**
-     * Returns the phone number corresponding to the user's account, if available, or `null` if none exists.
+     * The phone number normalized based on the E.164 standard (e.g. +16505550101) for the current user. This is null if the user has no phone credential linked to the account.
      */
     phoneNumber?: string;
     /**
@@ -847,7 +849,7 @@ export namespace Auth {
     emailVerified: boolean;
     /**
      * Returns true if the user is anonymous; that is, the user account was created with
-     * {@link auth#signInAnonymously()} and has not been linked to another account
+     * {@link auth#signInAnonymously} and has not been linked to another account
      * with {@link auth#linkWithCredential}.
      */
     isAnonymous: boolean;
@@ -892,6 +894,8 @@ export namespace Auth {
      * ```js
      * await firebase.auth().currentUser.delete();
      * ```
+     *
+     * @error auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold. Use `auth.User#reauthenticateWithCredential` to resolve. This does not apply if the user is anonymous.
      */
     delete(): Promise<void>;
 
@@ -935,6 +939,15 @@ export namespace Auth {
      * const userCredential = await firebase.auth().currentUser.linkWithCredential(facebookCredential);
      * ```
      *
+     * @error auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User.
+     * @error auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param credential A created {@link auth.AuthCredential}.
      */
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
@@ -949,6 +962,13 @@ export namespace Auth {
      * const userCredential = await firebase.auth().currentUser.reauthenticateWithCredential(facebookCredential);
      * ```
      *
+     * @error auth/user-mismatch Thrown if the credential given does not correspond to the user.
+     * @error auth/user-not-found Thrown if the credential given does not correspond to any existing user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param credential A created {@link auth.AuthCredential}.
      */
     reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
@@ -977,6 +997,11 @@ export namespace Auth {
      *
      * > This will Promise reject if the user is anonymous.
      *
+     * @error auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed.
+     * @error auth/missing-continue-uri A continue URL must be provided in the request.
+     * @error auth/missing-ios-bundle-id An iOS bundle ID must be provided if an App Store ID is provided.
+     * @error auth/invalid-continue-uri The continue URL provided in the request is invalid.
+     * @error auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console.
      * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
      */
     sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void>;
@@ -1001,6 +1026,7 @@ export namespace Auth {
      * const user = await firebase.auth().currentUser.unlink('facebook.com');
      * ```
      *
+     * @error auth/no-such-provider Thrown if the user does not have this provider linked or when the provider ID given does not exist.
      * @param providerId
      */
     unlink(providerId: string): Promise<User>;
@@ -1018,6 +1044,9 @@ export namespace Auth {
      *
      * > This will Promise reject if the user is anonymous.
      *
+     * @error auth/invalid-email Thrown if the email used is invalid.
+     * @error auth/email-already-in-use Thrown if the email is already used by another user.
+     * @error auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold.
      * @param email The users new email address.
      */
     updateEmail(email: string): Promise<void>;
@@ -1036,6 +1065,8 @@ export namespace Auth {
      *
      * > This will Promise reject is the user is anonymous.
      *
+     * @error auth/weak-password Thrown if the password is not strong enough.
+     * @error auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold.
      * @param password The users new password.
      */
     updatePassword(password: string): Promise<void>;
@@ -1059,6 +1090,8 @@ export namespace Auth {
      *
      * > This will Promise reject is the user is anonymous.
      *
+     * @error auth/invalid-verification-code Thrown if the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the verification ID of the credential is not valid.
      * @param credential A created `PhoneAuthCredential`.
      */
     updatePhoneNumber(credential: AuthCredential): Promise<void>;
@@ -1097,6 +1130,7 @@ export namespace Auth {
    * const authForOtherApp = firebase.auth(otherApp);
    * ```
    *
+   * TODO @salakar missing updateCurrentUser
    */
   export class Module extends ReactNativeFirebaseModule {
     /**
@@ -1171,7 +1205,7 @@ export namespace Auth {
      * This method returns a unsubscribe function to stop listening to events.
      * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
      *
-     *      * #### Example
+     * #### Example
      *
      * ```js
      * const unsubscribe = firebase.auth().onIdTokenChanged((user) => {
@@ -1234,7 +1268,7 @@ export namespace Auth {
      * #### Example
      *
      * ```js
-     * const userCredential = firebase.auth().signInAnonymously();
+     * const userCredential = await firebase.auth().signInAnonymously();
      * ```
      */
     signInAnonymously(): Promise<UserCredential>;
@@ -1249,6 +1283,11 @@ export namespace Auth {
      * const result = await firebase.auth().signInWithPhoneNumber('#4423456789', true);
      * ```
      *
+     * @error auth/invalid-phone-number Thrown if the phone number has an invalid format.
+     * @error auth/missing-phone-number Thrown if the phone number is missing.
+     * @error auth/quota-exceeded Thrown if the SMS quota for the Firebase project has been exceeded.
+     * @error auth/user-disabled Thrown if the user corresponding to the given phone number has been disabled.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
      * @param phoneNumber The devices phone number.
      * @param forceResend Forces a new message to be sent if it was already recently sent.
      */
@@ -1262,12 +1301,15 @@ export namespace Auth {
      * #### Example
      *
      * ```js
-     * TODO ehesp
+     * firebase.auth().verifyPhoneNumber('+4423456789', )
+     *  .on('state_changed', (phoneAuthSnapshot) => {
+     *    console.log('Snapshot state: ', phoneAuthSnapshot.state);
+     *  });
      * ```
      *
-     * @param phoneNumber
-     * @param autoVerifyTimeoutOrForceResend
-     * @param forceResend
+     * @param phoneNumber The user's phone number in E.164 format (e.g. +16505550101).
+     * @param autoVerifyTimeoutOrForceResend If a number, sets in seconds how to to wait until auto verification times out. If boolean, sets the `forceResend` parameter.
+     * @param forceResend If true, resend the verification message even if it was recently sent.
      */
     verifyPhoneNumber(
       phoneNumber: string,
@@ -1286,6 +1328,10 @@ export namespace Auth {
      * const userCredential = await firebase.auth().createUserWithEmailAndPassword('joe.bloggs@example.com', '123456');
      * ```
      *
+     * @error auth/email-already-in-use Thrown if there already exists an account with the given email address.
+     * @error auth/invalid-email Thrown if the email address is not valid.
+     * @error auth/operation-not-allowed Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+     * @error auth/weak-password Thrown if the password is not strong enough.
      * @param email The users email address.
      * @param password The users password.
      */
@@ -1321,6 +1367,8 @@ export namespace Auth {
      * const userCredential = await firebase.auth().signInWithCustomToken(token);
      * ```
      *
+     * @error auth/custom-token-mismatch Thrown if the custom token is for a different Firebase App.
+     * @error auth/invalid-custom-token Thrown if the custom token format is incorrect.
      * @param customToken A custom token generated from the Firebase Admin SDK.
      */
     signInWithCustomToken(customToken: string): Promise<UserCredential>;
@@ -1337,6 +1385,14 @@ export namespace Auth {
      * const userCredential = await firebase.auth().signInWithCredential(credential);
      * ```
      *
+     * @error auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential.
+     * @error auth/invalid-credential Thrown if the credential is malformed or has expired.
+     * @error auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab.
+     * @error auth/user-disabled Thrown if the user corresponding to the given credential has been disabled.
+     * @error auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email.
+     * @error auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set.
+     * @error auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param credential A generated `AuthCredential`, for example from social auth.
      */
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
@@ -1351,6 +1407,13 @@ export namespace Auth {
      * await firebase.auth().sendPasswordResetEmail('joe.bloggs@example.com');
      * ```
      *
+     * @error auth/invalid-email Thrown if the email address is not valid.
+     * @error auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed.
+     * @error auth/missing-continue-uri A continue URL must be provided in the request.
+     * @error auth/missing-ios-bundle-id An iOS Bundle ID must be provided if an App Store ID is provided.
+     * @error auth/invalid-continue-uri The continue URL provided in the request is invalid.
+     * @error auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the email address.
      * @param email The users email address.
      * @param actionCodeSettings Additional settings to be set before sending the reset email.
      */
@@ -1365,8 +1428,15 @@ export namespace Auth {
      * await firebase.auth().sendSignInLinkToEmail('joe.bloggs@example.com');
      * ```
      *
+     * @error auth/argument-error Thrown if handleCodeInApp is false.
+     * @error auth/invalid-email Thrown if the email address is not valid.
+     * @error auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed.
+     * @error auth/missing-continue-uri A continue URL must be provided in the request.
+     * @error auth/missing-ios-bundle-id An iOS Bundle ID must be provided if an App Store ID is provided.
+     * @error auth/invalid-continue-uri The continue URL provided in the request is invalid.
+     * @error auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console.
      * @param email The users email address.
-     * @param actionCodeSettings Additional settings to be set before sending the sign in email.
+     * @param actionCodeSettings The action code settings. The action code settings which provides Firebase with instructions on how to construct the email link. This includes the sign in completion URL or the deep link for mobile redirects, the mobile apps to use when the sign-in link is opened on an Android or iOS device. Mobile app redirects will only be applicable if the developer configures and accepts the Firebase Dynamic Links terms of condition. The Android package name and iOS bundle ID will be respected only if they are configured in the same Firebase Auth project used.
      */
     sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 
@@ -1392,6 +1462,9 @@ export namespace Auth {
      * const userCredential = await firebase.auth().signInWithEmailLink('joe.bloggs@example.com', link);
      * ```
      *
+     * @error auth/expired-action-code Thrown if OTP in email link expires.
+     * @error auth/invalid-email Thrown if the email address is not valid.
+     * @error auth/user-disabled Thrown if the user corresponding to the given email has been disabled.
      * @param email The users email to sign in with.
      * @param emailLink An email link.
      */
@@ -1407,8 +1480,13 @@ export namespace Auth {
      * await firebase.auth().confirmPasswordReset('ABCD', '1234567');
      * ```
      *
+     * @error auth/expired-action-code Thrown if the password reset code has expired.
+     * @error auth/invalid-action-code Thrown if the password reset code is invalid. This can happen if the code is malformed or has already been used.
+     * @error auth/user-disabled Thrown if the user corresponding to the given password reset code has been disabled.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the password reset code. This may have happened if the user was deleted between when the code was issued and when this method was called.
+     * @error auth/weak-password Thrown if the new password is not strong enough.
      * @param code The code from the password reset email.
-     * @param newPassword The users new password.
+     * @param newPassword The new password.
      */
     confirmPasswordReset(code: string, newPassword: string): Promise<void>;
 
@@ -1421,6 +1499,10 @@ export namespace Auth {
      * await firebase.auth().applyActionCode('ABCD');
      * ```
      *
+     * @error auth/expired-action-code Thrown if the action code has expired.
+     * @error auth/invalid-action-code Thrown if the action code is invalid. This can happen if the code is malformed or has already been used.
+     * @error auth/user-disabled Thrown if the user corresponding to the given action code has been disabled.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the action code. This may have happened if the user was deleted between when the action code was issued and when this method was called.
      * @param code A verification code sent to the user.
      */
     applyActionCode(code: string): Promise<void>;
@@ -1435,6 +1517,10 @@ export namespace Auth {
      * console.log('Action code operation: ', actionCodeInfo.operation);
      * ```
      *
+     * @error auth/expired-action-code Thrown if the action code has expired.
+     * @error auth/invalid-action-code Thrown if the action code is invalid. This can happen if the code is malformed or has already been used.
+     * @error auth/user-disabled Thrown if the user corresponding to the given action code has been disabled.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the action code. This may have happened if the user was deleted between when the action code was issued and when this method was called.
      * @param code A verification code sent to the user.
      */
     checkActionCode(code: string): Promise<ActionCodeInfo>;
@@ -1452,6 +1538,7 @@ export namespace Auth {
      * });
      * ```
      *
+     * @error auth/invalid-email Thrown if the email address is not valid.
      * @param email The users email address.
      */
     fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
@@ -1466,6 +1553,10 @@ export namespace Auth {
      * await firebase.auth().verifyPasswordResetCode('ABCD');
      * ```
      *
+     * @error auth/expired-action-code Thrown if the password reset code has expired.
+     * @error auth/invalid-action-code Thrown if the password reset code is invalid. This can happen if the code is malformed or has already been used.
+     * @error auth/user-disabled Thrown if the user corresponding to the given password reset code has been disabled.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the password reset code. This may have happened if the user was deleted between when the code was issued and when this method was called.
      * @param code A password reset code.
      */
     verifyPasswordResetCode(code: string): Promise<void>;
