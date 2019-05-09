@@ -30,6 +30,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Nullable;
 
@@ -97,8 +98,8 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
     return bytes;
   }
 
-  private void addEventListeners() {
-    uploadTask.addOnProgressListener(taskSnapshotRaw -> {
+  private void addEventListeners(ExecutorService executor) {
+    uploadTask.addOnProgressListener(executor, taskSnapshotRaw -> {
       Log.d(TAG, "onProgress " + storageReference.toString());
       WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -111,7 +112,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
         ));
     });
 
-    uploadTask.addOnCanceledListener(() -> {
+    uploadTask.addOnCanceledListener(executor, () -> {
       Log.d(TAG, "onCancelled " + storageReference.toString());
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
@@ -123,7 +124,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
         ));
     });
 
-    uploadTask.addOnPausedListener(taskSnapshotRaw -> {
+    uploadTask.addOnPausedListener(executor, taskSnapshotRaw -> {
       Log.d(TAG, "onPaused " + storageReference.toString());
       WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -137,8 +138,8 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
     });
   }
 
-  void addOnCompleteListener(Promise promise) {
-    uploadTask.addOnCompleteListener(task -> {
+  void addOnCompleteListener(ExecutorService executor, Promise promise) {
+    uploadTask.addOnCompleteListener(executor, task -> {
       destroyTask();
 
       if (task.isSuccessful()) {
@@ -201,21 +202,21 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
   /**
    * Put String or Data from JavaScript
    */
-  void begin(String string, String format, ReadableMap metadataMap) {
+  void begin(ExecutorService executor, String string, String format, ReadableMap metadataMap) {
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
     uploadTask = storageReference.putBytes(uploadStringToByteArray(string, format), metadata);
     setStorageTask(uploadTask);
-    addEventListeners();
+    addEventListeners(executor);
   }
 
   /**
    * Put File from JavaScript
    */
-  void begin(String localFilePath, ReadableMap metadataMap) {
+  void begin(ExecutorService executor, String localFilePath, ReadableMap metadataMap) {
     Uri fileUri = getUri(localFilePath);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, fileUri);
     uploadTask = storageReference.putFile(fileUri, metadata);
     setStorageTask(uploadTask);
-    addEventListeners();
+    addEventListeners(executor);
   }
 }

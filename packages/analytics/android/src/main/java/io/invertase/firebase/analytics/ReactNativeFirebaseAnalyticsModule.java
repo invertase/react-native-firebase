@@ -17,7 +17,6 @@ package io.invertase.firebase.analytics;
  *
  */
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import com.facebook.react.bridge.Arguments;
@@ -39,7 +38,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     super(reactContext, TAG);
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
     try {
@@ -50,7 +48,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
     try {
@@ -81,7 +78,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void setMinimumSessionDuration(double milliseconds, Promise promise) {
     try {
@@ -92,7 +88,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
     try {
@@ -103,7 +98,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void setUserId(String id, Promise promise) {
     try {
@@ -114,7 +108,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void setUserProperty(String name, String value, Promise promise) {
     try {
@@ -129,7 +122,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   public void setUserProperties(ReadableMap properties, Promise promise) {
     try {
       ReadableMapKeySetIterator iterator = properties.keySetIterator();
-      @SuppressLint("MissingPermission") FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+      FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
       while (iterator.hasNextKey()) {
         String name = iterator.nextKey();
@@ -143,7 +136,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     }
   }
 
-  @SuppressLint("MissingPermission")
   @ReactMethod
   public void resetAnalyticsData(Promise promise) {
     try {

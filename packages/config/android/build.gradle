@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        config: "16.5.0"
+        config: "17.0.0"
       ],
     ],
   ])

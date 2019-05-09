@@ -25,15 +25,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableReference;
-import com.google.firebase.functions.HttpsCallableResult;
-
-import javax.annotation.Nonnull;
 
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -71,41 +66,35 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
 
     httpsCallableReference
       .call(input)
-      .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
-        @Override
-        public void onSuccess(HttpsCallableResult httpsCallableResult) {
-          WritableMap map = Arguments.createMap();
-          Object result = httpsCallableResult.getData();
-          RCTConvertFirebase.mapPutValue(DATA_KEY, result, map);
-          promise.resolve(map);
-        }
+      .addOnSuccessListener(getExecutor(), httpsCallableResult -> {
+        WritableMap map = Arguments.createMap();
+        Object result = httpsCallableResult.getData();
+        RCTConvertFirebase.mapPutValue(DATA_KEY, result, map);
+        promise.resolve(map);
       })
-      .addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@Nonnull Exception exception) {
-          Log.d(TAG, "function:call:onFailure:" + name, exception);
+      .addOnFailureListener(getExecutor(), exception -> {
+        Log.d(TAG, "function:call:onFailure:" + name, exception);
 
-          String message;
-          Object details = null;
-          String code = "UNKNOWN";
-          WritableMap userInfo = Arguments.createMap();
+        String message;
+        Object details = null;
+        String code = "UNKNOWN";
+        WritableMap userInfo = Arguments.createMap();
 
-          if (exception instanceof FirebaseFunctionsException) {
-            FirebaseFunctionsException functionsException = (FirebaseFunctionsException) exception;
-            details = functionsException.getDetails();
-            code = functionsException
-              .getCode()
-              .name();
-            message = functionsException.getMessage();
-          } else {
-            message = exception.getMessage();
-          }
-
-          RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
-          RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
-          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
-          promise.reject(code, message, exception, userInfo);
+        if (exception instanceof FirebaseFunctionsException) {
+          FirebaseFunctionsException functionsException = (FirebaseFunctionsException) exception;
+          details = functionsException.getDetails();
+          code = functionsException
+            .getCode()
+            .name();
+          message = functionsException.getMessage();
+        } else {
+          message = exception.getMessage();
         }
+
+        RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
+        RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
+        RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
+        promise.reject(code, message, exception, userInfo);
       });
   }
 }

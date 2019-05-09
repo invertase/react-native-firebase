@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        iid: "17.1.2"
+        iid: "18.0.0"
       ],
     ],
   ])

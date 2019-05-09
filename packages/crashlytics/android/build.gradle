@@ -29,7 +29,7 @@ project.ext {
       ],
 
       fabric            : [
-        crashlytics   : "2.9.9",
+        crashlytics   : "2.10.0",
         crashlyticsNdk: "2.0.5"
       ],
     ],

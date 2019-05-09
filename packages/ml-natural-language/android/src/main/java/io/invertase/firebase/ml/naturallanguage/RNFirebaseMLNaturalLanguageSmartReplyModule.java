@@ -34,6 +34,7 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
 
   @Override
   public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
     RNFirebaseMLNaturalLanguageSmartReplyConversation.destroyAllConversations();
   }
 
@@ -45,7 +46,7 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
     RNFirebaseMLNaturalLanguageSmartReplyConversation conversation = RNFirebaseMLNaturalLanguageSmartReplyConversation.getOrCreateConversation(conversationId);
-    conversation.getSuggestedReplies(naturalLanguage).addOnCompleteListener(task -> {
+    conversation.getSuggestedReplies(naturalLanguage, getExecutor()).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -56,7 +57,7 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
   }
 
   /**
-   * @url  https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
+   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
    */
   @ReactMethod
   public void addLocalUserMessage(String appName, int conversationId, String message, long timestamp) {
