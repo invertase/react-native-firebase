@@ -85,7 +85,7 @@ export namespace Analytics {
      * });
      * ```
      *
-     * @note 100 characters is the maximum length for param key names.
+     * > 100 characters is the maximum length for param key names.
      *
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
@@ -103,9 +103,7 @@ export namespace Analytics {
      * await firebase.analytics().setAnalyticsCollectionEnabled(false);
      * ```
      *
-     * @note Analytics collection is enabled by default.
-     *
-     * @param enabled A boolean value representing whether Analytics collection is enabled or disabled.
+     * @param enabled A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.
      */
     setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
 
@@ -118,7 +116,7 @@ export namespace Analytics {
      * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
      * ```
      *
-     * @note Whilst screenClassOverride is optional, it is recommended it is
+     * > Whilst screenClassOverride is optional, it is recommended it is
      * always sent as your current class name. For example on Android it will always
      * show as 'MainActivity' if you do not specify it.
      *
