@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 232,
+							"line": 230,
 							"character": 30
 						}
 					],
@@ -56,7 +56,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 222,
+							"line": 220,
 							"character": 31
 						}
 					],
@@ -89,7 +89,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 230,
+							"line": 228,
 							"character": 23
 						}
 					],
@@ -114,7 +114,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 219,
+					"line": 217,
 					"character": 49
 				}
 			]
@@ -222,7 +222,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 252,
+									"line": 250,
 									"character": 13
 								}
 							]
@@ -437,7 +437,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 393,
+									"line": 392,
 									"character": 13
 								}
 							]
@@ -711,7 +711,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 251,
+							"line": 249,
 							"character": 23
 						},
 						{
@@ -746,7 +746,7 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 384,
+							"line": 383,
 							"character": 23
 						},
 						{
@@ -797,7 +797,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 245,
+									"line": 243,
 									"character": 13
 								}
 							],
@@ -1001,7 +1001,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 381,
+									"line": 380,
 									"character": 13
 								}
 							],
@@ -1257,7 +1257,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 244,
+							"line": 242,
 							"character": 40
 						},
 						{
@@ -1292,7 +1292,7 @@
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 374,
+							"line": 373,
 							"character": 40
 						},
 						{
@@ -1341,7 +1341,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 243,
+					"line": 241,
 					"character": 49
 				},
 				{
@@ -1376,7 +1376,7 @@
 				},
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 373,
+					"line": 372,
 					"character": 49
 				},
 				{
@@ -2030,7 +2030,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 356,
+							"line": 355,
 							"character": 30
 						}
 					],
@@ -2064,7 +2064,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 345,
+							"line": 344,
 							"character": 29
 						}
 					],
@@ -2103,7 +2103,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 354,
+							"line": 353,
 							"character": 23
 						}
 					],
@@ -2136,7 +2136,7 @@
 			"sources": [
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 341,
+					"line": 340,
 					"character": 49
 				}
 			]
@@ -2926,13 +2926,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Log a custom event with optional params.",
-										"text": "#### Example\n\n```js\nawait firebase.analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n",
-										"tags": [
-											{
-												"tag": "note",
-												"text": "100 characters is the maximum length for param key names.\n"
-											}
-										]
+										"text": "#### Example\n\n```js\nawait firebase.analytics().logEvent('product_view', {\n  id: '1234',\n});\n```\n\n> 100 characters is the maximum length for param key names.\n"
 									},
 									"parameters": [
 										{
@@ -3057,7 +3051,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 215,
+									"line": 213,
 									"character": 22
 								}
 							]
@@ -3079,13 +3073,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "If true, allows the device to collect analytical data and send it to Firebase.\nUseful for GDPR.",
-										"text": "#### Example\n\n```js\n// Disable collection\nawait firebase.analytics().setAnalyticsCollectionEnabled(false);\n```\n",
-										"tags": [
-											{
-												"tag": "note",
-												"text": "Analytics collection is enabled by default.\n"
-											}
-										]
+										"text": "#### Example\n\n```js\n// Disable collection\nawait firebase.analytics().setAnalyticsCollectionEnabled(false);\n```\n"
 									},
 									"parameters": [
 										{
@@ -3095,7 +3083,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "A boolean value representing whether Analytics collection is enabled or disabled.\n"
+												"text": "A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -3118,7 +3106,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 110,
+									"line": 108,
 									"character": 33
 								}
 							]
@@ -3140,13 +3128,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the current screen name.",
-										"text": "#### Example\n\n```js\nawait firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n",
-										"tags": [
-											{
-												"tag": "note",
-												"text": "Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n"
-											}
-										]
+										"text": "#### Example\n\n```js\nawait firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');\n```\n\n> Whilst screenClassOverride is optional, it is recommended it is\nalways sent as your current class name. For example on Android it will always\nshow as 'MainActivity' if you do not specify it.\n"
 									},
 									"parameters": [
 										{
@@ -3204,7 +3186,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 129,
+									"line": 127,
 									"character": 20
 								}
 							]
@@ -3259,7 +3241,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 143,
+									"line": 141,
 									"character": 29
 								}
 							]
@@ -3314,7 +3296,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 157,
+									"line": 155,
 									"character": 29
 								}
 							]
@@ -3378,7 +3360,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 173,
+									"line": 171,
 									"character": 13
 								}
 							]
@@ -3464,7 +3446,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 204,
+															"line": 202,
 															"character": 33
 														}
 													]
@@ -3487,7 +3469,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 204,
+									"line": 202,
 									"character": 21
 								}
 							]
@@ -3565,7 +3547,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 187,
+									"line": 185,
 									"character": 19
 								}
 							]
@@ -12893,7 +12875,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 318,
+									"line": 317,
 									"character": 17
 								}
 							]
@@ -12942,7 +12924,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 337,
+									"line": 336,
 									"character": 24
 								}
 							]
@@ -12968,7 +12950,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 296,
+							"line": 295,
 							"character": 21
 						}
 					],
@@ -13033,7 +13015,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 146,
+							"line": 145,
 							"character": 32
 						}
 					]
@@ -13061,7 +13043,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 124,
+									"line": 123,
 									"character": 17
 								}
 							],
@@ -13083,7 +13065,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 123,
+							"line": 122,
 							"character": 38
 						}
 					]
@@ -13136,7 +13118,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 183,
+									"line": 182,
 									"character": 17
 								}
 							],
@@ -13162,7 +13144,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 197,
+									"line": 196,
 									"character": 20
 								}
 							],
@@ -13275,7 +13257,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 168,
+							"line": 167,
 							"character": 29
 						}
 					],
@@ -13310,7 +13292,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 236,
+									"line": 235,
 									"character": 11
 								}
 							],
@@ -13330,7 +13312,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 231,
+									"line": 230,
 									"character": 18
 								}
 							],
@@ -13350,7 +13332,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 226,
+									"line": 225,
 									"character": 13
 								}
 							],
@@ -13370,7 +13352,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 241,
+									"line": 240,
 									"character": 13
 								}
 							],
@@ -13390,7 +13372,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 229,
+									"line": 228,
 									"character": 21
 								}
 							],
@@ -13410,7 +13392,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 235,
+									"line": 234,
 									"character": 23
 								}
 							],
@@ -13430,7 +13412,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 239,
+									"line": 238,
 									"character": 12
 								}
 							],
@@ -13450,7 +13432,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 228,
+									"line": 227,
 									"character": 20
 								}
 							],
@@ -13470,7 +13452,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 230,
+									"line": 229,
 									"character": 13
 								}
 							],
@@ -13490,7 +13472,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 225,
+									"line": 224,
 									"character": 6
 								}
 							],
@@ -13510,7 +13492,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 237,
+									"line": 236,
 									"character": 16
 								}
 							],
@@ -13530,7 +13512,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 232,
+									"line": 231,
 									"character": 21
 								}
 							],
@@ -13550,7 +13532,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 234,
+									"line": 233,
 									"character": 22
 								}
 							],
@@ -13570,7 +13552,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 233,
+									"line": 232,
 									"character": 19
 								}
 							],
@@ -13590,7 +13572,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 240,
+									"line": 239,
 									"character": 15
 								}
 							],
@@ -13610,7 +13592,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 238,
+									"line": 237,
 									"character": 17
 								}
 							],
@@ -13630,7 +13612,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 227,
+									"line": 226,
 									"character": 11
 								}
 							],
@@ -13668,7 +13650,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 224,
+							"line": 223,
 							"character": 33
 						}
 					]
@@ -13700,7 +13682,7 @@
 							"sources": [
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 258,
+									"line": 257,
 									"character": 18
 								}
 							],
@@ -13723,7 +13705,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 247,
+							"line": 246,
 							"character": 26
 						}
 					]
@@ -13738,17 +13720,12 @@
 					},
 					"comment": {
 						"shortText": "The set of Firebase Functions status codes.",
-						"tags": [
-							{
-								"tag": "note",
-								"text": "\nThe codes are the same at the ones exposed by [gRPC](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md).\n\nPossible values:\n- `cancelled`: The operation was cancelled (typically by the caller).\n- `unknown`: Unknown error or an error from a different error domain.\n- `invalid-argument`: Client specified an invalid argument. Note that this\n  differs from `failed-precondition`. `invalid-argument` indicates\n  arguments that are problematic regardless of the state of the system\n  (e.g. an invalid field name).\n- `deadline-exceeded`: Deadline expired before operation could complete.\n  For operations that change the state of the system, this error may be\n  returned even if the operation has completed successfully. For example,\n  a successful response from a server could have been delayed long enough\n  for the deadline to expire.\n- `not-found`: Some requested document was not found.\n- `already-exists`: Some document that we attempted to create already\n  exists.\n- `permission-denied`: The caller does not have permission to execute the\n  specified operation.\n- `resource-exhausted`: Some resource has been exhausted, perhaps a\n  per-user quota, or perhaps the entire file system is out of space.\n- `failed-precondition`: Operation was rejected because the system is not\n  in a state required for the operation's execution.\n- `aborted`: The operation was aborted, typically due to a concurrency\n  issue like transaction aborts, etc.\n- `out-of-range`: Operation was attempted past the valid range.\n- `unimplemented`: Operation is not implemented or not supported/enabled.\n- `internal`: Internal errors. Means some invariants expected by\n  underlying system has been broken. If you see one of these errors,\n  something is very broken.\n- `unavailable`: The service is currently unavailable. This is most likely\n  a transient condition and may be corrected by retrying with a backoff.\n- `data-loss`: Unrecoverable data loss or corruption.\n- `unauthenticated`: The request does not have valid authentication\n  credentials for the operation.\n"
-							}
-						]
+						"text": "The codes are the same at the ones exposed by [gRPC](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md).\n\nPossible values:\n- `cancelled`: The operation was cancelled (typically by the caller).\n- `unknown`: Unknown error or an error from a different error domain.\n- `invalid-argument`: Client specified an invalid argument. Note that this\n  differs from `failed-precondition`. `invalid-argument` indicates\n  arguments that are problematic regardless of the state of the system\n  (e.g. an invalid field name).\n- `deadline-exceeded`: Deadline expired before operation could complete.\n  For operations that change the state of the system, this error may be\n  returned even if the operation has completed successfully. For example,\n  a successful response from a server could have been delayed long enough\n  for the deadline to expire.\n- `not-found`: Some requested document was not found.\n- `already-exists`: Some document that we attempted to create already\n  exists.\n- `permission-denied`: The caller does not have permission to execute the\n  specified operation.\n- `resource-exhausted`: Some resource has been exhausted, perhaps a\n  per-user quota, or perhaps the entire file system is out of space.\n- `failed-precondition`: Operation was rejected because the system is not\n  in a state required for the operation's execution.\n- `aborted`: The operation was aborted, typically due to a concurrency\n  issue like transaction aborts, etc.\n- `out-of-range`: Operation was attempted past the valid range.\n- `unimplemented`: Operation is not implemented or not supported/enabled.\n- `internal`: Internal errors. Means some invariants expected by\n  underlying system has been broken. If you see one of these errors,\n  something is very broken.\n- `unavailable`: The service is currently unavailable. This is most likely\n  a transient condition and may be corrected by retrying with a backoff.\n- `data-loss`: Unrecoverable data loss or corruption.\n- `unauthenticated`: The request does not have valid authentication\n  credentials for the operation.\n"
 					},
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 101,
+							"line": 100,
 							"character": 32
 						}
 					],
@@ -14352,13 +14329,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the HTML-formatted (UTF-8 encoded, no JavaScript) content for invites sent through email. If set, this will\nbe sent instead of the default email.",
-										"text": "emailHtmlContent must be valid HTML for standard email processing. The pattern `%%APPINVITE_LINK_PLACEHOLDER%%`\nshould be embedded in your htmlContent and will be replaced with the invitation URL.\nThis url is a link that will launch the app if already installed or take the user to the appropriate app store\nif not. In both cases the deep link will be available if provided using setDeepLink(Uri).\n",
-										"tags": [
-											{
-												"tag": "warning",
-												"text": "Cannot be used with {@link invites.InviteBuilder#setCallToActionText}\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');\n```\n"
-											}
-										]
+										"text": "emailHtmlContent must be valid HTML for standard email processing. The pattern `%%APPINVITE_LINK_PLACEHOLDER%%`\nshould be embedded in your htmlContent and will be replaced with the invitation URL.\nThis url is a link that will launch the app if already installed or take the user to the appropriate app store\nif not. In both cases the deep link will be available if provided using setDeepLink(Uri).\n\n> Cannot be used with {@link invites.InviteBuilder#setCallToActionText}\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.android.setEmailHtmlContent('<p><strong>Rich HTML content</strong></p>');\n```\n"
 									},
 									"parameters": [
 										{
@@ -14666,12 +14637,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Text shown on the email invitation for the user to accept the invitation. Default install text used if not set.",
-										"tags": [
-											{
-												"tag": "warning",
-												"text": "Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCallToActionText('Join the app!');\n```\n"
-											}
-										]
+										"text": "> Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.\n\n#### Example\n\n```js\nconst invite = firebase.invites().createInvitation('Join my app', 'Join my app with me and share content!');\ninvite.setCallToActionText('Join the app!');\n```\n"
 									},
 									"parameters": [
 										{
@@ -15861,13 +15827,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sets the httpResponse code of the request.",
-										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setHttpResponseCode(response.status);\n```",
-										"tags": [
-											{
-												"tag": "warning",
-												"text": "This is required for every request, if you do not provide this your metric will not be captured.\n\n"
-											}
-										]
+										"text": "#### Example\n\n```js\nconst response = await fetch(url);\nmetric.setHttpResponseCode(response.status);\n```\n> This is required for every request, if you do not provide this your metric will not be captured.\n\n"
 									},
 									"parameters": [
 										{
