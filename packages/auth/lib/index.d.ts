@@ -1224,7 +1224,7 @@ export namespace Auth {
 
     /**
      * Adds a listener to observe changes to the User object. This is a superset of everything from
-     * {@link auth#onAuthStateChanged}, {@ auth#onIdTokenChanged} and user changes. The goal of this
+     * {@link auth#onAuthStateChanged}, {@link auth#onIdTokenChanged} and user changes. The goal of this
      * method is to provide easier listening to all user changes, such as when credentials are
      * linked and unlinked, without manually having to call {@link auth.User#reload}.
      *
