@@ -253,7 +253,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1606,
+									"line": 1608,
 									"character": 8
 								}
 							]
@@ -721,7 +721,7 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1602,
+							"line": 1604,
 							"character": 23
 						},
 						{
@@ -831,7 +831,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1599,
+									"line": 1601,
 									"character": 8
 								}
 							],
@@ -1267,7 +1267,7 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1595,
+							"line": 1597,
 							"character": 40
 						},
 						{
@@ -1351,7 +1351,7 @@
 				},
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1594,
+					"line": 1596,
 					"character": 49
 				},
 				{
@@ -1430,7 +1430,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1580,
+							"line": 1582,
 							"character": 25
 						}
 					],
@@ -1463,7 +1463,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1569,
+							"line": 1571,
 							"character": 31
 						}
 					],
@@ -1501,7 +1501,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1578,
+							"line": 1580,
 							"character": 23
 						}
 					],
@@ -1526,7 +1526,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1566,
+					"line": 1568,
 					"character": 44
 				}
 			]
@@ -4339,7 +4339,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1508,
+									"line": 1510,
 									"character": 19
 								}
 							]
@@ -4413,7 +4413,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1526,
+									"line": 1528,
 									"character": 19
 								}
 							]
@@ -4504,7 +4504,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1491,
+									"line": 1493,
 									"character": 24
 								}
 							]
@@ -4592,7 +4592,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1338,
+									"line": 1340,
 									"character": 34
 								}
 							]
@@ -4659,7 +4659,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1544,
+									"line": 1546,
 									"character": 30
 								}
 							]
@@ -4708,7 +4708,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1454,
+									"line": 1456,
 									"character": 25
 								}
 							]
@@ -4881,7 +4881,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Adds a listener to observe changes to the User object. This is a superset of everything from\n{@link auth#onAuthStateChanged}, {@ auth#onIdTokenChanged} and user changes. The goal of this\nmethod is to provide easier listening to all user changes, such as when credentials are\nlinked and unlinked, without manually having to call {@link auth.User#reload}.",
+										"shortText": "Adds a listener to observe changes to the User object. This is a superset of everything from\n{@link auth#onAuthStateChanged}, {@link auth#onIdTokenChanged} and user changes. The goal of this\nmethod is to provide easier listening to all user changes, such as when credentials are\nlinked and unlinked, without manually having to call {@link auth.User#reload}.",
 										"text": "#### Example\n\n```js\nconst unsubscribe = firebase.auth().onUserChanged((user) => {\n  if (user) {\n    // User is signed in or token was refreshed.\n  }\n});\n\n// Unsubscribe from further state changes\nunsubscribe();\n```\n\n> This is an experimental feature and is only part of React Native Firebase.\n",
 										"tags": [
 											{
@@ -5044,7 +5044,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1420,
+									"line": 1422,
 									"character": 26
 								}
 							]
@@ -5146,7 +5146,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1441,
+									"line": 1443,
 									"character": 25
 								}
 							]
@@ -5168,7 +5168,13 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sign in a user anonymously. If the user has already signed in, that user will be returned.",
-										"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInAnonymously();\n```\n"
+										"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInAnonymously();\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/operation-not-allowed Thrown if anonymous accounts are not enabled. Enable anonymous accounts in the Firebase Console, under the Auth tab.\n"
+											}
+										]
 									},
 									"type": {
 										"type": "reference",
@@ -5186,7 +5192,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1274,
+									"line": 1276,
 									"character": 21
 								}
 							]
@@ -5277,7 +5283,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1398,
+									"line": 1400,
 									"character": 24
 								}
 							]
@@ -5343,7 +5349,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1374,
+									"line": 1376,
 									"character": 25
 								}
 							]
@@ -5431,7 +5437,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1355,
+									"line": 1357,
 									"character": 30
 								}
 							]
@@ -5515,7 +5521,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1471,
+									"line": 1473,
 									"character": 23
 								}
 							]
@@ -5622,7 +5628,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1294,
+									"line": 1296,
 									"character": 25
 								}
 							]
@@ -5734,7 +5740,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1562,
+									"line": 1564,
 									"character": 27
 								}
 							]
@@ -5838,7 +5844,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1314,
+									"line": 1316,
 									"character": 21
 								}
 							]

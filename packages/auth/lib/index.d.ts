@@ -1270,6 +1270,8 @@ export namespace Auth {
      * ```js
      * const userCredential = await firebase.auth().signInAnonymously();
      * ```
+     *
+     * @error auth/operation-not-allowed Thrown if anonymous accounts are not enabled. Enable anonymous accounts in the Firebase Console, under the Auth tab.
      */
     signInAnonymously(): Promise<UserCredential>;
 
