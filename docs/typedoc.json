@@ -253,7 +253,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1515,
+									"line": 1606,
 									"character": 8
 								}
 							]
@@ -721,7 +721,7 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1511,
+							"line": 1602,
 							"character": 23
 						},
 						{
@@ -831,7 +831,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1508,
+									"line": 1599,
 									"character": 8
 								}
 							],
@@ -1267,7 +1267,7 @@
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1504,
+							"line": 1595,
 							"character": 40
 						},
 						{
@@ -1351,7 +1351,7 @@
 				},
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1503,
+					"line": 1594,
 					"character": 49
 				},
 				{
@@ -1430,7 +1430,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1489,
+							"line": 1580,
 							"character": 25
 						}
 					],
@@ -1463,7 +1463,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1478,
+							"line": 1569,
 							"character": 31
 						}
 					],
@@ -1501,7 +1501,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1487,
+							"line": 1578,
 							"character": 23
 						}
 					],
@@ -1526,7 +1526,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1475,
+					"line": 1566,
 					"character": 44
 				}
 			]
@@ -4116,7 +4116,7 @@
 					},
 					"comment": {
 						"shortText": "The Firebase Authentication service is available for the default app or a given app.",
-						"text": "#### Example 1\n\nGet the auth instance for the **default app**:\n\n```js\nconst authForDefaultApp = firebase.auth();\n```\n\n#### Example 2\n\nGet the auth instance for a **secondary app**:\n\n```js\nconst otherApp = firebase.app('otherApp');\nconst authForOtherApp = firebase.auth(otherApp);\n```\n\n"
+						"text": "#### Example 1\n\nGet the auth instance for the **default app**:\n\n```js\nconst authForDefaultApp = firebase.auth();\n```\n\n#### Example 2\n\nGet the auth instance for a **secondary app**:\n\n```js\nconst otherApp = firebase.app('otherApp');\nconst authForOtherApp = firebase.auth(otherApp);\n```\n\nTODO @salakar missing updateCurrentUser\n"
 					},
 					"children": [
 						{
@@ -4157,7 +4157,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1130,
+									"line": 1164,
 									"character": 12
 								}
 							],
@@ -4209,7 +4209,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1143,
+									"line": 1177,
 									"character": 19
 								}
 							]
@@ -4279,12 +4279,12 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1111,
+									"line": 1145,
 									"character": 20
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1125,
+									"line": 1159,
 									"character": 20
 								}
 							]
@@ -4306,7 +4306,25 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Applies a verification code sent to the user by email or other out-of-band mechanism.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().applyActionCode('ABCD');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().applyActionCode('ABCD');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/expired-action-code Thrown if the action code has expired."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-action-code Thrown if the action code is invalid. This can happen if the code is malformed or has already been used."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given action code has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if there is no user corresponding to the action code. This may have happened if the user was deleted between when the action code was issued and when this method was called."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4339,7 +4357,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1426,
+									"line": 1508,
 									"character": 19
 								}
 							]
@@ -4361,7 +4379,25 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Checks a verification code sent to the user by email or other out-of-band mechanism.",
-										"text": "#### Example\n\n```js\nconst actionCodeInfo = await firebase.auth().checkActionCode('ABCD');\nconsole.log('Action code operation: ', actionCodeInfo.operation);\n```\n"
+										"text": "#### Example\n\n```js\nconst actionCodeInfo = await firebase.auth().checkActionCode('ABCD');\nconsole.log('Action code operation: ', actionCodeInfo.operation);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/expired-action-code Thrown if the action code has expired."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-action-code Thrown if the action code is invalid. This can happen if the code is malformed or has already been used."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given action code has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if there is no user corresponding to the action code. This may have happened if the user was deleted between when the action code was issued and when this method was called."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4395,7 +4431,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1440,
+									"line": 1526,
 									"character": 19
 								}
 							]
@@ -4417,7 +4453,29 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Completes the password reset process with the confirmation code and new password, via\n{@link auth#sendPasswordResetEmail}.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().confirmPasswordReset('ABCD', '1234567');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().confirmPasswordReset('ABCD', '1234567');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/expired-action-code Thrown if the password reset code has expired."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-action-code Thrown if the password reset code is invalid. This can happen if the code is malformed or has already been used."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given password reset code has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if there is no user corresponding to the password reset code. This may have happened if the user was deleted between when the code was issued and when this method was called."
+											},
+											{
+												"tag": "error",
+												"text": "auth/weak-password Thrown if the new password is not strong enough."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4441,7 +4499,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "The users new password.\n"
+												"text": "The new password.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -4464,7 +4522,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1413,
+									"line": 1491,
 									"character": 24
 								}
 							]
@@ -4486,7 +4544,25 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates a new user with an email and password.",
-										"text": "This method also signs the user in once the account has been created.\n\n#### Example\n\n```js\nconst userCredential = await firebase.auth().createUserWithEmailAndPassword('joe.bloggs@example.com', '123456');\n```\n"
+										"text": "This method also signs the user in once the account has been created.\n\n#### Example\n\n```js\nconst userCredential = await firebase.auth().createUserWithEmailAndPassword('joe.bloggs@example.com', '123456');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/email-already-in-use Thrown if there already exists an account with the given email address."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email address is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/operation-not-allowed Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab."
+											},
+											{
+												"tag": "error",
+												"text": "auth/weak-password Thrown if the password is not strong enough."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4534,7 +4610,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1292,
+									"line": 1338,
 									"character": 34
 								}
 							]
@@ -4556,7 +4632,13 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).",
-										"text": "#### Example\n\n```js\nconst methods = await firebase.auth().fetchSignInMethodsForEmail('joe.bloggs@example.com');\n\nmethods.forEach((method) => {\n  console.log(method);\n});\n```\n"
+										"text": "#### Example\n\n```js\nconst methods = await firebase.auth().fetchSignInMethodsForEmail('joe.bloggs@example.com');\n\nmethods.forEach((method) => {\n  console.log(method);\n});\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email address is not valid."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4595,7 +4677,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1457,
+									"line": 1544,
 									"character": 30
 								}
 							]
@@ -4644,7 +4726,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1384,
+									"line": 1454,
 									"character": 25
 								}
 							]
@@ -4709,7 +4791,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1167,
+													"line": 1201,
 													"character": 55
 												}
 											]
@@ -4720,7 +4802,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1167,
+									"line": 1201,
 									"character": 22
 								}
 							]
@@ -4742,7 +4824,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listen for changes in id token.\nThis method returns a unsubscribe function to stop listening to events.\nAlways ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.",
-										"text": "     * #### Example\n\n```js\nconst unsubscribe = firebase.auth().onIdTokenChanged((user) => {\n  if (user) {\n    // User is signed in or token was refreshed.\n  }\n});\n\n// Unsubscribe from further state changes\nunsubscribe();\n```\n"
+										"text": "#### Example\n\n```js\nconst unsubscribe = firebase.auth().onIdTokenChanged((user) => {\n  if (user) {\n    // User is signed in or token was refreshed.\n  }\n});\n\n// Unsubscribe from further state changes\nunsubscribe();\n```\n"
 									},
 									"parameters": [
 										{
@@ -4785,7 +4867,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1189,
+													"line": 1223,
 													"character": 53
 												}
 											]
@@ -4796,7 +4878,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1189,
+									"line": 1223,
 									"character": 20
 								}
 							]
@@ -4867,7 +4949,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1215,
+													"line": 1249,
 													"character": 50
 												}
 											]
@@ -4878,7 +4960,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1215,
+									"line": 1249,
 									"character": 17
 								}
 							]
@@ -4900,7 +4982,37 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sends a password reset email to the given email address.\nUnlike the web SDK, the email will contain a password reset link rather than a code.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().sendPasswordResetEmail('joe.bloggs@example.com');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().sendPasswordResetEmail('joe.bloggs@example.com');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email address is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-continue-uri A continue URL must be provided in the request."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-ios-bundle-id An iOS Bundle ID must be provided if an App Store ID is provided."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-continue-uri The continue URL provided in the request is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if there is no user corresponding to the email address."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4950,7 +5062,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1357,
+									"line": 1420,
 									"character": 26
 								}
 							]
@@ -4972,7 +5084,37 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sends a sign in link to the user.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().sendSignInLinkToEmail('joe.bloggs@example.com');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().sendSignInLinkToEmail('joe.bloggs@example.com');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/argument-error Thrown if handleCodeInApp is false."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email address is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-continue-uri A continue URL must be provided in the request."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-ios-bundle-id An iOS Bundle ID must be provided if an App Store ID is provided."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-continue-uri The continue URL provided in the request is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -4998,7 +5140,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "Additional settings to be set before sending the sign in email.\n"
+												"text": "The action code settings. The action code settings which provides Firebase with instructions on how to construct the email link. This includes the sign in completion URL or the deep link for mobile redirects, the mobile apps to use when the sign-in link is opened on an Android or iOS device. Mobile app redirects will only be applicable if the developer configures and accepts the Firebase Dynamic Links terms of condition. The Android package name and iOS bundle ID will be respected only if they are configured in the same Firebase Auth project used.\n"
 											},
 											"type": {
 												"type": "reference",
@@ -5022,7 +5164,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1371,
+									"line": 1441,
 									"character": 25
 								}
 							]
@@ -5044,7 +5186,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sign in a user anonymously. If the user has already signed in, that user will be returned.",
-										"text": "#### Example\n\n```js\nconst userCredential = firebase.auth().signInAnonymously();\n```\n"
+										"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInAnonymously();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -5062,7 +5204,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1240,
+									"line": 1274,
 									"character": 21
 								}
 							]
@@ -5084,7 +5226,41 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Signs the user in with a generated credential.",
-										"text": "#### Example\n\n```js\n// Generate a Firebase credential\nconst credential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\n// Sign the user in with the credential\nconst userCredential = await firebase.auth().signInWithCredential(credential);\n```\n"
+										"text": "#### Example\n\n```js\n// Generate a Firebase credential\nconst credential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\n// Sign the user in with the credential\nconst userCredential = await firebase.auth().signInWithCredential(credential);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-credential Thrown if the credential is malformed or has expired."
+											},
+											{
+												"tag": "error",
+												"text": "auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given credential has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email."
+											},
+											{
+												"tag": "error",
+												"text": "auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -5119,7 +5295,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1342,
+									"line": 1398,
 									"character": 24
 								}
 							]
@@ -5141,7 +5317,17 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Signs a user in with a custom token.",
-										"text": "#### Example\n\n```js\n// Create a custom token via the Firebase Admin SDK.\nconst token = await firebase.auth().createCustomToken(uid, customClaims);\n...\n// Use the token on the device to sign in.\nconst userCredential = await firebase.auth().signInWithCustomToken(token);\n```\n"
+										"text": "#### Example\n\n```js\n// Create a custom token via the Firebase Admin SDK.\nconst token = await firebase.auth().createCustomToken(uid, customClaims);\n...\n// Use the token on the device to sign in.\nconst userCredential = await firebase.auth().signInWithCustomToken(token);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/custom-token-mismatch Thrown if the custom token is for a different Firebase App."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-custom-token Thrown if the custom token format is incorrect."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -5175,7 +5361,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1326,
+									"line": 1374,
 									"character": 25
 								}
 							]
@@ -5263,7 +5449,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1309,
+									"line": 1355,
 									"character": 30
 								}
 							]
@@ -5285,7 +5471,21 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Signs the user in with an email link.",
-										"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInWithEmailLink('joe.bloggs@example.com', link);\n```\n"
+										"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInWithEmailLink('joe.bloggs@example.com', link);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/expired-action-code Thrown if OTP in email link expires."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email address is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given email has been disabled."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -5333,7 +5533,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1398,
+									"line": 1471,
 									"character": 23
 								}
 							]
@@ -5355,7 +5555,29 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Signs in the user using their phone number.",
-										"text": "#### Example\n\n```js\n// Force a new message to be sent\nconst result = await firebase.auth().signInWithPhoneNumber('#4423456789', true);\n```\n"
+										"text": "#### Example\n\n```js\n// Force a new message to be sent\nconst result = await firebase.auth().signInWithPhoneNumber('#4423456789', true);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/invalid-phone-number Thrown if the phone number has an invalid format."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-phone-number Thrown if the phone number is missing."
+											},
+											{
+												"tag": "error",
+												"text": "auth/quota-exceeded Thrown if the SMS quota for the Firebase project has been exceeded."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given phone number has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -5418,7 +5640,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1255,
+									"line": 1294,
 									"character": 25
 								}
 							]
@@ -5457,7 +5679,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1229,
+									"line": 1263,
 									"character": 11
 								}
 							]
@@ -5479,7 +5701,25 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Checks a password reset code sent to the user by email or other out-of-band mechanism.\nTODO salakar: confirm return behavior (Returns the user's email address if valid.)",
-										"text": "#### Example\n\n```js\nawait firebase.auth().verifyPasswordResetCode('ABCD');\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().verifyPasswordResetCode('ABCD');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/expired-action-code Thrown if the password reset code has expired."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-action-code Thrown if the password reset code is invalid. This can happen if the code is malformed or has already been used."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-disabled Thrown if the user corresponding to the given password reset code has been disabled."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if there is no user corresponding to the password reset code. This may have happened if the user was deleted between when the code was issued and when this method was called."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -5512,7 +5752,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1471,
+									"line": 1562,
 									"character": 27
 								}
 							]
@@ -5534,7 +5774,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a PhoneAuthListener to listen to phone verification events,\non the final completion event a PhoneAuthCredential can be generated for\nauthentication purposes.",
-										"text": "#### Example\n\n```js\nTODO ehesp\n```\n"
+										"text": "#### Example\n\n```js\nfirebase.auth().verifyPhoneNumber('+4423456789', )\n .on('state_changed', (phoneAuthSnapshot) => {\n   console.log('Snapshot state: ', phoneAuthSnapshot.state);\n });\n```\n"
 									},
 									"parameters": [
 										{
@@ -5543,7 +5783,9 @@
 											"kind": 32768,
 											"kindString": "Parameter",
 											"flags": {},
-											"comment": {},
+											"comment": {
+												"text": "The user's phone number in E.164 format (e.g. +16505550101)."
+											},
 											"type": {
 												"type": "intrinsic",
 												"name": "string"
@@ -5557,7 +5799,9 @@
 											"flags": {
 												"isOptional": true
 											},
-											"comment": {},
+											"comment": {
+												"text": "If a number, sets in seconds how to to wait until auto verification times out. If boolean, sets the `forceResend` parameter."
+											},
 											"type": {
 												"type": "union",
 												"types": [
@@ -5581,7 +5825,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "\n"
+												"text": "If true, resend the verification message even if it was recently sent.\n"
 											},
 											"type": {
 												"type": "union",
@@ -5612,7 +5856,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1272,
+									"line": 1314,
 									"character": 21
 								}
 							]
@@ -5665,7 +5909,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1101,
+							"line": 1135,
 							"character": 21
 						}
 					],
@@ -5703,7 +5947,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 536,
+									"line": 538,
 									"character": 8
 								}
 							],
@@ -5727,7 +5971,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 540,
+									"line": 542,
 									"character": 13
 								}
 							],
@@ -5771,7 +6015,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 532,
+							"line": 534,
 							"character": 33
 						}
 					]
@@ -5801,7 +6045,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 518,
+									"line": 520,
 									"character": 9
 								}
 							],
@@ -5831,7 +6075,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 519,
+									"line": 521,
 									"character": 13
 								}
 							],
@@ -5863,7 +6107,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 517,
+							"line": 519,
 							"character": 37
 						}
 					]
@@ -5895,7 +6139,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 580,
+									"line": 582,
 									"character": 11
 								}
 							],
@@ -5920,7 +6164,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 584,
+									"line": 586,
 									"character": 19
 								}
 							],
@@ -5956,7 +6200,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 588,
+									"line": 590,
 									"character": 7
 								}
 							],
@@ -5980,7 +6224,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 592,
+									"line": 594,
 									"character": 7
 								}
 							],
@@ -6005,7 +6249,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 576,
+							"line": 578,
 							"character": 37
 						}
 					]
@@ -6038,7 +6282,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 498,
+									"line": 500,
 									"character": 14
 								}
 							],
@@ -6075,7 +6319,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 502,
+									"line": 504,
 									"character": 18
 								}
 							],
@@ -6107,7 +6351,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 494,
+									"line": 496,
 									"character": 15
 								}
 							],
@@ -6131,7 +6375,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 490,
+							"line": 492,
 							"character": 44
 						}
 					]
@@ -6164,7 +6408,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 561,
+									"line": 563,
 									"character": 12
 								}
 							],
@@ -6195,7 +6439,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 557,
+							"line": 559,
 							"character": 40
 						}
 					]
@@ -6210,7 +6454,13 @@
 					},
 					"comment": {
 						"shortText": "A structure containing additional user information from a federated identity provider via {@link auth.UserCredential}.",
-						"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInAnonymously();\nconsole.log('Additional user info: ', userCredential.additionalUserInfo);\n```\n"
+						"text": "#### Example\n\n```js\nconst userCredential = await firebase.auth().signInAnonymously();\nconsole.log('Additional user info: ', userCredential.additionalUserInfo);\n```\n",
+						"tags": [
+							{
+								"tag": "error",
+								"text": "auth/operation-not-allowed Thrown if anonymous accounts are not enabled. Enable anonymous accounts in the Firebase Console, under the Auth tab.\n"
+							}
+						]
 					},
 					"children": [
 						{
@@ -6227,7 +6477,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 279,
+									"line": 281,
 									"character": 13
 								}
 							],
@@ -6251,7 +6501,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 284,
+									"line": 286,
 									"character": 11
 								}
 							],
@@ -6274,7 +6524,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 288,
+									"line": 290,
 									"character": 14
 								}
 							],
@@ -6298,7 +6548,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 292,
+									"line": 294,
 									"character": 12
 								}
 							],
@@ -6332,7 +6582,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 275,
+							"line": 277,
 							"character": 37
 						}
 					]
@@ -6635,7 +6885,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 787,
+									"line": 789,
 									"character": 37
 								}
 							],
@@ -6714,7 +6964,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 806,
+									"line": 808,
 									"character": 41
 								}
 							]
@@ -6739,7 +6989,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 780,
+							"line": 782,
 							"character": 31
 						}
 					]
@@ -6771,7 +7021,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 466,
+									"line": 468,
 									"character": 18
 								}
 							],
@@ -6848,7 +7098,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 472,
+									"line": 474,
 									"character": 11
 								}
 							]
@@ -6873,7 +7123,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 461,
+							"line": 463,
 							"character": 37
 						}
 					]
@@ -7188,7 +7438,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 402,
+									"line": 404,
 									"character": 12
 								}
 							],
@@ -7211,7 +7461,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 420,
+									"line": 422,
 									"character": 10
 								}
 							],
@@ -7252,7 +7502,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 420,
+											"line": 422,
 											"character": 11
 										}
 									]
@@ -7273,7 +7523,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 410,
+									"line": 412,
 									"character": 18
 								}
 							],
@@ -7296,7 +7546,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 406,
+									"line": 408,
 									"character": 16
 								}
 							],
@@ -7319,7 +7569,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 415,
+									"line": 417,
 									"character": 18
 								}
 							],
@@ -7351,7 +7601,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 397,
+									"line": 399,
 									"character": 9
 								}
 							],
@@ -7378,7 +7628,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 393,
+							"line": 395,
 							"character": 32
 						}
 					]
@@ -7410,7 +7660,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 668,
+									"line": 670,
 									"character": 8
 								}
 							],
@@ -7442,7 +7692,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 676,
+									"line": 678,
 									"character": 11
 								}
 							],
@@ -7474,7 +7724,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 680,
+									"line": 682,
 									"character": 9
 								}
 							],
@@ -7506,7 +7756,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 672,
+									"line": 674,
 									"character": 18
 								}
 							],
@@ -7531,7 +7781,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 664,
+							"line": 666,
 							"character": 33
 						}
 					]
@@ -7614,7 +7864,7 @@
 													"sources": [
 														{
 															"fileName": "auth/lib/index.d.ts",
-															"line": 767,
+															"line": 769,
 															"character": 21
 														}
 													]
@@ -7637,7 +7887,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 767,
+									"line": 769,
 									"character": 9
 								}
 							]
@@ -7723,7 +7973,7 @@
 													"sources": [
 														{
 															"fileName": "auth/lib/index.d.ts",
-															"line": 710,
+															"line": 712,
 															"character": 15
 														}
 													]
@@ -7857,7 +8107,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 708,
+									"line": 710,
 									"character": 6
 								}
 							]
@@ -7934,7 +8184,7 @@
 															"sources": [
 																{
 																	"fileName": "auth/lib/index.d.ts",
-																	"line": 742,
+																	"line": 744,
 																	"character": 19
 																}
 															]
@@ -7998,7 +8248,7 @@
 															"sources": [
 																{
 																	"fileName": "auth/lib/index.d.ts",
-																	"line": 743,
+																	"line": 745,
 																	"character": 18
 																}
 															]
@@ -8027,7 +8277,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 741,
+									"line": 743,
 									"character": 8
 								}
 							]
@@ -8047,7 +8297,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 686,
+							"line": 688,
 							"character": 36
 						}
 					]
@@ -8079,7 +8329,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 643,
+									"line": 645,
 									"character": 8
 								}
 							],
@@ -8111,7 +8361,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 647,
+									"line": 649,
 									"character": 9
 								}
 							],
@@ -8144,7 +8394,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 635,
+									"line": 637,
 									"character": 9
 								}
 							],
@@ -8184,7 +8434,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 639,
+									"line": 641,
 									"character": 18
 								}
 							],
@@ -8209,7 +8459,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 626,
+							"line": 628,
 							"character": 36
 						}
 					]
@@ -8590,7 +8840,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 443,
+									"line": 445,
 									"character": 15
 								}
 							],
@@ -8623,7 +8873,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 447,
+									"line": 449,
 									"character": 12
 								}
 							],
@@ -8655,7 +8905,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 439,
+							"line": 441,
 							"character": 32
 						}
 					]
@@ -8687,7 +8937,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 839,
+									"line": 841,
 									"character": 15
 								}
 							],
@@ -8719,7 +8969,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 843,
+									"line": 845,
 									"character": 9
 								}
 							],
@@ -8751,7 +9001,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 847,
+									"line": 849,
 									"character": 17
 								}
 							],
@@ -8769,12 +9019,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Returns true if the user is anonymous; that is, the user account was created with\n{@link auth#signInAnonymously()} and has not been linked to another account\nwith {@link auth#linkWithCredential}."
+								"shortText": "Returns true if the user is anonymous; that is, the user account was created with\n{@link auth#signInAnonymously} and has not been linked to another account\nwith {@link auth#linkWithCredential}."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 853,
+									"line": 855,
 									"character": 15
 								}
 							],
@@ -8797,7 +9047,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 858,
+									"line": 860,
 									"character": 12
 								}
 							],
@@ -8821,7 +9071,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 864,
+									"line": 866,
 									"character": 15
 								}
 							],
@@ -8853,7 +9103,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 869,
+									"line": 871,
 									"character": 12
 								}
 							],
@@ -8885,7 +9135,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 874,
+									"line": 876,
 									"character": 16
 								}
 							],
@@ -8915,7 +9165,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 880,
+									"line": 882,
 									"character": 14
 								}
 							],
@@ -8938,7 +9188,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 885,
+									"line": 887,
 									"character": 7
 								}
 							],
@@ -8964,7 +9214,13 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Delete the current user.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().currentUser.delete();\n```\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().currentUser.delete();\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold. Use `auth.User#reauthenticateWithCredential` to resolve. This does not apply if the user is anonymous.\n"
+											}
+										]
 									},
 									"type": {
 										"type": "reference",
@@ -8981,7 +9237,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 896,
+									"line": 900,
 									"character": 10
 								}
 							]
@@ -9051,7 +9307,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 910,
+									"line": 914,
 									"character": 14
 								}
 							]
@@ -9122,7 +9378,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 926,
+									"line": 930,
 									"character": 20
 								}
 							]
@@ -9144,7 +9400,45 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Link the user with a 3rd party credential provider.",
-										"text": "#### Example\n\n```js\nconst facebookCredential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\nconst userCredential = await firebase.auth().currentUser.linkWithCredential(facebookCredential);\n```\n"
+										"text": "#### Example\n\n```js\nconst facebookCredential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\nconst userCredential = await firebase.auth().currentUser.linkWithCredential(facebookCredential);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method."
+											},
+											{
+												"tag": "error",
+												"text": "auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User."
+											},
+											{
+												"tag": "error",
+												"text": "auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users."
+											},
+											{
+												"tag": "error",
+												"text": "auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9179,7 +9473,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 940,
+									"line": 953,
 									"character": 22
 								}
 							]
@@ -9201,7 +9495,37 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Re-authenticate a user with a third-party authentication provider.",
-										"text": "#### Example\n\n```js\nconst facebookCredential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\nconst userCredential = await firebase.auth().currentUser.reauthenticateWithCredential(facebookCredential);\n```\n"
+										"text": "#### Example\n\n```js\nconst facebookCredential = firebase.auth.FacebookAuthProvider.credential('access token from Facebook');\nconst userCredential = await firebase.auth().currentUser.reauthenticateWithCredential(facebookCredential);\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/user-mismatch Thrown if the credential given does not correspond to the user."
+											},
+											{
+												"tag": "error",
+												"text": "auth/user-not-found Thrown if the credential given does not correspond to any existing user."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9236,7 +9560,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 954,
+									"line": 974,
 									"character": 32
 								}
 							]
@@ -9275,7 +9599,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 965,
+									"line": 985,
 									"character": 10
 								}
 							]
@@ -9297,7 +9621,29 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sends a verification email to a user.",
-										"text": "#### Example\n\n```js\nawait firebase.auth().currentUser.sendEmailVerification({\n  handleCodeInApp: true,\n});\n```\n\n> This will Promise reject if the user is anonymous.\n"
+										"text": "#### Example\n\n```js\nawait firebase.auth().currentUser.sendEmailVerification({\n  handleCodeInApp: true,\n});\n```\n\n> This will Promise reject if the user is anonymous.\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-continue-uri A continue URL must be provided in the request."
+											},
+											{
+												"tag": "error",
+												"text": "auth/missing-ios-bundle-id An iOS bundle ID must be provided if an App Store ID is provided."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-continue-uri The continue URL provided in the request is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9333,7 +9679,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 982,
+									"line": 1007,
 									"character": 25
 								}
 							]
@@ -9366,7 +9712,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 993,
+									"line": 1018,
 									"character": 10
 								}
 							]
@@ -9388,7 +9734,13 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Unlinks a provider from a user account.",
-										"text": "#### Example\n\n```js\nconst user = await firebase.auth().currentUser.unlink('facebook.com');\n```\n"
+										"text": "#### Example\n\n```js\nconst user = await firebase.auth().currentUser.unlink('facebook.com');\n```\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/no-such-provider Thrown if the user does not have this provider linked or when the provider ID given does not exist."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9422,7 +9774,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1006,
+									"line": 1032,
 									"character": 10
 								}
 							]
@@ -9444,7 +9796,21 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Updates the user's email address.",
-										"text": "See Firebase docs for more information on security & email validation.\n\n#### Example\n\n```js\nawait firebase.auth().currentUser.updateEmail('joe.bloggs@new-email.com');\n```\n\n> This will Promise reject if the user is anonymous.\n"
+										"text": "See Firebase docs for more information on security & email validation.\n\n#### Example\n\n```js\nawait firebase.auth().currentUser.updateEmail('joe.bloggs@new-email.com');\n```\n\n> This will Promise reject if the user is anonymous.\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/invalid-email Thrown if the email used is invalid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/email-already-in-use Thrown if the email is already used by another user."
+											},
+											{
+												"tag": "error",
+												"text": "auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9477,7 +9843,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1023,
+									"line": 1052,
 									"character": 15
 								}
 							]
@@ -9499,7 +9865,17 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Updates the users password.",
-										"text": "Important: this is a security sensitive operation that requires the user to have recently signed in.\nIf this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.\n\n#### Example\n\n```js\nawait firebase.auth().currentUser.updatePassword('654321');\n```\n\n> This will Promise reject is the user is anonymous.\n"
+										"text": "Important: this is a security sensitive operation that requires the user to have recently signed in.\nIf this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.\n\n#### Example\n\n```js\nawait firebase.auth().currentUser.updatePassword('654321');\n```\n\n> This will Promise reject is the user is anonymous.\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/weak-password Thrown if the password is not strong enough."
+											},
+											{
+												"tag": "error",
+												"text": "auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9532,7 +9908,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1041,
+									"line": 1072,
 									"character": 18
 								}
 							]
@@ -9554,7 +9930,17 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Updates the user's phone number.",
-										"text": "See Firebase docs for more information on security & email validation.\n\n#### Example\n\n```js\nconst snapshot = await firebase.auth().verifyPhoneNumber('+4423456789')\n .on(...); // See PhoneAuthListener - wait for successful verification\n\nconst credential = firebase.auth.PhoneAuthProvider.credential(snapshot.verificationId, snapshot.code);\n\n// Update user with new verified phone number\nawait firebase.auth().currentUser.updatePhoneNumber(credential);\n```\n\n> This will Promise reject is the user is anonymous.\n"
+										"text": "See Firebase docs for more information on security & email validation.\n\n#### Example\n\n```js\nconst snapshot = await firebase.auth().verifyPhoneNumber('+4423456789')\n .on(...); // See PhoneAuthListener - wait for successful verification\n\nconst credential = firebase.auth.PhoneAuthProvider.credential(snapshot.verificationId, snapshot.code);\n\n// Update user with new verified phone number\nawait firebase.auth().currentUser.updatePhoneNumber(credential);\n```\n\n> This will Promise reject is the user is anonymous.\n",
+										"tags": [
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-code Thrown if the verification code of the credential is not valid."
+											},
+											{
+												"tag": "error",
+												"text": "auth/invalid-verification-id Thrown if the verification ID of the credential is not valid."
+											}
+										]
 									},
 									"parameters": [
 										{
@@ -9588,7 +9974,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1064,
+									"line": 1097,
 									"character": 21
 								}
 							]
@@ -9641,7 +10027,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1077,
+									"line": 1110,
 									"character": 17
 								}
 							]
@@ -9687,7 +10073,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 835,
+							"line": 837,
 							"character": 23
 						}
 					]
@@ -9720,7 +10106,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 306,
+									"line": 308,
 									"character": 22
 								}
 							],
@@ -9744,7 +10130,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 310,
+									"line": 312,
 									"character": 8
 								}
 							],
@@ -9768,7 +10154,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 302,
+							"line": 304,
 							"character": 33
 						}
 					]
@@ -9801,7 +10187,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 356,
+									"line": 358,
 									"character": 15
 								}
 							],
@@ -9834,7 +10220,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 360,
+									"line": 362,
 									"character": 9
 								}
 							],
@@ -9862,12 +10248,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Returns the phone number corresponding to the user's account, if available, or `null` if none exists."
+								"shortText": "The phone number normalized based on the E.164 standard (e.g. +16505550101) for the current user. This is null if the user has no phone credential linked to the account."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 364,
+									"line": 366,
 									"character": 15
 								}
 							],
@@ -9900,7 +10286,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 368,
+									"line": 370,
 									"character": 12
 								}
 							],
@@ -9932,7 +10318,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 372,
+									"line": 374,
 									"character": 14
 								}
 							],
@@ -9955,7 +10341,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 376,
+									"line": 378,
 									"character": 7
 								}
 							],
@@ -9982,7 +10368,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 352,
+							"line": 354,
 							"character": 27
 						}
 					]
@@ -10015,7 +10401,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 328,
+									"line": 330,
 									"character": 16
 								}
 							],
@@ -10048,7 +10434,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 333,
+									"line": 335,
 									"character": 18
 								}
 							],
@@ -10080,7 +10466,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 323,
+							"line": 325,
 							"character": 31
 						}
 					]
@@ -10100,7 +10486,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 612,
+							"line": 614,
 							"character": 34
 						}
 					],
@@ -10151,7 +10537,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 612,
+									"line": 614,
 									"character": 36
 								}
 							]
