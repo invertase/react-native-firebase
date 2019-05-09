@@ -65,19 +65,15 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   public void setCurrentScreen(String screenName, String screenClassOverride, Promise promise) {
     Activity activity = getActivity();
     if (activity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @SuppressLint("MissingPermission")
-        @Override
-        public void run() {
-          try {
-            FirebaseAnalytics
-              .getInstance(getContext())
-              .setCurrentScreen(activity, screenName, screenClassOverride);
+      activity.runOnUiThread(() -> {
+        try {
+          FirebaseAnalytics
+            .getInstance(getContext())
+            .setCurrentScreen(activity, screenName, screenClassOverride);
 
-            promise.resolve(null);
-          } catch (Exception exception) {
-            rejectPromiseWithExceptionMap(promise, exception);
-          }
+          promise.resolve(null);
+        } catch (Exception exception) {
+          rejectPromiseWithExceptionMap(promise, exception);
         }
       });
     } else {

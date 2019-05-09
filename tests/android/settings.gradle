@@ -10,7 +10,7 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
-  'mlkit',
+  'ml-natural-language',
   'storage',
   'perf',
   'utils'
