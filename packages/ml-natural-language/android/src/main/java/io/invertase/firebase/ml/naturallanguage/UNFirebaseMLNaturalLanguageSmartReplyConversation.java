@@ -32,15 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-class RNFirebaseMLNaturalLanguageSmartReplyConversation {
-  private static final SparseArray<RNFirebaseMLNaturalLanguageSmartReplyConversation> existingConversations = new SparseArray<>();
+class UNFirebaseMLNaturalLanguageSmartReplyConversation {
+  private static final SparseArray<UNFirebaseMLNaturalLanguageSmartReplyConversation> existingConversations = new SparseArray<>();
   private List<FirebaseTextMessage> firebaseTextMessages = new ArrayList<>();
 
-  static RNFirebaseMLNaturalLanguageSmartReplyConversation getOrCreateConversation(int conversationId) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
+  static UNFirebaseMLNaturalLanguageSmartReplyConversation getOrCreateConversation(int conversationId) {
+    UNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
       conversationId);
     if (existingConversation != null) return existingConversation;
-    RNFirebaseMLNaturalLanguageSmartReplyConversation newConversation = new RNFirebaseMLNaturalLanguageSmartReplyConversation();
+    UNFirebaseMLNaturalLanguageSmartReplyConversation newConversation = new UNFirebaseMLNaturalLanguageSmartReplyConversation();
     existingConversations.setValueAt(conversationId, newConversation);
     return newConversation;
   }
@@ -50,7 +50,7 @@ class RNFirebaseMLNaturalLanguageSmartReplyConversation {
   }
 
   static void clearMessages(int conversationId) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
+    UNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
       conversationId);
     if (existingConversation != null) {
       existingConversation.firebaseTextMessages.clear();
@@ -87,21 +87,24 @@ class RNFirebaseMLNaturalLanguageSmartReplyConversation {
     FirebaseNaturalLanguage instance,
     ExecutorService executor
   ) {
-    return instance.getSmartReply().suggestReplies(firebaseTextMessages).continueWith(executor, task -> {
-      WritableArray suggestedRepliesArray = Arguments.createArray();
-      SmartReplySuggestionResult suggestionResult = task.getResult();
+    return instance
+      .getSmartReply()
+      .suggestReplies(firebaseTextMessages)
+      .continueWith(executor, task -> {
+        WritableArray suggestedRepliesArray = Arguments.createArray();
+        SmartReplySuggestionResult suggestionResult = task.getResult();
 
-      if (suggestionResult == null) return suggestedRepliesArray;
+        if (suggestionResult == null) return suggestedRepliesArray;
 
-      List<SmartReplySuggestion> suggestedRepliesList = suggestionResult.getSuggestions();
-      for (SmartReplySuggestion suggestion : suggestedRepliesList) {
-        WritableMap suggestionMap = Arguments.createMap();
-        suggestionMap.putString("text", suggestion.getText());
-        suggestionMap.putDouble("confidence", suggestion.getConfidence());
-        suggestedRepliesArray.pushMap(suggestionMap);
-      }
+        List<SmartReplySuggestion> suggestedRepliesList = suggestionResult.getSuggestions();
+        for (SmartReplySuggestion suggestion : suggestedRepliesList) {
+          WritableMap suggestionMap = Arguments.createMap();
+          suggestionMap.putString("text", suggestion.getText());
+          suggestionMap.putDouble("confidence", suggestion.getConfidence());
+          suggestedRepliesArray.pushMap(suggestionMap);
+        }
 
-      return suggestedRepliesArray;
-    });
+        return suggestedRepliesArray;
+      });
   }
 }
