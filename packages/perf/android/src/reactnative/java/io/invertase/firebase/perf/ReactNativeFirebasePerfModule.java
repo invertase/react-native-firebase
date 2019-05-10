@@ -28,65 +28,91 @@ import java.util.Map;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Perf";
+  private static final String SERVICE_NAME = "Perf";
   private final UniversalFirebasePerfModule module;
 
   ReactNativeFirebasePerfModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
-    this.module = new UniversalFirebasePerfModule(reactContext);
+    super(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebasePerfModule(reactContext, SERVICE_NAME);
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    this.module.onTearDown();
-
+    module.onTearDown();
   }
 
   @ReactMethod
   public void setPerformanceCollectionEnabled(Boolean enabled, Promise promise) {
-    this.module.setPerformanceCollectionEnabled(enabled).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+    module.setPerformanceCollectionEnabled(enabled).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void startTrace(int id, String identifier, Promise promise) {
-    this.module.startTrace(id, identifier).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+    module.startTrace(id, identifier).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void stopTrace(int id, ReadableMap traceData, Promise promise) {
-    this.module.stopTrace(id, Arguments.toBundle(traceData.getMap("metrics")), Arguments.toBundle(traceData.getMap("attributes"))).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
-    });
+    module
+      .stopTrace(
+        id,
+        Arguments.toBundle(traceData.getMap("metrics")),
+        Arguments.toBundle(traceData.getMap("attributes"))
+      )
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
   }
 
 
   @ReactMethod
   public void startHttpMetric(int id, String url, String httpMethod, Promise promise) {
-    this.module.startHttpMetric(id, url, httpMethod).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+    module.startHttpMetric(id, url, httpMethod).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void stopHttpMetric(int id, ReadableMap metricData, Promise promise) {
-    this.module.stopHttpMetric(id, Arguments.toBundle(metricData), Arguments.toBundle(metricData.getMap("attributes"))).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
-    });
+    module
+      .stopHttpMetric(
+        id,
+        Arguments.toBundle(metricData),
+        Arguments.toBundle(metricData.getMap("attributes"))
+      )
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
   }
 
 
   @Override
   public Map<String, Object> getConstants() {
-    return this.module.getConstants();
+    return module.getConstants();
   }
 }

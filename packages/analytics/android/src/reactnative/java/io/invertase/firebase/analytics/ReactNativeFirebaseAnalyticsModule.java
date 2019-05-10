@@ -29,83 +29,116 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Analytics";
+  private static final String SERVICE_NAME = "Analytics";
   private final UniversalFirebaseAnalyticsModule module;
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
-    this.module = new UniversalFirebaseAnalyticsModule(reactContext);
+    super(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseAnalyticsModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
     this.module.logEvent(name, Arguments.toBundle(params)).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
     this.module.setAnalyticsCollectionEnabled(enabled).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
-  public void setCurrentScreen(String screenName, @Nullable String screenClassOverride, Promise promise) {
-    this.module.setAnalyticsCollectionEnabled(getCurrentActivity(), screenName, screenClassOverride).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
-    });
+  public void setCurrentScreen(
+    String screenName,
+    @Nullable String screenClassOverride,
+    Promise promise
+  ) {
+    this.module
+      .setAnalyticsCollectionEnabled(getCurrentActivity(), screenName, screenClassOverride)
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
   }
 
   @ReactMethod
   public void setMinimumSessionDuration(double milliseconds, Promise promise) {
     this.module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
     this.module.setSessionTimeoutDuration((long) milliseconds).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void setUserId(String id, Promise promise) {
     this.module.setUserId(id).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void setUserProperty(String name, String value, Promise promise) {
     this.module.setUserProperty(name, value).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void setUserProperties(ReadableMap properties, Promise promise) {
     this.module.setUserProperties(Arguments.toBundle(properties)).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 
   @ReactMethod
   public void resetAnalyticsData(Promise promise) {
     this.module.resetAnalyticsData().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) promise.resolve(task.getResult());
-      else rejectPromiseWithExceptionMap(promise, task.getException());
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
     });
   }
 }

@@ -32,25 +32,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("WeakerAccess")
-public class UniversalFirebasePerfModule {
+import io.invertase.firebase.common.UniversalFirebaseModule;
+
+public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   private static SparseArray<Trace> traces = new SparseArray<>();
   private static SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
 
-  private final Context context;
-
-  UniversalFirebasePerfModule(Context context) {
-    this.context = context;
+  UniversalFirebasePerfModule(Context context, String serviceName) {
+    super(context, serviceName);
   }
 
-  void onTearDown() {
-    synchronized (UniversalFirebasePerfModule.class) {
-      traces.clear();
-      httpMetrics.clear();
-    }
+  @Override
+  public void onTearDown() {
+    super.onTearDown();
+    traces.clear();
+    httpMetrics.clear();
   }
 
-  Map<String, Object> getConstants() {
+  @Override
+  public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put(
       "isPerformanceCollectionEnabled",
@@ -71,9 +71,7 @@ public class UniversalFirebasePerfModule {
       Trace trace = FirebasePerformance.getInstance().newTrace(identifier);
       trace.start();
 
-      synchronized (UniversalFirebasePerfModule.class) {
-        traces.put(id, trace);
-      }
+      traces.put(id, trace);
 
       return null;
     });
@@ -81,10 +79,7 @@ public class UniversalFirebasePerfModule {
 
   Task<Void> stopTrace(int id, Bundle metrics, Bundle attributes) {
     return Tasks.call(() -> {
-      Trace trace;
-      synchronized (UniversalFirebasePerfModule.class) {
-        trace = traces.get(id);
-      }
+      Trace trace = traces.get(id);
 
       Set<String> metricKeys = metrics.keySet();
       Set<String> attributeKeys = attributes.keySet();
@@ -95,14 +90,14 @@ public class UniversalFirebasePerfModule {
       }
 
       for (String attributeKey : attributeKeys) {
-        trace.putAttribute(attributeKey, (String) Objects.requireNonNull(attributes.get(attributeKey)));
+        trace.putAttribute(
+          attributeKey,
+          (String) Objects.requireNonNull(attributes.get(attributeKey))
+        );
       }
 
       trace.stop();
-
-      synchronized (UniversalFirebasePerfModule.class) {
-        traces.remove(id);
-      }
+      traces.remove(id);
 
       return null;
     });
@@ -112,21 +107,14 @@ public class UniversalFirebasePerfModule {
     return Tasks.call(() -> {
       HttpMetric httpMetric = FirebasePerformance.getInstance().newHttpMetric(url, httpMethod);
       httpMetric.start();
-
-      synchronized (UniversalFirebasePerfModule.class) {
-        httpMetrics.put(id, httpMetric);
-      }
-
+      httpMetrics.put(id, httpMetric);
       return null;
     });
   }
 
   Task<Void> stopHttpMetric(int id, Bundle httpMetricConfig, Bundle attributes) {
     return Tasks.call(() -> {
-      HttpMetric httpMetric;
-      synchronized (UniversalFirebasePerfModule.class) {
-        httpMetric = httpMetrics.get(id);
-      }
+      HttpMetric httpMetric = httpMetrics.get(id);
 
       if (httpMetricConfig.containsKey("httpResponseCode")) {
         httpMetric.setHttpResponseCode(httpMetricConfig.getInt("httpResponseCode"));
@@ -147,14 +135,14 @@ public class UniversalFirebasePerfModule {
       Set<String> attributeKeys = attributes.keySet();
 
       for (String attributeKey : attributeKeys) {
-        httpMetric.putAttribute(attributeKey, Objects.requireNonNull(attributes.getString(attributeKey)));
+        httpMetric.putAttribute(
+          attributeKey,
+          Objects.requireNonNull(attributes.getString(attributeKey))
+        );
       }
 
       httpMetric.stop();
-
-      synchronized (UniversalFirebasePerfModule.class) {
-        httpMetrics.remove(id);
-      }
+      httpMetrics.remove(id);
 
       return null;
     });

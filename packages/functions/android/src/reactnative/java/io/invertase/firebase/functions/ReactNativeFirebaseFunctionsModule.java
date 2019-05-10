@@ -17,18 +17,14 @@ package io.invertase.firebase.functions;
  *
  */
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctionsException;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -39,15 +35,12 @@ import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.D
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.MSG_KEY;
 
 public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Functions";
-
-  private final UniversalFirebaseFunctionsModule context;
-  private final ExecutorService executor;
+  private static final String SERVICE_NAME = "Functions";
+  private final UniversalFirebaseFunctionsModule module;
 
   ReactNativeFirebaseFunctionsModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
-    this.context = new UniversalFirebaseFunctionsModule(reactContext);
-    this.executor = Executors.newSingleThreadExecutor();
+    super(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseFunctionsModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
@@ -59,44 +52,35 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
     ReadableMap wrapper,
     Promise promise
   ) {
-    this.context.httpsCallable(
+    Task<Object> callMethodTask = module.httpsCallable(
       appName,
       region,
       origin,
       name,
-      wrapper.toHashMap().get(DATA_KEY),
-      executor
-    ).addOnCompleteListener(executor, task -> {
-      if (task.isSuccessful()) {
-        WritableMap map = Arguments.createMap();
+      wrapper.toHashMap().get(DATA_KEY)
+    );
 
-        RCTConvertFirebase.mapPutValue(DATA_KEY, task.getResult(), map);
-        promise.resolve(map);
-      } else {
-        Exception exception = task.getException();
-        Log.d(TAG, "function:call:onFailure:" + name, exception);
+    // resolve
+    callMethodTask.addOnSuccessListener(getExecutor(), result -> {
+      promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
+    });
 
-        String message;
-        Object details = null;
-        String code = "UNKNOWN";
-        WritableMap userInfo = Arguments.createMap();
-
-        if (exception != null && exception.getCause() instanceof FirebaseFunctionsException) {
-          FirebaseFunctionsException functionsException = (FirebaseFunctionsException) exception.getCause();
-          details = functionsException.getDetails();
-          code = functionsException
-            .getCode()
-            .name();
-          message = functionsException.getMessage();
-        } else {
-          message = exception.getMessage();
-        }
-
-        RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
-        RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
-        RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
-        promise.reject(code, message, exception, userInfo);
+    // reject
+    callMethodTask.addOnFailureListener(getExecutor(), exception -> {
+      Object details = null;
+      String code = "UNKNOWN";
+      String message = exception.getMessage();
+      WritableMap userInfo = Arguments.createMap();
+      if (exception.getCause() instanceof FirebaseFunctionsException) {
+        FirebaseFunctionsException functionsException = (FirebaseFunctionsException) exception.getCause();
+        details = functionsException.getDetails();
+        code = functionsException.getCode().name();
+        message = functionsException.getMessage();
       }
+      RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
+      RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
+      RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
+      promise.reject(code, message, exception, userInfo);
     });
   }
 }

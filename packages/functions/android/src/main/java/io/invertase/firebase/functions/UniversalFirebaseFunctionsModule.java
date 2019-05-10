@@ -24,19 +24,17 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 
-import java.util.concurrent.Executor;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
-@SuppressWarnings("ALL")
-public class UniversalFirebaseFunctionsModule {
+@SuppressWarnings("WeakerAccess")
+public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
   public static final String DATA_KEY = "data";
   public static final String CODE_KEY = "code";
   public static final String MSG_KEY = "message";
   public static final String DETAILS_KEY = "details";
 
-  private final Context context;
-
-  UniversalFirebaseFunctionsModule(Context context) {
-    this.context = context;
+  UniversalFirebaseFunctionsModule(Context context, String serviceName) {
+    super(context, serviceName);
   }
 
   Task<Object> httpsCallable(
@@ -44,10 +42,9 @@ public class UniversalFirebaseFunctionsModule {
     String region,
     String origin,
     String name,
-    Object data,
-    Executor executor
+    Object data
   ) {
-    return Tasks.call(executor, () -> {
+    return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
 

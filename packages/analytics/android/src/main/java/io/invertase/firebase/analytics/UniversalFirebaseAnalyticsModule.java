@@ -29,61 +29,67 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-public class UniversalFirebaseAnalyticsModule {
-  private static final String TAG = "Analytics";
-  private final Context context;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
+@SuppressWarnings("WeakerAccess")
+public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
 
-  UniversalFirebaseAnalyticsModule(Context context) {
-    this.context = context;
+  UniversalFirebaseAnalyticsModule(Context context, String serviceName) {
+    super(context, serviceName);
   }
 
   Task<Void> logEvent(String name, Bundle parameters) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).logEvent(name, parameters);
+      FirebaseAnalytics.getInstance(getContext()).logEvent(name, parameters);
       return null;
     });
   }
 
   Task<Void> setAnalyticsCollectionEnabled(Boolean enabled) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(enabled);
+      FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
       return null;
     });
   }
 
-  Task<Void> setAnalyticsCollectionEnabled(Activity currentActivity, String screenName, @Nullable String screenClassOverride) {
+  Task<Void> setAnalyticsCollectionEnabled(
+    Activity currentActivity,
+    String screenName,
+    @Nullable String screenClassOverride
+  ) {
     return Tasks.call(() -> {
       if (currentActivity == null) return null;
-      FirebaseAnalytics.getInstance(context).setCurrentScreen(currentActivity, screenName, screenClassOverride);
+      FirebaseAnalytics
+        .getInstance(getContext())
+        .setCurrentScreen(currentActivity, screenName, screenClassOverride);
       return null;
     });
   }
 
   Task<Void> setMinimumSessionDuration(long milliseconds) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).setMinimumSessionDuration(milliseconds);
+      FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration(milliseconds);
       return null;
     });
   }
 
   Task<Void> setSessionTimeoutDuration(long milliseconds) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).setSessionTimeoutDuration(milliseconds);
+      FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration(milliseconds);
       return null;
     });
   }
 
   Task<Void> setUserId(String id) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).setUserId(id);
+      FirebaseAnalytics.getInstance(getContext()).setUserId(id);
       return null;
     });
   }
 
   Task<Void> setUserProperty(String name, String value) {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).setUserProperty(name, value);
+      FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
       return null;
     });
   }
@@ -91,9 +97,9 @@ public class UniversalFirebaseAnalyticsModule {
   Task<Void> setUserProperties(Bundle properties) {
     return Tasks.call(() -> {
       Set<String> bundleKeys = properties.keySet();
-      FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(context);
+      FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
-      for (String bundleKey:bundleKeys) {
+      for (String bundleKey : bundleKeys) {
         firebaseAnalytics.setUserProperty(bundleKey, (String) properties.get(bundleKey));
       }
 
@@ -103,7 +109,7 @@ public class UniversalFirebaseAnalyticsModule {
 
   Task<Void> resetAnalyticsData() {
     return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(context).resetAnalyticsData();
+      FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
       return null;
     });
   }
