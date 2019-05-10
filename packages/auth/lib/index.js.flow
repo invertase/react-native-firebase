@@ -16,6 +16,7 @@
  *
  */
 
+// TODO ehesp
 import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types/index.js.flow';
 
 export interface Statics {}

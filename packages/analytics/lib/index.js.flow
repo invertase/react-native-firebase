@@ -32,9 +32,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * });
    * ```
    *
-   * @note 100 characters is the maximum length for param key names.
-   *
-   * @param name Event name must not conflict with any Reserved Events.
+   * @param name Event name must not conflict with any Reserved Events. 100 characters is the maximum length for param key names.
    * @param params Parameters to be sent and displayed with the event.
    */
   logEvent(name: string, params: { [key: string]: string }): Promise<void>;
@@ -50,9 +48,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * await firebase.analytics().setAnalyticsCollectionEnabled(false);
    * ```
    *
-   * @note Analytics collection is enabled by default.
-   *
-   * @param enabled A boolean value representing whether Analytics collection is enabled or disabled.
+   * @param enabled A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.
    */
   setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
 
@@ -65,7 +61,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
    * ```
    *
-   * @note Whilst screenClassOverride is optional, it is recommended it is
+   * > Whilst screenClassOverride is optional, it is recommended it is
    * always sent as your current class name. For example on Android it will always
    * show as 'MainActivity' if you do not specify it.
    *

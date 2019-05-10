@@ -118,7 +118,7 @@ export namespace Invites {
      * This url is a link that will launch the app if already installed or take the user to the appropriate app store
      * if not. In both cases the deep link will be available if provided using setDeepLink(Uri).
      *
-     * @warning Cannot be used with {@link invites.InviteBuilder#setCallToActionText}
+     * > Cannot be used with {@link invites.InviteBuilder#setCallToActionText}
      *
      * #### Example
      *
@@ -209,7 +209,7 @@ export namespace Invites {
     /**
      * Text shown on the email invitation for the user to accept the invitation. Default install text used if not set.
      *
-     * @warning Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.
+     * > Cannot be used with {@link invites.AndroidInviteBuilder#setEmailHtmlContent}.
      *
      * #### Example
      *

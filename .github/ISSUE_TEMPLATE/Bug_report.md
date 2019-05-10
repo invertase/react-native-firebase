@@ -44,6 +44,9 @@ Describe your issue here
 
 ### iOS
 
+<details><summary>Click To Expand</summary>
+<p>
+
 #### `ios/Podfile`:
 
 - [ ] I'm not using Pods
@@ -59,9 +62,15 @@ Describe your issue here
 // N/A
 ```
 
+</p>
+</details>
+
 ---
 
 ### Android
+
+<details><summary>Click To Expand</summary>
+<p>
 
 #### `android/build.gradle`:
 
@@ -93,10 +102,16 @@ Describe your issue here
 <!-- N/A -->
 ```
 
+</p>
+</details>
+
+
 ---
 
 ## Environment
 
+<details><summary>Click To Expand</summary>
+<p>
 
 **`react-native info` output:**
 
@@ -118,6 +133,10 @@ Describe your issue here
   - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
   - `Y/N`
+  
+</p>
+</details>
+
 
 <!-- Thanks for reading this far down ❤️  -->
 <!-- High quality, detailed issues are much easier to triage for maintainers -->

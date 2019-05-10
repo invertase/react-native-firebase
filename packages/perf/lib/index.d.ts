@@ -279,7 +279,7 @@ export namespace Perf {
      * const response = await fetch(url);
      * metric.setHttpResponseCode(response.status);
      * ```
-     * @warning This is required for every request, if you do not provide this your metric will not be captured.
+     * > This is required for every request, if you do not provide this your metric will not be captured.
      *
      *
      * @param code Value must be greater than 0. Set to null to remove. Invalid usage will be logged natively.
