@@ -37,15 +37,21 @@ public class ReactNativeFirebaseMLNaturalLanguagePackage implements ReactPackage
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    if (ReactNativeFirebaseJSON.getSharedInstance().getBooleanValue("ml_natural_language_id_model", false)) {
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_natural_language_id_model", false)) {
       modules.add(new RNFirebaseMLNaturalLanguageIdModule(reactContext));
     }
 
-    if (ReactNativeFirebaseJSON.getSharedInstance().getBooleanValue("ml_natural_language_translate_model", false)) {
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_natural_language_translate_model", false)) {
       modules.add(new RNFirebaseMLNaturalLanguageTranslateModule(reactContext));
     }
 
-    if (ReactNativeFirebaseJSON.getSharedInstance().getBooleanValue("ml_natural_language_smart_reply_model", false)) {
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_natural_language_smart_reply_model", false)) {
       modules.add(new RNFirebaseMLNaturalLanguageSmartReplyModule(reactContext));
     }
 

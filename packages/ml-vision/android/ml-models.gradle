@@ -1,7 +1,7 @@
 def mlModels = [
-  'ml_natural_language_translate_model',
-  'ml_natural_language_language_id_model',
-  'ml_natural_language_smart_reply_model',
+  'ml_vision_face_model',
+  'ml_vision_image_label_model',
+  'ml_vision_object_detection_model',
 ]
 
 dependencies {

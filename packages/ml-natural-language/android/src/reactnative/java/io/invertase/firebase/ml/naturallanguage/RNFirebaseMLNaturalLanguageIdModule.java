@@ -22,77 +22,73 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
-import com.google.firebase.ml.naturallanguage.languageid.FirebaseLanguageIdentification;
-import com.google.firebase.ml.naturallanguage.languageid.FirebaseLanguageIdentificationOptions;
 
 import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 class RNFirebaseMLNaturalLanguageIdModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MLNaturalLanguageId";
+  private static final String SERVICE_NAME = "MLNaturalLanguageId";
+  private final UniversalFirebaseMLNaturalLanguageIdModule module;
 
   RNFirebaseMLNaturalLanguageIdModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+    super(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLNaturalLanguageIdModule(reactContext, SERVICE_NAME);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/languageid/FirebaseLanguageIdentification.html#identifyLanguage(java.lang.String)
    */
   @ReactMethod
-  public void identifyLanguage(String appName, String text, ReadableMap identificationOptionsMap, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
-    FirebaseLanguageIdentificationOptions identificationOptions = getOptions(identificationOptionsMap, true);
-    FirebaseLanguageIdentification languageIdentification = naturalLanguage.getLanguageIdentification(identificationOptions);
-
-    languageIdentification.identifyLanguage(text).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        String[] errorCodeAndMessage = RNFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(task.getException());
-        rejectPromiseWithCodeAndMessage(promise, errorCodeAndMessage[0], errorCodeAndMessage[1], errorCodeAndMessage[2]);
-      }
-    });
+  public void identifyLanguage(
+    String appName,
+    String text,
+    ReadableMap identificationOptionsMap,
+    Promise promise
+  ) {
+    module
+      .identifyLanguage(appName, text, Arguments.toBundle(identificationOptionsMap))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+            task.getException());
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            errorCodeAndMessage[0],
+            errorCodeAndMessage[1],
+            errorCodeAndMessage[2]
+          );
+        }
+      });
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/languageid/FirebaseLanguageIdentification.html#identifyPossibleLanguages(java.lang.String)
    */
   @ReactMethod
-  public void identifyPossibleLanguages(String appName, String text, ReadableMap identificationOptionsMap, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
-    FirebaseLanguageIdentificationOptions identificationOptions = getOptions(identificationOptionsMap, false);
-    FirebaseLanguageIdentification languageIdentification = naturalLanguage.getLanguageIdentification(identificationOptions);
-
-    languageIdentification.identifyPossibleLanguages(text).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
-      } else {
-        String[] errorCodeAndMessage = RNFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(task.getException());
-        rejectPromiseWithCodeAndMessage(promise, errorCodeAndMessage[0], errorCodeAndMessage[1], errorCodeAndMessage[2]);
-      }
-    });
-  }
-
-  /**
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/languageid/FirebaseLanguageIdentificationOptions.html
-   */
-  private FirebaseLanguageIdentificationOptions getOptions(ReadableMap identificationOptionsMap, boolean singleLanguage) {
-    FirebaseLanguageIdentificationOptions.Builder optionsBuilder = new FirebaseLanguageIdentificationOptions.Builder();
-
-    if (identificationOptionsMap.hasKey("confidenceThreshold")) {
-      optionsBuilder.setConfidenceThreshold((float) identificationOptionsMap.getDouble("confidenceThreshold"));
-    } else {
-      if (singleLanguage)
-        optionsBuilder.setConfidenceThreshold(FirebaseLanguageIdentification.DEFAULT_IDENTIFY_LANGUAGE_CONFIDENCE_THRESHOLD);
-      else
-        optionsBuilder.setConfidenceThreshold(FirebaseLanguageIdentification.DEFAULT_IDENTIFY_POSSIBLE_LANGUAGES_CONFIDENCE_THRESHOLD);
-    }
-
-    return optionsBuilder.build();
+  public void identifyPossibleLanguages(
+    String appName,
+    String text,
+    ReadableMap identificationOptionsMap,
+    Promise promise
+  ) {
+    module
+      .identifyPossibleLanguages(appName, text, Arguments.toBundle(identificationOptionsMap))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
+        } else {
+          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+            task.getException());
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            errorCodeAndMessage[0],
+            errorCodeAndMessage[1],
+            errorCodeAndMessage[2]
+          );
+        }
+      });
   }
 }

@@ -29,9 +29,10 @@ project.ext {
       ],
 
       firebase          : [
-        mlkitVision: "20.0.0",
-        mlkitCommon: "19.0.0",
-        mlkitNaturalLanguage: "19.0.0",
+        mlkitVision                               : "20.0.0",
+        "mlModel:ml_vision_face_model"            : "17.0.2",
+        "mlModel:ml_vision_image_label_model"     : "17.0.2",
+        "mlModel:ml_vision_object_detection_model": "16.0.0",
       ],
     ],
   ])
@@ -49,6 +50,11 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
+  }
 }
 
 repositories {
@@ -58,11 +64,10 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase_app')
-  implementation "com.google.firebase:firebase-ml-common:${ReactNative.ext.getVersion("firebase", "mlkitCommon")}"
   implementation "com.google.firebase:firebase-ml-vision:${ReactNative.ext.getVersion("firebase", "mlkitVision")}"
-  implementation "com.google.firebase:firebase-ml-natural-language:${ReactNative.ext.getVersion("firebase", "mlkitNaturalLanguage")}"
-  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
+
+apply from: file("./ml-models.gradle")
 
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()

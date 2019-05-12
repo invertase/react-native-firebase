@@ -19,28 +19,29 @@ package io.invertase.firebase.ml.naturallanguage;
 
 import android.util.SparseArray;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
 import com.google.firebase.ml.naturallanguage.smartreply.FirebaseTextMessage;
 import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestion;
 import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestionResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-class UNFirebaseMLNaturalLanguageSmartReplyConversation {
-  private static final SparseArray<UNFirebaseMLNaturalLanguageSmartReplyConversation> existingConversations = new SparseArray<>();
+class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
+  private static final SparseArray<UniversalFirebaseMLNaturalLanguageSmartReplyConversation> existingConversations = new SparseArray<>();
   private List<FirebaseTextMessage> firebaseTextMessages = new ArrayList<>();
 
-  static UNFirebaseMLNaturalLanguageSmartReplyConversation getOrCreateConversation(int conversationId) {
-    UNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
-      conversationId);
+  static UniversalFirebaseMLNaturalLanguageSmartReplyConversation getOrCreateConversation(int conversationId) {
+    UniversalFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations
+      .get(
+        conversationId);
     if (existingConversation != null) return existingConversation;
-    UNFirebaseMLNaturalLanguageSmartReplyConversation newConversation = new UNFirebaseMLNaturalLanguageSmartReplyConversation();
+    UniversalFirebaseMLNaturalLanguageSmartReplyConversation newConversation = new UniversalFirebaseMLNaturalLanguageSmartReplyConversation();
     existingConversations.setValueAt(conversationId, newConversation);
     return newConversation;
   }
@@ -50,8 +51,9 @@ class UNFirebaseMLNaturalLanguageSmartReplyConversation {
   }
 
   static void clearMessages(int conversationId) {
-    UNFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations.get(
-      conversationId);
+    UniversalFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations
+      .get(
+        conversationId);
     if (existingConversation != null) {
       existingConversation.firebaseTextMessages.clear();
     }
@@ -83,28 +85,30 @@ class UNFirebaseMLNaturalLanguageSmartReplyConversation {
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
-  Task<WritableArray> getSuggestedReplies(
+  Task<List<Map<String, Object>>> getSuggestedReplies(
     FirebaseNaturalLanguage instance,
     ExecutorService executor
   ) {
-    return instance
-      .getSmartReply()
-      .suggestReplies(firebaseTextMessages)
-      .continueWith(executor, task -> {
-        WritableArray suggestedRepliesArray = Arguments.createArray();
-        SmartReplySuggestionResult suggestionResult = task.getResult();
+    return Tasks.call(executor, () -> {
+      SmartReplySuggestionResult suggestionResult = Tasks.await(
+        instance.getSmartReply().suggestReplies(firebaseTextMessages)
+      );
 
-        if (suggestionResult == null) return suggestedRepliesArray;
+      if (suggestionResult == null) return new ArrayList<>(0);
 
-        List<SmartReplySuggestion> suggestedRepliesList = suggestionResult.getSuggestions();
-        for (SmartReplySuggestion suggestion : suggestedRepliesList) {
-          WritableMap suggestionMap = Arguments.createMap();
-          suggestionMap.putString("text", suggestion.getText());
-          suggestionMap.putDouble("confidence", suggestion.getConfidence());
-          suggestedRepliesArray.pushMap(suggestionMap);
-        }
+      List<SmartReplySuggestion> suggestedRepliesListRaw = suggestionResult.getSuggestions();
+      List<Map<String, Object>> suggestedRepliesListFormatted = new ArrayList<>(
+        suggestedRepliesListRaw.size());
 
-        return suggestedRepliesArray;
-      });
+
+      for (SmartReplySuggestion suggestedReplyRaw : suggestedRepliesListRaw) {
+        Map<String, Object> suggestReplyFormatted = new HashMap<>(2);
+        suggestReplyFormatted.put("text", suggestedReplyRaw.getText());
+        suggestReplyFormatted.put("confidence", suggestedReplyRaw.getConfidence());
+        suggestedRepliesListFormatted.add(suggestReplyFormatted);
+      }
+
+      return suggestedRepliesListFormatted;
+    });
   }
 }

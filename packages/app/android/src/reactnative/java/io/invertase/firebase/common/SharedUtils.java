@@ -19,6 +19,8 @@ package io.invertase.firebase.common;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -28,6 +30,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +55,23 @@ public class SharedUtils {
 
   private static final String REACT_NATIVE_REGISTRY_CLASS = "NativeModuleRegistry";
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
+
+  public static int[] rectToIntArray(Rect rect) {
+    return new int[]{rect.top, rect.left, rect.bottom, rect.right};
+  }
+
+  /**
+   * Create a Uri from the path, defaulting to file when there is no supplied scheme
+   */
+  public static Uri getUri(String uri) {
+    Uri parsed = Uri.parse(uri);
+
+    if (parsed.getScheme() == null || parsed.getScheme().isEmpty()) {
+      return Uri.fromFile(new File(uri));
+    }
+
+    return parsed;
+  }
 
 
   public static String timestampToUTC(long timestamp) {

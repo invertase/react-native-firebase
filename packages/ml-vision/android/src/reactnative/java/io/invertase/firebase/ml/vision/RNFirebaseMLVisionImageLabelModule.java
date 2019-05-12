@@ -1,4 +1,4 @@
-package io.invertase.firebase.mlkit;
+package io.invertase.firebase.ml.vision;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -17,23 +17,14 @@ package io.invertase.firebase.mlkit;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class ReactNativeFirebaseMlkitModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Mlkit";
+public class RNFirebaseMLVisionImageLabelModule extends ReactNativeFirebaseModule {
+  private static final String TAG = "MLVision";
 
-  ReactNativeFirebaseMlkitModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionImageLabelModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 

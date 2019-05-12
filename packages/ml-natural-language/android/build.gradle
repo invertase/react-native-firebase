@@ -29,9 +29,8 @@ project.ext {
       ],
 
       firebase          : [
-        mlkitCommon      : "19.0.0",
         mlNaturalLanguage: "19.0.0",
-        "mlModel:ml_natural_language_id_model": "19.0.0",
+        "mlModel:ml_natural_language_language_id_model": "19.0.0",
         "mlModel:ml_natural_language_translate_model": "19.0.0",
         "mlModel:ml_natural_language_smart_reply_model": "19.0.0",
       ],

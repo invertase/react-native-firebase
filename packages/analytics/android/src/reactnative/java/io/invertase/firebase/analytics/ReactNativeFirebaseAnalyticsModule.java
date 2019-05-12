@@ -34,12 +34,12 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    this.module = new UniversalFirebaseAnalyticsModule(reactContext, SERVICE_NAME);
+    module = new UniversalFirebaseAnalyticsModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
-    this.module.logEvent(name, Arguments.toBundle(params)).addOnCompleteListener(task -> {
+    module.logEvent(name, Arguments.toBundle(params)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -50,7 +50,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
-    this.module.setAnalyticsCollectionEnabled(enabled).addOnCompleteListener(task -> {
+    module.setAnalyticsCollectionEnabled(enabled).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -65,7 +65,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     @Nullable String screenClassOverride,
     Promise promise
   ) {
-    this.module
+    module
       .setAnalyticsCollectionEnabled(getCurrentActivity(), screenName, screenClassOverride)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
@@ -78,7 +78,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setMinimumSessionDuration(double milliseconds, Promise promise) {
-    this.module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
+    module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -89,7 +89,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
-    this.module.setSessionTimeoutDuration((long) milliseconds).addOnCompleteListener(task -> {
+    module.setSessionTimeoutDuration((long) milliseconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -100,7 +100,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setUserId(String id, Promise promise) {
-    this.module.setUserId(id).addOnCompleteListener(task -> {
+    module.setUserId(id).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -111,7 +111,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void setUserProperty(String name, String value, Promise promise) {
-    this.module.setUserProperty(name, value).addOnCompleteListener(task -> {
+    module.setUserProperty(name, value).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -120,9 +120,10 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     });
   }
 
+
   @ReactMethod
   public void setUserProperties(ReadableMap properties, Promise promise) {
-    this.module.setUserProperties(Arguments.toBundle(properties)).addOnCompleteListener(task -> {
+    module.setUserProperties(Arguments.toBundle(properties)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -133,7 +134,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void resetAnalyticsData(Promise promise) {
-    this.module.resetAnalyticsData().addOnCompleteListener(task -> {
+    module.resetAnalyticsData().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {

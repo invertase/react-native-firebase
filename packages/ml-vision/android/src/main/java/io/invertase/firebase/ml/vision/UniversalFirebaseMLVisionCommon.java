@@ -1,10 +1,10 @@
-package io.invertase.firebase.ml.naturallanguage;
+package io.invertase.firebase.ml.vision;
 
 import com.google.firebase.ml.common.FirebaseMLException;
 
 import javax.annotation.Nullable;
 
-public class RNFirebaseMLNaturalLanguageCommon {
+public class UniversalFirebaseMLVisionCommon {
 
   static String[] getErrorCodeAndMessageFromException(@Nullable Exception possibleMLException) {
     String code = "unknown";

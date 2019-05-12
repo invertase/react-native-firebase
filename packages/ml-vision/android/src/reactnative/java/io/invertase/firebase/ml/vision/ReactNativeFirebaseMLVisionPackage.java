@@ -1,4 +1,4 @@
-package io.invertase.firebase.mlkit;
+package io.invertase.firebase.ml.vision;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -28,14 +28,33 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+
 @SuppressWarnings("unused")
-public class ReactNativeFirebaseMlkitPackage implements ReactPackage {
+public class ReactNativeFirebaseMLVisionPackage implements ReactPackage {
   @Nonnull
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseMlkitModule(reactContext));
-    modules.add(new ReactNativeFirebaseMlkitLanguageModule(reactContext));
+
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_vision_face_model", false)) {
+      modules.add(new RNFirebaseMLVisionFaceModule(reactContext));
+    }
+
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_vision_image_label_model", false)) {
+      modules.add(new RNFirebaseMLVisionImageLabelModule(reactContext));
+    }
+
+    if (ReactNativeFirebaseJSON
+      .getSharedInstance()
+      .getBooleanValue("ml_vision_object_detection_model", false)) {
+      modules.add(new RNFirebaseMLVisionObjectDetectionModule(reactContext));
+    }
+
     return modules;
   }
 

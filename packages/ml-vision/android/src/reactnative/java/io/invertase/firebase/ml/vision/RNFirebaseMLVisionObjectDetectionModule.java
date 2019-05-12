@@ -1,4 +1,4 @@
-package io.invertase.firebase.mlkit;
+package io.invertase.firebase.ml.vision;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -21,10 +21,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class ReactNativeFirebaseMlkitVisionModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MlkitVision";
+public class RNFirebaseMLVisionObjectDetectionModule extends ReactNativeFirebaseModule {
+  private static final String TAG = "MLVision";
 
-  ReactNativeFirebaseMlkitVisionModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionObjectDetectionModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 

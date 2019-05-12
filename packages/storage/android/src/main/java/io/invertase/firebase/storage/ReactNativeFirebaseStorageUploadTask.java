@@ -29,12 +29,12 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.SharedUtils;
 
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
@@ -69,19 +69,6 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
     }
 
     return map;
-  }
-
-  /**
-   * Create a Uri from the path, defaulting to file when there is no supplied scheme
-   */
-  private static Uri getUri(String uri) {
-    Uri parsed = Uri.parse(uri);
-
-    if (parsed.getScheme() == null || parsed.getScheme().isEmpty()) {
-      return Uri.fromFile(new File(uri));
-    }
-
-    return parsed;
   }
 
   private byte[] uploadStringToByteArray(String string, String format) {
@@ -213,7 +200,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
    * Put File from JavaScript
    */
   void begin(ExecutorService executor, String localFilePath, ReadableMap metadataMap) {
-    Uri fileUri = getUri(localFilePath);
+    Uri fileUri = SharedUtils.getUri(localFilePath);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, fileUri);
     uploadTask = storageReference.putFile(fileUri, metadata);
     setStorageTask(uploadTask);

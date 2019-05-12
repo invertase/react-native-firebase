@@ -20,22 +20,25 @@ package io.invertase.firebase.ml.naturallanguage;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MLNaturalLanguageSmartReply";
+  private static final String SERVICE_NAME = "MLNaturalLanguageSmartReply";
+  private final UniversalFirebaseMLNaturalLanguageSmartReplyModule module;
 
   RNFirebaseMLNaturalLanguageSmartReplyModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+    super(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLNaturalLanguageSmartReplyModule(
+      reactContext,
+      SERVICE_NAME
+    );
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
-    RNFirebaseMLNaturalLanguageSmartReplyConversation.destroyAllConversations();
+    module.onTearDown();
   }
 
   /**
@@ -43,15 +46,18 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
    */
   @ReactMethod
   public void getSuggestedReplies(String appName, int conversationId, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
-    RNFirebaseMLNaturalLanguageSmartReplyConversation conversation = RNFirebaseMLNaturalLanguageSmartReplyConversation.getOrCreateConversation(conversationId);
-    conversation.getSuggestedReplies(naturalLanguage, getExecutor()).addOnCompleteListener(task -> {
+    module.getSuggestedReplies(appName, conversationId).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
-        String[] errorCodeAndMessage = RNFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(task.getException());
-        rejectPromiseWithCodeAndMessage(promise, errorCodeAndMessage[0], errorCodeAndMessage[1], errorCodeAndMessage[2]);
+        String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+          task.getException());
+        rejectPromiseWithCodeAndMessage(
+          promise,
+          errorCodeAndMessage[0],
+          errorCodeAndMessage[1],
+          errorCodeAndMessage[2]
+        );
       }
     });
   }
@@ -60,27 +66,36 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
    */
   @ReactMethod
-  public void addLocalUserMessage(String appName, int conversationId, String message, long timestamp) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation conversation = RNFirebaseMLNaturalLanguageSmartReplyConversation.getOrCreateConversation(conversationId);
-    conversation.addLocalUserMessage(message, timestamp);
+  public void addLocalUserMessage(
+    String appName,
+    int conversationId,
+    String message,
+    long timestamp
+  ) {
+    module.addLocalUserMessage(conversationId, message, timestamp);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#public-static-firebasetextmessagecreateforremoteuserstring-messagetext,-long-timestampmillis,-string-remoteuserid
    */
   @ReactMethod
-  public void addRemoteUserMessage(String appName, int conversationId, String message, long timestamp, String remoteUserId) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation conversation = RNFirebaseMLNaturalLanguageSmartReplyConversation.getOrCreateConversation(conversationId);
-    conversation.addRemoteUserMessage(message, timestamp, remoteUserId);
+  public void addRemoteUserMessage(
+    String appName,
+    int conversationId,
+    String message,
+    long timestamp,
+    String remoteUserId
+  ) {
+    module.addRemoteUserMessage(conversationId, message, timestamp, remoteUserId);
   }
 
   @ReactMethod
   public void destroyConversation(String appName, int conversationId) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation.destroyConversation(conversationId);
+    module.destroyConversation(conversationId);
   }
 
   @ReactMethod
   public void clearMessages(String appName, int conversationId) {
-    RNFirebaseMLNaturalLanguageSmartReplyConversation.clearMessages(conversationId);
+    module.clearMessages(conversationId);
   }
 }

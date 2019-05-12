@@ -27,7 +27,10 @@ const statics = {};
 
 const namespace = 'mlkit';
 
-const nativeModuleName = 'RNFBMlkitModule';
+const nativeModuleName = 'RNFBMLModule';
+
+// TODO(salakar) figure out a JS API
+// firebase.ml().natualLanguage().languageId().detectLanguage(text)
 
 class FirebaseMlkitModule extends FirebaseModule {}
 
