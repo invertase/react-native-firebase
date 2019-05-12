@@ -18,3 +18,28 @@ dependencies {
     rootProject.logger.warn ":${project.name} skipping optional models as no firebaseJson extension found, you may be missing a firebase.json file in the root of your React Native project, or you've not installed the @react-native-firebase/app package and included it in your app build."
   }
 }
+
+def manifestModels = [
+  'ml_vision_ica_model',
+  'ml_vision_face_model',
+  'ml_vision_barcode_model',
+]
+
+def manifestModelsString = ""
+
+manifestModels.each { modelFlag ->
+  if (rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
+    def modelIdentifier = modelFlag.replace("ml_vision_", "").replace("_model", "")
+    if (manifestModelsString.length() > 0) {
+      manifestModelsString += "," + modelIdentifier
+    } else {
+      manifestModelsString += modelIdentifier
+    }
+  }
+}
+
+android {
+  defaultConfig {
+    manifestPlaceholders = [visionModels: manifestModelsString]
+  }
+}

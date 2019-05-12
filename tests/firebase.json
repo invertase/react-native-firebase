@@ -12,6 +12,11 @@
     "ml_vision_image_label_model" : true,
     "ml_vision_object_detection_model" : true,
 
+    "ml_vision_ica_model" : true,
+    "ml_vision_ocr_model" : true,
+    "ml_vision_barcode_model" : true,
+
+
     "TODO_analytics_auto_collection_enabled": true,
     "TODO_perf_auto_collection_enabled": true,
     "TODO_fiam_auto_collection_enabled": true,

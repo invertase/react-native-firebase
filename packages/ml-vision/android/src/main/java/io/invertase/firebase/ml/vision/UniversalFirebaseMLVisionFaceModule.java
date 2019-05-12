@@ -109,46 +109,55 @@ public class UniversalFirebaseMLVisionFaceModule extends UniversalFirebaseModule
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_BOTTOM)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_RIGHT) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_RIGHT)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_LEFT) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_LEFT)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EYE) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EYE)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_EYE) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_EYE)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_EAR) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_EAR)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_CHEEK) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.RIGHT_CHEEK)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_CHEEK) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.LEFT_CHEEK)))
           );
         }
+
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.NOSE_BASE) != null) {
           faceLandmarksFormatted.add(getLandmarkMap(
             Objects.requireNonNull(visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.NOSE_BASE)))

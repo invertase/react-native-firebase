@@ -22,7 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionImageLabelModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MLVision";
+  private static final String TAG = "MLVisionLabel";
 
   RNFirebaseMLVisionImageLabelModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);

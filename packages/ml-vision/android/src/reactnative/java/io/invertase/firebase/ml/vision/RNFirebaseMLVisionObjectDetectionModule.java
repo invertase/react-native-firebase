@@ -22,7 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionObjectDetectionModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MLVision";
+  private static final String TAG = "MLVisionObjectDetection";
 
   RNFirebaseMLVisionObjectDetectionModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);

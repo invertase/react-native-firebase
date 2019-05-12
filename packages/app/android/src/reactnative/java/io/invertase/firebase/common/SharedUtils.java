@@ -19,6 +19,7 @@ package io.invertase.firebase.common;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -56,8 +58,25 @@ public class SharedUtils {
   private static final String REACT_NATIVE_REGISTRY_CLASS = "NativeModuleRegistry";
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
-  public static int[] rectToIntArray(Rect rect) {
+  public static int[] rectToIntArray(@Nullable Rect rect) {
+    if (rect == null) return new int[]{};
     return new int[]{rect.top, rect.left, rect.bottom, rect.right};
+  }
+
+  public static int[] pointToIntArray(@Nullable Point point) {
+    if (point == null) return new int[]{};
+    return new int[]{point.x, point.y};
+  }
+
+  public static List<int[]> pointsToIntsList(@Nullable Point[] points) {
+    if (points == null) return new ArrayList<>();
+
+    List<int[]> pointsList = new ArrayList<>(points.length);
+    for (Point point : points) {
+      pointsList.add(pointToIntArray(point));
+    }
+
+    return pointsList;
   }
 
   /**

@@ -17,9 +17,12 @@ package io.invertase.firebase.ml.naturallanguage;
  *
  */
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+
+import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -48,7 +51,7 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
   public void getSuggestedReplies(String appName, int conversationId, Promise promise) {
     module.getSuggestedReplies(appName, conversationId).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
+        promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
       } else {
         String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
           task.getException());

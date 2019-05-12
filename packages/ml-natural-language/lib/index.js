@@ -32,6 +32,31 @@ const nativeModuleName = 'RNFBMLModule';
 // TODO(salakar) figure out a JS API
 // firebase.ml().natualLanguage().languageId().detectLanguage(text)
 
+// -- LANGUAGE_LANGUAGE_ID
+// --------------------------
+// firebase.ml().language().detectLanguageId(text)
+
+// -- LANGUAGE_SMART_REPLIES
+// --------------------------
+// firebase.ml().language().newSmartReplyConversation(): SmartReplyConversation
+//      -> SmartReplyConversation
+//          -> destroy(): void;
+//          -> clear(): void;
+//          -> getSuggestedReplies(): Promise<SuggestedReply[]>;
+//          -> addLocalUserMessage(message, timestamp = Date.now()): void;
+//          -> addRemoteUserMessage(message, timestamp = Date.now(), remoteUserId): void;
+
+// -- LANGUAGE_TRANSLATE
+// --------------------------
+// firebase.ml().language().translateText(text, options): Promise<string>;
+// firebase.ml().language().translateGetAvailableModels(): Promise<Object[]>;
+// firebase.ml().language().translateDeleteDownloadedModel(languageId: int): Promise<void>;
+// firebase.ml().language().translateDownloadRemoteModel(languageId: int, downloadConditions: Object): Promise<void>;
+
+// firebase.ml().vision().detectFacesInImage(imageUri)
+// firebase.ml().vision().detectTextInImage(imageUri)
+// firebase.ml().vision().readBarcodeFromImage(imageUri)
+
 class FirebaseMlkitModule extends FirebaseModule {}
 
 // import { SDK_VERSION } from '@react-native-firebase/mlkit';

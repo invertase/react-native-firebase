@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.invertase.firebase.ml" />
+<manifest package="io.invertase.firebase.ml"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <meta-data
+      android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+      android:value="${visionModels}" />
+  </application>
+</manifest>
