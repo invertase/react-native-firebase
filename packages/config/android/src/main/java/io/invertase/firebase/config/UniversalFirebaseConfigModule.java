@@ -32,6 +32,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.invertase.firebase.common.UniversalFirebaseModule;
@@ -77,21 +78,21 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Bundle> getConfigSettings() {
+  Task<Map<String, Object>> getConfigSettings() {
     return Tasks.call(() -> {
-      Bundle settings = new Bundle();
+      Map<String, Object> settings = new HashMap<>(3);
       FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance().getInfo();
       FirebaseRemoteConfigSettings remoteConfigSettings = remoteConfigInfo.getConfigSettings();
 
-      settings.putDouble("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
-      settings.putString("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
-      settings.putBoolean("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
+      settings.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
+      settings.put("lastFetchStatus", lastFetchStatusToString((int) remoteConfigInfo.getFetchTimeMillis()));
+      settings.put("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
 
       return settings;
     });
   }
 
-  Task<Bundle> setConfigSettings(Bundle configSettings) {
+  Task<Map<String, Object>> setConfigSettings(Bundle configSettings) {
     return Tasks.call(() -> {
       FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
       configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
@@ -107,7 +108,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Bundle> setDefaultsFromResource(String resourceName) {
+  Task<Void> setDefaultsFromResource(String resourceName) {
     return Tasks.call(() -> {
       int resourceId = getXmlResourceIdByName(resourceName);
       XmlResourceParser xmlResourceParser = null;
@@ -123,44 +124,41 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
         return null;
       }
 
-      Bundle error = new Bundle();
-      error.putString("code", "resource_not_found");
-      error.putString("message", "The specified resource name was not found.");
-      return error;
+      throw new Exception("resource_not_found");
     });
   }
 
-  Task<Bundle> getValuesByKeysPrefix(String prefix) {
+  Task<Map<String, Object>> getValuesByKeysPrefix(String prefix) {
     return Tasks.call(() -> {
       Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
-      Bundle bundle = new Bundle();
+      HashMap<String, Object> map = new HashMap<>();
 
       for (String key : keys) {
         FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig.getInstance().getValue(key);
-        bundle.putBundle(key, convertRemoteConfigValue(configValue));
+        map.put(key, convertRemoteConfigValue(configValue));
       }
 
-      return bundle;
+      return map;
     });
   }
 
-  Task<List> getKeysByPrefix(String prefix) {
+  Task<List<String>> getKeysByPrefix(String prefix) {
     return Tasks.call(() -> {
       Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
       return new ArrayList<>(keys);
     });
   }
 
-  Task<Bundle> getValue(String key) {
+  Task<Map<String, Object>> getValue(String key) {
     return Tasks.call(() -> {
       FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig.getInstance().getValue(key);
       return convertRemoteConfigValue(configValue);
     });
   }
 
-  Task<List> getValues(ArrayList keys) {
+  Task<List<Map<String, Object>>> getValues(ArrayList<Object> keys) {
     return Tasks.call(() -> {
-      ArrayList<Bundle> valuesArray = new ArrayList<>();
+      ArrayList<Map<String, Object>> valuesArray = new ArrayList<>();
 
       for (Object key : keys) {
         FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig
@@ -198,37 +196,37 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return status;
   }
 
-  private Bundle convertRemoteConfigValue(FirebaseRemoteConfigValue value) {
-    Bundle bundle = new Bundle();
+  private Map<String, Object> convertRemoteConfigValue(FirebaseRemoteConfigValue value) {
+    Map<String, Object> converted = new HashMap<>();
 
-    bundle.putString(STRING_VALUE, value.asString());
+    converted.put(STRING_VALUE, value.asString());
 
     try {
       boolean booleanValue = value.asBoolean();
-      bundle.putBoolean(BOOL_VALUE, booleanValue);
+      converted.put(BOOL_VALUE, booleanValue);
     } catch (Exception e) {
-      bundle.putString(BOOL_VALUE, null);
+      converted.put(BOOL_VALUE, null);
     }
 
     try {
       double numberValue = value.asDouble();
-      bundle.putDouble(NUMBER_VALUE, numberValue);
+      converted.put(NUMBER_VALUE, numberValue);
     } catch (Exception e) {
-      bundle.putString(NUMBER_VALUE, null);
+      converted.put(NUMBER_VALUE, null);
     }
 
     switch (value.getSource()) {
       case FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT:
-        bundle.putString(SOURCE, "default");
+        converted.put(SOURCE, "default");
         break;
       case FirebaseRemoteConfig.VALUE_SOURCE_REMOTE:
-        bundle.putString(SOURCE, "remote");
+        converted.put(SOURCE, "remote");
         break;
       default:
-        bundle.putString(SOURCE, "static");
+        converted.put(SOURCE, "static");
     }
 
-    return bundle;
+    return converted;
   }
 
 }

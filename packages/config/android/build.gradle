@@ -63,8 +63,6 @@ dependencies {
   api project(':@react-native-firebase_app')
   implementation "com.google.firebase:firebase-config:${ReactNative.ext.getVersion("firebase", "config")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
-  compile project(path: ':@react-native-firebase_analytics')
-  implementation 'org.jetbrains:annotations:15.0'
 }
 
 ReactNative.shared.applyPackageVersion()

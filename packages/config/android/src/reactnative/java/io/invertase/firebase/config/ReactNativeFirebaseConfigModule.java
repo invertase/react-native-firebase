@@ -17,8 +17,6 @@ package io.invertase.firebase.config;
  *
  */
 
-import android.os.Bundle;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,6 +25,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -78,7 +77,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void getConfigSettings(Promise promise) {
     module.getConfigSettings().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromBundle(Objects.requireNonNull(task.getResult())));
+        promise.resolve(Arguments.makeNativeMap(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -89,7 +88,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setConfigSettings(ReadableMap configSettings, Promise promise) {
     module.setConfigSettings(Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromBundle(Objects.requireNonNull(task.getResult())));
+        promise.resolve(Arguments.makeNativeMap(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -111,14 +110,18 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setDefaultsFromResource(String resourceName, Promise promise) {
     module.setDefaultsFromResource(resourceName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        Bundle error = task.getResult();
-
-        if (error == null) {
-          promise.resolve(null);
-        } else {
-          rejectPromiseWithCodeAndMessage(promise, error.getString("code"), error.getString("message"));
-        }
+        promise.resolve(null);
       } else {
+        Exception exception = task.getException();
+
+        if (exception != null && exception.getMessage().equals("resource_not_found")) {
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            "resource_not_found",
+            "The specified resource name was not found."
+          );
+        }
+
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
     });
@@ -129,9 +132,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void getValuesByKeysPrefix(String prefix, Promise promise) {
     module.getValuesByKeysPrefix(prefix).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(
-          Arguments.fromBundle(Objects.requireNonNull(task.getResult()))
-        );
+        promise.resolve(Arguments.makeNativeMap(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -157,7 +158,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     module.getValue(key).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(
-          Arguments.fromBundle(Objects.requireNonNull(task.getResult()))
+          Arguments.makeNativeMap(task.getResult())
         );
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
