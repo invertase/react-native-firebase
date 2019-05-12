@@ -20,63 +20,59 @@ package io.invertase.firebase.iid;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseIidModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Iid";
+  private static final String SERVICE_NAME = "Iid";
+  private final UniversalFirebaseIidModule module;
 
   ReactNativeFirebaseIidModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+    super(reactContext, SERVICE_NAME);
+    module = new UniversalFirebaseIidModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
   public void get(String appName, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
-    try {
-      String id = FirebaseInstanceId.getInstance(firebaseApp).getId();
-      promise.resolve(id);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+    module.get(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
   }
 
   @ReactMethod
   public void getToken(String appName, String authorizedEntity, String scope, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
-    try {
-      String token = FirebaseInstanceId.getInstance(firebaseApp).getToken(authorizedEntity, scope);
-      promise.resolve(token);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+    module.getToken(appName, authorizedEntity, scope).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
   }
 
   @ReactMethod
   public void delete(String appName, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
-    try {
-      FirebaseInstanceId.getInstance(firebaseApp).deleteInstanceId();
-      promise.resolve(null);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+    module.delete(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
   }
 
   @ReactMethod
   public void deleteToken(String appName, String authorizedEntity, String scope, Promise promise) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-
-    try {
-      FirebaseInstanceId.getInstance(firebaseApp).deleteToken(authorizedEntity, scope);
-      promise.resolve(null);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+    module.deleteToken(appName, authorizedEntity, scope).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
   }
 }
