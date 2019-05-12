@@ -27,6 +27,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
 
+import java.util.Objects;
+
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
@@ -55,7 +57,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
-        if (task.getException().getCause() instanceof FirebaseRemoteConfigFetchThrottledException) {
+        if (Objects.requireNonNull(task.getException()).getCause() instanceof FirebaseRemoteConfigFetchThrottledException) {
           rejectPromiseWithCodeAndMessage(
             promise,
             "throttled",
@@ -76,7 +78,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void getConfigSettings(Promise promise) {
     module.getConfigSettings().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromBundle(task.getResult()));
+        promise.resolve(Arguments.fromBundle(Objects.requireNonNull(task.getResult())));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -87,7 +89,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setConfigSettings(ReadableMap configSettings, Promise promise) {
     module.setConfigSettings(Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromBundle(task.getResult()));
+        promise.resolve(Arguments.fromBundle(Objects.requireNonNull(task.getResult())));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -128,7 +130,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     module.getValuesByKeysPrefix(prefix).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(
-          Arguments.fromBundle(task.getResult())
+          Arguments.fromBundle(Objects.requireNonNull(task.getResult()))
         );
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
@@ -142,7 +144,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     module.getKeysByPrefix(prefix).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(
-          Arguments.fromList(task.getResult())
+          Arguments.fromList(Objects.requireNonNull(task.getResult()))
         );
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
@@ -155,7 +157,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     module.getValue(key).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(
-          Arguments.fromBundle(task.getResult())
+          Arguments.fromBundle(Objects.requireNonNull(task.getResult()))
         );
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
@@ -168,7 +170,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     module.getValues(keys.toArrayList()).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(
-          Arguments.fromList(task.getResult())
+          Arguments.fromList(Objects.requireNonNull(task.getResult()))
         );
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
