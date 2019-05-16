@@ -173,7 +173,10 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
       appsList.add(RCTConvertFirebase.firebaseAppToMap(app));
     }
 
-    constants.put("apps", appsList);
+    constants.put("NATIVE_FIREBASE_APPS", appsList);
+
+    constants.put("FIREBASE_RAW_JSON", ReactNativeFirebaseJSON.getSharedInstance().getRawJSON());
+
     return constants;
   }
 }

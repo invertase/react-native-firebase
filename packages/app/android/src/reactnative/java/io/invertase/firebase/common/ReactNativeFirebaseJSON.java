@@ -58,6 +58,10 @@ public class ReactNativeFirebaseJSON {
     return jsonObject.optString(key, defaultValue);
   }
 
+  public String getRawJSON() {
+    return BuildConfig.FIREBASE_JSON_RAW;
+  }
+
   public WritableMap getAll() {
     WritableMap writableMap = Arguments.createMap();
 

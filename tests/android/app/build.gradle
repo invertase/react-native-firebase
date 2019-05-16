@@ -35,7 +35,9 @@ def firebasePackages = [
 
 android {
   compileSdkVersion 28
-
+  aaptOptions {
+    noCompress "tflite"
+  }
   defaultConfig {
     applicationId "com.invertase.testing"
     minSdkVersion 18

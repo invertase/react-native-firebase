@@ -48,11 +48,11 @@ export function setOnAppDestroy(fn) {
  */
 export function initializeNativeApps() {
   const nativeModule = getAppModule();
-  const { apps } = nativeModule;
+  const { NATIVE_FIREBASE_APPS } = nativeModule;
 
-  if (apps && apps.length) {
-    for (let i = 0; i < apps.length; i++) {
-      const { appConfig, options } = apps[i];
+  if (NATIVE_FIREBASE_APPS && NATIVE_FIREBASE_APPS.length) {
+    for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {
+      const { appConfig, options } = NATIVE_FIREBASE_APPS[i];
       const { name } = appConfig;
       APP_REGISTRY[name] = new FirebaseApp(
         options,

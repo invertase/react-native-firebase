@@ -15,25 +15,23 @@
  *
  */
 
-describe('mlkit()', () => {
+describe('mlKitLanguage()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.mlkit);
-      app.mlkit().app.should.equal(app);
+      should.exist(app.mlKitLanguage);
+      app.mlKitLanguage().app.should.equal(app);
     });
 
-    // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
-      firebase.mlkit().app.name.should.equal('[DEFAULT]');
-
+    it('supports multiple apps', async () => {
+      firebase.mlKitLanguage().app.name.should.equal('[DEFAULT]');
       firebase
-        .mlkit(firebase.app('secondaryFromNative'))
+        .mlKitLanguage(firebase.app('secondaryFromNative'))
         .app.name.should.equal('secondaryFromNative');
 
       firebase
         .app('secondaryFromNative')
-        .mlkit()
+        .mlKitLanguage()
         .app.name.should.equal('secondaryFromNative');
     });
   });

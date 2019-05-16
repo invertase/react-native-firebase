@@ -171,7 +171,7 @@ class UniversalFirebaseMLNaturalLanguageTranslateModule extends UniversalFirebas
     for (Integer language : languages) {
       languagesMap.put(FirebaseTranslateLanguage.languageCodeForLanguage(language), language);
     }
-    constantsMap.put("LANGUAGES", languagesMap);
+    constantsMap.put("TRANSLATE_LANGUAGES", languagesMap);
     return constantsMap;
   }
 }

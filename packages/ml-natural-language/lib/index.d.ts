@@ -26,22 +26,22 @@ import {
  *
  * #### Example 1
  *
- * Access the firebase export from the `mlkit` package:
+ * Access the firebase export from the `mlKitLanguage` package:
  *
  * ```js
- * import { firebase } from '@react-native-firebase/mlkit';
+ * import { firebase } from '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlkit().X
+ * // firebase.mlKitLanguage().X
  * ```
  *
  * #### Example 2
  *
- * Using the default export from the `mlkit` package:
+ * Using the default export from the `mlKitLanguage` package:
  *
  * ```js
- * import mlkit from '@react-native-firebase/mlkit';
+ * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
  *
- * // mlkit().X
+ * // mlKitLanguage().X
  * ```
  *
  * #### Example 3
@@ -50,14 +50,14 @@ import {
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
- * import '@react-native-firebase/mlkit';
+ * import '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlkit().X
+ * // firebase.mlKitLanguage().X
  * ```
  *
- * @firebase mlkit
+ * @firebase mlKitLanguage
  */
-export namespace Mlkit {
+export namespace MlKitLanguage {
   export interface Statics {}
 
   /**
@@ -70,7 +70,7 @@ export namespace Mlkit {
    * Get the ML Kit service for the default app:
    *
    * ```js
-   * const defaultAppMLKit = firebase.mlkit();
+   * const defaultAppMLKit = firebase.mlKitLanguage();
    * ```
    */
   export class Module extends ReactNativeFirebaseModule {
@@ -78,7 +78,7 @@ export namespace Mlkit {
   }
 }
 
-declare module '@react-native-firebase/mlkit' {
+declare module '@react-native-firebase/ml-natural-language' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
@@ -86,24 +86,24 @@ declare module '@react-native-firebase/mlkit' {
   /**
    * @example
    * ```js
-   * import { firebase } from '@react-native-firebase/mlkit';
-   * firebase.mlkit().X(...);
+   * import { firebase } from '@react-native-firebase/ml-natural-language';
+   * firebase.mlKitLanguage().X(...);
    * ```
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const MlkitDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Mlkit.Module,
-    Mlkit.Statics
+  const MlKitLanguageDefaultExport: ReactNativeFirebaseModuleAndStatics<
+    MlKitLanguage.Module,
+    MlKitLanguage.Statics
   >;
   /**
    * @example
    * ```js
-   * import mlkit from '@react-native-firebase/mlkit';
-   * mlkit().X(...);
+   * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
+   * mlKitLanguage().X(...);
    * ```
    */
-  export default MlkitDefaultExport;
+  export default MlKitLanguageDefaultExport;
 }
 
 /**
@@ -112,18 +112,18 @@ declare module '@react-native-firebase/mlkit' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * Mlkit
+     * MlKitLanguage
      */
-    mlkit: ReactNativeFirebaseModuleAndStatics<
-      Mlkit.Module,
-      Mlkit.Statics
+    mlKitLanguage: ReactNativeFirebaseModuleAndStatics<
+      MlKitLanguage.Module,
+      MlKitLanguage.Statics
     >;
   }
 
   interface FirebaseApp {
     /**
-     * Mlkit
+     * MlKitLanguage
      */
-    mlkit(): Mlkit.Module;
+    mlKitLanguage(): MlKitLanguage.Module;
   }
 }

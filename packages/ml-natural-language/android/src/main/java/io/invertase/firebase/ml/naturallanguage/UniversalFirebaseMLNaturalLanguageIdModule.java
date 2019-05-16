@@ -70,7 +70,7 @@ class UniversalFirebaseMLNaturalLanguageIdModule extends UniversalFirebaseModule
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/languageid/FirebaseLanguageIdentification.html#identifyPossibleLanguages(java.lang.String)
    */
-  public Task<List<Map<String, Object>>> identifyPossibleLanguages(
+  public Task<List<Bundle>> identifyPossibleLanguages(
     String appName,
     String text,
     Bundle identificationOptionsBundle
@@ -88,17 +88,13 @@ class UniversalFirebaseMLNaturalLanguageIdModule extends UniversalFirebaseModule
       List<IdentifiedLanguage> languagesRaw = Tasks.await(languageIdentification.identifyPossibleLanguages(
         text));
 
-      List<Map<String, Object>> formattedLanguages = new ArrayList<>(languagesRaw.size());
+      List<Bundle> formattedLanguages = new ArrayList<>(languagesRaw.size());
 
 
       for (IdentifiedLanguage identifiedLanguage : languagesRaw) {
-        Map<String, Object> formattedLanguage = new HashMap<>(3);
-        formattedLanguage.put(
-          "language",
-          FirebaseTranslateLanguage.languageForLanguageCode(identifiedLanguage.getLanguageCode())
-        );
-        formattedLanguage.put("languageCode", identifiedLanguage.getLanguageCode());
-        formattedLanguage.put("confidence", identifiedLanguage.getLanguageCode());
+        Bundle formattedLanguage = new Bundle(2);
+        formattedLanguage.putString("language", identifiedLanguage.getLanguageCode());
+        formattedLanguage.putFloat("confidence", identifiedLanguage.getConfidence());
         formattedLanguages.add(formattedLanguage);
       }
 

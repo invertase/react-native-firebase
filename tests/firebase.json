@@ -4,7 +4,7 @@
     "crashlytics_debug_enabled": true,
     "crashlytics_auto_collection_enabled": true,
 
-    "ml_natural_language_language_id_model" : false,
+    "ml_natural_language_language_id_model" : true,
     "ml_natural_language_translate_model" : true,
     "ml_natural_language_smart_reply_model" : true,
 

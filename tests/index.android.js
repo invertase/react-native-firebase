@@ -1,1 +1,1 @@
-require('./app');
+require('./app.smartreply');

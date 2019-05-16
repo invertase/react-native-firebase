@@ -22,12 +22,17 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import version from './version';
+import SmartReplyConversation from './SmartReplyConversation';
 
 const statics = {};
 
-const namespace = 'mlkit';
+const namespace = 'mlKitLanguage';
 
-const nativeModuleName = 'RNFBMLModule';
+const nativeModuleName = [
+  'RNFBMLNaturalLanguageIdModule',
+  'RNFBMLNaturalLanguageTranslateModule',
+  'RNFBMLNaturalLanguageSmartReplyModule',
+];
 
 // TODO(salakar) figure out a JS API
 // firebase.ml().natualLanguage().languageId().detectLanguage(text)
@@ -48,34 +53,57 @@ const nativeModuleName = 'RNFBMLModule';
 
 // -- LANGUAGE_TRANSLATE
 // --------------------------
-// firebase.ml().language().translateText(text, options): Promise<string>;
-// firebase.ml().language().translateGetAvailableModels(): Promise<Object[]>;
-// firebase.ml().language().translateDeleteDownloadedModel(languageId: int): Promise<void>;
-// firebase.ml().language().translateDownloadRemoteModel(languageId: int, downloadConditions: Object): Promise<void>;
+// firebase.mlKitLanguage().translate().translateText(text, options);
+// firebase.mlKitVision();
+// firebase.mlVision();
+// firebase.mlKitLanguage().translateText(text, options): Promise<string>;
+// firebase.mlKitLanguage().translateGetAvailableModels(): Promise<Object[]>;
+// firebase.mlKitLanguage().translateDeleteDownloadedModel(languageId: int): Promise<void>;
+// firebase.mlKitLanguage().translateDownloadRemoteModel(languageId: int, downloadConditions: Object): Promise<void>;
 
 // firebase.ml().vision().detectFacesInImage(imageUri)
 // firebase.ml().vision().detectTextInImage(imageUri)
 // firebase.ml().vision().readBarcodeFromImage(imageUri)
 
-class FirebaseMlkitModule extends FirebaseModule {}
+class FirebaseMlKitLanguageModule extends FirebaseModule {
+  // --------------------------
+  // -- LANGUAGE_LANGUAGE_ID
+  // --------------------------
+
+  identifyLanguage(text, options = {}) {
+    return this.native.identifyLanguage(text, options);
+  }
+
+  identifyPossibleLanguages(text, options = {}) {
+    return this.native.identifyPossibleLanguages(text, options);
+  }
+
+  // --------------------------
+  // -- SMART_REPLIES
+  // --------------------------
+
+  newSmartReplyConversation() {
+    return new SmartReplyConversation(this.native);
+  }
+}
 
 // import { SDK_VERSION } from '@react-native-firebase/mlkit';
 export const SDK_VERSION = version;
 
-// import mlkit from '@react-native-firebase/mlkit';
-// mlkit().X(...);
+// import mlKitLanguage from '@react-native-firebase/mlkit';
+// mlKitLanguage().X(...);
 export default createModuleNamespace({
   statics,
   version,
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
-  ModuleClass: FirebaseMlkitModule,
+  ModuleClass: FirebaseMlKitLanguageModule,
 });
 
-// import mlkit, { firebase } from '@react-native-firebase/mlkit';
-// mlkit().X(...);
-// firebase.mlkit().X(...);
+// import mlKitLanguage, { firebase } from '@react-native-firebase/mlkit';
+// mlKitLanguage().X(...);
+// firebase.mlKitLanguage().X(...);
 export const firebase = getFirebaseRoot();

@@ -17,6 +17,7 @@ package io.invertase.firebase.ml.naturallanguage;
  *
  */
 
+import android.os.Bundle;
 import android.util.SparseArray;
 
 import com.google.android.gms.tasks.Task;
@@ -27,9 +28,7 @@ import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestion;
 import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestionResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
@@ -38,11 +37,11 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
 
   static UniversalFirebaseMLNaturalLanguageSmartReplyConversation getOrCreateConversation(int conversationId) {
     UniversalFirebaseMLNaturalLanguageSmartReplyConversation existingConversation = existingConversations
-      .get(
-        conversationId);
+      .get(conversationId);
     if (existingConversation != null) return existingConversation;
+
     UniversalFirebaseMLNaturalLanguageSmartReplyConversation newConversation = new UniversalFirebaseMLNaturalLanguageSmartReplyConversation();
-    existingConversations.setValueAt(conversationId, newConversation);
+    existingConversations.put(conversationId, newConversation);
     return newConversation;
   }
 
@@ -85,9 +84,9 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
-  Task<List<Map<String, Object>>> getSuggestedReplies(
-    FirebaseNaturalLanguage instance,
-    ExecutorService executor
+  Task<List<Bundle>> getSuggestedReplies(
+    ExecutorService executor,
+    FirebaseNaturalLanguage instance
   ) {
     return Tasks.call(executor, () -> {
       SmartReplySuggestionResult suggestionResult = Tasks.await(
@@ -97,14 +96,14 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
       if (suggestionResult == null) return new ArrayList<>(0);
 
       List<SmartReplySuggestion> suggestedRepliesListRaw = suggestionResult.getSuggestions();
-      List<Map<String, Object>> suggestedRepliesListFormatted = new ArrayList<>(
+      List<Bundle> suggestedRepliesListFormatted = new ArrayList<>(
         suggestedRepliesListRaw.size());
 
 
       for (SmartReplySuggestion suggestedReplyRaw : suggestedRepliesListRaw) {
-        Map<String, Object> suggestReplyFormatted = new HashMap<>(2);
-        suggestReplyFormatted.put("text", suggestedReplyRaw.getText());
-        suggestReplyFormatted.put("confidence", suggestedReplyRaw.getConfidence());
+        Bundle suggestReplyFormatted = new Bundle(2);
+        suggestReplyFormatted.putString("text", suggestedReplyRaw.getText());
+        suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
         suggestedRepliesListFormatted.add(suggestReplyFormatted);
       }
 

@@ -18,6 +18,7 @@ package io.invertase.firebase.ml.naturallanguage;
  */
 
 import android.content.Context;
+import android.os.Bundle;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -25,7 +26,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.Executors;
 
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
@@ -44,12 +45,15 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
-  public Task<List<Map<String, Object>>> getSuggestedReplies(String appName, int conversationId) {
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
-    UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
-      .getOrCreateConversation(conversationId);
-    return conversation.getSuggestedReplies(naturalLanguage, getExecutor());
+  public Task<List<Bundle>> getSuggestedReplies(String appName, int conversationId) {
+    return Tasks.call(getExecutor(), () -> {
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
+      UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
+        .getOrCreateConversation(conversationId);
+      return Tasks.await(conversation.getSuggestedReplies(Executors.newSingleThreadExecutor(), naturalLanguage));
+    });
+
   }
 
   /**
@@ -60,7 +64,7 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
     String message,
     long timestamp
   ) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
         .getOrCreateConversation(conversationId);
       conversation.addLocalUserMessage(message, timestamp);
@@ -77,7 +81,7 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
     long timestamp,
     String remoteUserId
   ) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
         .getOrCreateConversation(conversationId);
       conversation.addRemoteUserMessage(message, timestamp, remoteUserId);
@@ -86,14 +90,14 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
   }
 
   public Task<Void> destroyConversation(int conversationId) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       UniversalFirebaseMLNaturalLanguageSmartReplyConversation.destroyConversation(conversationId);
       return null;
     });
   }
 
   public Task<Void> clearMessages(int conversationId) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       UniversalFirebaseMLNaturalLanguageSmartReplyConversation.clearMessages(conversationId);
       return null;
     });

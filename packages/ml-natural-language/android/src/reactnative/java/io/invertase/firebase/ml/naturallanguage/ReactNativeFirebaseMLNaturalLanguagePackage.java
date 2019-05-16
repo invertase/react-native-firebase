@@ -39,7 +39,7 @@ public class ReactNativeFirebaseMLNaturalLanguagePackage implements ReactPackage
 
     if (ReactNativeFirebaseJSON
       .getSharedInstance()
-      .getBooleanValue("ml_natural_language_id_model", false)) {
+      .getBooleanValue("ml_natural_language_language_id_model", false)) {
       modules.add(new RNFirebaseMLNaturalLanguageIdModule(reactContext));
     }
 
