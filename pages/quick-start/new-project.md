@@ -21,7 +21,7 @@ npx @react-native-community/cli@next init --template=@react-native-firebase/temp
 
 > Substitute `<myProjectName>` for the name of your new project.
 
-This will create a new React Native project in a folder called `<myProjectName>` with the `@react-react-native/app` package pre installed.
+This will create a new React Native project in a folder called `<myProjectName>`, with the java package name 'com.<myProjectName>' with the `@react-react-native/app` package pre installed.
 
 ## Next
 
