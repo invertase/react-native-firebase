@@ -58,11 +58,6 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyConversation {
     }
   }
 
-  static void destroyAllConversations() {
-    existingConversations.clear();
-  }
-
-
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
    */

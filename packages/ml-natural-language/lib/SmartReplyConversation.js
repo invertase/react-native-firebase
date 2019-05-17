@@ -18,28 +18,26 @@
 let id = 0;
 
 export default class SmartReplyConversation {
-  constructor(nativeModule) {
+  constructor(nativeModule, messageLimit) {
     this.id = id++;
+    this.messages = [];
     this.native = nativeModule;
+    this.messageLimit = messageLimit || 10;
   }
 
-  addLocalUserMessage(message, timestamp = Date.now()) {
-    return this.native.addLocalUserMessage(this.id, message, timestamp);
+  addLocalUserMessage(message, timestamp) {
+    this.messages.push([message, timestamp || Date.now()]);
   }
 
-  addRemoteUserMessage(message, timestamp = Date.now(), remoteUserId) {
-    return this.native.addRemoteUserMessage(this.id, message, timestamp, remoteUserId);
+  addRemoteUserMessage(message, timestamp, remoteUserId) {
+    this.messages.push([message, timestamp || Date.now(), remoteUserId]);
   }
 
   getSuggestedReplies() {
-    return this.native.getSuggestedReplies(this.id);
+    return this.native.getSuggestedReplies(this.id, this.messages);
   }
 
-  destroy() {
-    return this.native.destroyConversation(this.id);
-  }
-
-  clear() {
-    return this.native.clearMessages(this.id);
+  reset() {
+    this.messages = [];
   }
 }

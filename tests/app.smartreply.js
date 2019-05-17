@@ -43,10 +43,6 @@ class Root extends Component {
     suggestions: [],
   };
 
-  constructor(props) {
-    super(props);
-  }
-
   onQuickReply = replies => {
     const createdAt = new Date();
     if (replies.length === 1) {
