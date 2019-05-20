@@ -8,12 +8,15 @@ target 'HelloWorld' do
   # TODO: remove after RN >=0.60
   react_native_path = "../node_modules/react-native"
   pod 'React', :path => "#{react_native_path}", :subspecs => [
+    # add more subspecs as needed, see: https://github.com/facebook/react-native/blob/0.59-stable/React.podspec
     'Core',
     'CxxBridge',
     'DevSupport',
     'RCTText',
     'RCTNetwork',
     'RCTImage',
+    'RCTBlob',
+    'RCTAnimation',
     'RCTWebSocket',
   ]
 
