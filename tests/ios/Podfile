@@ -18,11 +18,13 @@ target 'testing' do
     'RCTWebSocket',
   ]
 
+  
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
   pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
   pod 'Jet', :path => '../node_modules/jet/ios'
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
 
   react_native_firebase!
 end
