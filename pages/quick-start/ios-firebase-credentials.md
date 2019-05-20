@@ -1,16 +1,17 @@
 ---
 title: Adding Firebase credentials to your iOS app
-description: Firebase provides a google-services.json file containing your Firebase project credentials. Learn how to add this to your React Native project.
+description: Firebase provides a GoogleService-Info.plist file containing your Firebase project credentials. Learn how to add this to your React Native project.
 ---
 
-# Adding Firebase credentials to your Android app
+# Adding Firebase credentials to your iOS app
 
-Firebase provides a `GoogleService-Info.plist` file containing a set of credentials for iOS devices. 
-React Native Firebase uses this file to ensure any connection to a Firebase project is genuine. 
+The Firebase console provides a `GoogleService-Info.plist` file containing a set of credentials for iOS devices to use when authenticating with your Firebase project. 
+
+We'll quickly walk through the process of retrieving this file and installing it into your iOS project.
 
 ## Generating the credentials
 
-The credential file is generated automatically from the Firebase [console](https://console.firebase.google.com/).
+The credential file can be generated from the Firebase [console](https://console.firebase.google.com/):
 
 - Select your Firebase project.
 - Go to the general project settings: 'Project settings' -> 'General'.
@@ -45,21 +46,22 @@ If using Pods, open the `ios/{projectName}.xcworkspace` file, otherwise open the
 At the top of the following file, add:
 
 **`ios/{projectName}/AppDelegate.m`**:
-```objecttivec
-@import Firebase.h;
+```objectivec
+@import Firebase;
 ```
 
-Add the following line to the file:
+Add the following lines to the file:
 
 ```objectivec{4-6}
 @implementation AppDelegate
-
+// ...
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([FIRApp defaultApp] == nil) {
       [FIRApp configure];
     }
     // ...
 }
+// ...
 ```
 
 ## Next
