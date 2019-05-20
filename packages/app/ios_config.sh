@@ -85,7 +85,7 @@ for plist in ${_TARGET_PLIST} ${_DSYM_PLIST} ; do
       setPlistValue ${_PLIST_ENTRY_KEYS[$i]} ${_PLIST_ENTRY_TYPES[$i]} ${_PLIST_ENTRY_VALUES[$i]} ${plist}
     done
   else
-    echo "warning:   A plist file was not found"
+    echo "warning:   A Info.plist build output file was not found (${plist})"
   fi
 done
 
