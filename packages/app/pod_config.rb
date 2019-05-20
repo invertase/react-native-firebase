@@ -15,46 +15,49 @@
 #
 
 require 'json'
-
-class String
-  def red;            "\e[31m#{self}\e[0m" end
-  def green;          "\e[32m#{self}\e[0m" end
-  def brown;          "\e[33m#{self}\e[0m" end
-  def cyan;           "\e[36m#{self}\e[0m" end
-  def gray;           "\e[37m#{self}\e[0m" end
-  def bold;           "\e[1m#{self}\e[22m" end
-  def underline;      "\e[4m#{self}\e[24m" end
-end
+require 'pathname'
 
 def react_native_firebase!(config = {})
   react_native_firebase_path = config.fetch(:react_native_firebase_path, '../node_modules/@react-native-firebase')
-  known_firebase_modules = %w(app auth analytics config crashlytics fiam functions firestore iid invites perf utils storage)
+  discovered_firebase_modules = Pathname.new(react_native_firebase_path).children.select(&:directory?).sort
 
-  # TODO(salakar): validate versions / set pod versions
-  app_package = JSON.parse(File.read("#{react_native_firebase_path}/#{known_firebase_modules[0]}/package.json"))
-  app_package_version = app_package['version']
+  app_package = JSON.parse(File.read(File.join(react_native_firebase_path, 'app', 'package.json')))
+  app_version = app_package['version']
 
-  puts "Using React Native Firebase version '#{app_package_version}'".cyan
-  puts " -> Detecting Firebase modules...".cyan
+  Pod::UI.puts "Using React Native Firebase version '#{app_version}'"
+  Pod::UI.puts ' -> Detecting Firebase modules...'
 
-  known_firebase_modules.each {|firebase_module|
-    firebase_module_name = firebase_module.slice(0, 1).capitalize + firebase_module.slice(1..-1)
-    firebase_module_pod = "RNFB#{firebase_module_name}"
-    firebase_module_dir = "#{react_native_firebase_path}/#{firebase_module}"
-    firebase_module_build_script = "#{react_native_firebase_path}/#{firebase_module}/ios_config.sh"
+  discovered_firebase_modules.each do |module_dir|
+    module_name = File.basename(module_dir)
+    module_podspec_name = "RNFB#{module_name.capitalize}"
+    next if %w[private-tests-helpers app-types template common].include? module_name
 
-    if File.directory?(firebase_module_dir) then
-      pod firebase_module_pod, :path => "#{firebase_module_dir}/ios"
+    module_podspec_path = File.join(module_dir, "#{module_podspec_name}.podspec")
+    next unless File.exist?(module_podspec_path)
 
-      if File.exist?(firebase_module_build_script) then
-        puts "    ✓ #{firebase_module_name} (+ build script)".green
-        script_phase :name => "RNFB #{firebase_module_name} Build Script", :script => File.read(firebase_module_build_script), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
-      else
-        puts "    ✓ #{firebase_module_name}".green
-      end
-
-    else
-      puts "    x #{firebase_module_name}".brown
+    module_spec = Pod::Specification.from_file(module_podspec_path)
+    next if current_target_definition.dependencies.find do |existing_dep|
+      existing_dep.name.split('/').first == module_spec.name
     end
-  }
+
+
+    pod module_spec.name, :path => module_dir
+
+    module_build_script = File.join(module_dir, 'ios_config.sh')
+    module_package_json = JSON.parse(File.read(File.join(module_dir, 'package.json')))
+    module_version = module_package_json['version']
+
+    if module_version != app_version
+      Pod::UI.warn "Firebase #{module_name} has a different version than the Core/App Firebase module:"
+      Pod::UI.warn "  -> Found #{module_version} but expected #{app_version}"
+      Pod::UI.warn '  -> Mixing versions is not recommended and may cause some incompatibility issues'
+    end
+
+    if File.exist?(module_build_script)
+      Pod::UI.puts "    ✓ Discovered '#{module_name}' (+ build script)"
+      script_phase :name => "RNFB #{module_name} Build Script", :script => File.read(module_build_script), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
+    else
+      Pod::UI.puts "    ✓ Discovered '#{module_name}'"
+    end
+  end
 end
