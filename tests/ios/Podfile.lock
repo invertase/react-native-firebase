@@ -351,7 +351,8 @@ EXTERNAL SOURCES:
     :path: !ruby/object:Pathname
     path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
-    :path: "../node_modules/@react-native-firebase/app"
+    :path: !ruby/object:Pathname
+    path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
     :path: !ruby/object:Pathname
     path: "../node_modules/@react-native-firebase/auth"
@@ -419,20 +420,20 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  RNFBAnalytics: 08c3f6d3b6ef42a69997efd14d4bb9f466dcc277
-  RNFBApp: 837d9ca65b7de07424405ba29a4d713b0a671ff9
-  RNFBAuth: 6a55c3686fce8a49e74c53b0a5801a08530b7af6
-  RNFBCrashlytics: 53064f99f95afffde0030996caf364051784bc90
-  RNFBFiam: 14f108517d006ac68481a4e48ae3c870ab55973e
-  RNFBFirestore: 22109f341a23cb0768d1de0548f20df4de8457d5
-  RNFBFunctions: 2ccab71052653272f1e515d5505c0513738fe6c9
-  RNFBIid: 856c8e6c00e8035806951b7291ec73a4a84d9881
-  RNFBInvites: 3f8d22b16df8d0d91fd76adc216270306f470496
-  RNFBPerf: a6f4618cec0fc86a1bff85482ff5e4431089e94a
-  RNFBStorage: 0a2124511b1079322a332b2b841eba1aacc39ff6
-  RNFBUtils: 5de1e5b225a129aef0438961f4059df1509d6a0a
+  RNFBAnalytics: e03359f6447302423ec6e87a41495de050944feb
+  RNFBApp: 7482cbe2a041c3072d57e4288ad74d1e9e7957b8
+  RNFBAuth: f9344d91dd699e8951325de8c29f2cf7652ae614
+  RNFBCrashlytics: a1e22e638d6840743ac40e682e3db2f32ec357c5
+  RNFBFiam: 74600d36ce77236d16505da0b5b53238990d7baa
+  RNFBFirestore: 0f1d858a79bfb252ac810b72617ca124ac29a999
+  RNFBFunctions: c808f7fb99fe5e5163eb8394752652c001872321
+  RNFBIid: 2abac0da11857bfb92e7fac7edebec2cc3244d0b
+  RNFBInvites: 501a697c63b517c1fc7d36a397552501cd7bfbbd
+  RNFBPerf: 31fe96325bd659fe0369d37aa94bcb409fdab5c6
+  RNFBStorage: 38546e2bd728e2910ac2b17c3640fdf2c64fd6d8
+  RNFBUtils: 2aa8a9a1357fdf13e264f7b139cd5831f67f0fd6
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 02f715d793c3e2604c56af92bf8efe0192c9f84e
+PODFILE CHECKSUM: cefbd7c428a5b33a7a051ddc98946a385520b922
 
 COCOAPODS: 1.5.3
