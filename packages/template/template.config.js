@@ -6,6 +6,7 @@ module.exports = {
   // Directory with template
   templateDir: './project',
 
+  // TODO broken on cli: error Error: spawn /var/folders/**/node_modules/@react-native-firebase/template/post-init.js EACCES
   // Path to script, which will be executed after init
-  postInitScript: './post-init.js',
+  // postInitScript: './post-init.js',
 };
