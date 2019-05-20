@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/utils",
-  "version": "6.0.0-alpha.11",
+  "version": "6.0.0-alpha.12",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Utils",
   "main": "lib/index.js",
@@ -29,8 +29,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.11",
-    "@react-native-firebase/common": "6.0.0-alpha.11"
+    "@react-native-firebase/app-types": "6.0.0-alpha.12",
+    "@react-native-firebase/common": "6.0.0-alpha.12"
   },
   "gitHead": "664631546eb1775e1271f73235f9ace6c0f0c744",
   "publishConfig": {
