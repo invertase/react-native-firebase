@@ -9,7 +9,8 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
-import FirebaseAnalytics from '@react-native-firebase/analytics';
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/analytics';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\nCmd+D or shake for dev menu',
@@ -20,7 +21,7 @@ type Props = {};
 
 export default class App extends Component<Props> {
   async componentDidMount() {
-    await FirebaseAnalytics().setCurrentScreen('HomeScreen', 'RootView');
+    await firebase.analytics().setCurrentScreen('HomeScreen', 'RootView');
   }
 
   render() {
