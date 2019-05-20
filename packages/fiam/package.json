@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/fiam",
-  "version": "6.0.0-alpha.15",
+  "version": "6.0.0-alpha.16",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - In-App Messaging - Engage active app users with contextual messages.",
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "@react-native-firebase/app": "6.0.0-alpha.9"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.15",
-    "@react-native-firebase/common": "6.0.0-alpha.15"
+    "@react-native-firebase/app-types": "6.0.0-alpha.16",
+    "@react-native-firebase/common": "6.0.0-alpha.16"
   },
   "gitHead": "d5bc14b499d40c3ff8f2250fbb08b76510e7e557",
   "publishConfig": {
