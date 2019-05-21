@@ -51,20 +51,20 @@ apply plugin: 'com.google.gms.google-services'
 
 <Grid>
 	<Block
-		title="New Projects"
+		title="iOS Firebase Credentials"
 		to="/quick-start/ios-firebase-credentials"
         icon="phone_iphone"
         color="#2196F3"
 	>
-		Create an iOS Firebase app and download the credentials from the Firebase console.
+		Adding Firebase credentials to your iOS app from the Firebase console.
   	</Block>
 	<Block
-		title="Install React Native Firebase packages"
+		title="Integrate additional Firebase services"
 		to="/v6"
 		icon="check"
 		color="#43a047"
 	>
-		Install React Native Firebase packages by following the quick start guide on
-		the packages you require.
+		Integrate additional Firebase services by following the quick start guides for
+		the services you require.
   	</Block>
 </Grid>
