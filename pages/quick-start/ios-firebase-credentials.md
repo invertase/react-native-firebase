@@ -68,20 +68,20 @@ Add the following lines to the file:
 
 <Grid>
 	<Block
-		title="New Projects"
+		title="Android Firebase Credentials"
 		to="/quick-start/android-firebase-credentials"
 		icon="phone_android"
 		color="#4CAF50"
 	>
-		Create an Android Firebase app and download the credentials from the Firebase console.
+		Adding Firebase credentials to your Android app from the Firebase console.
   	</Block>
 	<Block
-		title="Install React Native Firebase packages"
+		title="Integrate additional Firebase services"
 		to="/v6"
 		icon="check"
 		color="#43a047"
 	>
-		Install React Native Firebase packages by following the quick start guide on
-		the packages you require.
+		Integrate additional Firebase services by following the quick start guides for
+		the services you require.
   	</Block>
 </Grid>
