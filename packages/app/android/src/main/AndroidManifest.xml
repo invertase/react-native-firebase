@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.invertase.firebase">
+  package="io.invertase.firebase.app">
 
   <application>
     <service android:name="com.google.firebase.components.ComponentDiscoveryService">
