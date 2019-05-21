@@ -11,7 +11,7 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/app": "^6.0.0-alpha.20",
+    "@react-native-firebase/app": "^6.0.0-alpha.21",
     "react": "16.8.1",
     "react-native": "0.59.8"
   },
