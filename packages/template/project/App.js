@@ -1,6 +1,6 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Sample React Native App with Firebase
+ * https://github.com/invertase/react-native-firebase
  *
  * @format
  * @flow
@@ -24,9 +24,8 @@ const instructions = Platform.select({
 });
 
 const firebaseCredentials = Platform.select({
-  ios: 'https://invertase.io/oss/react-native-firebase/quick-start/ios-firebase-credentials',
-  android:
-    'https://invertase.io/oss/react-native-firebase/quick-start/android-firebase-credentials',
+  ios: 'https://invertase.link/firebase-ios',
+  android: 'https://invertase.link/firebase-android',
 });
 
 type Props = {};
@@ -40,7 +39,7 @@ export default class App extends Component<Props> {
         <Text style={styles.instructions}>{instructions}</Text>
         {!firebase.apps.length && (
           <Text style={styles.instructions}>
-            {`You currently have no Firebase apps registered, this most likely means you've not downloaded your project credentials, see \n ${firebaseCredentials} \n to learn how to add them.`}
+            {`\nYou currently have no Firebase apps registered, this most likely means you've not downloaded your project credentials. Visit the link below to learn more. \n\n ${firebaseCredentials}`}
           </Text>
         )}
       </View>
