@@ -20,15 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-// import {
-//   isNull,
-//   isObject,
-//   isUndefined,
-//   isString,
-//   isOneOf,
-//   isAlphaNumericUnderscore,
-// } from '@react-native-firebase/common';
+import { isAndroid } from '@react-native-firebase/common';
 
 import version from './version';
 import HttpsError from './HttpsError';
@@ -88,7 +80,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   useFunctionsEmulator(origin) {
-    this._useFunctionsEmulatorOrigin = origin || null;
+    let _origin = origin;
+    if (isAndroid && _origin) {
+      if (_origin.startsWith('http://localhost'))
+        _origin = _origin.replace('http://localhost', 'http://10.0.2.2');
+      if (_origin.startsWith('http://127.0.0.1'))
+        _origin = _origin.replace('http://127.0.0.1', 'http://10.0.2.2');
+    }
+    this._useFunctionsEmulatorOrigin = _origin || null;
   }
 }
 

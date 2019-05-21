@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/analytics",
-  "version": "6.0.0-alpha.11",
+  "version": "6.0.0-alpha.21",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Analytics",
   "main": "lib/index.js",
@@ -25,10 +25,10 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.11",
-    "@react-native-firebase/common": "6.0.0-alpha.11"
+    "@react-native-firebase/app-types": "6.0.0-alpha.21",
+    "@react-native-firebase/common": "6.0.0-alpha.21"
   },
-  "gitHead": "664631546eb1775e1271f73235f9ace6c0f0c744",
+  "gitHead": "53e456afd3f9bdc4bf40ad385c8f3bf1cc20585c",
   "publishConfig": {
     "access": "public"
   }
