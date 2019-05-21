@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/invites",
-  "version": "6.0.0-alpha.19",
+  "version": "6.0.0-alpha.20",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS. To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.",
   "main": "lib/index.js",
@@ -27,8 +27,8 @@
     "@react-native-firebase/app": "6.0.0-alpha.9"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.19",
-    "@react-native-firebase/common": "6.0.0-alpha.19"
+    "@react-native-firebase/app-types": "6.0.0-alpha.20",
+    "@react-native-firebase/common": "6.0.0-alpha.20"
   },
   "gitHead": "c4752ae7494b9dbd5791783aae8e3bf847a3c804",
   "publishConfig": {
