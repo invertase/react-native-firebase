@@ -10,7 +10,7 @@ description: Get to grips with the basics of Authentication in React Native Fire
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/auth
+yarn add @react-native-firebase/auth@alpha
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.

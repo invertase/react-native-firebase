@@ -10,7 +10,7 @@ description: Get to grips with the basics of Cloud Functions in React Native Fir
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/functions
+yarn add @react-native-firebase/functions@alpha
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
