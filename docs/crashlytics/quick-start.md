@@ -10,7 +10,7 @@ description: Get to grips with the basics of Crashlytics in React Native Firebas
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/crashlytics
+yarn add @react-native-firebase/crashlytics@alpha
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
