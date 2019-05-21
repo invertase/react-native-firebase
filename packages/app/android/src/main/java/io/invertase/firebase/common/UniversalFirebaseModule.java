@@ -41,6 +41,10 @@ public class UniversalFirebaseModule {
     return context;
   }
 
+  public Context getApplicationContext() {
+    return getContext().getApplicationContext();
+  }
+
   protected ExecutorService getExecutor() {
     ExecutorService existingSingleThreadExecutor = executors.get(getName());
     if (existingSingleThreadExecutor != null) return existingSingleThreadExecutor;
