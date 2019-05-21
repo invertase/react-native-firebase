@@ -223,12 +223,13 @@ What has changed?
 
 All `httpsCallable` calls require authentication, to ensure only your own app is making calls to the endpoint. For ease, we'll create an annoymous user in our app before making the request.
 
-> The `@react-native-firebase/auth` package is required to make calls with `httpsCallable`. Ensure it is installed and that Anonymous sign in is enabled.
+> The `@react-native-firebase/auth` package is required to make calls with `httpsCallable`. Ensure it is installed and that anonymous sign-in is enabled on the Firebase Console for your project.
 
 With your React Native app ready to go, edit the entry point component to import our React Native Firebase modules. We also need to point our app at the local functions endpoint:
 
 ```js
 import React, { useState, useEffect } from 'react';
+
 import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/auth';
@@ -276,31 +277,35 @@ Lets go ahead and handle our components state, rendering the products once they'
 
 ```js
 import { FlatList } from 'react-native';
-...
+// ...
 
-if (loading) {
-  // Show a loading spinner or text here
-  return null;
+function App() {
+  // ...
+  
+  if (loading) {
+    // Show a loading spinner or text here
+    return null;
+  }
+
+  return (
+    <FlatList 
+      data={products.map((product, i) => {
+        return {
+          ...product,
+          key: `${product.name}-${i}`, // Provide a unique key for FlatList
+        };
+      })}
+      renderItem={({item}) => (
+        <Text>{item.name} (${item.price})</Text>
+      )}
+    />
+  );
 }
-
-return (
-  <FlatList 
-    data={products.map((product, i) => {
-      return {
-        ...product,
-        key: `${product.name}-${i}`, // Provide a unique key for FlatList
-      };
-    })}
-    renderItem={({item}) => (
-      <Text>{item.name} (${item.price})</Text>
-    )}
-  />
-);
 ```
 
 ![Example](https://prismic-io.s3.amazonaws.com/invertase%2F21b05dbe-0600-4e58-a911-64f113fdb139_screenshot_1558444986.png)
 
-By providing the `FlatList` with our product data set and returning a simple text based row for each product, the output is a simple scrollable list of our products and their prices. It's now straightforward to add more data to our products, and build out an awesome user interface - give it a go!
+By providing the `FlatList` with our product data set and returning a simple text based row for each product, the output is a scrollable list of our products and their prices. It's now straightforward to add more data to your products and build out an awesome user interface - give it a go!
 
 ### Deploying your Cloud Functions to production
 
@@ -312,7 +317,7 @@ terminal, inside of the `functions/` directory:
 npm run deploy
 ```
 
-Once complete, your Cloud Function will be available from a publicly accessible endpoint, for example:
+Once complete, your Cloud Function will also be available from a publicly accessible endpoint if required, for example:
 
 ```
 https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/products
@@ -334,8 +339,9 @@ if (__DEV__) {
 ## Summary
 
 This tutorial has only scratched the surface of what is achievable with Cloud Functions and React Native. Our product
-api is simple, however provides a great backbone to help develop a production ready API using Cloud Functions.
+api example whilst simple provides a good example on developing an API using Cloud Functions.
 
 If you're interested in learning more, check out the following resources:
 
 - [Firebase Cloud Function Documentation](https://firebase.google.com/docs/functions/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=tutorial)
+- [Firebase Cloud Functions Samples](https://github.com/firebase/functions-samples?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=tutorial)
