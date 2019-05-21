@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/crashlytics",
-  "version": "6.0.0-alpha.17",
+  "version": "6.0.0-alpha.18",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Crashlytics",
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.17",
-    "@react-native-firebase/common": "6.0.0-alpha.17",
+    "@react-native-firebase/app-types": "6.0.0-alpha.18",
+    "@react-native-firebase/common": "6.0.0-alpha.18",
     "stacktrace-js": "^2.0.0"
   },
   "gitHead": "ade0bc094760514cd735281acb6881fc96b516c5",
