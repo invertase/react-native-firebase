@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/auth",
-  "version": "6.0.0-alpha.16",
+  "version": "6.0.0-alpha.21",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Auth",
   "main": "lib/index.js",
@@ -25,10 +25,10 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.16",
-    "@react-native-firebase/common": "6.0.0-alpha.16"
+    "@react-native-firebase/app-types": "6.0.0-alpha.21",
+    "@react-native-firebase/common": "6.0.0-alpha.21"
   },
-  "gitHead": "b0b831171c067ccfa1f57474b2ae4c88ab82f7ee",
+  "gitHead": "53e456afd3f9bdc4bf40ad385c8f3bf1cc20585c",
   "publishConfig": {
     "access": "public"
   }

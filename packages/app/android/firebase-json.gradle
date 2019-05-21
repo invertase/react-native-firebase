@@ -32,6 +32,13 @@ if (jsonFile != null && jsonFile.exists()) {
         buildConfigField "String", "FIREBASE_JSON_RAW", jsonStr
       }
     }
+  } else {
+    rootProject.logger.info ":${project.name} firebase.json found with no react-native config, skipping"
+    android {
+      defaultConfig {
+        buildConfigField "String", "FIREBASE_JSON_RAW", '"{}"'
+      }
+    }
   }
 } else {
   rootProject.logger.info ":${project.name} no firebase.json found, skipping"
