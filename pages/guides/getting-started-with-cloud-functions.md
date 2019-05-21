@@ -14,9 +14,11 @@ a HTTPS function and querying the response in your React Native application.
 
 To find out more about Cloud Functions, view [Firebase's documentation](https://firebase.google.com/docs/functions/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=tutorial).
 
+> This guide assumes you have a React Native & Firebase project setup and ready to use.
+
 ## What are we building?
 
-This tutorial will create a simple API endpoint which returns a list of products using the [Faker](https://www.npmjs.com/package/faker)
+This tutorial will create a simple endpoint which returns a list of products using the [Faker](https://www.npmjs.com/package/faker)
 library. This data will be used to create a simple product listing screen on your React Native application.
 
 ### Installing the Firebase CLI
@@ -195,12 +197,110 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET
 ### Integrating with React Native
 
 With the HTTPS endpoint now ready for use, lets go ahead and integrate our dataset into a React Native application
-using the Cloud Functions module.
+using the Cloud Functions module. We'll use the [/{{ latest_version }}/functions](Cloud Functions) package to call our endpoint directly, and display the product listing using a `ListView`.
 
-> If you haven't already, install the `@react-native-firebase/functions` package by following the instructions on the
-> [overview page](#). TODO LINKME
+> If you haven't already, install the `@react-native-firebase/functions` package by following the instructions on the [/{{ latest_version }}/functions](Cloud Functions) page.
 
-TODO
+Firstly, we need to change our endpoint function. We have currenntly been using the `onRequest` method which exposes a HTTPS endpoint, however we want to now expose a named endpoint which our React Native app can call with the `httpsCallable` method.
+
+```js
+exports.products = functions.https.onCall((input, context) => {
+  const { page = 1, limit = 10 } = input;
+
+  const startAt = (page - 1) * limit;
+  const endAt = startAt + limit;
+
+  return products.slice(startAt, endAt);
+});
+```
+
+What has changed?
+
+- `onRequest` -> `onCall`: We've now created a named function called `products`.
+- `(request, response)` -> `(input, context)`: The input argument contains parameters from our `httpsCallable` method call, and the context contains information relating to the request.
+- `request.query` -> `input`: Any parameters are extracted from the input argument.
+- `return response.json` -> `return`: Any data returned is sent back directly to the function.
+
+All `httpsCallable` calls require authentication, to ensure only your own app is making calls to the endpoint. For ease, we'll create an annoymous user in our app before making the request.
+
+> The `@react-native-firebase/auth` package is required to make calls with `httpsCallable`. Ensure it is installed and that Anonymous sign in is enabled.
+
+With your React Native app ready to go, edit the entry point component to import our React Native Firebase modules. We also need to point our app at the local functions endpoint:
+
+```js
+import React, { useState, useEffect } from 'react';
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/functions';
+import '@react-native-firebase/auth';
+
+firebase.functions().useFunctionsEmulator('http://localhost:5000');
+```
+
+We'll now build out our component, first authenticating the user and making a request to our named function using the `httpsCallable` methood:
+
+```js
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+
+  // Sign in, and load the products
+  async function loadProducts() {
+    try {
+      // Create or sign the user into a anonymous account
+      await firebase.auth().signInAnonymously();
+      // call our named products endpoint
+      const { data } = await firebase.functions().httpsCallable('products')({
+        page: 1,
+        limit: 15,
+      });
+      
+      // Update component state
+      setProducts(data);
+      setLoading(false);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  return null;
+}
+```
+
+Great, we're now able to grab our products directly from the function with an added layer of security with no extra work!
+
+Lets go ahead and handle our components state, rendering the products once they've been downloaded:
+
+```js
+import { FlatList } from 'react-native';
+...
+
+if (loading) {
+  // Show a loading spinner or text here
+  return null;
+}
+
+return (
+  <FlatList 
+    data={products.map((product, i) => {
+      return {
+        ...product,
+        key: `${product.name}-${i}`, // Provide a unique key for FlatList
+      };
+    })}
+    renderItem={({item}) => (
+      <Text>{item.name} (${item.price})</Text>
+    )}
+  />
+);
+```
+
+![Example](https://prismic-io.s3.amazonaws.com/invertase%2F21b05dbe-0600-4e58-a911-64f113fdb139_screenshot_1558444986.png)
+
+By providing the `FlatList` with our product data set and returning a simple text based row for each product, the output is a simple scrollable list of our products and their prices. It's now straightforward to add more data to our products, and build out an awesome user interface - give it a go!
 
 ### Deploying your Cloud Functions to production
 
@@ -220,17 +320,15 @@ https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/products
 
 #### Updating the functions emulator
 
-With our Cloud Functions deployed, we are now able to update the application to use the production endpoint. Common
-practice is to interchange the functions emulator based on whether the React Native application is in development mode:
+With our Cloud Functions deployed, we are now able to update the application to only use the development endpoint whilst developing. Common practice is to use the React Native `__DEV__` with a conditional:
 
 ```js
 import functions from '@react-native-firebase/functions';
 
-const emulator = __DEV__
-  ? 'http://localhost:5000'
-  : 'https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net';
-
-functions().useFunctionsEmulator(emulator);
+if (__DEV__) {
+  // Use a local emulator in development
+  functions().useFunctionsEmulator('http://localhost:5000');
+}
 ```
 
 ## Summary
