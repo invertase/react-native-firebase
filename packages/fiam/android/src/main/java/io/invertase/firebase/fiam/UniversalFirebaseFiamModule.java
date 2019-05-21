@@ -17,46 +17,39 @@ package io.invertase.firebase.fiam;
  *
  */
 
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
+import android.content.Context;
+
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
-public class ReactNativeFirebaseFiamModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Fiam";
+public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
 
-  ReactNativeFirebaseFiamModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+  UniversalFirebaseFiamModule(Context context, String serviceName) {
+    super(context, serviceName);
   }
 
-  @ReactMethod
-  public void setAutomaticDataCollectionEnabled(Boolean enabled, Promise promise) {
-    try {
+  Task<Void> setAutomaticDataCollectionEnabled(Boolean enabled) {
+    return Tasks.call(() -> {
       FirebaseInAppMessaging.getInstance().setAutomaticDataCollectionEnabled(enabled);
-      promise.resolve(null);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+      return null;
+    });
   }
 
-  @ReactMethod
-  public void setMessagesDisplaySuppressed(Boolean enabled, Promise promise) {
-    try {
+  Task<Void> setMessagesDisplaySuppressed(Boolean enabled) {
+    return Tasks.call(() -> {
       FirebaseInAppMessaging.getInstance().setMessagesSuppressed(enabled);
-      promise.resolve(null);
-    } catch (Exception exception) {
-      rejectPromiseWithExceptionMap(promise, exception);
-    }
+      return null;
+    });
   }
 
   @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
+  public HashMap<String, Object> getConstants() {
+    final HashMap<String, Object> constants = new HashMap<>();
     constants.put(
       "isMessagesDisplaySuppressed",
       FirebaseInAppMessaging.getInstance().areMessagesSuppressed()
