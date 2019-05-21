@@ -90,6 +90,7 @@ export function getApp(name = DEFAULT_APP_NAME) {
  * Gets all app instances, used for `firebase.apps`
  */
 export function getApps() {
+  if (!initializedNativeApps) initializeNativeApps();
   return Object.values(APP_REGISTRY);
 }
 
