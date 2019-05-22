@@ -20,17 +20,43 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { isString, isUndefined } from '@react-native-firebase/common';
 
 import version from './version';
-
-const statics = {};
+import DatabaseStatics from './DatabaseStatics';
+import DatabaseReference from './DatabaseReference';
 
 const namespace = 'database';
 
 const nativeModuleName = 'RNFBDatabaseModule';
 
 class FirebaseDatabaseModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    // TODO
+  }
 
+  ref(path = '/') {
+    if (!isString(path)) {
+      throw new Error(
+        `firebase.app().database().ref(*) 'path' must be a string value.`,
+      );
+    }
+
+    return new DatabaseReference(this, path);
+  }
+
+  refFromURL() {
+    // TODO Not supported?
+  }
+
+  goOnline() {
+    // TODO Not supported?
+  }
+
+  goOffline() {
+    // TODO Not supported?
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/database';
@@ -39,12 +65,12 @@ export const SDK_VERSION = version;
 // import database from '@react-native-firebase/database';
 // database().X(...);
 export default createModuleNamespace({
-  statics,
+  statics: DatabaseStatics,
   version,
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseDatabaseModule,
 });
