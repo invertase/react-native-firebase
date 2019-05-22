@@ -18,14 +18,12 @@ package io.invertase.firebase.fiam;
  */
 
 import android.content.Context;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.HashMap;
-
-import io.invertase.firebase.common.UniversalFirebaseModule;
 
 public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
 
