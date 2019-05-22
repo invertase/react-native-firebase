@@ -24,6 +24,23 @@ describe('config()', () => {
     });
   });
 
+  describe('statics', () => {
+    it('LastFetchStatus', () => {
+      firebase.config.LastFetchStatus.should.be.an.Object();
+      firebase.config.LastFetchStatus.FAILURE.should.equal('failure');
+      firebase.config.LastFetchStatus.SUCCESS.should.equal('success');
+      firebase.config.LastFetchStatus.NO_FETCH_YET.should.equal('no_fetch_yet');
+      firebase.config.LastFetchStatus.THROTTLED.should.equal('throttled');
+    });
+
+    it('ValueSource', () => {
+      firebase.config.ValueSource.should.be.an.Object();
+      firebase.config.ValueSource.REMOTE.should.equal('remote');
+      firebase.config.ValueSource.STATIC.should.equal('static');
+      firebase.config.ValueSource.DEFAULT.should.equal('default');
+    });
+  });
+
   describe('fetch()', () => {
     it('with expiration provided', () => firebase.config().fetch(0));
     it('without expiration provided', () => firebase.config().fetch());
@@ -234,7 +251,6 @@ describe('config()', () => {
 
   describe('setDefaultsFromResource()', () => {
     it('sets defaults from remote_config_resource_test file', async () => {
-      await Utils.sleep(10000);
       await firebase.config().setDefaultsFromResource('remote_config_resource_test');
       const config = await firebase.config().getValues(['company']);
       config.company.source.should.equal('default');
