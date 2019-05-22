@@ -234,7 +234,6 @@ describe('config()', () => {
 
   describe('setDefaultsFromResource()', () => {
     it('sets defaults from remote_config_resource_test file', async () => {
-      await Utils.sleep(10000);
       await firebase.config().setDefaultsFromResource('remote_config_resource_test');
       const config = await firebase.config().getValues(['company']);
       config.company.source.should.equal('default');

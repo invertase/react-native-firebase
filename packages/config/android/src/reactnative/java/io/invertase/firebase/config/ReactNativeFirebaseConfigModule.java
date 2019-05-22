@@ -17,21 +17,14 @@ package io.invertase.firebase.config;
  *
  */
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.*;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import java.util.Objects;
+
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "RemoteConfig";
+  private static final String SERVICE_NAME = "Config";
   private final UniversalFirebaseConfigModule module;
 
   ReactNativeFirebaseConfigModule(ReactApplicationContext reactContext) {
@@ -75,7 +68,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void getConfigSettings(Promise promise) {
-    module.getConfigSettings().addOnCompleteListener(task -> {
+    module.getConfigSettings().addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(Arguments.makeNativeMap(task.getResult()));
       } else {
@@ -130,7 +123,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void getValuesByKeysPrefix(String prefix, Promise promise) {
-    module.getValuesByKeysPrefix(prefix).addOnCompleteListener(task -> {
+    module.getValuesByKeysPrefix(prefix).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(Arguments.makeNativeMap(task.getResult()));
       } else {
@@ -142,7 +135,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void getKeysByPrefix(String prefix, Promise promise) {
-    module.getKeysByPrefix(prefix).addOnCompleteListener(task -> {
+    module.getKeysByPrefix(prefix).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(
           Arguments.fromList(Objects.requireNonNull(task.getResult()))
@@ -168,7 +161,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void getValues(ReadableArray keys, Promise promise) {
-    module.getValues(keys.toArrayList()).addOnCompleteListener(task -> {
+    module.getValues(keys.toArrayList()).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(
           Arguments.fromList(Objects.requireNonNull(task.getResult()))
