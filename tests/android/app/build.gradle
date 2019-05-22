@@ -18,19 +18,20 @@ apply from: "../../node_modules/react-native/react.gradle"
 def enableSeparateBuildPerCPUArchitecture = false
 def firebasePackages = [
   'app',
+  'database',
   'auth',
-  'analytics',
-  'config',
-  'crashlytics',
-  'functions',
-  'fiam',
-  'iid',
-  'invites',
-  'ml-natural-language',
-  'ml-vision',
-  'storage',
-  'perf',
-  'utils'
+//  'analytics',
+//  'config',
+//  'crashlytics',
+//  'functions',
+//  'fiam',
+//  'iid',
+//  'invites',
+//  'ml-natural-language',
+//  'ml-vision',
+//  'storage',
+//  'perf',
+//  'utils'
 ]
 
 android {
