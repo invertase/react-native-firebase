@@ -58,7 +58,123 @@ import {
  * @firebase config
  */
 export namespace Config {
-  export interface Statics {}
+  /**
+   * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
+   *
+   * #### Example
+   *
+   * ```js
+   * firebase.config.LastFetchStatus;
+   * ```
+   */
+  export interface LastFetchStatus {
+    /**
+     * A value indicating that the last fetch was successful.
+     *
+     * ```js
+     * firebase.config.LastFetchStatus.SUCCESS;
+     * ```
+     */
+    SUCCESS: 'success';
+
+    /**
+     * A value indicating that the last fetch failed.
+     *
+     * ```js
+     * firebase.config.LastFetchStatus.FAILURE;
+     * ```
+     */
+    FAILURE: 'failure';
+
+    /**
+     * A value indicating that the last fetch was throttled.
+     *
+     * This usually occurs when calling fetch often with a low expiration duration.
+     *
+     * ```js
+     * firebase.config.LastFetchStatus.THROTTLED;
+     * ```
+     */
+    THROTTLED: 'throttled';
+
+    /**
+     * A value indicating that no fetches have occurred yet.
+     *
+     * This usually means you've not called fetch yet.
+     *
+     * ```js
+     * firebase.config.LastFetchStatus.NO_FETCH_YET;
+     * ```
+     */
+    NO_FETCH_YET: 'no_fetch_yet';
+  }
+
+  /**
+   * A pseudo-enum for usage with ConfigValue.source to determine the value source.
+   *
+   * #### Example
+   *
+   * ```js
+   * firebase.config.ValueSource;
+   * ```
+   */
+  export interface ValueSource {
+    /**
+     * If the value was retrieved from the server.
+     *
+     * ```js
+     * firebase.config.ValueSource.REMOTE;
+     * ```
+     */
+    REMOTE: 'remote';
+    /**
+     * If the value was set as a default value.
+     *
+     * ```js
+     * firebase.config.ValueSource.DEFAULT;
+     * ```
+     */
+    DEFAULT: 'default';
+    /**
+     * If no value was found and a static default value was returned instead.
+     *
+     * ```js
+     * firebase.config.ValueSource.STATIC;
+     * ```
+     */
+    STATIC: 'static';
+  }
+
+  /**
+   * Firebase Remote Config statics.
+   *
+   * ```js
+   * firebase.config;
+   * ```
+   */
+  export interface Statics {
+    /**
+     * A pseudo-enum for usage with ConfigValue.source to determine the value source.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.config.ValueSource;
+     * ```
+     */
+    ValueSource: ValueSource;
+
+    /**
+     * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.config.LastFetchStatus;
+     * ```
+     */
+    LastFetchStatus: LastFetchStatus;
+  }
 
   /**
    * An Interface representing a Remote Config value.
@@ -70,6 +186,8 @@ export namespace Config {
      * - `remote`:  If the value was retrieved from the server.
      * - `default`: If the value was set as a default value.
      * - `static`: If no value was found and a static default value was returned instead.
+     *
+     * See the `ValueSource` statics definition.
      *
      * #### Example
      *
@@ -156,6 +274,8 @@ export namespace Config {
     isDeveloperModeEnabled: boolean;
     /**
      * The status of the latest Remote Config fetch action.
+     *
+     * See the `LastFetchStatus` statics definition.
      */
     lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
   }
