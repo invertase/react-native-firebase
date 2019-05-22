@@ -26,7 +26,7 @@ const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
 const PACKAGES = [
-  'app',
+  // 'app',
   'database',
   // 'iid',
   // 'perf',

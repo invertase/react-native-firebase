@@ -20,6 +20,7 @@ import {
   isString,
   pathParent,
   pathChild,
+  isValidPath,
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
@@ -36,7 +37,7 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   get parent() {
     const parentPath = pathParent(this.path);
-    if (parentPath === null) return parentPath;
+    if (parentPath === null) return null;
     return new DatabaseReference(this._database, parentPath);
   }
 
@@ -60,6 +61,13 @@ export default class DatabaseReference extends DatabaseQuery {
   child(path) {
     if (!isString(path)) {
       throw new Error(`firebase.app().database().ref().child(*) 'path' must be a string value.`);
+    }
+
+    console.log('valid path >> ', isValidPath(path))
+    if (!isValidPath(path)) {
+      throw new Error(
+        `firebase.app().database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`
+      );
     }
 
     return new DatabaseReference(this._database, pathChild(this.path, path));

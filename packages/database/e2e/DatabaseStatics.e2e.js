@@ -15,6 +15,12 @@
  *
  */
 
-require('./app');
-// require('./app.playground');
-// require('./app.smartreply');
+describe('database.X', () => {
+  describe('ServerValue.TIMESTAMP', () => {
+    it('returns null when no reference path is provides', () => {
+      const { TIMESTAMP } = firebase.database.ServerValue;
+      TIMESTAMP.should.have.property('.sv');
+      TIMESTAMP['.sv'].should.equal('timestamp');
+    });
+  });
+});

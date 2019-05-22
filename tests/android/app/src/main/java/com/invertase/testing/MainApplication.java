@@ -66,7 +66,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative");
+//    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative");
 
     // TODO move to jet
     DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()

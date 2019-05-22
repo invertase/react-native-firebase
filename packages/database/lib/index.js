@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isString, isUndefined } from '@react-native-firebase/common';
+import { isString, isUndefined, isValidPath } from '@react-native-firebase/common';
 
 import version from './version';
 import DatabaseStatics from './DatabaseStatics';
@@ -40,6 +40,13 @@ class FirebaseDatabaseModule extends FirebaseModule {
     if (!isString(path)) {
       throw new Error(
         `firebase.app().database().ref(*) 'path' must be a string value.`,
+      );
+    }
+
+
+    if (!isValidPath(path)) {
+      throw new Error(
+        `firebase.app().database().ref(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
       );
     }
 

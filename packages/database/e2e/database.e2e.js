@@ -15,7 +15,7 @@
  *
  */
 
-describe('database()', () => {
+describe('database().ref()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -38,7 +38,37 @@ describe('database()', () => {
     });
   });
 
-  describe('aMethod()', () => {
+  describe('ref()', () => {
+    it('throws if path is not a string', async () => {
+      try {
+        firebase.database().ref({ foo: 'bar' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'path' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path is not a valid string', async () => {
+      try {
+        firebase.database().ref('$$$$$');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'path' can't contain`);
+        return Promise.resolve();
+      }
+    });
+  });
+
+  describe('refFromURL()', () => {
     // TODO
+  });
+
+  describe('goOnline()', () => {
+    // TODO unsupported error
+  });
+
+  describe('goOffline()', () => {
+    // TODO unsupported error
   });
 });
