@@ -92,36 +92,36 @@ class FirebaseConfigModule extends FirebaseModule {
   /**
    * Fetches parameter values for your app.
 
-   * @param {number} cacheExpirationSeconds
+   * @param {number} expirationDurationSeconds
    * @returns {Promise}
    */
-  fetch(cacheExpirationSeconds) {
-    if (!isUndefined(cacheExpirationSeconds) && !isNumber(cacheExpirationSeconds)) {
+  fetch(expirationDurationSeconds) {
+    if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
       throw new Error(
-        `firebase.config().fetch(): 'cacheExpirationSeconds' must be a number value.`,
+        `firebase.config().fetch(): 'expirationDurationSeconds' must be a number value.`,
       );
     }
 
     return this.native.fetch(
-      cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1,
+      expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1,
       false,
     );
   }
 
   /**
    * TODO(salakar) return boolean always?
-   * @param cacheExpirationSeconds
+   * @param expirationDurationSeconds
    * @returns {Promise|never|Promise<Response>}
    */
-  fetchAndActivate(cacheExpirationSeconds) {
-    if (!isUndefined(cacheExpirationSeconds) && !isNumber(cacheExpirationSeconds)) {
+  fetchAndActivate(expirationDurationSeconds) {
+    if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
       throw new Error(
-        `firebase.config().fetchAndActivate(): 'cacheExpirationSeconds' must be a number value.`,
+        `firebase.config().fetchAndActivate(): 'expirationDurationSeconds' must be a number value.`,
       );
     }
 
     return this.native.fetch(
-      cacheExpirationSeconds !== undefined ? cacheExpirationSeconds : -1,
+      expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1,
       true,
     );
   }

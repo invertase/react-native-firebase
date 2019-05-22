@@ -219,9 +219,9 @@ export namespace Config {
      * await firebase.config().fetch(300);
      * ```
      *
-     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
+     * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
      */
-    fetch(cacheExpirationSeconds?: number): Promise<null>;
+    fetch(expirationDurationSeconds?: number): Promise<null>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
@@ -241,9 +241,9 @@ export namespace Config {
      * }
      * ```
      *
-     * @param cacheExpirationSeconds Duration in seconds to cache the data for. To skip cache use a duration of 0.
+     * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache use a duration of 0.
      */
-    fetchAndActivate(cacheExpirationSeconds?: number): Promise<boolean>;
+    fetchAndActivate(expirationDurationSeconds?: number): Promise<boolean>;
 
     /**
      * Retrieve the configuration settings and status for Remote Config.
