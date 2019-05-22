@@ -82,8 +82,8 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
   // -- SMART_REPLIES
   // --------------------------
 
-  newSmartReplyConversation() {
-    return new SmartReplyConversation(this.native);
+  newSmartReplyConversation(messageHistoryLimit) {
+    return new SmartReplyConversation(this.native, messageHistoryLimit);
   }
 }
 

@@ -15,29 +15,32 @@
  *
  */
 
-let id = 0;
-
 export default class SmartReplyConversation {
-  constructor(nativeModule, messageLimit) {
-    this.id = id++;
+  constructor(nativeModule, messageHistoryLimit = 20) {
     this.messages = [];
     this.native = nativeModule;
-    this.messageLimit = messageLimit || 10;
+    this.messageHistoryLimit = messageHistoryLimit;
   }
 
   addLocalUserMessage(message, timestamp) {
     this.messages.push([message, timestamp || Date.now()]);
+    if (this.messages.length > this.messageHistoryLimit) {
+      this.messages = this.messages.slice(-this.messageHistoryLimit);
+    }
   }
 
   addRemoteUserMessage(message, timestamp, remoteUserId) {
     this.messages.push([message, timestamp || Date.now(), remoteUserId]);
+    if (this.messages.length > this.messageHistoryLimit) {
+      this.messages = this.messages.slice(-this.messageHistoryLimit);
+    }
   }
 
   getSuggestedReplies() {
-    return this.native.getSuggestedReplies(this.id, this.messages);
+    return this.native.getSuggestedReplies(this.messages);
   }
 
-  reset() {
+  clearMessages() {
     this.messages = [];
   }
 }
