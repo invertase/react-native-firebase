@@ -39,7 +39,7 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
   @Override
   public void onTearDown() {
     super.onTearDown();
-    UniversalFirebaseMLNaturalLanguageSmartReplyConversation.destroyAllConversations();
+//    UniversalFirebaseMLNaturalLanguageSmartReplyConversation.destroyAllConversations();
   }
 
   /**
