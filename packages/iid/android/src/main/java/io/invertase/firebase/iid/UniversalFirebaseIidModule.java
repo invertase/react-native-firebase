@@ -33,21 +33,21 @@ public class UniversalFirebaseIidModule extends UniversalFirebaseModule {
   }
 
   Task<String> get(String appName) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       return FirebaseInstanceId.getInstance(firebaseApp).getId();
     });
   }
 
   Task<String> getToken(String appName, String authorizedEntity, String scope) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       return FirebaseInstanceId.getInstance(firebaseApp).getToken(authorizedEntity, scope);
     });
   }
 
   Task<Void> delete(String appName) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseInstanceId.getInstance(firebaseApp).deleteInstanceId();
       return null;
@@ -55,7 +55,7 @@ public class UniversalFirebaseIidModule extends UniversalFirebaseModule {
   }
 
   Task<Void> deleteToken(String appName, String authorizedEntity, String scope) {
-    return Tasks.call(() -> {
+    return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseInstanceId.getInstance(firebaseApp).deleteToken(authorizedEntity, scope);
       return null;
