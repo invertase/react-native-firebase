@@ -31,10 +31,33 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseDatabaseModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Database";
+  private static final String SERVICE_NAME = "Database";
+  private final UniversalFirebaseDatabaseModule module;
 
   ReactNativeFirebaseDatabaseModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+    super(reactContext, SERVICE_NAME);
+    module = new UniversalFirebaseDatabaseModule(reactContext, SERVICE_NAME);
   }
 
+  @ReactMethod
+  public void goOnline(String app, String dbURL, Promise promise) {
+    module.goOnline(app, dbURL).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void goOffline(String app, String dbURL, Promise promise) {
+    module.goOffline(app, dbURL).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
 }

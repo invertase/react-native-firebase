@@ -66,36 +66,24 @@ export default class DatabaseReference extends DatabaseQuery {
 
     if (!isValidPath(path)) {
       throw new Error(
-        `firebase.app().database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`
+        `firebase.app().database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
       );
     }
 
     return new DatabaseReference(this._database, pathChild(this.path, path));
   }
 
-  set() {
+  set() {}
 
-  }
+  update() {}
 
-  update() {
+  setWithPriority() {}
 
-  }
+  remove() {}
 
-  setWithPriority() {
+  transaction() {}
 
-  }
-
-  remove() {
-
-  }
-
-  transaction() {
-
-  }
-
-  setPriority() {
-
-  }
+  setPriority() {}
 
   push(value, onComplete) {
     // TODO validate value?
@@ -107,7 +95,5 @@ export default class DatabaseReference extends DatabaseQuery {
     return thennablePushRef;
   }
 
-  onDisconnect() {
-
-  }
+  onDisconnect() {}
 }

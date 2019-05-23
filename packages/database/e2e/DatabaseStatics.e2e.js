@@ -17,8 +17,9 @@
 
 describe('database.X', () => {
   describe('ServerValue.TIMESTAMP', () => {
-    it('returns null when no reference path is provides', () => {
+    it('returns a valid object', () => {
       const { TIMESTAMP } = firebase.database.ServerValue;
+      should.equal(Object.keys(TIMESTAMP).length, 1);
       TIMESTAMP.should.have.property('.sv');
       TIMESTAMP['.sv'].should.equal('timestamp');
     });

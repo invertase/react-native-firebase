@@ -15,7 +15,7 @@
  *
  */
 
-describe('database().ref()', () => {
+describe('database()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -23,8 +23,7 @@ describe('database().ref()', () => {
       app.database().app.should.equal(app);
     });
 
-    // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
+    it('supports multiple apps', async () => {
       firebase.database().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -36,6 +35,19 @@ describe('database().ref()', () => {
         .database()
         .app.name.should.equal('secondaryFromNative');
     });
+  });
+
+  it('supports custom database URL', async () => {
+    firebase.database().app.name.should.equal('[DEFAULT]');
+
+    firebase
+      .database(firebase.app('secondaryFromNative'))
+      .app.name.should.equal('secondaryFromNative');
+
+    firebase
+      .app('secondaryFromNative')
+      .database()
+      .app.name.should.equal('secondaryFromNative');
   });
 
   describe('ref()', () => {
@@ -61,14 +73,47 @@ describe('database().ref()', () => {
   });
 
   describe('refFromURL()', () => {
-    // TODO
+    it('throws if url is not a url', async () => {
+      try {
+        firebase.database().refFromURL('foobar');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'url' must be a valid database URL`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if url from a different domain', async () => {
+      try {
+        firebase.database().refFromURL('https://foobar.firebaseio.com');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'url' must be the same domain as the current instance`);
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a reference', async () => {
+      const ref1 = firebase.database().refFromURL(firebase.database()._customUrlOrRegion);
+      const ref2 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar`);
+      const ref3 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar?baz=foo`);
+      should.equal(ref1.path, '/');
+      should.equal(ref2.path, 'foo/bar');
+      should.equal(ref3.path, 'foo/bar');
+    });
   });
 
   describe('goOnline()', () => {
-    // TODO unsupported error
+    it('calls goOnline successfully', async () => {
+      await firebase.database().goOnline();
+    });
   });
 
   describe('goOffline()', () => {
-    // TODO unsupported error
+    it('calls goOffline successfully', async () => {
+      await firebase.database().goOffline();
+      // Go back online
+      await firebase.database().goOnline();
+    });
   });
 });

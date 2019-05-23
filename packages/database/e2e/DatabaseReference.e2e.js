@@ -37,13 +37,12 @@ describe('database().ref()', () => {
       should.equal(ref.parent, null);
     });
 
-    // TODO /foo path should be its own parent?
-    // it('return last token in reference path', () => {
-    //   const ref1 = firebase.database().ref('/foo').parent;
-    //   const ref2 = firebase.database().ref('/foo/bar/baz').parent;
-    //   ref1.should.equal('foo');
-    //   ref2.key.should.equal('foo/bar');
-    // });
+    it('return last token in reference path', () => {
+      const ref1 = firebase.database().ref('/foo').parent;
+      const ref2 = firebase.database().ref('/foo/bar/baz').parent;
+      should.equal(ref1, null);
+      ref2.key.should.equal('bar');
+    });
   });
 
   describe('ref', () => {

@@ -31,9 +31,10 @@ const namespace = 'database';
 const nativeModuleName = 'RNFBDatabaseModule';
 
 class FirebaseDatabaseModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+  constructor(app, config, databaseUrl) {
+    super(app, config, databaseUrl);
     this._serverTimeOffset = 0;
+    this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
   }
 
   get _serverTime() {
@@ -42,11 +43,8 @@ class FirebaseDatabaseModule extends FirebaseModule {
 
   ref(path = '/') {
     if (!isString(path)) {
-      throw new Error(
-        `firebase.app().database().ref(*) 'path' must be a string value.`,
-      );
+      throw new Error(`firebase.app().database().ref(*) 'path' must be a string value.`);
     }
-
 
     if (!isValidPath(path)) {
       throw new Error(
@@ -57,16 +55,33 @@ class FirebaseDatabaseModule extends FirebaseModule {
     return new DatabaseReference(this, path);
   }
 
-  refFromURL() {
-    // TODO Not supported?
+  refFromURL(url) {
+    if (!isString(url) || !url.startsWith('https://')) {
+      throw new Error(
+        `firebase.app().database().refFromURL(*) 'url' must be a valid database URL.`,
+      );
+    }
+
+    if (!url.includes(this._customUrlOrRegion)) {
+      throw new Error(
+        `firebase.app().database().refFromURL(*) 'url' must be the same domain as the current instance (${
+          this._customUrlOrRegion
+        }). To use a different database domain, create a new Firebase instance.`,
+      );
+    }
+
+    let path = url.replace(this._customUrlOrRegion, '');
+    if (path.includes('?')) path = path.slice(0, path.indexOf('?'));
+
+    return new DatabaseReference(this, path);
   }
 
   goOnline() {
-    // TODO Not supported?
+    return this.native.goOnline();
   }
 
   goOffline() {
-    // TODO Not supported?
+    return this.native.goOffline();
   }
 }
 
@@ -82,7 +97,7 @@ export default createModuleNamespace({
   nativeModuleName,
   nativeEvents: false,
   hasMultiAppSupport: true,
-  hasCustomUrlOrRegionSupport: false,
+  hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseDatabaseModule,
 });
 
