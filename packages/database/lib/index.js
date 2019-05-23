@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isString, isUndefined, isValidPath } from '@react-native-firebase/common';
+import { isString, isValidPath } from '@react-native-firebase/common';
 
 import version from './version';
 import DatabaseStatics from './DatabaseStatics';
@@ -35,12 +35,33 @@ class FirebaseDatabaseModule extends FirebaseModule {
     super(app, config, databaseUrl);
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
+    this._syncServerTimeOffset();
   }
 
+  /**
+   * Keep the server time offset in sync with the server time
+   * @private
+   */
+  _syncServerTimeOffset() {
+    this.ref('.info/serverTimeOffset').on('value', snapshot => {
+      this._serverTimeOffset = snapshot.val() || this._serverTimeOffset;
+    });
+  }
+
+  /**
+   * Get the current server time, used to generate data such as database keys
+   * @returns {Date}
+   * @private
+   */
   get _serverTime() {
     return new Date(Date.now() + this._serverTimeOffset);
   }
 
+  /**
+   * Returns a new Reference instance from a given path. Defaults to the root reference.
+   * @param path
+   * @returns {DatabaseReference}
+   */
   ref(path = '/') {
     if (!isString(path)) {
       throw new Error(`firebase.app().database().ref(*) 'path' must be a string value.`);
@@ -55,6 +76,13 @@ class FirebaseDatabaseModule extends FirebaseModule {
     return new DatabaseReference(this, path);
   }
 
+  /**
+   * Generates a Reference from a database URL.
+   * Note domain must be the same.
+   * Any query parameters are stripped as per the web SDK.
+   * @param url
+   * @returns {DatabaseReference}
+   */
   refFromURL(url) {
     if (!isString(url) || !url.startsWith('https://')) {
       throw new Error(
@@ -76,10 +104,16 @@ class FirebaseDatabaseModule extends FirebaseModule {
     return new DatabaseReference(this, path);
   }
 
+  /**
+   * goOnline
+   */
   goOnline() {
     return this.native.goOnline();
   }
 
+  /**
+   * goOffline
+   */
   goOffline() {
     return this.native.goOffline();
   }

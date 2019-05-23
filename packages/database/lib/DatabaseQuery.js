@@ -25,11 +25,10 @@ import {
   ReferenceBase,
 } from '@react-native-firebase/common';
 
+const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
+
 export default class DatabaseQuery extends ReferenceBase {
-
-  static _validateQueryEndpoints(params) {
-
-  }
+  static _validateQueryEndpoints(params) {}
 
   static _validateLimit(params) {
     if (
@@ -39,7 +38,7 @@ export default class DatabaseQuery extends ReferenceBase {
       !params.hasAnchoredLimit()
     ) {
       throw new Error(
-        `Can't combine startAt(), endAt(), and limit(). Use limitToFirst() or limitToLast() instead.`
+        `Can't combine startAt(), endAt(), and limit(). Use limitToFirst() or limitToLast() instead.`,
       );
     }
   }
@@ -91,6 +90,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
   constructor(path, queryParams, orderByCalled = false) {
     super(path);
+    this._reference = super(path);
     this._queryParams = queryParams;
     this._orderByCalled = orderByCalled;
   }
@@ -99,8 +99,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
-    // TODO how to get it?
-    // return this._reference;
+    return super().ref;
   }
 
   endAt(value, name = null) {
@@ -164,7 +163,22 @@ export default class DatabaseQuery extends ReferenceBase {
 
   on() {}
 
-  once() {}
+  /**
+   *
+   * @param eventType
+   */
+  once(eventType, successCallBack, failureCallbackOrContext, context) {
+    if (!eventTypes.includes(eventType)) {
+      throw new Error(
+        `firebase.app().database().ref().once(*) 'eventType' must be one of ${eventTypes.join(
+          ', ',
+        )}.`,
+      );
+    }
+
+    this._database
+
+  }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbychild
@@ -195,29 +209,21 @@ export default class DatabaseQuery extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbykey
    */
-  orderByKey(...args) {
-
-  }
+  orderByKey(...args) {}
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbypriority
    */
-  orderByPriority(...args) {
-
-  }
+  orderByPriority(...args) {}
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbyvalue
    */
-  orderByValue(...args) {
-
-  }
+  orderByValue(...args) {}
 
   startAt(value, key) {
     if (isUndefined(value)) {
-      throw new Error(
-        `firebase.app().database().ref().startAt(*) 'value' cannot be undefined.`,
-      );
+      throw new Error(`firebase.app().database().ref().startAt(*) 'value' cannot be undefined.`);
     }
 
     if (!isUndefined(key) && !isString(key)) {
@@ -232,7 +238,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (this._queryParams.hasStartAt()) {
       throw new Error(
-        `firebase.app().database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`
+        `firebase.app().database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
       );
     }
 
