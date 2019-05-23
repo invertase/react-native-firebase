@@ -33,7 +33,11 @@ const nativeModuleName = 'RNFBDatabaseModule';
 class FirebaseDatabaseModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    // TODO
+    this._serverTimeOffset = 0;
+  }
+
+  get _serverTime() {
+    return new Date(Date.now() + this._serverTimeOffset);
   }
 
   ref(path = '/') {

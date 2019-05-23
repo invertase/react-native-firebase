@@ -58,26 +58,132 @@ import {
  * @firebase database
  */
 export namespace Database {
+
+  export interface ServerValue {
+    TIMESTAMP: object;
+  }
+
   export interface Statics {
-    // firebase.database.* static props go here
+
+    ServerValue: ServerValue;
+  }
+
+  export interface Reference extends Query {
+
+    parent: Reference | null;
+
+    root: Reference;
+
+    child(path: string): Reference;
+
+    set(value: any, onComplete?: Function): Promise<any>;
+
+    update(values: { [key]: value }, onComplete?: Function): Promise<any>;
+
+    setPriority(priority: string | number | null, onComplete?: Function): Promise<any>;
+
+    setWithPriority(newVal: any, newPriority: string | number | null, onComplete?: Function): Promise<any>;
+
+    toJSON(): object;
+
+    toString(): string;
+
+    transaction(transactionUpdate: Function, onComplete?: Function, applyLocally?: boolean): Promise<any>;
+
+    push(value?: any, onComplete?: Function): null; // TODO Thenable
+
+    onDisconnect(): OnDisconnect;
+  }
+  
+  export interface ThenableReference extends Reference {}
+
+  export interface Query {
+
+    key: string | null;
+
+    ref: Reference;
+
+    endAt(value: number | string | boolean | null, key?: string): Query;
+
+    equalTo(value: number | string | boolean | null, key?: string): Query;
+
+    isEqual(other: Query | null): boolean;
+
+    limitToFirst(limit: number): Query;
+
+    limitToLast(limit: number): Query;
+
+    off(eventType?: EventType, callback?: Function): void; // TODO context?
+
+    on(eventType?: EventType, callback?: Function): Function; // TODO context?
+
+    once(eventType: EventType, successCallback?: Function): Promise<DataSnapshot>; // TODO
+
+    orderByChild(path: string): Query;
+
+    orderByKey(): Query;
+
+    orderByPriority(): Query;
+
+    orderByValue(): Query;
+
+    startAt(value: number | string | boolean | null, key?: string): Query;
+
+    toJSON(): object;
+
+    toString(): string;
+  }
+
+  export interface OnDisconnect {
+    cancel(onComplete?: Function): Promise<any>;
+
+    remove(onComplete?: Function): Promise<any>;
+
+    set(value: any, onComplete?: Function): Promise<any>;
+
+    setWithPriority(value: any, priority: string | number | null, onComplete?: Function): Promise<any>;
+
+    update(values: { [key]: value }, onComplete?: Function): Promise<any>;
+
+  }
+
+  export type EventType =
+    "value" |
+    "child_added" |
+    "child_changed" |
+    "child_moved" |
+    "child_removed";
+
+  export interface DataSnapshot {
+
+    key: string | null;
+
+    ref: Reference;
+
+    child(path: string): DataSnapshot;
+
+    exists(): boolean;
+
+    exportVal(): any;
+
+    forEach(action: Function): boolean;
+
+    getPriority(): string | number | null;
+
+    hasChild(path: string): boolean;
+
+    hasChildren(): boolean;
+
+    numChildren: number;
+
+    toJSON(): object | null;
+
+    val(): any;
+
+
   }
 
   /**
-   * // TODO CHOOSE THIS ---------------------------------------
-   *
-   * The Firebase Database service interface.
-   *
-   * > This module is available for the default app only.
-   *
-   * #### Example
-   *
-   * Get the Database service for the default app:
-   *
-   * ```js
-   * const defaultAppDatabase = firebase.database();
-   * ```
-   *
-   * // TODO OR THIS -------------------------------------------
    *
    * The Firebase Database service is available for the default app or a given app.
    *
@@ -100,7 +206,11 @@ export namespace Database {
    *
    */
   export interface Module extends ReactNativeFirebaseModule {
-    // firebase.database().* methods & props go here
+
+    ref(path?: string): Reference;
+
+    refFromURL(url: string): Reference;
+
   }
 }
 
@@ -108,10 +218,8 @@ declare module '@react-native-firebase/database' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
   export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Database.Module,
-    Database.Statics
-  >;
+  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<Database.Module,
+    Database.Statics>;
   export default DatabaseDefaultExport;
 }
 
