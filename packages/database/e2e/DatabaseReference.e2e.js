@@ -110,7 +110,10 @@ describe('database().ref()', () => {
 
   });
 
-  describe('onDisconnect()', async () => {
-
+  describe('onDisconnect()', () => {
+    it('returns an OnDisconnect instance', async () => {
+      const instance = firebase.database().ref().onDisconnect();
+      should.equal(instance.constructor.name, 'DatabaseOnDisconnect');
+    });
   });
 });

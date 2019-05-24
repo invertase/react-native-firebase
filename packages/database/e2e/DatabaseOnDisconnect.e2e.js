@@ -15,16 +15,17 @@
  *
  */
 
-export default function promiseDefer() {
-  const deferred = {
-    resolve: null,
-    reject: null,
-  };
-
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
-}
+// describe('database().ref().onDisconnect()', () => {
+//   describe('cancel', () => {
+//     it('cancels all previous events', async () => {
+//       const ref = firebase.database().ref('on-disconnect-cancel');
+//       await ref.set('foobar');
+//       await ref.onDisconnect().set(Date.now());
+//       await ref.onDisconnect().cancel();
+//       await firebase.database().goOffline();
+//       await firebase.database().goOnline();
+//       const snapshot = await ref.once('value');
+//       snapshot.val().should.equal('foobar');
+//     });
+//   });
+// });

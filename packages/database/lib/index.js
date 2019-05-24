@@ -28,7 +28,10 @@ import DatabaseReference from './DatabaseReference';
 
 const namespace = 'database';
 
-const nativeModuleName = 'RNFBDatabaseModule';
+const nativeModuleName = [
+  'RNFBDatabaseModule',
+  'RNFBDatabaseReferenceModule',
+];
 
 class FirebaseDatabaseModule extends FirebaseModule {
   constructor(app, config, databaseUrl) {

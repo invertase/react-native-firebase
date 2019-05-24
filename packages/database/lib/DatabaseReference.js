@@ -22,14 +22,21 @@ import {
   pathChild,
   isValidPath,
   generateDatabaseId,
+  isNumber,
+  isNull,
+  isUndefined,
+  isFunction,
+  promiseWithOptionalCallback,
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
 import DatabaseQueryParams from './DatabaseQueryParams';
+import DatabaseOnDisconnect from './DatabaseOnDisconnect';
+import { serializeType } from '@react-native-firebase/common/lib/serialize';
 
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
-    super(path, DatabaseQueryParams.DEFAULT);
+    super(database, path, DatabaseQueryParams.DEFAULT);
     this._database = database;
   }
 
@@ -40,13 +47,6 @@ export default class DatabaseReference extends DatabaseQuery {
     const parentPath = pathParent(this.path);
     if (parentPath === null) return null;
     return new DatabaseReference(this._database, parentPath);
-  }
-
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#ref
-   */
-  get ref() {
-    return this;
   }
 
   /**
@@ -61,12 +61,12 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   child(path) {
     if (!isString(path)) {
-      throw new Error(`firebase.app().database().ref().child(*) 'path' must be a string value.`);
+      throw new Error(`firebase.database().ref().child(*) 'path' must be a string value.`);
     }
 
     if (!isValidPath(path)) {
       throw new Error(
-        `firebase.app().database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
+        `firebase.database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
       );
     }
 
@@ -83,7 +83,28 @@ export default class DatabaseReference extends DatabaseQuery {
 
   transaction() {}
 
-  setPriority() {}
+  /**
+   * @param priority
+   * @param onComplete
+   */
+  setPriority(priority, onComplete) {
+    if (!isNumber(priority) && !isString(priority) && !isNull(priority)) {
+      throw new Error(
+        `firebase.database().ref().setPriority(*) 'priority' must be a number, string or null value.`,
+      );
+    }
+
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().setPriority(_, *) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    return promiseWithOptionalCallback(
+      this._database.native.setPriority(this.path, { priority }),
+      onComplete,
+    );
+  }
 
   push(value, onComplete) {
     // TODO validate value?
@@ -95,5 +116,10 @@ export default class DatabaseReference extends DatabaseQuery {
     return thennablePushRef;
   }
 
-  onDisconnect() {}
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#ondisconnect
+   */
+  onDisconnect() {
+    return new DatabaseOnDisconnect(this);
+  }
 }

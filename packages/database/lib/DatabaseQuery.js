@@ -24,6 +24,7 @@ import {
   pathToUrlEncodedString,
   ReferenceBase,
 } from '@react-native-firebase/common';
+import DatabaseReference from './DatabaseReference';
 
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
@@ -88,9 +89,9 @@ export default class DatabaseQuery extends ReferenceBase {
     };
   }
 
-  constructor(path, queryParams, orderByCalled = false) {
+  constructor(database, path, queryParams, orderByCalled = false) {
     super(path);
-    this._reference = super(path);
+    this._database = database;
     this._queryParams = queryParams;
     this._orderByCalled = orderByCalled;
   }
@@ -99,7 +100,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
-    return super().ref;
+    return new DatabaseReference(this._database, this.path);
   }
 
   endAt(value, name = null) {
@@ -117,20 +118,18 @@ export default class DatabaseQuery extends ReferenceBase {
 
   limitToFirst(limit) {
     if (!isNumber(limit)) {
-      throw new Error(
-        `firebase.app().database().ref().limitToFirst(*) 'limit' must be a number value.`,
-      );
+      throw new Error(`firebase.database().ref().limitToFirst(*) 'limit' must be a number value.`);
     }
 
     if (Math.floor(limit) !== limit || limit <= 0) {
       throw new Error(
-        `firebase.app().database().ref().limitToFirst(*) 'limit' must be a positive integer.`,
+        `firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer.`,
       );
     }
 
     if (this._queryParams.hasLimit()) {
       throw new Error(
-        `firebase.app().database().ref().limitToFirst(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
+        `firebase.database().ref().limitToFirst(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
       );
     }
 
@@ -139,20 +138,18 @@ export default class DatabaseQuery extends ReferenceBase {
 
   limitToLast(limit) {
     if (!isNumber(limit)) {
-      throw new Error(
-        `firebase.app().database().ref().limitToLast(*) 'limit' must be a number value.`,
-      );
+      throw new Error(`firebase.database().ref().limitToLast(*) 'limit' must be a number value.`);
     }
 
     if (Math.floor(limit) !== limit || limit <= 0) {
       throw new Error(
-        `firebase.app().database().ref().limitToLast(*) 'limit' must be a positive integer.`,
+        `firebase.database().ref().limitToLast(*) 'limit' must be a positive integer.`,
       );
     }
 
     if (this._queryParams.hasLimit()) {
       throw new Error(
-        `firebase.app().database().ref().limitToLast(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
+        `firebase.database().ref().limitToLast(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
       );
     }
 
@@ -170,14 +167,14 @@ export default class DatabaseQuery extends ReferenceBase {
   once(eventType, successCallBack, failureCallbackOrContext, context) {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
-        `firebase.app().database().ref().once(*) 'eventType' must be one of ${eventTypes.join(
-          ', ',
-        )}.`,
+        `firebase.database().ref().once(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
       );
     }
 
-    this._database
-
+    // this._database.native.once(eventType)
+    //   .then(() => {
+    //
+    //   })
   }
 
   /**
@@ -185,20 +182,18 @@ export default class DatabaseQuery extends ReferenceBase {
    */
   orderByChild(path) {
     if (!isString(path)) {
-      throw new Error(
-        `firebase.app().database().ref().orderByChild(*) 'path' must be a string value.`,
-      );
+      throw new Error(`firebase.database().ref().orderByChild(*) 'path' must be a string value.`);
     }
 
     if (pathIsEmpty(path)) {
       throw new Error(
-        `firebase.app().database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead..`,
+        `firebase.database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead..`,
       );
     }
 
     if (this._orderByCalled) {
       throw new Error(
-        `firebase.app().database().ref().orderByChild(*) You can't combine multiple orderBy calls.`,
+        `firebase.database().ref().orderByChild(*) You can't combine multiple orderBy calls.`,
       );
     }
 
@@ -223,12 +218,12 @@ export default class DatabaseQuery extends ReferenceBase {
 
   startAt(value, key) {
     if (isUndefined(value)) {
-      throw new Error(`firebase.app().database().ref().startAt(*) 'value' cannot be undefined.`);
+      throw new Error(`firebase.database().ref().startAt(*) 'value' cannot be undefined.`);
     }
 
     if (!isUndefined(key) && !isString(key)) {
       throw new Error(
-        `firebase.app().database().ref().startAt(*) 'key' must be a string value if defined.`,
+        `firebase.database().ref().startAt(*) 'key' must be a string value if defined.`,
       );
     }
 
@@ -238,7 +233,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (this._queryParams.hasStartAt()) {
       throw new Error(
-        `firebase.app().database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
+        `firebase.database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
       );
     }
 
