@@ -24,6 +24,23 @@ describe('config()', () => {
     });
   });
 
+  describe('statics', () => {
+    it('LastFetchStatus', () => {
+      firebase.config.LastFetchStatus.should.be.an.Object();
+      firebase.config.LastFetchStatus.FAILURE.should.equal('failure');
+      firebase.config.LastFetchStatus.SUCCESS.should.equal('success');
+      firebase.config.LastFetchStatus.NO_FETCH_YET.should.equal('no_fetch_yet');
+      firebase.config.LastFetchStatus.THROTTLED.should.equal('throttled');
+    });
+
+    it('ValueSource', () => {
+      firebase.config.ValueSource.should.be.an.Object();
+      firebase.config.ValueSource.REMOTE.should.equal('remote');
+      firebase.config.ValueSource.STATIC.should.equal('static');
+      firebase.config.ValueSource.DEFAULT.should.equal('default');
+    });
+  });
+
   describe('fetch()', () => {
     it('with expiration provided', () => firebase.config().fetch(0));
     it('without expiration provided', () => firebase.config().fetch());
