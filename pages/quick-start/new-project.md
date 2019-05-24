@@ -21,7 +21,7 @@ npx @react-native-community/cli@next init --template=@react-native-firebase/temp
 
 > Substitute `<myProjectName>` for the name of your new project.
 
-This will create a new React Native project in a folder called `<myProjectName>` with the `@react-react-native/app` package pre installed.
+This will create a new React Native project in a folder called `<myProjectName>` with the `@react-react-native/app` package pre installed. The generated java package name will be `com.<myProjectName>`, while the XCode iOS Bundle Identifier will have the format `org.reactjs.native.example.<myProjectName>`
 
 ## Next
 
