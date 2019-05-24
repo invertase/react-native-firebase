@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "react-native-firebase",
   "private": true,
   "scripts": {
     "prepare": "yarn run lerna:link && lerna run prepare",
