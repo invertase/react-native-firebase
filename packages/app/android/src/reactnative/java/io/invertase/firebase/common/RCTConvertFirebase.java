@@ -116,6 +116,7 @@ public class RCTConvertFirebase {
   }
 
   /**
+   * TODO Remove me - also in SharedUtils
    * Takes a value and calls the appropriate setter for its type on the target map + key
    *
    * @param key   String key to set on target map

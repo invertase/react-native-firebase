@@ -17,7 +17,9 @@
  */
 
 import {
+  isFunction,
   isNumber,
+  isObject,
   isString,
   isUndefined,
   pathIsEmpty,
@@ -25,6 +27,7 @@ import {
   ReferenceBase,
 } from '@react-native-firebase/common';
 import DatabaseReference from './DatabaseReference';
+import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
@@ -156,13 +159,58 @@ export default class DatabaseQuery extends ReferenceBase {
     return new DatabaseQuery(this.path, this._queryParams.limitToLast(limit), this._orderByCalled);
   }
 
-  off() {}
+  off(eventType, callback, context) {
+    if (!isUndefined(eventType) && !eventTypes.includes(eventType)) {
+      throw new Error(
+        `firebase.database().ref().off(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
+      );
+    }
 
-  on() {}
+    if (!isUndefined(callback) && !isFunction(callback)) {
+      throw new Error(`firebase.database().ref().off(_, *) 'callback' must be a function.`);
+    }
+
+    if (!isUndefined(context) && !isObject(context)) {
+      throw new Error(`firebase.database().ref().off(_, _, *) 'context' must be an object.`);
+    }
+
+    // TODO
+    return this;
+  }
+
+  on(eventType, callback, cancelCallbackOrContext, context) {
+    if (!eventTypes.includes(eventType)) {
+      throw new Error(
+        `firebase.database().ref().on(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
+      );
+    }
+
+    if (!isFunction(callback)) {
+      throw new Error(`firebase.database().ref().on(_, *) 'callback' must be a function.`);
+    }
+
+    if (
+      !isUndefined(cancelCallbackOrContext) &&
+      (!isFunction(cancelCallbackOrContext) || !isObject(cancelCallbackOrContext))
+    ) {
+      throw new Error(
+        `firebase.database().ref().on(_, _, *) 'cancelCallbackOrContext' must be a function or object.`,
+      );
+    }
+
+    if (!isUndefined(context) && !isObject(context)) {
+      throw new Error(`firebase.database().ref().on(_, _, _, *) 'context' must be an object.`);
+    }
+
+    // TODO
+    return this;
+  }
 
   /**
-   *
    * @param eventType
+   * @param successCallBack
+   * @param failureCallbackOrContext
+   * @param context
    */
   once(eventType, successCallBack, failureCallbackOrContext, context) {
     if (!eventTypes.includes(eventType)) {
@@ -171,10 +219,55 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    // this._database.native.once(eventType)
-    //   .then(() => {
-    //
-    //   })
+    if (!isUndefined(successCallBack) && !isFunction(successCallBack)) {
+      throw new Error(
+        `firebase.database().ref().once(_, *) 'successCallBack' must be a function.`,
+      );
+    }
+
+    if (
+      !isUndefined(failureCallbackOrContext) &&
+      !!context &&
+      !isFunction(failureCallbackOrContext)
+    ) {
+      throw new Error(
+        `firebase.database().ref().once(_, *) 'failureCallbackOrContext' must be a function if context.`,
+      );
+    }
+
+    if (
+      !isUndefined(failureCallbackOrContext) &&
+      (!isObject(failureCallbackOrContext) || !isFunction(failureCallbackOrContext))
+    ) {
+      throw new Error(
+        `firebase.database().ref().once(_, *) 'failureCallbackOrContext' must be a function.`,
+      );
+    }
+
+    const key = this._generateQueryKey();
+    const modifiers = [];
+
+    return this._database.native
+      .once(key, this.path, modifiers, eventType)
+      .then(snapshot => {
+        const dataSnapshot = new DatabaseDataSnapshot(this.ref, snapshot);
+
+        if (isFunction(successCallBack)) {
+          if (isObject(failureCallbackOrContext)) {
+            successCallBack.bind(failureCallbackOrContext)(dataSnapshot);
+          } else if (isObject(context)) {
+            successCallBack.bind(context)(dataSnapshot);
+          } else {
+            successCallBack(dataSnapshot);
+          }
+        }
+
+        return dataSnapshot;
+      })
+      .catch(error => {
+        if (isFunction(failureCallbackOrContext)) failureCallbackOrContext(error);
+        return Promise.reject(error);
+      });
   }
 
   /**
@@ -187,7 +280,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (pathIsEmpty(path)) {
       throw new Error(
-        `firebase.database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead..`,
+        `firebase.database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead.`,
       );
     }
 
@@ -245,7 +338,10 @@ export default class DatabaseQuery extends ReferenceBase {
   }
 
   toString() {
-    // TODO prefix? https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L579
-    return pathToUrlEncodedString(this.path);
+    return `${this._database._customUrlOrRegion}/${pathToUrlEncodedString(this.path)}`;
+  }
+
+  _generateQueryKey() {
+    return `$${this._database._customUrlOrRegion}$/${this.path}$${'todo'}`;
   }
 }

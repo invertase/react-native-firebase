@@ -179,8 +179,6 @@ export namespace Database {
     toJSON(): object | null;
 
     val(): any;
-
-
   }
 
   /**
