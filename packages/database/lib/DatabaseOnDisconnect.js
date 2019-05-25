@@ -74,7 +74,7 @@ export default class DatabaseOnDisconnect {
     }
 
     return promiseWithOptionalCallback(
-      this._ref._database.native.onDisconnectSet(this._ref.path, value),
+      this._ref._database.native.onDisconnectSet(this._ref.path, { value }),
       onComplete,
     );
   }
@@ -96,7 +96,7 @@ export default class DatabaseOnDisconnect {
     }
 
     return promiseWithOptionalCallback(
-      this._ref._database.native.onDisconnectSetWithPriority(this._ref.path, value),
+      this._ref._database.native.onDisconnectSetWithPriority(this._ref.path, { value, priority }),
       onComplete,
     );
   }
@@ -118,7 +118,7 @@ export default class DatabaseOnDisconnect {
     }
 
     return promiseWithOptionalCallback(
-      this._ref._database.native.onDisconnectUpdate(this._ref.path, values),
+      this._ref._database.native.onDisconnectUpdate(this._ref.path, { values }),
       onComplete,
     );
   }

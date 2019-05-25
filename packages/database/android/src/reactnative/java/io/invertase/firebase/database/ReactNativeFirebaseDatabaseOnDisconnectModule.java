@@ -22,25 +22,24 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
-public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFirebaseModule {
+public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseReference";
-  private final UniversalFirebaseDatabaseReferenceModule module;
+  private final UniversalFirebaseDatabaseOnDisconnectModule module;
 
-  ReactNativeFirebaseDatabaseReferenceModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseDatabaseOnDisconnectModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    module = new UniversalFirebaseDatabaseReferenceModule(reactContext, SERVICE_NAME);
+    module = new UniversalFirebaseDatabaseOnDisconnectModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
-  public void set(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    module.set(app, dbURL, path, toHashMap(props).get("value"))
+  public void onDisconnectCancel(String app, String dbURL, String path, Promise promise) {
+    module.onDisconnectCancel(app, dbURL, path)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
@@ -51,9 +50,45 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void update(String app, String dbURL, String path, ReadableMap props, Promise promise) {
+  public void onDisconnectRemove(String app, String dbURL, String path, Promise promise) {
+    module.onDisconnectRemove(app, dbURL, path)
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
+  }
+
+  @ReactMethod
+  public void onDisconnectSet(String app, String dbURL, String path, ReadableMap props, Promise promise) {
+    module.onDisconnectSet(app, dbURL, path, toHashMap(props).get("value"))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
+  }
+
+  @ReactMethod
+  public void onDisconnectSetWithPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
+    module.onDisconnectSetWithPriority(app, dbURL, path, toHashMap(props).get("value"), toHashMap(props).get("priority"))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
+  }
+
+  @ReactMethod
+  public void onDisconnectUpdate(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     Map<String, Object> values = toHashMap(props);
-    module.update(app, dbURL, path, values)
+    module.onDisconnectUpdate(app, dbURL, path, values)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
@@ -62,42 +97,4 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
         }
       });
   }
-
-  @ReactMethod
-  public void setWithPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    module.setWithPriority(app, dbURL, path, toHashMap(props).get("value"), toHashMap(props).get("priority"))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
-  }
-
-  @ReactMethod
-  public void remove(String app, String dbURL, String path, Promise promise) {
-    module.remove(app, dbURL, path)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
-  }
-
-  @ReactMethod
-  public void setPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    module.setPriority(app, dbURL, path, toHashMap(props).get("priority"))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
-  }
-
-
 }

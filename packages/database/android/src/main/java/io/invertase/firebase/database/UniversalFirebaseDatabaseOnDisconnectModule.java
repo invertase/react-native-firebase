@@ -17,10 +17,10 @@ package io.invertase.firebase.database;
  *
  */
 
-
 import android.content.Context;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.OnDisconnect;
 
 import java.util.Map;
 
@@ -28,39 +28,49 @@ import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseUtils.getDatabaseForApp;
 
-public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseModule {
+public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFirebaseModule {
 
-  UniversalFirebaseDatabaseReferenceModule(Context context, String serviceName) {
+  UniversalFirebaseDatabaseOnDisconnectModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 
-  Task<Void> set(String appName, String dbURL, String path, Object value) {
+  Task<Void> onDisconnectCancel(String appName, String dbURL, String path) {
     return getDatabaseForApp(appName, dbURL)
       .getReference(path)
-      .setValue(value);
+      .onDisconnect()
+      .cancel();
   }
 
-  Task<Void> update(String appName, String dbURL, String path, Map<String , Object> value) {
+  Task<Void> onDisconnectRemove(String appName, String dbURL, String path) {
     return getDatabaseForApp(appName, dbURL)
       .getReference(path)
-      .updateChildren(value);
-  }
-
-  Task<Void> setWithPriority(String appName, String dbURL, String path, Object value, Object priority) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .setValue(value, priority);
-  }
-
-  Task<Void> remove(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
+      .onDisconnect()
       .removeValue();
   }
 
-  Task<Void> setPriority(String appName, String dbURL, String path, Object priority) {
+  Task<Void> onDisconnectSet(String appName, String dbURL, String path, Object value) {
     return getDatabaseForApp(appName, dbURL)
       .getReference(path)
-      .setPriority(priority);
+      .onDisconnect()
+      .setValue(value);
+  }
+
+  Task<Void> onDisconnectSetWithPriority(String appName, String dbURL, String path, Object value, Object priority) {
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL)
+      .getReference(path)
+      .onDisconnect();
+
+    if (priority instanceof String) {
+      return onDisconnect.setValue(value, (String) value);
+    } else {
+      return onDisconnect.setValue(value, (double) value);
+    }
+  }
+
+  Task<Void> onDisconnectUpdate(String appName, String dbURL, String path, Map<String, Object> values) {
+    return getDatabaseForApp(appName, dbURL)
+      .getReference(path)
+      .onDisconnect()
+      .updateChildren(values);
   }
 }

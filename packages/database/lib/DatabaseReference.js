@@ -27,12 +27,12 @@ import {
   isUndefined,
   isFunction,
   promiseWithOptionalCallback,
+  isObject,
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
 import DatabaseQueryParams from './DatabaseQueryParams';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
-import { serializeType } from '@react-native-firebase/common/lib/serialize';
 
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
@@ -58,6 +58,7 @@ export default class DatabaseReference extends DatabaseQuery {
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#child
+   * @param path
    */
   child(path) {
     if (!isString(path)) {
@@ -73,17 +74,97 @@ export default class DatabaseReference extends DatabaseQuery {
     return new DatabaseReference(this._database, pathChild(this.path, path));
   }
 
-  set() {}
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#set
+   * @param value
+   * @param onComplete
+   */
+  set(value, onComplete) {
+    if (isUndefined(value)) {
+      throw new Error(`firebase.database().ref().set(*) 'value' must be defined.`);
+    }
 
-  update() {}
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().set(_, *) 'onComplete' must be a function if provided.`,
+      );
+    }
 
-  setWithPriority() {}
+    return promiseWithOptionalCallback(this._database.native.set(this.path, { value }), onComplete);
+  }
 
-  remove() {}
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#update
+   * @param values
+   * @param onComplete
+   */
+  update(values, onComplete) {
+    if (!isObject(values)) {
+      throw new Error(`firebase.database().ref().update(*) 'values' must be an object.`);
+    }
+
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().update(_, *) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    return promiseWithOptionalCallback(
+      this._database.native.update(this.path, { values }),
+      onComplete,
+    );
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#setwithpriority
+   * @param newVal
+   * @param newPriority
+   * @param onComplete
+   */
+  setWithPriority(newVal, newPriority, onComplete) {
+    if (isUndefined(newVal)) {
+      throw new Error(`firebase.database().ref().setWithPriority(*) 'newVal' must be defined.`);
+    }
+
+    if (!isNumber(newPriority) && !isString(newPriority) && !isNull(newPriority)) {
+      throw new Error(
+        `firebase.database().ref().setWithPriority(_, *) 'newPriority' must be a number, string or null value.`,
+      );
+    }
+
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().setWithPriority(_, _, *) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    return promiseWithOptionalCallback(
+      this._database.native.setWithPriority(this.path, {
+        value: newVal,
+        priority: newPriority,
+      }),
+      onComplete,
+    );
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#remove
+   * @param onComplete
+   */
+  remove(onComplete) {
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().remove(*) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    return promiseWithOptionalCallback(this._database.native.remove(this.path), onComplete);
+  }
 
   transaction() {}
 
   /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#setpriority
    * @param priority
    * @param onComplete
    */
@@ -106,6 +187,12 @@ export default class DatabaseReference extends DatabaseQuery {
     );
   }
 
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#push
+   * @param value
+   * @param onComplete
+   * @returns {DatabaseReference}
+   */
   push(value, onComplete) {
     // TODO validate value?
 
