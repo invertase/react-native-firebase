@@ -20,15 +20,15 @@
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
   },
   "dependencies": {
-    "detox": "^9.0.4",
+    "detox": "12.5.0",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
-    "jet": "^0.2.0",
+    "jet": "^0.4.0",
     "jsonwebtoken": "^8.2.1",
-    "mocha": "^5.2.0",
-    "prop-types": "^15.6.1",
-    "react": "16.8.3",
-    "react-native": "0.59.3",
+    "mocha": "^6.0.2",
+    "prop-types": "^15.7.2",
+    "react": "16.8.1",
+    "react-native": "0.59.8",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0",
@@ -49,7 +49,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "flow-bin": "^0.78.0",
-    "nyc": "^13.1.0",
+    "nyc": "^13.3.0",
     "rimraf": "^2.6.2"
   },
   "nyc": {

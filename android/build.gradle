@@ -144,7 +144,7 @@ dependencies {
 
   // Required dependencies
   //noinspection GradleCompatible
-  compileOnly "com.google.firebase:firebase-core:16.0.8"
+  compileOnly "com.google.firebase:firebase-core:16.0.9"
   compileOnly "com.google.android.gms:play-services-base:16.1.0"
 
   /* -------------------------
@@ -158,7 +158,7 @@ dependencies {
     exclude group: 'com.android.support', module: 'customtabs'
   }
   // Authentication
-  compileOnly "com.google.firebase:firebase-auth:16.2.1"
+  compileOnly "com.google.firebase:firebase-auth:17.0.0"
   // Analytics
   compileOnly "com.google.firebase:firebase-analytics:16.4.0"
   // Performance Monitoring
@@ -178,7 +178,7 @@ dependencies {
   // Cloud Firestore
   compileOnly "com.google.firebase:firebase-firestore:18.2.0"
   // Cloud Messaging / FCM
-  compileOnly "com.google.firebase:firebase-messaging:17.5.0"
+  compileOnly "com.google.firebase:firebase-messaging:18.0.0"
   // Crashlytics
   compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
     transitive = true
