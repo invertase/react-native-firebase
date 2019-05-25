@@ -237,52 +237,52 @@ PODS:
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
   - Protobuf (3.7.0)
-  - React (0.59.3):
-    - React/Core (= 0.59.3)
-  - React/Core (0.59.3):
-    - yoga (= 0.59.3.React)
-  - React/CxxBridge (0.59.3):
+  - React (0.59.8):
+    - React/Core (= 0.59.8)
+  - React/Core (0.59.8):
+    - yoga (= 0.59.8.React)
+  - React/CxxBridge (0.59.8):
     - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
     - React/jsiexecutor
-  - React/cxxreact (0.59.3):
+  - React/cxxreact (0.59.8):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/jsinspector
-  - React/DevSupport (0.59.3):
+  - React/DevSupport (0.59.8):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.3)
-  - React/jsi (0.59.3):
+  - React/fishhook (0.59.8)
+  - React/jsi (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React/jsiexecutor (0.59.3):
+  - React/jsiexecutor (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/cxxreact
     - React/jsi
-  - React/jsinspector (0.59.3)
-  - React/RCTAnimation (0.59.3):
+  - React/jsinspector (0.59.8)
+  - React/RCTAnimation (0.59.8):
     - React/Core
-  - React/RCTBlob (0.59.3):
+  - React/RCTBlob (0.59.8):
     - React/Core
-  - React/RCTNetwork (0.59.3):
+  - React/RCTNetwork (0.59.8):
     - React/Core
-  - React/RCTText (0.59.3):
+  - React/RCTText (0.59.8):
     - React/Core
-  - React/RCTWebSocket (0.59.3):
+  - React/RCTWebSocket (0.59.8):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNFirebase (5.3.1):
     - Firebase/Core
     - React
-  - yoga (0.59.3.React)
+  - yoga (0.59.8.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.12.0)
