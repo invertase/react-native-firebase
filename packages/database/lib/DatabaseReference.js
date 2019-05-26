@@ -109,6 +109,8 @@ export default class DatabaseReference extends DatabaseQuery {
       );
     }
 
+    // TODO validate value keys?
+
     return promiseWithOptionalCallback(
       this._database.native.update(this.path, { values }),
       onComplete,

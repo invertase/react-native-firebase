@@ -100,6 +100,8 @@ export default class DatabaseQuery extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
+    // TODO require cycle warning
+    // Require cycle: ../packages/database/lib/DatabaseReference.js -> ../packages/database/lib/DatabaseQuery.js -> ../packages/database/lib/DatabaseReference.js
     return new DatabaseReference(this._database, this.path);
   }
 

@@ -17,7 +17,7 @@
  */
 
 import binaryToBase64 from 'react-native/Libraries/Utilities/binaryToBase64';
-import promiseDefer from './promiseDefer';
+import { promiseDefer } from './promise';
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -40,7 +40,7 @@ function btoa(input): string {
 
     if (charCode > 0xff) {
       throw new Error(
-        "'RNFirebase.Base64.btoa' failed: The string to be encoded contains characters outside of the Latin1 range.",
+        '\'RNFirebase.Base64.btoa\' failed: The string to be encoded contains characters outside of the Latin1 range.',
       );
     }
 
@@ -64,7 +64,7 @@ function atob(input): string {
 
   if (str.length % 4 === 1) {
     throw new Error(
-      "'RNFirebase.Base64.atob' failed: The string to be decoded is not correctly encoded.",
+      '\'RNFirebase.Base64.atob\' failed: The string to be decoded is not correctly encoded.',
     );
   }
 
@@ -111,7 +111,7 @@ function fromData(data) {
     });
   }
 
-  throw new Error("'RNFirebase.Base64.fromData' failed: Unknown data type.");
+  throw new Error('\'RNFirebase.Base64.fromData\' failed: Unknown data type.');
 }
 
 export default {
