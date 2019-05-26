@@ -32,70 +32,70 @@ import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
 export default class DatabaseQuery extends ReferenceBase {
-  static _validateQueryEndpoints(params) {}
+  // static _validateQueryEndpoints(params) {}
+  //
+  // static _validateLimit(params) {
+  //   if (
+  //     params.hasStartAt() &&
+  //     params.hasEndAt() &&
+  //     params.hasLimit() &&
+  //     !params.hasAnchoredLimit()
+  //   ) {
+  //     throw new Error(
+  //       `Can't combine startAt(), endAt(), and limit(). Use limitToFirst() or limitToLast() instead.`,
+  //     );
+  //   }
+  // }
+  //
+  // static _modifiersToString(modifiers = []) {
+  //   const sorted = modifiers.sort((a, b) => {
+  //     if (a.id < b.id) return -1;
+  //     if (a.id > b.id) return 1;
+  //     return 0;
+  //   });
+  //
+  //   let key = '{';
+  //   for (let i = 0; i < sorted.length; i++) {
+  //     if (i !== 0) key += ',';
+  //     key += sorted[i].id;
+  //   }
+  //   key += '}';
+  //   return key;
+  // }
+  //
+  // static _orderByModifier(name, key) {
+  //   return {
+  //     id: 'TODO',
+  //     type: 'orderBy',
+  //     name: `orderBy${name}`,
+  //     key,
+  //   };
+  // }
+  //
+  // static _limitModifier(name, limit) {
+  //   return {
+  //     id: 'TODO',
+  //     type: 'limit',
+  //     name: `limitTo${name}`,
+  //     limit,
+  //   };
+  // }
+  //
+  // static _filterModifier(name, value, key) {
+  //   return {
+  //     id: 'TODO',
+  //     type: 'filter',
+  //     name,
+  //     value,
+  //     valueType: typeof value,
+  //     key,
+  //   };
+  // }
 
-  static _validateLimit(params) {
-    if (
-      params.hasStartAt() &&
-      params.hasEndAt() &&
-      params.hasLimit() &&
-      !params.hasAnchoredLimit()
-    ) {
-      throw new Error(
-        `Can't combine startAt(), endAt(), and limit(). Use limitToFirst() or limitToLast() instead.`,
-      );
-    }
-  }
-
-  static _modifiersToString(modifiers = []) {
-    const sorted = modifiers.sort((a, b) => {
-      if (a.id < b.id) return -1;
-      if (a.id > b.id) return 1;
-      return 0;
-    });
-
-    let key = '{';
-    for (let i = 0; i < sorted.length; i++) {
-      if (i !== 0) key += ',';
-      key += sorted[i].id;
-    }
-    key += '}';
-    return key;
-  }
-
-  static _orderByModifier(name, key) {
-    return {
-      id: 'TODO',
-      type: 'orderBy',
-      name: `orderBy${name}`,
-      key,
-    };
-  }
-
-  static _limitModifier(name, limit) {
-    return {
-      id: 'TODO',
-      type: 'limit',
-      name: `limitTo${name}`,
-      limit,
-    };
-  }
-
-  static _filterModifier(name, value, key) {
-    return {
-      id: 'TODO',
-      type: 'filter',
-      name,
-      value,
-      valueType: typeof value,
-      key,
-    };
-  }
-
-  constructor(database, path, queryParams, orderByCalled = false) {
+  constructor(database, path, modifiers, orderByCalled = false) {
     super(path);
     this._database = database;
-    this._queryParams = queryParams;
+    this._modifiers = modifiers;
     this._orderByCalled = orderByCalled;
   }
 
@@ -120,23 +120,19 @@ export default class DatabaseQuery extends ReferenceBase {
   isEqual() {}
 
   limitToFirst(limit) {
-    if (!isNumber(limit)) {
-      throw new Error(`firebase.database().ref().limitToFirst(*) 'limit' must be a number value.`);
-    }
-
-    if (Math.floor(limit) !== limit || limit <= 0) {
+    if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
-        `firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer.`,
+        `firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer value.`,
       );
     }
 
-    if (this._queryParams.hasLimit()) {
+    if (this._modifiers.hasLimit()) {
       throw new Error(
-        `firebase.database().ref().limitToFirst(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
+        `firebase.database().ref().limitToFirst(*) Limit was already set (by another call to limitToFirst, or limitToLast)`,
       );
     }
 
-    return new DatabaseQuery(this.path, this._queryParams.limitToFirst(limit), this._orderByCalled);
+    return new DatabaseQuery(this.path, this._modifiers.limitToFirst(limit));
   }
 
   limitToLast(limit) {
@@ -220,9 +216,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     if (!isUndefined(successCallBack) && !isFunction(successCallBack)) {
-      throw new Error(
-        `firebase.database().ref().once(_, *) 'successCallBack' must be a function.`,
-      );
+      throw new Error(`firebase.database().ref().once(_, *) 'successCallBack' must be a function.`);
     }
 
     if (
@@ -245,7 +239,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     const key = this._generateQueryKey();
-    const modifiers = [];
+    const modifiers = this._modifiers.toArray();
 
     return this._database.native
       .once(key, this.path, modifiers, eventType)

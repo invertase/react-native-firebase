@@ -31,12 +31,12 @@ import {
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
-import DatabaseQueryParams from './DatabaseQueryParams';
+import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
-    super(database, path, DatabaseQueryParams.DEFAULT);
+    super(database, path, DatabaseQueryModifiers.DEFAULT);
     this._database = database;
   }
 
