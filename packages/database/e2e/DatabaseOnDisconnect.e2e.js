@@ -25,7 +25,7 @@
 //       await firebase.database().goOffline();
 //       await firebase.database().goOnline();
 //       const snapshot = await ref.once('value');
-//       snapshot.val().should.equal('foobar');
+//       snapshot.val().should.eql('foobar');
 //     });
 //   });
 // });

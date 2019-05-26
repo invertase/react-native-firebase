@@ -223,20 +223,16 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (
       !isUndefined(failureCallbackOrContext) &&
-      !!context &&
-      !isFunction(failureCallbackOrContext)
+      (!isObject(failureCallbackOrContext) && !isFunction(failureCallbackOrContext))
     ) {
       throw new Error(
-        `firebase.database().ref().once(_, *) 'failureCallbackOrContext' must be a function if context.`,
+        `firebase.database().ref().once(_, _, *) 'failureCallbackOrContext' must be a function or context.`,
       );
     }
 
-    if (
-      !isUndefined(failureCallbackOrContext) &&
-      (!isObject(failureCallbackOrContext) || !isFunction(failureCallbackOrContext))
-    ) {
+    if (!isUndefined(context) && !isObject(context)) {
       throw new Error(
-        `firebase.database().ref().once(_, *) 'failureCallbackOrContext' must be a function.`,
+        `firebase.database().ref().once(_, _, _, *) 'context' must be a context object.`,
       );
     }
 
@@ -338,6 +334,6 @@ export default class DatabaseQuery extends ReferenceBase {
   }
 
   _generateQueryKey() {
-    return `$${this._database._customUrlOrRegion}$/${this.path}$${'todo'}`;
+    return `$${this._database._customUrlOrRegion}$/${this.path}$${this._modifiers.toString()}`;
   }
 }

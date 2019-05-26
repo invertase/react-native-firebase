@@ -21,6 +21,7 @@ package io.invertase.firebase.database;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -29,10 +30,17 @@ import com.google.firebase.database.MutableData;
 
 import javax.annotation.Nullable;
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.SharedUtils.mapPutValue;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getExceptionCodeAndMessage;
 
-public class ReactNativeFirebaseDatabaseUtils {
+public class ReactNativeFirebaseDatabaseCommon {
   private static final String TAG = "Utils";
+
+  public static void rejectPromiseDatabaseException(Promise promise, @Nullable Exception exception) {
+    String[] codeAndMessage = getExceptionCodeAndMessage(exception);
+    rejectPromiseWithCodeAndMessage(promise, codeAndMessage[0], codeAndMessage[1]);
+  }
 
   /**
    * @param dataSnapshot

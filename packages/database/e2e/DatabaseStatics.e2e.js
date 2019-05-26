@@ -19,9 +19,9 @@ describe('database.X', () => {
   describe('ServerValue.TIMESTAMP', () => {
     it('returns a valid object', () => {
       const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
+      should.eql(Object.keys(TIMESTAMP).length, 1);
       TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.equal('timestamp');
+      TIMESTAMP['.sv'].should.eql('timestamp');
     });
   });
 });

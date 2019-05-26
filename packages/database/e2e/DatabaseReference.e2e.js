@@ -19,35 +19,35 @@ describe('database().ref()', () => {
   describe('key', () => {
     it('returns null when no reference path is provides', () => {
       const ref = firebase.database().ref();
-      should.equal(ref.key, null);
+      should.eql(ref.key, null);
     });
 
     it('return last token in reference path', () => {
       const ref1 = firebase.database().ref('foo');
       const ref2 = firebase.database().ref('foo/bar/baz');
-      ref1.key.should.equal('foo');
-      ref2.key.should.equal('baz');
+      ref1.key.should.eql('foo');
+      ref2.key.should.eql('baz');
     });
   });
 
   describe('parent', () => {
     it('returns null when no reference path is provides', () => {
       const ref = firebase.database().ref();
-      should.equal(ref.parent, null);
+      should.eql(ref.parent, null);
     });
 
     it('return last token in reference path', () => {
       const ref1 = firebase.database().ref('/foo').parent;
       const ref2 = firebase.database().ref('/foo/bar/baz').parent;
-      should.equal(ref1, null);
-      ref2.key.should.equal('bar');
+      should.eql(ref1, null);
+      ref2.key.should.eql('bar');
     });
   });
 
   describe('root', () => {
     it('returns a root reference', () => {
       const ref = firebase.database().ref('foo/bar/baz');
-      should.equal(ref.root.key, null);
+      should.eql(ref.root.key, null);
     });
   });
 
@@ -79,7 +79,7 @@ describe('database().ref()', () => {
     });
   });
 
-  describe.only('set()', async () => {
+  describe('set()', async () => {
     it('throws if no value is provided', async () => {
       try {
         await firebase
@@ -123,6 +123,21 @@ describe('database().ref()', () => {
           .ref('tests/elliot')
           .set(value, resolve);
       });
+    });
+
+    it.only('throws if permission defined', async () => {
+      const value = Date.now();
+      try {
+        await firebase
+          .database()
+          .ref('nope/foo')
+          .set(value);
+        return Promise.reject(new Error('Did not throw error.'));
+      } catch (error) {
+        console.log(error);
+        error.code.includes('database/permission-denied').should.be.true();
+        return Promise.resolve();
+      }
     });
   });
 
@@ -262,7 +277,7 @@ describe('database().ref()', () => {
         .database()
         .ref()
         .onDisconnect();
-      should.equal(instance.constructor.name, 'DatabaseOnDisconnect');
+      should.eql(instance.constructor.name, 'DatabaseOnDisconnect');
     });
   });
 });

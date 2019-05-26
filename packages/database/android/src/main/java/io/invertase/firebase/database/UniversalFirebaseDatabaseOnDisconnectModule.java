@@ -26,7 +26,7 @@ import java.util.Map;
 
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseUtils.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFirebaseModule {
 

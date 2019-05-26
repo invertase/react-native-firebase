@@ -20,34 +20,34 @@ describe('database()', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.database);
-      app.database().app.should.equal(app);
+      app.database().app.should.eql(app);
     });
 
     it('supports multiple apps', async () => {
-      firebase.database().app.name.should.equal('[DEFAULT]');
+      firebase.database().app.name.should.eql('[DEFAULT]');
 
       firebase
         .database(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
+        .app.name.should.eql('secondaryFromNative');
 
       firebase
         .app('secondaryFromNative')
         .database()
-        .app.name.should.equal('secondaryFromNative');
+        .app.name.should.eql('secondaryFromNative');
     });
   });
 
   it('supports custom database URL', async () => {
-    firebase.database().app.name.should.equal('[DEFAULT]');
+    firebase.database().app.name.should.eql('[DEFAULT]');
 
     firebase
       .database(firebase.app('secondaryFromNative'))
-      .app.name.should.equal('secondaryFromNative');
+      .app.name.should.eql('secondaryFromNative');
 
     firebase
       .app('secondaryFromNative')
       .database()
-      .app.name.should.equal('secondaryFromNative');
+      .app.name.should.eql('secondaryFromNative');
   });
 
   describe('ref()', () => {
@@ -97,9 +97,9 @@ describe('database()', () => {
       const ref1 = firebase.database().refFromURL(firebase.database()._customUrlOrRegion);
       const ref2 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar`);
       const ref3 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar?baz=foo`);
-      should.equal(ref1.path, '/');
-      should.equal(ref2.path, 'foo/bar');
-      should.equal(ref3.path, 'foo/bar');
+      should.eql(ref1.path, '/');
+      should.eql(ref2.path, 'foo/bar');
+      should.eql(ref3.path, 'foo/bar');
     });
   });
 

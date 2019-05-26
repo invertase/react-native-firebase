@@ -29,7 +29,7 @@ import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
 public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "DatabaseReference";
+  private static final String SERVICE_NAME = "DatabaseOnDisconnect";
   private final UniversalFirebaseDatabaseOnDisconnectModule module;
 
   ReactNativeFirebaseDatabaseOnDisconnectModule(ReactApplicationContext reactContext) {

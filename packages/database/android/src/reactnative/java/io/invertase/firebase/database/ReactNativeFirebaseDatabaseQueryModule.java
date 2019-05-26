@@ -29,7 +29,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -37,8 +36,9 @@ import javax.annotation.Nonnull;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
-import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseUtils.snapshotToMap;
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseUtils.getDatabaseForApp;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
+//import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseErrorCodeAndMessage;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseQuery";
@@ -261,6 +261,12 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       @Override
       public void onCancelled(@Nonnull DatabaseError error) {
         rejectPromiseWithExceptionMap(promise, error.toException());
+//        Map<String, String> errorCodeAndMessage = getDatabaseErrorCodeAndMessage(error);
+//        rejectPromiseWithCodeAndMessage(
+//          promise,
+//          errorCodeAndMessage.get("code"),
+//          errorCodeAndMessage.get("message")
+//        );
       }
     };
 
@@ -340,6 +346,12 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       public void onCancelled(@Nonnull DatabaseError error) {
         query.removeEventListener(this);
         rejectPromiseWithExceptionMap(promise, error.toException());
+//        Map<String, String> errorCodeAndMessage = getDatabaseErrorCodeAndMessage(error);
+//        rejectPromiseWithCodeAndMessage(
+//          promise,
+//          errorCodeAndMessage.get("code"),
+//          errorCodeAndMessage.get("message")
+//        );
       }
     };
 

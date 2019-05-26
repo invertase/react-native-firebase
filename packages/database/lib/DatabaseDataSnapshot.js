@@ -16,18 +16,25 @@
  *
  */
 
+import { isArray, isFunction, isObject } from '@react-native-firebase/common';
+
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
-    this._ref = reference;
     this._snapshot = snapshot;
+
+    if (reference.key !== snapshot.key) {
+      this._ref = reference.child(snapshot.key);
+    } else {
+      this._ref = reference;
+    }
   }
 
   get key() {
-    return 'todo'; // TODO
+    return this._snapshot.key;
   }
 
   get ref() {
-    return 'todo'; // TODO
+    return this._ref;
   }
 
   child(path) {
@@ -35,14 +42,27 @@ export default class DatabaseDataSnapshot {
   }
 
   exists() {
-    return false; // TODO
+    return this._snapshot.exists;
   }
 
   exportVal() {
-    // TODO
+    let { value } = this._snapshot;
+
+    if (isObject(value) || isArray(value)) {
+      value = JSON.parse(JSON.stringify(value));
+    }
+
+    return {
+      '.value': value,
+      '.priority': this._snapshot.priority,
+    };
   }
 
-  forEach() {
+  forEach(action) {
+    if (!isFunction(action)) {
+      throw new Error(`snapshot.forEach(*) 'action' must be a function.`);
+    }
+
     // TODO
   }
 
@@ -63,10 +83,16 @@ export default class DatabaseDataSnapshot {
   }
 
   toJSON() {
-
+    return this.val();
   }
 
   val() {
+    const { value } = this._snapshot;
 
+    if (isObject(value) || isArray(value)) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    return value;
   }
 }

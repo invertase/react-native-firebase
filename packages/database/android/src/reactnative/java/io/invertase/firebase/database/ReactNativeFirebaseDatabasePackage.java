@@ -33,6 +33,8 @@ public class ReactNativeFirebaseDatabasePackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new ReactNativeFirebaseDatabaseModule(reactContext));
     modules.add(new ReactNativeFirebaseDatabaseReferenceModule(reactContext));
+    modules.add(new ReactNativeFirebaseDatabaseQueryModule(reactContext));
+    modules.add(new ReactNativeFirebaseDatabaseOnDisconnectModule(reactContext));
     return modules;
   }
 

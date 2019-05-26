@@ -32,6 +32,7 @@ const nativeModuleName = [
   'RNFBDatabaseModule',
   'RNFBDatabaseReferenceModule',
   'RNFBDatabaseQueryModule',
+  'RNFBDatabaseOnDisconnect',
 ];
 
 class FirebaseDatabaseModule extends FirebaseModule {

@@ -27,6 +27,7 @@ import java.util.Map;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.rejectPromiseDatabaseException;
 
 public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseReference";
@@ -44,7 +45,7 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
+          rejectPromiseDatabaseException(promise, task.getException());
         }
       });
   }
