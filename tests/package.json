@@ -17,28 +17,31 @@
     "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
+    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
+    "postinstall": "patch-package"
   },
   "dependencies": {
-    "detox": "12.5.0",
+    "@invertase/tests-firebase-functions": "^0.0.1",
+    "detox": "^9.0.4",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
-    "jet": "^0.4.0",
+    "jet": "https://github.com/mikehardy/jet.git#v0.3.0-dev",
     "jsonwebtoken": "^8.2.1",
-    "mocha": "^6.0.2",
-    "prop-types": "^15.7.2",
-    "react": "16.8.1",
-    "react-native": "0.59.8",
+    "mocha": "^5.2.0",
+    "patch-package": "^6.1.2",
+    "postinstall-postinstall": "^2.0.0",
+    "prop-types": "^15.6.1",
+    "react": "16.8.3",
+    "react-native": "0.59.3",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0",
-    "@invertase/tests-firebase-functions": "^0.0.1"
+    "sinon": "^6.2.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.0.0",
-    "@react-native-firebase/private-tests-helpers": "^0.0.9",
-    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
     "@babel/runtime": "^7.0.0",
+    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
     "babel-eslint": "^9.0.0",
     "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
@@ -48,8 +51,8 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.78.0",
-    "nyc": "^13.3.0",
+    "flow-bin": "^0.98.1",
+    "nyc": "^13.1.0",
     "rimraf": "^2.6.2"
   },
   "nyc": {
