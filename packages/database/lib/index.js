@@ -31,6 +31,7 @@ const namespace = 'database';
 const nativeModuleName = [
   'RNFBDatabaseModule',
   'RNFBDatabaseReferenceModule',
+  'RNFBDatabaseQueryModule',
 ];
 
 class FirebaseDatabaseModule extends FirebaseModule {
