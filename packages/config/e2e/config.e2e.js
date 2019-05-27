@@ -167,7 +167,6 @@ describe('config()', () => {
 
   describe('setDefaults()', () => {
     it('sets default values from key values object', async () => {
-      await Utils.sleep(10000);
       await firebase.config().setDefaults({
         some_key: 'I do not exist',
         some_key_1: 1337,
@@ -208,7 +207,6 @@ describe('config()', () => {
 
   describe('setDefaultsFromResource()', () => {
     it('sets defaults from remote_config_resource_test file', async () => {
-      await Utils.sleep(10000);
       await firebase.config().setDefaultsFromResource('remote_config_resource_test');
       const config = firebase.config().getAll();
       config.company.source.should.equal('default');
