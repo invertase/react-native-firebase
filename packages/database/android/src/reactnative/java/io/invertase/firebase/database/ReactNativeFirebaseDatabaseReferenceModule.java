@@ -41,7 +41,7 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void set(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     module.set(app, dbURL, path, toHashMap(props).get("value"))
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
@@ -52,13 +52,14 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
 
   @ReactMethod
   public void update(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    Map<String, Object> values = toHashMap(props);
+    @SuppressWarnings("unchecked") Map<String, Object> values = (Map<String, Object>) toHashMap(props).get("values");
+
     module.update(app, dbURL, path, values)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
+          rejectPromiseDatabaseException(promise, task.getException());
         }
       });
   }
@@ -66,11 +67,11 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void setWithPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     module.setWithPriority(app, dbURL, path, toHashMap(props).get("value"), toHashMap(props).get("priority"))
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
+          rejectPromiseDatabaseException(promise, task.getException());
         }
       });
   }
@@ -78,11 +79,11 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void remove(String app, String dbURL, String path, Promise promise) {
     module.remove(app, dbURL, path)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
+          rejectPromiseDatabaseException(promise, task.getException());
         }
       });
   }
@@ -90,14 +91,12 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void setPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     module.setPriority(app, dbURL, path, toHashMap(props).get("priority"))
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
+          rejectPromiseDatabaseException(promise, task.getException());
         }
       });
   }
-
-
 }

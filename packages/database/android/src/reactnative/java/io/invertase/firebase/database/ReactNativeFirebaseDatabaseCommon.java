@@ -32,14 +32,17 @@ import javax.annotation.Nullable;
 
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.SharedUtils.mapPutValue;
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getExceptionCodeAndMessage;
 
 public class ReactNativeFirebaseDatabaseCommon {
-  private static final String TAG = "Utils";
+  private static final String TAG = "DatabaseCommon";
 
+  /**
+   * @param promise
+   * @param exception
+   */
   public static void rejectPromiseDatabaseException(Promise promise, @Nullable Exception exception) {
-    String[] codeAndMessage = getExceptionCodeAndMessage(exception);
-    rejectPromiseWithCodeAndMessage(promise, codeAndMessage[0], codeAndMessage[1]);
+    UniversalDatabaseException databaseException = (UniversalDatabaseException) exception;
+    rejectPromiseWithCodeAndMessage(promise, databaseException.getCode(), databaseException.getMessage());
   }
 
   /**

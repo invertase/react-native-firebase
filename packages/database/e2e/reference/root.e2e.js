@@ -15,17 +15,9 @@
  *
  */
 
-// describe('database().ref().onDisconnect()', () => {
-//   describe('cancel', () => {
-//     it('cancels all previous events', async () => {
-//       const ref = firebase.database().ref('on-disconnect-cancel');
-//       await ref.set('foobar');
-//       await ref.onDisconnect().set(Date.now());
-//       await ref.onDisconnect().cancel();
-//       await firebase.database().goOffline();
-//       await firebase.database().goOnline();
-//       const snapshot = await ref.once('value');
-//       snapshot.val().should.eql('foobar');
-//     });
-//   });
-// });
+describe('database().ref().root', () => {
+  it('returns a root reference', () => {
+    const ref = firebase.database().ref('foo/bar/baz');
+    should.equal(ref.root.key, null);
+  });
+});

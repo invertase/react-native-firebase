@@ -20,6 +20,7 @@ import { isNumber } from '@react-native-firebase/common';
 
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',
+  VIEW_FROM_RIGHT: 'right',
 };
 
 export default class DatabaseQueryModifiers {
@@ -27,8 +28,18 @@ export default class DatabaseQueryModifiers {
 
   constructor() {
     this._limit = undefined;
+    this._orderBy = undefined;
+    this._startAt = undefined;
+    this._endAt = undefined;
     this._modifiers = [];
   }
+
+
+  /**
+   *
+   * LIMIT
+   *
+   */
 
   hasLimit() {
     return this._limit !== undefined;
@@ -61,6 +72,71 @@ export default class DatabaseQueryModifiers {
     this._modifiers.push(newLimit);
     return this;
   }
+
+  /**
+   *
+   * ORDER
+   *
+   */
+
+  hasOrderBy() {
+    return this._orderBy !== undefined;
+  }
+
+  orderByChild(path) {
+    const newOrder = {
+      id: `order-orderByChild:${path}`,
+      type: 'orderBy',
+      name: 'orderByChild',
+      key: path,
+    };
+
+    this._orderBy = newOrder;
+    this._modifiers.push(newOrder);
+    return this;
+  }
+
+  orderByKey() {
+    const newOrder = {
+      id: `order-orderByKey`,
+      type: 'orderBy',
+      name: 'orderByKey',
+    };
+
+    this._orderBy = newOrder;
+    this._modifiers.push(newOrder);
+    return this;
+  }
+
+  orderByPriority() {
+    const newOrder = {
+      id: `order-orderByPriority`,
+      type: 'orderBy',
+      name: 'orderByPriority',
+    };
+
+    this._orderBy = newOrder;
+    this._modifiers.push(newOrder);
+    return this;
+  }
+
+  orderByValue() {
+    const newOrder = {
+      id: `order-orderByValue`,
+      type: 'orderBy',
+      name: 'orderByValue',
+    };
+
+    this._orderBy = newOrder;
+    this._modifiers.push(newOrder);
+    return this;
+  }
+
+  /**
+   *
+   * FILTER
+   *
+   */
 
   // Returns a modifier array
   toArray() {

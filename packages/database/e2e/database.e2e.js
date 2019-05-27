@@ -97,9 +97,9 @@ describe('database()', () => {
       const ref1 = firebase.database().refFromURL(firebase.database()._customUrlOrRegion);
       const ref2 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar`);
       const ref3 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar?baz=foo`);
-      should.eql(ref1.path, '/');
-      should.eql(ref2.path, 'foo/bar');
-      should.eql(ref3.path, 'foo/bar');
+      should.equal(ref1.path, '/');
+      should.equal(ref2.path, 'foo/bar');
+      should.equal(ref3.path, 'foo/bar');
     });
   });
 

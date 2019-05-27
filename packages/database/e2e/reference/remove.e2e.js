@@ -15,13 +15,21 @@
  *
  */
 
-describe('database.X', () => {
-  describe('ServerValue.TIMESTAMP', () => {
-    it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.eql('timestamp');
-    });
+describe('database().ref().remove()', () => {
+  it('throws if onComplete is not a function', async () => {
+    try {
+      await firebase
+        .database()
+        .ref('tests/elliot')
+        .remove('foo');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      return Promise.resolve();
+    }
+  });
+
+  it('removes a value at the path', async () => {
+
   });
 });

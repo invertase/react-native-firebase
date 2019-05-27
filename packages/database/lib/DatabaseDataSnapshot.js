@@ -16,7 +16,7 @@
  *
  */
 
-import { isArray, isFunction, isObject } from '@react-native-firebase/common';
+import { isString, isValidPath, isArray, isFunction, isObject } from '@react-native-firebase/common';
 
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
@@ -38,7 +38,7 @@ export default class DatabaseDataSnapshot {
   }
 
   child(path) {
-    // TODO
+
   }
 
   exists() {
@@ -67,7 +67,7 @@ export default class DatabaseDataSnapshot {
   }
 
   getPriority() {
-    // TODO
+    return this._snapshot.priority;
   }
 
   hasChild() {

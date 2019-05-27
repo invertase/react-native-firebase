@@ -15,14 +15,14 @@ const CONTENT = {
   },
 };
 
-exports.seed = function seed() {
+exports.seed = function seed(path) {
   return Promise.all([
-    firebase.database().ref(`${PATH}/types`).set(CONTENT.DEFAULT),
+    firebase.database().ref(`${path}/types`).set(CONTENT.DEFAULT),
   ]);
 };
 
-exports.wipe = function wipe() {
-  return firebase.database().ref(`${PATH}/types`)
+exports.wipe = function wipe(path) {
+  return firebase.database().ref(path)
     .remove();
 };
 

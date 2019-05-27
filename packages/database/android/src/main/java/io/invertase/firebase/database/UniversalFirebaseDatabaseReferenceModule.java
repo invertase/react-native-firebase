@@ -21,6 +21,8 @@ package io.invertase.firebase.database;
 import android.content.Context;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.Map;
 
@@ -35,32 +37,87 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
   }
 
   Task<Void> set(String appName, String dbURL, String path, Object value) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .setValue(value);
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+
+    reference.setValue(value, (databaseError, databaseReference) -> {
+      if (databaseError != null) {
+        taskCompletionSource.setException(
+          new UniversalDatabaseException(databaseError.getCode(), databaseError.getMessage(), databaseError.toException())
+        );
+      } else {
+        taskCompletionSource.setResult(null);
+      }
+    });
+
+    return taskCompletionSource.getTask();
   }
 
-  Task<Void> update(String appName, String dbURL, String path, Map<String , Object> value) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .updateChildren(value);
+  Task<Void> update(String appName, String dbURL, String path, Map<String, Object> value) {
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+
+    reference.updateChildren(value, (databaseError, databaseReference) -> {
+      if (databaseError != null) {
+        taskCompletionSource.setException(
+          new UniversalDatabaseException(databaseError.getCode(), databaseError.getMessage(), databaseError.toException())
+        );
+      } else {
+        taskCompletionSource.setResult(null);
+      }
+    });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> setWithPriority(String appName, String dbURL, String path, Object value, Object priority) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .setValue(value, priority);
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+
+    reference.setValue(value, priority, (databaseError, databaseReference) -> {
+      if (databaseError != null) {
+        taskCompletionSource.setException(
+          new UniversalDatabaseException(databaseError.getCode(), databaseError.getMessage(), databaseError.toException())
+        );
+      } else {
+        taskCompletionSource.setResult(null);
+      }
+    });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> remove(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .removeValue();
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+
+    reference.removeValue((databaseError, databaseReference) -> {
+      if (databaseError != null) {
+        taskCompletionSource.setException(
+          new UniversalDatabaseException(databaseError.getCode(), databaseError.getMessage(), databaseError.toException())
+        );
+      } else {
+        taskCompletionSource.setResult(null);
+      }
+    });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> setPriority(String appName, String dbURL, String path, Object priority) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .setPriority(priority);
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+
+    reference.setPriority(priority, (databaseError, databaseReference) -> {
+      if (databaseError != null) {
+        taskCompletionSource.setException(
+          new UniversalDatabaseException(databaseError.getCode(), databaseError.getMessage(), databaseError.toException())
+        );
+      } else {
+        taskCompletionSource.setResult(null);
+      }
+    });
+
+    return taskCompletionSource.getTask();
   }
 }

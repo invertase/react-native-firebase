@@ -15,13 +15,15 @@
  *
  */
 
-describe('database.X', () => {
-  describe('ServerValue.TIMESTAMP', () => {
-    it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.eql('timestamp');
-    });
-  });
-});
+// describe('database().ref().onDisconnect().cancel()', () => {
+//     it('cancels all previous events', async () => {
+//       const ref = firebase.database().ref('on-disconnect-cancel');
+//       await ref.set('foobar');
+//       await ref.onDisconnect().set(Date.now());
+//       await ref.onDisconnect().cancel();
+//       await firebase.database().goOffline();
+//       await firebase.database().goOnline();
+//       const snapshot = await ref.once('value');
+//       snapshot.val().should.eql('foobar');
+//     });
+// });

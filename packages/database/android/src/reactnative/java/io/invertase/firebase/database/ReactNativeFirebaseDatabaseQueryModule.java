@@ -36,9 +36,11 @@ import javax.annotation.Nonnull;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.rejectPromiseDatabaseException;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
-//import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseErrorCodeAndMessage;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+
+//import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseErrorCodeAndMessage;
 
 public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseQuery";
@@ -260,13 +262,9 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
       @Override
       public void onCancelled(@Nonnull DatabaseError error) {
-        rejectPromiseWithExceptionMap(promise, error.toException());
-//        Map<String, String> errorCodeAndMessage = getDatabaseErrorCodeAndMessage(error);
-//        rejectPromiseWithCodeAndMessage(
-//          promise,
-//          errorCodeAndMessage.get("code"),
-//          errorCodeAndMessage.get("message")
-//        );
+        rejectPromiseDatabaseException(promise,
+          new UniversalDatabaseException(error.getCode(), error.getMessage(), error.toException())
+        );
       }
     };
 
@@ -345,13 +343,9 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       @Override
       public void onCancelled(@Nonnull DatabaseError error) {
         query.removeEventListener(this);
-        rejectPromiseWithExceptionMap(promise, error.toException());
-//        Map<String, String> errorCodeAndMessage = getDatabaseErrorCodeAndMessage(error);
-//        rejectPromiseWithCodeAndMessage(
-//          promise,
-//          errorCodeAndMessage.get("code"),
-//          errorCodeAndMessage.get("message")
-//        );
+        rejectPromiseDatabaseException(promise,
+          new UniversalDatabaseException(error.getCode(), error.getMessage(), error.toException())
+        );
       }
     };
 

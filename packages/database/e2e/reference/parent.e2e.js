@@ -15,13 +15,16 @@
  *
  */
 
-describe('database.X', () => {
-  describe('ServerValue.TIMESTAMP', () => {
-    it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.eql('timestamp');
-    });
+describe('database().ref().parent', () => {
+  it('returns null when no reference path is provides', () => {
+    const ref = firebase.database().ref();
+    should.equal(ref.parent, null);
+  });
+
+  it('return last token in reference path', () => {
+    const ref1 = firebase.database().ref('/foo').parent;
+    const ref2 = firebase.database().ref('/foo/bar/baz').parent;
+    should.equal(ref1, null);
+    ref2.key.should.equal('bar');
   });
 });

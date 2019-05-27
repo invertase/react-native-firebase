@@ -32,78 +32,17 @@ import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
 export default class DatabaseQuery extends ReferenceBase {
-  // static _validateQueryEndpoints(params) {}
-  //
-  // static _validateLimit(params) {
-  //   if (
-  //     params.hasStartAt() &&
-  //     params.hasEndAt() &&
-  //     params.hasLimit() &&
-  //     !params.hasAnchoredLimit()
-  //   ) {
-  //     throw new Error(
-  //       `Can't combine startAt(), endAt(), and limit(). Use limitToFirst() or limitToLast() instead.`,
-  //     );
-  //   }
-  // }
-  //
-  // static _modifiersToString(modifiers = []) {
-  //   const sorted = modifiers.sort((a, b) => {
-  //     if (a.id < b.id) return -1;
-  //     if (a.id > b.id) return 1;
-  //     return 0;
-  //   });
-  //
-  //   let key = '{';
-  //   for (let i = 0; i < sorted.length; i++) {
-  //     if (i !== 0) key += ',';
-  //     key += sorted[i].id;
-  //   }
-  //   key += '}';
-  //   return key;
-  // }
-  //
-  // static _orderByModifier(name, key) {
-  //   return {
-  //     id: 'TODO',
-  //     type: 'orderBy',
-  //     name: `orderBy${name}`,
-  //     key,
-  //   };
-  // }
-  //
-  // static _limitModifier(name, limit) {
-  //   return {
-  //     id: 'TODO',
-  //     type: 'limit',
-  //     name: `limitTo${name}`,
-  //     limit,
-  //   };
-  // }
-  //
-  // static _filterModifier(name, value, key) {
-  //   return {
-  //     id: 'TODO',
-  //     type: 'filter',
-  //     name,
-  //     value,
-  //     valueType: typeof value,
-  //     key,
-  //   };
-  // }
-
-  constructor(database, path, modifiers, orderByCalled = false) {
+  constructor(database, path, modifiers) {
     super(path);
     this._database = database;
     this._modifiers = modifiers;
-    this._orderByCalled = orderByCalled;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
-    // TODO require cycle warning
+    // TODO require cycle warning?
     // Require cycle: ../packages/database/lib/DatabaseReference.js -> ../packages/database/lib/DatabaseQuery.js -> ../packages/database/lib/DatabaseReference.js
     return new DatabaseReference(this._database, this.path);
   }
@@ -111,10 +50,10 @@ export default class DatabaseQuery extends ReferenceBase {
   endAt(value, name = null) {
     // TODO validate args https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L530
     const newParams = this._queryParams.endAt(value, name);
-    DatabaseQuery._validateLimit(newParams);
-    DatabaseQuery._validateQueryEndpoints(newParams);
+    // DatabaseQuery._validateLimit(newParams);
+    // DatabaseQuery._validateQueryEndpoints(newParams);
 
-    return new DatabaseQuery(this.path, newParams, this._orderByCalled);
+    return new DatabaseQuery(this._database, this.path, newParams);
   }
 
   equalTo() {}
@@ -134,27 +73,23 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this.path, this._modifiers.limitToFirst(limit));
+    return new DatabaseQuery(this._database, this.path, this._modifiers.limitToFirst(limit));
   }
 
   limitToLast(limit) {
-    if (!isNumber(limit)) {
-      throw new Error(`firebase.database().ref().limitToLast(*) 'limit' must be a number value.`);
-    }
-
-    if (Math.floor(limit) !== limit || limit <= 0) {
+    if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
-        `firebase.database().ref().limitToLast(*) 'limit' must be a positive integer.`,
+        `firebase.database().ref().limitToLast(*) 'limit' must be a positive integer value.`,
       );
     }
 
-    if (this._queryParams.hasLimit()) {
+    if (this._modifiers.hasLimit()) {
       throw new Error(
-        `firebase.database().ref().limitToLast(*) Limit was already set (by another call to limit, limitToFirst, or limitToLast)`,
+        `firebase.database().ref().limitToLast(*) Limit was already set (by another call to limitToFirst, or limitToLast)`,
       );
     }
 
-    return new DatabaseQuery(this.path, this._queryParams.limitToLast(limit), this._orderByCalled);
+    return new DatabaseQuery(this._database, this.path, this._modifiers.limitToLast(limit));
   }
 
   off(eventType, callback, context) {
@@ -241,16 +176,23 @@ export default class DatabaseQuery extends ReferenceBase {
 
     return this._database.native
       .once(key, this.path, modifiers, eventType)
-      .then(snapshot => {
-        const dataSnapshot = new DatabaseDataSnapshot(this.ref, snapshot);
+      .then(result => {
+        let dataSnapshot;
+
+        // Child based events return a previousChildName
+        if (eventType === 'value') {
+          dataSnapshot = new DatabaseDataSnapshot(this.ref, result);
+        } else {
+          dataSnapshot = new DatabaseDataSnapshot(this.ref, result.snapshot);
+        }
 
         if (isFunction(successCallBack)) {
           if (isObject(failureCallbackOrContext)) {
-            successCallBack.bind(failureCallbackOrContext)(dataSnapshot);
+            successCallBack.bind(failureCallbackOrContext)(dataSnapshot, result.previousChildName);
           } else if (isObject(context)) {
-            successCallBack.bind(context)(dataSnapshot);
+            successCallBack.bind(context)(dataSnapshot, result.previousChildName);
           } else {
-            successCallBack(dataSnapshot);
+            successCallBack(dataSnapshot, result.previousChildName);
           }
         }
 
@@ -276,30 +218,53 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    if (this._orderByCalled) {
+    if (this._modifiers.hasOrderBy()) {
       throw new Error(
         `firebase.database().ref().orderByChild(*) You can't combine multiple orderBy calls.`,
       );
     }
 
-    const newParams = this._queryParams.orderBy('TODO');
-    return new DatabaseQuery(path, newParams, true);
+    return new DatabaseQuery(this._database, path, this._modifiers.orderByChild(path));
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbykey
    */
-  orderByKey(...args) {}
+  orderByKey() {
+    if (this._modifiers.hasOrderBy()) {
+      throw new Error(
+        `firebase.database().ref().orderByKey() You can't combine multiple orderBy calls.`,
+      );
+    }
+
+    return new DatabaseQuery(this._database, path, this._modifiers.orderByKey());
+  }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbypriority
    */
-  orderByPriority(...args) {}
+  orderByPriority() {
+    if (this._modifiers.hasOrderBy()) {
+      throw new Error(
+        `firebase.database().ref().orderByPriority() You can't combine multiple orderBy calls.`,
+      );
+    }
+
+    return new DatabaseQuery(this._database, path, this._modifiers.orderByPriority());
+  }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbyvalue
    */
-  orderByValue(...args) {}
+  orderByValue() {
+    if (this._modifiers.hasOrderBy()) {
+      throw new Error(
+        `firebase.database().ref().orderByValue() You can't combine multiple orderBy calls.`,
+      );
+    }
+
+    return new DatabaseQuery(this._database, path, this._modifiers.orderByValue());
+  }
 
   startAt(value, key) {
     if (isUndefined(value)) {
@@ -312,21 +277,21 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const newParams = this._queryParams.startAt(value, key);
-    DatabaseQuery._validateLimit(newParams);
-    DatabaseQuery._validateQueryEndpoints(newParams);
+    // const newParams = this._queryParams.startAt(value, key);
+    // DatabaseQuery._validateLimit(newParams);
+    // DatabaseQuery._validateQueryEndpoints(newParams);
+    //
+    // if (this._queryParams.hasStartAt()) {
+    //   throw new Error(
+    //     `firebase.database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
+    //   );
+    // }
 
-    if (this._queryParams.hasStartAt()) {
-      throw new Error(
-        `firebase.database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
-      );
-    }
-
-    return new DatabaseQuery(this.path, newParams, this._orderByCalled);
+    return new DatabaseQuery(this._database, this.path);
   }
 
   toJSON() {
-    // TODO
+    return this.toString();
   }
 
   toString() {

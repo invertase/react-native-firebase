@@ -15,13 +15,16 @@
  *
  */
 
-describe('database.X', () => {
-  describe('ServerValue.TIMESTAMP', () => {
-    it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.eql('timestamp');
-    });
-  });
+const { PATH, seed, wipe } = require('../helpers');
+
+const TEST_PATH = `${PATH}/push`;
+
+describe('database().ref().push()', () => {
+
+  // before(() => seed(TEST_PATH));
+  // after(() => wipe(TEST_PATH));
+
+
+  // TODO
+
 });

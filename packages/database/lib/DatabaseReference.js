@@ -27,7 +27,7 @@ import {
   isUndefined,
   isFunction,
   promiseWithOptionalCallback,
-  isObject,
+  isObject, isBoolean,
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
@@ -103,13 +103,17 @@ export default class DatabaseReference extends DatabaseQuery {
       throw new Error(`firebase.database().ref().update(*) 'values' must be an object.`);
     }
 
+    if (!Object.keys(values).length) {
+      throw new Error(
+        `firebase.database().ref().update(*) 'values' must be an object containing multiple values.`,
+      );
+    }
+
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         `firebase.database().ref().update(_, *) 'onComplete' must be a function if provided.`,
       );
     }
-
-    // TODO validate value keys?
 
     return promiseWithOptionalCallback(
       this._database.native.update(this.path, { values }),
@@ -163,7 +167,34 @@ export default class DatabaseReference extends DatabaseQuery {
     return promiseWithOptionalCallback(this._database.native.remove(this.path), onComplete);
   }
 
-  transaction() {}
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction
+   * @param transactionUpdate
+   * @param onComplete
+   * @param applyLocally
+   */
+  transaction(transactionUpdate, onComplete, applyLocally) {
+    if (!isFunction(transactionUpdate)) {
+      throw new Error(
+        `firebase.database().ref().transaction(*) 'transactionUpdate' must be a function.`,
+      );
+    }
+
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().transaction(_, *) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    if (!isUndefined(applyLocally) && !isBoolean(applyLocally)) {
+      throw new Error(
+        `firebase.database().ref().transaction(_, _, *) 'applyLocally' must be a boolean value if provided.`,
+      );
+    }
+
+    // TODO
+    return Promise.resolve();
+  }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#setpriority

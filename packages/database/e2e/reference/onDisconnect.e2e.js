@@ -15,13 +15,11 @@
  *
  */
 
-describe('database.X', () => {
-  describe('ServerValue.TIMESTAMP', () => {
-    it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.eql('timestamp');
-    });
+// See onDisconnect directory for specific tests
+
+describe('database().ref().onDisconnect()', () => {
+  it('returns a new DatabaseOnDisconnect instance', () => {
+    const instance = firebase.database().ref().onDisconnect();
+    instance.constructor.name.should.eql('DatabaseOnDisconnect');
   });
 });
