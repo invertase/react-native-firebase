@@ -44,8 +44,8 @@ public class RCTConvertFirebase {
     FirebaseOptions appOptions = firebaseApp.getOptions();
 
     Map<String, Object> root = new HashMap<>();
-    Map<String, Object> appConfig = new HashMap<>();
     Map<String, Object> options = new HashMap<>();
+    Map<String, Object> appConfig = new HashMap<>();
 
     appConfig.put("name", name);
     appConfig.put("automaticDataCollectionEnabled", firebaseApp.isDataCollectionDefaultEnabled());

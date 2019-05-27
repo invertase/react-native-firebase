@@ -23,16 +23,16 @@ import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.*;
 
@@ -47,59 +47,35 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-  Task<Boolean> activateFetched() {
-    return Tasks.call(() -> FirebaseRemoteConfig.getInstance().activateFetched());
+  Task<Boolean> activate() {
+    return FirebaseRemoteConfig.getInstance().activate();
   }
 
-  Task<Boolean> fetch(long cacheExpirationSeconds, boolean activate) {
+  Task<Void> fetch(long expirationDuration) {
     return Tasks.call(getExecutor(), () -> {
-      FirebaseRemoteConfig instance = FirebaseRemoteConfig.getInstance();
-      Task<Void> fetchTask;
-
-      if (cacheExpirationSeconds == -1) {
-        fetchTask = instance.fetch(cacheExpirationSeconds);
-      } else {
-        fetchTask = instance.fetch();
-      }
-
-      Tasks.await(fetchTask);
-
-      if (activate) {
-        return FirebaseRemoteConfig.getInstance().activateFetched();
-      }
-
+      FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+      Tasks.await(expirationDuration == -1 ? config.fetch(expirationDuration) : config.fetch());
       return null;
     });
   }
 
-  Task<Bundle> getConfigSettings() {
-    return Tasks.call(() -> {
-      Bundle settingsBundle = new Bundle(3);
-      FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance().getInfo();
-      FirebaseRemoteConfigSettings remoteConfigSettings = remoteConfigInfo.getConfigSettings();
-
-      settingsBundle.putLong("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
-      settingsBundle.putString("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
-      settingsBundle.putBoolean("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
-
-      return settingsBundle;
-    });
+  Task<Boolean> fetchAndActivate(long expirationDuration) {
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+    Task<Void> fetchTask = expirationDuration == -1 ? config.fetch(expirationDuration) : config.fetch();
+    return fetchTask.onSuccessTask(aVoid -> config.activate());
   }
 
-  Task<Bundle> setConfigSettings(Bundle configSettings) {
+  Task<Void> setConfigSettings(Bundle configSettings) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
       configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
       FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
-      return Tasks.await(getConfigSettings());
+      return null;
     });
   }
 
   Task<Void> setDefaults(HashMap<String, Object> defaults) {
-    return Tasks.call(() -> {
-      FirebaseRemoteConfig.getInstance().setDefaults(defaults);
-      return null;
-    });
+    return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
   }
 
   Task<Void> setDefaultsFromResource(String resourceName) {
@@ -122,39 +98,14 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Bundle> getValuesByKeysPrefix(String prefix) {
-    return Tasks.call(() -> {
-      Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
-      Bundle valuesBundle = new Bundle(keys.size());
-
-      for (String key : keys) {
-        FirebaseRemoteConfigValue configValue = FirebaseRemoteConfig.getInstance().getValue(key);
-        valuesBundle.putBundle(key, convertRemoteConfigValue(configValue));
-      }
-
-      return valuesBundle;
-    });
-  }
-
-  Task<List<String>> getKeysByPrefix(String prefix) {
-    return Tasks.call(() -> {
-      Set<String> keys = FirebaseRemoteConfig.getInstance().getKeysByPrefix(prefix);
-      return new ArrayList<>(keys);
-    });
-  }
-
-  Task<Bundle> getValue(String key) {
-    return Tasks.call(() -> convertRemoteConfigValue(FirebaseRemoteConfig.getInstance().getValue(key)));
-  }
-
-  Task<List<Bundle>> getValues(ArrayList<Object> keys) {
-    return Tasks.call(getExecutor(), () -> {
-      List<Bundle> valuesList = new ArrayList<>(keys.size());
-      for (Object key : keys) {
-        valuesList.add(convertRemoteConfigValue(FirebaseRemoteConfig.getInstance().getValue((String) key)));
-      }
-      return valuesList;
-    });
+  Map<String, Object> getAllValuesForApp(String appName) {
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName));
+    Map<String, FirebaseRemoteConfigValue> configValueMapRaw = config.getAll();
+    Map<String, Object> configValuesMap = new HashMap<>(configValueMapRaw.size());
+    for (Map.Entry<String, FirebaseRemoteConfigValue> entry : configValueMapRaw.entrySet()) {
+      configValuesMap.put(entry.getKey(), convertRemoteConfigValue(entry.getValue()));
+    }
+    return configValuesMap;
   }
 
   private int getXmlResourceIdByName(String name) {
@@ -212,6 +163,31 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     }
 
     return convertedConfigBundle;
+  }
+
+  public Map<String, Object> getConstantsForApp(String appName) {
+    Map<String, Object> appConstants = new HashMap<>();
+    FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName)).getInfo();
+    FirebaseRemoteConfigSettings remoteConfigSettings = remoteConfigInfo.getConfigSettings();
+
+    appConstants.put("values", getAllValuesForApp(appName));
+    appConstants.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
+    appConstants.put("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
+    appConstants.put("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
+
+    return appConstants;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    Map<String, Object> constants = new HashMap<>();
+    Map<String, Object> constantsForApps = new HashMap<>();
+    List<FirebaseApp> firebaseApps = FirebaseApp.getApps(getApplicationContext());
+    for (FirebaseApp app : firebaseApps) {
+      constantsForApps.put(app.getName(), getConstantsForApp(app.getName()));
+    }
+    constants.put("REMOTE_CONFIG_APP_CONSTANTS", constantsForApps);
+    return constants;
   }
 
 }

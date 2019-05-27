@@ -24,6 +24,7 @@ import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
 
@@ -46,8 +47,8 @@ public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
   }
 
   @Override
-  public HashMap<String, Object> getConstants() {
-    final HashMap<String, Object> constants = new HashMap<>();
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
     constants.put(
       "isMessagesDisplaySuppressed",
       FirebaseInAppMessaging.getInstance().areMessagesSuppressed()

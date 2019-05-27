@@ -18,10 +18,13 @@ package io.invertase.firebase.config;
  */
 
 import com.facebook.react.bridge.*;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Config";
@@ -33,10 +36,10 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void activateFetched(Promise promise) {
-    module.activateFetched().addOnCompleteListener(task -> {
+  public void activate(Promise promise) {
+    module.activate().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -44,35 +47,23 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void fetch(double cacheExpirationSeconds, boolean activate, Promise promise) {
-    module.fetch((long) cacheExpirationSeconds, activate).addOnCompleteListener(task -> {
+  public void fetch(double expirationDurationSeconds, Promise promise) {
+    module.fetch((long) expirationDurationSeconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
-        if (Objects.requireNonNull(task.getException()).getCause() instanceof FirebaseRemoteConfigFetchThrottledException) {
-          rejectPromiseWithCodeAndMessage(
-            promise,
-            "throttled",
-            "fetch() operation cannot be completed successfully, due to throttling."
-          );
-        } else {
-          rejectPromiseWithCodeAndMessage(
-            promise,
-            "failure",
-            "fetch() operation cannot be completed successfully."
-          );
-        }
+        rejectPromiseWithConfigException(promise, task.getException());
       }
     });
   }
 
   @ReactMethod
-  public void getConfigSettings(Promise promise) {
-    module.getConfigSettings().addOnCompleteListener(getExecutor(), task -> {
+  public void fetchAndActivate(double expirationDurationSeconds, Promise promise) {
+    module.fetchAndActivate((long) expirationDurationSeconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.makeNativeMap(task.getResult()));
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
+        rejectPromiseWithConfigException(promise, task.getException());
       }
     });
   }
@@ -81,7 +72,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setConfigSettings(ReadableMap configSettings, Promise promise) {
     module.setConfigSettings(Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Arguments.makeNativeMap(task.getResult()));
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -92,7 +83,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setDefaults(ReadableMap defaults, Promise promise) {
     module.setDefaults(defaults.toHashMap()).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
@@ -103,10 +94,9 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   public void setDefaultsFromResource(String resourceName, Promise promise) {
     module.setDefaultsFromResource(resourceName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(null);
+        promise.resolve(resultWithConstants(task.getResult()));
       } else {
         Exception exception = task.getException();
-
         if (exception != null && exception.getMessage().equals("resource_not_found")) {
           rejectPromiseWithCodeAndMessage(
             promise,
@@ -114,61 +104,48 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
             "The specified resource name was not found."
           );
         }
-
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
     });
   }
 
-
-  @ReactMethod
-  public void getValuesByKeysPrefix(String prefix, Promise promise) {
-    module.getValuesByKeysPrefix(prefix).addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(Arguments.makeNativeMap(task.getResult()));
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+  private WritableMap resultWithConstants(Object result) {
+    Map<String, Object> responseMap = new HashMap<>(2);
+    responseMap.put("result", result);
+    responseMap.put("constants", module.getConstantsForApp(FirebaseApp.DEFAULT_APP_NAME));
+    return Arguments.makeNativeMap(responseMap);
   }
 
 
-  @ReactMethod
-  public void getKeysByPrefix(String prefix, Promise promise) {
-    module.getKeysByPrefix(prefix).addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(
-          Arguments.fromList(Objects.requireNonNull(task.getResult()))
-        );
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+  private void rejectPromiseWithConfigException(Promise promise, @Nullable Exception exception) {
+    if (exception == null) {
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "unknown",
+        "Operation cannot be completed successfully, due to an unknown error."
+      );
+      return;
+    }
+
+    if (exception.getCause() instanceof FirebaseRemoteConfigFetchThrottledException) {
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "throttled",
+        "fetch() operation cannot be completed successfully, due to throttling.",
+        exception.getMessage()
+      );
+    } else {
+      rejectPromiseWithCodeAndMessage(
+        promise,
+        "failure",
+        "fetch() operation cannot be completed successfully.",
+        exception.getMessage()
+      );
+    }
   }
 
-  @ReactMethod
-  public void getValue(String key, Promise promise) {
-    module.getValue(key).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(
-          Arguments.makeNativeMap(task.getResult())
-        );
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
-  }
-
-  @ReactMethod
-  public void getValues(ReadableArray keys, Promise promise) {
-    module.getValues(keys.toArrayList()).addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(
-          Arguments.fromList(Objects.requireNonNull(task.getResult()))
-        );
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+  @Override
+  public Map<String, Object> getConstants() {
+    return module.getConstants();
   }
 }
