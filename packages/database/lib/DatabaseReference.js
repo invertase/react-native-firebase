@@ -27,16 +27,18 @@ import {
   isUndefined,
   isFunction,
   promiseWithOptionalCallback,
-  isObject, isBoolean,
+  isObject,
+  isBoolean,
 } from '@react-native-firebase/common';
 
 import DatabaseQuery from './DatabaseQuery';
 import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
+import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
-    super(database, path, DatabaseQueryModifiers.DEFAULT);
+    super(database, path, new DatabaseQueryModifiers());
     this._database = database;
   }
 
@@ -192,8 +194,56 @@ export default class DatabaseReference extends DatabaseQuery {
       );
     }
 
-    // TODO
-    return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const onCompleteWrapper = (error, committed, snapshotData) => {
+        if (isFunction(onComplete)) {
+          if (error) {
+            onComplete(error, committed, null);
+          } else {
+            onComplete(null, committed, new DatabaseDataSnapshot(this, snapshotData));
+          }
+        }
+
+        if (error) return reject(error);
+        return resolve({
+          committed,
+          snapshot: new DatabaseDataSnapshot(this, snapshotData),
+        });
+      };
+
+      // start the transaction natively
+      this._database._transaction.add(
+        this,
+        transactionUpdate,
+        onCompleteWrapper,
+        applyLocally
+      );
+    });
+
+    // const promise = promiseDefer();
+    //
+    // const _onTransactionComplete = (error, committed, snapshot) => {
+    //   if (isFunction(onComplete)) {
+    //     if (error) {
+    //       onComplete(error, committed, null);
+    //     } else {
+    //       onComplete(null, committed, new DatabaseDataSnapshot(this, snapshot));
+    //     }
+    //   }
+    //
+    //   if (error) {
+    //     return promise.reject(error);
+    //   }
+    //
+    //   return promise.resolve({
+    //     committed,
+    //     snapshot: new DatabaseDataSnapshot(this, snapshot),
+    //   });
+    // };
+    //
+    // this._database._transaction.add(this, transactionUpdate, _onTransactionComplete, applyLocally);
+    //
+    // return promise;
   }
 
   /**

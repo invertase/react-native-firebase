@@ -42,8 +42,6 @@ public class UniversalDatabaseException extends Exception {
     String code = "unknown";
     String message = "An unknown error occurred";
 
-    Log.d("ELLIOT", "GOT ERROR CODE v");
-    Log.d("ELLIOT", Integer.toString(errorCode));
     switch (errorCode) {
       case DatabaseError.DATA_STALE:
         code = "data-stale";

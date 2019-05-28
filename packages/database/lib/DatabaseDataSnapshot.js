@@ -16,7 +16,13 @@
  *
  */
 
-import { isString, isValidPath, isArray, isFunction, isObject } from '@react-native-firebase/common';
+import {
+  isString,
+  isValidPath,
+  isArray,
+  isFunction,
+  isObject,
+} from '@react-native-firebase/common';
 
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
@@ -38,7 +44,26 @@ export default class DatabaseDataSnapshot {
   }
 
   child(path) {
+    if (!isString(path)) {
+      throw new Error(
+        `snapshot().child(*) 'path' must be a string value`
+      )
+    }
 
+    let value = null; // TODO deepGet value
+
+    if (value === undefined) value = null;
+    const childRef = this._ref.child(path);
+
+    return new DatabaseDataSnapshot(childRef, {
+      value,
+      key: childRef.key,
+      exists: value !== null,
+      // TODO this is wrong - child keys needs to be the ordered keys, from FB
+      // TODO potential solution is build up a tree/map of a snapshot and its children
+      // TODO natively and send that back to JS to be use in this class.
+      childKeys: isObject(value) ? Object.keys(value) : [],
+    });
   }
 
   exists() {
@@ -58,12 +83,35 @@ export default class DatabaseDataSnapshot {
     };
   }
 
+  /**
+   * Iterate over keys in order from Firebase
+   *
+   * @param action
+   * @return {boolean}
+   */
   forEach(action) {
     if (!isFunction(action)) {
       throw new Error(`snapshot.forEach(*) 'action' must be a function.`);
     }
 
-    // TODO
+    if (!this._snapshot.childKeys.length) {
+      return false;
+    }
+
+    let cancelled = false;
+
+    for (let i = 0; i < this._snapshot.childKeys.length; i++) {
+      const key = this._snapshot.childKeys[i];
+      const snapshot = this.child(key);
+      const actionReturn = action(snapshot, i);
+
+      if (actionReturn === true) {
+        cancelled = true;
+        break;
+      }
+    }
+
+    return cancelled;
   }
 
   getPriority() {

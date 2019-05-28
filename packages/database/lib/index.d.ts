@@ -107,7 +107,7 @@ export namespace Database {
 
     equalTo(value: number | string | boolean | null, key?: string): Query;
 
-    isEqual(other: Query | null): boolean;
+    isEqual(other: Query): boolean;
 
     limitToFirst(limit: number): Query;
 

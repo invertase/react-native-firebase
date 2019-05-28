@@ -17,6 +17,8 @@ package io.invertase.firebase.database;
  *
  */
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -110,7 +112,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
    * @param modifier
    */
   private Query applyLimitModifier(Query query, String name, Map modifier) {
-    int limit = ((Double) modifier.get("limit")).intValue();
+    int limit = ((Double) modifier.get("value")).intValue();
     if ("limitToLast".equals(name)) {
       query = query.limitToLast(limit);
     } else if ("limitToFirst".equals(name)) {
@@ -128,46 +130,13 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
   private Query applyFilterModifier(Query query, String name, Map modifier) {
     String valueType = (String) modifier.get("valueType");
     String key = (String) modifier.get("key");
-    if ("equalTo".equals(name)) {
-      query = applyEqualToFilter(query, key, valueType, modifier);
-    } else if ("endAt".equals(name)) {
+
+    // Note: equalTo() is handled in JS land by setting startAt() & endAt() to the same
+    // value (see https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L570)
+    if ("endAt".equals(name)) {
       query = applyEndAtFilter(query, key, valueType, modifier);
     } else if ("startAt".equals(name)) {
       query = applyStartAtFilter(query, key, valueType, modifier);
-    }
-
-    return query;
-  }
-
-  /**
-   * ref().equalTo(value, key?)
-   *
-   * @param key
-   * @param valueType
-   * @param modifier
-   */
-  private Query applyEqualToFilter(Query query, String key, String valueType, Map modifier) {
-    if ("number".equals(valueType)) {
-      double value = (Double) modifier.get("value");
-      if (key == null) {
-        query = query.equalTo(value);
-      } else {
-        query = query.equalTo(value, key);
-      }
-    } else if ("boolean".equals(valueType)) {
-      boolean value = (Boolean) modifier.get("value");
-      if (key == null) {
-        query = query.equalTo(value);
-      } else {
-        query = query.equalTo(value, key);
-      }
-    } else if ("string".equals(valueType)) {
-      String value = (String) modifier.get("value");
-      if (key == null) {
-        query = query.equalTo(value);
-      } else {
-        query = query.equalTo(value, key);
-      }
     }
 
     return query;
@@ -202,6 +171,12 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       } else {
         query = query.endAt(value, key);
       }
+    } else if ("null".equals(valueType)) {
+      if (key == null) {
+        query = query.endAt(null);
+      } else {
+        query = query.endAt(null, key);
+      }
     }
 
     return query;
@@ -235,6 +210,12 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         query = query.startAt(value);
       } else {
         query = query.startAt(value, key);
+      }
+    } else if ("null".equals(valueType)) {
+      if (key == null) {
+        query = query.startAt(null);
+      } else {
+        query = query.startAt(null, key);
       }
     }
 

@@ -15,12 +15,11 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const { PATH, wipe } = require('../helpers');
 
-const TEST_PATH = `${PATH}/onDisconnectSet`;
+const TEST_PATH = `${PATH}/onDisconnectUpdate`;
 
-describe('database().ref().onDisconnect().set()', () => {
-
+describe('database().ref().onDisconnect().update()', () => {
   after(() => wipe(TEST_PATH));
 
   afterEach(() => {
@@ -28,21 +27,41 @@ describe('database().ref().onDisconnect().set()', () => {
     firebase.database().goOnline();
   });
 
-  it('throws if value is not a defined', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+  it('throws if values is not an object', async () => {
     try {
-      ref.set();
+      await firebase
+        .database()
+        .ref(TEST_PATH)
+        .onDisconnect()
+        .update('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' must be defined`);
+      error.message.should.containEql(`'values' must be an object`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if values does not contain any values', async () => {
+    try {
+      await firebase
+        .database()
+        .ref(TEST_PATH)
+        .onDisconnect()
+        .update({});
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'values' must be an object containing multiple values`);
       return Promise.resolve();
     }
   });
 
   it('throws if onComplete is not a function', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
-      ref.set(null, 'foo');
+      ref.update({ foo: 'bar' }, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'onComplete' must be a function if provided`);
@@ -50,17 +69,28 @@ describe('database().ref().onDisconnect().set()', () => {
     }
   });
 
-  it('sets value when disconnected', async () => {
+  it('updates value when disconnected', async () => {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
+    await ref.set({
+      foo: {
+        bar: 'baz',
+      },
+    });
 
-    await ref.onDisconnect().set(value);
+    await ref.child('foo').onDisconnect().update({
+      bar: value,
+    });
     await firebase.database().goOffline();
     await firebase.database().goOnline();
 
-    const snapshot = await ref.once('value');
-    snapshot.val().should.eql(value);
+    const snapshot = await ref.child('foo').once('value');
+    snapshot.val().should.eql(
+      jet.contextify({
+        bar: value,
+      }),
+    );
   });
 
   it('calls back to the onComplete function', async () => {
@@ -69,8 +99,7 @@ describe('database().ref().onDisconnect().set()', () => {
 
     // Set an initial value
     await ref.set('foo');
-
-    await ref.onDisconnect().set('bar', callback);
+    await ref.onDisconnect().update({ foo: 'bar' }, callback);
     await firebase.database().goOffline();
     await firebase.database().goOnline();
 

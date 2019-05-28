@@ -116,4 +116,6 @@ describe('database()', () => {
       await firebase.database().goOnline();
     });
   });
+
+
 });

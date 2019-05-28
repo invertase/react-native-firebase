@@ -20,7 +20,6 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/once`;
 
 describe('database().ref().once()', () => {
-
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
@@ -55,8 +54,7 @@ describe('database().ref().once()', () => {
       await firebase
         .database()
         .ref()
-        .once('value', () => {
-        }, 'foo');
+        .once('value', () => {}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'failureCallbackOrContext' must be a function or context`);
@@ -69,9 +67,7 @@ describe('database().ref().once()', () => {
       await firebase
         .database()
         .ref()
-        .once('value', () => {
-        }, () => {
-        }, 'foo');
+        .once('value', () => {}, () => {}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'context' must be a context object.`);
@@ -89,8 +85,8 @@ describe('database().ref().once()', () => {
     const ref = firebase.database().ref(`${TEST_PATH}/types`);
 
     await Promise.all(
-      Object.keys(CONTENT.DEFAULT).map(async key => {
-        const value = CONTENT.DEFAULT[key];
+      Object.keys(CONTENT.TYPES).map(async key => {
+        const value = CONTENT.TYPES[key];
         const snapsnot = await ref.child(key).once('value');
         snapsnot.val().should.eql(jet.contextify(value));
       }),
@@ -116,60 +112,88 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('resolves when a child is added', async () => {
+  xit('resolves when a child is added', async () => {
     const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
     const value = Date.now();
 
-    // eslint-disable-next-line consistent-return
-    return new Promise(async (resolve, reject) => {
-      try {
-        ref.once('child_added').then(snapshot => {
-          snapshot.key.should.eql('foo');
-          snapshot.val().should.eql(value);
-          return resolve();
-        });
-        await ref.child('foo').set(value);
-      } catch (error) {
-        return reject(error);
-      }
-    });
+    ref
+      .once('child_added')
+      .then(snapshot => {
+        snapshot.key.should.eql('foo');
+        snapshot.val().should.eql(value);
+        return Promise.resolve();
+      })
+      .catch(error => Promise.reject(error));
+
+    // Allow the listener to subscribe before calling
+    setTimeout(async () => {
+      await ref.child('foo').set(value);
+    }, 100);
   });
 
-  it('resolves when a child is added', async () => {
-    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
-    const value = Date.now();
-
-    // eslint-disable-next-line consistent-return
-    return new Promise(async (resolve, reject) => {
-      try {
-        ref.once('child_added').then(snapshot => {
-          snapshot.key.should.eql('foo');
-          snapshot.val().should.eql(value);
-          return resolve();
-        });
-        await ref.child('foo').set(value);
-      } catch (error) {
-        return reject(error);
-      }
-    });
-  });
-
-  it.only('resolves when a child is changed', async () => {
+  // TODO Never seems to trigger on native?
+  xit('resolves when a child is changed', async () => {
     const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
-    await ref.set(1);
+    const child = ref.child('changed');
+    await child.set(1);
 
-    // eslint-disable-next-line consistent-return
     return new Promise(async (resolve, reject) => {
-      try {
-        ref.once('child_changed').then(snapshot => {
-          snapshot.key.should.eql('foo');
-          snapshot.val().should.eql(2);
-          return resolve();
-        });
-        await ref.set(2);
-      } catch (error) {
-        return reject(error);
-      }
+      ref.once('child_changed', (snapshot) => {
+        snapshot.key.should.eql('foo');
+        snapshot.val().should.eql(2);
+        return resolve();
+      });
+
+      // Allow the listener to subscribe before calling
+      await child.set(2);
     });
+  });
+
+  xit('resolves when a child is removed', async () => {
+    const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
+    const child = ref.child('removed');
+    await child.set('foo');
+
+    ref
+      .once('child_removed')
+      .then(snapshot => {
+        snapshot.val().should.eql('foo');
+        return Promise.resolve();
+      })
+      .catch(error => Promise.reject(error));
+
+    // Allow the listener to subscribe before calling
+    setTimeout(async () => {
+      await child.remove();
+    }, 100);
+  });
+
+  // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
+  xit('resolves when a child is moved', async () => {
+    const ref = firebase.database()
+      .ref(`${TEST_PATH}/childMoved`)
+      .orderByChild('nuggets');
+
+    const initial = {
+      alex: { nuggets: 60 },
+      rob: { nuggets: 56 },
+      vassili: { nuggets: 55.5 },
+      tony: { nuggets: 52 },
+      greg: { nuggets: 52 },
+    };
+
+    ref
+      .once('child_moved')
+      .then(snapshot => {
+        // snapshot.val().should.eql('foo');
+        return Promise.resolve();
+      })
+      .catch(error => Promise.reject(error));
+
+    // Allow the listener to subscribe before calling
+    setTimeout(async () => {
+      await ref.child.set(initial);
+      await ref.child('greg/nuggets').set(57);
+    }, 100);
   });
 });

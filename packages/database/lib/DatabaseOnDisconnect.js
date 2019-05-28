@@ -66,7 +66,11 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#set
    */
-  set(value = null, onComplete) {
+  set(value, onComplete) {
+    if (isUndefined(value)) {
+      throw new Error(`firebase.database().ref().value(*) 'value' must be defined.`);
+    }
+
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         `firebase.database().ref().onDisconnect().set(_, *) 'onComplete' must be a function if provided.`,
@@ -82,7 +86,11 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#setwithpriority
    */
-  setWithPriority(value = null, priority, onComplete) {
+  setWithPriority(value, priority, onComplete) {
+    if (isUndefined(value)) {
+      throw new Error(`firebase.database().ref().setWithPriority(*) 'value' must be defined.`);
+    }
+
     if (!isNumber(priority) && !isString(priority) && !isNull(priority)) {
       throw new Error(
         `firebase.database().ref().onDisconnect().setWithPriority(_, *) 'priority' must be a number, string or null value.`,
@@ -110,6 +118,14 @@ export default class DatabaseOnDisconnect {
         `firebase.database().ref().onDisconnect().update(*) 'values' must be an object.`,
       );
     }
+
+    if (!Object.keys(values).length) {
+      throw new Error(
+        `firebase.database().ref().onDisconnect().update(*) 'values' must be an object containing multiple values.`,
+      );
+    }
+
+    // TODO validate keys; / . # $ |
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(

@@ -17,7 +17,9 @@
  */
 
 import {
+  isBoolean,
   isFunction,
+  isNull,
   isNumber,
   isObject,
   isString,
@@ -47,19 +49,93 @@ export default class DatabaseQuery extends ReferenceBase {
     return new DatabaseReference(this._database, this.path);
   }
 
-  endAt(value, name = null) {
-    // TODO validate args https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L530
-    const newParams = this._queryParams.endAt(value, name);
-    // DatabaseQuery._validateLimit(newParams);
-    // DatabaseQuery._validateQueryEndpoints(newParams);
+  /**
+   *
+   * @param value
+   * @param key
+   * @return {DatabaseQuery}
+   */
+  endAt(value, key) {
+    if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
+      throw new Error(
+        `firebase.database().ref().endAt(*) 'value' must be a number, string, boolean or null value.`,
+      );
+    }
 
-    return new DatabaseQuery(this._database, this.path, newParams);
+    if (!isUndefined(key) && !isString(key)) {
+      throw new Error(
+        `firebase.database().ref().endAt(_, *) 'key' must be a string value if defined.`,
+      );
+    }
+
+    if (this._modifiers.hasEndAt()) {
+      throw new Error(
+        `firebase.database().ref().endAt() Ending point was already set (by another call to endAt or equalTo).`,
+      );
+    }
+
+    const modifiers = this._modifiers.endAt(value, key);
+    modifiers.validateModifiers('firebase.database().ref().endAt()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
-  equalTo() {}
+  /**
+   *
+   * @param value
+   * @param key
+   * @return {DatabaseQuery}
+   */
+  equalTo(value, key) {
+    if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
+      throw new Error(
+        `firebase.database().ref().equalTo(*) 'value' must be a number, string, boolean or null value.`,
+      );
+    }
 
-  isEqual() {}
+    if (!isUndefined(key) && !isString(key)) {
+      throw new Error(
+        `firebase.database().ref().equalTo(_, *) 'key' must be a string value if defined.`,
+      );
+    }
 
+    if (this._modifiers.hasStartAt()) {
+      throw new Error(
+        `firebase.database().ref().equalTo() Starting point was already set (by another call to startAt or equalTo).`,
+      );
+    }
+
+    if (this._modifiers.hasEndAt()) {
+      throw new Error(
+        `firebase.database().ref().equalTo() Ending point was already set (by another call to endAt or equalTo).`,
+      );
+    }
+
+    return this.startAt(value, key).endAt(value, key);
+  }
+
+  /**
+   *
+   * @param other
+   * @return {boolean}
+   */
+  isEqual(other) {
+    if (!(other instanceof DatabaseQuery)) {
+      throw new Error(`firebase.database().ref().isEqual(*) 'other' must be an instance of Query.`);
+    }
+
+    const sameApp = other._database.app === this._database.app;
+    const sameDatabasePath = other.toString() === this.toString();
+    const sameModifiers = other._modifiers.toString() === this._modifiers.toString();
+
+    return sameApp && sameDatabasePath && sameModifiers;
+  }
+
+  /**
+   *
+   * @param limit
+   * @return {DatabaseQuery}
+   */
   limitToFirst(limit) {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
@@ -76,6 +152,11 @@ export default class DatabaseQuery extends ReferenceBase {
     return new DatabaseQuery(this._database, this.path, this._modifiers.limitToFirst(limit));
   }
 
+  /**
+   *
+   * @param limit
+   * @return {DatabaseQuery}
+   */
   limitToLast(limit) {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
@@ -92,6 +173,13 @@ export default class DatabaseQuery extends ReferenceBase {
     return new DatabaseQuery(this._database, this.path, this._modifiers.limitToLast(limit));
   }
 
+  /**
+   *
+   * @param eventType
+   * @param callback
+   * @param context
+   * @return {DatabaseQuery}
+   */
   off(eventType, callback, context) {
     if (!isUndefined(eventType) && !eventTypes.includes(eventType)) {
       throw new Error(
@@ -111,6 +199,14 @@ export default class DatabaseQuery extends ReferenceBase {
     return this;
   }
 
+  /**
+   *
+   * @param eventType
+   * @param callback
+   * @param cancelCallbackOrContext
+   * @param context
+   * @return {DatabaseQuery}
+   */
   on(eventType, callback, cancelCallbackOrContext, context) {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
@@ -224,7 +320,10 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, path, this._modifiers.orderByChild(path));
+    const modifiers = this._modifiers.orderByChild(path);
+    modifiers.validateModifiers('firebase.database().ref().orderByChild()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   /**
@@ -237,7 +336,10 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, path, this._modifiers.orderByKey());
+    const modifiers = this._modifiers.orderByKey();
+    modifiers.validateModifiers('firebase.database().ref().orderByKey()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   /**
@@ -250,7 +352,10 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, path, this._modifiers.orderByPriority());
+    const modifiers = this._modifiers.orderByPriority();
+    modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   /**
@@ -263,31 +368,35 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, path, this._modifiers.orderByValue());
+    const modifiers = this._modifiers.orderByValue();
+    modifiers.validateModifiers('firebase.database().ref().orderByValue()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   startAt(value, key) {
-    if (isUndefined(value)) {
-      throw new Error(`firebase.database().ref().startAt(*) 'value' cannot be undefined.`);
+    if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
+      throw new Error(
+        `firebase.database().ref().startAt(*) 'value' must be a number, string, boolean or null value.`,
+      );
     }
 
     if (!isUndefined(key) && !isString(key)) {
       throw new Error(
-        `firebase.database().ref().startAt(*) 'key' must be a string value if defined.`,
+        `firebase.database().ref().startAt(_, *) 'key' must be a string value if defined.`,
       );
     }
 
-    // const newParams = this._queryParams.startAt(value, key);
-    // DatabaseQuery._validateLimit(newParams);
-    // DatabaseQuery._validateQueryEndpoints(newParams);
-    //
-    // if (this._queryParams.hasStartAt()) {
-    //   throw new Error(
-    //     `firebase.database().ref().startAt(*) Starting point was already set (by another call to startAt or equalTo).`,
-    //   );
-    // }
+    if (this._modifiers.hasStartAt()) {
+      throw new Error(
+        `firebase.database().ref().startAt() Starting point was already set (by another call to startAt or equalTo).`,
+      );
+    }
 
-    return new DatabaseQuery(this._database, this.path);
+    const modifiers = this._modifiers.startAt(value, key);
+    modifiers.validateModifiers('firebase.database().ref().startAt()');
+
+    return new DatabaseQuery(this._database, this.path, modifiers);
   }
 
   toJSON() {
@@ -295,7 +404,7 @@ export default class DatabaseQuery extends ReferenceBase {
   }
 
   toString() {
-    return `${this._database._customUrlOrRegion}/${pathToUrlEncodedString(this.path)}`;
+    return `${this._database._customUrlOrRegion}${pathToUrlEncodedString(this.path)}`;
   }
 
   _generateQueryKey() {

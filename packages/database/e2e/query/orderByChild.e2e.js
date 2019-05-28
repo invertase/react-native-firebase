@@ -17,63 +17,70 @@
 
 const { PATH, seed, wipe } = require('../helpers');
 
-const TEST_PATH = `${PATH}/transaction`;
-const NOOP = () => {};
+const TEST_PATH = `${PATH}/orderByChild`;
 
-describe('database().ref().transaction()', () => {
+describe('database().ref().orderByChild()', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
-  it('throws if no transactionUpdate is provided', async () => {
-    try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .transaction();
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(`'transactionUpdate' must be a function`);
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if onComplete is not a function', async () => {
+  it('throws if path is not a string value', async () => {
     try {
       await firebase
         .database()
         .ref()
-        .transaction(NOOP, 'foo');
+        .orderByChild({ foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql(`'path' must be a string value`);
       return Promise.resolve();
     }
   });
 
-  it('throws if applyLocally is not a boolean', async () => {
+  it('throws if path is an empty path', async () => {
     try {
       await firebase
         .database()
         .ref()
-        .transaction(NOOP, NOOP, 'foo');
+        .orderByChild('/');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'applyLocally' must be a boolean value if provided`);
+      error.message.should.containEql(`'path' cannot be empty. Use orderByValue instead`);
       return Promise.resolve();
     }
   });
 
-  xit('updates the value via a transaction', async () => {
-    const ref = firebase.database().ref('tests/transaction');
-    // await ref.set(1);
+  it('throws if an orderBy call has already been set', async () => {
+    try {
+      await firebase
+        .database()
+        .ref()
+        .orderByKey()
+        .orderByChild('foo');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`You can't combine multiple orderBy calls`);
+      return Promise.resolve();
+    }
+  });
 
-    const { committed, snapshot } = await ref.transaction(value => {
-      value.should.eql(1);
-      return value + 1;
-    });
-    console.log(committed);
-    console.log(snapshot);
-    should.equal(committed, true, 'Transaction did not commit.');
-    snapshot.val().should.equal(2);
+  it('order by a child value', async () => {
+    const ref = firebase.database().ref(TEST_PATH);
+
+    try {
+      const snapshot = await ref
+        .child('query')
+        .orderByChild('number')
+        .once('value');
+
+      const expected = ['b', 'c', 'a'];
+
+      snapshot.forEach((childSnapshot, i) => {
+        childSnapshot.key.should.eql(expected[i]);
+      });
+
+      return Promise.resolve();
+    } catch (error) {
+      throw error;
+    }
   });
 });

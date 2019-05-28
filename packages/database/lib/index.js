@@ -25,6 +25,7 @@ import { isString, isValidPath } from '@react-native-firebase/common';
 import version from './version';
 import DatabaseStatics from './DatabaseStatics';
 import DatabaseReference from './DatabaseReference';
+import DatabaseTransaction from './DatabaseTransaction';
 
 const namespace = 'database';
 
@@ -32,7 +33,8 @@ const nativeModuleName = [
   'RNFBDatabaseModule',
   'RNFBDatabaseReferenceModule',
   'RNFBDatabaseQueryModule',
-  'RNFBDatabaseOnDisconnect',
+  'RNFBDatabaseOnDisconnectModule',
+  'RNFBDatabaseTransactionModule',
 ];
 
 class FirebaseDatabaseModule extends FirebaseModule {
@@ -40,6 +42,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
     super(app, config, databaseUrl);
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
+    this._transaction = new DatabaseTransaction(this);
     // this._syncServerTimeOffset();
   }
 
@@ -134,7 +137,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents: ['database_transaction_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseDatabaseModule,

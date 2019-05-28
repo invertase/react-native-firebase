@@ -15,15 +15,77 @@
  *
  */
 
-// describe('database().ref().onDisconnect().cancel()', () => {
-//     it('cancels all previous events', async () => {
-//       const ref = firebase.database().ref('on-disconnect-cancel');
-//       await ref.set('foobar');
-//       await ref.onDisconnect().set(Date.now());
-//       await ref.onDisconnect().cancel();
-//       await firebase.database().goOffline();
-//       await firebase.database().goOnline();
-//       const snapshot = await ref.once('value');
-//       snapshot.val().should.eql('foobar');
-//     });
-// });
+const { PATH, wipe } = require('../helpers');
+
+const TEST_PATH = `${PATH}/onDisconnectSetWithPriority`;
+
+describe('database().ref().onDisconnect().setWithPriority()', () => {
+
+  after(() => wipe(TEST_PATH));
+
+  afterEach(() => {
+    // Ensures the db is online before running each test
+    firebase.database().goOnline();
+  });
+
+  it('throws if value is not a defined', () => {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    try {
+      ref.setWithPriority();
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'value' must be defined`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if priority is not a valid type', () => {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    try {
+      ref.setWithPriority(null, { foo: 'bar' });
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'priority' must be a number, string or null value`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if onComplete is not a function', () => {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    try {
+      ref.setWithPriority(null, 1, 'foo');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      return Promise.resolve();
+    }
+  });
+
+  it('sets value with priority when disconnected', async () => {
+    const ref = firebase.database().ref(TEST_PATH);
+
+    const value = Date.now();
+
+    await ref.onDisconnect().setWithPriority(value, 3);
+    await firebase.database().goOffline();
+    await firebase.database().goOnline();
+
+    const snapshot = await ref.once('value');
+    snapshot.exportVal()['.value'].should.eql(value);
+    snapshot.exportVal()['.priority'].should.eql(3);
+  });
+
+  it('calls back to the onComplete function', async () => {
+    const callback = sinon.spy();
+    const ref = firebase.database().ref(TEST_PATH);
+
+    // Set an initial value
+    await ref.set('foo');
+
+    await ref.onDisconnect().setWithPriority('bar', 2, callback);
+    await firebase.database().goOffline();
+    await firebase.database().goOnline();
+
+    callback.should.be.calledOnce();
+  });
+});

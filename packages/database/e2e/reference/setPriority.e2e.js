@@ -46,7 +46,7 @@ describe('database().ref().setPriority()', () => {
 
   it('should correctly set a priority for all non-null values', async () => {
     await Promise.all(
-      Object.keys(CONTENT.DEFAULT).map(async dataRef => {
+      Object.keys(CONTENT.TYPES).map(async dataRef => {
         const ref = firebase.database().ref(`${TEST_PATH}/types/${dataRef}`);
         await ref.setPriority(1);
         const snapshot = await ref.once('value');
@@ -65,6 +65,20 @@ describe('database().ref().setPriority()', () => {
         .ref(`${TEST_PATH}/types/string`)
         .set(value, resolve);
     });
+  });
+
+  it('throws if setting priority on non-existent node', async () => {
+    try {
+      await firebase
+        .database()
+        .ref('tests/siudfhsuidfj')
+        .setPriority(1);
+      return Promise.reject(new Error('Did not throw error.'));
+    } catch (error) {
+      // WEB SDK: INVALID_PARAMETERS: could not set priority on non-existent node
+      // TODO Get this error? Native code = -999 Unknown
+      return Promise.resolve();
+    }
   });
 
   it('throws if permission defined', async () => {

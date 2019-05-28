@@ -16,7 +16,7 @@
  *
  */
 
-import { isNumber } from '@react-native-firebase/common';
+import { isNull, isNumber, isString } from '@react-native-firebase/common';
 
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',
@@ -24,8 +24,6 @@ const CONSTANTS = {
 };
 
 export default class DatabaseQueryModifiers {
-  static DEFAULT = new DatabaseQueryModifiers();
-
   constructor() {
     this._limit = undefined;
     this._orderBy = undefined;
@@ -33,7 +31,6 @@ export default class DatabaseQueryModifiers {
     this._endAt = undefined;
     this._modifiers = [];
   }
-
 
   /**
    *
@@ -52,6 +49,8 @@ export default class DatabaseQueryModifiers {
   limitToFirst(limit) {
     const newLimit = {
       id: `limit-limitToFirst:${limit}`,
+      name: 'limitToFirst',
+      type: 'limit',
       value: limit,
       viewFrom: CONSTANTS.VIEW_FROM_LEFT,
     };
@@ -64,6 +63,8 @@ export default class DatabaseQueryModifiers {
   limitToLast(limit) {
     const newLimit = {
       id: `limit-limitToLast:${limit}`,
+      name: 'limitToLast',
+      type: 'limit',
       value: limit,
       viewFrom: CONSTANTS.VIEW_FROM_RIGHT,
     };
@@ -108,6 +109,10 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
+  isValidPriority(priority) {
+    return isNumber(priority) || isString(priority) || isNull(priority);
+  }
+
   orderByPriority() {
     const newOrder = {
       id: `order-orderByPriority`,
@@ -138,6 +143,44 @@ export default class DatabaseQueryModifiers {
    *
    */
 
+  hasStartAt() {
+    return this._startAt !== undefined;
+  }
+
+  hasEndAt() {
+    return this._endAt !== undefined;
+  }
+
+  startAt(value, key) {
+    const newStart = {
+      id: `filter-startAt:${value}:${key || ''}`,
+      type: 'filter',
+      name: 'startAt',
+      value,
+      valueType: value === null ? 'null' : typeof value,
+      key,
+    };
+
+    this._startAt = newStart;
+    this._modifiers.push(newStart);
+    return this;
+  }
+
+  endAt(value, key) {
+    const newStart = {
+      id: `filter-endAt:${value}:${key || ''}`,
+      type: 'filter',
+      name: 'endAt',
+      value,
+      valueType: value === null ? 'null' : typeof value,
+      key,
+    };
+
+    this._endAt = newStart;
+    this._modifiers.push(newStart);
+    return this;
+  }
+
   // Returns a modifier array
   toArray() {
     return this._modifiers;
@@ -158,5 +201,37 @@ export default class DatabaseQueryModifiers {
     }
     key += '}';
     return key;
+  }
+
+  validateModifiers(prefix) {
+    if (this._orderBy && this._orderBy.name === 'orderByKey') {
+      if ((this._startAt && !!this._startAt.key) || (this._endAt && !!this._endAt.key)) {
+        throw new Error(
+          `${prefix} When ordering by key, you may only pass a value argument to startAt(), endAt(), or equalTo().`,
+        );
+      }
+    }
+
+    if (this._orderBy && this._orderBy.name === 'orderByKey') {
+      if (
+        (this._startAt && this._startAt.valueType !== 'string') ||
+        (this._endAt && this._endAt.valueType !== 'string')
+      ) {
+        throw new Error(
+          `${prefix} When ordering by key, the value of startAt(), endAt(), or equalTo() must be a string.`,
+        );
+      }
+    }
+
+    if (this._orderBy && this._orderBy.name === 'orderByPriority') {
+      if (
+        (this._startAt && !this.isValidPriority(this._startAt.value)) ||
+        (this._endAt && !this.isValidPriority(this._endAt.value))
+      ) {
+        throw new Error(
+          `${prefix} When ordering by priority, the first value of startAt(), endAt(), or equalTo() must be a valid priority value (null, a number, or a string).`,
+        );
+      }
+    }
   }
 }

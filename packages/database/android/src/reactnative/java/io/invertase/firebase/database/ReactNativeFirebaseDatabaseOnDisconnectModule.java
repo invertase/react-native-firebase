@@ -87,7 +87,7 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
 
   @ReactMethod
   public void onDisconnectUpdate(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    Map<String, Object> values = toHashMap(props);
+    @SuppressWarnings("unchecked") Map<String, Object> values = (Map<String, Object>) toHashMap(props).get("values");
     module.onDisconnectUpdate(app, dbURL, path, values)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {

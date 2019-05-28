@@ -61,9 +61,9 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
       .onDisconnect();
 
     if (priority instanceof String) {
-      return onDisconnect.setValue(value, (String) value);
+      return onDisconnect.setValue(value, (String) priority);
     } else {
-      return onDisconnect.setValue(value, (double) value);
+      return onDisconnect.setValue(value, (double) priority);
     }
   }
 
