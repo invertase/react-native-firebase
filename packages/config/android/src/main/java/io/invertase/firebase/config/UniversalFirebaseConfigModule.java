@@ -59,9 +59,9 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Boolean> fetchAndActivate(long expirationDuration) {
+  Task<Boolean> fetchAndActivate() {
     FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-    Task<Void> fetchTask = expirationDuration == -1 ? config.fetch(expirationDuration) : config.fetch();
+    Task<Void> fetchTask = config.fetch();
     return fetchTask.onSuccessTask(aVoid -> config.activate());
   }
 

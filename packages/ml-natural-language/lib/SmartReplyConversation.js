@@ -15,29 +15,62 @@
  *
  */
 
+import { isNumber, isString, isUndefined } from '@react-native-firebase/common';
+
 export default class SmartReplyConversation {
-  constructor(nativeModule, messageHistoryLimit = 20) {
+  constructor(nativeModule, messageHistoryLimit = 30) {
     this.messages = [];
     this.native = nativeModule;
     this.messageHistoryLimit = messageHistoryLimit;
   }
 
-  addLocalUserMessage(message, timestamp) {
-    this.messages.push([message, timestamp || Date.now()]);
+  addLocalUserMessage(text, timestamp) {
+    if (!isString(text)) {
+      throw new Error(
+        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.`,
+      );
+    }
+
+    if (!isUndefined(timestamp) && !isNumber(timestamp)) {
+      throw new Error(
+        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.`,
+      );
+    }
+
+    this.messages.push({ text, timestamp: timestamp || Date.now() });
     if (this.messages.length > this.messageHistoryLimit) {
       this.messages = this.messages.slice(-this.messageHistoryLimit);
     }
   }
 
-  addRemoteUserMessage(message, timestamp, remoteUserId) {
-    this.messages.push([message, timestamp || Date.now(), remoteUserId]);
+  addRemoteUserMessage(text, timestamp, remoteUserId) {
+    if (!isString(text)) {
+      throw new Error(
+        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.`,
+      );
+    }
+
+    if (!isNumber(timestamp)) {
+      throw new Error(
+        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.`,
+      );
+    }
+
+    if (!isString(remoteUserId)) {
+      throw new Error(
+        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, _, *) 'remoteUserId' must be a string value.`,
+      );
+    }
+
+    this.messages.push({ text, timestamp: timestamp || Date.now(), remoteUserId });
     if (this.messages.length > this.messageHistoryLimit) {
       this.messages = this.messages.slice(-this.messageHistoryLimit);
     }
   }
 
   getSuggestedReplies() {
-    return this.native.getSuggestedReplies(this.messages);
+    if (!this.messages.length) return Promise.resolve([]);
+    return this.native.getSuggestedReplies([...this.messages]);
   }
 
   clearMessages() {

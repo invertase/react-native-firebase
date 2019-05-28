@@ -1,4 +1,4 @@
-/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies,no-console */
+/* eslint-disable */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *

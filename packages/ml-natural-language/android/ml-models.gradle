@@ -1,5 +1,6 @@
 def mlModels = [
-  'ml_natural_language_translate_model',
+  // TODO not available on iOS until SDK 6.0.0
+  //  'ml_natural_language_translate_model',
   'ml_natural_language_language_id_model',
   'ml_natural_language_smart_reply_model',
 ]

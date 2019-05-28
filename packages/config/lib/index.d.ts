@@ -325,7 +325,7 @@ export namespace Config {
     fetch(expirationDurationSeconds?: number): Promise<null>;
 
     /**
-     * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     * Fetches the remote config data from Firebase, as defined in the dashboard.
      *
      * Once fetching is complete this method immediately calls activate and returns a boolean value of the activation status.
      *
@@ -333,7 +333,7 @@ export namespace Config {
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await firebase.config().fetchAndActivate(300);
+     * const activated = await firebase.config().fetchAndActivate();
      *
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
@@ -342,9 +342,8 @@ export namespace Config {
      * }
      * ```
      *
-     * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache use a duration of 0.
      */
-    fetchAndActivate(expirationDurationSeconds?: number): Promise<boolean>;
+    fetchAndActivate(): Promise<boolean>;
 
     /**
      * Returns all available config values.

@@ -20,69 +20,107 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import {
+  isAndroid,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
 
 import version from './version';
 import SmartReplyConversation from './SmartReplyConversation';
 
+// TODO not available on iOS until SDK 6.0.0
+// import TranslateModelManager from './TranslateModelManager';
+
 const statics = {};
-
 const namespace = 'mlKitLanguage';
-
 const nativeModuleName = [
   'RNFBMLNaturalLanguageIdModule',
   'RNFBMLNaturalLanguageTranslateModule',
   'RNFBMLNaturalLanguageSmartReplyModule',
 ];
 
-// TODO(salakar) figure out a JS API
-// firebase.ml().natualLanguage().languageId().detectLanguage(text)
+function validateIdentifyLanguageArgs(text, options, methodName) {
+  if (!isString(text)) {
+    throw new Error(`firebase.mlKitLanguage().${methodName}(*, _) 'text' must be a string value.`);
+  }
 
-// -- LANGUAGE_LANGUAGE_ID
-// --------------------------
-// firebase.ml().language().detectLanguageId(text)
+  if (!isObject(options)) {
+    throw new Error(
+      `firebase.mlKitLanguage().${methodName}(_, *) 'options' must be an object or undefined.`,
+    );
+  }
 
-// -- LANGUAGE_SMART_REPLIES
-// --------------------------
-// firebase.ml().language().newSmartReplyConversation(): SmartReplyConversation
-//      -> SmartReplyConversation
-//          -> destroy(): void;
-//          -> clear(): void;
-//          -> getSuggestedReplies(): Promise<SuggestedReply[]>;
-//          -> addLocalUserMessage(message, timestamp = Date.now()): void;
-//          -> addRemoteUserMessage(message, timestamp = Date.now(), remoteUserId): void;
+  if (
+    !isUndefined(options.confidenceThreshold) &&
+    (!isNumber(options.confidenceThreshold) ||
+      options.confidenceThreshold < 0 ||
+      options.confidenceThreshold > 1)
+  ) {
+    throw new Error(
+      `firebase.mlKitLanguage().${methodName}(_, *) 'options.confidenceThreshold' must be a float value between 0 and 1.`,
+    );
+  }
+}
 
-// -- LANGUAGE_TRANSLATE
-// --------------------------
-// firebase.mlKitLanguage().translate().translateText(text, options);
-// firebase.mlKitVision();
-// firebase.mlVision();
-// firebase.mlKitLanguage().translateText(text, options): Promise<string>;
-// firebase.mlKitLanguage().translateGetAvailableModels(): Promise<Object[]>;
-// firebase.mlKitLanguage().translateDeleteDownloadedModel(languageId: int): Promise<void>;
-// firebase.mlKitLanguage().translateDownloadRemoteModel(languageId: int, downloadConditions: Object): Promise<void>;
+function validateOptionalNativeDependencyExists(firebaseJsonKey, nativeFnExists) {
+  if (nativeFnExists) return;
+  let errorMessage = `You attempted to use an optional ML Kit API that's not enabled natively. \n\n To enable `;
 
-// firebase.ml().vision().detectFacesInImage(imageUri)
-// firebase.ml().vision().detectTextInImage(imageUri)
-// firebase.ml().vision().readBarcodeFromImage(imageUri)
+  if (firebaseJsonKey === 'ml_natural_language_language_id_model') {
+    errorMessage += `Language ID detection`;
+  } else if (firebaseJsonKey === 'ml_natural_language_smart_reply_model') {
+    errorMessage += `Smart Replies`;
+  }
+
+  errorMessage += ` please set the 'react-native' -> '${firebaseJsonKey}' key to true in your firebase.json file`;
+
+  if (isAndroid) {
+    errorMessage += ' and rebuild your Android app.';
+  } else {
+    errorMessage +=
+      ', re-run pod install and rebuild your iOS app. ' +
+      "If you're not using Pods then make sure you've have downloaded the necessary Firebase iOS SDK dependencies for this API.";
+  }
+
+  throw new Error(errorMessage);
+}
 
 class FirebaseMlKitLanguageModule extends FirebaseModule {
-  // --------------------------
-  // -- LANGUAGE_LANGUAGE_ID
-  // --------------------------
-
   identifyLanguage(text, options = {}) {
-    return this.native.identifyLanguage(text, options);
+    validateOptionalNativeDependencyExists(
+      'ml_natural_language_language_id_model',
+      !!this.native.identifyLanguage,
+    );
+    validateIdentifyLanguageArgs(text, options, 'identifyLanguage');
+    return this.native.identifyLanguage(text.slice(0, 200), options);
   }
 
   identifyPossibleLanguages(text, options = {}) {
-    return this.native.identifyPossibleLanguages(text, options);
+    validateOptionalNativeDependencyExists(
+      'ml_natural_language_language_id_model',
+      !!this.native.identifyPossibleLanguages,
+    );
+    validateIdentifyLanguageArgs(text, options, 'identifyPossibleLanguages');
+    return this.native.identifyPossibleLanguages(
+      text.slice(0, 200),
+      Object.assign({}, options, { multipleLanguages: true }),
+    );
   }
 
-  // --------------------------
-  // -- SMART_REPLIES
-  // --------------------------
-
   newSmartReplyConversation(messageHistoryLimit) {
+    validateOptionalNativeDependencyExists(
+      'ml_natural_language_smart_reply_model',
+      !!this.native.getSuggestedReplies,
+    );
+    if (!isUndefined(messageHistoryLimit) && !isNumber(messageHistoryLimit)) {
+      throw new Error(
+        `firebase.mlKitLanguage().newSmartReplyConversation(*) 'messageHistoryLimit' must be a number or undefined.`,
+      );
+    }
+
     return new SmartReplyConversation(this.native, messageHistoryLimit);
   }
 }
@@ -107,3 +145,24 @@ export default createModuleNamespace({
 // mlKitLanguage().X(...);
 // firebase.mlKitLanguage().X(...);
 export const firebase = getFirebaseRoot();
+
+// TODO not available on Firebase iOS until SDK 6.0.0, add in RNFB >6.1
+// --------------------------
+//     LANGUAGE_TRANSLATE
+// --------------------------
+// translate(text, translationOptions) {
+//   const _translationOptions = {};
+//
+//   // retrieve the language id integers
+//   const { sourceLanguage, targetLanguage } = translationOptions;
+//   _translationOptions.sourceLanguage = this.native.TRANSLATE_LANGUAGES[sourceLanguage];
+//   _translationOptions.targetLanguage = this.native.TRANSLATE_LANGUAGES[targetLanguage];
+//   // translationOptions required:
+//   //    sourceLanguage
+//   //    targetLanguage
+//   return this.native.translate(text, _translationOptions);
+// }
+//
+// get translateModelManager() {
+//   return new TranslateModelManager(this);
+// }

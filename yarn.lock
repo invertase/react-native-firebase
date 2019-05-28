@@ -1549,14 +1549,6 @@
     xcode "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-firebase/mlkit@6.0.0-alpha.22":
-  version "6.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/mlkit/-/mlkit-6.0.0-alpha.22.tgz#20fb3dd29225b131a68b469b81aade12d55cf2cd"
-  integrity sha512-MRUFkWAMF5XQBwpBsYFz4nGJWkSU/PJ9i3FJkSt1+vGHjY2Q10ukEzTnveQSevjZGc8J0oUyFUVB1dsk/XHxqA==
-  dependencies:
-    "@react-native-firebase/app-types" "6.0.0-alpha.22"
-    "@react-native-firebase/common" "6.0.0-alpha.22"
-
 "@react-native-firebase/private-tests-firebase-functions@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-firebase-functions/-/private-tests-firebase-functions-0.0.1.tgz#bbee243641e92a3d50925cb95e95dbcd28f7fc27"

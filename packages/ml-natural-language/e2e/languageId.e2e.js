@@ -35,7 +35,55 @@ describe('mlKitLanguage() -> Language ID', () => {
       should.equal(languageDeLowConfidence, 'de');
     });
 
-    // TODO(salakar) arg validation tests
+    it('throws an error if text is not a string', async () => {
+      try {
+        firebase.mlKitLanguage().identifyLanguage(false);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a string value');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if options is not an object', async () => {
+      try {
+        firebase.mlKitLanguage().identifyLanguage('hello', false);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be an object');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if options.confidenceThreshold is not a float value', async () => {
+      try {
+        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: 'boop' });
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a float value between 0 and 1');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if options.confidenceThreshold is greater than 1', async () => {
+      try {
+        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: 1.2 });
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a float value between 0 and 1');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if options.confidenceThreshold is less than 0', async () => {
+      try {
+        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: -1.2 });
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql('must be a float value between 0 and 1');
+        return Promise.resolve();
+      }
+    });
   });
 
   describe('identifyPossibleLanguages()', () => {
@@ -58,7 +106,6 @@ describe('mlKitLanguage() -> Language ID', () => {
       languages[0].confidence.should.be.a.Number();
       languages[0].confidence.should.be.greaterThan(0.7);
     });
+    // arg validation not required, uses same validator as identifyLanguage
   });
-
-  // TODO(salakar) arg validation tests
 });

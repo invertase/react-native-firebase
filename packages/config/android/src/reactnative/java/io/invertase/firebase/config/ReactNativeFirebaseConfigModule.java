@@ -58,8 +58,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void fetchAndActivate(double expirationDurationSeconds, Promise promise) {
-    module.fetchAndActivate((long) expirationDurationSeconds).addOnCompleteListener(task -> {
+  public void fetchAndActivate(Promise promise) {
+    module.fetchAndActivate().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {

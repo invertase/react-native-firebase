@@ -17,16 +17,10 @@ package io.invertase.firebase.ml.naturallanguage;
  *
  */
 
-import android.util.Log;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.*;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import java.util.Objects;
-
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "MLNaturalLanguageSmartReply";
@@ -50,9 +44,9 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
   @ReactMethod
-  public void getSuggestedReplies(String appName, int conversationId, Promise promise) {
+  public void getSuggestedReplies(String appName, ReadableArray messages, Promise promise) {
     module
-      .getSuggestedReplies(appName, conversationId)
+      .getSuggestedReplies(appName, messages.toArrayList())
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
@@ -67,44 +61,5 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
           );
         }
       });
-  }
-
-  /**
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
-   */
-  @ReactMethod
-  public void addLocalUserMessage(
-    String appName,
-    int conversationId,
-    String message,
-    double timestamp
-  ) {
-    module.addLocalUserMessage(conversationId, message, (long) timestamp);
-  }
-
-  /**
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#public-static-firebasetextmessagecreateforremoteuserstring-messagetext,-long-timestampmillis,-string-remoteuserid
-   */
-  @ReactMethod
-  public void addRemoteUserMessage(
-    String appName,
-    int conversationId,
-    String message,
-    double timestamp,
-    String remoteUserId
-  ) {
-    module
-      .addRemoteUserMessage(conversationId, message, (long) timestamp, remoteUserId)
-      .addOnFailureListener(exception -> Log.e("SHOOBY", "DOOBY", exception));
-  }
-
-  @ReactMethod
-  public void destroyConversation(String appName, int conversationId) {
-    module.destroyConversation(conversationId);
-  }
-
-  @ReactMethod
-  public void clearMessages(String appName, int conversationId) {
-    module.clearMessages(conversationId);
   }
 }

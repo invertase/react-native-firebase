@@ -19,16 +19,18 @@ package io.invertase.firebase.ml.naturallanguage;
 
 import android.content.Context;
 import android.os.Bundle;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage;
-
-import java.util.List;
-import java.util.concurrent.Executors;
-
+import com.google.firebase.ml.naturallanguage.smartreply.FirebaseTextMessage;
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestion;
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestionResult;
 import io.invertase.firebase.common.UniversalFirebaseModule;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
 class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFirebaseModule {
@@ -39,67 +41,62 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
   @Override
   public void onTearDown() {
     super.onTearDown();
-//    UniversalFirebaseMLNaturalLanguageSmartReplyConversation.destroyAllConversations();
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<FirebaseTextMessage> buildFirebaseTextMessagesList(List<Object> messages) {
+    List<FirebaseTextMessage> firebaseTextMessages = new ArrayList<>(messages.size());
+
+    for (Object message : messages) {
+      Map<String, Object> messageMap = (Map<String, Object>) message;
+      if (messageMap.containsKey("remoteUserId")) {
+        firebaseTextMessages.add(
+          FirebaseTextMessage.createForRemoteUser(
+            (String) messageMap.get("text"),
+            (long) ((double) messageMap.get("timestamp")),
+            (String) messageMap.get("remoteUserId")
+          )
+        );
+      } else {
+        firebaseTextMessages.add(
+          FirebaseTextMessage.createForLocalUser(
+            (String) messageMap.get("text"),
+            (long) ((double) messageMap.get("timestamp"))
+          )
+        );
+      }
+    }
+
+    return firebaseTextMessages;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
-  public Task<List<Bundle>> getSuggestedReplies(String appName, int conversationId) {
+  public Task<List<Bundle>> getSuggestedReplies(String appName, List<Object> messages) {
     return Tasks.call(getExecutor(), () -> {
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
-      UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
-        .getOrCreateConversation(conversationId);
-      return Tasks.await(conversation.getSuggestedReplies(Executors.newSingleThreadExecutor(), naturalLanguage));
-    });
+      List<FirebaseTextMessage> firebaseTextMessages = buildFirebaseTextMessagesList(messages);
+      FirebaseNaturalLanguage instance = FirebaseNaturalLanguage.getInstance(FirebaseApp.getInstance(appName));
 
-  }
+      SmartReplySuggestionResult suggestionResult = Tasks.await(
+        instance.getSmartReply().suggestReplies(firebaseTextMessages)
+      );
 
-  /**
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#createForLocalUser(java.lang.String,%20long)
-   */
-  public Task<Void> addLocalUserMessage(
-    int conversationId,
-    String message,
-    long timestamp
-  ) {
-    return Tasks.call(getExecutor(), () -> {
-      UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
-        .getOrCreateConversation(conversationId);
-      conversation.addLocalUserMessage(message, timestamp);
-      return null;
-    });
-  }
+      if (suggestionResult == null) return new ArrayList<>(0);
 
-  /**
-   * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseTextMessage.html#public-static-firebasetextmessagecreateforremoteuserstring-messagetext,-long-timestampmillis,-string-remoteuserid
-   */
-  public Task<Void> addRemoteUserMessage(
-    int conversationId,
-    String message,
-    long timestamp,
-    String remoteUserId
-  ) {
-    return Tasks.call(getExecutor(), () -> {
-      UniversalFirebaseMLNaturalLanguageSmartReplyConversation conversation = UniversalFirebaseMLNaturalLanguageSmartReplyConversation
-        .getOrCreateConversation(conversationId);
-      conversation.addRemoteUserMessage(message, timestamp, remoteUserId);
-      return null;
-    });
-  }
+      List<SmartReplySuggestion> suggestedRepliesListRaw = suggestionResult.getSuggestions();
+      List<Bundle> suggestedRepliesListFormatted = new ArrayList<>(
+        suggestedRepliesListRaw.size());
 
-  public Task<Void> destroyConversation(int conversationId) {
-    return Tasks.call(getExecutor(), () -> {
-      UniversalFirebaseMLNaturalLanguageSmartReplyConversation.destroyConversation(conversationId);
-      return null;
-    });
-  }
 
-  public Task<Void> clearMessages(int conversationId) {
-    return Tasks.call(getExecutor(), () -> {
-      UniversalFirebaseMLNaturalLanguageSmartReplyConversation.clearMessages(conversationId);
-      return null;
+      for (SmartReplySuggestion suggestedReplyRaw : suggestedRepliesListRaw) {
+        Bundle suggestReplyFormatted = new Bundle(2);
+        suggestReplyFormatted.putString("text", suggestedReplyRaw.getText());
+        suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
+        suggestedRepliesListFormatted.add(suggestReplyFormatted);
+      }
+
+      return suggestedRepliesListFormatted;
     });
   }
 }

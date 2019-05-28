@@ -56,8 +56,7 @@ class UniversalFirebaseMLNaturalLanguageIdModule extends UniversalFirebaseModule
       FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
 
       FirebaseLanguageIdentificationOptions identificationOptions = getOptions(
-        identificationOptionsBundle,
-        true
+        identificationOptionsBundle
       );
 
       FirebaseLanguageIdentification languageIdentification = naturalLanguage.getLanguageIdentification(
@@ -79,8 +78,7 @@ class UniversalFirebaseMLNaturalLanguageIdModule extends UniversalFirebaseModule
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseNaturalLanguage naturalLanguage = FirebaseNaturalLanguage.getInstance(firebaseApp);
       FirebaseLanguageIdentificationOptions identificationOptions = getOptions(
-        identificationOptionsBundle,
-        false
+        identificationOptionsBundle
       );
       FirebaseLanguageIdentification languageIdentification = naturalLanguage.getLanguageIdentification(
         identificationOptions);
@@ -107,16 +105,16 @@ class UniversalFirebaseMLNaturalLanguageIdModule extends UniversalFirebaseModule
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/languageid/FirebaseLanguageIdentificationOptions.html
    */
   private FirebaseLanguageIdentificationOptions getOptions(
-    Bundle identificationOptionsBundle,
-    boolean singleLanguage
+    Bundle identificationOptionsBundle
   ) {
+    boolean multipleLanguages = identificationOptionsBundle.containsKey("multipleLanguages");
     FirebaseLanguageIdentificationOptions.Builder optionsBuilder = new FirebaseLanguageIdentificationOptions.Builder();
 
     if (identificationOptionsBundle.containsKey("confidenceThreshold")) {
       optionsBuilder.setConfidenceThreshold((float) identificationOptionsBundle.getDouble(
         "confidenceThreshold"));
     } else {
-      if (singleLanguage) {
+      if (!multipleLanguages) {
         optionsBuilder.setConfidenceThreshold(FirebaseLanguageIdentification.DEFAULT_IDENTIFY_LANGUAGE_CONFIDENCE_THRESHOLD);
       } else {
         optionsBuilder.setConfidenceThreshold(FirebaseLanguageIdentification.DEFAULT_IDENTIFY_POSSIBLE_LANGUAGES_CONFIDENCE_THRESHOLD);

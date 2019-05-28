@@ -110,9 +110,7 @@ RCT_EXPORT_METHOD(fetch:
 }
 
 RCT_EXPORT_METHOD(fetchAndActivate:
-  (nonnull
-    NSNumber *)expirationDuration
-    : (RCTPromiseResolveBlock)resolve
+  (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock)reject
 ) {
   FIRRemoteConfigFetchCompletion completionHandler = ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
@@ -125,11 +123,7 @@ RCT_EXPORT_METHOD(fetchAndActivate:
     }
   };
 
-  if (expirationDuration == @(-1)) {
-    [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
-  } else {
-    [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
-  }
+  [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
 }
 
 RCT_EXPORT_METHOD(activate:

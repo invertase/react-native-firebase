@@ -17,15 +17,7 @@ package io.invertase.firebase.ml.naturallanguage;
  *
  */
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-
-import java.util.Map;
-import java.util.Objects;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 class RNFirebaseMLNaturalLanguageTranslateModule extends ReactNativeFirebaseModule {
@@ -37,107 +29,109 @@ class RNFirebaseMLNaturalLanguageTranslateModule extends ReactNativeFirebaseModu
     this.module = new UniversalFirebaseMLNaturalLanguageTranslateModule(reactContext, SERVICE_NAME);
   }
 
-  /**
-   * @url No reference documentation yet...
-   */
-  @ReactMethod
-  public void translate(
-    String appName,
-    String text,
-    ReadableMap translationOptionsMap,
-    Promise promise
-  ) {
-    module
-      .translate(appName, text, Arguments.toBundle(translationOptionsMap))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
-            task.getException());
-          rejectPromiseWithCodeAndMessage(
-            promise,
-            errorCodeAndMessage[0],
-            errorCodeAndMessage[1],
-            errorCodeAndMessage[2]
-          );
-        }
-      });
-  }
+// TODO not available on iOS until SDK 6.0.0
 
-  /**
-   * @url No reference documentation yet...
-   */
-  @ReactMethod
-  public void modelManagerGetAvailableModels(String appName, Promise promise) {
-    module.modelManagerGetAvailableModels(appName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
-      } else {
-        String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
-          task.getException());
-        rejectPromiseWithCodeAndMessage(
-          promise,
-          errorCodeAndMessage[0],
-          errorCodeAndMessage[1],
-          errorCodeAndMessage[2]
-        );
-      }
-    });
-  }
-
-  /**
-   * @url No reference documentation yet...
-   */
-  @ReactMethod
-  public void modelManagerDeleteDownloadedModel(String appName, int language, Promise promise) {
-    module.modelManagerDeleteDownloadedModel(appName, language).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
-          task.getException());
-        rejectPromiseWithCodeAndMessage(
-          promise,
-          errorCodeAndMessage[0],
-          errorCodeAndMessage[1],
-          errorCodeAndMessage[2]
-        );
-      }
-    });
-  }
-
-  /**
-   * @url No reference documentation yet...
-   */
-  @ReactMethod
-  public void modelManagerDownloadRemoteModel(
-    String appName,
-    int language,
-    ReadableMap downloadConditionsMap,
-    Promise promise
-  ) {
-    module
-      .modelManagerDownloadRemoteModel(appName, language, Arguments.toBundle(downloadConditionsMap))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
-            task.getException());
-          rejectPromiseWithCodeAndMessage(
-            promise,
-            errorCodeAndMessage[0],
-            errorCodeAndMessage[1],
-            errorCodeAndMessage[2]
-          );
-        }
-      });
-  }
-
-
-  @Override
-  public Map<String, Object> getConstants() {
-    return module.getConstants();
-  }
+//  /**
+//   * @url No reference documentation yet...
+//   */
+//  @ReactMethod
+//  public void translate(
+//    String appName,
+//    String text,
+//    ReadableMap translationOptionsMap,
+//    Promise promise
+//  ) {
+//    module
+//      .translate(appName, text, Arguments.toBundle(translationOptionsMap))
+//      .addOnCompleteListener(task -> {
+//        if (task.isSuccessful()) {
+//          promise.resolve(task.getResult());
+//        } else {
+//          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+//            task.getException());
+//          rejectPromiseWithCodeAndMessage(
+//            promise,
+//            errorCodeAndMessage[0],
+//            errorCodeAndMessage[1],
+//            errorCodeAndMessage[2]
+//          );
+//        }
+//      });
+//  }
+//
+//  /**
+//   * @url No reference documentation yet...
+//   */
+//  @ReactMethod
+//  public void modelManagerGetAvailableModels(String appName, Promise promise) {
+//    module.modelManagerGetAvailableModels(appName).addOnCompleteListener(task -> {
+//      if (task.isSuccessful()) {
+//        promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
+//      } else {
+//        String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+//          task.getException());
+//        rejectPromiseWithCodeAndMessage(
+//          promise,
+//          errorCodeAndMessage[0],
+//          errorCodeAndMessage[1],
+//          errorCodeAndMessage[2]
+//        );
+//      }
+//    });
+//  }
+//
+//  /**
+//   * @url No reference documentation yet...
+//   */
+//  @ReactMethod
+//  public void modelManagerDeleteDownloadedModel(String appName, int language, Promise promise) {
+//    module.modelManagerDeleteDownloadedModel(appName, language).addOnCompleteListener(task -> {
+//      if (task.isSuccessful()) {
+//        promise.resolve(task.getResult());
+//      } else {
+//        String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+//          task.getException());
+//        rejectPromiseWithCodeAndMessage(
+//          promise,
+//          errorCodeAndMessage[0],
+//          errorCodeAndMessage[1],
+//          errorCodeAndMessage[2]
+//        );
+//      }
+//    });
+//  }
+//
+//  /**
+//   * @url No reference documentation yet...
+//   */
+//  @ReactMethod
+//  public void modelManagerDownloadRemoteModelIfNeeded(
+//    String appName,
+//    int language,
+//    ReadableMap downloadConditionsMap,
+//    Promise promise
+//  ) {
+//    module
+//      .modelManagerDownloadRemoteModelIfNeeded(appName, language, Arguments.toBundle(downloadConditionsMap))
+//      .addOnCompleteListener(task -> {
+//        if (task.isSuccessful()) {
+//          promise.resolve(task.getResult());
+//        } else {
+//          String[] errorCodeAndMessage = UniversalFirebaseMLNaturalLanguageCommon.getErrorCodeAndMessageFromException(
+//            task.getException());
+//          rejectPromiseWithCodeAndMessage(
+//            promise,
+//            errorCodeAndMessage[0],
+//            errorCodeAndMessage[1],
+//            errorCodeAndMessage[2]
+//          );
+//        }
+//      });
+//  }
+//
+//
+//  @Override
+//  public Map<String, Object> getConstants() {
+//    return module.getConstants();
+//  }
 }

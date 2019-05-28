@@ -164,7 +164,11 @@ describe('auth().currentUser', () => {
         await firebase.auth().currentUser.delete();
       } catch (error) {
         // Reject
-        await firebase.auth().currentUser.delete();
+        try {
+          await firebase.auth().currentUser.delete();
+        } catch (_) {
+          /* do nothing */
+        }
         return Promise.reject(new Error('sendEmailVerification() caused an error', error));
       }
 

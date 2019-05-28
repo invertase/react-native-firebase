@@ -22,8 +22,8 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import {
   hasOwnProperty,
-  isNumber,
   isBoolean,
+  isNumber,
   isObject,
   isString,
   isUndefined,
@@ -47,6 +47,7 @@ const statics = {
 
 const namespace = 'config';
 const nativeModuleName = 'RNFBConfigModule';
+
 function convertNativeConfigValues(configValues) {
   const convertedValues = {};
   const entries = Object.entries(configValues);
@@ -164,18 +165,8 @@ class FirebaseConfigModule extends FirebaseModule {
     );
   }
 
-  fetchAndActivate(expirationDurationSeconds) {
-    if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
-      throw new Error(
-        `firebase.config().fetchAndActivate(): 'expirationDurationSeconds' must be a number value.`,
-      );
-    }
-
-    return this._promiseWithConstants(
-      this.native.fetchAndActivate(
-        expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1,
-      ),
-    );
+  fetchAndActivate() {
+    return this._promiseWithConstants(this.native.fetchAndActivate());
   }
 
   /**

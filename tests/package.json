@@ -7,7 +7,6 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/ml": "6.0.0-alpha.22",
     "@react-native-firebase/ml-natural-language": "6.0.0-alpha.22",
     "@react-native-firebase/analytics": "6.0.0-alpha.22",
     "@react-native-firebase/app": "6.0.0-alpha.22",
@@ -20,7 +19,6 @@
     "@react-native-firebase/functions": "6.0.0-alpha.22",
     "@react-native-firebase/iid": "6.0.0-alpha.22",
     "@react-native-firebase/invites": "6.0.0-alpha.22",
-    "@react-native-firebase/mlkit": "6.0.0-alpha.22",
     "@react-native-firebase/perf": "6.0.0-alpha.22",
     "@react-native-firebase/storage": "6.0.0-alpha.22",
     "@react-native-firebase/utils": "6.0.0-alpha.22",

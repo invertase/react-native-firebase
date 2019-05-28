@@ -43,11 +43,13 @@ describe('config()', () => {
 
   describe('fetch()', () => {
     it('with expiration provided', async () => {
-      const date = Date.now() - 10000;
+      const date = Date.now() - 30000;
       firebase.config().lastFetchTime.should.equal(0);
       firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
       await firebase.config().fetch(0);
       firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.SUCCESS);
+      // TODO leave logger here - need to investigate flakey test
+      console.log(firebase.config().lastFetchTime, date);
       should.equal(firebase.config().lastFetchTime >= date, true);
     });
     it('without expiration provided', () => firebase.config().fetch());
@@ -64,19 +66,8 @@ describe('config()', () => {
 
   describe('fetchAndActivate()', () => {
     it('returns true/false if activated', async () => {
-      const activated = await firebase.config().fetchAndActivate(0);
+      const activated = await firebase.config().fetchAndActivate();
       activated.should.be.a.Boolean();
-    });
-    it('with expiration provided', () => firebase.config().fetchAndActivate(0));
-    it('without expiration provided', () => firebase.config().fetchAndActivate());
-    it('it throws if expiration is not a number', () => {
-      try {
-        firebase.config().fetchAndActivate('foo');
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a number value');
-        return Promise.resolve();
-      }
     });
   });
 

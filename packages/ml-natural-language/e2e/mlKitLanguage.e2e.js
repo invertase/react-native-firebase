@@ -34,9 +34,47 @@ describe('mlKitLanguage()', () => {
         .mlKitLanguage()
         .app.name.should.equal('secondaryFromNative');
     });
-  });
 
-  describe('aMethod()', () => {
-    // TODO
+    it('throws an error if language id native module does not exist', async () => {
+      const method = firebase.mlKitLanguage().native.identifyLanguage;
+      firebase.mlKitLanguage()._nativeModule = Object.assign(
+        {},
+        firebase.mlKitLanguage()._nativeModule,
+      );
+      delete firebase.mlKitLanguage()._nativeModule.identifyLanguage;
+      try {
+        firebase.mlKitLanguage().identifyLanguage();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql(
+          "You attempted to use an optional ML Kit API that's not enabled natively",
+        );
+        e.message.should.containEql('Language ID');
+        firebase.mlKitLanguage()._nativeModule.identifyLanguage = method;
+        Object.freeze(firebase.mlKitLanguage()._nativeModule);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error if smart replies native module does not exist', async () => {
+      const method = firebase.mlKitLanguage().native.getSuggestedReplies;
+      firebase.mlKitLanguage()._nativeModule = Object.assign(
+        {},
+        firebase.mlKitLanguage()._nativeModule,
+      );
+      delete firebase.mlKitLanguage()._nativeModule.getSuggestedReplies;
+      try {
+        firebase.mlKitLanguage().newSmartReplyConversation();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        e.message.should.containEql(
+          "You attempted to use an optional ML Kit API that's not enabled natively",
+        );
+        e.message.should.containEql('Smart Replies');
+        firebase.mlKitLanguage()._nativeModule.getSuggestedReplies = method;
+        Object.freeze(firebase.mlKitLanguage()._nativeModule);
+        return Promise.resolve();
+      }
+    });
   });
 });
