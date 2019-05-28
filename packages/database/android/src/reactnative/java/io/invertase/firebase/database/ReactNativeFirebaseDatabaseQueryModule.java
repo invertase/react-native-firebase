@@ -38,6 +38,7 @@ import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.rejectPromiseDatabaseException;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotWithPreviousChildToMap;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 //import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseErrorCodeAndMessage;
@@ -284,7 +285,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventType)) {
           query.removeEventListener(this);
-          Tasks.call(() -> snapshotToMap(dataSnapshot, previousChildName))
+          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -299,7 +300,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventType)) {
           query.removeEventListener(this);
-          Tasks.call(() -> snapshotToMap(dataSnapshot, previousChildName))
+          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -314,7 +315,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventType)) {
           query.removeEventListener(this);
-          Tasks.call(() -> snapshotToMap(dataSnapshot, null))
+          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, null))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -329,7 +330,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventType)) {
           query.removeEventListener(this);
-          Tasks.call(() -> snapshotToMap(dataSnapshot, previousChildName))
+          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());

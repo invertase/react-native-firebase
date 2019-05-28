@@ -50,7 +50,7 @@ public class ReactNativeFirebaseDatabaseCommon {
    * @param previousChildName
    * @return
    */
-  public static WritableMap snapshotToMap(
+  public static WritableMap snapshotWithPreviousChildToMap(
     DataSnapshot dataSnapshot,
     @Nullable String previousChildName
   ) {
