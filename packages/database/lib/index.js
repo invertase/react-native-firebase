@@ -43,7 +43,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
     this._transaction = new DatabaseTransaction(this);
-    // this._syncServerTimeOffset();
+    this._syncServerTimeOffset();
   }
 
   /**
@@ -51,9 +51,10 @@ class FirebaseDatabaseModule extends FirebaseModule {
    * @private
    */
   _syncServerTimeOffset() {
-    this.ref('.info/serverTimeOffset').on('value', snapshot => {
-      this._serverTimeOffset = snapshot.val() || this._serverTimeOffset;
-    });
+    // TODO test when on is implemented
+    // this.ref('.info/serverTimeOffset').on('value', snapshot => {
+    //   this._serverTimeOffset = snapshot.val() || this._serverTimeOffset;
+    // });
   }
 
   /**
@@ -109,7 +110,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
     let path = url.replace(this._customUrlOrRegion, '');
     if (path.includes('?')) path = path.slice(0, path.indexOf('?'));
 
-    return new DatabaseReference(this, path);
+    return new DatabaseReference(this, path || '/');
   }
 
   /**
@@ -137,7 +138,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: ['database_transaction_event'],
+  nativeEvents: ['database_transaction_event', 'database_sync_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseDatabaseModule,

@@ -99,3 +99,15 @@ export const INVALID_PATH_REGEX = /[[\].#$\u0000-\u001F\u007F]/;
 export function isValidPath(path) {
   return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
 }
+
+// eslint-disable-next-line no-control-regex
+export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
+
+/**
+ * Ensures a given key is a valid Firebase key
+ * @param key
+ * @returns {boolean}
+ */
+export function isValidKey(key) {
+  return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(path);
+}

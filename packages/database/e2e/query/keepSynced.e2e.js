@@ -15,29 +15,23 @@
  *
  */
 
-const { PATH } = require('../helpers');
-
-const TEST_PATH = `${PATH}/remove`;
-
-describe('database().ref().remove()', () => {
-  it('throws if onComplete is not a function', async () => {
+describe('database().ref().keepSynced()', () => {
+  it('throws if bool is not a valid type', async () => {
     try {
       await firebase
         .database()
-        .ref(TEST_PATH)
-        .remove('foo');
+        .ref()
+        .keepSynced('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql(`'bool' value must be a boolean value.`);
       return Promise.resolve();
     }
   });
 
-  it('removes a value at the path', async () => {
-    const ref = firebase.database().ref(TEST_PATH);
-    await ref.set('foo');
-    await ref.remove();
-    const snapshot = await ref.once('value');
-    snapshot.exists().should.equal(false);
+  it('toggles keepSynced on and off without throwing', async () => {
+    const ref = firebase.database().ref('noop').orderByValue();
+    await ref.keepSynced(true);
+    await ref.keepSynced(false);
   });
 });

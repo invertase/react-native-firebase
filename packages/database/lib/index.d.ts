@@ -132,6 +132,8 @@ export namespace Database {
     toJSON(): object;
 
     toString(): string;
+
+    keepSynced(bool: boolean): Promise<void>;
   }
 
   export interface OnDisconnect {

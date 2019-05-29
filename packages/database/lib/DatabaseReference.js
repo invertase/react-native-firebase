@@ -36,8 +36,17 @@ import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
+const internalRefs = ['.info/connected', '.info/serverTimeOffset'];
+
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
+    // Validate the reference path
+    if (!isValidPath(path) && !internalRefs.includes(path)) {
+      throw new Error(
+        `firebase.database() Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+      );
+    }
+
     super(database, path, new DatabaseQueryModifiers());
     this._database = database;
   }
@@ -65,12 +74,6 @@ export default class DatabaseReference extends DatabaseQuery {
   child(path) {
     if (!isString(path)) {
       throw new Error(`firebase.database().ref().child(*) 'path' must be a string value.`);
-    }
-
-    if (!isValidPath(path)) {
-      throw new Error(
-        `firebase.database().ref().child(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
-      );
     }
 
     return new DatabaseReference(this._database, pathChild(this.path, path));
@@ -110,6 +113,8 @@ export default class DatabaseReference extends DatabaseQuery {
         `firebase.database().ref().update(*) 'values' must be an object containing multiple values.`,
       );
     }
+
+    // TODO validate keys
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
@@ -219,31 +224,6 @@ export default class DatabaseReference extends DatabaseQuery {
         applyLocally
       );
     });
-
-    // const promise = promiseDefer();
-    //
-    // const _onTransactionComplete = (error, committed, snapshot) => {
-    //   if (isFunction(onComplete)) {
-    //     if (error) {
-    //       onComplete(error, committed, null);
-    //     } else {
-    //       onComplete(null, committed, new DatabaseDataSnapshot(this, snapshot));
-    //     }
-    //   }
-    //
-    //   if (error) {
-    //     return promise.reject(error);
-    //   }
-    //
-    //   return promise.resolve({
-    //     committed,
-    //     snapshot: new DatabaseDataSnapshot(this, snapshot),
-    //   });
-    // };
-    //
-    // this._database._transaction.add(this, transactionUpdate, _onTransactionComplete, applyLocally);
-    //
-    // return promise;
   }
 
   /**
@@ -278,12 +258,12 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   push(value, onComplete) {
     // TODO validate value?
-
-    const id = generateDatabaseId(this._database._serverTime);
-    const pushRef = this.child(id);
-    const thennablePushRef = this.child(id);
-
-    return thennablePushRef;
+    //
+    // const id = generateDatabaseId(this._database._serverTime);
+    // const pushRef = this.child(id);
+    // const thennablePushRef = this.child(id);
+    //
+    // return thennablePushRef;
   }
 
   /**

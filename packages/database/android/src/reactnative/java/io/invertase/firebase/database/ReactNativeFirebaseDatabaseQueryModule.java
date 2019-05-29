@@ -19,38 +19,60 @@ package io.invertase.firebase.database;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
+import static io.invertase.firebase.common.RCTConvertFirebase.readableMapToWritableMap;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.rejectPromiseDatabaseException;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotWithPreviousChildToMap;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
-
-//import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseErrorCodeAndMessage;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getReferenceFromKey;
 
 public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseQuery";
+  private HashMap<String, ReactNativeFirebaseDatabaseQuery> queryMap = new HashMap<>();
 
   ReactNativeFirebaseDatabaseQueryModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
   }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    Iterator refIterator = queryMap.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      ReactNativeFirebaseDatabaseQuery databaseQuery = (ReactNativeFirebaseDatabaseQuery) pair.getValue();
+      databaseQuery.removeAllEventListeners();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
+  }
+
 
   /**
    * Assign a reference query modifiers and return the query
@@ -58,177 +80,29 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
    * @param reference
    * @param modifiers
    */
-  private Query getQueryInstance(DatabaseReference reference, ReadableArray modifiers) {
-    Query query = reference;
+  private ReactNativeFirebaseDatabaseQuery getDatabaseQueryInstance(String key, DatabaseReference reference, ReadableArray modifiers) {
+    ReactNativeFirebaseDatabaseQuery cachedDatabaseQuery = queryMap.get(key);
 
-    for (Object m : toArrayList(modifiers)) {
-      Map modifier = (Map) m;
-      String type = (String) modifier.get("type");
-      String name = (String) modifier.get("name");
-
-      if ("orderBy".equals(type)) {
-        query = applyOrderByModifier(query, name, modifier);
-      } else if ("limit".equals(type)) {
-        query = applyLimitModifier(query, name, modifier);
-      } else if ("filter".equals(type)) {
-        query = applyFilterModifier(query, name, modifier);
-      }
+    if (cachedDatabaseQuery != null) {
+      return cachedDatabaseQuery;
     }
 
-    return query;
-  }
+    ReactNativeFirebaseDatabaseQuery databaseQuery = new ReactNativeFirebaseDatabaseQuery(
+      reference,
+      modifiers
+    );
 
-  /**
-   * ref().orderBy*(key?)
-   *
-   * @param query
-   * @param name
-   * @param modifier
-   */
-  private Query applyOrderByModifier(Query query, String name, Map modifier) {
-    switch (name) {
-      case "orderByKey":
-        query = query.orderByKey();
-        break;
-      case "orderByPriority":
-        query = query.orderByPriority();
-        break;
-      case "orderByValue":
-        query = query.orderByValue();
-        break;
-      case "orderByChild":
-        String key = (String) modifier.get("key");
-        query = query.orderByChild(key);
-    }
-
-    return query;
-  }
-
-  /**
-   * ref().limitTo*(number)
-   *
-   * @param query
-   * @param name
-   * @param modifier
-   */
-  private Query applyLimitModifier(Query query, String name, Map modifier) {
-    int limit = ((Double) modifier.get("value")).intValue();
-    if ("limitToLast".equals(name)) {
-      query = query.limitToLast(limit);
-    } else if ("limitToFirst".equals(name)) {
-      query = query.limitToFirst(limit);
-    }
-    return query;
-  }
-
-  /**
-   * ref().equalTo(), ref().endAt(), ref().startAt();
-   *
-   * @param name
-   * @param modifier
-   */
-  private Query applyFilterModifier(Query query, String name, Map modifier) {
-    String valueType = (String) modifier.get("valueType");
-    String key = (String) modifier.get("key");
-
-    // Note: equalTo() is handled in JS land by setting startAt() & endAt() to the same
-    // value (see https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L570)
-    if ("endAt".equals(name)) {
-      query = applyEndAtFilter(query, key, valueType, modifier);
-    } else if ("startAt".equals(name)) {
-      query = applyStartAtFilter(query, key, valueType, modifier);
-    }
-
-    return query;
-  }
-
-  /**
-   * ref().endAt(value, key?)
-   *
-   * @param key
-   * @param valueType
-   * @param modifier
-   */
-  private Query applyEndAtFilter(Query query, String key, String valueType, Map modifier) {
-    if ("number".equals(valueType)) {
-      double value = (Double) modifier.get("value");
-      if (key == null) {
-        query = query.endAt(value);
-      } else {
-        query = query.endAt(value, key);
-      }
-    } else if ("boolean".equals(valueType)) {
-      boolean value = (Boolean) modifier.get("value");
-      if (key == null) {
-        query = query.endAt(value);
-      } else {
-        query = query.endAt(value, key);
-      }
-    } else if ("string".equals(valueType)) {
-      String value = (String) modifier.get("value");
-      if (key == null) {
-        query = query.endAt(value);
-      } else {
-        query = query.endAt(value, key);
-      }
-    } else if ("null".equals(valueType)) {
-      if (key == null) {
-        query = query.endAt(null);
-      } else {
-        query = query.endAt(null, key);
-      }
-    }
-
-    return query;
-  }
-
-  /**
-   * ref().startAt(value, key?)
-   *
-   * @param key
-   * @param valueType
-   * @param modifier
-   */
-  private Query applyStartAtFilter(Query query, String key, String valueType, Map modifier) {
-    if ("number".equals(valueType)) {
-      double value = (Double) modifier.get("value");
-      if (key == null) {
-        query = query.startAt(value);
-      } else {
-        query = query.startAt(value, key);
-      }
-    } else if ("boolean".equals(valueType)) {
-      boolean value = (Boolean) modifier.get("value");
-      if (key == null) {
-        query = query.startAt(value);
-      } else {
-        query = query.startAt(value, key);
-      }
-    } else if ("string".equals(valueType)) {
-      String value = (String) modifier.get("value");
-      if (key == null) {
-        query = query.startAt(value);
-      } else {
-        query = query.startAt(value, key);
-      }
-    } else if ("null".equals(valueType)) {
-      if (key == null) {
-        query = query.startAt(null);
-      } else {
-        query = query.startAt(null, key);
-      }
-    }
-
-    return query;
+    queryMap.put(key, databaseQuery);
+    return databaseQuery;
   }
 
   /**
    * ref().once('value')
    *
-   * @param query
+   * @param databaseQuery
    * @param promise
    */
-  private void addOnceValueEventListener(Query query, Promise promise) {
+  private void addOnceValueEventListener(ReactNativeFirebaseDatabaseQuery databaseQuery, Promise promise) {
     ValueEventListener onceValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
@@ -250,23 +124,23 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       }
     };
 
-    query.addListenerForSingleValueEvent(onceValueEventListener);
+    databaseQuery.addSingleValueEventListener(onceValueEventListener);
   }
 
   /**
    * ref().once('child_*') handler
    *
    * @param eventType
-   * @param query
+   * @param databaseQuery
    * @param promise
    */
-  private void addChildOnceEventListener(String eventType, Query query, Promise promise) {
+  private void addChildOnceEventListener(String eventType, ReactNativeFirebaseDatabaseQuery databaseQuery, Promise promise) {
     ChildEventListener childEventListener = new ChildEventListener() {
       @Override
       public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_added".equals(eventType)) {
-          query.removeEventListener(this);
-          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+          databaseQuery.removeEventListener(this);
+          Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -280,8 +154,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       @Override
       public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_changed".equals(eventType)) {
-          query.removeEventListener(this);
-          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+          databaseQuery.removeEventListener(this);
+          Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -295,8 +169,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       @Override
       public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
         if ("child_removed".equals(eventType)) {
-          query.removeEventListener(this);
-          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, null))
+          databaseQuery.removeEventListener(this);
+          Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, null))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -310,8 +184,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       @Override
       public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
         if ("child_moved".equals(eventType)) {
-          query.removeEventListener(this);
-          Tasks.call(() -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
+          databaseQuery.removeEventListener(this);
+          Tasks.call(getExecutor(), () -> snapshotWithPreviousChildToMap(dataSnapshot, previousChildName))
             .addOnCompleteListener(task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
@@ -324,14 +198,157 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
       @Override
       public void onCancelled(@Nonnull DatabaseError error) {
-        query.removeEventListener(this);
+        databaseQuery.removeEventListener(this);
         rejectPromiseDatabaseException(promise,
           new UniversalDatabaseException(error.getCode(), error.getMessage(), error.toException())
         );
       }
     };
 
-    query.addChildEventListener(childEventListener);
+    databaseQuery.addSingleChildEventListener(childEventListener);
+  }
+
+  /**
+   * ref().on('value') handler
+   *
+   * @param key
+   * @param databaseQuery
+   * @param registration
+   */
+  private void addValueEventListener(String key, ReactNativeFirebaseDatabaseQuery databaseQuery, ReadableMap registration) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+
+    if (!databaseQuery.hasEventListener(eventRegistrationKey)) {
+      ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@Nonnull DataSnapshot dataSnapshot) {
+          handleDatabaseEvent(key, "value", registration, dataSnapshot, null);
+        }
+
+        @Override
+        public void onCancelled(@Nonnull DatabaseError error) {
+          databaseQuery.removeEventListener(eventRegistrationKey);
+          handleDatabaseError(key, registration, error);
+        }
+      };
+
+      databaseQuery.addEventListener(eventRegistrationKey, valueEventListener);
+    }
+  }
+
+  private void addChildEventListener(String key, String eventType, ReactNativeFirebaseDatabaseQuery databaseQuery, ReadableMap registration) {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
+
+    if (!databaseQuery.hasEventListener(eventRegistrationKey)) {
+      ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_added".equals(eventType)) {
+            handleDatabaseEvent(key,"child_added", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onChildChanged(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_changed".equals(eventType)) {
+            handleDatabaseEvent(key, "child_changed", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onChildRemoved(@Nonnull DataSnapshot dataSnapshot) {
+          if ("child_removed".equals(eventType)) {
+            handleDatabaseEvent(key, "child_removed", registration, dataSnapshot, null);
+          }
+        }
+
+        @Override
+        public void onChildMoved(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
+          if ("child_moved".equals(eventType)) {
+            handleDatabaseEvent(key, "child_moved", registration, dataSnapshot, previousChildName);
+          }
+        }
+
+        @Override
+        public void onCancelled(@Nonnull DatabaseError error) {
+          databaseQuery.removeEventListener(eventRegistrationKey);
+          handleDatabaseError(key, registration, error);
+        }
+      };
+
+      databaseQuery.addEventListener(eventRegistrationKey, childEventListener);
+    }
+  }
+
+  /**
+   * Handles value/child update events.
+   *
+   * @param eventType
+   * @param dataSnapshot
+   * @param previousChildName
+   */
+  private void handleDatabaseEvent(
+    final String key,
+    final String eventType,
+    final ReadableMap registration,
+    DataSnapshot dataSnapshot,
+    @Nullable String previousChildName
+  ) {
+    Tasks.call(() -> {
+      if (eventType.equals("value")) {
+        return snapshotToMap(dataSnapshot);
+      } else {
+        return snapshotWithPreviousChildToMap(dataSnapshot, previousChildName);
+      }
+    }).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        WritableMap data = task.getResult();
+        WritableMap event = Arguments.createMap();
+        event.putMap("data", data);
+        event.putString("key", key);
+        event.putString("eventType", eventType);
+        event.putMap("registration", readableMapToWritableMap(registration));
+
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+        Log.d("ELLIOT", event.toString());
+
+        emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
+          ReactNativeFirebaseDatabaseEvent.EVENT_SYNC,
+          event
+        ));
+      }
+    });
+  }
+
+  /**
+   * Handles a database listener cancellation error.
+   *
+   * @param registration
+   * @param error
+   */
+  private void handleDatabaseError(String key, ReadableMap registration, DatabaseError error) {
+    WritableMap event = Arguments.createMap();
+    UniversalDatabaseException databaseException = new UniversalDatabaseException(
+      error.getCode(),
+      error.getMessage(),
+      error.toException()
+    );
+
+    WritableMap errorMap = Arguments.createMap();
+    errorMap.putString("code", databaseException.getCode());
+    errorMap.putString("message", databaseException.getMessage());
+
+    event.putString("key", key);
+    event.putMap("error", errorMap);
+    event.putMap("registration", readableMapToWritableMap(registration));
+
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
+      ReactNativeFirebaseDatabaseEvent.EVENT_SYNC,
+      event
+    ));
   }
 
   /**
@@ -339,7 +356,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
    *
    * @param app
    * @param dbURL
-   * @param key
    * @param path
    * @param modifiers
    * @param eventType
@@ -350,19 +366,78 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
 
     if (eventType.equals("value")) {
-      addOnceValueEventListener(getQueryInstance(reference, modifiers), promise);
+      addOnceValueEventListener(getDatabaseQueryInstance(key, reference, modifiers), promise);
     } else {
-      addChildOnceEventListener(eventType, getQueryInstance(reference, modifiers), promise);
+      addChildOnceEventListener(eventType, getDatabaseQueryInstance(key, reference, modifiers), promise);
     }
   }
 
+  /**
+   * ref().on('*')
+   *
+   * @param app
+   * @param dbURL
+   * @param props
+   */
   @ReactMethod
-  public void on(String app, String dbURL, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
-    // TODO
+  public void on(String app, String dbURL, ReadableMap props) {
+    String key = props.getString("key");
+    String path = props.getString("path");
+    String eventType = props.getString("eventType");
+    ReadableArray modifiers = props.getArray("modifiers");
+    ReadableMap registration = props.getMap("registration");
+
+    FirebaseDatabase database = getDatabaseForApp(app, dbURL);
+    DatabaseReference reference = getReferenceFromKey(database, key, path);
+
+    if (eventType.equals("value")) {
+      addValueEventListener(
+        key,
+        getDatabaseQueryInstance(key, reference, modifiers),
+        registration
+      );
+    } else {
+      addChildEventListener(
+        key,
+        eventType,
+        getDatabaseQueryInstance(key, reference, modifiers),
+        registration
+      );
+    }
   }
 
+  /**
+   * ref().off('*')
+   *
+   */
   @ReactMethod
-  public void off(String app, String dbURL, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
-    // TODO
+  public void off(String queryKey, String eventRegistrationKey) {
+    ReactNativeFirebaseDatabaseQuery databaseQuery = queryMap.get(queryKey);
+
+    if (databaseQuery != null) {
+      databaseQuery.removeEventListener(eventRegistrationKey);
+
+      if (!databaseQuery.hasListeners()) {
+        queryMap.remove(queryKey);
+      }
+    }
+
+  }
+
+  /**
+   * ref().keepSynced('*')
+   *
+   * @param app
+   * @param dbURL
+   * @param path
+   * @param modifiers
+   * @param bool
+   * @param promise
+   */
+  @ReactMethod
+  public void keepSynced(String app, String dbURL, String key, String path, ReadableArray modifiers, Boolean bool, Promise promise) {
+    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+    getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(bool);
+    promise.resolve(null);
   }
 }

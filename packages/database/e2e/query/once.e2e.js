@@ -93,7 +93,7 @@ describe('database().ref().once()', () => {
     );
   });
 
-  it('is NOT called when the value is changed', async () => {
+  it('is is called when the value is changed', async () => {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/types/number`);
     ref.once('value').then(callback);
@@ -112,67 +112,52 @@ describe('database().ref().once()', () => {
     }
   });
 
-  xit('resolves when a child is added', async () => {
-    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
+  it('it calls when a child is added', async () => {
     const value = Date.now();
+    const callback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
 
-    ref
-      .once('child_added')
-      .then(snapshot => {
-        snapshot.key.should.eql('foo');
-        snapshot.val().should.eql(value);
-        return Promise.resolve();
-      })
-      .catch(error => Promise.reject(error));
+    ref.once('child_added').then($ => callback($.val()));
+    await ref.child('foo').set(value);
+    await Utils.sleep(5);
 
-    // Allow the listener to subscribe before calling
-    setTimeout(async () => {
-      await ref.child('foo').set(value);
-    }, 100);
+    callback.should.be.calledOnce();
+    callback.should.be.calledWith(value);
   });
 
-  // TODO Never seems to trigger on native?
-  xit('resolves when a child is changed', async () => {
+  it('resolves when a child is changed', async () => {
+    const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
-    const child = ref.child('changed');
-    await child.set(1);
 
-    return new Promise(async (resolve, reject) => {
-      ref.once('child_changed', (snapshot) => {
-        snapshot.key.should.eql('foo');
-        snapshot.val().should.eql(2);
-        return resolve();
-      });
-
-      // Allow the listener to subscribe before calling
-      await child.set(2);
-    });
+    await ref.child('foo').set(1);
+    ref.once('child_changed').then($ => callback($.val()));
+    await Utils.sleep(300);
+    await ref.child('foo').set(2);
+    await Utils.sleep(300);
+    callback.should.be.calledOnce();
+    callback.should.be.calledWith(2);
   });
 
-  xit('resolves when a child is removed', async () => {
+  it('resolves when a child is removed', async () => {
+    const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
-    const child = ref.child('removed');
+    const child = ref.child('removeme');
     await child.set('foo');
 
-    ref
-      .once('child_removed')
-      .then(snapshot => {
-        snapshot.val().should.eql('foo');
-        return Promise.resolve();
-      })
-      .catch(error => Promise.reject(error));
+    ref.once('child_removed').then($ => callback($.val()));
+    await Utils.sleep(300);
+    await child.remove();
+    await Utils.sleep(300);
 
-    // Allow the listener to subscribe before calling
-    setTimeout(async () => {
-      await child.remove();
-    }, 100);
+    callback.should.be.calledOnce();
+    callback.should.be.calledWith('foo');
   });
 
   // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
-  xit('resolves when a child is moved', async () => {
-    const ref = firebase.database()
-      .ref(`${TEST_PATH}/childMoved`)
-      .orderByChild('nuggets');
+  it('resolves when a child is moved', async () => {
+    const callback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
+    const orderedRef = ref.orderByChild('nuggets');
 
     const initial = {
       alex: { nuggets: 60 },
@@ -182,18 +167,12 @@ describe('database().ref().once()', () => {
       greg: { nuggets: 52 },
     };
 
-    ref
-      .once('child_moved')
-      .then(snapshot => {
-        // snapshot.val().should.eql('foo');
-        return Promise.resolve();
-      })
-      .catch(error => Promise.reject(error));
+    orderedRef.once('child_moved').then($ => callback($.val()));
+    await ref.set(initial);
+    await ref.child('greg/nuggets').set(57);
+    await Utils.sleep(100);
 
-    // Allow the listener to subscribe before calling
-    setTimeout(async () => {
-      await ref.child.set(initial);
-      await ref.child('greg/nuggets').set(57);
-    }, 100);
+    callback.should.be.calledOnce();
+    callback.should.be.calledWith({ nuggets: 57 });
   });
 });

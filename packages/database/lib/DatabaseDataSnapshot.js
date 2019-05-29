@@ -45,9 +45,7 @@ export default class DatabaseDataSnapshot {
 
   child(path) {
     if (!isString(path)) {
-      throw new Error(
-        `snapshot().child(*) 'path' must be a string value`
-      )
+      throw new Error(`snapshot().child(*) 'path' must be a string value`);
     }
 
     let value = null; // TODO deepGet value

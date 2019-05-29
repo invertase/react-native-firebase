@@ -18,9 +18,14 @@ package io.invertase.firebase.database;
  */
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class UniversalFirebaseDatabaseCommon {
+  static Map<String, DatabaseReference> databaseReferenceMap = new HashMap<>();
 
   static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
@@ -40,4 +45,15 @@ public class UniversalFirebaseDatabaseCommon {
     return firebaseDatabase;
   }
 
+  static DatabaseReference getReferenceFromKey(FirebaseDatabase database, String key, String path) {
+    DatabaseReference cachedReference = databaseReferenceMap.get(key);
+
+    if (cachedReference != null) {
+      return cachedReference;
+    }
+
+    DatabaseReference newReference = database.getReference(path);
+    databaseReferenceMap.put(key, newReference);
+    return newReference;
+  }
 }

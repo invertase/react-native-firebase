@@ -67,13 +67,13 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
           // emit the updates to js using an async task
           // otherwise it gets blocked by the lock await
           AsyncTask.execute(() -> {
-            ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-            emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
-              updatesMap,
-              ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
-              app,
-              transactionId
-            ));
+//            ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+//            emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
+//              updatesMap,
+//              ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
+//              app,
+//              transactionId
+//            ));
 
 //                Utils.sendEvent(
 //                  getReactApplicationContext(),
@@ -107,13 +107,13 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
           ReactNativeFirebaseDatabaseTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
           WritableMap resultMap = transactionHandler.createResultMap(error, committed, snapshot);
 
-          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-          emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
-            resultMap,
-            ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
-            app,
-            transactionId
-          ));
+//          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+//          emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
+//            resultMap,
+//            ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
+//            app,
+//            transactionId
+//          ));
 
 //            Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", resultMap);
           transactionHandlers.delete(transactionId);

@@ -24,29 +24,21 @@ import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseDatabaseEvent implements NativeEvent {
-  static final String EVENT_DEFAULT = "database_event";
+  static final String EVENT_SYNC = "database_sync_event";
   static final String EVENT_TRANSACTION = "database_transaction_event";
 
-  private static final String KEY_ID = "taskId";
   private static final String KEY_BODY = "body";
-  private static final String KEY_APP_NAME = "appName";
   private static final String KEY_EVENT_NAME = "eventName";
 
-  private int taskId;
-  private String appName;
-  private WritableMap eventBody;
   private String eventName;
+  private WritableMap eventBody;
 
   ReactNativeFirebaseDatabaseEvent(
-    WritableMap eventBody,
     String eventName,
-    String appName,
-    int taskId
+    WritableMap eventBody
   ) {
-    this.eventBody = eventBody;
     this.eventName = eventName;
-    this.appName = appName;
-    this.taskId = taskId;
+    this.eventBody = eventBody;
   }
 
   @Override
@@ -57,15 +49,14 @@ public class ReactNativeFirebaseDatabaseEvent implements NativeEvent {
   @Override
   public WritableMap getEventBody() {
     WritableMap event = Arguments.createMap();
-    event.putInt(KEY_ID, taskId);
     event.putMap(KEY_BODY, eventBody);
-    event.putString(KEY_APP_NAME, appName);
     event.putString(KEY_EVENT_NAME, eventName);
     return event;
   }
 
+  // Return null so all events are picked up by SyncTree
   @Override
   public String getFirebaseAppName() {
-    return appName;
+    return null;
   }
 }

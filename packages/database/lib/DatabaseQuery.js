@@ -17,6 +17,7 @@
  */
 
 import {
+  isArray,
   isBoolean,
   isFunction,
   isNull,
@@ -30,8 +31,12 @@ import {
 } from '@react-native-firebase/common';
 import DatabaseReference from './DatabaseReference';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
+import DatabaseSyncTree from './DatabaseSyncTree';
 
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
+
+// Internal listener count
+let listeners = 0;
 
 export default class DatabaseQuery extends ReferenceBase {
   constructor(database, path, modifiers) {
@@ -181,6 +186,15 @@ export default class DatabaseQuery extends ReferenceBase {
    * @return {DatabaseQuery}
    */
   off(eventType, callback, context) {
+    //
+    if (arguments.length === 0) {
+      // Firebase Docs:
+      //    if no eventType or callback is specified, all callbacks for the Reference will be removed
+      return DatabaseSyncTree.removeListenersForRegistrations(
+        DatabaseSyncTree.getRegistrationsByPath(this.path),
+      );
+    }
+
     if (!isUndefined(eventType) && !eventTypes.includes(eventType)) {
       throw new Error(
         `firebase.database().ref().off(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
@@ -195,8 +209,38 @@ export default class DatabaseQuery extends ReferenceBase {
       throw new Error(`firebase.database().ref().off(_, _, *) 'context' must be an object.`);
     }
 
-    // TODO
-    return this;
+    // Firebase Docs:
+    //     Note that if on() was called
+    //     multiple times with the same eventType and callback, the callback will be called
+    //     multiple times for each event, and off() must be called multiple times to
+    //     remove the callback.
+
+    // Remove only a single registration
+    if (eventType && callback) {
+      const registration = DatabaseSyncTree.getOneByPathEventListener(
+        this.path,
+        eventType,
+        callback,
+      );
+      if (!registration) return [];
+
+      // remove the paired cancellation registration if any exist
+      DatabaseSyncTree.removeListenersForRegistrations([`${registration}$cancelled`]);
+
+      // remove only the first registration to match firebase web sdk
+      // call multiple times to remove multiple registrations
+      return DatabaseSyncTree.removeListenerRegistrations(callback, [registration]);
+    }
+
+    // Firebase Docs:
+    //     If a callback is not specified, all callbacks for the specified eventType will be removed.
+    const registrations = DatabaseSyncTree.getRegistrationsByPathEvent(this.path, eventType);
+
+    DatabaseSyncTree.removeListenersForRegistrations(
+      DatabaseSyncTree.getRegistrationsByPathEvent(this.path, `${eventType}$cancelled`),
+    );
+
+    return DatabaseSyncTree.removeListenersForRegistrations(registrations);
   }
 
   /**
@@ -220,7 +264,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (
       !isUndefined(cancelCallbackOrContext) &&
-      (!isFunction(cancelCallbackOrContext) || !isObject(cancelCallbackOrContext))
+      (!isFunction(cancelCallbackOrContext) && !isObject(cancelCallbackOrContext))
     ) {
       throw new Error(
         `firebase.database().ref().on(_, _, *) 'cancelCallbackOrContext' must be a function or object.`,
@@ -231,8 +275,65 @@ export default class DatabaseQuery extends ReferenceBase {
       throw new Error(`firebase.database().ref().on(_, _, _, *) 'context' must be an object.`);
     }
 
-    // TODO
-    return this;
+    const queryKey = this._generateQueryKey();
+    const eventRegistrationKey = this._generateQueryEventKey(eventType);
+    const registrationCancellationKey = `${eventRegistrationKey}$cancelled`;
+    const _context =
+      cancelCallbackOrContext && !isFunction(cancelCallbackOrContext)
+        ? cancelCallbackOrContext
+        : context;
+
+    // Add a new SyncTree registration
+    DatabaseSyncTree.addRegistration({
+      eventType,
+      ref: this, // Not this.ref?
+      path: this.path,
+      key: queryKey,
+      appName: this._database.app.name,
+      dbURL: this._database._customUrlOrRegion,
+      eventRegistrationKey,
+      listener: _context ? callback.bind(_context) : callback,
+    });
+
+    if (cancelCallbackOrContext && isFunction(cancelCallbackOrContext)) {
+      // cancellations have their own separate registration
+      // as these are one off events, and they're not guaranteed
+      // to occur either, only happens on failure to register on native
+
+      DatabaseSyncTree.addRegistration({
+        ref: this,
+        once: true,
+        path: this.path,
+        key: queryKey,
+        appName: this._database.app.name,
+        dbURL: this._database._customUrlOrRegion,
+        eventType: `${eventType}$cancelled`,
+        eventRegistrationKey: registrationCancellationKey,
+        listener: _context ? cancelCallbackOrContext.bind(_context) : cancelCallbackOrContext,
+      });
+    }
+
+    // TODO appName, DB already passed along?
+    // TODO what needs going into the object?
+    this._database.native.on({
+      eventType,
+      path: this.path,
+      key: queryKey,
+      appName: this._database.app.name,
+      modifiers: this._modifiers.toArray(),
+      hasCancellationCallback: isFunction(cancelCallbackOrContext),
+      registration: {
+        eventRegistrationKey,
+        key: queryKey,
+        registrationCancellationKey,
+      },
+    });
+
+    // increment number of listeners - just a short way of making
+    // every registration unique per .on() call
+    listeners += 1;
+
+    return callback;
   }
 
   /**
@@ -407,7 +508,31 @@ export default class DatabaseQuery extends ReferenceBase {
     return `${this._database._customUrlOrRegion}${pathToUrlEncodedString(this.path)}`;
   }
 
+  keepSynced(bool) {
+    if (!isBoolean(bool)) {
+      throw new Error(
+        `firebase.database().ref().keepSynced(*) 'bool' value must be a boolean value.`,
+      );
+    }
+
+    return this._database.native.keepSynced(
+      this._generateQueryKey(),
+      this.path,
+      this._modifiers.toArray(),
+      bool,
+    );
+  }
+
+  // Generates a unique string for a query
+  // Ensures any queries called in various orders keep the same key
   _generateQueryKey() {
-    return `$${this._database._customUrlOrRegion}$/${this.path}$${this._modifiers.toString()}`;
+    return `$${this._database._customUrlOrRegion}$/${this.path}$${
+      this._database.app.name
+    }$${this._modifiers.toString()}`;
+  }
+
+  // Generates a unique event registration key
+  _generateQueryEventKey(eventType) {
+    return `${this._generateQueryKey()}$${listeners}$${eventType}`;
   }
 }
