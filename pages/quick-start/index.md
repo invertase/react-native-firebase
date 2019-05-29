@@ -25,6 +25,8 @@ If you do not already have a Firebase project on the Firebase console, visit the
   	</Block>
 </Grid>
 
+> **Note**: Integration for iOS is currently only supported via CocoaPods see [#2128](https://github.com/invertase/react-native-firebase/issues/2128) to learn more or to help implement non-pods support.
+
 ## Choose your integration path
 
 You can get started with Firebase in React Native using one of the following options:
