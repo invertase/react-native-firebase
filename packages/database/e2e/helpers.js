@@ -11,6 +11,7 @@ const CONTENT = {
     number: 123567890,
     object: {
       foo: 'bar',
+      bar: 'baz',
     },
   },
   QUERY: {

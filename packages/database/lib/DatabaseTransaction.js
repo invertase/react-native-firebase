@@ -16,6 +16,9 @@
  *
  */
 
+import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import DatabaseDataSnapshot from './DatabaseDataSnapshot';
+
 let transactionId = 0;
 
 /**
@@ -90,20 +93,14 @@ export default class DatabaseTransaction {
    * @private
    */
   _onTransactionEvent(event) {
-    const { body } = event;
-
-    console.log(event);
-    switch (body.type) {
+    switch (event.body.type) {
       case 'update':
-        return this._handleUpdate(body);
+        return this._handleUpdate(event);
       case 'error':
-        return this._handleError(body);
+        return this._handleError(event);
       case 'complete':
-        return this._handleComplete(body);
+        return this._handleComplete(event);
       default:
-        console.warn(
-          `firebase.database().transaction() returned an unknown event type: ${body.type}`,
-        );
         return undefined;
     }
   }
@@ -115,8 +112,9 @@ export default class DatabaseTransaction {
    */
   _handleUpdate(event) {
     let newValue;
-    const { id, value } = event;
-    console.log('update', event.value)
+
+    const { id, body } = event;
+    const { value } = body;
 
     try {
       const transaction = this._getTransaction(id);
@@ -149,7 +147,8 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        transaction.onComplete(event.error, false, null);
+        const error = NativeError.fromEvent(event.body.error, 'database');
+        transaction.onComplete(error, false, null);
       } finally {
         this._removeTransaction(event.id);
       }
@@ -169,7 +168,7 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        transaction.onComplete(null, event.committed, Object.assign({}, event.snapshot));
+        transaction.onComplete(null, event.body.committed, Object.assign({}, event.body.snapshot));
       } finally {
         this._removeTransaction(event.id);
       }

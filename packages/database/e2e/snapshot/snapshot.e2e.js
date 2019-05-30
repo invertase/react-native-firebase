@@ -75,6 +75,21 @@ describe('database()...snapshot', () => {
     should.equal(exported['.priority'], null);
   });
 
+  it('exports a valid object with a object value', async () => {
+    const snapshot = await firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('types/object')
+      .once('value');
+
+    const exported = snapshot.exportVal();
+
+    exported.should.have.property('.value');
+    exported.should.have.property('.priority');
+    exported['.value'].should.eql(jet.contextify(CONTENT.TYPES.object));
+    should.equal(exported['.priority'], null);
+  });
+
   it('forEach throws if action param is not a function', async () => {
     const ref = firebase
       .database()
@@ -133,6 +148,25 @@ describe('database()...snapshot', () => {
     });
 
     callback.should.be.callCount(snapshot.child('array').numChildren());
+  });
+
+  it('forEach works with objects and cancels when returning true', async () => {
+    const callback = sinon.spy();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('types');
+
+    const snapshot = await ref.once('value');
+
+    snapshot.child('object').forEach((childSnap) => {
+      callback();
+      childSnap.val().should.equal('bar');
+      childSnap.key.should.equal('foo');
+      return true;
+    });
+
+    callback.should.be.calledOnce();
   });
 
   it('forEach works with arrays and cancels when returning true', async () => {
@@ -211,7 +245,7 @@ describe('database()...snapshot', () => {
     const snapshot = await ref.once('value');
 
     try {
-      snapshot.hasChild('foo');
+      snapshot.hasChild({ foo: 'bar' });
     } catch (error) {
       error.message.should.containEql(`'path' must be a string value`);
     }
@@ -225,6 +259,12 @@ describe('database()...snapshot', () => {
 
     snapshot1.hasChild('foo').should.equal(false);
     snapshot2.hasChild('boolean').should.equal(true);
+  });
+
+  it('hasChildren returns the correct boolean value', async () => {
+    const ref = firebase.database().ref(TEST_PATH);
+    const snapshot = await ref.child('types/object').once('value');
+    snapshot.hasChildren().should.equal(true);
   });
 
   it('numChildren returns the correct number value', async () => {
@@ -247,9 +287,7 @@ describe('database()...snapshot', () => {
 
     snapshot1.toJSON().should.equal('foobar');
     snapshot2.toJSON().should.eql(
-      jet.contextify({
-        foo: 'bar',
-      }),
+      jet.contextify(CONTENT.TYPES.object),
     );
   });
 
@@ -261,9 +299,7 @@ describe('database()...snapshot', () => {
 
     snapshot1.val().should.equal('foobar');
     snapshot2.val().should.eql(
-      jet.contextify({
-        foo: 'bar',
-      }),
+      jet.contextify(CONTENT.TYPES.object),
     );
   });
 });

@@ -66,7 +66,7 @@ describe('database()', () => {
         firebase.database().ref('$$$$$');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'path' can't contain`);
+        error.message.should.containEql(`Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`);
         return Promise.resolve();
       }
     });

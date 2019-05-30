@@ -41,7 +41,7 @@ const internalRefs = ['.info/connected', '.info/serverTimeOffset'];
 export default class DatabaseReference extends DatabaseQuery {
   constructor(database, path) {
     // Validate the reference path
-    if (!isValidPath(path) && !internalRefs.includes(path)) {
+    if (!internalRefs.includes(path) && !isValidPath(path)) {
       throw new Error(
         `firebase.database() Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
       );

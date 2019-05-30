@@ -63,17 +63,155 @@ describe('database().ref().transaction()', () => {
     }
   });
 
-  xit('updates the value via a transaction', async () => {
-    const ref = firebase.database().ref('tests/transaction');
-    // await ref.set(1);
+  it('updates the value via a transaction', async () => {
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('transaction');
+    await ref.set(1);
 
     const { committed, snapshot } = await ref.transaction(value => {
-      value.should.eql(1);
       return value + 1;
     });
-    console.log(committed);
-    console.log(snapshot);
+
     should.equal(committed, true, 'Transaction did not commit.');
     snapshot.val().should.equal(2);
+  });
+
+  it('aborts transaction if undefined returned', async () => {
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('transaction');
+    await ref.set(1);
+
+    return new Promise((resolve, reject) => {
+      ref.transaction(
+        () => {
+          return undefined;
+        },
+        (error, committed) => {
+          if (error) {
+            return reject(error);
+          }
+
+          if (!committed) {
+            return resolve();
+          }
+
+          return reject(new Error('Transaction did not abort commit.'));
+        },
+      );
+    });
+  });
+
+  it('passes valid data through the callback', async () => {
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('transaction');
+    await ref.set(1);
+
+    return new Promise((resolve, reject) => {
+      ref.transaction(
+        $ => {
+          return $ + 1;
+        },
+        (error, committed, snapshot) => {
+          if (error) {
+            return reject(error);
+          }
+
+          if (!committed) {
+            return reject(new Error('Transaction aborted when it should not have done'));
+          }
+
+          should.equal(snapshot.val(), 2);
+          return resolve();
+        },
+      );
+    });
+  });
+
+  it('throws when an error occurs', async () => {
+    const ref = firebase.database().ref('nope');
+
+    try {
+      await ref.transaction($ => {
+        return $ + 1;
+      });
+      return Promise.reject(new Error('Did not throw error.'));
+    } catch (error) {
+      error.message.should.containEql(`Client doesn't have permission to access the desired data`);
+      return Promise.resolve();
+    }
+  });
+
+  it('passes error back to the callback', async () => {
+    const ref = firebase.database().ref('nope');
+
+    return new Promise((resolve, reject) => {
+      ref
+        .transaction(
+          $ => {
+            return $ + 1;
+          },
+          (error, committed, snapshot) => {
+            if (snapshot !== null) {
+              return reject(new Error('Snapshot should not be available'));
+            }
+
+            if (committed === true) {
+              return reject(new Error('Transaction should not have committed'));
+            }
+
+            error.message.should.containEql(
+              `Client doesn't have permission to access the desired data`,
+            );
+            return resolve();
+          },
+        )
+        .catch(() => {
+          // catch unhandled rejection
+        });
+    });
+  });
+
+  it('sets a value if one does not exist', async () => {
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('create');
+    await ref.remove(); // Ensure it's clear
+
+    const value = Date.now();
+
+    return new Promise((resolve, reject) => {
+      ref.transaction(
+        $ => {
+          if ($ === null) {
+            return { foo: value };
+          }
+
+          throw new Error('Value should not exist');
+        },
+        (error, committed, snapshot) => {
+          if (error) {
+            return reject(error);
+          }
+
+          if (!committed) {
+            return reject(new Error('Transaction should have committed'));
+          }
+
+          snapshot.val().should.eql(
+            jet.contextify({
+              foo: value,
+            }),
+          );
+          return resolve();
+        },
+      );
+    });
   });
 });

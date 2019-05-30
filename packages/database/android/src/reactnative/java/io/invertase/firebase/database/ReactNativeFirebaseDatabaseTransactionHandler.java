@@ -90,7 +90,6 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
   /**
    * Wait for signalUpdateReceived to signal condition
    *
-   * @throws InterruptedException
    */
   void await() throws InterruptedException {
     lock.lock();
@@ -127,14 +126,7 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
   WritableMap createUpdateMap(MutableData updatesData) {
     final WritableMap updatesMap = Arguments.createMap();
 
-    Log.d("Elliot", updatesData.toString());
-
-//    updatesMap.putInt("id", transactionId);
     updatesMap.putString("type", "update");
-
-    // all events get distributed js side based on app name
-//    updatesMap.putString("appName", appName);
-//    updatesMap.putString("dbURL", dbURL);
 
     if (!updatesData.hasChildren()) {
       mapPutValue("value", updatesData.getValue(), updatesMap);
@@ -158,10 +150,6 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     DataSnapshot snapshot
   ) {
     WritableMap resultMap = Arguments.createMap();
-
-//    resultMap.putInt("id", transactionId);
-//    resultMap.putString("appName", appName);
-//    resultMap.putString("dbURL", dbURL);
 
     resultMap.putBoolean("timeout", timeout);
     resultMap.putBoolean("committed", committed);

@@ -29,6 +29,11 @@ export default class DatabaseDataSnapshot {
     } else {
       this._ref = reference;
     }
+
+    // TODO #894
+    // if (this._ref.path === '.info/connected') {
+    //  Handle 1/0 vs true/false values on ios/android
+    // }
   }
 
   get key() {

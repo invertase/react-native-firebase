@@ -60,7 +60,8 @@
       "packages/**/node_modules/**",
       "**/common/lib/**",
       "**/internal/registry/**",
-      "**/lib/handlers.js"
+      "**/lib/handlers.js",
+      "packages/database/lib/DatabaseSyncTree.js"
     ],
     "cwd": "..",
     "all": true,

@@ -51,10 +51,9 @@ class FirebaseDatabaseModule extends FirebaseModule {
    * @private
    */
   _syncServerTimeOffset() {
-    // TODO test when on is implemented
-    // this.ref('.info/serverTimeOffset').on('value', snapshot => {
-    //   this._serverTimeOffset = snapshot.val() || this._serverTimeOffset;
-    // });
+    this.ref('.info/serverTimeOffset').on('value', snapshot => {
+      this._serverTimeOffset = snapshot.val();
+    });
   }
 
   /**
@@ -74,12 +73,6 @@ class FirebaseDatabaseModule extends FirebaseModule {
   ref(path = '/') {
     if (!isString(path)) {
       throw new Error(`firebase.app().database().ref(*) 'path' must be a string value.`);
-    }
-
-    if (!isValidPath(path)) {
-      throw new Error(
-        `firebase.app().database().ref(*) 'path' can't contain ".", "#", "$", "[", or "]"`,
-      );
     }
 
     return new DatabaseReference(this, path);

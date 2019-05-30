@@ -48,7 +48,6 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
 
   @ReactMethod
   public void transactionStart(String app, String dbURL, String path, int transactionId, Boolean applyLocally) {
-    Log.d("ELLIOT", path);
     AsyncTask.execute(() -> {
       DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
 
@@ -67,19 +66,14 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
           // emit the updates to js using an async task
           // otherwise it gets blocked by the lock await
           AsyncTask.execute(() -> {
-//            ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-//            emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
-//              updatesMap,
-//              ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
-//              app,
-//              transactionId
-//            ));
+            ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-//                Utils.sendEvent(
-//                  getReactApplicationContext(),
-//                  "database_transaction_event",
-//                  updatesMap
-//                );
+            emitter.sendEvent(new ReactNativeFirebaseTransactionEvent(
+              ReactNativeFirebaseTransactionEvent.EVENT_TRANSACTION,
+              updatesMap,
+              app,
+              transactionId
+            ));
           });
 
           // wait for js to return the updates (js calls transactionTryCommit)
@@ -107,15 +101,16 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
           ReactNativeFirebaseDatabaseTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
           WritableMap resultMap = transactionHandler.createResultMap(error, committed, snapshot);
 
-//          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-//          emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
-//            resultMap,
-//            ReactNativeFirebaseDatabaseEvent.EVENT_TRANSACTION,
-//            app,
-//            transactionId
-//          ));
+          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-//            Utils.sendEvent(getReactApplicationContext(), "database_transaction_event", resultMap);
+          emitter.sendEvent(new ReactNativeFirebaseTransactionEvent(
+            ReactNativeFirebaseTransactionEvent.EVENT_TRANSACTION,
+            resultMap,
+            app,
+            transactionId
+          ));
+
+
           transactionHandlers.delete(transactionId);
         }
 
