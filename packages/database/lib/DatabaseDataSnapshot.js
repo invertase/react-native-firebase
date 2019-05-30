@@ -39,6 +39,11 @@ export default class DatabaseDataSnapshot {
     return this._ref;
   }
 
+  /**
+   * Returns a new snapshot of the child location
+   * @param path
+   * @returns {DatabaseDataSnapshot}
+   */
   child(path) {
     if (!isString(path)) {
       throw new Error(`snapshot().child(*) 'path' must be a string value`);
@@ -57,10 +62,20 @@ export default class DatabaseDataSnapshot {
     });
   }
 
+  /**
+   * Returns whether the value exists
+   *
+   * @returns {(function())|((path: PathLike, callback: (exists: boolean) => void) => void)|boolean|exists|(() => boolean)}
+   */
   exists() {
     return this._snapshot.exists;
   }
 
+  /**
+   * Exports value and priority
+   *
+   * @returns {{'.priority': *, '.value': *}}
+   */
   exportVal() {
     let { value } = this._snapshot;
 

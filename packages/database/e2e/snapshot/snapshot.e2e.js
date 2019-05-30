@@ -19,7 +19,7 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
-describe.only('database()...snapshot', () => {
+describe('database()...snapshot', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
