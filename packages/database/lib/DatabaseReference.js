@@ -75,7 +75,6 @@ export default class DatabaseReference extends DatabaseQuery {
     if (!isString(path)) {
       throw new Error(`firebase.database().ref().child(*) 'path' must be a string value.`);
     }
-
     return new DatabaseReference(this._database, pathChild(this.path, path));
   }
 

@@ -76,22 +76,22 @@ public class ReactNativeFirebaseDatabaseQuery {
   /**
    * Adds a value event listener and stores the query key
    *
-   * @param key
+   * @param eventRegistrationKey
    * @param listener
    */
-  public void addEventListener(String key, ValueEventListener listener) {
-    valueEventListeners.put(key, listener);
+  public void addEventListener(String eventRegistrationKey, ValueEventListener listener) {
+    valueEventListeners.put(eventRegistrationKey, listener);
     query.addValueEventListener(listener);
   }
 
   /**
    * Adds a value event listener and stores the query key
    *
-   * @param key
+   * @param eventRegistrationKey
    * @param listener
    */
-  public void addEventListener(String key, ChildEventListener listener) {
-    childEventListeners.put(key, listener);
+  public void addEventListener(String eventRegistrationKey, ChildEventListener listener) {
+    childEventListeners.put(eventRegistrationKey, listener);
     query.addChildEventListener(listener);
   }
 
@@ -116,17 +116,17 @@ public class ReactNativeFirebaseDatabaseQuery {
   /**
    * Removes a value or child event listener by query key
    *
-   * @param key
+   * @param eventRegistrationKey
    */
-  public void removeEventListener(String key) {
-    if (valueEventListeners.containsKey(key)) {
-      query.removeEventListener(valueEventListeners.get(key));
-      valueEventListeners.remove(key);
+  public void removeEventListener(String eventRegistrationKey) {
+    if (valueEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(valueEventListeners.get(eventRegistrationKey));
+      valueEventListeners.remove(eventRegistrationKey);
     }
 
-    if (childEventListeners.containsKey(key)) {
-      query.removeEventListener(childEventListeners.get(key));
-      childEventListeners.remove(key);
+    if (childEventListeners.containsKey(eventRegistrationKey)) {
+      query.removeEventListener(childEventListeners.get(eventRegistrationKey));
+      childEventListeners.remove(eventRegistrationKey);
     }
   }
 
@@ -159,12 +159,12 @@ public class ReactNativeFirebaseDatabaseQuery {
   /**
    * Returns true/false whether this internal ref has a specific listener by eventRegistrationKey.
    *
-   * @param key
+   * @param eventRegistrationKey
    * @return
    */
-  public Boolean hasEventListener(String key) {
-    return valueEventListeners.containsKey(key) || childEventListeners.containsKey(
-      key);
+  public Boolean hasEventListener(String eventRegistrationKey) {
+    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(
+      eventRegistrationKey);
   }
 
   /**

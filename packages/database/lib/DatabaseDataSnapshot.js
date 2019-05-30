@@ -16,20 +16,16 @@
  *
  */
 
-import {
-  isString,
-  isValidPath,
-  isArray,
-  isFunction,
-  isObject,
-} from '@react-native-firebase/common';
+import { isString, isArray, isFunction, isObject } from '@react-native-firebase/common';
+import { deepGet } from '@react-native-firebase/common/lib/deeps';
 
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
     this._snapshot = snapshot;
 
     if (reference.key !== snapshot.key) {
-      this._ref = reference.child(snapshot.key);
+      // reference is a query?
+      this._ref = reference.ref.child(snapshot.key);
     } else {
       this._ref = reference;
     }
@@ -48,7 +44,7 @@ export default class DatabaseDataSnapshot {
       throw new Error(`snapshot().child(*) 'path' must be a string value`);
     }
 
-    let value = null; // TODO deepGet value
+    let value = deepGet(this._snapshot.value, path);
 
     if (value === undefined) value = null;
     const childRef = this._ref.child(path);
@@ -57,9 +53,6 @@ export default class DatabaseDataSnapshot {
       value,
       key: childRef.key,
       exists: value !== null,
-      // TODO this is wrong - child keys needs to be the ordered keys, from FB
-      // TODO potential solution is build up a tree/map of a snapshot and its children
-      // TODO natively and send that back to JS to be use in this class.
       childKeys: isObject(value) ? Object.keys(value) : [],
     });
   }
@@ -92,6 +85,14 @@ export default class DatabaseDataSnapshot {
       throw new Error(`snapshot.forEach(*) 'action' must be a function.`);
     }
 
+    // If the value is an array,
+    if (isArray(this._snapshot.value)) {
+      return this._snapshot.value.some((value, i) => {
+        const snapshot = this.child(i.toString());
+        return action(snapshot, i) === true;
+      });
+    }
+
     if (!this._snapshot.childKeys.length) {
       return false;
     }
@@ -116,22 +117,55 @@ export default class DatabaseDataSnapshot {
     return this._snapshot.priority;
   }
 
-  hasChild() {
-    // TODO
+  /**
+   * Checks the returned value for a nested child path
+   *
+   * @param path
+   * @returns {boolean}
+   */
+  hasChild(path) {
+    if (!isString(path)) {
+      throw new Error(`snapshot.hasChild(*) 'path' must be a string value.`);
+    }
+
+    return deepGet(this._snapshot.value, path) !== undefined;
   }
 
+  /**
+   * Returns whether the snapshot has any children
+   *
+   * @returns {boolean}
+   */
   hasChildren() {
-    // TODO
+    return this.numChildren() > 0;
   }
 
+  /**
+   * Returns the number of children this snapshot has
+   *
+   * @returns {number}
+   */
   numChildren() {
-    // TODO
+    const { value } = this._snapshot;
+    if (isArray(value)) return value.length;
+    if (!isObject(value)) return 0;
+    return Object.keys(value).length;
   }
 
+  /**
+   * Overrides the .toJSON implementation for snapshot
+   * Same as snapshot.val()
+   * @returns {any}
+   */
   toJSON() {
     return this.val();
   }
 
+  /**
+   * Returns the serialized value of the snapshot returned from Firebase
+   *
+   * @returns {any}
+   */
   val() {
     const { value } = this._snapshot;
 

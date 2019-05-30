@@ -368,28 +368,30 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const key = this._generateQueryKey();
     const modifiers = this._modifiers.toArray();
 
     return this._database.native
-      .once(key, this.path, modifiers, eventType)
+      .once(this.path, modifiers, eventType)
       .then(result => {
         let dataSnapshot;
+        let previousChildName;
 
         // Child based events return a previousChildName
         if (eventType === 'value') {
           dataSnapshot = new DatabaseDataSnapshot(this.ref, result);
         } else {
           dataSnapshot = new DatabaseDataSnapshot(this.ref, result.snapshot);
+          // eslint-disable-next-line prefer-destructuring
+          previousChildName = result.previousChildName;
         }
 
         if (isFunction(successCallBack)) {
           if (isObject(failureCallbackOrContext)) {
-            successCallBack.bind(failureCallbackOrContext)(dataSnapshot, result.previousChildName);
+            successCallBack.bind(failureCallbackOrContext)(dataSnapshot, previousChildName);
           } else if (isObject(context)) {
-            successCallBack.bind(context)(dataSnapshot, result.previousChildName);
+            successCallBack.bind(context)(dataSnapshot, previousChildName);
           } else {
-            successCallBack(dataSnapshot, result.previousChildName);
+            successCallBack(dataSnapshot, previousChildName);
           }
         }
 

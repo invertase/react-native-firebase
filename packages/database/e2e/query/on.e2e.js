@@ -15,13 +15,11 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
 describe('database().ref().on()', () => {
-  // before(() => seed(TEST_PATH));
-  // after(() => wipe(TEST_PATH));
 
   it('throws if event type is invalid', async () => {
     try {
@@ -135,4 +133,113 @@ describe('database().ref().on()', () => {
     cancelCallback.should.be.calledOnce();
   });
 
+  it('subscribe to child added events', async () => {
+    const successCallback = sinon.spy();
+    const cancelCallback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
+
+    ref.on(
+      'child_added',
+      $ => {
+        successCallback($.val());
+      },
+      () => {
+        cancelCallback();
+      },
+    );
+
+    await Utils.sleep(500);
+    await ref.child('child1').set('foo');
+    await ref.child('child2').set('bar');
+    await Utils.sleep(500);
+    ref.off('child_added');
+    successCallback.should.be.callCount(2);
+    successCallback.getCall(0).args[0].should.equal('foo');
+    successCallback.getCall(1).args[0].should.equal('bar');
+    cancelCallback.should.be.callCount(0);
+  });
+
+  it('subscribe to child changed events', async () => {
+    const successCallback = sinon.spy();
+    const cancelCallback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
+    const child = ref.child('changeme');
+    await child.set('foo');
+
+    ref.on(
+      'child_changed',
+      $ => {
+        successCallback($.val());
+      },
+      () => {
+        cancelCallback();
+      },
+    );
+
+    const value1 = Date.now();
+    const value2 = Date.now() + 123;
+
+    await Utils.sleep(500);
+    await child.set(value1);
+    await child.set(value2);
+    await Utils.sleep(500);
+    ref.off('child_changed');
+    successCallback.should.be.callCount(2);
+    successCallback.getCall(0).args[0].should.equal(value1);
+    successCallback.getCall(1).args[0].should.equal(value2);
+    cancelCallback.should.be.callCount(0);
+  });
+
+  it('subscribe to child removed events', async () => {
+    const successCallback = sinon.spy();
+    const cancelCallback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
+    const child = ref.child('removeme');
+    await child.set('foo');
+
+    ref.on(
+      'child_removed',
+      $ => {
+        successCallback($.val());
+      },
+      () => {
+        cancelCallback();
+      },
+    );
+
+    await Utils.sleep(500);
+    await child.remove();
+    await Utils.sleep(500);
+    ref.off('child_removed');
+    successCallback.should.be.callCount(1);
+    successCallback.getCall(0).args[0].should.equal('foo');
+    cancelCallback.should.be.callCount(0);
+  });
+
+  it('subscribe to child moved events', async () => {
+    const callback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
+    const orderedRef = ref.orderByChild('nuggets');
+
+    const initial = {
+      alex: { nuggets: 60 },
+      rob: { nuggets: 56 },
+      vassili: { nuggets: 55.5 },
+      tony: { nuggets: 52 },
+      greg: { nuggets: 52 },
+    };
+
+    orderedRef.on('child_moved', $ => {
+      // console.log($);
+      callback($.val());
+    });
+    await ref.set(initial);
+    await ref.child('greg/nuggets').set(57);
+    await ref.child('rob/nuggets').set(61);
+    await Utils.sleep(500);
+    ref.off('child_moved');
+    callback.should.be.calledTwice();
+    callback.getCall(0).args[0].should.be.eql(jet.contextify({ nuggets: 57 }));
+    callback.getCall(1).args[0].should.be.eql(jet.contextify({ nuggets: 61 }));
+  });
 });

@@ -73,9 +73,22 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     }
   }
 
+  /**
+   * Returns an uncached ReactNativeFirebaseDatabaseQuery instance, used when no cleanup is needed (e.g. once).
+   *
+   * @param reference
+   * @param modifiers
+   */
+  private ReactNativeFirebaseDatabaseQuery getDatabaseQueryInstance(DatabaseReference reference, ReadableArray modifiers) {
+    return new ReactNativeFirebaseDatabaseQuery(
+      reference,
+      modifiers
+    );
+  }
+
 
   /**
-   * Assign a reference query modifiers and return the query
+   * Caches a ReactNativeFirebaseDatabaseQuery instance from the query key and caches it for later use (e.g. on/off)
    *
    * @param reference
    * @param modifiers
@@ -238,7 +251,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
   private void addChildEventListener(String key, String eventType, ReactNativeFirebaseDatabaseQuery databaseQuery, ReadableMap registration) {
     final String eventRegistrationKey = registration.getString("eventRegistrationKey");
-    final String registrationCancellationKey = registration.getString("registrationCancellationKey");
 
     if (!databaseQuery.hasEventListener(eventRegistrationKey)) {
       ChildEventListener childEventListener = new ChildEventListener() {
@@ -312,8 +324,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
         ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-        Log.d("ELLIOT", event.toString());
-
         emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
           ReactNativeFirebaseDatabaseEvent.EVENT_SYNC,
           event
@@ -345,6 +355,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     event.putMap("registration", readableMapToWritableMap(registration));
 
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
     emitter.sendEvent(new ReactNativeFirebaseDatabaseEvent(
       ReactNativeFirebaseDatabaseEvent.EVENT_SYNC,
       event
@@ -362,13 +373,13 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
    * @param promise
    */
   @ReactMethod
-  public void once(String app, String dbURL, String key, String path, ReadableArray modifiers, String eventType, Promise promise) {
+  public void once(String app, String dbURL, String path, ReadableArray modifiers, String eventType, Promise promise) {
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
 
     if (eventType.equals("value")) {
-      addOnceValueEventListener(getDatabaseQueryInstance(key, reference, modifiers), promise);
+      addOnceValueEventListener(getDatabaseQueryInstance(reference, modifiers), promise);
     } else {
-      addChildOnceEventListener(eventType, getDatabaseQueryInstance(key, reference, modifiers), promise);
+      addChildOnceEventListener(eventType, getDatabaseQueryInstance(reference, modifiers), promise);
     }
   }
 
