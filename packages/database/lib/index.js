@@ -43,7 +43,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL;
     this._transaction = new DatabaseTransaction(this);
-    this._syncServerTimeOffset();
+    // this._syncServerTimeOffset();
   }
 
   /**

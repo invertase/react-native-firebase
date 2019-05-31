@@ -62,7 +62,7 @@ describe('database().ref().set()', () => {
     });
   });
 
-  it('throws if permission defined', async () => {
+  it.only('throws if permission defined', async () => {
     const value = Date.now();
     try {
       await firebase

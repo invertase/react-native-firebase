@@ -40,7 +40,9 @@ def react_native_firebase!(config = {})
       existing_dep.name.split('/').first == module_spec.name
     end
 
-    pod module_podspec_name, :path => module_dir
+    if module_podspec_name.include?("App") || module_podspec_name.include?("Database")
+      pod module_podspec_name, :path => File.join(module_dir, 'ios')
+    end
 
     module_build_script = File.join(module_dir, 'ios_config.sh')
     module_package_json = JSON.parse(File.read(File.join(module_dir, 'package.json')))

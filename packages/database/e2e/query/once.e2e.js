@@ -19,7 +19,7 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/once`;
 
-describe('database().ref().once()', () => {
+describe.only('database().ref().once()', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
@@ -119,7 +119,7 @@ describe('database().ref().once()', () => {
 
     ref.once('child_added').then($ => callback($.val()));
     await ref.child('foo').set(value);
-    await Utils.sleep(5);
+    await Utils.sleep(100);
 
     callback.should.be.calledOnce();
     callback.should.be.calledWith(value);

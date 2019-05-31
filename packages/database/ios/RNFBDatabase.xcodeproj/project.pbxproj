@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBDatabaseModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBDatabaseModule.m */; };
+		8B9DD3BA22A03C7900A16945 /* RNFBDatabaseQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3B922A03C7900A16945 /* RNFBDatabaseQuery.m */; };
+		8B9DD3BD22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3BC22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m */; };
+		8B9DD3C222A0617400A16945 /* RNFBDatabaseCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C122A0617400A16945 /* RNFBDatabaseCommon.m */; };
+		8B9DD3C622A11F4F00A16945 /* RNFBDatabaseReferenceModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */; };
+		8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +31,16 @@
 		2744B98221F45429004F8E3F /* libRNFBDatabase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBDatabase.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBDatabaseModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDatabaseModule.h; path = RNFBDatabase/RNFBDatabaseModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBDatabaseModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseModule.m; path = RNFBDatabase/RNFBDatabaseModule.m; sourceTree = SOURCE_ROOT; };
+		8B9DD3B822A03C6700A16945 /* RNFBDatabaseQuery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseQuery.h; sourceTree = "<group>"; };
+		8B9DD3B922A03C7900A16945 /* RNFBDatabaseQuery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQuery.m; sourceTree = "<group>"; };
+		8B9DD3BC22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseOnDisconnectModule.m; sourceTree = "<group>"; };
+		8B9DD3BE22A05D0400A16945 /* RNFBDatabaseOnDisconnectModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseOnDisconnectModule.h; sourceTree = "<group>"; };
+		8B9DD3C022A0616300A16945 /* RNFBDatabaseCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseCommon.h; sourceTree = "<group>"; };
+		8B9DD3C122A0617400A16945 /* RNFBDatabaseCommon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseCommon.m; sourceTree = "<group>"; };
+		8B9DD3C422A11F3E00A16945 /* RNFBDatabaseReferenceModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseReferenceModule.h; sourceTree = "<group>"; };
+		8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseReferenceModule.m; sourceTree = "<group>"; };
+		8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQueryModule.m; sourceTree = "<group>"; };
+		8B9DD3CA22A1259F00A16945 /* RNFBDatabaseQueryModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseQueryModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,10 +65,18 @@
 		2744B98321F45429004F8E3F /* RNFBDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				2744B9A121F48736004F8E3F /* converters */,
-				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBDatabaseModule.h */,
 				2744B98521F45429004F8E3F /* RNFBDatabaseModule.m */,
+				8B9DD3B822A03C6700A16945 /* RNFBDatabaseQuery.h */,
+				8B9DD3B922A03C7900A16945 /* RNFBDatabaseQuery.m */,
+				8B9DD3BC22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m */,
+				8B9DD3BE22A05D0400A16945 /* RNFBDatabaseOnDisconnectModule.h */,
+				8B9DD3C022A0616300A16945 /* RNFBDatabaseCommon.h */,
+				8B9DD3C122A0617400A16945 /* RNFBDatabaseCommon.m */,
+				8B9DD3C422A11F3E00A16945 /* RNFBDatabaseReferenceModule.h */,
+				8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */,
+				8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */,
+				8B9DD3CA22A1259F00A16945 /* RNFBDatabaseQueryModule.h */,
 			);
 			path = RNFBDatabase;
 			sourceTree = "<group>";
@@ -107,6 +130,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3323F52AAFE26B7384BE4DE3;
@@ -124,7 +148,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B9DD3BD22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m in Sources */,
+				8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.m in Sources */,
+				8B9DD3C222A0617400A16945 /* RNFBDatabaseCommon.m in Sources */,
+				8B9DD3C622A11F4F00A16945 /* RNFBDatabaseReferenceModule.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBDatabaseModule.m in Sources */,
+				8B9DD3BA22A03C7900A16945 /* RNFBDatabaseQuery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

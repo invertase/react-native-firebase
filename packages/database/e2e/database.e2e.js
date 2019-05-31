@@ -66,7 +66,9 @@ describe('database()', () => {
         firebase.database().ref('$$$$$');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`);
+        error.message.should.containEql(
+          `Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+        );
         return Promise.resolve();
       }
     });
@@ -95,27 +97,29 @@ describe('database()', () => {
 
     it('returns a reference', async () => {
       const ref1 = firebase.database().refFromURL(firebase.database()._customUrlOrRegion);
-      const ref2 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar`);
-      const ref3 = firebase.database().refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar?baz=foo`);
+      const ref2 = firebase
+        .database()
+        .refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar`);
+      const ref3 = firebase
+        .database()
+        .refFromURL(`${firebase.database()._customUrlOrRegion}/foo/bar?baz=foo`);
       should.equal(ref1.path, '/');
       should.equal(ref2.path, 'foo/bar');
       should.equal(ref3.path, 'foo/bar');
     });
   });
 
-  describe('goOnline()', () => {
+  describe.only('goOnline()', () => {
     it('calls goOnline successfully', async () => {
       await firebase.database().goOnline();
     });
   });
 
-  describe('goOffline()', () => {
+  describe.only('goOffline()', () => {
     it('calls goOffline successfully', async () => {
       await firebase.database().goOffline();
       // Go back online
       await firebase.database().goOnline();
     });
   });
-
-
 });
