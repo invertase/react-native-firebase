@@ -17,7 +17,7 @@
 
 const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
-const TEST_PATH = `${PATH}/on`;
+const TEST_PATH = `${PATH}/snapshot`;
 
 describe('database()...snapshot', () => {
   before(() => seed(TEST_PATH));
@@ -150,19 +150,20 @@ describe('database()...snapshot', () => {
     callback.should.be.callCount(snapshot.child('array').numChildren());
   });
 
-  it('forEach works with objects and cancels when returning true', async () => {
+  it.only('forEach works with objects and cancels when returning true', async () => {
     const callback = sinon.spy();
     const ref = firebase
       .database()
       .ref(TEST_PATH)
-      .child('types');
+      .child('types/object')
+      .orderByKey();
 
     const snapshot = await ref.once('value');
 
-    snapshot.child('object').forEach((childSnap) => {
+    snapshot.forEach(childSnap => {
       callback();
-      childSnap.val().should.equal('bar');
-      childSnap.key.should.equal('foo');
+      childSnap.key.should.equal('bar');
+      childSnap.val().should.equal('baz');
       return true;
     });
 
@@ -178,7 +179,7 @@ describe('database()...snapshot', () => {
 
     const snapshot = await ref.once('value');
 
-    snapshot.child('array').forEach((childSnap) => {
+    snapshot.child('array').forEach(childSnap => {
       callback();
       childSnap.val().should.equal(0);
       childSnap.key.should.equal('0');
@@ -286,9 +287,7 @@ describe('database()...snapshot', () => {
     const snapshot2 = await ref.child('types/object').once('value');
 
     snapshot1.toJSON().should.equal('foobar');
-    snapshot2.toJSON().should.eql(
-      jet.contextify(CONTENT.TYPES.object),
-    );
+    snapshot2.toJSON().should.eql(jet.contextify(CONTENT.TYPES.object));
   });
 
   it('val returns the value of the snapshot', async () => {
@@ -298,8 +297,6 @@ describe('database()...snapshot', () => {
     const snapshot2 = await ref.child('types/object').once('value');
 
     snapshot1.val().should.equal('foobar');
-    snapshot2.val().should.eql(
-      jet.contextify(CONTENT.TYPES.object),
-    );
+    snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
   });
 });

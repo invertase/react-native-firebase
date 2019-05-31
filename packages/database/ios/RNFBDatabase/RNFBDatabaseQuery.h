@@ -20,7 +20,18 @@
 #import <Firebase/Firebase.h>
 
 @interface RNFBDatabaseQuery : NSObject
+@property FIRDatabaseQuery *query;
+@property NSMutableDictionary *listeners;
 
-- (RNFBDatabaseQuery *)initWithReferenceAndModifiers :(FIRDatabaseReference *) reference modifiers:(NSArray *) modifiers;
+- (RNFBDatabaseQuery *)initWithReferenceAndModifiers:(FIRDatabaseReference *)reference modifiers:(NSArray *)modifiers;
 
+- (BOOL)hasEventListener:(NSString *)eventRegistrationKey;
+
+- (BOOL)hasListeners;
+
+- (void)addEventListener:(NSString *)eventRegistrationKey :(FIRDatabaseHandle)listener;
+
+- (void)removeEventListener:(NSString *)eventRegistrationKey;
+
+- (void)removeAllEventListeners;
 @end

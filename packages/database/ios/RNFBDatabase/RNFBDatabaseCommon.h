@@ -27,6 +27,10 @@
 
 + (FIRDatabaseReference *)getReferenceForDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
 
++ (FIRDatabaseReference *)getReferenceForDatabase:(NSString *)key firebaseDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
+
++ (void)removeReferenceByKey:(NSString *)key;
+
 + (void)promiseRejectDatabaseException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 
 + (NSArray *)getCodeAndMessage:(NSError *)error;

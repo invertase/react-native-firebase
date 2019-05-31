@@ -38,7 +38,8 @@ class DatabaseSyncTree {
    * @param event
    * @private
    */
-  _handleSyncEvent({ body }) {
+  _handleSyncEvent(event) {
+    const { body } = event;
     if (body.error) {
       this._handleErrorEvent(body);
     } else {

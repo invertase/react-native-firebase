@@ -18,7 +18,13 @@
 #import "RNFBDatabaseCommon.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 
+static __strong NSMutableDictionary *references;
+
 @implementation RNFBDatabaseCommon
+
++ (void)load {
+  references = [NSMutableDictionary dictionary];
+}
 
 + (FIRDatabase *)getDatabaseForApp
     :(FIRApp *)firebaseApp
@@ -32,8 +38,27 @@
 + (FIRDatabaseReference *)getReferenceForDatabase
     :(FIRDatabase *)firebaseDatabase
                                              path:(NSString *)path {
-  NSLog(path);
   return [firebaseDatabase referenceWithPath:path];
+}
+
++ (FIRDatabaseReference *)getReferenceForDatabase
+    :(NSString *)key
+                                 firebaseDatabase:(FIRDatabase *)firebaseDatabase
+                                             path:(NSString *)path {
+  FIRDatabaseReference *cachedReference = references[key];
+
+  if (cachedReference != nil) {
+    return cachedReference;
+  }
+
+  FIRDatabaseReference *databaseReference = [firebaseDatabase referenceWithPath:path];
+
+  references[key] = databaseReference;
+  return databaseReference;
+}
+
++ (void)removeReferenceByKey:(NSString *)key {
+  [references removeObjectForKey:key];
 }
 
 + (void)promiseRejectDatabaseException
@@ -137,7 +162,7 @@
 
 + (NSDictionary *)snapshotWithPreviousChildToDictionary
     :(FIRDataSnapshot *)dataSnapshot
-    previousChildName:(NSString *)previousChildName {
+                                      previousChildName:(NSString *)previousChildName {
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
   NSDictionary *snapshot = [self snapshotToDictionary:dataSnapshot];
 
@@ -173,5 +198,12 @@
   }
   return childKeys;
 }
+
+//+ (NSDictionary *)getDatabaseEventDictionary:(NSString *)key
+//                                    snapshot:(FIRDataSnapshot *)dataSnapshot
+//                                   eventType:(NSString *)eventType
+//                                registration:(NSDictionary *)registration {
+//
+//}
 
 @end

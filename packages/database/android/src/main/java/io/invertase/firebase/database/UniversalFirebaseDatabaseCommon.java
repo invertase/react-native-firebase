@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UniversalFirebaseDatabaseCommon {
-  static Map<String, DatabaseReference> databaseReferenceMap = new HashMap<>();
-
   static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
     // TODO clean me
@@ -43,17 +41,5 @@ public class UniversalFirebaseDatabaseCommon {
     }
 
     return firebaseDatabase;
-  }
-
-  static DatabaseReference getReferenceFromKey(FirebaseDatabase database, String key, String path) {
-    DatabaseReference cachedReference = databaseReferenceMap.get(key);
-
-    if (cachedReference != null) {
-      return cachedReference;
-    }
-
-    DatabaseReference newReference = database.getReference(path);
-    databaseReferenceMap.put(key, newReference);
-    return newReference;
   }
 }

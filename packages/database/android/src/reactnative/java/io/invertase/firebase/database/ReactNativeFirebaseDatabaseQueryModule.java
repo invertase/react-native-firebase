@@ -17,8 +17,6 @@ package io.invertase.firebase.database;
  *
  */
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -31,13 +29,12 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +47,6 @@ import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.r
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotWithPreviousChildToMap;
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getReferenceFromKey;
 
 public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseQuery";
@@ -241,7 +237,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         @Override
         public void onCancelled(@Nonnull DatabaseError error) {
           databaseQuery.removeEventListener(eventRegistrationKey);
-          handleDatabaseError(key, registration, error);
+          handleDatabaseEventError(key, registration, error);
         }
       };
 
@@ -257,7 +253,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         @Override
         public void onChildAdded(@Nonnull DataSnapshot dataSnapshot, String previousChildName) {
           if ("child_added".equals(eventType)) {
-            handleDatabaseEvent(key,"child_added", registration, dataSnapshot, previousChildName);
+            handleDatabaseEvent(key, "child_added", registration, dataSnapshot, previousChildName);
           }
         }
 
@@ -285,7 +281,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         @Override
         public void onCancelled(@Nonnull DatabaseError error) {
           databaseQuery.removeEventListener(eventRegistrationKey);
-          handleDatabaseError(key, registration, error);
+          handleDatabaseEventError(key, registration, error);
         }
       };
 
@@ -338,7 +334,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
    * @param registration
    * @param error
    */
-  private void handleDatabaseError(String key, ReadableMap registration, DatabaseError error) {
+  private void handleDatabaseEventError(String key, ReadableMap registration, DatabaseError error) {
     WritableMap event = Arguments.createMap();
     UniversalDatabaseException databaseException = new UniversalDatabaseException(
       error.getCode(),
@@ -393,13 +389,12 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
   @ReactMethod
   public void on(String app, String dbURL, ReadableMap props) {
     String key = props.getString("key");
-    String path = props.getString("path");
-    String eventType = props.getString("eventType");
     ReadableArray modifiers = props.getArray("modifiers");
-    ReadableMap registration = props.getMap("registration");
+    String path = Objects.requireNonNull(props.getString("path"));
+    String eventType = Objects.requireNonNull(props.getString("eventType"));
+    ReadableMap registration = Objects.requireNonNull(props.getMap("registration"));
 
-    FirebaseDatabase database = getDatabaseForApp(app, dbURL);
-    DatabaseReference reference = getReferenceFromKey(database, key, path);
+    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
 
     if (eventType.equals("value")) {
       addValueEventListener(
@@ -419,7 +414,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
   /**
    * ref().off('*')
-   *
    */
   @ReactMethod
   public void off(String queryKey, String eventRegistrationKey) {
@@ -432,7 +426,6 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
         queryMap.remove(queryKey);
       }
     }
-
   }
 
   /**

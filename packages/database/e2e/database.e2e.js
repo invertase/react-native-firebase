@@ -109,13 +109,13 @@ describe('database()', () => {
     });
   });
 
-  describe.only('goOnline()', () => {
+  describe('goOnline()', () => {
     it('calls goOnline successfully', async () => {
       await firebase.database().goOnline();
     });
   });
 
-  describe.only('goOffline()', () => {
+  describe('goOffline()', () => {
     it('calls goOffline successfully', async () => {
       await firebase.database().goOffline();
       // Go back online

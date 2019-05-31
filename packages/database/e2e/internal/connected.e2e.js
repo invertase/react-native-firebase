@@ -43,16 +43,20 @@ describe(`database().ref('.info/connected')`, () => {
     const callback = sinon.spy();
     await firebase.database().goOffline();
 
-    firebase
+    const ref = firebase
       .database()
-      .ref('.info/connected')
-      .on('value', $ => {
-        callback($.val());
-      });
+      .ref('.info/connected');
 
-    await Utils.sleep(500);
+    const handler = $ => {
+      callback($.val());
+    };
+
+    ref.on('value', handler);
+
+    await Utils.sleep(1000);
     await firebase.database().goOnline();
     await Utils.sleep(1000);
+    ref.off('value', handler);
 
     callback.should.be.calledTwice();
     callback.getCall(0).args[0].should.equal(false);

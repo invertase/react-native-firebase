@@ -21,7 +21,6 @@
 #import "RNFBDatabaseModule.h"
 #import "RNFBDatabaseCommon.h"
 
-
 @implementation RNFBDatabaseModule
 #pragma mark -
 #pragma mark Module Setup

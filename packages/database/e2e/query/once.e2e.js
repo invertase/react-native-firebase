@@ -19,7 +19,7 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/once`;
 
-describe.only('database().ref().once()', () => {
+describe('database().ref().once()', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 

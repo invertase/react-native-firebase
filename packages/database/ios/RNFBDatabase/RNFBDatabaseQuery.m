@@ -18,28 +18,17 @@
 
 #import "RNFBDatabaseQuery.h"
 
-static __strong FIRDatabaseQuery *query;
-static __strong NSMutableDictionary  *listeners;
-
 @implementation RNFBDatabaseQuery
 
-- (id)init {
-  self = [super init];
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    query = [FIRDatabaseQuery alloc];
-    listeners = [[NSMutableDictionary  alloc] init];
-  });
-  return self;
-}
 
 - (RNFBDatabaseQuery *)initWithReferenceAndModifiers
     :(FIRDatabaseReference *)reference
-    modifiers:(NSArray *)modifiers {
+                                           modifiers:(NSArray *)modifiers {
   self = [super init];
 
   if (self) {
-    query = [self buildQueryWithModifiers:reference modifiers:modifiers];
+    _query = [self buildQueryWithModifiers:reference modifiers:modifiers];
+    _listeners = [NSMutableDictionary dictionary];
   }
 
   return self;
@@ -47,7 +36,7 @@ static __strong NSMutableDictionary  *listeners;
 
 - (FIRDatabaseQuery *)buildQueryWithModifiers
     :(FIRDatabaseReference *)reference
-    modifiers:(NSArray *)modifiers {
+                                    modifiers:(NSArray *)modifiers {
   FIRDatabaseQuery *query = reference;
 
   for (NSDictionary *modifier in modifiers) {
@@ -126,12 +115,32 @@ static __strong NSMutableDictionary  *listeners;
   }
 }
 
-+ (BOOL)hasEventListener:(NSString *)eventRegistrationKey {
-  return listeners[eventRegistrationKey] != nil;
+- (void)addEventListener:(NSString *)eventRegistrationKey
+    :(FIRDatabaseHandle)listener {
+  _listeners[eventRegistrationKey] = @(listener);
 }
 
-+ (BOOL)hasListeners {
-  return [[listeners allKeys] count] > 0;
+- (void)removeEventListener:(NSString *)eventRegistrationKey {
+  FIRDatabaseHandle handle = (FIRDatabaseHandle)[_listeners[eventRegistrationKey] integerValue];
+  if (handle) {
+    [_query removeObserverWithHandle:handle];
+    [_listeners removeObjectForKey:eventRegistrationKey];
+
+  }
+}
+
+- (void)removeAllEventListeners {
+  for (NSString * eventRegistrationKey in _listeners) {
+    [self removeEventListener:eventRegistrationKey];
+  }
+}
+
+- (BOOL)hasEventListener:(NSString *)eventRegistrationKey {
+  return _listeners[eventRegistrationKey] != nil;
+}
+
+- (BOOL)hasListeners {
+  return [[_listeners allKeys] count] > 0;
 }
 
 @end
