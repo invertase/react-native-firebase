@@ -16,6 +16,7 @@
 
 require 'json'
 require 'pathname'
+require_relative './firebase_json'
 
 def react_native_firebase!(config = {})
   react_native_firebase_path = config.fetch(:react_native_firebase_path, '../node_modules/@react-native-firebase')
@@ -29,10 +30,10 @@ def react_native_firebase!(config = {})
 
   discovered_firebase_modules.each do |module_dir|
     module_name = File.basename(module_dir)
-    module_podspec_name = "RNFB#{module_name.capitalize}"
+    module_podspec_name = "RNFB_#{module_name.gsub('-', '_')}".camelize
     next if %w[private-tests-helpers app-types template common].include? module_name
 
-    module_podspec_path = File.join(module_dir, "#{module_podspec_name}.podspec")
+    module_podspec_path = File.join(module_dir, "ios", "#{module_podspec_name}.podspec")
     next unless File.exist?(module_podspec_path)
 
     module_spec = Pod::Specification.from_file(module_podspec_path)
@@ -40,7 +41,7 @@ def react_native_firebase!(config = {})
       existing_dep.name.split('/').first == module_spec.name
     end
 
-    pod module_podspec_name, :path => module_dir
+    pod module_podspec_name, :path => File.join(module_dir, "ios")
 
     module_build_script = File.join(module_dir, 'ios_config.sh')
     module_package_json = JSON.parse(File.read(File.join(module_dir, 'package.json')))

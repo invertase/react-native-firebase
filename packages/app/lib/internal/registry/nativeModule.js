@@ -62,6 +62,8 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  */
 function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   const native = {};
+  if (!NativeModule) return NativeModule;
+
   const properties = Object.keys(NativeModule);
 
   for (let i = 0, len = properties.length; i < len; i++) {
@@ -93,29 +95,45 @@ function initialiseNativeModule(module) {
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
   } = config;
-  const nativeModule = NativeModules[nativeModuleName];
+  const multiModuleRoot = {};
+  const multiModule = Array.isArray(nativeModuleName);
+  const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
-  if (!nativeModule) {
-    throw new Error(getMissingModuleHelpText(namespace));
+  for (let i = 0; i < nativeModuleNames.length; i++) {
+    const nativeModule = NativeModules[nativeModuleNames[i]];
+
+    // only error if there's a single native module
+    // as multi modules can mean some are optional
+    if (!multiModule && !nativeModule) {
+      throw new Error(getMissingModuleHelpText(namespace));
+    }
+
+    if (multiModule) {
+      multiModuleRoot[nativeModuleNames[i]] = !!nativeModule;
+    }
+
+    const argToPrepend = [];
+
+    if (hasMultiAppSupport) {
+      argToPrepend.push(module.app.name);
+    }
+
+    if (hasCustomUrlOrRegionSupport && !disablePrependCustomUrlOrRegion) {
+      argToPrepend.push(module._customUrlOrRegion);
+    }
+
+    Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
   }
-
-  const argToPrepend = [];
-
-  if (hasMultiAppSupport) {
-    argToPrepend.push(module.app.name);
-  }
-
-  if (hasCustomUrlOrRegionSupport && !disablePrependCustomUrlOrRegion) {
-    argToPrepend.push(module._customUrlOrRegion);
-  }
-
-  NATIVE_MODULE_REGISTRY[key] = nativeModuleWrapped(namespace, nativeModule, argToPrepend);
 
   if (nativeEvents && nativeEvents.length) {
     for (let i = 0, len = nativeEvents.length; i < len; i++) {
       subscribeToNativeModuleEvent(nativeEvents[i]);
     }
   }
+
+  Object.freeze(multiModuleRoot);
+
+  NATIVE_MODULE_REGISTRY[key] = multiModuleRoot;
 
   return NATIVE_MODULE_REGISTRY[key];
 }

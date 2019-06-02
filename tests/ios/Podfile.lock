@@ -21,9 +21,24 @@ PODS:
   - Firebase/Invites (5.20.2):
     - Firebase/CoreOnly
     - FirebaseInvites (= 3.0.1)
+  - Firebase/MLCommon (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseMLCommon (= 0.15.0)
+  - Firebase/MLNaturalLanguage (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseMLNaturalLanguage (= 0.15.0)
+  - Firebase/MLNLLanguageID (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseMLNLLanguageID (= 0.15.0)
+  - Firebase/MLNLSmartReply (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseMLNLSmartReply (= 0.15.0)
   - Firebase/Performance (5.20.2):
     - Firebase/Core
     - FirebasePerformance (= 2.2.4)
+  - Firebase/RemoteConfig (5.20.2):
+    - Firebase/Core
+    - FirebaseRemoteConfig (= 3.1.0)
   - Firebase/Storage (5.20.2):
     - Firebase/CoreOnly
     - FirebaseStorage (= 3.1.1)
@@ -83,6 +98,24 @@ PODS:
     - GTMSessionFetcher/Core (~> 1.1)
     - GTMSessionFetcher/Full (~> 1.1)
     - Protobuf (~> 3.5)
+  - FirebaseMLCommon (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseInstanceID (~> 3.8)
+    - GoogleUtilities/UserDefaults (~> 5.3)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseMLNaturalLanguage (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseMLCommon (~> 0.15)
+  - FirebaseMLNLLanguageID (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseMLCommon (~> 0.15)
+    - FirebaseMLNaturalLanguage (~> 0.15)
+  - FirebaseMLNLSmartReply (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseMLCommon (~> 0.15)
+    - FirebaseMLNaturalLanguage (~> 0.15)
+    - FirebaseMLNLLanguageID (~> 0.15)
+    - FirebaseRemoteConfig (~> 3.1)
   - FirebasePerformance (2.2.4):
     - FirebaseAnalytics (~> 5.8)
     - FirebaseInstanceID (~> 3.8)
@@ -223,57 +256,70 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFBAnalytics (6.0.0-alpha.11):
+  - RNFBAnalytics (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBApp (6.0.0-alpha.11):
+  - RNFBApp (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - React
-  - RNFBAuth (6.0.0-alpha.11):
+  - RNFBAuth (6.0.0-alpha.22):
     - Firebase/Auth (~> 5.20.2)
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.0.0-alpha.11):
+  - RNFBConfig (6.0.0-alpha.22):
+    - Firebase/Core (~> 5.20.2)
+    - Firebase/RemoteConfig (~> 5.20.2)
+    - React
+    - RNFBApp
+  - RNFBCrashlytics (6.0.0-alpha.22):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFiam (6.0.0-alpha.11):
+  - RNFBFiam (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - Firebase/InAppMessagingDisplay (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFirestore (6.0.0-alpha.11):
+  - RNFBFirestore (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBFunctions (6.0.0-alpha.11):
+  - RNFBFunctions (6.0.0-alpha.22):
     - Firebase/Functions (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBIid (6.0.0-alpha.11):
+  - RNFBIid (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBInvites (6.0.0-alpha.11):
+  - RNFBInvites (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Invites (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBPerf (6.0.0-alpha.11):
+  - RNFBMlNaturalLanguage (6.0.0-alpha.22):
+    - Firebase/Core (~> 5.20.2)
+    - Firebase/MLCommon (~> 5.20.2)
+    - Firebase/MLNaturalLanguage (~> 5.20.2)
+    - Firebase/MLNLLanguageID (~> 5.20.2)
+    - Firebase/MLNLSmartReply (~> 5.20.2)
+    - React
+    - RNFBApp
+  - RNFBPerf (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Performance (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBStorage (6.0.0-alpha.11):
+  - RNFBStorage (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - Firebase/Storage (~> 5.20.2)
     - React
     - RNFBApp
-  - RNFBUtils (6.0.0-alpha.11):
+  - RNFBUtils (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
@@ -291,18 +337,20 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
-  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
-  - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
-  - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
-  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
-  - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam`)"
-  - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
-  - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions`)"
-  - "RNFBIid (from `../node_modules/@react-native-firebase/iid`)"
-  - "RNFBInvites (from `../node_modules/@react-native-firebase/invites`)"
-  - "RNFBPerf (from `../node_modules/@react-native-firebase/perf`)"
-  - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
-  - "RNFBUtils (from `../node_modules/@react-native-firebase/utils`)"
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
+  - "RNFBAuth (from `../node_modules/@react-native-firebase/auth/ios`)"
+  - "RNFBConfig (from `../node_modules/@react-native-firebase/config/ios`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
+  - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
+  - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
+  - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
+  - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
+  - "RNFBInvites (from `../node_modules/@react-native-firebase/invites/ios`)"
+  - "RNFBMlNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
+  - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
+  - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
+  - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -323,6 +371,10 @@ SPEC REPOS:
     - FirebaseInAppMessagingDisplay
     - FirebaseInstanceID
     - FirebaseInvites
+    - FirebaseMLCommon
+    - FirebaseMLNaturalLanguage
+    - FirebaseMLNLLanguageID
+    - FirebaseMLNLSmartReply
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseStorage
@@ -348,41 +400,33 @@ EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
   RNFBAnalytics:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/analytics"
+    :path: "../node_modules/@react-native-firebase/analytics/ios"
   RNFBApp:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/app"
+    :path: "../node_modules/@react-native-firebase/app/ios"
   RNFBAuth:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/auth"
+    :path: "../node_modules/@react-native-firebase/auth/ios"
+  RNFBConfig:
+    :path: "../node_modules/@react-native-firebase/config/ios"
   RNFBCrashlytics:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/crashlytics"
+    :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBFiam:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/fiam"
+    :path: "../node_modules/@react-native-firebase/fiam/ios"
   RNFBFirestore:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/firestore"
+    :path: "../node_modules/@react-native-firebase/firestore/ios"
   RNFBFunctions:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/functions"
+    :path: "../node_modules/@react-native-firebase/functions/ios"
   RNFBIid:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/iid"
+    :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBInvites:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/invites"
+    :path: "../node_modules/@react-native-firebase/invites/ios"
+  RNFBMlNaturalLanguage:
+    :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
   RNFBPerf:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/perf"
+    :path: "../node_modules/@react-native-firebase/perf/ios"
   RNFBStorage:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/storage"
+    :path: "../node_modules/@react-native-firebase/storage/ios"
   RNFBUtils:
-    :path: !ruby/object:Pathname
-    path: "../node_modules/@react-native-firebase/utils"
+    :path: "../node_modules/@react-native-firebase/utils/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -404,6 +448,10 @@ SPEC CHECKSUMS:
   FirebaseInAppMessagingDisplay: 72f67cfe9711c9bf6d6768a1c538299ea2043042
   FirebaseInstanceID: a122b0c258720cf250551bb2bedf48c699f80d90
   FirebaseInvites: f13ed69fae140e705baec1a59ff127334b841a8a
+  FirebaseMLCommon: 192c49ec584f1fb559747f1da8052441158b04d7
+  FirebaseMLNaturalLanguage: 340b92288e88aef3b8e39040502da926d1012b20
+  FirebaseMLNLLanguageID: 64851edf8bc1d27877cd46e34e288335a2f9c82e
+  FirebaseMLNLSmartReply: 087410cd2ab6f6308236f0020ad2500b2524cd21
   FirebasePerformance: 25ecee2a260bcf398d7f32d6f4804438df953100
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   FirebaseStorage: 6162ef4322502b818d9de0ec552f5226d283de43
@@ -420,18 +468,20 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
-  RNFBAnalytics: e03359f6447302423ec6e87a41495de050944feb
-  RNFBApp: 7482cbe2a041c3072d57e4288ad74d1e9e7957b8
-  RNFBAuth: f9344d91dd699e8951325de8c29f2cf7652ae614
-  RNFBCrashlytics: a1e22e638d6840743ac40e682e3db2f32ec357c5
-  RNFBFiam: 74600d36ce77236d16505da0b5b53238990d7baa
-  RNFBFirestore: 0f1d858a79bfb252ac810b72617ca124ac29a999
-  RNFBFunctions: c808f7fb99fe5e5163eb8394752652c001872321
-  RNFBIid: 2abac0da11857bfb92e7fac7edebec2cc3244d0b
-  RNFBInvites: 501a697c63b517c1fc7d36a397552501cd7bfbbd
-  RNFBPerf: 31fe96325bd659fe0369d37aa94bcb409fdab5c6
-  RNFBStorage: 38546e2bd728e2910ac2b17c3640fdf2c64fd6d8
-  RNFBUtils: 2aa8a9a1357fdf13e264f7b139cd5831f67f0fd6
+  RNFBAnalytics: 0cb5029951a67b82807b9c42219816f5bdeac1cd
+  RNFBApp: 3424ffe199bbd58f8977b255378a0518b7e3bad8
+  RNFBAuth: 82b44f91b28bacf8e7ee273e741776cb45401cfb
+  RNFBConfig: 5e2ff9099cfeb40d7d82a18f816b559b19dc531d
+  RNFBCrashlytics: 730bfea7be5181b5ee9d5d87173d4265fde11f63
+  RNFBFiam: b648fc64e9ec44fa70564e84c91f8565bd9dd76f
+  RNFBFirestore: 3301d9730537139ef75cf72d26d5b32101dfe6b7
+  RNFBFunctions: 3e4297a8371e5fab8c43dc5be6b126cbe3502e90
+  RNFBIid: 5f13d19962d4e9abd65d944a82ab194481dc46f0
+  RNFBInvites: b1b4072620d09bcb83df756c5204dad4eb5ccffc
+  RNFBMlNaturalLanguage: 4b5bb265f738484ee7ad2e9622bcad8eb4eabd86
+  RNFBPerf: 8056260b583177bcb2de5602c203a11ffb110d1e
+  RNFBStorage: fb57793fc2b70f030e464d8ddd512521d7d125ac
+  RNFBUtils: a62772fc1610c79923267a610846c7b3dfc9af88
   yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
 PODFILE CHECKSUM: 27c241220cf5683d1710ae561216cf927903fa66

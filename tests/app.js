@@ -29,7 +29,7 @@ import '@react-native-firebase/utils';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/fiam';
 import '@react-native-firebase/functions';
-import '@react-native-firebase/mlkit';
+import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/storage';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/invites';
