@@ -35,6 +35,7 @@ static NSMutableDictionary *PENDING_TASKS;
 @implementation RNFBStorageModule
 #pragma mark -
 #pragma mark Module Setup
+
 RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup {
@@ -377,13 +378,17 @@ RCT_EXPORT_METHOD(setTaskStatus:
   }
 
   switch ([status integerValue]) {
-  case 0:[task pause];
-    break;
-  case 1:[task resume];
-    break;
-  case 2:[task cancel];
-    break;
-  default:break;
+    case 0:
+      [task pause];
+      break;
+    case 1:
+      [task resume];
+      break;
+    case 2:
+      [task cancel];
+      break;
+    default:
+      break;
   }
 }
 

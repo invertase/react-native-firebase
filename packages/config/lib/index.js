@@ -22,7 +22,6 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import {
   hasOwnProperty,
-  isArray,
   isBoolean,
   isNumber,
   isObject,
@@ -47,58 +46,105 @@ const statics = {
 };
 
 const namespace = 'config';
-
 const nativeModuleName = 'RNFBConfigModule';
 
-/**
- *
- * @param nativeValue
- * @returns {*}
- */
-function nativeValueToJS(nativeValue) {
-  return {
-    source: nativeValue.source,
-    get value() {
-      const { boolValue, stringValue, numberValue } = nativeValue;
+function convertNativeConfigValues(configValues) {
+  const convertedValues = {};
+  const entries = Object.entries(configValues);
 
-      // undefined
-      if (boolValue === false && numberValue === 0 && !stringValue.length) {
-        return undefined;
-      }
+  for (let i = 0; i < entries.length; i++) {
+    const convertedValue = {};
+    const [key, nativeValue] = entries[i];
+    const { source, boolValue, stringValue, numberValue } = nativeValue;
+    let value = stringValue;
 
-      // boolean
-      if (
-        boolValue !== null &&
-        (stringValue === 'true' || stringValue === 'false' || stringValue === null)
-      ) {
-        return boolValue;
-      }
+    if (
+      boolValue !== null &&
+      (stringValue === 'true' || stringValue === 'false' || stringValue === null)
+    ) {
+      value = boolValue;
+    } else if (
+      numberValue !== null &&
+      numberValue !== undefined &&
+      (stringValue == null ||
+        stringValue === '' ||
+        numberValue.toString() === stringValue ||
+        parseInt(stringValue, 10) === numberValue)
+    ) {
+      value = numberValue;
+    }
 
-      // number
-      if (
-        numberValue !== null &&
-        numberValue !== undefined &&
-        (stringValue == null ||
-          stringValue === '' ||
-          numberValue.toString() === stringValue ||
-          parseInt(stringValue, 10) === numberValue)
-      ) {
-        return numberValue;
-      }
+    convertedValue.value = value;
+    convertedValue.source = source;
+    Object.freeze(convertedValue);
+    convertedValues[key] = convertedValue;
+  }
 
-      // string
-      return stringValue;
-    },
-  };
+  Object.freeze(convertedValues);
+  return convertedValues;
 }
 
 class FirebaseConfigModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+    // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
+    this._updateFromConstants(this.native.REMOTE_CONFIG_APP_CONSTANTS['[DEFAULT]']);
+  }
+
+  getValue(key) {
+    if (!isString(key)) {
+      throw new Error(`firebase.config().getValue(): 'key' must be a string value.`);
+    }
+
+    if (!hasOwnProperty(this._values, key)) {
+      return {
+        value: undefined,
+        source: 'static',
+      };
+    }
+
+    return this._values[key];
+  }
+
+  getAll() {
+    return Object.assign({}, this._values);
+  }
+
+  get lastFetchTime() {
+    // android returns -1 if no fetch yet and iOS returns 0
+    return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
+  }
+
+  get lastFetchStatus() {
+    return this._lastFetchStatus;
+  }
+
+  get isDeveloperModeEnabled() {
+    return this._isDeveloperModeEnabled;
+  }
+
+  setConfigSettings(settings = {}) {
+    if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      throw new Error(
+        `firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.`,
+      );
+    }
+
+    if (!isBoolean(settings.isDeveloperModeEnabled)) {
+      throw new Error(
+        `firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.`,
+      );
+    }
+
+    return this._promiseWithConstants(this.native.setConfigSettings(settings));
+  }
+
   /**
    * Activates the Fetched Config, so that the fetched key-values take effect.
    * @returns {Promise<boolean>}
    */
-  activateFetched() {
-    return this.native.activateFetched();
+  activate() {
+    return this._promiseWithConstants(this.native.activate());
   }
 
   /**
@@ -114,137 +160,13 @@ class FirebaseConfigModule extends FirebaseModule {
       );
     }
 
-    return this.native.fetch(
-      expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1,
-      false,
+    return this._promiseWithConstants(
+      this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
     );
   }
 
-  /**
-   * TODO(salakar) return boolean always?
-   * @param expirationDurationSeconds
-   * @returns {Promise|never|Promise<Response>}
-   */
-  fetchAndActivate(expirationDurationSeconds) {
-    if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
-      throw new Error(
-        `firebase.config().fetchAndActivate(): 'expirationDurationSeconds' must be a number value.`,
-      );
-    }
-
-    return this.native.fetch(
-      expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1,
-      true,
-    );
-  }
-
-  /**
-   * Returns FirebaseRemoteConfig singleton
-   *  lastFetchTime,
-   *  lastFetchStatus.
-   *  isDeveloperModeEnabled
-   * @returns {Object}
-   */
-  getConfigSettings() {
-    return this.native.getConfigSettings();
-  }
-
-  /**
-   * Gets the set of keys that start with the given prefix.
-   *
-   * @param {string} prefix
-   * @returns {string[]}
-   */
-  getKeysByPrefix(prefix) {
-    if (!isUndefined(prefix) && !isString(prefix)) {
-      throw new Error(`firebase.config().getKeysByPrefix(): 'prefix' must be a string value.`);
-    }
-
-    return this.native.getKeysByPrefix(prefix);
-  }
-
-  /**
-   *
-   * @param prefix
-   * @returns {Promise<void>}
-   */
-  async getValuesByKeysPrefix(prefix) {
-    if (!isUndefined(prefix) && !isString(prefix)) {
-      throw new Error(
-        `firebase.config().getValuesByKeysPrefix(): 'prefix' must be a string value.`,
-      );
-    }
-
-    const output = {};
-    const entries = Object.entries(await this.native.getValuesByKeysPrefix(prefix));
-
-    for (let i = 0; i < entries.length; i++) {
-      const [key, value] = entries[i];
-      output[key] = nativeValueToJS(value);
-    }
-
-    return output;
-  }
-
-  /**
-   * Gets the FirebaseRemoteConfigValue corresponding to the specified key.
-   *
-   * @param {string} key
-   */
-  async getValue(key) {
-    if (!isString(key)) {
-      throw new Error(`firebase.config().getValue(): 'key' must be a string value.`);
-    }
-
-    return nativeValueToJS(await this.native.getValue(key));
-  }
-
-  /**
-   * Gets the FirebaseRemoteConfigValue array corresponding to the specified
-   * keys.
-   *
-   * @param keys
-   */
-  async getValues(keys) {
-    if (!isArray(keys) || !keys.length) {
-      throw new Error(`firebase.config().getValues(): 'keys' must be an non empty array.`);
-    }
-
-    if (!isString(keys[0])) {
-      throw new Error(`firebase.config().getValues(): 'keys' must be an array of strings.`);
-    }
-
-    const valuesObject = {};
-    const keyValues = await this.native.getValues(keys);
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      valuesObject[key] = nativeValueToJS(keyValues[i]);
-    }
-
-    return valuesObject;
-  }
-
-  /**
-   * Changes the settings for the FirebaseRemoteConfig object's operations,
-   * such as turning the developer mode on.
-   * @param {object} settings
-   * @description Android & iOS
-   */
-  setConfigSettings(settings = {}) {
-    if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      throw new Error(
-        `firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.`,
-      );
-    }
-
-    if (!isBoolean(settings.isDeveloperModeEnabled)) {
-      throw new Error(
-        `firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.`,
-      );
-    }
-
-    return this.native.setConfigSettings(settings);
+  fetchAndActivate() {
+    return this._promiseWithConstants(this.native.fetchAndActivate());
   }
 
   /**
@@ -257,7 +179,7 @@ class FirebaseConfigModule extends FirebaseModule {
       throw new Error(`firebase.config().setDefaults(): 'defaults' must be an object.`);
     }
 
-    return this.native.setDefaults(defaults);
+    return this._promiseWithConstants(this.native.setDefaults(defaults));
   }
 
   /**
@@ -271,7 +193,21 @@ class FirebaseConfigModule extends FirebaseModule {
       );
     }
 
-    return this.native.setDefaultsFromResource(resourceName);
+    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
+  }
+
+  _updateFromConstants(constants) {
+    this._lastFetchTime = constants.lastFetchTime;
+    this._lastFetchStatus = constants.lastFetchStatus;
+    this._values = convertNativeConfigValues(constants.values);
+    this._isDeveloperModeEnabled = constants.isDeveloperModeEnabled;
+  }
+
+  _promiseWithConstants(promise) {
+    return promise.then(({ result, constants }) => {
+      this._updateFromConstants(constants);
+      return result;
+    });
   }
 }
 

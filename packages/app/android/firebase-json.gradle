@@ -26,6 +26,14 @@ if (jsonFile != null && jsonFile.exists()) {
 
   if (json && json[jsonRoot]) {
     String jsonStr = JsonOutput.toJson(JsonOutput.toJson(json[jsonRoot]))
+
+    rootProject.ext.firebaseJson = [
+      raw: json[jsonRoot],
+      isFlagEnabled: { key ->
+        return json[jsonRoot] != null && json[jsonRoot][key] == true
+      }
+    ]
+
     rootProject.logger.info ":${project.name} found react-native json root in firebase.json, creating firebase build config"
     android {
       defaultConfig {

@@ -26,6 +26,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Nullable;
 
@@ -73,7 +74,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
     return indexOfLastSlash > 0 ? localFilePath.substring(indexOfLastSlash + 1) : localFilePath;
   }
 
-  void addOnCompleteListener(Promise promise) {
+  void addOnCompleteListener(ExecutorService executor, Promise promise) {
     if (fileDownloadTask == null) {
       // TODO(salakar) send failure event
       rejectPromiseWithCodeAndMessage(
@@ -85,7 +86,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
       return;
     }
 
-    fileDownloadTask.addOnCompleteListener(task -> {
+    fileDownloadTask.addOnCompleteListener(executor, task -> {
       destroyTask();
 
       if (task.isSuccessful()) {
@@ -150,8 +151,8 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
     });
   }
 
-  private void addEventListeners() {
-    fileDownloadTask.addOnProgressListener(taskSnapshotRaw -> {
+  private void addEventListeners(ExecutorService executor) {
+    fileDownloadTask.addOnProgressListener(executor, taskSnapshotRaw -> {
       Log.d(TAG, "onProgress " + storageReference.toString());
       WritableMap taskSnapshot = buildDownloadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -164,7 +165,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
         ));
     });
 
-    fileDownloadTask.addOnCanceledListener(() -> {
+    fileDownloadTask.addOnCanceledListener(executor, () -> {
       Log.d(TAG, "onCancelled " + storageReference.toString());
       ReactNativeFirebaseEventEmitter
         .getSharedInstance()
@@ -176,7 +177,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
         ));
     });
 
-    fileDownloadTask.addOnPausedListener(taskSnapshotRaw -> {
+    fileDownloadTask.addOnPausedListener(executor, taskSnapshotRaw -> {
       Log.d(TAG, "onPaused " + storageReference.toString());
       WritableMap taskSnapshot = buildDownloadSnapshotMap(taskSnapshotRaw);
       ReactNativeFirebaseEventEmitter
@@ -190,7 +191,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
     });
   }
 
-  void begin(String localFilePath) {
+  void begin(ExecutorService executor, String localFilePath) {
     String pathWithoutFile = getPath(localFilePath);
     File downloadDirectory = new File(pathWithoutFile);
 
@@ -203,7 +204,7 @@ class ReactNativeFirebaseStorageDownloadTask extends ReactNativeFirebaseStorageT
     if (directoriesCreated) {
       File fileWithFullPath = new File(pathWithoutFile, getFileName(localFilePath));
       fileDownloadTask = storageReference.getFile(fileWithFullPath);
-      addEventListeners();
+      addEventListeners(executor);
       setStorageTask(fileDownloadTask);
     }
   }

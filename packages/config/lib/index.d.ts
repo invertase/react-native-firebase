@@ -165,7 +165,7 @@ export namespace Config {
     ValueSource: ValueSource;
 
     /**
-     * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
+     * A pseudo-enum for usage with `firebase.config().lastFetchStatus` to determine the last fetch status.
      *
      * #### Example
      *
@@ -192,7 +192,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await firebase.config().getValue('beta_enabled');
+     * const configValue = firebase.config().getValue('beta_enabled');
      * console.log('Value source: ', configValue.source);
      * ```
      */
@@ -204,7 +204,7 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await firebase.config().getValue('beta_enabled');
+     * const configValue = firebase.config().getValue('beta_enabled');
      * console.log('Value: ', configValue.value);
      * ```
      */
@@ -217,12 +217,7 @@ export namespace Config {
    * #### Example
    *
    * ```js
-   * const values = await firebase.config().getValuesByKeysPrefix('feature_');
-   *
-   * values.forEach(($) => {
-   *   console.log('Source: ', $.source);
-   *   console.log('Value: ', $.value);
-   * });
+   * const values = firebase.config().getAll();
    * ```
    */
   export interface ConfigValues {
@@ -243,41 +238,12 @@ export namespace Config {
    * });
    * ```
    */
-  export interface ConfigSettingsWrite {
+  export interface ConfigSettings {
     /**
      * If enabled, default behaviour such as caching is disabled for a better debugging
      * experience.
      */
     isDeveloperModeEnabled: boolean;
-  }
-
-  /**
-   * An Interface representing readable config settings.
-   *
-   * #### Example
-   *
-   * ```js
-   * const settings = await firebase.config().getConfigSettings();
-   * console.log('Last fetched time: ', settings.lastFetchTime);
-   * console.log('Developer mode enabled': settings.isDeveloperModeEnabled);
-   * console.log('Last fetch status: ', settings.lastFetchStatus);
-   * ```
-   */
-  export interface ConfigSettingsRead {
-    /**
-     * The number of milliseconds since the last Remote Config fetch was performed.
-     */
-    lastFetchTime: number;
-    /**
-     * Whether developer mode is enabled. This is set manually via {@link config#setConfigSettings}
-     */
-    isDeveloperModeEnabled: boolean;
-    /**
-     * The status of the latest Remote Config fetch action.
-     *
-     * See the `LastFetchStatus` statics definition.
-     */
-    lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
   }
 
   /**
@@ -310,6 +276,21 @@ export namespace Config {
    */
   export class Module extends ReactNativeFirebaseModule {
     /**
+     * The number of milliseconds since the last Remote Config fetch was performed.
+     */
+    lastFetchTime: number;
+    /**
+     * Whether developer mode is enabled. This is set manually via {@link config#setConfigSettings}
+     */
+    isDeveloperModeEnabled: boolean;
+    /**
+     * The status of the latest Remote Config fetch action.
+     *
+     * See the `LastFetchStatus` statics definition.
+     */
+    lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+
+    /**
      * Moves fetched data to the apps active config.
      * Resolves with a boolean value of whether the fetched config was moved successfully.
      *
@@ -318,7 +299,7 @@ export namespace Config {
      * ```js
      * // Fetch values
      * await firebase.config().fetch();
-     * const activated = await firebase.config().activateFetched();
+     * const activated = await firebase.config().activate();
      *
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
@@ -327,7 +308,7 @@ export namespace Config {
      * }
      * ```
      */
-    activateFetched(): Promise<boolean>;
+    activate(): Promise<boolean>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
@@ -344,15 +325,15 @@ export namespace Config {
     fetch(expirationDurationSeconds?: number): Promise<null>;
 
     /**
-     * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     * Fetches the remote config data from Firebase, as defined in the dashboard.
      *
-     * Once fetching is complete this method immediately calls activateFetched and returns a boolean value of the activation status.
+     * Once fetching is complete this method immediately calls activate and returns a boolean value of the activation status.
      *
      * #### Example
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await firebase.config().fetchAndActivate(300);
+     * const activated = await firebase.config().fetchAndActivate();
      *
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
@@ -361,52 +342,27 @@ export namespace Config {
      * }
      * ```
      *
-     * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache use a duration of 0.
      */
-    fetchAndActivate(expirationDurationSeconds?: number): Promise<boolean>;
+    fetchAndActivate(): Promise<boolean>;
 
     /**
-     * Retrieve the configuration settings and status for Remote Config.
-     *
-     * ### Example
-     *
-     * ```js
-     * const settings = await firebase.config().getConfigSettings();
-     * console.log('Developer mode enabled: ', settings.isDeveloperModeEnabled);
-     * ```
-     */
-    getConfigSettings(): Promise<ConfigSettingsRead>;
-
-    /**
-     * Returns all keys matching the prefix as an array. If no prefix is defined all keys are returned.
+     * Returns all available config values.
      *
      * #### Example
      *
      * ```js
-     *  const keys = await firebase.config().getKeysByPrefix('feature_');
-     * ```
+     * const values = firebase.config().getAll();
      *
-     * @param prefix A prefix value to match keys by. Leave blank to retrieve all keys.
-     */
-    getKeysByPrefix(prefix?: string): Promise<string[]>;
-
-    /**
-     * Returns all config values for the keys matching the prefix provided. In no prefix is provided all values are returned.
-     *
-     * #### Example
-     *
-     * ```js
-     * const values = await firebase.config().getValuesByKeysPrefix('feature_');
-     *
-     * values.forEach(($) => {
-     *   console.log('Source: ', $.source);
-     *   console.log('Value: ', $.value);
+     * Object.entries(values).forEach(($) => {
+     *   const [key, entry] = $;
+     *   console.log('Key: ', key);
+     *   console.log('Source: ', entry.source);
+     *   console.log('Value: ', entry.value);
      * });
      * ```
      *
-     * @param prefix A prefix value to match values by. Leave blank to retrieve all values.
      */
-    getValuesByKeysPrefix(prefix?: string): Promise<ConfigValues>;
+    getAll(): ConfigValues;
 
     /**
      * Gets a ConfigValue by key.
@@ -414,14 +370,14 @@ export namespace Config {
      * #### Example
      *
      * ```js
-     * const configValue = await firebase.config().getValue('experiment');
+     * const configValue = firebase.config().getValue('experiment');
      * console.log('Source: ', configValue.source);
      * console.log('Value: ', configValue.value);
      * ```
      *
      * @param key A key used to retrieve a specific value.
      */
-    getValue(key: string): Promise<ConfigValue>;
+    getValue(key: string): ConfigValue;
 
     /**
      * Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.
@@ -436,7 +392,7 @@ export namespace Config {
      *
      * @param configSettings A ConfigSettingsWrite instance used to set Remote Config settings.
      */
-    setConfigSettings(configSettings: ConfigSettingsWrite): Promise<ConfigSettingsRead>;
+    setConfigSettings(configSettings: ConfigSettings): Promise<void>;
 
     /**
      * Sets default values for the app to use when accessing values.

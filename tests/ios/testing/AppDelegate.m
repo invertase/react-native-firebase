@@ -26,6 +26,9 @@
 
 @implementation AppDelegate
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+    }
     [FIRApp configureWithName:@"secondaryFromNative" options:[FIROptions defaultOptions]];
     NSURL *jsCodeLocation;
     jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];

@@ -26,7 +26,7 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
-  'mlkit',
+  'ml-natural-language',
   'storage',
   'perf',
   'utils'
@@ -34,7 +34,9 @@ def firebasePackages = [
 
 android {
   compileSdkVersion 28
-
+  aaptOptions {
+    noCompress "tflite"
+  }
   defaultConfig {
     applicationId "com.invertase.testing"
     minSdkVersion 18
@@ -117,26 +119,23 @@ android {
 }
 
 dependencies {
-  implementation fileTree(dir: "libs", include: ["*.jar"])
+  implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
+  implementation 'com.facebook.react:react-native:+'
   //noinspection GradleDynamicVersion
   implementation 'org.webkit:android-jsc:+'
   /* ----------------------------
    *    REACT NATIVE FIREBASE
    * ---------------------------- */
-
   firebasePackages.each { firebasePackage ->
     implementation project(path: ":@react-native-firebase_${firebasePackage}")
   }
-
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
   implementation(project(path: ':jet')) {
     transitive = false
   }
-
   androidTestImplementation('com.wix:detox:+') { transitive = true }
   androidTestImplementation 'junit:junit:4.12'
 }

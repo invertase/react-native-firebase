@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        functions: "16.3.0"
+        functions: "17.0.0"
       ],
     ],
   ])
@@ -46,6 +46,11 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
   }
 }
 

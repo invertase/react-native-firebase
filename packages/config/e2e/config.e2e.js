@@ -42,7 +42,16 @@ describe('config()', () => {
   });
 
   describe('fetch()', () => {
-    it('with expiration provided', () => firebase.config().fetch(0));
+    it('with expiration provided', async () => {
+      const date = Date.now() - 30000;
+      firebase.config().lastFetchTime.should.equal(0);
+      firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
+      await firebase.config().fetch(0);
+      firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.SUCCESS);
+      // TODO leave logger here - need to investigate flakey test
+      console.log(firebase.config().lastFetchTime, date);
+      should.equal(firebase.config().lastFetchTime >= date, true);
+    });
     it('without expiration provided', () => firebase.config().fetch());
     it('it throws if expiration is not a number', () => {
       try {
@@ -57,69 +66,48 @@ describe('config()', () => {
 
   describe('fetchAndActivate()', () => {
     it('returns true/false if activated', async () => {
-      const activated = await firebase.config().fetchAndActivate(0);
+      const activated = await firebase.config().fetchAndActivate();
       activated.should.be.a.Boolean();
-    });
-    it('with expiration provided', () => firebase.config().fetchAndActivate(0));
-    it('without expiration provided', () => firebase.config().fetchAndActivate());
-    it('it throws if expiration is not a number', () => {
-      try {
-        firebase.config().fetchAndActivate('foo');
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a number value');
-        return Promise.resolve();
-      }
     });
   });
 
-  describe('activateFetched()', () => {
+  describe('activate()', () => {
     it('with expiration provided', async () => {
       await firebase.config().fetch(0);
-      const activated = await firebase.config().activateFetched();
+      const activated = await firebase.config().activate();
       activated.should.be.a.Boolean();
     });
 
     it('without expiration provided', async () => {
       await firebase.config().fetch();
-      const activated = await firebase.config().activateFetched();
+      const activated = await firebase.config().activate();
       activated.should.be.a.Boolean();
     });
   });
 
-  describe('getConfigSettings()', () => {
-    it('gets settings', async () => {
-      const settings = await firebase.config().getConfigSettings();
-      settings.isDeveloperModeEnabled.should.be.a.Boolean();
-      settings.isDeveloperModeEnabled.should.equal(false);
-      settings.lastFetchStatus.should.be.a.String();
-      settings.lastFetchStatus.should.equal('success');
-      settings.lastFetchTime.should.be.a.Number();
+  describe('config settings', () => {
+    it('should be immediately available', async () => {
+      firebase.config().isDeveloperModeEnabled.should.be.a.Boolean();
+      firebase.config().isDeveloperModeEnabled.should.equal(false);
+      firebase.config().lastFetchStatus.should.be.a.String();
+      firebase.config().lastFetchStatus.should.equal('success');
+      firebase.config().lastFetchTime.should.be.a.Number();
     });
   });
 
   describe('setConfigSettings()', () => {
     it('isDeveloperModeEnabled sets correctly', async () => {
-      const settingsBefore = await firebase.config().getConfigSettings();
-      settingsBefore.isDeveloperModeEnabled.should.equal(false);
-      settingsBefore.isDeveloperModeEnabled.should.be.a.Boolean();
+      firebase.config().isDeveloperModeEnabled.should.equal(false);
+      firebase.config().isDeveloperModeEnabled.should.be.a.Boolean();
 
       await firebase.config().setConfigSettings({ isDeveloperModeEnabled: true });
 
-      const settingsAfter = await firebase.config().getConfigSettings();
-      settingsAfter.isDeveloperModeEnabled.should.equal(true);
-      settingsAfter.isDeveloperModeEnabled.should.be.a.Boolean();
+      firebase.config().isDeveloperModeEnabled.should.equal(true);
+      firebase.config().isDeveloperModeEnabled.should.be.a.Boolean();
 
       await firebase.config().setConfigSettings({ isDeveloperModeEnabled: false });
-    });
 
-    it('returns the new config settings', async () => {
-      const settings = await firebase.config().setConfigSettings({ isDeveloperModeEnabled: false });
-      settings.isDeveloperModeEnabled.should.be.a.Boolean();
-      settings.isDeveloperModeEnabled.should.equal(false);
-      settings.lastFetchStatus.should.be.a.String();
-      settings.lastFetchStatus.should.equal('success');
-      settings.lastFetchTime.should.be.a.Number();
+      firebase.config().isDeveloperModeEnabled.should.equal(false);
     });
 
     it('it throws if no args', async () => {
@@ -155,55 +143,16 @@ describe('config()', () => {
     });
   });
 
-  describe('getKeysByPrefix()', () => {
-    it('should return an object of all available values if no key prefix provided', async () => {
-      const config = await firebase.config().getValuesByKeysPrefix();
+  describe('getAll()', () => {
+    it('should return an object of all available values', async () => {
+      const config = firebase.config().getAll();
       config.number.value.should.equal(1337);
       config.number.source.should.equal('remote');
       // firebase console stores as a string
       config.float.value.should.equal(123.456);
       config.float.source.should.equal('remote');
-    });
-
-    it('should return an object filtered by prefixed keys', async () => {
-      const config = await firebase.config().getValuesByKeysPrefix('prefix_');
-      Object.keys(config).length.should.equal(3);
       config.prefix_1.value.should.equal(1);
       config.prefix_1.source.should.equal('remote');
-    });
-
-    it('it throws if prefix is not a string', async () => {
-      try {
-        await firebase.config().getValuesByKeysPrefix(1337);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a string value');
-        return Promise.resolve();
-      }
-    });
-  });
-
-  describe('getKeysByPrefix()', () => {
-    it('should return an array of all available keys if no prefix provided', async () => {
-      const keys = await firebase.config().getKeysByPrefix();
-      keys.length.should.equal(9);
-      keys[0].should.be.a.String();
-    });
-
-    it('should return an array of prefixed keys', async () => {
-      const keys = await firebase.config().getKeysByPrefix('prefix_');
-      keys.length.should.equal(3);
-      keys[0].should.be.a.String();
-    });
-
-    it('it throws if prefix is not a string', () => {
-      try {
-        firebase.config().getKeysByPrefix(1337);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a string value');
-        return Promise.resolve();
-      }
     });
   });
 
@@ -215,10 +164,8 @@ describe('config()', () => {
         some_key_2: true,
       });
 
-      await firebase.config().fetch(0);
-
-      const values = await firebase.config().getValues(['some_key', 'some_key_1', 'some_key_2']);
-
+      await firebase.config().fetchAndActivate(0);
+      const values = firebase.config().getAll();
       values.some_key.value.should.equal('I do not exist');
       values.some_key_1.value.should.equal(1337);
       should.equal(values.some_key_2.value, true);
@@ -252,7 +199,7 @@ describe('config()', () => {
   describe('setDefaultsFromResource()', () => {
     it('sets defaults from remote_config_resource_test file', async () => {
       await firebase.config().setDefaultsFromResource('remote_config_resource_test');
-      const config = await firebase.config().getValues(['company']);
+      const config = firebase.config().getAll();
       config.company.source.should.equal('default');
       config.company.value.should.equal('invertase');
     });
@@ -277,14 +224,20 @@ describe('config()', () => {
 
   describe('getValue()', () => {
     it('returns a value for the specified key', async () => {
-      const configValue = await firebase.config().getValue('string');
+      const configValue = firebase.config().getValue('string');
       configValue.source.should.equal('remote');
       configValue.value.should.equal('invertase');
     });
 
+    it('returns an undefined static value for keys that dont exist', async () => {
+      const configValue = firebase.config().getValue('fourOhFour');
+      configValue.source.should.equal('static');
+      should.equal(configValue.value, undefined);
+    });
+
     it('errors if no key provided', async () => {
       try {
-        await firebase.config().getValue();
+        firebase.config().getValue();
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql('must be a string');
@@ -294,7 +247,7 @@ describe('config()', () => {
 
     it('errors if key not a string', async () => {
       try {
-        await firebase.config().getValue(1234);
+        firebase.config().getValue(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql('must be a string');
@@ -303,17 +256,9 @@ describe('config()', () => {
     });
   });
 
-  describe('getValues()', () => {
-    it('returns undefined for non existent keys', async () => {
-      const config = await firebase.config().getValues(['boopy', 'shoopy']);
-      should.equal(config.boopy.value, undefined);
-      should.equal(config.boopy.source, 'static');
-      should.equal(config.shoopy.value, undefined);
-      should.equal(config.shoopy.source, 'static');
-    });
-
-    it('get multiple values by an array of keys', async () => {
-      const config = await firebase.config().getValues(['bool', 'string', 'number']);
+  describe('getAll()', () => {
+    it('gets all values', async () => {
+      const config = firebase.config().getAll();
 
       config.should.be.a.Object();
       config.should.have.keys('bool', 'string', 'number');
@@ -325,46 +270,6 @@ describe('config()', () => {
       boolValue.should.be.equal(true);
       stringValue.should.be.equal('invertase');
       numberValue.should.be.equal(1337);
-    });
-
-    it('errors if no args', async () => {
-      try {
-        await firebase.config().getValues();
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an non empty array');
-        return Promise.resolve();
-      }
-    });
-
-    it('errors if not an array', async () => {
-      try {
-        await firebase.config().getValues({ foo: 'bar' });
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an non empty array');
-        return Promise.resolve();
-      }
-    });
-
-    it('errors if array is empty', async () => {
-      try {
-        await firebase.config().getValues([]);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an non empty array');
-        return Promise.resolve();
-      }
-    });
-
-    it('errors if array values are not strings', async () => {
-      try {
-        await firebase.config().getValues([1, 2, 3]);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an array of strings');
-        return Promise.resolve();
-      }
     });
   });
 });
