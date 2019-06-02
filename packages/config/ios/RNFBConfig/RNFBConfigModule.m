@@ -103,9 +103,9 @@ RCT_EXPORT_METHOD(fetch:
   };
 
   if (expirationDuration == @(-1)) {
-    [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
-  } else {
     [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
+  } else {
+    [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
   }
 }
 
