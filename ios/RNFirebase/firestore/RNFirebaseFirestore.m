@@ -378,6 +378,11 @@ RCT_EXPORT_METHOD(settings:(NSString *)appDisplayName
     } else {
         firestoreSettings.persistenceEnabled = firestore.settings.persistenceEnabled;
     }
+    if (settings[@"cacheSizeBytes"]) {
+        firestoreSettings.cacheSizeBytes = settings[@"cacheSizeBytes"];
+    } else {
+        firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
+    }
     if (settings[@"ssl"]) {
         firestoreSettings.sslEnabled = settings[@"ssl"];
     } else {

@@ -17,7 +17,7 @@ import WriteBatch from './WriteBatch';
 import TransactionHandler from './TransactionHandler';
 import Timestamp from './Timestamp';
 import Transaction from './Transaction';
-import { isBoolean, isObject, isString, hop } from '../../utils';
+import { isBoolean, isObject, isString, isNumber, hop } from '../../utils';
 import { getNativeModule } from '../../utils/native';
 
 import type DocumentSnapshot from './DocumentSnapshot';
@@ -42,6 +42,7 @@ type DocumentSyncEvent = {
 
 type Settings = {
   host?: string,
+  cacheSizeBytes?: number,
   persistence?: boolean,
   ssl?: boolean,
   timestampsInSnapshots?: boolean,
@@ -54,6 +55,8 @@ const NATIVE_EVENTS = [
 ];
 
 const LogLevels = ['debug', 'error', 'silent'];
+
+const MIN_CACHE_SIZE = 1048576;
 
 export const MODULE_NAME = 'RNFirebaseFirestore';
 export const NAMESPACE = 'firestore';
@@ -180,6 +183,32 @@ export default class Firestore extends ModuleBase {
         )
       );
     }
+
+    if (hop(settings, 'cacheSizeBytes')) {
+      if (!isNumber(settings.cacheSizeBytes)) {
+        return Promise.reject(
+          new Error(
+            'Firestore.settings failed: settings.cacheSizeBytes must be number.'
+          )
+        );
+      }
+      if (settings.cacheSizeBytes < MIN_CACHE_SIZE) {
+        return Promise.reject(
+          new Error(
+            `Firestore.settings failed: settings.cacheSizeBytes must be set to ${MIN_CACHE_SIZE} at least bytes.`
+          )
+        );
+      }
+    }
+
+    if (hop(settings, 'cacheSizeBytes') && !isNumber(settings.cacheSizeBytes)) {
+      return Promise.reject(
+        new Error(
+          'Firestore.settings failed: settings.cacheSizeBytes must be number.'
+        )
+      );
+    }
+
     if (hop(settings, 'ssl') && !isBoolean(settings.ssl)) {
       return Promise.reject(
         new Error('Firestore.settings failed: settings.ssl must be boolean.')

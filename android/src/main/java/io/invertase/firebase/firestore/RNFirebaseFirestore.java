@@ -448,6 +448,13 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
                                                 .getFirestoreSettings()
                                                 .isPersistenceEnabled());
     }
+
+    if (settings.hasKey("cacheSizeBytes")) {
+      firestoreSettings.setCacheSizeBytes(settings.getInt("cacheSizeBytes"));
+    } else {
+      firestoreSettings.setCacheSizeBytes(firestore.getFirestoreSettings().getCacheSizeBytes());
+    }
+
     if (settings.hasKey("ssl")) {
       firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
     } else {
