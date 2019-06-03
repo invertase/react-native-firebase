@@ -451,6 +451,12 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
 
     if (settings.hasKey("cacheSizeBytes")) {
       firestoreSettings.setCacheSizeBytes(settings.getInt("cacheSizeBytes"));
+      int cacheSizeBytes = settings.getInt("cacheSizeBytes");
+      if (cacheSizeBytes == -1) {
+        firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
+      } else {
+        firestoreSettings.setCacheSizeBytes(cacheSizeBytes);
+      }
     } else {
       firestoreSettings.setCacheSizeBytes(firestore.getFirestoreSettings().getCacheSizeBytes());
     }

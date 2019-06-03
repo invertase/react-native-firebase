@@ -24,6 +24,13 @@ import type DocumentSnapshot from './DocumentSnapshot';
 import type App from '../core/app';
 import type QuerySnapshot from './QuerySnapshot';
 
+// Flag firestore to use unlimited cache size
+const CACHE_SIZE_UNLIMITED = -1;
+
+// A constant indicating the the minimum cache size that
+// currently is 1MB
+const MIN_CACHE_SIZE = 1048576;
+
 type CollectionSyncEvent = {
   appName: string,
   querySnapshot?: QuerySnapshot,
@@ -42,7 +49,7 @@ type DocumentSyncEvent = {
 
 type Settings = {
   host?: string,
-  cacheSizeBytes?: number,
+  cacheSizeBytes?: CACHE_SIZE_UNLIMITED | number,
   persistence?: boolean,
   ssl?: boolean,
   timestampsInSnapshots?: boolean,
@@ -55,8 +62,6 @@ const NATIVE_EVENTS = [
 ];
 
 const LogLevels = ['debug', 'error', 'silent'];
-
-const MIN_CACHE_SIZE = 1048576;
 
 export const MODULE_NAME = 'RNFirebaseFirestore';
 export const NAMESPACE = 'firestore';
@@ -192,7 +197,10 @@ export default class Firestore extends ModuleBase {
           )
         );
       }
-      if (settings.cacheSizeBytes < MIN_CACHE_SIZE) {
+      if (
+        settings.cacheSizeBytes !== CACHE_SIZE_UNLIMITED &&
+        settings.cacheSizeBytes < MIN_CACHE_SIZE
+      ) {
         return Promise.reject(
           new Error(
             `Firestore.settings failed: settings.cacheSizeBytes must be set to ${MIN_CACHE_SIZE} at least bytes.`
@@ -293,6 +301,7 @@ export const statics = {
   FieldValue,
   GeoPoint,
   Timestamp,
+  CACHE_SIZE_UNLIMITED,
   enableLogging(enabled: boolean): void {
     // DEPRECATED: Remove method in v4.1.0
     console.warn(
