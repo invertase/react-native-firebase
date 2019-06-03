@@ -55,10 +55,11 @@
     ],
     "exclude": [
       "node_modules",
-      "packages/**/node_modules/**",
       "**/common/lib/**",
+      "**/lib/handlers.js",
       "**/internal/registry/**",
-      "**/lib/handlers.js"
+      "packages/**/node_modules/**",
+      "packages/database/lib/DatabaseSyncTree.js"
     ],
     "cwd": "..",
     "all": true,

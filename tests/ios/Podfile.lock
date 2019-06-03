@@ -205,7 +205,7 @@ PODS:
   - GTMSessionFetcher/Core (1.2.1)
   - GTMSessionFetcher/Full (1.2.1):
     - GTMSessionFetcher/Core (= 1.2.1)
-  - Jet (0.3.0):
+  - Jet (0.4.1):
     - React
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)

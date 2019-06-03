@@ -55,6 +55,16 @@ static NSString *const RNFBDomainIdentifier = @"io.invertase.firebase";
     [_userDefaults synchronize];
   }
 
+  - (void)setIntegerValue:(NSString *)key integerValue:(NSInteger *)integerValue {
+    [_userDefaults setInteger:(NSInteger) integerValue forKey:key];
+    [_userDefaults synchronize];
+  }
+
+  - (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue {
+    if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+    return (NSInteger *) [_userDefaults integerForKey:key];
+  }
+
   - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
     if ([_userDefaults objectForKey:key] != nil) return defaultValue;
     return [_userDefaults stringForKey:key];
