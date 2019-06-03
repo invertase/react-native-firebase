@@ -39,6 +39,7 @@ const PACKAGES = [
   'invites',
   'fiam',
   'auth',
+  'database',
   'storage',
   // 'firestore',
   // 'links',
