@@ -98,7 +98,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       throw new Error(
         `firebase.app().database().refFromURL(*) 'url' must be the same domain as the current instance (${
           this._customUrlOrRegion
-          }). To use a different database domain, create a new Firebase instance.`,
+        }). To use a different database domain, create a new Firebase instance.`,
       );
     }
 

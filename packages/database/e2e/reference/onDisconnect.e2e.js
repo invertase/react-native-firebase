@@ -19,7 +19,10 @@
 
 describe('database().ref().onDisconnect()', () => {
   it('returns a new DatabaseOnDisconnect instance', () => {
-    const instance = firebase.database().ref().onDisconnect();
+    const instance = firebase
+      .database()
+      .ref()
+      .onDisconnect();
     instance.constructor.name.should.eql('DatabaseOnDisconnect');
   });
 });

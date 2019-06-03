@@ -16,7 +16,6 @@
  */
 
 describe(`database().ref('.info/connected')`, () => {
-
   after(() => firebase.database().goOnline());
 
   it('returns false when used with once', async () => {
@@ -43,9 +42,7 @@ describe(`database().ref('.info/connected')`, () => {
     const callback = sinon.spy();
     await firebase.database().goOffline();
 
-    const ref = firebase
-      .database()
-      .ref('.info/connected');
+    const ref = firebase.database().ref('.info/connected');
 
     const handler = $ => {
       callback($.val());

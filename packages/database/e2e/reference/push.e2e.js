@@ -15,16 +15,12 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+// const { PATH, seed, wipe } = require('../helpers');
 
-const TEST_PATH = `${PATH}/push`;
+// const TEST_PATH = `${PATH}/push`;
 
-describe('database().ref().push()', () => {
-
+xdescribe('database().ref().push()', () => {
   // before(() => seed(TEST_PATH));
   // after(() => wipe(TEST_PATH));
-
-
   // TODO
-
 });

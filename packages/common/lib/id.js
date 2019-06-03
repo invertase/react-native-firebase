@@ -1,9 +1,6 @@
+const PUSH_CHARS = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 
-const PUSH_CHARS =
-  '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
-
-const AUTO_ID_CHARS =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const AUTO_ID_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 // timestamp of last push, used to prevent local collisions if you push twice in one ms.
 let lastPushTime = 0;
@@ -69,9 +66,7 @@ export function generateFirestoreId(): string {
   let autoId = '';
 
   for (let i = 0; i < 20; i++) {
-    autoId += AUTO_ID_CHARS.charAt(
-      Math.floor(Math.random() * AUTO_ID_CHARS.length)
-    );
+    autoId += AUTO_ID_CHARS.charAt(Math.floor(Math.random() * AUTO_ID_CHARS.length));
   }
   return autoId;
 }

@@ -20,7 +20,6 @@ const { PATH, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/onDisconnectCancel`;
 
 describe('database().ref().onDisconnect().cancel()', () => {
-
   after(() => wipe(TEST_PATH));
 
   afterEach(() => {
@@ -29,7 +28,10 @@ describe('database().ref().onDisconnect().cancel()', () => {
   });
 
   it('throws if onComplete is not a function', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.cancel('foo');
       return Promise.reject(new Error('Did not throw an Error.'));

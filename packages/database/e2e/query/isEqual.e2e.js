@@ -37,14 +37,25 @@ describe('database().ref().isEqual()', () => {
 
   it('returns false if the query is different', async () => {
     const query = await firebase.database().ref();
-    const other = await firebase.database().ref().limitToLast(2);
+    const other = await firebase
+      .database()
+      .ref()
+      .limitToLast(2);
     const same = query.isEqual(other);
     same.should.eql(false);
   });
 
   it('returns true if the query is created differently', async () => {
-    const query = await firebase.database().ref().limitToFirst(1).orderByChild('foo');
-    const other = await firebase.database().ref().orderByChild('foo').limitToFirst(1);
+    const query = await firebase
+      .database()
+      .ref()
+      .limitToFirst(1)
+      .orderByChild('foo');
+    const other = await firebase
+      .database()
+      .ref()
+      .orderByChild('foo')
+      .limitToFirst(1);
     const same = query.isEqual(other);
     same.should.eql(true);
   });

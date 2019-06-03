@@ -20,7 +20,6 @@ const { PATH, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/onDisconnectSetWithPriority`;
 
 describe('database().ref().onDisconnect().setWithPriority()', () => {
-
   after(() => wipe(TEST_PATH));
 
   afterEach(() => {
@@ -29,7 +28,10 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
   });
 
   it('throws if value is not a defined', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.setWithPriority();
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -40,7 +42,10 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
   });
 
   it('throws if priority is not a valid type', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.setWithPriority(null, { foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -51,7 +56,10 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
   });
 
   it('throws if onComplete is not a function', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.setWithPriority(null, 1, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
