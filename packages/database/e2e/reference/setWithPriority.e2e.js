@@ -15,12 +15,11 @@
  *
  */
 
-const { PATH, CONTENT, seed, wipe } = require('../helpers');
+const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/setWithPriority`;
 
 describe('database().ref().setWithPriority()', () => {
-
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 

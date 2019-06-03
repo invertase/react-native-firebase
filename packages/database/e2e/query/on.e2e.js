@@ -20,7 +20,6 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/on`;
 
 describe('database().ref().on()', () => {
-
   it('throws if event type is invalid', async () => {
     try {
       await firebase

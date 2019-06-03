@@ -38,7 +38,10 @@ describe('database().ref().orderByValue()', () => {
   });
 
   it('order by value', async () => {
-    const ref = firebase.database().ref(TEST_PATH).child('query');
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('query');
 
     await ref.set({
       a: 2,
@@ -47,9 +50,7 @@ describe('database().ref().orderByValue()', () => {
     });
 
     try {
-      const snapshot = await ref
-        .orderByValue()
-        .once('value');
+      const snapshot = await ref.orderByValue().once('value');
 
       const expected = ['c', 'a', 'b'];
 

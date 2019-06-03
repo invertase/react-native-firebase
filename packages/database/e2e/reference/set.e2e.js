@@ -20,13 +20,15 @@ const { PATH, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/set`;
 
 describe('database().ref().set()', () => {
-
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
   it('throws if no value is provided', async () => {
     try {
-      await firebase.database().ref(TEST_PATH).set();
+      await firebase
+        .database()
+        .ref(TEST_PATH)
+        .set();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'value' must be defined`);
@@ -36,7 +38,10 @@ describe('database().ref().set()', () => {
 
   it('throws if onComplete is not a function', async () => {
     try {
-      await firebase.database().ref(TEST_PATH).set(null, 'foo');
+      await firebase
+        .database()
+        .ref(TEST_PATH)
+        .set(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'onComplete' must be a function if provided`);

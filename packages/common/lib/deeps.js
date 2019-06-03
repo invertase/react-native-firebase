@@ -8,6 +8,7 @@ import { isObject } from './validate';
  * @param joiner
  * @returns {*}
  */
+// eslint-disable-next-line import/prefer-default-export
 export function deepGet(object, path, joiner = '/') {
   if (!isObject(object) && !Array.isArray(object)) return undefined;
   const keys = path.split(joiner);

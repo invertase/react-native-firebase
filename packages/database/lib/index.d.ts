@@ -364,8 +364,7 @@ export namespace Database {
     onDisconnect(): OnDisconnect;
   }
 
-  export interface ThenableReference extends Reference {
-  }
+  export interface ThenableReference extends Reference {}
 
   /**
    * A Query sorts and filters the data at a Database location so only a subset of the child data
@@ -1154,7 +1153,7 @@ export namespace Database {
      *
      * @param enabled Whether debug logging is enabled.
      */
-    setLoggingEnabled(enabled: boolean): void
+    setLoggingEnabled(enabled: boolean): void;
 
     /**
      * By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
@@ -1187,8 +1186,10 @@ declare module '@react-native-firebase/database' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
   export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<Database.Module,
-    Database.Statics>;
+  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
+    Database.Module,
+    Database.Statics
+  >;
   export default DatabaseDefaultExport;
 }
 

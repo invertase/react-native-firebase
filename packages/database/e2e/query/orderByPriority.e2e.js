@@ -38,7 +38,10 @@ describe('database().ref().orderByPriority()', () => {
   });
 
   it('order by priority', async () => {
-    const ref = firebase.database().ref(TEST_PATH).child('query');
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .child('query');
 
     await Promise.all([
       ref.child('a').setPriority(2),
@@ -47,9 +50,7 @@ describe('database().ref().orderByPriority()', () => {
     ]);
 
     try {
-      const snapshot = await ref
-        .orderByPriority()
-        .once('value');
+      const snapshot = await ref.orderByPriority().once('value');
 
       const expected = ['c', 'a', 'b'];
 

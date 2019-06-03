@@ -21,7 +21,7 @@ import {
   pathParent,
   pathChild,
   isValidPath,
-  generateDatabaseId,
+  // generateDatabaseId,
   isNumber,
   isNull,
   isUndefined,
@@ -216,12 +216,7 @@ export default class DatabaseReference extends DatabaseQuery {
       };
 
       // start the transaction natively
-      this._database._transaction.add(
-        this,
-        transactionUpdate,
-        onCompleteWrapper,
-        applyLocally
-      );
+      this._database._transaction.add(this, transactionUpdate, onCompleteWrapper, applyLocally);
     });
   }
 
@@ -255,15 +250,15 @@ export default class DatabaseReference extends DatabaseQuery {
    * @param onComplete
    * @returns {DatabaseReference}
    */
-  push(value, onComplete) {
-    // TODO validate value?
-    //
-    // const id = generateDatabaseId(this._database._serverTime);
-    // const pushRef = this.child(id);
-    // const thennablePushRef = this.child(id);
-    //
-    // return thennablePushRef;
-  }
+  // push(value, onComplete) {
+  // TODO validate value?
+  //
+  // const id = generateDatabaseId(this._database._serverTime);
+  // const pushRef = this.child(id);
+  // const thennablePushRef = this.child(id);
+  //
+  // return thennablePushRef;
+  // }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#ondisconnect

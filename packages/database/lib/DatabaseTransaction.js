@@ -17,7 +17,6 @@
  */
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 let transactionId = 0;
 

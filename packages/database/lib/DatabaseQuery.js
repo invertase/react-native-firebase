@@ -17,7 +17,6 @@
  */
 
 import {
-  isArray,
   isBoolean,
   isFunction,
   isNull,

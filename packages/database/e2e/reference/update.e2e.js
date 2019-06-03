@@ -56,9 +56,12 @@ describe('database().ref().update()', () => {
       await firebase
         .database()
         .ref(`${PATH}/update`)
-        .update({
-          foo: 'bar',
-        }, 'foo');
+        .update(
+          {
+            foo: 'bar',
+          },
+          'foo',
+        );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'onComplete' must be a function if provided`);

@@ -15,12 +15,11 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectSet`;
 
 describe('database().ref().onDisconnect().set()', () => {
-
   after(() => wipe(TEST_PATH));
 
   afterEach(() => {
@@ -29,7 +28,10 @@ describe('database().ref().onDisconnect().set()', () => {
   });
 
   it('throws if value is not a defined', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.set();
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -40,7 +42,10 @@ describe('database().ref().onDisconnect().set()', () => {
   });
 
   it('throws if onComplete is not a function', () => {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+    const ref = firebase
+      .database()
+      .ref(TEST_PATH)
+      .onDisconnect();
     try {
       ref.set(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));

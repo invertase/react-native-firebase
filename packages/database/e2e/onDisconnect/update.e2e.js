@@ -79,9 +79,12 @@ describe('database().ref().onDisconnect().update()', () => {
       },
     });
 
-    await ref.child('foo').onDisconnect().update({
-      bar: value,
-    });
+    await ref
+      .child('foo')
+      .onDisconnect()
+      .update({
+        bar: value,
+      });
     await firebase.database().goOffline();
     await firebase.database().goOnline();
 

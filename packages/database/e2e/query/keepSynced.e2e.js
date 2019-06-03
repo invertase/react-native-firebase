@@ -30,7 +30,10 @@ describe('database().ref().keepSynced()', () => {
   });
 
   it('toggles keepSynced on and off without throwing', async () => {
-    const ref = firebase.database().ref('noop').orderByValue();
+    const ref = firebase
+      .database()
+      .ref('noop')
+      .orderByValue();
     await ref.keepSynced(true);
     await ref.keepSynced(false);
   });

@@ -20,13 +20,15 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/priority`;
 
 describe('database().ref().setPriority()', () => {
-
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 
   it('throws if priority is not a valid type', async () => {
     try {
-      await firebase.database().ref().setPriority({});
+      await firebase
+        .database()
+        .ref()
+        .setPriority({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'priority' must be a number, string or null value`);
@@ -36,7 +38,10 @@ describe('database().ref().setPriority()', () => {
 
   it('throws if onComplete is not a function', async () => {
     try {
-      await firebase.database().ref().setPriority(null, 'foo');
+      await firebase
+        .database()
+        .ref()
+        .setPriority(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'onComplete' must be a function if provided`);
