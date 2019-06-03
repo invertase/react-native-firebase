@@ -95,6 +95,7 @@
       "**/detox",
       "**/detox/**",
       "**/react-native-gifted-chat/**",
+      "**/react-native-port-patcher/**",
       "**/prop-types/**",
       "**/@react-native-firebase/private-tests-helpers",
       "**/@react-native-firebase/private-tests-helpers/**",
