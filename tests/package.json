@@ -80,6 +80,12 @@
         "type": "ios.simulator",
         "name": "iPhone X"
       },
+      "ios.ci": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet RCT_METRO_PORT=$RCT_METRO_PORT | xcpretty -k",
+        "type": "ios.simulator",
+        "name": "iPhone X"
+      },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
         "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false && popd",
