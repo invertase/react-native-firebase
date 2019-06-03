@@ -19,20 +19,65 @@
 #import <Firebase/Firebase.h>
 
 #import "RNFBDatabaseModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
-
+#import "RNFBDatabaseCommon.h"
+#import "RNFBPreferences.h"
 
 @implementation RNFBDatabaseModule
 #pragma mark -
 #pragma mark Module Setup
 
-  RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
+- (dispatch_queue_t)methodQueue {
+  return dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+}
 
 #pragma mark -
-#pragma mark Firebase Database Methods
+#pragma mark Firebase Database
+
+RCT_EXPORT_METHOD(goOnline:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock)reject
+) {
+  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOnline];
+  resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(goOffline:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock)reject
+) {
+  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
+  resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setPersistenceEnabled:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (BOOL) enabled
+) {
+  [[RNFBPreferences shared] setBooleanValue:DATABASE_PERSISTENCE_ENABLED boolValue:enabled];
+}
+
+RCT_EXPORT_METHOD(setLoggingEnabled:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (BOOL) enabled
+) {
+  [[RNFBPreferences shared] setBooleanValue:DATABASE_LOGGING_ENABLED boolValue:enabled];
+}
+
+RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (NSInteger *) bytes
+) {
+  [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE integerValue:bytes];
+}
+
 
 @end
