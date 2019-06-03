@@ -1956,6 +1956,13 @@ arr-union@^3.1.0:
   resolved "https://registry.yarnpkg.com/arr-union/-/arr-union-3.1.0.tgz#e39b09aea9def866a8f206e288af63919bae39c4"
   integrity sha1-45sJrqne+Gao8gbiiK9jkZuuOcQ=
 
+array-back@^1.0.3, array-back@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/array-back/-/array-back-1.0.4.tgz#644ba7f095f7ffcf7c43b5f0dc39d3c1f03c063b"
+  integrity sha1-ZEun8JX3/898Q7Xw3DnTwfA8Bjs=
+  dependencies:
+    typical "^2.6.0"
+
 array-differ@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/array-differ/-/array-differ-1.0.0.tgz#eff52e3758249d33be402b8bb8e564bb2b5d4031"
@@ -2726,12 +2733,22 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
+command-line-args@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/command-line-args/-/command-line-args-3.0.5.tgz#5bd4ad45e7983e5c1344918e40280ee2693c5ac0"
+  integrity sha1-W9StReeYPlwTRJGOQCgO4mk8WsA=
+  dependencies:
+    array-back "^1.0.4"
+    feature-detect-es6 "^1.3.1"
+    find-replace "^1.0.2"
+    typical "^2.6.0"
+
 commander@2.15.1:
   version "2.15.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
   integrity sha512-VlfT9F3V0v+jr4yxPc5gg9s62/fIVWsd2Bk2iD435um1NlGMYdVCq+MjcXnhYq2icNOizHr1kK+5TI6H0Hy0ag==
 
-commander@^2.11.0, commander@^2.12.1, commander@^2.14.1, commander@^2.15.1, commander@^2.8.1, commander@^2.9.0:
+commander@^2.11.0, commander@^2.12.1, commander@^2.14.1, commander@^2.8.1, commander@^2.9.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
   integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
@@ -3279,15 +3296,15 @@ detox@12.5.0:
     yargs "^13.0.0"
     yargs-parser "^13.0.0"
 
-detox@^9.0.1:
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-9.1.2.tgz#f71b9dafcf006ef9a4a456528726b38a107205cf"
-  integrity sha512-pVyyDHPekYxzQK+sComeYXau5oNG1ZyMGjhEB8ecSbg5EaK1MhIyaLDxri4eDXVnOgLizFP9gqHZSgPcpdITRg==
+detox@^12.5.0:
+  version "12.10.2"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-12.10.2.tgz#042ae3ae0405cf70ff2ec06cc7d9084a56ae6d64"
+  integrity sha512-5CWeuG/HpiGfkOFPkyUmswbd98Cobq3D/75Bc9NnsRRZ9ldbsA8HtekMvys+elH8p9jGMGEXu6kmA3U87mBB6A==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
+    chalk "^2.4.2"
     child-process-promise "^2.2.0"
-    commander "^2.15.1"
     fs-extra "^4.0.2"
     get-port "^2.1.0"
     ini "^1.3.4"
@@ -3296,10 +3313,12 @@ detox@^9.0.1:
     proper-lockfile "^3.0.2"
     sanitize-filename "^1.6.1"
     shell-utils "^1.0.9"
-    tail "^1.2.3"
+    tail "^2.0.0"
     telnet-client "0.15.3"
     tempfile "^2.0.0"
     ws "^1.1.1"
+    yargs "^13.0.0"
+    yargs-parser "^13.0.0"
 
 dezalgo@^1.0.0:
   version "1.0.3"
@@ -4017,6 +4036,13 @@ fbjs@^1.0.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
+feature-detect-es6@^1.3.1:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/feature-detect-es6/-/feature-detect-es6-1.5.0.tgz#a69bb7662c65f64f89f07eac5a461b649a1e0a00"
+  integrity sha512-DzWPIGzTnfp3/KK1d/YPfmgLqeDju9F2DQYBL35VusgSApcA7XGqVtXfR4ETOOFEzdFJ3J7zh0Gkk011TiA4uQ==
+  dependencies:
+    array-back "^1.0.4"
+
 figgy-pudding@^3.4.1, figgy-pudding@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.1.tgz#862470112901c727a0e495a80744bd5baa1d6790"
@@ -4112,6 +4138,14 @@ find-parent-dir@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/find-parent-dir/-/find-parent-dir-0.3.0.tgz#33c44b429ab2b2f0646299c5f9f718f376ff8d54"
   integrity sha1-M8RLQpqysvBkYpnF+fcY83b/jVQ=
+
+find-replace@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/find-replace/-/find-replace-1.0.3.tgz#b88e7364d2d9c959559f388c66670d6130441fa0"
+  integrity sha1-uI5zZNLZyVlVnziMZmcNYTBEH6A=
+  dependencies:
+    array-back "^1.0.4"
+    test-value "^2.1.0"
 
 find-up@^1.0.0:
   version "1.1.2"
@@ -5572,10 +5606,10 @@ jest-worker@^24.0.0-alpha.6:
     merge-stream "^1.0.1"
     supports-color "^5.5.0"
 
-jet@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/jet/-/jet-0.3.0.tgz#a94dbf48aacdbecdf5d3fd74733a3209118a025c"
-  integrity sha512-a6GOL8DRBqMjY+mu1uDKqjYrgfgT1LwYVoY7wc/yXqwYVQScl38Q3Wvr4qOGXYZc8yWTTAP1ivQI1b5Lg2+KOw==
+jet@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/jet/-/jet-0.4.1.tgz#32af78efebc051486c0e835b2f7772f05a2c8257"
+  integrity sha512-rfnduyw1dc32TcROGSsTGvi2XZfY6N4H2AIGLvoMb0SUP8TOBFoNR6on3KyzWqWxAeoWLx59f13NnCnUMnc9mQ==
   dependencies:
     chalk "^2.4.1"
     error-stack-parser "^2.0.2"
@@ -5587,7 +5621,7 @@ jet@^0.3.0:
     tinyqueue "^1.2.3"
     ws "^6.0.0"
   optionalDependencies:
-    detox "^9.0.1"
+    detox "^12.5.0"
     mocha "^5.2.0"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
@@ -8092,6 +8126,13 @@ react-native-parsed-text@^0.0.20:
     babel-plugin-check-es2015-constants "6.22.0"
     prop-types "^15.5.10"
 
+react-native-port-patcher@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-port-patcher/-/react-native-port-patcher-1.0.3.tgz#f2f9e377b68aad5f05249d897e7f1ecda4b5f021"
+  integrity sha1-8vnjd7aKrV8FJJ2Jfn8ezaS18CE=
+  dependencies:
+    command-line-args "^3.0.5"
+
 react-native-video@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-3.2.1.tgz#7ba3cbdfc5c747b5b00452811e98193824b16ce3"
@@ -9408,11 +9449,6 @@ table@^5.2.3:
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
 
-tail@^1.2.3:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/tail/-/tail-1.4.0.tgz#884b216220b90804bfe87a4c8174c2efed0e2661"
-  integrity sha512-wjwfZw6wcMFTB1Po7NFUf4TdCDwX8duZjdTMhnHBEC677Q6mFRcVZE7f/nZDhG2Fpf/wEEKOJP9L7/b11/vlHQ==
-
 tail@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/tail/-/tail-2.0.2.tgz#86073f3a9a568807b7fd886897a7350314275b5f"
@@ -9515,6 +9551,14 @@ test-exclude@^5.1.0:
     minimatch "^3.0.4"
     read-pkg-up "^4.0.0"
     require-main-filename "^1.0.1"
+
+test-value@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/test-value/-/test-value-2.1.0.tgz#11da6ff670f3471a73b625ca4f3fdcf7bb748291"
+  integrity sha1-Edpv9nDzRxpztiXKTz/c97t0gpE=
+  dependencies:
+    array-back "^1.0.3"
+    typical "^2.6.0"
 
 text-encoding@^0.6.4:
   version "0.6.4"
@@ -9817,6 +9861,11 @@ typescript@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
   integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
+
+typical@^2.6.0:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/typical/-/typical-2.6.1.tgz#5c080e5d661cbbe38259d2e70a3c7253e873881d"
+  integrity sha1-XAgOXWYcu+OCWdLnCjxyU+hziB0=
 
 ua-parser-js@^0.7.18:
   version "0.7.19"

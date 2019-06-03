@@ -23,6 +23,7 @@ import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
 import '@react-native-firebase/auth';
+import '@react-native-firebase/database';
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/config';
 import '@react-native-firebase/utils';

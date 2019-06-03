@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,9 @@
  *
  */
 
-export default function promiseDefer() {
-  const deferred = {
-    resolve: null,
-    reject: null,
-  };
+#import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
+#import <Firebase/Firebase.h>
 
-  deferred.promise = new Promise((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
-
-  return deferred;
-}
+@interface RNFBDatabaseQueryModule : NSObject <RCTBridgeModule>
+@end

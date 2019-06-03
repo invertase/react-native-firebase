@@ -39,4 +39,9 @@ public class ReactNativeFirebaseApp {
     FirebaseOptions options = FirebaseOptions.fromResource(applicationContext);
     FirebaseApp.initializeApp(applicationContext, options, name);
   }
+
+  public static void initializeSecondaryApp(String name, Context applicationContext) {
+    FirebaseOptions options = FirebaseOptions.fromResource(applicationContext);
+    FirebaseApp.initializeApp(applicationContext, options, name);
+  }
 }

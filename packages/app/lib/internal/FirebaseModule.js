@@ -42,6 +42,7 @@ export default class FirebaseModule {
     return SharedEventEmitter;
   }
 
+  // TODO Handle custom url or region?
   eventNameForApp(...args) {
     return `${this.app.name}-${args.join('-')}`;
   }
