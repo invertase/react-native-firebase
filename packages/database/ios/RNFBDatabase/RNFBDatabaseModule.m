@@ -20,6 +20,7 @@
 
 #import "RNFBDatabaseModule.h"
 #import "RNFBDatabaseCommon.h"
+#import "RNFBPreferences.h"
 
 @implementation RNFBDatabaseModule
 #pragma mark -
@@ -52,6 +53,30 @@ RCT_EXPORT_METHOD(goOffline:
 ) {
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
   resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setPersistenceEnabled:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (BOOL) enabled
+) {
+  [[RNFBPreferences shared] setBooleanValue:DATABASE_PERSISTENCE_ENABLED boolValue:enabled];
+}
+
+RCT_EXPORT_METHOD(setLoggingEnabled:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (BOOL) enabled
+) {
+  [[RNFBPreferences shared] setBooleanValue:DATABASE_LOGGING_ENABLED boolValue:enabled];
+}
+
+RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    : (NSInteger *) bytes
+) {
+  [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE integerValue:bytes];
 }
 
 

@@ -117,9 +117,80 @@ describe('database()', () => {
 
   describe('goOffline()', () => {
     it('calls goOffline successfully', async () => {
+      // await Utils.sleep(5000);
       await firebase.database().goOffline();
-      // Go back online
+
       await firebase.database().goOnline();
+    });
+  });
+
+  describe('setPersistenceEnabled()', () => {
+    it('throws if enabled is not a boolean', async () => {
+      try {
+        firebase.database().setPersistenceEnabled('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'enabled' must be a boolean value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('calls setPersistenceEnabled successfully', async () => {
+      firebase.database().setPersistenceEnabled(true);
+      firebase.database().setPersistenceEnabled(false);
+    });
+  });
+
+  describe('setLoggingEnabled()', () => {
+    it('throws if enabled is not a boolean', async () => {
+      try {
+        firebase.database().setLoggingEnabled('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'enabled' must be a boolean value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('calls setLoggingEnabled successfully', async () => {
+      firebase.database().setLoggingEnabled(true);
+      firebase.database().setLoggingEnabled(false);
+    });
+  });
+
+  describe('setPersistenceCacheSizeBytes()', () => {
+    it('throws if bytes is not a number', async () => {
+      try {
+        firebase.database().setPersistenceCacheSizeBytes('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'bytes' must be a number value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if bytes is less than 1MB', async () => {
+      try {
+        firebase.database().setPersistenceCacheSizeBytes(1234);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'bytes' must be greater than 1000000 (1MB)`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if bytes is greater than 10MB', async () => {
+      try {
+        firebase.database().setPersistenceCacheSizeBytes(100000000000000);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'bytes' must be less than 100000000 (10MB)`);
+        return Promise.resolve();
+      }
+    });
+
+    it('calls setPersistenceCacheSizeBytes successfully', async () => {
+      firebase.database().setPersistenceCacheSizeBytes(1000000);
     });
   });
 });

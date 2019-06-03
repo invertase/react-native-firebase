@@ -13,6 +13,7 @@
 		8B9DD3C222A0617400A16945 /* RNFBDatabaseCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C122A0617400A16945 /* RNFBDatabaseCommon.m */; };
 		8B9DD3C622A11F4F00A16945 /* RNFBDatabaseReferenceModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */; };
 		8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */; };
+		8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,8 @@
 		8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseReferenceModule.m; sourceTree = "<group>"; };
 		8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQueryModule.m; sourceTree = "<group>"; };
 		8B9DD3CA22A1259F00A16945 /* RNFBDatabaseQueryModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseQueryModule.h; sourceTree = "<group>"; };
+		8B9DD3CC22A43D0300A16945 /* RNFBDatabaseTransactionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseTransactionModule.h; sourceTree = "<group>"; };
+		8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseTransactionModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +80,8 @@
 				8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.m */,
 				8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.m */,
 				8B9DD3CA22A1259F00A16945 /* RNFBDatabaseQueryModule.h */,
+				8B9DD3CC22A43D0300A16945 /* RNFBDatabaseTransactionModule.h */,
+				8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.m */,
 			);
 			path = RNFBDatabase;
 			sourceTree = "<group>";
@@ -150,6 +155,7 @@
 			files = (
 				8B9DD3BD22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.m in Sources */,
 				8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.m in Sources */,
+				8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.m in Sources */,
 				8B9DD3C222A0617400A16945 /* RNFBDatabaseCommon.m in Sources */,
 				8B9DD3C622A11F4F00A16945 /* RNFBDatabaseReferenceModule.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBDatabaseModule.m in Sources */,

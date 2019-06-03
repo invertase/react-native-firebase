@@ -16,23 +16,71 @@
  */
 
 #import "RNFBDatabaseCommon.h"
+#import "RNFBPreferences.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 
 static __strong NSMutableDictionary *references;
+static __strong NSMutableDictionary *configSettingsLock;
+
+NSString *const DATABASE_PERSISTENCE_ENABLED = @"firebase_database_persistence_enabled";
+NSString *const DATABASE_LOGGING_ENABLED = @"firebase_database_logging_enabled";
+NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistence_cache_size_bytes";
 
 @implementation RNFBDatabaseCommon
 
 + (void)load {
   references = [NSMutableDictionary dictionary];
+  configSettingsLock = [NSMutableDictionary dictionary];
 }
 
-+ (FIRDatabase *)getDatabaseForApp
-    :(FIRApp *)firebaseApp
-                             dbURL:(NSString *)dbURL {
++ (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL {
+
+  FIRDatabase *firDatabase;
+
   if (dbURL == nil && dbURL.length == 0) {
-    return [FIRDatabase databaseForApp:firebaseApp];
+    firDatabase = [FIRDatabase databaseForApp:firebaseApp];
+  } else {
+    firDatabase = [FIRDatabase databaseForApp:firebaseApp URL:dbURL];
   }
-  return [FIRDatabase databaseForApp:firebaseApp URL:dbURL];
+
+  [RNFBDatabaseCommon setDatabaseConfig:firDatabase dbURL:dbURL];
+
+  return firDatabase;
+}
+
++ (void)setDatabaseConfig:(FIRDatabase *)firDatabase
+                    dbURL:(NSString *)dbURL {
+  NSMutableString *lockKey = [firDatabase.app.name mutableCopy];
+
+  if (dbURL != nil && dbURL.length > 0) {
+    [lockKey appendString:dbURL];
+  }
+
+  if (configSettingsLock[lockKey]) {
+    return;
+  }
+
+  RNFBPreferences *preferences = [RNFBPreferences shared];
+
+  @try {
+    // Persistence enabled
+    BOOL *persistenceEnabled = (BOOL *) [preferences getBooleanValue:DATABASE_PERSISTENCE_ENABLED defaultValue:false];
+    [firDatabase setPersistenceEnabled:(BOOL) persistenceEnabled];
+
+    // Logging enabled
+    BOOL *loggingEnabled = (BOOL *) [preferences getBooleanValue:DATABASE_LOGGING_ENABLED defaultValue:false];
+    [FIRDatabase setLoggingEnabled:(BOOL) loggingEnabled];
+
+    // Persistence cache size
+    if ([preferences contains:DATABASE_PERSISTENCE_CACHE_SIZE]) {
+      NSInteger *cacheSizeBytes = [preferences getIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE defaultValue:(NSInteger *) 10000000];
+      [firDatabase setPersistenceCacheSizeBytes:(NSUInteger) cacheSizeBytes];
+    }
+  } @catch (NSException *exception) {
+    if (![@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
+      @throw exception;
+    }
+  }
 }
 
 + (FIRDatabaseReference *)getReferenceForDatabase
@@ -192,18 +240,13 @@ static __strong NSMutableDictionary *references;
   if (dataSnapshot.childrenCount > 0) {
     NSEnumerator *children = [dataSnapshot children];
     FIRDataSnapshot *child;
-    while (child = [children nextObject]) {
+    child = [children nextObject];
+    while (child) {
       [childKeys addObject:child.key];
+      child = [children nextObject];
     }
   }
   return childKeys;
 }
-
-//+ (NSDictionary *)getDatabaseEventDictionary:(NSString *)key
-//                                    snapshot:(FIRDataSnapshot *)dataSnapshot
-//                                   eventType:(NSString *)eventType
-//                                registration:(NSDictionary *)registration {
-//
-//}
 
 @end

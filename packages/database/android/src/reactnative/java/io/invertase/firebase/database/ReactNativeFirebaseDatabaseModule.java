@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class ReactNativeFirebaseDatabaseModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Database";
@@ -52,5 +53,29 @@ public class ReactNativeFirebaseDatabaseModule extends ReactNativeFirebaseModule
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
     });
+  }
+
+  @ReactMethod
+  public void setPersistenceEnabled(String app, String dbURL, boolean enabled) {
+    UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
+      UniversalDatabaseStatics.DATABASE_PERSISTENCE_ENABLED,
+      enabled
+    );
+  }
+
+  @ReactMethod
+  public void setLoggingEnabled(String app, String dbURL, boolean bool) {
+    UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
+      UniversalDatabaseStatics.DATABASE_LOGGING_ENABLED,
+      bool
+    );
+  }
+
+  @ReactMethod
+  public void setPersistenceCacheSizeBytes(String app, String dbURL, long cacheSizeBytes) {
+    UniversalFirebasePreferences.getSharedInstance().setLongValue(
+      UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE,
+      cacheSizeBytes
+    );
   }
 }

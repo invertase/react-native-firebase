@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isString, isValidPath } from '@react-native-firebase/common';
+import { isString, isBoolean, isNumber } from '@react-native-firebase/common';
 
 import version from './version';
 import DatabaseStatics from './DatabaseStatics';
@@ -45,7 +45,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
     this._transaction = new DatabaseTransaction(this);
     setTimeout(() => {
       this._syncServerTimeOffset();
-    },100);
+    }, 100);
   }
 
   /**
@@ -98,7 +98,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       throw new Error(
         `firebase.app().database().refFromURL(*) 'url' must be the same domain as the current instance (${
           this._customUrlOrRegion
-        }). To use a different database domain, create a new Firebase instance.`,
+          }). To use a different database domain, create a new Firebase instance.`,
       );
     }
 
@@ -120,6 +120,60 @@ class FirebaseDatabaseModule extends FirebaseModule {
    */
   goOffline() {
     return this.native.goOffline();
+  }
+
+  /**
+   *
+   * @param enabled
+   */
+  setPersistenceEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.app().database().setPersistenceEnabled(*) 'enabled' must be a boolean value.`,
+      );
+    }
+
+    this.native.setPersistenceEnabled(enabled);
+  }
+
+  /**
+   *
+   * @param enabled
+   */
+  setLoggingEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.app().database().setLoggingEnabled(*) 'enabled' must be a boolean value.`,
+      );
+    }
+
+    this.native.setLoggingEnabled(enabled);
+  }
+
+  /**
+   *
+   * @param bytes
+   */
+  setPersistenceCacheSizeBytes(bytes) {
+    if (!isNumber(bytes)) {
+      throw new Error(
+        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be a number value.`,
+      );
+    }
+
+    if (bytes < 1000000) {
+      throw new Error(
+        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be greater than 1000000 (1MB).`,
+      );
+    }
+
+    if (bytes > 100000000) {
+      throw new Error(
+        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be less than 100000000 (10MB).`,
+      );
+    }
+
+    this.native.setPersistenceCacheSizeBytes(bytes);
   }
 }
 

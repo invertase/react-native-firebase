@@ -20,7 +20,7 @@ const { PATH, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/transaction`;
 const NOOP = () => {};
 
-xdescribe('database().ref().transaction()', () => {
+describe('database().ref().transaction()', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
 

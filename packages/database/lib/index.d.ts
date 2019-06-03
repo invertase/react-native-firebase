@@ -364,7 +364,8 @@ export namespace Database {
     onDisconnect(): OnDisconnect;
   }
 
-  export interface ThenableReference extends Reference {}
+  export interface ThenableReference extends Reference {
+  }
 
   /**
    * A Query sorts and filters the data at a Database location so only a subset of the child data
@@ -746,7 +747,7 @@ export namespace Database {
      * await ref.keepSynced(true);
      * ```
      *
-     * @param bool 	Pass `true` to keep this location synchronized, pass `false` to stop synchronization.
+     * @param bool  Pass `true` to keep this location synchronized, pass `false` to stop synchronization.
      */
     keepSynced(bool: boolean): Promise<void>;
   }
@@ -1112,6 +1113,73 @@ export namespace Database {
      * ```
      */
     goOffline(): Promise<void>;
+
+    /**
+     * Sets whether persistence is enabled for all database calls across all app
+     * instances.
+     *
+     * > Ensure this is called before any database calls are performed, otherwise
+     * persistence will only come into effect when the app is next started.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.database().setPersistenceEnabled(true);
+     *
+     * async function bootstrap() {
+     *   // Bootstrapping application
+     *   const snapshot = await firebase.database().ref('settings').once('value');
+     * }
+     * ```
+     *
+     * @param enabled Whether persistence is enabled for the Database service.
+     */
+    setPersistenceEnabled(enabled: boolean): void;
+
+    /**
+     * Sets the native logging level for the database module. By default,
+     * only warnings and errors are logged natively. Setting this to true will log all
+     * database events.
+     *
+     * > Ensure logging is disabled for production apps, as excessive logging can cause performance issues.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Set debug logging if developing
+     * if (__DEV__) {
+     *   firebase.database().setLoggingEnabled(true);
+     * }
+     * ```
+     *
+     * @param enabled Whether debug logging is enabled.
+     */
+    setLoggingEnabled(enabled: boolean): void
+
+    /**
+     * By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
+     * Firebase Database will start removing data that hasn't been recently used. If you find that your application
+     * caches too little or too much data, call this method to change the cache size. This method must be called before
+     * creating your first Database reference and only needs to be called once per application.
+     *
+     * Note that the specified cache size is only an approximation and the size on disk may temporarily exceed it at times.
+     * Cache sizes smaller than 1 MB or greater than 100 MB are not supported.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.database().setPersistenceEnabled(true);
+     * firebase.database().setPersistenceCacheSizeBytes(2000000); // 2MB
+     *
+     * async function bootstrap() {
+     *   // Bootstrapping application
+     *   const snapshot = await firebase.database().ref('settings').once('value');
+     * }
+     * ```
+     *
+     * @param bytes The new size of the cache in bytes.
+     */
+    setPersistenceCacheSizeBytes(bytes: number): void;
   }
 }
 
@@ -1119,10 +1187,8 @@ declare module '@react-native-firebase/database' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
   export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Database.Module,
-    Database.Statics
-  >;
+  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<Database.Module,
+    Database.Statics>;
   export default DatabaseDefaultExport;
 }
 

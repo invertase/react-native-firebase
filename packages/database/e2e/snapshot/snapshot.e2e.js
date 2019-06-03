@@ -150,7 +150,7 @@ describe('database()...snapshot', () => {
     callback.should.be.callCount(snapshot.child('array').numChildren());
   });
 
-  it.only('forEach works with objects and cancels when returning true', async () => {
+  it('forEach works with objects and cancels when returning true', async () => {
     const callback = sinon.spy();
     const ref = firebase
       .database()

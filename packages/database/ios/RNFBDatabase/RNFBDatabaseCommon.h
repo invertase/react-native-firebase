@@ -25,6 +25,8 @@
     :(FIRApp *)firebaseApp
                              dbURL:(NSString *)dbURL;
 
++ (void)setDatabaseConfig:(FIRDatabase *)firDatabase dbURL:(NSString *)dbURL;
+
 + (FIRDatabaseReference *)getReferenceForDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
 
 + (FIRDatabaseReference *)getReferenceForDatabase:(NSString *)key firebaseDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
@@ -44,3 +46,7 @@
 + (NSMutableArray *)getSnapshotChildKeys:(FIRDataSnapshot *)dataSnapshot;
 
 @end
+
+extern NSString *const DATABASE_PERSISTENCE_ENABLED;
+extern NSString *const DATABASE_LOGGING_ENABLED;
+extern NSString *const DATABASE_PERSISTENCE_CACHE_SIZE;

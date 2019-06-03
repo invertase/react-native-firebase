@@ -17,26 +17,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RNFBPreferences : NSObject
+#import <React/RCTBridgeModule.h>
 
-- (BOOL)contains:(NSString *)key;
-
-- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue;
-
-- (void)setBooleanValue:(NSString *)key boolValue:(BOOL)boolValue;
-
-- (void)setIntegerValue:(NSString *)key integerValue:(NSInteger *)integerValue;
-
-- (void)setStringValue:(NSString *)key stringValue:(NSString *)stringValue;
-
-- (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
-
-- (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue;
-
-- (NSDictionary *)getAll;
-
-- (void)clearAll;
-
-+ (RNFBPreferences *)shared;
-
+@interface RNFBDatabaseTransactionModule : NSObject <RCTBridgeModule>
+@property dispatch_queue_t transactionQueue;
 @end
