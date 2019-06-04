@@ -17,7 +17,7 @@
     "tests:ios:test-cover": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "format": "npm run format:assets && npm run lint -- --fix",
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "prepare": "npm run clean && npm run build && npm run build-flow && cd tests && yarn install",
+    "prepare": "npm run clean && npm run build && npm run build-flow",
     "precommit": "lint-staged",
     "postinstall": "opencollective-postinstall || exit 0",
     "prepublishOnly": "npm run validate-ts-declarations && npm run validate-flow-declarations"
