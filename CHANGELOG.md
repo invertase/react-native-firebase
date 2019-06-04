@@ -9,22 +9,22 @@ and most modules can now be used just by linking it (e.g. `react-native link @re
 
 The following modules are completed and published to NPM on the `alpha` tag ready to be consumed:
 
-| Name                                     |                                                                                    Downloads                                                                                    |                                                        Coverage                                                         |
-| ---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: |
-| [Analytics](/packages/analytics)         |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics)   |   [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail)   |
-| [App](/packages/app)                     |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)         |         [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)         |
-| [App Invites](/packages/invites)         |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)     |     [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)     |
-| [Cloud Functions](/packages/functions)   |   [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)   |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
-| [Cloud Storage](/packages/storage)       |     [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)     |     [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)     |
-| [Crashlytics](/packages/crashlytics)     | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics) | [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail) |
-| [In-app Messaging](/packages/fiam)       |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)        |        [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)        |
-| [Instance ID](/packages/iid)             |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)         |         [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)         |
-| [Performance Monitoring](/packages/perf) |        [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)        |        [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)        |
-| [Remote Config](/packages/config)        |      [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)      |   [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)   |
-| [Utils](/packages/utils)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)       |       [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)       |
+| Name                                                      |                                                                                            Downloads                                                                                            |                                                                Coverage                                                                 |
+| --------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: |
+| [Analytics](/packages/analytics)                          |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics)           |           [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail)           |
+| [App](/packages/app)                                      |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)                 |                 [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)                 |
+| [App Invites](/packages/invites)                          |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)             |             [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)             |
+| [Cloud Functions](/packages/functions)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)           |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
+| [Cloud Storage](/packages/storage)                        |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)             |             [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)             |
+| [Crashlytics](/packages/crashlytics)                      |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics)         |         [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail)         |
+| [In-app Messaging](/packages/fiam)                        |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)                |                [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)                |
+| [Instance ID](/packages/iid)                              |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
+| [ML Kit Natural Language ](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
+| [Performance Monitoring](/packages/perf)                  |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
+| [Remote Config](/packages/config)                         |              [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)              |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
+| [Utils](/packages/utils)                                  |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)               |               [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)               |
 
-
-----
+---
 
 The following modules are **migration only** for now (migrated from v5 to v6 with minimal changes), what this means:
 
@@ -113,7 +113,7 @@ await analytics().setUserId('12345678');
 - [NEW][ios] Implemented a CocoaPods Firebase React Native modules auto-loader script for your Podfile; you only need to change your Podfile once (to add the script); this script will then automatically include all React Native Firebase modules found in your `node_modules` directory as Pods, manage additional required build phases (e.g. auto adds the crashlytics build phase (`/Fabric/Run`)), and allows the `firebase.json` functionality to work. [Example Podfile](https://github.com/invertase/react-native-firebase/blob/master/tests/ios/Podfile) with script included and sample `pod install` logs:
   ![pod install image](https://i.imgur.com/XOqw5Jq.png)
 
-## App
+## App (app)
 
 - [NEW] Added `appConfig` & method support for `setAutomaticDataCollectionEnabled` & `automaticResourceManagement`
 - [NEW] Added app `options` support for `gaTrackingId`
@@ -122,18 +122,18 @@ await analytics().setUserId('12345678');
 - [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
 - [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
 
-## App Invites
+## App Invites (invites)
 
 - [NEW] Added `createInvitation(title: string, message: string)` method to replace construction an Invite from `new firebase.invites.Invitation` (this is still supported for now)
 - [WARNING] Deprecation notice printed when using Invites - it's now deprecated by Firebase and will be removed by January 2020 - the suggested migration path is switching to Dynamic Links and handling the sending of the link yourself.
 
-## Analytics
+## Analytics (analytics)
 
 - [NEW] Added support for `resetAnalyticsData()`
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
 
-## Crashlytics
+## Crashlytics (crashlytics)
 
 > **Blog post announcement**: [[Firebase Crashlytics for React Native](https://invertase.io/blog/firebase-crashlytics-for-react-native?utm_source=github&utm_medium=changelog)]
 
@@ -159,7 +159,7 @@ await analytics().setUserId('12345678');
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
-## Functions
+## Functions (functions)
 
 - [BUGFIX] Fixed an issue where `useFunctionsEmulator` does not persist natively (Firebase iOS SDK requires chaining this method before other calls and does not modify the instance, Android however persists this)
 
@@ -176,6 +176,9 @@ await analytics().setUserId('12345678');
 
 ## Performance Monitoring (perf)
 
+The Performance Monitoring API has had a significant API change as originally highlighted would happen in the v5.x.x docs:
+![image](https://user-images.githubusercontent.com/5347038/58876674-b633b780-86c6-11e9-8a74-6b6194c8ab05.png)
+
 - [BREAKING] All `Trace` & `HttpMetric` methods (except for `start` & `stop`) are now synchronous and no longer return a Promise, extra attributes/metrics now only get sent to native when you call `stop`
 - [BREAKING] `firebase.perf.Trace.incrementMetric` will now create a metric if it could not be found
 - [BREAKING] `firebase.perf.Trace.getMetric` will now return 0 if a metric could not be found
@@ -184,21 +187,27 @@ await analytics().setUserId('12345678');
 
 ## Remote Config (config)
 
-- [NEW] Added a new `fetchAndActivate` method - this fetches the config and activate it without the need to call `activate()` separately
-- [NEW] Added the following properties to `firebase.config()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
-- [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
-- [NEW] All previous `get* ` methods have been removed and replaced with 2 synchronous methods:
-  - `getValue(key: string): ConfigValue` - returns a single configuration value `{ value, source }`
-  - `getAll(): ConfigValues` - returns all configuration values e.g. `{ some_key: { value, source }, other_key: { value, source } }`
+The Remote Config API has had a significant API change as originally highlighted would happen in the v5.x.x docs:
+![image](https://user-images.githubusercontent.com/5347038/58876587-7c62b100-86c6-11e9-81f9-95c26e1485a1.png)
+
+- [BREAKING] All Remote Config values can now be accessed synchronously in JS, see `getValue(key: string): ConfigValue` & `getAll(): ConfigValues` below
+  - [BREAKING] These replace all the original async methods: `getValue`, `getValues`, `getKeysByPrefix`
 - [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
 - [BREAKING] `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android)
-  - We're writing up a guide for this on the new documentation website, showing how to use the plist/xml defaults files on each platform
+  - And example for both platforms can be found in the tests. We'll writeup up a guide for this at some point to show how to use the plist/xml defaults files on each platform.
 - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
 - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
+- [NEW] Added a new `fetchAndActivate` method - this fetches the config and activates it without the need to call `activate()` separately
+- [NEW] Added the following properties to `firebase.config()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
+- [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
+  - This is a generic settings function to pre-emotively account for an upcoming future change to the native sdks - more settings to be added.
+- [NEW] All previous `get*` methods have been removed and replaced with 2 synchronous methods:
+  - `getValue(key: string): ConfigValue` - returns a single configuration value `{ value, source }`
+  - `getAll(): ConfigValues` - returns all configuration values e.g. `{ some_key: { value, source }, other_key: { value, source } }`
 
-Multi-apps is not yet supported as the Firebase iOS SDK is missing support for it.
+> **Note**: Multi-apps is not yet supported as the Firebase iOS SDK is missing support for it.
 
-## Storage
+## Storage (storage)
 
 <!-- TODO(salakar) change link -->
 
@@ -221,8 +230,46 @@ Multi-apps is not yet supported as the Firebase iOS SDK is missing support for i
 
 ## Messaging
 
+**MODULE STILL WIP**
+
 - [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
 
+## ML Kit Natural Language (mlKitLanguage) - **[NEW]**
+
+- [NEW] Implemented support for language identification APIs
+
+**Identify a single language:**
+
+```js
+const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+console.warn(language); // en
+
+const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+console.warn(language); // und
+```
+
+**Identify a multiple languages:**
+
+```js
+const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+console.warn(identifiedLanguages[0].language); // en
+```
+
+- [NEW] Implemented support for [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
+ - [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
+
+```js
+const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
+conversation.addLocalUserMessage('That sounds great!');
+conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
+
+const suggestedReplies = await conversation.getSuggestedReplies();
+console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
+```
+
+> ML Kit Translate APIs to come in a later release.
+     
 ## Utils
 
 - [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment
