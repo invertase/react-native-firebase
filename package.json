@@ -6,20 +6,21 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "genversion src/version.js && npm run build-src",
+    "build": "genversion src/version.js && yarn run build-src",
     "build-src": "cross-env BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
     "build-flow": "flow-copy-source -i */__tests__* src dist",
     "build-src-watch": "genversion src/version.js && BABEL_ENV=development babel src -d dist --ignore __tests__ --copy-files --watch",
-    "lint": "eslint ./src",
+    "validate:all:js": "eslint ./src",
     "clean": "rimraf dist/",
-    "validate-ts-declarations": "tsc --project ./",
-    "validate-flow-declarations": "flow",
-    "format": "npm run format:assets && npm run lint -- --fix",
+    "validate:all:ts": "tsc --project ./",
+    "validate:all:flow": "flow",
+    "tests:ios:test-cover": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
+    "format": "yarn run format:assets && yarn run lint -- --fix",
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
-    "prepare": "npm run clean && npm run build && npm run build-flow",
+    "prepare": "yarn run clean && yarn run build && yarn run build-flow",
     "precommit": "lint-staged",
     "postinstall": "opencollective-postinstall || exit 0",
-    "prepublishOnly": "npm run validate-ts-declarations && npm run validate-flow-declarations"
+    "prepublishOnly": "yarn run validate-ts-declarations && yarn run validate-flow-declarations"
   },
   "repository": {
     "type": "git",

@@ -25,7 +25,7 @@
     "detox": "^9.0.4",
     "fbjs": "^0.8.16",
     "firebase-admin": "^5.12.0",
-    "jet": "https://github.com/mikehardy/jet.git#v0.3.0-dev",
+    "jet": "^0.4.3",
     "jsonwebtoken": "^8.2.1",
     "mocha": "^5.2.0",
     "patch-package": "^6.1.2",
@@ -33,6 +33,7 @@
     "prop-types": "^15.6.1",
     "react": "16.8.3",
     "react-native": "0.59.3",
+    "react-native-port-patcher": "^1.0.3",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
     "sinon": "^6.2.0"
@@ -94,6 +95,12 @@
         "type": "ios.simulator",
         "name": "iPhone X",
         "logLevel": "error"
+      },
+      "ios.ci": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
+        "type": "ios.simulator",
+        "name": "iPhone X"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
