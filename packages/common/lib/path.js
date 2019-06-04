@@ -35,10 +35,7 @@ export function pathParent(path) {
  * Joins a parent and a child path
  */
 export function pathChild(path, childPath) {
-  const canonicalChildPath = childPath
-    .split('/')
-    .filter($ => $.length > 0)
-    .join('/');
+  const canonicalChildPath = pathPieces(childPath).join('/');
 
   if (path.length === 0) {
     return canonicalChildPath;
@@ -57,4 +54,60 @@ export function pathLastComponent(path) {
   }
 
   return path.slice(index + 1);
+}
+
+/**
+ * Returns all none empty pieces of the path
+ * @param path
+ * @returns {*}
+ */
+export function pathPieces(path) {
+  return path.split('/').filter($ => $.length > 0);
+}
+
+/**
+ * Returns whether a given path is empty
+ * @param path
+ * @returns {boolean}
+ */
+export function pathIsEmpty(path) {
+  return !pathPieces(path).length;
+}
+
+/**
+ * Converts a given path to a URL encoded string
+ * @param path
+ * @returns {string|string}
+ */
+export function pathToUrlEncodedString(path) {
+  const pieces = pathPieces(path);
+  let pathString = '';
+  for (let i = 0; i < pieces.length; i++) {
+    pathString += `/${encodeURIComponent(String(pieces[i]))}`;
+  }
+  return pathString || '/';
+}
+
+// eslint-disable-next-line no-control-regex
+export const INVALID_PATH_REGEX = /[[\].#$\u0000-\u001F\u007F]/;
+
+/**
+ * Ensures a given path is a valid Firebase path
+ * @param path
+ * @returns {boolean}
+ */
+export function isValidPath(path) {
+  return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
+}
+
+// eslint-disable-next-line no-control-regex,no-useless-escape
+export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
+
+/**
+ * Ensures a given key is a valid Firebase key
+ * @param key
+ * @returns {boolean}
+ */
+export function isValidKey(key) {
+  return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(path);
 }

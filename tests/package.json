@@ -10,6 +10,7 @@
     "@react-native-firebase/ml-natural-language": "6.0.0-alpha.22",
     "@react-native-firebase/analytics": "6.0.0-alpha.22",
     "@react-native-firebase/app": "6.0.0-alpha.22",
+    "@react-native-firebase/database": "6.0.0-alpha.22",
     "@react-native-firebase/app-types": "6.0.0-alpha.22",
     "@react-native-firebase/auth": "6.0.0-alpha.22",
     "@react-native-firebase/config": "6.0.0-alpha.22",
@@ -55,10 +56,11 @@
     ],
     "exclude": [
       "node_modules",
-      "packages/**/node_modules/**",
       "**/common/lib/**",
+      "**/lib/handlers.js",
       "**/internal/registry/**",
-      "**/lib/handlers.js"
+      "packages/**/node_modules/**",
+      "packages/database/lib/DatabaseSyncTree.js"
     ],
     "cwd": "..",
     "all": true,

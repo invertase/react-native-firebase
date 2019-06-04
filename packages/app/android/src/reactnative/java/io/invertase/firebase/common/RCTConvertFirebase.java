@@ -176,6 +176,7 @@ public class RCTConvertFirebase {
     return map;
   }
 
+  // TODO Remove me - also in SharedUtils
   public static WritableMap readableMapToWritableMap(ReadableMap map) {
     WritableMap writableMap = Arguments.createMap();
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/WritableNativeMap.java#L54
@@ -183,12 +184,12 @@ public class RCTConvertFirebase {
     return writableMap;
   }
 
-  public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
+  public static Map<String, Object> toHashMap(ReadableMap readableMap) {
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java#L216
     return readableMap.toHashMap();
   }
 
-  public static List<Object> recursivelyDeconstructReadableArray(ReadableArray readableArray) {
+  public static List<Object> toArrayList(ReadableArray readableArray) {
     // https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeArray.java#L175
     return readableArray.toArrayList();
   }

@@ -19,6 +19,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 def firebasePackages = [
   'app',
   'auth',
+  'database',
   'analytics',
   'config',
   'crashlytics',

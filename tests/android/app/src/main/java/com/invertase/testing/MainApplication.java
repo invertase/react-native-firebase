@@ -14,6 +14,7 @@ import java.util.List;
 
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
+import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;
@@ -43,6 +44,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAnalyticsPackage(),
         new ReactNativeFirebaseAuthPackage(),
+        new ReactNativeFirebaseDatabasePackage(),
         new ReactNativeFirebaseInvitesPackage(),
         new ReactNativeFirebaseCrashlyticsPackage(),
         new ReactNativeFirebaseConfigPackage(),
@@ -65,7 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative");
+    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative", getApplicationContext());
 
     // TODO move to jet
     DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()

@@ -12,6 +12,9 @@ PODS:
     - FirebaseAnalytics (= 5.8.1)
   - Firebase/CoreOnly (5.20.2):
     - FirebaseCore (= 5.4.1)
+  - Firebase/Database (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseDatabase (= 5.1.1)
   - Firebase/Functions (5.20.2):
     - Firebase/CoreOnly
     - FirebaseFunctions (= 2.4.0)
@@ -64,6 +67,10 @@ PODS:
   - FirebaseCore (5.4.1):
     - GoogleUtilities/Environment (~> 5.2)
     - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseDatabase (5.1.1):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 5.2)
+    - leveldb-library (~> 1.18)
   - FirebaseDynamicLinks (3.4.3):
     - FirebaseAnalytics (~> 5.1)
     - FirebaseAnalyticsInterop (~> 1.0)
@@ -207,6 +214,7 @@ PODS:
     - GTMSessionFetcher/Core (= 1.2.1)
   - Jet (0.4.1):
     - React
+  - leveldb-library (1.20)
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -279,6 +287,11 @@ PODS:
     - Firebase/Core (~> 5.20.2)
     - React
     - RNFBApp
+  - RNFBDatabase (6.0.0-alpha.22):
+    - Firebase/Core (~> 5.20.2)
+    - Firebase/Database (~> 5.20.2)
+    - React
+    - RNFBApp
   - RNFBFiam (6.0.0-alpha.22):
     - Firebase/Core (~> 5.20.2)
     - Firebase/InAppMessagingDisplay (~> 5.20.2)
@@ -342,6 +355,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth/ios`)"
   - "RNFBConfig (from `../node_modules/@react-native-firebase/config/ios`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
+  - "RNFBDatabase (from `../node_modules/@react-native-firebase/database/ios`)"
   - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
@@ -365,6 +379,7 @@ SPEC REPOS:
     - FirebaseAuth
     - FirebaseAuthInterop
     - FirebaseCore
+    - FirebaseDatabase
     - FirebaseDynamicLinks
     - FirebaseFunctions
     - FirebaseInAppMessaging
@@ -385,6 +400,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMOAuth2
     - GTMSessionFetcher
+    - leveldb-library
     - nanopb
     - Protobuf
 
@@ -409,6 +425,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/config/ios"
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics/ios"
+  RNFBDatabase:
+    :path: "../node_modules/@react-native-firebase/database/ios"
   RNFBFiam:
     :path: "../node_modules/@react-native-firebase/fiam/ios"
   RNFBFirestore:
@@ -442,6 +460,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: dd7bbf03a5aee0eafb3a1aee4d2812bd74bac890
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
+  FirebaseDatabase: 2c15b0ea6f2c6eb5e57413f9d6340f1e50b81ae3
   FirebaseDynamicLinks: f7a8717e2c7ea652923882a2d60b0045d6fd99d5
   FirebaseFunctions: 35b530c69ef8c322c414104280d36a06347a5d49
   FirebaseInAppMessaging: 25e8c4408829928b6727fb461e0aef6a43111467
@@ -464,26 +483,28 @@ SPEC CHECKSUMS:
   GoogleUtilities: 273e67030e0de313e7304f6dcfa96fc5214f6c23
   GTMOAuth2: e8b6512c896235149df975c41d9a36c868ab7fba
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
-  Jet: 271953e7858ea45774e54398924781928b870b9b
+  Jet: 5748d9e6ccc47b646859282fc25d1b063540e981
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
-  React: 90adac468c7b72bf1fa6c64bf230650f851a8388
-  RNFBAnalytics: c4f58ed8e9e630510a6219f6b7c483ac90d2cdbc
-  RNFBApp: 2ba8d24b2d5a3c82ecda2c34c90005b18851aed2
-  RNFBAuth: c4704d6cf87f95bd8ee864f002b2c2cceea061b2
-  RNFBConfig: f86f50b499dbc09aa086a88507bc41b91def659c
-  RNFBCrashlytics: 2e41028618e3e09cb0bda87fb036cf9047a47718
-  RNFBFiam: a52605735177218ef7d77a308af4313a8ed71d0b
-  RNFBFirestore: e3d91f8b273827f67e52db1fb46136ffae53a3fc
-  RNFBFunctions: 7647429be1df78830704927a02e02eaa4f08767c
-  RNFBIid: 71d7c86e6ba2b103bc9034824159b6939a110a2d
-  RNFBInvites: 5039ae15688df5fd593424073a8bd0c030fdee97
-  RNFBMlNaturalLanguage: d9e9a7dcc72eb0487d4a26c7ba55cc0d920343cd
-  RNFBPerf: 7eb6befbaf6b6b370db825433790088852b4ea11
-  RNFBStorage: 61fb862367b1e9ede8a365ac3a7497189b6e7489
-  RNFBUtils: a5a8f785172a88494e66bb14211cd850b13b6964
-  yoga: 2e571f113e8cbeb0eb752aeebc86c1bfe7a8200c
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
+  RNFBAnalytics: 0cb5029951a67b82807b9c42219816f5bdeac1cd
+  RNFBApp: 3424ffe199bbd58f8977b255378a0518b7e3bad8
+  RNFBAuth: 82b44f91b28bacf8e7ee273e741776cb45401cfb
+  RNFBConfig: 5e2ff9099cfeb40d7d82a18f816b559b19dc531d
+  RNFBCrashlytics: 730bfea7be5181b5ee9d5d87173d4265fde11f63
+  RNFBDatabase: b144ff289ecff46c20c77ba3c288d638aaa10f7a
+  RNFBFiam: b648fc64e9ec44fa70564e84c91f8565bd9dd76f
+  RNFBFirestore: 3301d9730537139ef75cf72d26d5b32101dfe6b7
+  RNFBFunctions: 3e4297a8371e5fab8c43dc5be6b126cbe3502e90
+  RNFBIid: 5f13d19962d4e9abd65d944a82ab194481dc46f0
+  RNFBInvites: b1b4072620d09bcb83df756c5204dad4eb5ccffc
+  RNFBMlNaturalLanguage: 4b5bb265f738484ee7ad2e9622bcad8eb4eabd86
+  RNFBPerf: 8056260b583177bcb2de5602c203a11ffb110d1e
+  RNFBStorage: fb57793fc2b70f030e464d8ddd512521d7d125ac
+  RNFBUtils: a62772fc1610c79923267a610846c7b3dfc9af88
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
 PODFILE CHECKSUM: 27c241220cf5683d1710ae561216cf927903fa66
 
-COCOAPODS: 1.7.0
+COCOAPODS: 1.5.3
