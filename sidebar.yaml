@@ -74,8 +74,8 @@
   - text: Invites
     to: "/v6/invites"
     asset: "//static.invertase.io/assets/firebase/invites.svg"
-  - text: ML Kit
-    to: "/v6/ml-kit"
+  - text: ML Kit Natural Language
+    to: "/v6/ml-natural-language"
     asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
   - text: Notifications
     to: "/v6/notifications"
