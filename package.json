@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "genversion src/version.js && npm run build-src",
+    "build": "genversion src/version.js && yarn run build-src",
     "build-src": "cross-env BABEL_ENV=publish babel src -d dist --ignore __tests__ --copy-files",
     "build-flow": "flow-copy-source -i */__tests__* src dist",
     "build-src-watch": "genversion src/version.js && BABEL_ENV=development babel src -d dist --ignore __tests__ --copy-files --watch",
