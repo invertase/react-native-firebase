@@ -1,3 +1,5 @@
+apply from: file("./../../app/android/firebase-json.gradle")
+
 def mlModels = [
   // TODO not available on iOS until SDK 6.0.0
   //  'ml_natural_language_translate_model',
@@ -6,7 +8,7 @@ def mlModels = [
 ]
 
 dependencies {
-  if (rootProject.ext.firebaseJson) {
+  if (rootProject.ext && rootProject.ext.firebaseJson) {
     mlModels.each { modelFlag ->
       if (rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
         rootProject.logger.info ":${project.name} model enabled: '${modelFlag}'"
