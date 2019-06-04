@@ -25,9 +25,13 @@
 
 - (void)setBooleanValue:(NSString *)key boolValue:(BOOL)boolValue;
 
+- (void)setIntegerValue:(NSString *)key integerValue:(NSInteger *)integerValue;
+
 - (void)setStringValue:(NSString *)key stringValue:(NSString *)stringValue;
 
 - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
+
+- (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue;
 
 - (NSDictionary *)getAll;
 
