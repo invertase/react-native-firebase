@@ -1,13 +1,20 @@
 ---
-title: ML Kit
-description: ML Kit lets you bring powerful machine learning features to your React Native app.
+title: ML Kit Natural Language
+description: ML Kit Natural Language APIs lets you bring powerful Natural Language machine learning features into your React Native app.
 ---
 
-# ML Kit
+# ML Kit - Natural Language
 
 Firebase ML Kit brings the power of machine learning to your React Native application, supporting both Android & iOS.
 
 <Youtube id="ejrn_JHksws" />
+
+ML Kit Natural Language for React Native currently supports the following APIs:
+
+- [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages)
+- [Smart Reply](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
+
+Support for Translate APIs coming in a later release.
 
 ## Getting Started
 
@@ -41,7 +48,7 @@ Firebase ML Kit brings the power of machine learning to your React Native applic
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-mlkit)
