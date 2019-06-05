@@ -29,6 +29,16 @@
 				<string>com.googleusercontent.apps.448618578101-28tsenal97nceuij1msj7iuqinv48t02</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.testing</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>invertase</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -49,8 +59,6 @@
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -61,11 +69,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>rnfirebase_meta_testing_string</key>
-	<string>abc</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 	<key>rnfirebase_meta_testing_boolean_false</key>
 	<false/>
 	<key>rnfirebase_meta_testing_boolean_true</key>
 	<true/>
+	<key>rnfirebase_meta_testing_string</key>
+	<string>abc</string>
 </dict>
 </plist>

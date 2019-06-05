@@ -15,6 +15,7 @@ target 'testing' do
     'RCTNetwork',
     'RCTImage',
     'RCTWebSocket',
+    'RCTLinkingIOS',
   ]
 
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"

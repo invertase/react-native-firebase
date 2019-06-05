@@ -21,6 +21,7 @@
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
 #import <RNFBInvites/RNFBInvitesModule.h>
+#import <React/RCTLinkingManager.h>
 
 @import Firebase;
 
@@ -49,8 +50,13 @@
   }
 
   - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-    return [RNFBInvitesModule application:application openURL:url options:options];
+//    if ([RNFBInvitesModule application:application openURL:url options:options]) {
+//      return YES;
+//    }
+
+    return [RCTLinkingManager application:application openURL:url options:options];
   }
+
 
   - (BOOL)application:(nonnull UIApplication *)application continueUserActivity :(nonnull NSUserActivity *)userActivity restorationHandler:
     #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
@@ -58,7 +64,10 @@
     #else
       (nonnull void (^)(NSArray *_Nullable))restorationHandler {
     #endif
-    return [RNFBInvitesModule application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+//    return [RNFBInvitesModule application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    return [RCTLinkingManager application:application
+                     continueUserActivity:userActivity
+                       restorationHandler:restorationHandler];
   }
 
 
