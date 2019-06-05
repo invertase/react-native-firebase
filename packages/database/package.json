@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/database",
-  "version": "6.0.0-alpha.22",
+  "version": "6.0.0-alpha.23",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Realtime Database",
   "main": "lib/index.js",
@@ -25,11 +25,11 @@
     "realtome database"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "6.0.0-alpha.22"
+    "@react-native-firebase/app": "6.0.0-alpha.23"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.22",
-    "@react-native-firebase/common": "6.0.0-alpha.22"
+    "@react-native-firebase/app-types": "6.0.0-alpha.23",
+    "@react-native-firebase/common": "6.0.0-alpha.23"
   },
   "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
   "publishConfig": {

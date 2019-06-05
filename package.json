@@ -5,7 +5,6 @@
     "prepare": "yarn run lerna:link && lerna run prepare",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
-    "build:all:src": "lerna run build:src",
     "validate:all:js": "eslint ./",
     "validate:all:ts": "tsc --project ./",
     "validate:all:flow": "flow",
