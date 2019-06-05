@@ -21,7 +21,7 @@ import {
   pathParent,
   pathChild,
   isValidPath,
-  // generateDatabaseId,
+  generateDatabaseId,
   isNumber,
   isNull,
   isUndefined,
@@ -31,10 +31,11 @@ import {
   isBoolean,
 } from '@react-native-firebase/common';
 
-import DatabaseQuery from './DatabaseQuery';
+import DatabaseQuery, { provideReferenceClass } from './DatabaseQuery';
 import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
+import DatabaseThenableReference from './DatabaseThenableReference';
 
 const internalRefs = ['.info/connected', '.info/serverTimeOffset'];
 
@@ -113,7 +114,14 @@ export default class DatabaseReference extends DatabaseQuery {
       );
     }
 
-    // TODO validate keys
+    const keys = Object.keys(values);
+    for (let i = 0; i < keys.length; i++) {
+      if (!isValidPath(keys[i])) {
+        throw new Error(
+          `firebase.database().update(*) 'values' contains an invalid path. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+        );
+      }
+    }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
@@ -250,15 +258,34 @@ export default class DatabaseReference extends DatabaseQuery {
    * @param onComplete
    * @returns {DatabaseReference}
    */
-  // push(value, onComplete) {
-  // TODO validate value?
-  //
-  // const id = generateDatabaseId(this._database._serverTime);
-  // const pushRef = this.child(id);
-  // const thennablePushRef = this.child(id);
-  //
-  // return thennablePushRef;
-  // }
+  push(value, onComplete) {
+    if (!isUndefined(onComplete) && !isFunction(onComplete)) {
+      throw new Error(
+        `firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.`,
+      );
+    }
+
+    const id = generateDatabaseId(this._database._serverTimeOffset);
+
+    if (isUndefined(value) || isNull(value)) {
+      return new DatabaseThenableReference(
+        this._database,
+        pathChild(this.path, id),
+        Promise.resolve(this.child(id)),
+      );
+    }
+
+    const pushRef = this.child(id);
+
+    const promise = pushRef.set(value, onComplete).then(() => pushRef);
+
+    // Prevent unhandled promise rejection if onComplete is passed
+    if (onComplete) {
+      promise.catch(() => {});
+    }
+
+    return new DatabaseThenableReference(this._database, pathChild(this.path, id), promise);
+  }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference#ondisconnect
@@ -267,3 +294,6 @@ export default class DatabaseReference extends DatabaseQuery {
     return new DatabaseOnDisconnect(this);
   }
 }
+
+// To avoid React Native require cycle warnings
+provideReferenceClass(DatabaseReference);
