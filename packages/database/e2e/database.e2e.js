@@ -174,7 +174,7 @@ describe('database()', () => {
         firebase.database().setPersistenceCacheSizeBytes(1234);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'bytes' must be greater than 1000000 (1MB)`);
+        error.message.should.containEql(`'bytes' must be greater than 1048576 bytes (1MB)`);
         return Promise.resolve();
       }
     });
@@ -184,7 +184,7 @@ describe('database()', () => {
         firebase.database().setPersistenceCacheSizeBytes(100000000000000);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'bytes' must be less than 100000000 (10MB)`);
+        error.message.should.containEql(`'bytes' must be less than 104857600 bytes (100MB)`);
         return Promise.resolve();
       }
     });
