@@ -20,7 +20,6 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/push`;
 
 describe('database().ref().push()', () => {
-
   // onComplete function check
   // onComplete success / error check
   // unhandled rejection with onComplete
