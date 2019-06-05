@@ -1040,6 +1040,11 @@ export namespace Database {
    */
   export interface Module extends ReactNativeFirebaseModule {
     /**
+     * Returns the current Firebase Database server time as a JavaScript Date object.
+     */
+    getServerTime(): Date;
+
+    /**
      * Returns a `Reference` representing the location in the Database corresponding to the provided path.
      * If no path is provided, the Reference will point to the root of the Database.
      *

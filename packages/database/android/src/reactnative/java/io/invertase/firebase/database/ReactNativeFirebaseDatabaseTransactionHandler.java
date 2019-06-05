@@ -18,23 +18,16 @@ package io.invertase.firebase.database;
  */
 
 
-import android.util.Log;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.MutableData;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.annotation.Nullable;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.mapPutValue;
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
@@ -89,7 +82,6 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
 
   /**
    * Wait for signalUpdateReceived to signal condition
-   *
    */
   void await() throws InterruptedException {
     lock.lock();

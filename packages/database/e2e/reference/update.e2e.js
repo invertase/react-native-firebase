@@ -17,11 +17,13 @@
 
 const { PATH } = require('../helpers');
 
+const TEST_PATH = `${PATH}/update`;
+
 describe('database().ref().update()', () => {
   after(async () => {
     await firebase
       .database()
-      .ref(`${PATH}/update`)
+      .ref(TEST_PATH)
       .remove();
   });
 
@@ -29,7 +31,7 @@ describe('database().ref().update()', () => {
     try {
       await firebase
         .database()
-        .ref(`${PATH}/update`)
+        .ref(TEST_PATH)
         .update('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -42,7 +44,7 @@ describe('database().ref().update()', () => {
     try {
       await firebase
         .database()
-        .ref(`${PATH}/update`)
+        .ref(TEST_PATH)
         .update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -70,7 +72,7 @@ describe('database().ref().update()', () => {
     try {
       await firebase
         .database()
-        .ref(`${PATH}/update`)
+        .ref(TEST_PATH)
         .update(
           {
             foo: 'bar',
@@ -86,7 +88,7 @@ describe('database().ref().update()', () => {
 
   it('updates values', async () => {
     const value = Date.now();
-    const ref = firebase.database().ref(`${PATH}/update`);
+    const ref = firebase.database().ref(TEST_PATH);
     await ref.update({
       foo: value,
     });
@@ -103,7 +105,7 @@ describe('database().ref().update()', () => {
     return new Promise(async resolve => {
       await firebase
         .database()
-        .ref(`${PATH}/update`)
+        .ref(TEST_PATH)
         .update(
           {
             foo: value,

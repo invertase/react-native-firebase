@@ -31,7 +31,7 @@ import {
   isBoolean,
 } from '@react-native-firebase/common';
 
-import DatabaseQuery from './DatabaseQuery';
+import DatabaseQuery, { provideReferenceClass } from './DatabaseQuery';
 import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
@@ -260,10 +260,12 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   push(value, onComplete) {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
-      throw new Error('TODO');
+      throw new Error(
+        `firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.`,
+      );
     }
 
-    const id = generateDatabaseId(this._database._serverTime);
+    const id = generateDatabaseId(this._database._serverTimeOffset);
 
     if (isUndefined(value) || isNull(value)) {
       return new DatabaseThenableReference(
@@ -292,3 +294,6 @@ export default class DatabaseReference extends DatabaseQuery {
     return new DatabaseOnDisconnect(this);
   }
 }
+
+// To avoid React Native require cycle warnings
+provideReferenceClass(DatabaseReference);

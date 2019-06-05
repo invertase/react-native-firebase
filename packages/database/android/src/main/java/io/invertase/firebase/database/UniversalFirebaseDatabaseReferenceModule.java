@@ -19,14 +19,12 @@ package io.invertase.firebase.database;
 
 
 import android.content.Context;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseReference;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.Map;
-
-import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 

@@ -17,8 +17,6 @@ package io.invertase.firebase.database;
  *
  */
 
-import android.util.Log;
-
 import com.google.firebase.database.DatabaseError;
 
 public class UniversalDatabaseException extends Exception {

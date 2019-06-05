@@ -28,11 +28,16 @@ import {
   pathToUrlEncodedString,
   ReferenceBase,
 } from '@react-native-firebase/common';
-import DatabaseReference from './DatabaseReference';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
 
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
+
+// To avoid React Native require cycle warnings
+let DatabaseReference = null;
+export function provideReferenceClass(databaseReference) {
+  DatabaseReference = databaseReference;
+}
 
 // Internal listener count
 let listeners = 0;
@@ -48,8 +53,6 @@ export default class DatabaseQuery extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
-    // TODO require cycle warning?
-    // Require cycle: ../packages/database/lib/DatabaseReference.js -> ../packages/database/lib/DatabaseQuery.js -> ../packages/database/lib/DatabaseReference.js
     return new DatabaseReference(this._database, this.path);
   }
 

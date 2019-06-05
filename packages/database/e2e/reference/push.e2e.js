@@ -15,16 +15,17 @@
  *
  */
 
-const { PATH, seed, wipe } = require('../helpers');
+const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/push`;
 
-describe.only('database().ref().push()', () => {
-  // before(() => seed(TEST_PATH));
-  // after(() => wipe(TEST_PATH));
-  // TODO
+describe('database().ref().push()', () => {
 
-  it('wraps Firebase.push when no value is passed', () => {
+  // onComplete function check
+  // onComplete success / error check
+  // unhandled rejection with onComplete
+
+  it('returns a promise when no value is passed', () => {
     const ref = firebase.database().ref(`${TEST_PATH}/boop`);
     const pushed = ref.push();
     return pushed
@@ -35,6 +36,21 @@ describe.only('database().ref().push()', () => {
       })
       .then(snap => {
         should.equal(snap.val(), null);
+        snap.ref.toString().should.eql(pushed.toString());
+      });
+  });
+
+  it('returns a promise and sets the provided value', () => {
+    const ref = firebase.database().ref(`${TEST_PATH}/value`);
+    const pushed = ref.push(6);
+    return pushed
+      .then(childRef => {
+        pushed.ref.parent.toString().should.eql(ref.toString());
+        pushed.toString().should.eql(childRef.toString());
+        return pushed.once('value');
+      })
+      .then(snap => {
+        snap.val().should.equal(6);
         snap.ref.toString().should.eql(pushed.toString());
       });
   });
