@@ -15,12 +15,27 @@
  *
  */
 
-// const { PATH, seed, wipe } = require('../helpers');
+const { PATH, seed, wipe } = require('../helpers');
 
-// const TEST_PATH = `${PATH}/push`;
+const TEST_PATH = `${PATH}/push`;
 
-xdescribe('database().ref().push()', () => {
+describe.only('database().ref().push()', () => {
   // before(() => seed(TEST_PATH));
   // after(() => wipe(TEST_PATH));
   // TODO
+
+  it('wraps Firebase.push when no value is passed', () => {
+    const ref = firebase.database().ref(`${TEST_PATH}/boop`);
+    const pushed = ref.push();
+    return pushed
+      .then(childRef => {
+        pushed.ref.parent.toString().should.eql(ref.toString());
+        pushed.toString().should.eql(childRef.toString());
+        return pushed.once('value');
+      })
+      .then(snap => {
+        should.equal(snap.val(), null);
+        snap.ref.toString().should.eql(pushed.toString());
+      });
+  });
 });

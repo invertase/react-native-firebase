@@ -55,6 +55,22 @@ describe('database().ref().onDisconnect().update()', () => {
     }
   });
 
+  it('throws if update paths are not valid', async () => {
+    try {
+      await firebase
+        .database()
+        .ref(TEST_PATH)
+        .onDisconnect()
+        .update({
+          $$$$: 'foo',
+        });
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'values' contains an invalid path.`);
+      return Promise.resolve();
+    }
+  });
+
   it('throws if onComplete is not a function', () => {
     const ref = firebase
       .database()
