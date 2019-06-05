@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ml-natural-language",
-  "version": "6.0.0-alpha.23",
+  "version": "6.0.0-alpha.24",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - ML Kit Natural Language",
   "main": "lib/index.js",
@@ -33,8 +33,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.23",
-    "@react-native-firebase/common": "6.0.0-alpha.23"
+    "@react-native-firebase/app-types": "6.0.0-alpha.24",
+    "@react-native-firebase/common": "6.0.0-alpha.24"
   },
   "gitHead": "1f2bd61ae34209638f5fccba99934cd546af9ee9",
   "publishConfig": {
