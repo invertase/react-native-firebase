@@ -22,8 +22,8 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import version from './version';
 import { isFunction } from '@react-native-firebase/common';
+import version from './version';
 
 const statics = {};
 
