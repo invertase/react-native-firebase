@@ -73,7 +73,7 @@ public class UniversalFirebaseDatabaseCommon {
 
       if (preferences.contains(UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE)) {
         firebaseDatabase.setPersistenceCacheSizeBytes(preferences.getLongValue(
-          UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE, 10000000)
+          UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE, 1048576L)
         );
       }
     } catch (DatabaseException exception) {
