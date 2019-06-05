@@ -21,6 +21,7 @@ The following modules are completed and published to NPM on the `alpha` tag read
 | [Instance ID](/packages/iid)                              |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language ](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
 | [Performance Monitoring](/packages/perf)                  |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
+| [Realtime Database](/packages/database)                   |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |            [![badge](https://api.rnfirebase.io/coverage/database/badge)](https://api.rnfirebase.io/coverage/database/detail)            |
 | [Remote Config](/packages/config)                         |              [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)              |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
 | [Utils](/packages/utils)                                  |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)               |               [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)               |
 
@@ -207,7 +208,7 @@ The Remote Config API has had a significant API change as originally highlighted
 
 > **Note**: Multi-apps is not yet supported as the Firebase iOS SDK is missing support for it.
 
-## Storage (storage)
+## Cloud Storage (storage)
 
 <!-- TODO(salakar) change link -->
 
@@ -244,7 +245,9 @@ The Remote Config API has had a significant API change as originally highlighted
 const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
 console.warn(language); // en
 
-const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+const unknownLanguage = await firebase
+  .mlKitLanguage()
+  .identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
 console.warn(language); // und
 ```
 
@@ -256,7 +259,7 @@ console.warn(identifiedLanguages[0].language); // en
 ```
 
 - [NEW] Implemented support for [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
- - [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
+- [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
 
 ```js
 const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
@@ -269,7 +272,11 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 ```
 
 > ML Kit Translate APIs to come in a later release.
-     
+
+## Realtime Database (database)
+
+- CHANGELOG TODO @ehesp
+
 ## Utils
 
 - [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment

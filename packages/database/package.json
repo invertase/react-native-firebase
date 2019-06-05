@@ -19,7 +19,10 @@
     "react",
     "react-native",
     "firebase",
-    "database"
+    "realtime",
+    "database",
+    "synchronized",
+    "realtome database"
   ],
   "peerDependencies": {
     "@react-native-firebase/app": "6.0.0-alpha.22"
