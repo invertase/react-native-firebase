@@ -190,7 +190,7 @@ describe('database()', () => {
     });
 
     it('calls setPersistenceCacheSizeBytes successfully', async () => {
-      firebase.database().setPersistenceCacheSizeBytes(1000000);
+      firebase.database().setPersistenceCacheSizeBytes(1048576); // 1mb
     });
   });
 });
