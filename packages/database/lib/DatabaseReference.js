@@ -31,11 +31,15 @@ import {
   isBoolean,
 } from '@react-native-firebase/common';
 
-import DatabaseQuery, { provideReferenceClass } from './DatabaseQuery';
 import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
-import DatabaseThenableReference from './DatabaseThenableReference';
+import DatabaseQuery, {
+  provideReferenceClass as provideReferenceClassForQuery,
+} from './DatabaseQuery';
+import DatabaseThenableReference, {
+  provideReferenceClass as provideReferenceClassForThenable,
+} from './DatabaseThenableReference';
 
 const internalRefs = ['.info/connected', '.info/serverTimeOffset'];
 
@@ -296,4 +300,5 @@ export default class DatabaseReference extends DatabaseQuery {
 }
 
 // To avoid React Native require cycle warnings
-provideReferenceClass(DatabaseReference);
+provideReferenceClassForQuery(DatabaseReference);
+provideReferenceClassForThenable(DatabaseReference);
