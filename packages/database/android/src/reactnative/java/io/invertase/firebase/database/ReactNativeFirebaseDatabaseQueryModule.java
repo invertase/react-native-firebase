@@ -303,13 +303,13 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     DataSnapshot dataSnapshot,
     @Nullable String previousChildName
   ) {
-    Tasks.call(() -> {
+    Tasks.call(getExecutor(), () -> {
       if (eventType.equals("value")) {
         return snapshotToMap(dataSnapshot);
       } else {
         return snapshotWithPreviousChildToMap(dataSnapshot, previousChildName);
       }
-    }).addOnCompleteListener(task -> {
+    }).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         WritableMap data = task.getResult();
         WritableMap event = Arguments.createMap();
