@@ -2,13 +2,13 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - ML-Kit</h2>
+  <h4 align="center">React Native Firebase - ML Kit Natural Language</h2>
 </p>
 
 <p align="center">
-  <a href="https://api.rnfirebase.io/coverage/mlkit/detail"><img src="https://api.rnfirebase.io/coverage/mlkit/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/mlkit"><img src="https://img.shields.io/npm/dm/@react-native-firebase/mlkit.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/mlkit"><img src="https://img.shields.io/npm/v/@react-native-firebase/mlkit.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://api.rnfirebase.io/coverage/ml-natural-language/detail"><img src="https://api.rnfirebase.io/coverage/ml-natural-language/badge?style=flat-square" alt="Coverage"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-natural-language"><img src="https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-natural-language"><img src="https://img.shields.io/npm/v/@react-native-firebase/ml-natural-language.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg?style=flat-square" alt="Backers on Open Collective"></a>
   <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg?style=flat-square" alt="Sponsors on Open Collective"></a>
@@ -22,11 +22,11 @@
 
 Bring powerful machine learning features to your mobile app whether you're new or experienced in ML. Get started easily by using ready-to-use APIs from Firebase for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
 
-**Supported APIs:**
+**This module supports the following APIs:**
 
-- Vision
-- Custom models
 - Natural Language
+ - Language Identification
+ - Smart Reply Generation
 
 [> Learn More](https://firebase.google.com/products/ml-kit/)
 
@@ -35,15 +35,15 @@ Bring powerful machine learning features to your mobile app whether you're new o
 Requires `@react-native-firebase/app` to be installed.
 
 ```bash
-yarn add @react-native-firebase/mlkit
-react-native link @react-native-firebase/mlkit
+yarn add @react-native-firebase/ml-natural-language
+react-native link @react-native-firebase/ml-natural-language
 ```
 
 ## Documentation
 
  - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=ml-kit)
- - [Installation](https://invertase.io/oss/react-native-firebase/v6/ml-kit)
- - [Reference](https://invertase.io/oss/react-native-firebase/v6/ml-kit/reference)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/ml-natural-reference)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/ml-natural-reference/reference)
 
 ## License
 

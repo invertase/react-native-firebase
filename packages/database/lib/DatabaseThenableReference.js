@@ -17,10 +17,20 @@
 
 import DatabaseReference from './DatabaseReference';
 
-export default class DatabaseThenableReference extends DatabaseReference {
+export default class DatabaseThenableReference {
   constructor(database, path, promise) {
-    super(database, path);
+    this._ref = new DatabaseReference(database, path);
     this._promise = promise;
+
+    return new Proxy(this, {
+      get(target, prop) {
+        if (prop === 'then' || prop === 'catch') {
+          return target[prop];
+        }
+
+        return target._ref[prop];
+      },
+    });
   }
 
   get then() {

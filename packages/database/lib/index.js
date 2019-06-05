@@ -59,11 +59,11 @@ class FirebaseDatabaseModule extends FirebaseModule {
   }
 
   /**
-   * Get the current server time, used to generate data such as database keys
+   *
    * @returns {Date}
    * @private
    */
-  get _serverTime() {
+  getServerTime() {
     return new Date(Date.now() + this._serverTimeOffset);
   }
 
@@ -161,15 +161,15 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    if (bytes < 1000000) {
+    if (bytes < 1048576) {
       throw new Error(
-        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be greater than 1000000 (1MB).`,
+        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be greater than 1048576 bytes (1MB).`,
       );
     }
 
-    if (bytes > 100000000) {
+    if (bytes > 104857600) {
       throw new Error(
-        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be less than 100000000 (10MB).`,
+        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be less than 104857600 bytes (100MB).`,
       );
     }
 

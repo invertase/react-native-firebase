@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Database</h2>
+  <h4 align="center">React Native Firebase - Realtime Database</h2>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
-Database description.
+The Firebase Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected client. When you build cross-platform apps with our React Native SDK, all of your clients share one Realtime Database instance and automatically receive updates with the newest data.
 
 [> Learn More](https://firebase.google.com/products/database/)
 
@@ -35,9 +35,10 @@ react-native link @react-native-firebase/database
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=database)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/database)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/database/reference)
+
 
 ## License
 

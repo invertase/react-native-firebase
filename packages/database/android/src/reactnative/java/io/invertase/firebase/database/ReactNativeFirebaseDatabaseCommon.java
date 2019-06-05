@@ -19,12 +19,7 @@ package io.invertase.firebase.database;
 
 
 import android.util.Log;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
 

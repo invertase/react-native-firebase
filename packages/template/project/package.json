@@ -1,6 +1,6 @@
 {
   "name": "HelloWorld",
-  "version": "6.0.0-alpha.22",
+  "version": "6.0.0-alpha.24",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -11,14 +11,14 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/app": "^6.0.0-alpha.22",
+    "@react-native-firebase/app": "^6.0.0-alpha.24",
     "react": "16.8.1",
     "react-native": "0.59.8"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/runtime": "^7.3.1",
-    "@react-native-community/cli": "2.0.0-alpha.22",
+    "@react-native-community/cli": "2.0.0-alpha.23",
     "@react-native-community/eslint-config": "^0.0.3",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",

@@ -21,10 +21,9 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import java.util.Map;
-
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
