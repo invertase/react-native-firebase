@@ -15,7 +15,11 @@
  *
  */
 
-import DatabaseReference from './DatabaseReference';
+// To avoid React Native require cycle warnings
+let DatabaseReference = null;
+export function provideReferenceClass(databaseReference) {
+  DatabaseReference = databaseReference;
+}
 
 export default class DatabaseThenableReference {
   constructor(database, path, promise) {
