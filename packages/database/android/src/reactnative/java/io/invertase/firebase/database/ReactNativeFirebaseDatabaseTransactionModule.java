@@ -18,23 +18,16 @@ package io.invertase.firebase.database;
  */
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-
-import javax.annotation.Nonnull;
-
+import com.google.firebase.database.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+
+import javax.annotation.Nonnull;
 
 import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
@@ -109,7 +102,6 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
             app,
             transactionId
           ));
-
 
           transactionHandlers.delete(transactionId);
         }
