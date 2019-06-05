@@ -22,6 +22,7 @@ import {
   isNumber,
   isObject,
   isString,
+  isValidPath,
   isUndefined,
   promiseWithOptionalCallback,
 } from '@react-native-firebase/common';
@@ -125,7 +126,14 @@ export default class DatabaseOnDisconnect {
       );
     }
 
-    // TODO validate keys; / . # $ |
+    const keys = Object.keys(values);
+    for (let i = 0; i < keys.length; i++) {
+      if (!isValidPath(keys[i])) {
+        throw new Error(
+          `firebase.database().onDisconnect().update(*) 'values' contains an invalid path. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+        );
+      }
+    }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(

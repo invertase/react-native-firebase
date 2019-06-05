@@ -16,7 +16,7 @@ const lastRandChars = [];
  * @param serverTimeOffset - pass in server time offset from native side
  * @returns {string}
  */
-export function generateDatabaseId(serverTimeOffset = 0): string {
+export function generateDatabaseId(serverTimeOffset = 0) {
   const timeStampChars = new Array(8);
   let now = new Date().getTime() + serverTimeOffset;
   const duplicateTime = now === lastPushTime;

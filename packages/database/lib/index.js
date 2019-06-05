@@ -59,11 +59,11 @@ class FirebaseDatabaseModule extends FirebaseModule {
   }
 
   /**
-   * Get the current server time, used to generate data such as database keys
+   *
    * @returns {Date}
    * @private
    */
-  get _serverTime() {
+  getServerTime() {
     return new Date(Date.now() + this._serverTimeOffset);
   }
 
