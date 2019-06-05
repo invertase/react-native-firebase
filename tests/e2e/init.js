@@ -41,6 +41,7 @@ const PACKAGES = [
   'auth',
   'database',
   'storage',
+  'indexing',
   // 'firestore',
   // 'links',
   // 'messaging',
