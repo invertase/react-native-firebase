@@ -27,6 +27,8 @@
 
 - (NSDictionary *)getAll;
 
+- (NSString *)getRawJSON;
+
 + (RNFBJSON *)shared;
 
 @end

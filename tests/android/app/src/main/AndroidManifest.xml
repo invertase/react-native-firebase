@@ -113,6 +113,17 @@
           android:host="je786.app.goo.gl"
           android:scheme="https" />
       </intent-filter>
+      <!-- App Indexing Test -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data
+          android:host="foo.bar"
+          android:scheme="invertase" />
+      </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
   </application>

@@ -2,6 +2,8 @@ rootProject.name = '@react-native-firebase_tests'
 
 def firebasePackages = [
   'app',
+  'auth',
+  'database',
   'analytics',
   'config',
   'crashlytics',
@@ -9,7 +11,7 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
-  'mlkit',
+  'ml-natural-language',
   'storage',
   'perf',
   'links',

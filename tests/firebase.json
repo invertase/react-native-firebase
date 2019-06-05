@@ -3,7 +3,17 @@
     "crashlytics_ndk_enabled": true,
     "crashlytics_debug_enabled": true,
     "crashlytics_auto_collection_enabled": true,
+    "ml_natural_language_language_id_model" : true,
+    "ml_natural_language_smart_reply_model" : true,
+    "ml_vision_face_model" : true,
+    "ml_vision_image_label_model" : true,
+    "ml_vision_object_detection_model" : true,
+    "ml_vision_ica_model" : true,
+    "ml_vision_ocr_model" : true,
+    "ml_vision_barcode_model" : true,
 
+
+    "TODO_ml_natural_language_translate_model" : true,
     "TODO_analytics_auto_collection_enabled": true,
     "TODO_perf_auto_collection_enabled": true,
     "TODO_fiam_auto_collection_enabled": true,

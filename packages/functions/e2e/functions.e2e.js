@@ -26,10 +26,6 @@ describe('functions()', () => {
       app.functions().httpsCallable.should.be.a.Function();
     });
 
-    xit('throws if app arg provided to firebase.functions(APP)', {
-      // TODO
-    });
-
     it('accepts passing in an FirebaseApp instance as first arg', async () => {
       const appName = `functionsApp${FirebaseHelpers.id}1`;
       const platformAppConfig = FirebaseHelpers.app.config();

@@ -28,7 +28,6 @@ let FIREBASE_ROOT = null;
 
 const NAMESPACE_REGISTRY = {};
 const APP_MODULE_INSTANCE = {};
-const ROOT_MODULE_INSTANCE = {};
 const MODULE_GETTER_FOR_APP = {};
 const MODULE_GETTER_FOR_ROOT = {};
 
@@ -158,18 +157,18 @@ function getOrCreateModuleForRoot(moduleNamespace) {
       );
     }
 
-    if (!ROOT_MODULE_INSTANCE[_app.name]) {
-      ROOT_MODULE_INSTANCE[_app.name] = {};
+    if (!APP_MODULE_INSTANCE[_app.name]) {
+      APP_MODULE_INSTANCE[_app.name] = {};
     }
 
-    if (!ROOT_MODULE_INSTANCE[_app.name][moduleNamespace]) {
-      ROOT_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
+    if (!APP_MODULE_INSTANCE[_app.name][moduleNamespace]) {
+      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
         _app,
         NAMESPACE_REGISTRY[moduleNamespace],
       );
     }
 
-    return ROOT_MODULE_INSTANCE[_app.name][moduleNamespace];
+    return APP_MODULE_INSTANCE[_app.name][moduleNamespace];
   }
 
   Object.assign(firebaseModuleWithApp, statics || {});

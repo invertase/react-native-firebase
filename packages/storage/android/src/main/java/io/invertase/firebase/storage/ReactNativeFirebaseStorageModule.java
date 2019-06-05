@@ -104,7 +104,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @ReactMethod
   public void getMetadata(String appName, String url, Promise promise) {
     StorageReference reference = getReferenceFromUrl(url, appName);
-    reference.getMetadata().addOnCompleteListener(task -> {
+    reference.getMetadata().addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
       } else {
@@ -126,7 +126,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     StorageReference reference = getReferenceFromUrl(url, appName);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
 
-    reference.updateMetadata(metadata).addOnCompleteListener(task -> {
+    reference.updateMetadata(metadata).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
       } else {
@@ -196,8 +196,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(localFilePath);
-    storageTask.addOnCompleteListener(promise);
+    storageTask.begin(getExecutor(), localFilePath);
+    storageTask.addOnCompleteListener(getExecutor(), promise);
   }
 
   /**
@@ -219,8 +219,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(string, format, metadataMap);
-    storageTask.addOnCompleteListener(promise);
+    storageTask.begin(getExecutor(), string, format, metadataMap);
+    storageTask.addOnCompleteListener(getExecutor(),promise);
   }
 
   /**
@@ -241,8 +241,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(localFilePath, metadata);
-    storageTask.addOnCompleteListener(promise);
+    storageTask.begin(getExecutor(),localFilePath, metadata);
+    storageTask.addOnCompleteListener(getExecutor(), promise);
   }
 
   @ReactMethod

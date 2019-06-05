@@ -18,10 +18,11 @@ import { Platform } from 'react-native';
 import { isString } from './validate';
 import Base64 from './Base64';
 
+export * from './id';
 export * from './path';
 export * from './validate';
+export * from './promise';
 export Base64 from './Base64';
-export promiseDefer from './promiseDefer';
 export ReferenceBase from './ReferenceBase';
 
 export function getDataUrlParts(dataUrlString) {
@@ -74,3 +75,19 @@ export function stripTrailingSlash(string) {
 export const isIOS = Platform.OS === 'ios';
 
 export const isAndroid = Platform.OS === 'android';
+
+export function tryJSONParse(string) {
+  try {
+    return string && JSON.parse(string);
+  } catch (jsonError) {
+    return string;
+  }
+}
+
+export function tryJSONStringify(data: mixed): string | null {
+  try {
+    return JSON.stringify(data);
+  } catch (jsonError) {
+    return null;
+  }
+}

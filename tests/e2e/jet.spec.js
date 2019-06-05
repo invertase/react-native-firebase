@@ -17,7 +17,7 @@
 
 const should = require('should');
 
-describe('jet', () => {
+xdescribe('jet', () => {
   // beforeEach(async function beforeEach() {
   // await device.reloadReactNative();
   // jet.root.setState({ message: this.currentTest.title });

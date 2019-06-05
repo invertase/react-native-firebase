@@ -188,8 +188,8 @@
     - text: Migrate to Dynamic Links
       to: "/migrate-to-dynamic-links"
 
-- module: ml-kit
-  group: ML Kit
+- module: ml-natural-language
+  group: ML Kit Natural Language
   children:
     - text: Overview
       to: "/"

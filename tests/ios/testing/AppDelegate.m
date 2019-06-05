@@ -21,11 +21,15 @@
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
 #import <RNFBInvites/RNFBInvitesModule.h>
+#import <React/RCTLinkingManager.h>
 
 @import Firebase;
 
 @implementation AppDelegate
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if ([FIRApp defaultApp] == nil) {
+      [FIRApp configure];
+    }
     [FIRApp configureWithName:@"secondaryFromNative" options:[FIROptions defaultOptions]];
     NSURL *jsCodeLocation;
     jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
@@ -46,8 +50,13 @@
   }
 
   - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-    return [RNFBInvitesModule application:application openURL:url options:options];
+//    if ([RNFBInvitesModule application:application openURL:url options:options]) {
+//      return YES;
+//    }
+
+    return [RCTLinkingManager application:application openURL:url options:options];
   }
+
 
   - (BOOL)application:(nonnull UIApplication *)application continueUserActivity :(nonnull NSUserActivity *)userActivity restorationHandler:
     #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
@@ -55,7 +64,10 @@
     #else
       (nonnull void (^)(NSArray *_Nullable))restorationHandler {
     #endif
-    return [RNFBInvitesModule application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+//    return [RNFBInvitesModule application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    return [RCTLinkingManager application:application
+                     continueUserActivity:userActivity
+                       restorationHandler:restorationHandler];
   }
 
 

@@ -48,11 +48,11 @@ export function setOnAppDestroy(fn) {
  */
 export function initializeNativeApps() {
   const nativeModule = getAppModule();
-  const { apps } = nativeModule;
+  const { NATIVE_FIREBASE_APPS } = nativeModule;
 
-  if (apps && apps.length) {
-    for (let i = 0; i < apps.length; i++) {
-      const { appConfig, options } = apps[i];
+  if (NATIVE_FIREBASE_APPS && NATIVE_FIREBASE_APPS.length) {
+    for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {
+      const { appConfig, options } = NATIVE_FIREBASE_APPS[i];
       const { name } = appConfig;
       APP_REGISTRY[name] = new FirebaseApp(
         options,
@@ -90,6 +90,7 @@ export function getApp(name = DEFAULT_APP_NAME) {
  * Gets all app instances, used for `firebase.apps`
  */
 export function getApps() {
+  if (!initializedNativeApps) initializeNativeApps();
   return Object.values(APP_REGISTRY);
 }
 

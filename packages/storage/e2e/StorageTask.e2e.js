@@ -581,7 +581,7 @@ describe('storage() -> StorageTask', () => {
 
       await firebase
         .storage()
-        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif')
+        .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
         .getFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
 
       const ref = firebase.storage().ref('/uploadCat.gif');

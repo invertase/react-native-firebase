@@ -36,14 +36,16 @@ const PACKAGES = [
   'config',
   'crashlytics',
   'utils',
-  // 'mlkit',
+  'ml-natural-language',
   'invites',
   'fiam',
-  // 'auth',
+  'auth',
+  'database',
+  'storage',
+  'indexing',
   // 'firestore',
   // 'links',
   // 'messaging',
-  'storage',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
