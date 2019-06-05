@@ -5,12 +5,13 @@ description: Firebase provides a google-services.json file containing your Fireb
 
 # Adding Firebase credentials to your Android app
 
-Firebase provides a `google-services.json` file containing a set of credentials for Android devices. React Native Firebase uses this file
-to ensure any connection to a Firebase project is genuine. 
+Firebase provides a `google-services.json` file containing a set of credentials for Android devices to use when authenticating with your Firebase project.
+
+We'll quickly walk through the process of retrieving this file and installing it into your Android project.
 
 ## Generating the credentials
 
-The credential file is generated automatically from the Firebase [console](https://console.firebase.google.com/).
+The credential file is generated from the Firebase [console](https://console.firebase.google.com/).
 
 - Select your Firebase project.
 - Go to the general project settings: 'Project settings' -> 'General'.
