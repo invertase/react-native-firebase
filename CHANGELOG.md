@@ -285,6 +285,15 @@ The Realtime Database module has had a large re-write, fixing various inconsiste
 - [NEW] Many methods were missing an `onComplete` handler, which is now implemented as per the Web SDK.
 - [BUGFIX] `DatabaseSnapshot.forEach` correct iterates over "array" fields in the database.
 
+## App Indexing (indexing) - **[NEW]**
+
+Support for handling an incoming app index URL has been added to React Native Firebase.
+
+- [NEW] Handle the app opening via an app indexing URL with `indexing().getInitialURL()`.
+- [NEW] Setup a realtime event listener to handle app indexing URL opening whilst the app is active with `indexing().onOpenURL()`.
+
+> Support for Android events will be integrated post-v6 release.
+
 ## Utils
 
 - [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment
