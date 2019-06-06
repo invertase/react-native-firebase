@@ -23,7 +23,7 @@ import DynamicLinkNavigationParameters from './DynamicLinkNavigationParameters';
 import DynamicLinkSocialParameters from './DynamicLinkSocialParameters';
 import MutatableParams from './MutatableParams';
 
-export default class DynamicLink extends MutatableParams {
+export default class DynamicLinkParameters extends MutatableParams {
   constructor(link, domainURIPrefix) {
     super();
     this._link = link;
