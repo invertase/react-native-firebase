@@ -298,19 +298,16 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
     builder.setSocialMetaTagParameters(socialBuilder.build());
   }
 
-
   @Override
   public void onHostDestroy() {
     initialLinkValue = null;
     gotInitialLink = false;
   }
 
-
   private boolean isNotInvite(PendingDynamicLinkData pendingDynamicLinkData) {
     FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
     return invite == null || invite.getInvitationId() == null || invite.getInvitationId().isEmpty();
   }
-
 
   @Override
   public void onNewIntent(Intent intent) {
