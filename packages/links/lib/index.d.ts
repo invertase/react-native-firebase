@@ -273,7 +273,7 @@ export namespace Links {
     // DynamicLink: DynamicLink;
   }
 
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Builds a dynamic link.
      *
@@ -283,7 +283,7 @@ export namespace Links {
      * @param link The link the target app will open. You can specify any URL the app can handle, such as a link to the app’s content, or a URL that initiates some app-specific logic such as crediting the user with a coupon, or displaying a specific welcome screen. This link must be a well-formatted URL, be properly URL-encoded, and use the HTTP or HTTPS scheme.
      * @param domainURIPrefix Domain URI Prefix of your App. This value must be your assigned domain from the Firebase console. (e.g. https://xyz.page.link) The domain URI prefix must start with a valid HTTPS scheme (https://).
      */
-    newDynamicLink(link, domainURIPrefix): DynamicLink;
+    newDynamicLink(link: string, domainURIPrefix: string): DynamicLink;
     /**
      * Creates a standard dynamic link.
      *

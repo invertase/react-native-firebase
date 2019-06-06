@@ -75,6 +75,10 @@
 	<false/>
 	<key>rnfirebase_meta_testing_boolean_true</key>
 	<true/>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://invertase.io/links-test</string>
+	</array>
 	<key>rnfirebase_meta_testing_string</key>
 	<string>abc</string>
 </dict>

@@ -25,6 +25,8 @@
 
 RCT_EXPORT_MODULE();
 
+@synthesize bridge = _bridge;
+
 #pragma mark -
 #pragma mark Firebase Links Methods
 
@@ -32,7 +34,27 @@ RCT_EXPORT_METHOD(buildLink:
   (NSDictionary *) dynamicLinkDict
     :(RCTPromiseResolveBlock)resolve
     :(RCTPromiseRejectBlock)reject) {
-  // TODO
+  FIRDynamicLinkComponents *linkComponents;
+
+  @try {
+    linkComponents = [self createDynamicLinkComponents:dynamicLinkDict];
+  } @catch (NSException *exception) {
+    DLog(@"Building dynamic link failed %@", exception);
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+        @"code": @"build-failed",
+        @"message": [exception description],
+    }];
+    return;
+  }
+
+  if (!linkComponents || !linkComponents.url) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+        @"code": @"build-failed",
+        @"message": @"Failed to build dynamic link for unknown reason",
+    }];
+  }
+
+  resolve(linkComponents.url.absoluteString);
 }
 
 RCT_EXPORT_METHOD(buildShortLink:
@@ -40,7 +62,41 @@ RCT_EXPORT_METHOD(buildShortLink:
     :(NSString *)shortLinkType
     :(RCTPromiseResolveBlock)resolve
     :(RCTPromiseRejectBlock)reject) {
-  // TODO
+  FIRDynamicLinkComponents *linkComponents;
+
+  @try {
+    linkComponents = [self createDynamicLinkComponents:dynamicLinkDict];
+  } @catch (NSException *exception) {
+    DLog(@"Building short dynamic link failed %@", exception);
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+        @"code": @"build-failed",
+        @"message": [exception description],
+    }];
+    return;
+  }
+
+  FIRDynamicLinkComponentsOptions *componentsOptions = [FIRDynamicLinkComponentsOptions options];
+
+  if ([shortLinkType isEqual:@"SHORT"]) {
+    componentsOptions.pathLength = FIRShortDynamicLinkPathLengthShort;
+  } else if ([shortLinkType isEqual:@"UNGUESSABLE"]) {
+    componentsOptions.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
+  } else {
+    componentsOptions.pathLength = FIRShortDynamicLinkPathLengthDefault;
+  }
+
+
+  [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
+    if (error) {
+      DLog(@"Building short dynamic link failed %@", error);
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"build-failed",
+          @"message": [error localizedDescription],
+      }];
+    } else {
+      resolve(shortURL.absoluteString);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(getInitialLink:
@@ -88,7 +144,150 @@ RCT_EXPORT_METHOD(getInitialLink:
 }
 
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {
+  NSURL *link = [NSURL URLWithString:dynamicLinkDict[@"link"]];
+  FIRDynamicLinkComponents *linkComponents = [FIRDynamicLinkComponents componentsWithLink:link domainURIPrefix:dynamicLinkDict[@"domainUriPrefix"]];
 
+  [self buildAnalyticsParameters:dynamicLinkDict[@"analytics"] components:linkComponents];
+  [self buildAndroidParameters:dynamicLinkDict[@"android"] components:linkComponents];
+  [self buildIosParameters:dynamicLinkDict[@"ios"] components:linkComponents];
+  [self buildItunesParameters:dynamicLinkDict[@"itunes"] components:linkComponents];
+  [self buildNavigationParameters:dynamicLinkDict[@"navigation"] components:linkComponents];
+  [self buildSocialParameters:dynamicLinkDict[@"social"] components:linkComponents];
+
+  return linkComponents;
+}
+
+
+- (void)buildAnalyticsParameters:(NSDictionary *)analyticsDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (analyticsDict == nil) return;
+
+  FIRDynamicLinkGoogleAnalyticsParameters *analyticsParams = [FIRDynamicLinkGoogleAnalyticsParameters parameters];
+
+  if (analyticsDict[@"campaign"]) {
+    analyticsParams.campaign = analyticsDict[@"campaign"];
+  }
+
+  if (analyticsDict[@"content"]) {
+    analyticsParams.content = analyticsDict[@"content"];
+  }
+
+  if (analyticsDict[@"medium"]) {
+    analyticsParams.medium = analyticsDict[@"medium"];
+  }
+
+  if (analyticsDict[@"source"]) {
+    analyticsParams.source = analyticsDict[@"source"];
+  }
+
+  if (analyticsDict[@"term"]) {
+    analyticsParams.term = analyticsDict[@"term"];
+  }
+
+  linkComponents.analyticsParameters = analyticsParams;
+}
+
+- (void)buildAndroidParameters:(NSDictionary *)androidDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (androidDict == nil) return;
+
+  FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters parametersWithPackageName:androidDict[@"packageName"]];
+
+  if (androidDict[@"fallbackUrl"]) {
+    androidParams.fallbackURL = [NSURL URLWithString:androidDict[@"fallbackUrl"]];
+  }
+
+  if (androidDict[@"minimumVersion"]) {
+    androidParams.minimumVersion = [androidDict[@"minimumVersion"] integerValue];
+  }
+
+  linkComponents.androidParameters = androidParams;
+}
+
+- (void)buildIosParameters:(NSDictionary *)iosDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (iosDict == nil) return;
+
+  FIRDynamicLinkIOSParameters *iOSParams = [FIRDynamicLinkIOSParameters parametersWithBundleID:iosDict[@"bundleId"]];
+
+  if (iosDict[@"appStoreId"]) {
+    iOSParams.appStoreID = iosDict[@"appStoreId"];
+  }
+
+  if (iosDict[@"customScheme"]) {
+    iOSParams.customScheme = iosDict[@"customScheme"];
+  }
+
+  if (iosDict[@"fallbackUrl"]) {
+    iOSParams.fallbackURL = [NSURL URLWithString:iosDict[@"fallbackUrl"]];
+  }
+
+  if (iosDict[@"iPadBundleId"]) {
+    iOSParams.iPadBundleID = iosDict[@"iPadBundleId"];
+  }
+
+  if (iosDict[@"iPadFallbackUrl"]) {
+    iOSParams.iPadFallbackURL = [NSURL URLWithString:iosDict[@"iPadFallbackUrl"]];
+  }
+
+  if (iosDict[@"minimumVersion"]) {
+    iOSParams.minimumAppVersion = iosDict[@"minimumVersion"];
+  }
+
+  linkComponents.iOSParameters = iOSParams;
+}
+
+- (void)buildItunesParameters:(NSDictionary *)itunesDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (itunesDict == nil) return;
+
+  FIRDynamicLinkItunesConnectAnalyticsParameters *itunesParams = [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
+
+  if (itunesDict[@"affiliateToken"]) {
+    itunesParams.affiliateToken = itunesDict[@"affiliateToken"];
+  }
+
+  if (itunesDict[@"campaignToken"]) {
+    itunesParams.campaignToken = itunesDict[@"campaignToken"];
+  }
+
+  if (itunesDict[@"providerToken"]) {
+    itunesParams.providerToken = itunesDict[@"providerToken"];
+  }
+
+  linkComponents.iTunesConnectParameters = itunesParams;
+}
+
+- (void)buildNavigationParameters:(NSDictionary *)navigationDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (navigationDict == nil) return;
+
+  FIRDynamicLinkNavigationInfoParameters *navigationParams = [FIRDynamicLinkNavigationInfoParameters parameters];
+
+  if (navigationDict[@"forcedRedirectEnabled"]) {
+    navigationParams.forcedRedirectEnabled = [navigationDict[@"forcedRedirectEnabled"] boolValue];
+  }
+
+  linkComponents.navigationInfoParameters = navigationParams;
+}
+
+- (void)buildSocialParameters:(NSDictionary *)socialDict components:(FIRDynamicLinkComponents *)linkComponents {
+  if (socialDict == nil) return;
+
+  FIRDynamicLinkSocialMetaTagParameters *socialParams = [FIRDynamicLinkSocialMetaTagParameters parameters];
+  if (socialDict[@"descriptionText"]) {
+    socialParams.descriptionText = socialDict[@"descriptionText"];
+  }
+
+  if (socialDict[@"imageUrl"]) {
+    socialParams.imageURL = [NSURL URLWithString:socialDict[@"imageUrl"]];
+  }
+
+  if (socialDict[@"title"]) {
+    socialParams.title = socialDict[@"title"];
+  }
+
+  linkComponents.socialMetaTagParameters = socialParams;
+}
+
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[];
 }
 
 @end

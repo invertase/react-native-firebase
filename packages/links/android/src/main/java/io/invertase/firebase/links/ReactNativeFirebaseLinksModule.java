@@ -86,14 +86,14 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
       .addOnCompleteListener(getExecutor(), (task) -> {
         if (task.isSuccessful()) {
           // TODO implement after v6
-//          WritableMap shortLinkMap = Arguments.createMap();
-//          WritableArray shortLinkWarnings = Arguments.createArray();
-//          List<? extends ShortDynamicLink.Warning> warningsList = task.getResult().getWarnings();
-//          for (ShortDynamicLink.Warning warning : warningsList) {
-//            shortLinkWarnings.pushString(warning.getMessage());
-//          }
-//          shortLinkMap.putArray("warnings", shortLinkWarnings);
-//          shortLinkMap.putString("link", task.getResult().getShortLink().toString());
+          // WritableMap shortLinkMap = Arguments.createMap();
+          // WritableArray shortLinkWarnings = Arguments.createArray();
+          // List<? extends ShortDynamicLink.Warning> warningsList = task.getResult().getWarnings();
+          // for (ShortDynamicLink.Warning warning : warningsList) {
+          //   shortLinkWarnings.pushString(warning.getMessage());
+          // }
+          // shortLinkMap.putArray("warnings", shortLinkWarnings);
+          // shortLinkMap.putString("link", task.getResult().getShortLink().toString());
 
           promise.resolve(task.getResult().getShortLink().toString());
         } else {

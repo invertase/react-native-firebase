@@ -28,23 +28,23 @@ const { detox: config } = require('../package.json');
 
 const PACKAGES = [
   'app',
-  'iid',
-  'perf',
-  'fiam',
-  'functions',
-  'analytics',
-  'config',
-  'crashlytics',
-  'utils',
-  'ml-natural-language',
-  'invites',
-  'fiam',
-  'auth',
-  'database',
-  'storage',
-  'indexing',
+  'links',
+  // 'iid',
+  // 'perf',
+  // 'fiam',
+  // 'functions',
+  // 'analytics',
+  // 'config',
+  // 'crashlytics',
+  // 'utils',
+  // 'ml-natural-language',
+  // 'invites',
+  // 'fiam',
+  // 'auth',
+  // 'database',
+  // 'storage',
+  // 'indexing',
   // 'firestore',
-  // 'links',
   // 'messaging',
 ];
 
@@ -84,4 +84,5 @@ beforeEach(async function beforeEach() {
 after(async () => {
   console.log('Cleaning up...');
   await device.terminateApp();
+  await detox.cleanup();
 });
