@@ -55,7 +55,7 @@ import {
  * // firebase.mlKitLanguage().X
  * ```
  *
- * @firebase mlKitLanguage
+ * @firebase ml-natural-language
  */
 export namespace MlKitLanguage {
   export interface Statics {}

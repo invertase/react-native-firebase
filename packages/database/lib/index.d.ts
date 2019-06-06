@@ -1038,7 +1038,7 @@ export namespace Database {
    * ```
    *
    */
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * Returns the current Firebase Database server time as a JavaScript Date object.
      */
