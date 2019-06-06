@@ -1,62 +1,71 @@
-import AnalyticsParameters from './AnalyticsParameters';
-import AndroidParameters from './AndroidParameters';
-import IOSParameters from './IOSParameters';
-import ITunesParameters from './ITunesParameters';
-import NavigationParameters from './NavigationParameters';
-import SocialParameters from './SocialParameters';
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
-export default class DynamicLink {
-  constructor(link, dynamicLinkDomain) {
-    this._analytics = new AnalyticsParameters(this);
-    this._android = new AndroidParameters(this);
-    this._dynamicLinkDomain = dynamicLinkDomain;
-    this._ios = new IOSParameters(this);
-    this._itunes = new ITunesParameters(this);
+import DynamicLinkAnalyticsParameters from './DynamicLinkAnalyticsParameters';
+import DynamicLinkAndroidParameters from './DynamicLinkAndroidParameters';
+import DynamicLinkIOSParameters from './DynamicLinkIOSParameters';
+import DynamicLinkItunesParameters from './DynamicLinkItunesParameters';
+import DynamicLinkNavigationParameters from './DynamicLinkNavigationParameters';
+import DynamicLinkSocialParameters from './DynamicLinkSocialParameters';
+import MutatableParams from './MutatableParams';
+
+export default class DynamicLink extends MutatableParams {
+  constructor(link, domainURIPrefix) {
+    super();
     this._link = link;
-    this._navigation = new NavigationParameters(this);
-    this._social = new SocialParameters(this);
+    this._domainURIPrefix = domainURIPrefix;
   }
 
   get analytics() {
-    return this._analytics;
+    return new DynamicLinkAnalyticsParameters(this);
   }
 
   get android() {
-    return this._android;
+    return new DynamicLinkAndroidParameters(this);
   }
 
   get ios() {
-    return this._ios;
+    return new DynamicLinkIOSParameters(this);
   }
 
   get itunes() {
-    return this._itunes;
+    return new DynamicLinkItunesParameters(this);
   }
 
   get navigation() {
-    return this._navigation;
+    return new DynamicLinkNavigationParameters(this);
   }
 
   get social() {
-    return this._social;
+    return new DynamicLinkSocialParameters(this);
   }
 
   build() {
-    if (!this._link) {
-      throw new Error('DynamicLink: Missing required `link` property');
-    } else if (!this._dynamicLinkDomain) {
-      throw new Error('DynamicLink: Missing required `dynamicLinkDomain` property');
-    }
+    if (this.get('analytics')) this.analytics.validate();
+    if (this.get('android')) this.android.validate();
+    if (this.get('ios')) this.ios.validate();
+    if (this.get('itunes')) this.itunes.validate();
+    if (this.get('navigation')) this.navigation.validate();
+    if (this.get('social')) this.social.validate();
 
     return {
-      analytics: this._analytics.build(),
-      android: this._android.build(),
-      dynamicLinkDomain: this._dynamicLinkDomain,
-      ios: this._ios.build(),
-      itunes: this._itunes.build(),
       link: this._link,
-      navigation: this._navigation.build(),
-      social: this._social.build(),
+      domainURIPrefix: this._domainURIPrefix,
+      ...this.toJSON(),
     };
   }
 }

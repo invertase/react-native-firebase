@@ -29,8 +29,8 @@ project.ext {
       ],
 
       firebase          : [
-        links: "16.1.8",
-        invites: "16.1.8"
+        'dynamic-links': "17.0.0",
+        invites: "17.0.0"
       ],
     ],
   ])
@@ -57,7 +57,8 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase_app')
-  implementation "com.google.firebase:firebase-dynamic-links:${ReactNative.ext.getVersion("firebase", "links")}"
+  implementation "com.google.firebase:firebase-invites:${ReactNative.ext.getVersion("firebase", "invites")}"
+  implementation "com.google.firebase:firebase-dynamic-links:${ReactNative.ext.getVersion("firebase", "dynamic-links")}"
   implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
 }
 

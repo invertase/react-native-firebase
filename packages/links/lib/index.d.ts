@@ -29,12 +29,6 @@ import {
 export namespace Links {
   export interface AnalyticsParameters {
     /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new (link: DynamicLink): AnalyticsParameters;
-
-    /**
      * Sets the campaign name.
      *
      * @param campaign The campaign name; The individual campaign name, slogan, promo code, etc. for a product.
@@ -71,18 +65,12 @@ export namespace Links {
     setTerm(term?: string): DynamicLink;
 
     /**
-     * Returns the current AnalyticsParameters object.
+     * Returns the current DynamicLinkAnalyticsParameters object.
      */
     build(): Object;
   }
 
   export interface AndroidParameters {
-    /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new(link: DynamicLink): AndroidParameters;
-
     /**
      * Sets the link to open when the app isn't installed. Specify this to do something other than install your app from
      * the Play Store when the app isn't installed, such as open the mobile web version of the content, or display a
@@ -107,18 +95,12 @@ export namespace Links {
     setPackageName(packageName?: string): DynamicLink;
 
     /**
-     * Returns the current AndroidParameters object.
+     * Returns the current DynamicLinkAndroidParameters object.
      */
     build(): Object;
   }
 
   export interface IOSParameters {
-    /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new(link: DynamicLink): IOSParameters;
-
     /**
      * Sets the App Store ID, used to send users to the App Store when the app isn't installed.
      *
@@ -174,18 +156,12 @@ export namespace Links {
     setMinimumVersion(minimumVersion?: string): DynamicLink;
 
     /**
-     * Returns the current IOSParameters object.
+     * Returns the current DynamicLinkIOSParameters object.
      */
     build(): Object;
   }
 
   export interface ITunesParameters {
-    /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new (link: DynamicLink): IOSParameters;
-
     /**
      * Sets the affiliate token.
      *
@@ -208,18 +184,12 @@ export namespace Links {
     setProviderToken(providerToken?: string): DynamicLink;
 
     /**
-     * Returns the current IOSParameters object.
+     * Returns the current DynamicLinkIOSParameters object.
      */
     build(): Object;
   }
 
   export interface NavigationParameters {
-    /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new(link: DynamicLink): NavigationParameters;
-
     /**
      * Sets whether to enable force redirecting or going to the app preview page. Defaults to false.
      *
@@ -228,18 +198,12 @@ export namespace Links {
     setForcedRedirectEnabled(forcedRedirectEnabled?: boolean): DynamicLink;
 
     /**
-     * Returns the current IOSParameters object.
+     * Returns the current DynamicLinkIOSParameters object.
      */
     build(): Object;
   }
 
   export interface SocialParameters {
-    /**
-     *
-     * @param link A DynamicLink instance.
-     */
-    new(link: DynamicLink): SocialParameters;
-
     /**
      * Sets the meta-tag description.
      *
@@ -262,23 +226,12 @@ export namespace Links {
     setTitle(title?: string): DynamicLink;
 
     /**
-     * Returns the current SocialParameters object.
+     * Returns the current DynamicLinkSocialParameters object.
      */
     build(): Object;
   }
 
   export interface DynamicLink {
-    /**
-     * Builds a dynamic link.
-     *
-     * To create a DynamicLink, first populate it by using the setX methods available on the properties described below,
-     * then pass it to `firebase.links().createDynamicLink(link)` or `firebase.links().createShortDynamicLink(link)`.
-     *
-     * @param link The link the target app will open. You can specify any URL the app can handle, such as a link to the app’s content, or a URL that initiates some app-specific logic such as crediting the user with a coupon, or displaying a specific welcome screen. This link must be a well-formatted URL, be properly URL-encoded, and use the HTTP or HTTPS scheme.
-     * @param dynamicLinkDomain The Firebase project’s Dynamic Links domain. You can find this value in the Dynamic Links section of the Firebase console.
-     */
-    new(link: string, dynamicLinkDomain: string): DynamicLink;
-
     /**
      * Access Google Analytics specific link properties.
      */
@@ -316,10 +269,21 @@ export namespace Links {
   }
 
   export interface Statics {
-    DynamicLink: DynamicLink;
+    // TODO deprecate
+    // DynamicLink: DynamicLink;
   }
 
   export interface Module extends ReactNativeFirebaseModule {
+    /**
+     * Builds a dynamic link.
+     *
+     * To create a DynamicLink, first populate it by using the setX methods available on the `DynamicLink` builder classes,
+     * then pass it to `firebase.links().buildLink(link)` or `firebase.links().buildLink(link)`.
+     *
+     * @param link The link the target app will open. You can specify any URL the app can handle, such as a link to the app’s content, or a URL that initiates some app-specific logic such as crediting the user with a coupon, or displaying a specific welcome screen. This link must be a well-formatted URL, be properly URL-encoded, and use the HTTP or HTTPS scheme.
+     * @param domainURIPrefix Domain URI Prefix of your App. This value must be your assigned domain from the Firebase console. (e.g. https://xyz.page.link) The domain URI prefix must start with a valid HTTPS scheme (https://).
+     */
+    newDynamicLink(link, domainURIPrefix): DynamicLink;
     /**
      * Creates a standard dynamic link.
      *
@@ -369,8 +333,7 @@ declare module '@react-native-firebase/links' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const LinksDefaultExport: ReactNativeFirebaseModuleAndStatics<Links.Module,
-    Links.Statics>;
+  const LinksDefaultExport: ReactNativeFirebaseModuleAndStatics<Links.Module, Links.Statics>;
   /**
    * @example
    * ```js
@@ -389,8 +352,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * Links
      */
-    links: ReactNativeFirebaseModuleAndStatics<Links.Module,
-      Links.Statics>;
+    links: ReactNativeFirebaseModuleAndStatics<Links.Module, Links.Statics>;
   }
 
   interface FirebaseApp {

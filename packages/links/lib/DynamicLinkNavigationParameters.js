@@ -15,16 +15,10 @@
  *
  */
 
-describe.only('links()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
-    });
-  });
+import MutatableParams from './MutatableParams';
 
-  describe('aMethod()', () => {
-    // TODO
-  });
-});
+export default class DynamicLinkNavigationParameters extends MutatableParams {
+  setForcedRedirectEnabled(forcedRedirectEnabled) {
+    return this.set('navigation.forcedRedirectEnabled', forcedRedirectEnabled);
+  }
+}

@@ -22,7 +22,7 @@
     "_template_"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "_VERSION_"
+    "@react-native-firebase/app": "*"
   },
   "dependencies": {
     "@react-native-firebase/app-types": "_VERSION_",

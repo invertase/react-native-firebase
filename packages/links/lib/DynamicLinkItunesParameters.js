@@ -15,16 +15,18 @@
  *
  */
 
-describe.only('links()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
-    });
-  });
+import MutatableParams from './MutatableParams';
 
-  describe('aMethod()', () => {
-    // TODO
-  });
-});
+export default class DynamicLinkItunesParameters extends MutatableParams {
+  setAffiliateToken(affiliateToken) {
+    return this.set('itunes.affiliateToken', affiliateToken);
+  }
+
+  setCampaignToken(campaignToken) {
+    return this.set('itunes.campaignToken', campaignToken);
+  }
+
+  setProviderToken(providerToken) {
+    return this.set('itunes.providerToken', providerToken);
+  }
+}

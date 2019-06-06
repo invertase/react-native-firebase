@@ -26,7 +26,7 @@ import DynamicLink from './DynamicLink';
 import version from './version';
 
 const statics = {
-  DynamicLink,
+  DynamicLink, // TODO deprecate
 };
 
 const namespace = 'links';
@@ -36,18 +36,41 @@ const nativeModuleName = 'RNFBLinksModule';
 const nativeEvents = ['links_link_received'];
 
 class FirebaseLinksModule extends FirebaseModule {
-  createDynamicLink(link) {
+  newDynamicLink(link, domainUriPrefix) {
+    // todo validate args
+    //    link string must start with http:// or https://
+    //    domainUriPrefix string, must not start with http:// or https:// - without these
+    return new DynamicLink(link, domainUriPrefix);
+  }
+
+  buildLink(link) {
     // TODO(salakar) instance of link validate
-    return this.native.createDynamicLink(link.build());
+    return this.native.buildLink(link.build());
+  }
+
+  createDynamicLink(link) {
+    console.warn(`firebase.links().createDynamicLink() is deprecated in favour of buildLink()`);
+    return this.buildLink(link);
+  }
+
+  buildShortLink(link, type) {
+    // TODO(salakar) instance of link validate
+    // TODO(salakar) type validate
+    return this.native.buildLink(link.build(), type);
   }
 
   createShortDynamicLink(link, type) {
-    // TODO(salakar) instance of link validate
-    return this.native.createShortDynamicLink(link.build(), type);
+    console.warn(
+      `firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()`,
+    );
+    return this.buildShortLink(link, type);
   }
 
   getInitialLink() {
-    return this.native.getInitialLink();
+    return Linking.getInitialURL().then(url => {
+      console.warn('inner' + url);
+      return url;
+    });
   }
 
   onLink(listener) {

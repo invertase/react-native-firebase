@@ -15,16 +15,24 @@
  *
  */
 
-describe.only('links()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
-    });
-  });
+import MutatableParams from './MutatableParams';
 
-  describe('aMethod()', () => {
-    // TODO
-  });
-});
+export default class DynamicLinkAndroidParameters extends MutatableParams {
+  setFallbackUrl(fallbackUrl) {
+    return this.set('android.fallbackUrl', fallbackUrl);
+  }
+
+  setMinimumVersion(minimumVersion) {
+    return this.set('android.minimumVersion', minimumVersion);
+  }
+
+  setPackageName(packageName) {
+    return this.set('android.packageName', packageName);
+  }
+
+  validate() {
+    if (this.get('android') && !this.get('android.packageName')) {
+      throw new Error('DynamicLinkAndroidParameters: Missing required `packageName` property');
+    }
+  }
+}

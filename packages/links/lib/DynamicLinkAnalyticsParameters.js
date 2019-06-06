@@ -15,16 +15,26 @@
  *
  */
 
-describe.only('links()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
-    });
-  });
+import MutatableParams from './MutatableParams';
 
-  describe('aMethod()', () => {
-    // TODO
-  });
-});
+export default class DynamicLinkAnalyticsParameters extends MutatableParams {
+  setCampaign(campaign) {
+    return this.set('analytics.campaign', campaign);
+  }
+
+  setContent(content) {
+    return this.set('analytics.content', content);
+  }
+
+  setMedium(medium) {
+    return this.set('analytics.medium', medium);
+  }
+
+  setSource(source) {
+    return this.set('analytics.source', source);
+  }
+
+  setTerm(term) {
+    return this.set('analytics.term', term);
+  }
+}

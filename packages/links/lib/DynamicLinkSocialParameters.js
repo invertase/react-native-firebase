@@ -15,16 +15,18 @@
  *
  */
 
-describe.only('links()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
-    });
-  });
+import MutatableParams from './MutatableParams';
 
-  describe('aMethod()', () => {
-    // TODO
-  });
-});
+export default class DynamicLinkSocialParameters extends MutatableParams {
+  setDescriptionText(descriptionText) {
+    return this.set('social.descriptionText', descriptionText);
+  }
+
+  setImageUrl(imageUrl) {
+    return this.set('social.imageUrl', imageUrl);
+  }
+
+  setTitle(title) {
+    return this.set('social.title', title);
+  }
+}
