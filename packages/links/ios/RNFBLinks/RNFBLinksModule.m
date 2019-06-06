@@ -15,24 +15,80 @@
  *
  */
 
-#import <React/RCTUtils.h>
-#import <Firebase/Firebase.h>
 
 #import "RNFBLinksModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
-
+#import "RNFBLinksAppDelegateInterceptor.h"
 
 @implementation RNFBLinksModule
 #pragma mark -
 #pragma mark Module Setup
 
-  RCT_EXPORT_MODULE();
-
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
+RCT_EXPORT_MODULE();
 
 #pragma mark -
 #pragma mark Firebase Links Methods
+
+RCT_EXPORT_METHOD(buildLink:
+  (NSDictionary *) dynamicLinkDict
+    :(RCTPromiseResolveBlock)resolve
+    :(RCTPromiseRejectBlock)reject) {
+  // TODO
+}
+
+RCT_EXPORT_METHOD(buildShortLink:
+  (NSDictionary *) dynamicLinkDict
+    :(NSString *)shortLinkType
+    :(RCTPromiseResolveBlock)resolve
+    :(RCTPromiseRejectBlock)reject) {
+  // TODO
+}
+
+RCT_EXPORT_METHOD(getInitialLink:
+  (RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock)reject) {
+  NSDictionary *launchOptions = self.bridge.launchOptions;
+
+  if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    NSURL *url = (NSURL *) launchOptions[UIApplicationLaunchOptionsURLKey];
+    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+
+    if (dynamicLink && dynamicLink.url) resolve(dynamicLink.url.absoluteString);
+    else resolve([NSNull null]);
+
+    return;
+  }
+
+  NSDictionary *userActivityDict = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  if (userActivityDict && [userActivityDict[UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSUserActivity *userActivity = (NSUserActivity *) userActivityDict[@"UIApplicationLaunchOptionsUserActivityKey"];
+
+    id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+      if (!error && dynamicLink && dynamicLink.url) {
+        resolve(dynamicLink.url.absoluteString);
+      } else if (!error) {
+        resolve([NSNull null]);
+      } else {
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+            @"code": @"initial-link-error",
+            @"message": [error localizedDescription],
+        }];
+      }
+    };
+
+    [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+
+    return;
+  }
+
+  if ([RNFBLinksAppDelegateInterceptor shared].initialLink) {
+    resolve([RNFBLinksAppDelegateInterceptor shared].initialLink);
+  } else {
+    resolve([NSNull null]);
+  }
+}
+
+- (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {
+
+}
 
 @end

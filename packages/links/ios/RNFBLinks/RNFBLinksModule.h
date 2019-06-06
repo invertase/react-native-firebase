@@ -16,8 +16,11 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridge.h>
+#import <React/RCTUtils.h>
+#import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 
 @interface RNFBLinksModule : NSObject <RCTBridgeModule>
 
