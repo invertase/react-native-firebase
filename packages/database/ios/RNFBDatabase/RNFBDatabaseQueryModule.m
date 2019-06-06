@@ -235,4 +235,8 @@ RCT_EXPORT_METHOD(keepSynced:
   resolve([NSNull null]);
 }
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
 @end

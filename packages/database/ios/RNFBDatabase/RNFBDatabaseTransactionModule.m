@@ -160,4 +160,8 @@ RCT_EXPORT_METHOD(transactionTryCommit:
   dispatch_semaphore_signal([transactionState valueForKey:@"semaphore"]);
 }
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
 @end
