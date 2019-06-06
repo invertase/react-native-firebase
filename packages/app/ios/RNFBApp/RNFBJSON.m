@@ -21,46 +21,39 @@
 @property(nonatomic, strong) NSDictionary *firebaseJson;
 @end
 
-NSString *const RNFBJSONBundleKey = @"firebase_json_raw";
-
 @implementation RNFBJSON
 
-static RNFBJSON *sharedInstance;
++ (instancetype)shared {
+  static dispatch_once_t once;
+  static RNFBJSON *sharedInstance;
 
-+ (void)load {
-  sharedInstance = [[RNFBJSON alloc] init];
-}
-
-- (instancetype)init {
-  self = [super init];
-
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:RNFBJSONBundleKey];
+  dispatch_once(&once, ^{
+    sharedInstance = [[RNFBJSON alloc] init];
+    NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
 
     if (firebaseJsonRaw == nil) {
-      self.firebaseJson = [NSDictionary dictionary];
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
       return;
     }
 
     NSData *data = [[NSData alloc] initWithBase64EncodedString:firebaseJsonRaw options:0];
 
     if (data == nil) {
-      self.firebaseJson = [NSDictionary dictionary];
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
       return;
     }
 
     NSError *jsonError = nil;
     NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError != nil) {
-      self.firebaseJson = [NSDictionary dictionary];
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
       return;
     }
 
-    self.firebaseJson = dictionary;
+    sharedInstance.firebaseJson = dictionary;
   });
 
-  return self;
+  return sharedInstance;
 }
 
 - (BOOL)contains:(NSString *)key {
@@ -86,15 +79,11 @@ static RNFBJSON *sharedInstance;
 }
 
 - (NSString *)getRawJSON {
-  NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:RNFBJSONBundleKey];
+  NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
   if (firebaseJsonRaw == nil) {
     return @"{}";
   }
 
   return firebaseJsonRaw;
-}
-
-+ (RNFBJSON *)shared {
-  return sharedInstance;
 }
 @end
