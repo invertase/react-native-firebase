@@ -20,9 +20,19 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/push`;
 
 describe('database().ref().push()', () => {
-  // onComplete function check
-  // onComplete success / error check
-  // unhandled rejection with onComplete
+
+  it('throws if on complete callback is not a function', () => {
+    try {
+      firebase
+        .database()
+        .ref(TEST_PATH)
+        .push('foo', 'bar');
+      return Promise.reject(new Error('Did not throw Error'));
+    } catch (error) {
+      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      return Promise.resolve();
+    }
+  });
 
   it('returns a promise when no value is passed', () => {
     const ref = firebase.database().ref(`${TEST_PATH}/boop`);
@@ -52,5 +62,35 @@ describe('database().ref().push()', () => {
         snap.val().should.equal(6);
         snap.ref.toString().should.eql(pushed.toString());
       });
+  });
+
+  it('returns a to the callback if provided once set', async () => {
+    const callback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/callback`);
+    const value = Date.now();
+    ref.push(value, () => {
+      callback();
+    });
+    await Utils.sleep(1000);
+    callback.should.be.calledOnce();
+  });
+
+  it('throws if push errors', async () => {
+    const ref = firebase.database().ref('nope');
+    return ref.push('foo').catch(error => {
+      error.message.should.containEql(`doesn't have permission to access`);
+      return Promise.resolve();
+    });
+  });
+
+  it('returns an error to the callback', async () => {
+    const callback = sinon.spy();
+    const ref = firebase.database().ref('nope');
+    ref.push('foo', (error) => {
+      error.message.should.containEql(`doesn't have permission to access`);
+      callback();
+    });
+    await Utils.sleep(1000);
+    callback.should.be.calledOnce();
   });
 });
