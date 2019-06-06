@@ -67,14 +67,11 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 
   getInitialLink() {
-    return Linking.getInitialURL().then(url => {
-      console.warn('inner' + url);
-      return url;
-    });
+    return this.native.getInitialLink();
   }
 
   onLink(listener) {
-    const subscription = this.emitter.addListener('links_link_received', listener);
+    const subscription = this.emitter.subscribe('links_link_received', listener);
     return () => {
       subscription.remove();
     };
