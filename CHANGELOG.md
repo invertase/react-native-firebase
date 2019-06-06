@@ -275,7 +275,15 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 
 ## Realtime Database (database)
 
-- CHANGELOG TODO @ehesp
+The Realtime Database module has had a large re-write, fixing various inconsistencies against the web SDK, along with improving data serialization on the native side by moving intensive work to separate threads. 
+
+- [BREAKING][BUGFIX] The `Reference` class now extends a `Query` class (to match the web SDK). Currently in v5 everything is within the `Reference` class, allowing for incorrect behaviour such as chaining a reference only method to a query, e.g. `ref().orderByKey().once()`. This is now not possible and will cause a standard JavaScript error.
+- [BREAKING][BUGFIX] Internal validation for all methods has now been added. With v5 in some cases, incorrect values would be passed to causing native exceptions and potential crashes if not handled.
+- [BREAKING][BUGFIX] All query based modifiers are now validated as per the Web SDK spec. In v5 it is possible to chain queries which are not allowed together causing native errors (e.g. `.orderByKey().orderByPriority()`, `.startAt('foo', 'bar').orderByKey()` etc). Doing so in v6 will now throw an error to keep in-line with the Web SDK.
+- [BREAKING][BUGFIX] `Reference.push` now correctly mimics the Web SDK, returning a thenable reference.
+- [NEW] `DatabaseSnapshot.forEach` now returns the current index key.
+- [NEW] Many methods were missing an `onComplete` handler, which is now implemented as per the Web SDK.
+- [BUGFIX] `DatabaseSnapshot.forEach` correct iterates over "array" fields in the database.
 
 ## Utils
 
