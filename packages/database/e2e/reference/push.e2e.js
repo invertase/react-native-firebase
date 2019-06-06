@@ -20,7 +20,6 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/push`;
 
 describe('database().ref().push()', () => {
-
   it('throws if on complete callback is not a function', () => {
     try {
       firebase
@@ -86,7 +85,7 @@ describe('database().ref().push()', () => {
   it('returns an error to the callback', async () => {
     const callback = sinon.spy();
     const ref = firebase.database().ref('nope');
-    ref.push('foo', (error) => {
+    ref.push('foo', error => {
       error.message.should.containEql(`doesn't have permission to access`);
       callback();
     });
