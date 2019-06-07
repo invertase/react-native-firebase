@@ -19,7 +19,7 @@
     "format:assets": "prettier --ignore-path .gitignore --write \"**/*.{json,md}\"",
     "prepare": "yarn run clean && yarn run build && yarn run build-flow",
     "precommit": "lint-staged",
-    "postinstall": "opencollective-postinstall || exit 0",
+    "postinstall": "opencollective-postinstall && echo 'FIREBASE WARNING: react-native-firebase v5 will allow breaking change in minor versions starting v5.5.x. Info: https://rnfirebase.io/docs/v5.x.x/releases/v5.4.x' || exit 0",
     "prepublishOnly": "yarn run validate-ts-declarations && yarn run validate-flow-declarations"
   },
   "repository": {
