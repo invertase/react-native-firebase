@@ -87,5 +87,4 @@ beforeEach(async function beforeEach() {
 after(async () => {
   console.log('Cleaning up...');
   await device.terminateApp();
-  await detox.cleanup();
 });
