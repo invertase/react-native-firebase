@@ -48,7 +48,9 @@ describe('config()', () => {
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
         firebase.config().lastFetchTime.should.equal(0);
-        firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
+        firebase
+          .config()
+          .lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
       }
 
       await firebase.config().fetch(0);
@@ -106,12 +108,12 @@ describe('config()', () => {
       firebase.config().isDeveloperModeEnabled.should.equal(false);
       firebase.config().isDeveloperModeEnabled.should.be.a.Boolean();
 
-      await firebase.config().setConfigSettings({isDeveloperModeEnabled: true});
+      await firebase.config().setConfigSettings({ isDeveloperModeEnabled: true });
 
       firebase.config().isDeveloperModeEnabled.should.equal(true);
       firebase.config().isDeveloperModeEnabled.should.be.a.Boolean();
 
-      await firebase.config().setConfigSettings({isDeveloperModeEnabled: false});
+      await firebase.config().setConfigSettings({ isDeveloperModeEnabled: false });
 
       firebase.config().isDeveloperModeEnabled.should.equal(false);
     });
@@ -138,7 +140,7 @@ describe('config()', () => {
 
     it('it throws if isDeveloperModeEnabled key is not a boolean', async () => {
       try {
-        await firebase.config().setConfigSettings({isDeveloperModeEnabled: 'potato'});
+        await firebase.config().setConfigSettings({ isDeveloperModeEnabled: 'potato' });
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql(

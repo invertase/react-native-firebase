@@ -60,9 +60,7 @@ class Root extends Component {
     // invite.setDeepLink(inviteParams.deepLink);
     invite.setIOSClientId(inviteParams.iosClientId);
 
-    androidInvite.setAdditionalReferralParameters(
-      androidInviteParams.additionalReferralParameters,
-    );
+    androidInvite.setAdditionalReferralParameters(androidInviteParams.additionalReferralParameters);
 
     androidInvite.setEmailHtmlContent(androidInviteParams.emailHtmlContent);
     androidInvite.setEmailSubject(androidInviteParams.emailSubject);
@@ -75,7 +73,7 @@ class Root extends Component {
       .links()
       .getInitialLink()
       .then(link => {
-        console.warn('outer' + link);
+        console.warn(`outer${link}`);
       });
   }
 
