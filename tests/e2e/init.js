@@ -79,12 +79,12 @@ beforeEach(async function beforeEach() {
       console.warn(`   🔴  Retry #${retry - 1} failed...`);
     }
 
-    console.warn(`️   ->  Retrying... (${retry})`);
-    await Utils.sleep(3000);
+    console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
+    await Utils.sleep(1000 * retry);
   }
 });
 
 after(async () => {
-  console.log('Cleaning up...');
+  console.log(' ✨ Tests Complete ✨ ');
   await device.terminateApp();
 });
