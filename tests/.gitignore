@@ -39,3 +39,6 @@ buck-out/
 android/app/libs
 android/keystores/debug.keystore
 .vscode
+
+google-services.json
+GoogleService-Info.plist

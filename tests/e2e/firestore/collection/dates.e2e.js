@@ -60,7 +60,7 @@ function documents() {
 }
 
 describe('firestore()', () => {
-  describe('CollectionReference', () => {
+  xdescribe('CollectionReference', () => {
     before(async () => {
       const firestore = firebaseAdmin.firestore();
       const collection = firestore.collection(TEST_COLLECTION_NAME_DYNAMIC);

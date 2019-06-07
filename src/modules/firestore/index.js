@@ -15,6 +15,7 @@ import Blob from './Blob';
 import Path from './Path';
 import WriteBatch from './WriteBatch';
 import TransactionHandler from './TransactionHandler';
+import Timestamp from './Timestamp';
 import Transaction from './Transaction';
 import { isBoolean, isObject, isString, hop } from '../../utils';
 import { getNativeModule } from '../../utils/native';
@@ -262,6 +263,7 @@ export const statics = {
   FieldPath,
   FieldValue,
   GeoPoint,
+  Timestamp,
   enableLogging(enabled: boolean): void {
     // DEPRECATED: Remove method in v4.1.0
     console.warn(

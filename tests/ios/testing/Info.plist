@@ -25,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.305229645282-9i07a33r4sj2fmrshnmh8jkh52dgpdve</string>
+				<string>com.googleusercontent.apps.448618578101-28tsenal97nceuij1msj7iuqinv48t02</string>
 			</array>
 		</dict>
 	</array>
@@ -58,6 +58,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-4406399463942824~2098755700</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

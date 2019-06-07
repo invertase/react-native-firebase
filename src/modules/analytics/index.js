@@ -99,7 +99,7 @@ export default class Analytics extends ModuleBase {
    * @param screenName
    * @param screenClassOverride
    */
-  setCurrentScreen(screenName: string, screenClassOverride: string): void {
+  setCurrentScreen(screenName: string, screenClassOverride?: string): void {
     getNativeModule(this).setCurrentScreen(screenName, screenClassOverride);
   }
 

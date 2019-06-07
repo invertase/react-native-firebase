@@ -5,7 +5,7 @@
 import { Importance, Visibility } from './types';
 import type { ImportanceType, VisibilityType } from './types';
 
-type NativeAndroidChannel = {|
+export type NativeAndroidChannel = {|
   bypassDnd?: boolean,
   channelId: string,
   description?: string,

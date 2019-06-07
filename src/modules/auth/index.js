@@ -506,7 +506,11 @@ export default class Auth extends ModuleBase {
    * @return {Promise.<Null>}
    */
   applyActionCode(code: string): Promise<void> {
-    return getNativeModule(this).applyActionCode(code);
+    return getNativeModule(this)
+      .applyActionCode(code)
+      .then(user => {
+        this._setUser(user);
+      });
   }
 
   /**

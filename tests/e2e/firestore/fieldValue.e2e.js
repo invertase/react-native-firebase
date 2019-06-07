@@ -42,8 +42,25 @@ describe('firestore()', () => {
         ).get();
 
         dataAfterUpdate().creationDate.should.be.instanceof(
-          jet.context.window.Date
+          firebase.firestore.Timestamp
         );
+      });
+    });
+
+    describe('increment()', () => {
+      it('should increment a value', async () => {
+        const { data } = await testCollectionDoc(DOC_2_PATH).get();
+        should.equal(data().incrementValue, undefined);
+
+        await testCollectionDoc(DOC_2_PATH).update({
+          incrementValue: firebase.firestore.FieldValue.increment(69),
+        });
+
+        const { data: dataAfterUpdate } = await testCollectionDoc(
+          DOC_2_PATH
+        ).get();
+
+        dataAfterUpdate().incrementValue.should.equal(69);
       });
     });
 

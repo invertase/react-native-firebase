@@ -456,9 +456,9 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
                                         .isSslEnabled());
     }
 
-//    if (settings.hasKey("timestampsInSnapshots")) {
-//      // TODO: Not supported on Android yet
-//    }
+    if (settings.hasKey("timestampsInSnapshots")) {
+      firestoreSettings.setTimestampsInSnapshotsEnabled(settings.getBoolean("timestampsInSnapshots"));
+    }
 
     firestore.setFirestoreSettings(firestoreSettings.build());
     promise.resolve(null);

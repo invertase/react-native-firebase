@@ -47,6 +47,12 @@ describe('firestore()', () => {
         exists.should.be.a.Boolean();
         exists.should.be.true();
       });
+
+      it('returns false if it does not exist', async () => {
+        const { exists } = await testCollectionDoc('random/document').get();
+        exists.should.be.a.Boolean();
+        exists.should.be.false();
+      });
     });
 
     describe('data()', () => {
@@ -63,6 +69,15 @@ describe('firestore()', () => {
 
         snapshot.data().baz.should.be.true();
         data().baz.should.be.true();
+      });
+
+      it('correctly returns timestamp fields in data', async () => {
+        const snapshot = await testCollectionDoc(COL_DOC_1_PATH).get();
+        // 'it's pronounced dayter not darter'
+        const data = snapshot.data();
+        data.timestamp.should.be.an.instanceOf(firebase.firestore.Timestamp);
+        data.timestamp.seconds.should.be.a.Number();
+        data.timestamp.nanoseconds.should.be.a.Number();
       });
     });
 

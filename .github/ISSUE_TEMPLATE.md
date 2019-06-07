@@ -122,6 +122,7 @@ This issue list of this repo is exclusively for bug reports.
   - [ ] Realtime **Database**
   - [ ] Remote **Config**
   - [ ] Storage
+  - [ ] In App Messaging
 - **Are you using `TypeScript`?**
   - [ ] No
   - [ ] Yes, version: `N/A`

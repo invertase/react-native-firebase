@@ -19,7 +19,7 @@ const notification = {
 
 describe('notifications() - iOS Only', () => {
   describe('getInitialNotification()', () => {
-    it('should be provided ', async () => {
+    xit('should be provided ', async () => {
       if (device.getPlatform() === 'ios') {
         await device.relaunchApp({ userNotification: notification });
         const initialNotification = await firebase

@@ -42,29 +42,31 @@
 
     [self initBanner:[RNFirebaseAdMob stringToAdSize:_size]];
     [self addSubview:_banner];
-
-    [self sendEvent:@"onSizeChange" payload:@{
-            @"width": @(_banner.bounds.size.width),
-            @"height": @(_banner.bounds.size.height),
-    }];
-
     _banner.adUnitID = _unitId;
     [self setRequested:YES];
     [_banner loadRequest:[RNFirebaseAdMob buildRequest:_request]];
+    [self sendEvent:@"onSizeChange" payload:@{
+      @"width": @(_banner.bounds.size.width),
+      @"height": @(_banner.bounds.size.height),
+    }];
 }
 
 - (void)sendEvent:(NSString *)type payload:(NSDictionary *_Nullable)payload {
+    if (!self.onBannerEvent) {
+      return;
+    }
+
     self.onBannerEvent(@{
-            @"type": type,
-            @"payload": payload != nil ? payload : [NSNull null],
+      @"type": type,
+      @"payload": payload != nil ? payload : [NSNull null],
     });
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {
     [self sendEvent:@"onAdLoaded" payload:@{
-            @"width": @(adView.bounds.size.width),
-            @"height": @(adView.bounds.size.height),
-            @"hasVideoContent": @NO,
+      @"width": @(adView.bounds.size.width),
+      @"height": @(adView.bounds.size.height),
+      @"hasVideoContent": @NO,
     }];
 }
 

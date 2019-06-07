@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewPropTypes, requireNativeComponent } from 'react-native';
+import { ViewPropTypes, requireNativeComponent, Platform } from 'react-native';
 import PropTypes from 'prop-types';
 import EventTypes, { NativeExpressEventTypes } from './EventTypes';
 import { nativeToJSError } from '../../utils';
@@ -70,8 +70,13 @@ class AdMobComponent extends React.Component {
       }
     }
 
-    if (nativeEvent.type === 'onSizeChange')
+    if (nativeEvent.type === 'onSizeChange') {
       this.updateSize(nativeEvent.payload);
+    }
+
+    if (nativeEvent.type === 'onAdLoaded' && Platform.OS === 'ios') {
+      this.updateSize(nativeEvent.payload);
+    }
   };
 
   /**
@@ -80,7 +85,9 @@ class AdMobComponent extends React.Component {
    * @param height
    */
   updateSize = ({ width, height }) => {
-    this.setState({ width, height });
+    if (width !== undefined && height !== undefined) {
+      this.setState({ width, height });
+    }
   };
 
   /**

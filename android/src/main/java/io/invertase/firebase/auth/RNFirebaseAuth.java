@@ -59,13 +59,13 @@ import io.invertase.firebase.Utils;
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "JavaDoc"})
 class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseAuth";
+  private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
+  private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
   private String mVerificationId;
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
-  private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
-  private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
 
 
   RNFirebaseAuth(ReactApplicationContext reactContext) {
@@ -1209,7 +1209,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         public void onComplete(@Nonnull Task<Void> task) {
           if (task.isSuccessful()) {
             Log.d(TAG, "applyActionCode:onComplete:success");
-            promiseNoUser(promise, false);
+            promiseWithUser(firebaseAuth.getCurrentUser(), promise);
           } else {
             Exception exception = task.getException();
             Log.e(TAG, "applyActionCode:onComplete:failure", exception);

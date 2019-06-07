@@ -3,27 +3,40 @@
  * AndroidChannelGroup representation wrapper
  */
 
-type NativeAndroidChannelGroup = {|
-  groupId: string,
+import type { NativeAndroidChannel } from './AndroidChannel';
+
+export type NativeAndroidChannelGroup = {|
   name: string,
+  groupId: string,
+  // Android API >= 28
+  description: string | void,
+  // Android API >= 28
+  channels: void | NativeAndroidChannel[],
 |};
 
 export default class AndroidChannelGroup {
-  _groupId: string;
-
-  _name: string;
-
-  constructor(groupId: string, name: string) {
-    this._groupId = groupId;
+  constructor(groupId: string, name: string, description?: string) {
     this._name = name;
+    this._groupId = groupId;
+    this._description = description;
   }
+
+  _groupId: string;
 
   get groupId(): string {
     return this._groupId;
   }
 
+  _name: string;
+
   get name(): string {
     return this._name;
+  }
+
+  _description: string | void;
+
+  get description(): string | void {
+    return this._description;
   }
 
   build(): NativeAndroidChannelGroup {
@@ -36,8 +49,10 @@ export default class AndroidChannelGroup {
     }
 
     return {
-      groupId: this._groupId,
       name: this._name,
+      groupId: this._groupId,
+      description: this._description,
+      channels: [],
     };
   }
 }

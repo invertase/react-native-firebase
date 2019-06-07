@@ -38,15 +38,16 @@ aliases:
     paths:
       - /usr/local/Homebrew
       - ~/Library/Caches/Homebrew
-    key: v4-brew-cache-{{ arch }}
+    key: v5-brew-cache-{{ arch }}
 
   - &restore-brew-cache
     keys:
-      - v4-brew-cache-{{ arch }}
+      - v5-brew-cache-{{ arch }}
 
   - &configure-jet-detox-environment
     name: Configure Jet + Detox Environment
     command: |
+      brew update >/dev/null
       brew install node@8 >/dev/null
       brew tap wix/brew >/dev/null
       brew install applesimutils >/dev/null
@@ -128,6 +129,9 @@ android_defaults: &android_defaults
   <<: *defaults
   docker:
     - image: invertase/react-native-firebase-android:standard
+      args:
+        ANDROID_COMPILE_SDK_VERSION: "28"
+        ANDROID_BUILD_TOOLS_VERSION: "28.0.3"
   resource_class: "xlarge"
   working_directory: ~/react-native-firebase
   environment:
@@ -178,28 +182,23 @@ jobs:
       - run: *yarn
       - save-cache: *save-yarn-cache
 
-      #      # must always be after environment config job but before android build
-      #      - run: *packager-jet
-      #      - run: *packager-warmup#
-      #      - run: *android-launch-avd
-
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-cache
+            - v1-gradle-cache-{{ checksum "tests/android/build.gradle" }}
+            - v1-gradle-cache
 
       - restore_cache:
           keys:
-            - gradle-build-caches-{{ .Revision }}
-            - gradle-build-caches
+            - v1-gradle-build-caches-{{ .Revision }}
+            - v1-gradle-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -210,6 +209,13 @@ jobs:
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
 
+      - run:
+          name: Accept Android Licenses
+          shell: /bin/bash -e
+          command: |
+            yes | sdkmanager --licenses
+            yes | sdkmanager --update
+
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
@@ -218,12 +224,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v1-gradle-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -243,7 +249,7 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-build-caches-{{ .Revision }}
+          key: v1-gradle-build-caches-{{ .Revision }}
           when: always
 
   #      - run: *android-wait-avd
@@ -276,20 +282,20 @@ jobs:
       # restore saved caches
       - restore_cache:
           keys:
-            - gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+            - v1-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - restore_cache:
           keys:
             # for multi-project builds where dependencies are not defined in one central file,
             # an additional run step before is necessary that concatenates affected files
             # into one file that can be checksummed
-            - gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
-            - gradle-release-cache
+            - v1-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+            - v1-gradle-release-cache
 
       - restore_cache:
           keys:
-            - gradle-release-build-caches-{{ .Revision }}
-            - gradle-release-build-caches
+            - v1-gradle-release-build-caches-{{ .Revision }}
+            - v1-gradle-release-build-caches
 
       - run:
           name: Restoring Gradle Build Caches
@@ -300,6 +306,13 @@ jobs:
               mkdir -p ~/.gradle/caches/ &&
               mv ~/gradle-build-caches/* ~/.gradle/caches/ || true
 
+      - run:
+          name: Accept Android Licenses
+          shell: /bin/bash -e
+          command: |
+            yes | sdkmanager --licenses
+            yes | sdkmanager --update
+
       # download and cache dependencies and Gradle
       - run:
           name: Downloading Dependencies
@@ -308,12 +321,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle/wrapper/
-          key: gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
+          key: v1-gradle-release-wrapper-{{ checksum "tests/android/gradle/wrapper/gradle-wrapper.properties" }}
 
       - save_cache:
           paths:
             - ~/.gradle/caches/
-          key: gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
+          key: v1-gradle-release-cache-{{ checksum "tests/android/build.gradle" }}
 
       - run:
           name: Build Android Testing App
@@ -333,7 +346,7 @@ jobs:
       - save_cache:
           paths:
             - ~/gradle-build-caches
-          key: gradle-release-build-caches-{{ .Revision }}
+          key: v1-gradle-release-build-caches-{{ .Revision }}
           when: always
 
 

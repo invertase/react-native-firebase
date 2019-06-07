@@ -1,4 +1,4 @@
-describe('config()', () => {
+xdescribe('config()', () => {
   before(() => {
     firebase.config().enableDeveloperMode();
     firebase.config().setDefaults({
@@ -26,7 +26,7 @@ describe('config()', () => {
     });
   });
 
-  describe('getValue()', () => {
+  xdescribe('getValue()', () => {
     it('gets a single value by key', async () => {
       const config = await firebase.config().getValue('foo');
       config.should.be.a.Object();
@@ -40,8 +40,8 @@ describe('config()', () => {
     });
   });
 
-  describe('getValues()', () => {
-    it('get multiple values by an array of keys', async () => {
+  xdescribe('getValues()', () => {
+    xit('get multiple values by an array of keys', async () => {
       const config = await firebase
         .config()
         .getValues(['foo', 'bar', 'foobar', 'numvalue']);
@@ -63,7 +63,7 @@ describe('config()', () => {
     });
   });
 
-  describe('getKeysByPrefix()', () => {
+  xdescribe('getKeysByPrefix()', () => {
     it('get keys beginning with the prefix provided', async () => {
       const keys = await firebase.config().getKeysByPrefix('num');
       keys.should.be.Array();

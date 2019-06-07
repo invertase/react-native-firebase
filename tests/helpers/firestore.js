@@ -48,7 +48,9 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      timestamp: firebase.firestore.Timestamp.fromDate(
+        new jet.context.window.Date(2017, 2, 10, 10, 0, 0)
+      ),
     };
   },
 
@@ -67,7 +69,10 @@ module.exports = {
       object: {
         daz: 123,
       },
-      timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      // timestamp: new jet.context.window.Date(2017, 2, 10, 10, 0, 0),
+      timestamp: firebase.firestore.Timestamp.fromDate(
+        new jet.context.window.Date(2017, 2, 10, 10, 0, 0, 0)
+      ),
     };
   },
 
@@ -149,10 +154,10 @@ module.exports = {
     return firebase.firestore().doc(path);
   },
 
-  testCollectionDocAdmin(path) {
-    shouldCleanup = true;
-    return firebaseAdmin.firestore().doc(path);
-  },
+  // testCollectionDocAdmin(path) {
+  //   shouldCleanup = true;
+  //   return firebaseAdmin.firestore().doc(path);
+  // },
 
   async resetTestCollectionDoc(path, doc) {
     shouldCleanup = true;
@@ -167,13 +172,13 @@ module.exports = {
   },
 };
 
-firebaseAdmin.firestore().settings({ timestampsInSnapshots: true });
+// firebaseAdmin.firestore().settings({ timestampsInSnapshots: true });
 
 // call a get request without waiting to force firestore to connect
 // so the first test isn't delayed whilst connecting
 
-module.exports
-  .testCollectionDocAdmin(module.exports.DOC_1_PATH)
-  .get()
-  .then(() => {})
-  .catch(() => {});
+// module.exports
+//   .testCollectionDocAdmin(module.exports.DOC_1_PATH)
+//   .get()
+//   .then(() => {})
+//   .catch(() => {});

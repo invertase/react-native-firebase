@@ -21,8 +21,7 @@ describe('auth()', () => {
   });
 
   describe('checkActionCode()', () => {
-    // todo Android has changed the format of the error response
-    xit('errors on invalid code', async () => {
+    it('errors on invalid code', async () => {
       try {
         await firebase.auth().checkActionCode('fooby shooby dooby');
       } catch (e) {
@@ -45,7 +44,7 @@ describe('auth()', () => {
       }
     });
 
-   xit('accepts a valid code', async () => {
+    xit('accepts a valid code', async () => {
       // todo not sure how to generate a code yet - maybe via admin sdk?
     });
   });
@@ -69,20 +68,36 @@ describe('auth()', () => {
 
   describe('signInWithCustomToken()', () => {
     it('signs in with a admin sdk created custom auth token', async () => {
-      const customUID = `custom${randomString(12, '#aA')}`;
-      const token = await firebaseAdmin.auth().createCustomToken(customUID);
+      const customUID = `zdwHCjbpzraRoNK7d64FYWv5AH02`;
+      const token = await firebaseAdmin.auth().createCustomToken(customUID, {
+        test: null,
+        roles: [
+          {
+            role: 'validated',
+            scheme_id: null,
+          },
+          {
+            role: 'member',
+            scheme_id: 1,
+          },
+          {
+            role: 'member',
+            scheme_id: 2,
+          },
+        ],
+      });
       const { user } = await firebase.auth().signInWithCustomToken(token);
+
       user.uid.should.equal(customUID);
       firebase.auth().currentUser.uid.should.equal(customUID);
 
+      const { claims } = await firebase
+        .auth()
+        .currentUser.getIdTokenResult(true);
+
+      claims.roles.should.be.an.Array();
+
       await firebase.auth().signOut();
-
-      const {
-        user: user2,
-      } = await firebase.auth().signInAndRetrieveDataWithCustomToken(token);
-
-      user2.uid.should.equal(customUID);
-      firebase.auth().currentUser.uid.should.equal(customUID);
     });
   });
 
@@ -1109,9 +1124,7 @@ describe('auth()', () => {
       const email = `${random}@${random}.com`;
       const pass = random;
 
-      await firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, pass);
+      await firebase.auth().createUserWithEmailAndPassword(email, pass);
 
       try {
         await firebase.auth().sendPasswordResetEmail(email);
