@@ -150,9 +150,7 @@ export default {
         return (
           `You attempted to use a firebase module that's not installed natively on your iOS project by calling ${snippet}.` +
           '\r\n\r\nEnsure you have the required Firebase iOS SDK pod for this module included in your Podfile, in this instance ' +
-          `confirm you've added "pod '${
-            NAMESPACE_PODS[namespace]
-          }'" to your Podfile` +
+          `confirm you've added "pod '${NAMESPACE_PODS[namespace]}'" to your Podfile` +
           '\r\n\r\nSee http://invertase.link/ios for full setup instructions.'
         );
       }
