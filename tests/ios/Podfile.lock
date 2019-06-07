@@ -237,52 +237,52 @@ PODS:
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
   - Protobuf (3.7.0)
-  - React (0.59.3):
-    - React/Core (= 0.59.3)
-  - React/Core (0.59.3):
-    - yoga (= 0.59.3.React)
-  - React/CxxBridge (0.59.3):
+  - React (0.59.9):
+    - React/Core (= 0.59.9)
+  - React/Core (0.59.9):
+    - yoga (= 0.59.9.React)
+  - React/CxxBridge (0.59.9):
     - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
     - React/jsiexecutor
-  - React/cxxreact (0.59.3):
+  - React/cxxreact (0.59.9):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/jsinspector
-  - React/DevSupport (0.59.3):
+  - React/DevSupport (0.59.9):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.3)
-  - React/jsi (0.59.3):
+  - React/fishhook (0.59.9)
+  - React/jsi (0.59.9):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React/jsiexecutor (0.59.3):
+  - React/jsiexecutor (0.59.9):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/cxxreact
     - React/jsi
-  - React/jsinspector (0.59.3)
-  - React/RCTAnimation (0.59.3):
+  - React/jsinspector (0.59.9)
+  - React/RCTAnimation (0.59.9):
     - React/Core
-  - React/RCTBlob (0.59.3):
+  - React/RCTBlob (0.59.9):
     - React/Core
-  - React/RCTNetwork (0.59.3):
+  - React/RCTNetwork (0.59.9):
     - React/Core
-  - React/RCTText (0.59.3):
+  - React/RCTText (0.59.9):
     - React/Core
-  - React/RCTWebSocket (0.59.3):
+  - React/RCTWebSocket (0.59.9):
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (5.3.1):
+  - RNFirebase (5.4.2):
     - Firebase/Core
     - React
-  - yoga (0.59.3.React)
+  - yoga (0.59.9.React)
 
 DEPENDENCIES:
   - Crashlytics (~> 3.12.0)
@@ -360,7 +360,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
-    :version: "~> 5.3.1"
+    :version: "~> 5.4.2"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -402,10 +402,10 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
-  React: b52fdb80565505b7e4592b313a38868f5df51641
-  RNFirebase: f20e5e4ceaa632aebb1a29a9a91022ae0469c633
-  yoga: 1a492113f66a35e9e583bb0434f4b8cc668dd839
+  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
+  RNFirebase: 891477280514b0cef3225cc48709cabedd192d5e
+  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
 PODFILE CHECKSUM: 084df7890ac66693a9c12bb079c1824cf2e61dab
 
-COCOAPODS: 1.7.0
+COCOAPODS: 1.7.1
