@@ -205,7 +205,7 @@ export namespace Links {
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .itunes.setAffiliateToken('ABCDEFG');
+   *   .itunes.setAffiliateToken('ABCDEFG');
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -234,7 +234,7 @@ export namespace Links {
   }
 
   /**
-   * The DynamicLinkNavigationParameters interface provides functionality to handle how the navigation
+   * The DynamicLinkNavigationParameters interface provides functionality to specify how the navigation
    * of the created link is handled.
    *
    * #### Example
@@ -242,7 +242,7 @@ export namespace Links {
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .navigation.setForcedRedirectEnabled(true);
+   *   .navigation.setForcedRedirectEnabled(true);
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -265,8 +265,8 @@ export namespace Links {
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .social.setTitle('Social Application')
-   *  .social.setDescriptionText('A Social Application');
+   *   .social.setTitle('Social Application')
+   *   .social.setDescriptionText('A Social Application');
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -302,7 +302,7 @@ export namespace Links {
    *
    * ```js
    * const linkParams = firebase.links()
-   *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    *
    * linkParams.analytics.setCampaign('banner');
    *
@@ -311,32 +311,32 @@ export namespace Links {
    */
   export interface DynamicLinkParameters {
     /**
-     * Access Google Analytics specific link properties.
+     * Access Google Analytics specific link parameters.
      */
     analytics: DynamicLinkAnalyticsParameters;
 
     /**
-     * Access Android specific link properties.
+     * Access Android specific link parameters.
      */
     android: DynamicLinkAndroidParameters;
 
     /**
-     * Access iOS specific link properties.
+     * Access iOS specific link parameters.
      */
     ios: DynamicLinkIOSParameters;
 
     /**
-     * Access iTunes Connect specific link properties.
+     * Access iTunes Connect specific link parameters.
      */
     itunes: DynamicLinkITunesParameters;
 
     /**
-     * Access navigation specific link properties.
+     * Access navigation specific link parameters.
      */
     navigation: DynamicLinkNavigationParameters;
 
     /**
-     * Access social specific link properties.
+     * Access social specific link parameters.
      */
     social: DynamicLinkSocialParameters;
   }
@@ -349,7 +349,7 @@ export namespace Links {
    *
    * ```js
    * const linkParams = firebase.links()
-   *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    *
    * linkParams.analytics.setCampaign('banner');
    *
@@ -440,7 +440,7 @@ export namespace Links {
      *
      * ```js
      * const linkParams = firebase.links()
-     *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+     *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
      *
      * linkParams.analytics.setCampaign('banner');
      *
@@ -464,7 +464,7 @@ export namespace Links {
      *
      *  ```js
      * const linkParams = firebase.links()
-     *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+     *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
      *
      * linkParams.analytics.setCampaign('banner');
      *
