@@ -184,9 +184,7 @@ export default class StorageTask {
 
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `StorageTask.on event argument must be a string with a value of '${
-          StorageStatics.TaskEvent.STATE_CHANGED
-        }'`
+        `StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent.STATE_CHANGED}'`
       );
     }
 
