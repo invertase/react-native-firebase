@@ -79,5 +79,4 @@ RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes:
   [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE integerValue:bytes];
 }
 
-
 @end

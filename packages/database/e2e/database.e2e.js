@@ -193,4 +193,11 @@ describe('database()', () => {
       firebase.database().setPersistenceCacheSizeBytes(1048576); // 1mb
     });
   });
+
+  describe('getServerTime()', () => {
+    it('returns a valid date', async () => {
+      const date = firebase.database().getServerTime();
+      date.getDate.should.be.Function();
+    });
+  });
 });

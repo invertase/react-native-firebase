@@ -74,7 +74,7 @@ export namespace Indexing {
    * const defaultAppIndexing = firebase.indexing();
    * ```
    */
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     /**
      * If the application was launched via a deep link URL, the URL is returned, otherwise
      * value is `null`.

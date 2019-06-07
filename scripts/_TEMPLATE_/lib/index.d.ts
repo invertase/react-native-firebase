@@ -92,14 +92,14 @@ export namespace _Template_ {
    * #### Example 2
    *
    * Get the _template_ instance for a **secondary app**:
-   *
+   *˚
    * ```js
    * const otherApp = firebase.app('otherApp');
    * const _template_ForOtherApp = firebase._template_(otherApp);
    * ```
    *
    */
-  export interface Module extends ReactNativeFirebaseModule {
+  export class Module extends ReactNativeFirebaseModule {
     // firebase._template_().* methods & props go here
   }
 }

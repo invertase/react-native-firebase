@@ -13062,6 +13062,449 @@
 			},
 			"children": [
 				{
+					"id": 718,
+					"name": "Module",
+					"kind": 128,
+					"kindString": "Class",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The Firebase Database service is available for the default app or a given app.",
+						"text": "#### Example 1\n\nGet the database instance for the **default app**:\n\n```js\nconst databaseForDefaultApp = firebase.database();\n```\n\n#### Example 2\n\nGet the database instance for a **secondary app**:\n\n```js\nconst otherApp = firebase.app('otherApp');\nconst databaseForOtherApp = firebase.database(otherApp);\n```\n\n"
+					},
+					"children": [
+						{
+							"id": 740,
+							"name": "app",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
+									"line": 179,
+									"character": 5
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FirebaseApp"
+							},
+							"inheritedFrom": {
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule.app"
+							}
+						},
+						{
+							"id": 719,
+							"name": "getServerTime",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 720,
+									"name": "getServerTime",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Returns the current Firebase Database server time as a JavaScript Date object."
+									},
+									"type": {
+										"type": "reference",
+										"name": "Date"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1045,
+									"character": 17
+								}
+							]
+						},
+						{
+							"id": 729,
+							"name": "goOffline",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 730,
+									"name": "goOffline",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Disconnects from the server (all Database operations will be completed offline).",
+										"text": "The client automatically maintains a persistent connection to the Database server, which\nwill remain active indefinitely and reconnect when disconnected. However, the `goOffline()` and\n`goOnline()` methods may be used to control the client connection in cases where a persistent\nconnection is undesirable.\n\nWhile offline, the client will no longer receive data updates from the Database. However,\nall Database operations performed locally will continue to immediately fire events, allowing\nyour application to continue behaving normally. Additionally, each operation performed locally\nwill automatically be queued and retried upon reconnection to the Database server.\n\nTo reconnect to the Database and begin receiving remote events, see `goOnline()`.\n\n#### Example\n\n```js\nawait firebase.database().goOnline();\n```\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1119,
+									"character": 13
+								}
+							]
+						},
+						{
+							"id": 727,
+							"name": "goOnline",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 728,
+									"name": "goOnline",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Reconnects to the server and synchronizes the offline Database state with the server state.",
+										"text": "This method should be used after disabling the active connection with `goOffline()`. Once\nreconnected, the client will transmit the proper data and fire the appropriate events so that\nyour client \"catches up\" automatically.\n\n#### Example\n\n```js\nawait firebase.database().goOnline();\n```\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1096,
+									"character": 12
+								}
+							]
+						},
+						{
+							"id": 721,
+							"name": "ref",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 722,
+									"name": "ref",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Returns a `Reference` representing the location in the Database corresponding to the provided path.\nIf no path is provided, the Reference will point to the root of the Database.",
+										"text": "#### Example\n\n```js\n// Get a reference to the root of the Database\nconst rootRef = firebase.database().ref();\n\n// Get a reference to the /users/ada node\nconst adaRef = firebase.database().ref(\"users/ada\");\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 723,
+											"name": "path",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "Optional path representing the location the returned `Reference` will point. If not provided, the returned `Reference` will point to the root of the Database.\n"
+											},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Reference",
+										"id": 444
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1063,
+									"character": 7
+								}
+							]
+						},
+						{
+							"id": 724,
+							"name": "refFromURL",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 725,
+									"name": "refFromURL",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Returns a `Reference` representing the location in the Database corresponding to the provided Firebase URL.",
+										"text": "An exception is thrown if the URL is not a valid Firebase Database URL or it has a different domain than the current Database instance.\n\nNote that all query parameters (orderBy, limitToLast, etc.) are ignored and are not applied to the returned Reference.\n\n#### Example\n\n```js\n// Get a reference to the root of the Database\nconst rootRef = firebase.database().ref(\"https://<DATABASE_NAME>.firebaseio.com\");\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 726,
+											"name": "url",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The Firebase URL at which the returned Reference will point.\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Reference",
+										"id": 444
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1081,
+									"character": 14
+								}
+							]
+						},
+						{
+							"id": 734,
+							"name": "setLoggingEnabled",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 735,
+									"name": "setLoggingEnabled",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the native logging level for the database module. By default,\nonly warnings and errors are logged natively. Setting this to true will log all\ndatabase events.",
+										"text": "> Ensure logging is disabled for production apps, as excessive logging can cause performance issues.\n\n#### Example\n\n```js\n// Set debug logging if developing\nif (__DEV__) {\n  firebase.database().setLoggingEnabled(true);\n}\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 736,
+											"name": "enabled",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Whether debug logging is enabled.\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1161,
+									"character": 21
+								}
+							]
+						},
+						{
+							"id": 737,
+							"name": "setPersistenceCacheSizeBytes",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 738,
+									"name": "setPersistenceCacheSizeBytes",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,\nFirebase Database will start removing data that hasn't been recently used. If you find that your application\ncaches too little or too much data, call this method to change the cache size. This method must be called before\ncreating your first Database reference and only needs to be called once per application.",
+										"text": "Note that the specified cache size is only an approximation and the size on disk may temporarily exceed it at times.\nCache sizes smaller than 1 MB or greater than 100 MB are not supported.\n\n#### Example\n\n```js\nfirebase.database().setPersistenceEnabled(true);\nfirebase.database().setPersistenceCacheSizeBytes(2000000); // 2MB\n\nasync function bootstrap() {\n  // Bootstrapping application\n  const snapshot = await firebase.database().ref('settings').once('value');\n}\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 739,
+											"name": "bytes",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "The new size of the cache in bytes.\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "number"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1186,
+									"character": 32
+								}
+							]
+						},
+						{
+							"id": 731,
+							"name": "setPersistenceEnabled",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 732,
+									"name": "setPersistenceEnabled",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets whether persistence is enabled for all database calls across all app\ninstances.",
+										"text": "> Ensure this is called before any database calls are performed, otherwise\npersistence will only come into effect when the app is next started.\n\n#### Example\n\n```js\nfirebase.database().setPersistenceEnabled(true);\n\nasync function bootstrap() {\n  // Bootstrapping application\n  const snapshot = await firebase.database().ref('settings').once('value');\n}\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 733,
+											"name": "enabled",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"comment": {
+												"text": "Whether persistence is enabled for the Database service.\n"
+											},
+											"type": {
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "database/lib/index.d.ts",
+									"line": 1141,
+									"character": 25
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								740
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								719,
+								729,
+								727,
+								721,
+								724,
+								734,
+								737,
+								731
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "database/lib/index.d.ts",
+							"line": 1041,
+							"character": 21
+						}
+					],
+					"extendedTypes": [
+						{
+							"type": "reference",
+							"name": "ReactNativeFirebaseModule"
+						}
+					]
+				},
+				{
 					"id": 692,
 					"name": "DataSnapshot",
 					"kind": 256,
@@ -13561,449 +14004,6 @@
 							"fileName": "database/lib/index.d.ts",
 							"line": 875,
 							"character": 31
-						}
-					]
-				},
-				{
-					"id": 718,
-					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "The Firebase Database service is available for the default app or a given app.",
-						"text": "#### Example 1\n\nGet the database instance for the **default app**:\n\n```js\nconst databaseForDefaultApp = firebase.database();\n```\n\n#### Example 2\n\nGet the database instance for a **secondary app**:\n\n```js\nconst otherApp = firebase.app('otherApp');\nconst databaseForOtherApp = firebase.database(otherApp);\n```\n\n"
-					},
-					"children": [
-						{
-							"id": 740,
-							"name": "app",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"sources": [
-								{
-									"fileName": "analytics/node_modules/@react-native-firebase/app-types/index.d.ts",
-									"line": 179,
-									"character": 5
-								}
-							],
-							"type": {
-								"type": "reference",
-								"name": "FirebaseApp"
-							},
-							"inheritedFrom": {
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule.app"
-							}
-						},
-						{
-							"id": 719,
-							"name": "getServerTime",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 720,
-									"name": "getServerTime",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Returns the current Firebase Database server time as a JavaScript Date object."
-									},
-									"type": {
-										"type": "reference",
-										"name": "Date"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1045,
-									"character": 17
-								}
-							]
-						},
-						{
-							"id": 729,
-							"name": "goOffline",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 730,
-									"name": "goOffline",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Disconnects from the server (all Database operations will be completed offline).",
-										"text": "The client automatically maintains a persistent connection to the Database server, which\nwill remain active indefinitely and reconnect when disconnected. However, the `goOffline()` and\n`goOnline()` methods may be used to control the client connection in cases where a persistent\nconnection is undesirable.\n\nWhile offline, the client will no longer receive data updates from the Database. However,\nall Database operations performed locally will continue to immediately fire events, allowing\nyour application to continue behaving normally. Additionally, each operation performed locally\nwill automatically be queued and retried upon reconnection to the Database server.\n\nTo reconnect to the Database and begin receiving remote events, see `goOnline()`.\n\n#### Example\n\n```js\nawait firebase.database().goOnline();\n```\n"
-									},
-									"type": {
-										"type": "reference",
-										"name": "Promise",
-										"typeArguments": [
-											{
-												"type": "intrinsic",
-												"name": "void"
-											}
-										]
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1119,
-									"character": 13
-								}
-							]
-						},
-						{
-							"id": 727,
-							"name": "goOnline",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 728,
-									"name": "goOnline",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Reconnects to the server and synchronizes the offline Database state with the server state.",
-										"text": "This method should be used after disabling the active connection with `goOffline()`. Once\nreconnected, the client will transmit the proper data and fire the appropriate events so that\nyour client \"catches up\" automatically.\n\n#### Example\n\n```js\nawait firebase.database().goOnline();\n```\n"
-									},
-									"type": {
-										"type": "reference",
-										"name": "Promise",
-										"typeArguments": [
-											{
-												"type": "intrinsic",
-												"name": "void"
-											}
-										]
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1096,
-									"character": 12
-								}
-							]
-						},
-						{
-							"id": 721,
-							"name": "ref",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 722,
-									"name": "ref",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Returns a `Reference` representing the location in the Database corresponding to the provided path.\nIf no path is provided, the Reference will point to the root of the Database.",
-										"text": "#### Example\n\n```js\n// Get a reference to the root of the Database\nconst rootRef = firebase.database().ref();\n\n// Get a reference to the /users/ada node\nconst adaRef = firebase.database().ref(\"users/ada\");\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 723,
-											"name": "path",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {
-												"isOptional": true
-											},
-											"comment": {
-												"text": "Optional path representing the location the returned `Reference` will point. If not provided, the returned `Reference` will point to the root of the Database.\n"
-											},
-											"type": {
-												"type": "union",
-												"types": [
-													{
-														"type": "intrinsic",
-														"name": "undefined"
-													},
-													{
-														"type": "intrinsic",
-														"name": "string"
-													}
-												]
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "Reference",
-										"id": 444
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1063,
-									"character": 7
-								}
-							]
-						},
-						{
-							"id": 724,
-							"name": "refFromURL",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 725,
-									"name": "refFromURL",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Returns a `Reference` representing the location in the Database corresponding to the provided Firebase URL.",
-										"text": "An exception is thrown if the URL is not a valid Firebase Database URL or it has a different domain than the current Database instance.\n\nNote that all query parameters (orderBy, limitToLast, etc.) are ignored and are not applied to the returned Reference.\n\n#### Example\n\n```js\n// Get a reference to the root of the Database\nconst rootRef = firebase.database().ref(\"https://<DATABASE_NAME>.firebaseio.com\");\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 726,
-											"name": "url",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "The Firebase URL at which the returned Reference will point.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "Reference",
-										"id": 444
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1081,
-									"character": 14
-								}
-							]
-						},
-						{
-							"id": 734,
-							"name": "setLoggingEnabled",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 735,
-									"name": "setLoggingEnabled",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Sets the native logging level for the database module. By default,\nonly warnings and errors are logged natively. Setting this to true will log all\ndatabase events.",
-										"text": "> Ensure logging is disabled for production apps, as excessive logging can cause performance issues.\n\n#### Example\n\n```js\n// Set debug logging if developing\nif (__DEV__) {\n  firebase.database().setLoggingEnabled(true);\n}\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 736,
-											"name": "enabled",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "Whether debug logging is enabled.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "boolean"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "void"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1161,
-									"character": 21
-								}
-							]
-						},
-						{
-							"id": 737,
-							"name": "setPersistenceCacheSizeBytes",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 738,
-									"name": "setPersistenceCacheSizeBytes",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,\nFirebase Database will start removing data that hasn't been recently used. If you find that your application\ncaches too little or too much data, call this method to change the cache size. This method must be called before\ncreating your first Database reference and only needs to be called once per application.",
-										"text": "Note that the specified cache size is only an approximation and the size on disk may temporarily exceed it at times.\nCache sizes smaller than 1 MB or greater than 100 MB are not supported.\n\n#### Example\n\n```js\nfirebase.database().setPersistenceEnabled(true);\nfirebase.database().setPersistenceCacheSizeBytes(2000000); // 2MB\n\nasync function bootstrap() {\n  // Bootstrapping application\n  const snapshot = await firebase.database().ref('settings').once('value');\n}\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 739,
-											"name": "bytes",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "The new size of the cache in bytes.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "number"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "void"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1186,
-									"character": 32
-								}
-							]
-						},
-						{
-							"id": 731,
-							"name": "setPersistenceEnabled",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 732,
-									"name": "setPersistenceEnabled",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Sets whether persistence is enabled for all database calls across all app\ninstances.",
-										"text": "> Ensure this is called before any database calls are performed, otherwise\npersistence will only come into effect when the app is next started.\n\n#### Example\n\n```js\nfirebase.database().setPersistenceEnabled(true);\n\nasync function bootstrap() {\n  // Bootstrapping application\n  const snapshot = await firebase.database().ref('settings').once('value');\n}\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 733,
-											"name": "enabled",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"text": "Whether persistence is enabled for the Database service.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "boolean"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "void"
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "database/lib/index.d.ts",
-									"line": 1141,
-									"character": 25
-								}
-							]
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								740
-							]
-						},
-						{
-							"title": "Methods",
-							"kind": 2048,
-							"children": [
-								719,
-								729,
-								727,
-								721,
-								724,
-								734,
-								737,
-								731
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "database/lib/index.d.ts",
-							"line": 1041,
-							"character": 25
-						}
-					],
-					"extendedTypes": [
-						{
-							"type": "reference",
-							"name": "ReactNativeFirebaseModule"
 						}
 					]
 				},
@@ -14921,7 +14921,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for data changes at a particular location.",
-										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n*value* event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n*child_added* event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n*child_removed* event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n*child_changed* event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n*child_moved* event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
+										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n**value** event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n**child_added** event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n**child_removed** event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n**child_changed** event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n**child_moved** event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
 									},
 									"parameters": [
 										{
@@ -15030,7 +15030,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for exactly one event of the specified event type, and then stops listening.",
-										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users).once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
+										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users').once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -16153,7 +16153,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for data changes at a particular location.",
-										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n*value* event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n*child_added* event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n*child_removed* event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n*child_changed* event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n*child_moved* event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
+										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n**value** event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n**child_added** event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n**child_removed** event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n**child_changed** event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n**child_moved** event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
 									},
 									"parameters": [
 										{
@@ -16306,7 +16306,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for exactly one event of the specified event type, and then stops listening.",
-										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users).once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
+										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users').once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -18144,7 +18144,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for data changes at a particular location.",
-										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n*value* event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n*child_added* event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n*child_removed* event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n*child_changed* event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n*child_moved* event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
+										"text": "This is the primary way to read data from a Database. Your callback will be triggered for the\ninitial data and again whenever the data changes. Use `off()` to stop receiving updates..\n\n**value** event\n\nThis event will trigger once with the initial data stored at this location, and then trigger\nagain each time the data changes. The `DataSnapshot` passed to the callback will be for the location\nat which on() was called. It won't trigger until the entire contents has been synchronized.\nIf the location has no data, it will be triggered with an empty `DataSnapshot`\n(`val()` will return `null`).\n\n**child_added** event\n\nThis event will be triggered once for each initial child at this location, and it will be\ntriggered again every time a new child is added. The `DataSnapshot` passed into the callback\nwill reflect the data for the relevant child. For ordering purposes, it is passed a second argument\nwhich is a string containing the key of the previous sibling child by sort order, or `null` if\nit is the first child.\n\n**child_removed** event\n\nThis event will be triggered once every time a child is removed. The `DataSnapshot` passed into\nthe callback will be the old data for the child that was removed. A child will get removed when either:\n- a client explicitly calls `remove()` on that child or one of its ancestors\n- a client calls `set(null)` on that child or one of its ancestors\n- that child has all of its children removed\n- there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)\n\n**child_changed** event\n\nThis event will be triggered when the data stored in a child (or any of its descendants) changes.\nNote that a single `child_changed` event may represent multiple changes to the child. The\n`DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,\nthe callback is also passed a second argument which is a string containing the key of the previous\nsibling child by sort order, or `null` if it is the first child.\n\n**child_moved** event\n\nThis event will be triggered when a child's sort order changes such that its position relative\nto its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child\nthat has moved. It is also passed a second argument which is a string containing the key of the\nprevious sibling child by sort order, or `null` if it is the first child.\n"
 									},
 									"parameters": [
 										{
@@ -18307,7 +18307,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Listens for exactly one event of the specified event type, and then stops listening.",
-										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users).once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
+										"text": "This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.\n\n#### Example\n\n```js\n// Promise\nconst snapshot = await firebase.database().ref('users').once('value');\n// Callback\nfirebase.database().ref('users).once('value', (snapshot) => {\n  console.log(snapshot.val());\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -19405,11 +19405,17 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						718
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
 						692,
-						718,
 						672,
 						618,
 						444,
@@ -21323,8 +21329,8 @@
 				{
 					"id": 854,
 					"name": "Module",
-					"kind": 256,
-					"kindString": "Interface",
+					"kind": 128,
+					"kindString": "Class",
 					"flags": {
 						"isExported": true
 					},
@@ -21475,7 +21481,7 @@
 						{
 							"fileName": "indexing/lib/index.d.ts",
 							"line": 77,
-							"character": 25
+							"character": 21
 						}
 					],
 					"extendedTypes": [
@@ -21504,10 +21510,16 @@
 			],
 			"groups": [
 				{
+					"title": "Classes",
+					"kind": 128,
+					"children": [
+						854
+					]
+				},
+				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						854,
 						853
 					]
 				}
@@ -24898,7 +24910,7 @@
 				"tags": [
 					{
 						"tag": "firebase",
-						"text": "mlKitLanguage\n"
+						"text": "ml-natural-language\n"
 					}
 				]
 			},
