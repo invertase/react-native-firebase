@@ -44,8 +44,15 @@ describe('config()', () => {
   describe('fetch()', () => {
     it('with expiration provided', async () => {
       const date = Date.now() - 30000;
-      firebase.config().lastFetchTime.should.equal(0);
-      firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
+
+      if (device.getPlatform() === 'android') {
+        // iOS persists last fetch status so this test will fail sometimes
+        firebase.config().lastFetchTime.should.equal(0);
+        firebase
+          .config()
+          .lastFetchStatus.should.equal(firebase.config.LastFetchStatus.NO_FETCH_YET);
+      }
+
       await firebase.config().fetch(0);
       firebase.config().lastFetchStatus.should.equal(firebase.config.LastFetchStatus.SUCCESS);
       // TODO leave logger here - need to investigate flakey test

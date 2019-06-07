@@ -19,13 +19,13 @@
 #import "RNFBSharedUtils.h"
 
 @implementation RCTConvert (FIRApp)
-  + (FIRApp *)firAppFromString:(NSString *)appName {
-    if ([appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
-      return [FIRApp defaultApp];
-    }
-
-    return [FIRApp appNamed:appName];
++ (FIRApp *)firAppFromString:(NSString *)appName {
+  if ([appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
+    return [FIRApp defaultApp];
   }
 
-  RCT_CUSTOM_CONVERTER(FIRApp *, FIRApp, [self firAppFromString:[self NSString:json]]);
+  return [FIRApp appNamed:appName];
+}
+
+RCT_CUSTOM_CONVERTER(FIRApp *, FIRApp, [self firAppFromString:[self NSString:json]]);
 @end

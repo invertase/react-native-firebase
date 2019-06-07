@@ -20,6 +20,7 @@
     "@react-native-firebase/iid": "6.0.0-alpha.25",
     "@react-native-firebase/indexing": "^6.0.0-alpha.25",
     "@react-native-firebase/invites": "6.0.0-alpha.25",
+    "@react-native-firebase/links": "6.0.0-alpha.25",
     "@react-native-firebase/ml-natural-language": "6.0.0-alpha.25",
     "@react-native-firebase/perf": "6.0.0-alpha.25",
     "@react-native-firebase/storage": "6.0.0-alpha.25",
@@ -36,15 +37,15 @@
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.1.1",
     "detox": "12.5.0",
-    "jet": "^0.4.1",
-    "mocha": "^6.0.2",
-    "nyc": "^13.3.0",
+    "jet": "^0.4.3",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "patch-package": "^6.1.0",
     "react-native-port-patcher": "1.0.3",
     "require-all": "3.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^7.3.1"
+    "sinon": "^7.3.2"
   },
   "nyc": {
     "check-coverage": false,

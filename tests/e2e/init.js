@@ -22,11 +22,13 @@ require('@react-native-firebase/private-tests-helpers');
 
 const detox = require('detox');
 const jet = require('jet/platform/node');
+
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
 const PACKAGES = [
   'app',
+  'links',
   'iid',
   'perf',
   'fiam',
@@ -43,13 +45,15 @@ const PACKAGES = [
   'storage',
   'indexing',
   // 'firestore',
-  // 'links',
   // 'messaging',
+  // 'ml-vision',
+  // 'ml-automl',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
   requirePackageTests(PACKAGES[i]);
 }
+
 before(async () => {
   await detox.init(config);
   await jet.init();
@@ -75,12 +79,12 @@ beforeEach(async function beforeEach() {
       console.warn(`   🔴  Retry #${retry - 1} failed...`);
     }
 
-    console.warn(`️   ->  Retrying... (${retry})`);
-    await Utils.sleep(3000);
+    console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
+    await Utils.sleep(1000 * retry);
   }
 });
 
 after(async () => {
-  console.log('Cleaning up...');
+  console.log(' ✨ Tests Complete ✨ ');
   await device.terminateApp();
 });

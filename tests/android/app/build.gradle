@@ -27,11 +27,22 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
+  'links',
   'ml-natural-language',
   'storage',
   'perf',
+  'links',
   'utils'
 ]
+
+/**
+ * Use international variant JavaScriptCore
+ * International variant includes ICU i18n library and necessary data allowing to use
+ * e.g. Date.toLocaleString and String.localeCompare that give correct results
+ * when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than default.
+ */
+def useIntlJsc = false
 
 android {
   compileSdkVersion 28
@@ -124,7 +135,13 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   //noinspection GradleDynamicVersion
-  implementation 'org.webkit:android-jsc:+'
+  
+  // JSC from node_modules
+  if (useIntlJsc) {
+    implementation 'org.webkit:android-jsc-intl:+'
+  } else {
+    implementation 'org.webkit:android-jsc:+'
+  }
   /* ----------------------------
    *    REACT NATIVE FIREBASE
    * ---------------------------- */

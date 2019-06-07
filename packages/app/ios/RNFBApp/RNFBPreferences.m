@@ -25,66 +25,66 @@ static NSString *const RNFBDomainIdentifier = @"io.invertase.firebase";
 
 @implementation RNFBPreferences
 
-  static RNFBPreferences *sharedInstance;
+static RNFBPreferences *sharedInstance;
 
-  + (void)load {
-    sharedInstance = [[RNFBPreferences alloc] init];
++ (void)load {
+  sharedInstance = [[RNFBPreferences alloc] init];
+}
+
+- (instancetype)init {
+  self = [super init];
+
+  if (self) {
+    _userDefaults = [[NSUserDefaults alloc] initWithSuiteName:RNFBDomainIdentifier];
   }
 
-  - (instancetype)init {
-    self = [super init];
+  return self;
+}
 
-    if (self) {
-      _userDefaults = [[NSUserDefaults alloc] initWithSuiteName:RNFBDomainIdentifier];
-    }
+- (BOOL)contains:(NSString *)key {
+  return [_userDefaults objectForKey:key] != nil;
+}
 
-    return self;
-  }
+- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
+  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  return [_userDefaults boolForKey:key];
+}
 
-  - (BOOL)contains:(NSString *)key {
-    return [_userDefaults objectForKey:key] != nil;
-  }
+- (void)setBooleanValue:(NSString *)key boolValue:(BOOL)boolValue {
+  [_userDefaults setBool:boolValue forKey:key];
+  [_userDefaults synchronize];
+}
 
-  - (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-    if ([_userDefaults objectForKey:key] != nil) return defaultValue;
-    return [_userDefaults boolForKey:key];
-  }
+- (void)setIntegerValue:(NSString *)key integerValue:(NSInteger *)integerValue {
+  [_userDefaults setInteger:(NSInteger) integerValue forKey:key];
+  [_userDefaults synchronize];
+}
 
-  - (void)setBooleanValue:(NSString *)key boolValue:(BOOL)boolValue {
-    [_userDefaults setBool:boolValue forKey:key];
-    [_userDefaults synchronize];
-  }
+- (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue {
+  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  return (NSInteger *) [_userDefaults integerForKey:key];
+}
 
-  - (void)setIntegerValue:(NSString *)key integerValue:(NSInteger *)integerValue {
-    [_userDefaults setInteger:(NSInteger) integerValue forKey:key];
-    [_userDefaults synchronize];
-  }
+- (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
+  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  return [_userDefaults stringForKey:key];
+}
 
-  - (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue {
-    if ([_userDefaults objectForKey:key] != nil) return defaultValue;
-    return (NSInteger *) [_userDefaults integerForKey:key];
-  }
+- (void)setStringValue:(NSString *)key stringValue:(NSString *)stringValue {
+  [_userDefaults setValue:stringValue forKey:key];
+  [_userDefaults synchronize];
+}
 
-  - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-    if ([_userDefaults objectForKey:key] != nil) return defaultValue;
-    return [_userDefaults stringForKey:key];
-  }
+- (NSDictionary *)getAll {
+  return [_userDefaults dictionaryRepresentation];
+}
 
-  - (void)setStringValue:(NSString *)key stringValue:(NSString *)stringValue {
-    [_userDefaults setValue:stringValue forKey:key];
-    [_userDefaults synchronize];
-  }
+- (void)clearAll {
+  [_userDefaults removePersistentDomainForName:RNFBDomainIdentifier];
+}
 
-  - (NSDictionary *)getAll {
-    return [_userDefaults dictionaryRepresentation];
-  }
-
-  - (void)clearAll {
-    [_userDefaults removePersistentDomainForName:RNFBDomainIdentifier];
-  }
-
-  + (RNFBPreferences *)shared {
-    return sharedInstance;
-  }
++ (RNFBPreferences *)shared {
+  return sharedInstance;
+}
 
 @end

@@ -15,6 +15,9 @@ PODS:
   - Firebase/Database (5.20.2):
     - Firebase/CoreOnly
     - FirebaseDatabase (= 5.1.1)
+  - Firebase/DynamicLinks (5.20.2):
+    - Firebase/CoreOnly
+    - FirebaseDynamicLinks (= 3.4.3)
   - Firebase/Functions (5.20.2):
     - Firebase/CoreOnly
     - FirebaseFunctions (= 2.4.0)
@@ -212,7 +215,7 @@ PODS:
   - GTMSessionFetcher/Core (1.2.2)
   - GTMSessionFetcher/Full (1.2.2):
     - GTMSessionFetcher/Core (= 1.2.2)
-  - Jet (0.4.1):
+  - Jet (0.4.3):
     - React
   - leveldb-library (1.20)
   - nanopb (0.3.901):
@@ -316,6 +319,11 @@ PODS:
     - Firebase/Invites (~> 5.20.2)
     - React
     - RNFBApp
+  - RNFBLinks (6.0.0-alpha.25):
+    - Firebase/Core (~> 5.20.2)
+    - Firebase/DynamicLinks (~> 5.20.2)
+    - React
+    - RNFBApp
   - RNFBMlNaturalLanguage (6.0.0-alpha.25):
     - Firebase/Core (~> 5.20.2)
     - Firebase/MLCommon (~> 5.20.2)
@@ -364,6 +372,7 @@ DEPENDENCIES:
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
   - "RNFBInvites (from `../node_modules/@react-native-firebase/invites/ios`)"
+  - "RNFBLinks (from `../node_modules/@react-native-firebase/links/ios`)"
   - "RNFBMlNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
@@ -440,6 +449,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBInvites:
     :path: "../node_modules/@react-native-firebase/invites/ios"
+  RNFBLinks:
+    :path: "../node_modules/@react-native-firebase/links/ios"
   RNFBMlNaturalLanguage:
     :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
   RNFBPerf:
@@ -486,7 +497,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 04fce34bcd5620c1ee76fb79172105c74a4df335
   GTMOAuth2: e8b6512c896235149df975c41d9a36c868ab7fba
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
-  Jet: 271953e7858ea45774e54398924781928b870b9b
+  Jet: ad9ee8e1069e228f48d1aae72d9eb0310be541dd
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
@@ -502,6 +513,7 @@ SPEC CHECKSUMS:
   RNFBFunctions: 661d6db375ecb34ede31fdf83be769521b31b5ba
   RNFBIid: 6ee19f328a787cbb598205108d2660db9c62fd1c
   RNFBInvites: 6701a440fbe8a03f1c3adc03c1f8a57c8dc837f8
+  RNFBLinks: ebcc255f1979010faf0e161d73e7c2cab20c7260
   RNFBMlNaturalLanguage: 22133b929c71f528cbb45bbaf90cb0496e4a82c8
   RNFBPerf: e7afb51a854771459cffdab709850db16c028165
   RNFBStorage: 2f0c4fb5bab92494ca959ead003e6ebdabb5b589
