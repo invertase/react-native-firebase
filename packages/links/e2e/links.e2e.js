@@ -24,7 +24,8 @@ describe.only('links()', () => {
     });
   });
 
-  describe('aMethod()', () => {
+  // Tests TODO
+  xdescribe('aMethod()', () => {
     it('foo', async () => {
       await device.relaunchApp({ url: 'https://invertase.io/links-test', newInstance: true });
       firebase.links().onLink(console.dir);
@@ -32,13 +33,6 @@ describe.only('links()', () => {
       await Utils.sleep(3000);
       const result = await firebase.links().getInitialLink();
       await device.relaunchApp({ url: 'https://invertase.io/links-test', newInstance: false });
-
-      // console.dir(result);
-      // console.dir(result);
-      // console.dir(result);
-      // console.dir(result);
-      // console.dir(result);
-      // console.dir(result);
     });
   });
 });

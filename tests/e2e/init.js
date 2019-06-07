@@ -29,28 +29,31 @@ const { detox: config } = require('../package.json');
 const PACKAGES = [
   'app',
   'links',
-  // 'iid',
-  // 'perf',
-  // 'fiam',
-  // 'functions',
-  // 'analytics',
-  // 'config',
-  // 'crashlytics',
-  // 'utils',
-  // 'ml-natural-language',
-  // 'invites',
-  // 'fiam',
-  // 'auth',
-  // 'database',
-  // 'storage',
-  // 'indexing',
+  'iid',
+  'perf',
+  'fiam',
+  'functions',
+  'analytics',
+  'config',
+  'crashlytics',
+  'utils',
+  'ml-natural-language',
+  'invites',
+  'fiam',
+  'auth',
+  'database',
+  'storage',
+  'indexing',
   // 'firestore',
   // 'messaging',
+  // 'ml-vision',
+  // 'ml-automl',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
   requirePackageTests(PACKAGES[i]);
 }
+
 before(async () => {
   await detox.init(config);
   await jet.init();
