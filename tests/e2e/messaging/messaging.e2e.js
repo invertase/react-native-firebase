@@ -104,11 +104,11 @@ describe('messaging()', () => {
       });
 
       await firebase.messaging().deleteToken();
-      await sleep(250);
+      await sleep(10000);
       await firebase.iid().delete();
-      await sleep(250);
+      await sleep(10000);
       await firebase.iid().get();
-      await sleep(250);
+      await sleep(1000);
 
       const tokenAfter = await firebase.messaging().getToken();
       tokenAfter.should.be.a.String();
@@ -129,7 +129,7 @@ describe('messaging()', () => {
     it('deletes the current fcm token', async () => {
       // This call is racy. On my machine this fails about 40% of the time (over 50 reps)
       // If I sleep 2 seconds while the token does the auto-background fetch it is stable though
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await sleep(10000);
 
       const tokenBefore = await firebase.messaging().getToken();
       tokenBefore.should.be.a.String();
@@ -137,7 +137,7 @@ describe('messaging()', () => {
 
       // This call is racy. On my machine this fails about 40% of the time (over 50 reps)
       // If I sleep 2 seconds while the token does the auto-background fetch it is stable though
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await sleep(10000);
 
       const tokenAfter = await firebase.messaging().getToken();
       tokenAfter.should.be.a.String();
