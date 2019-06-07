@@ -36,11 +36,11 @@ const nativeModuleName = 'RNFBLinksModule';
 const nativeEvents = ['links_link_received'];
 
 class FirebaseLinksModule extends FirebaseModule {
-  newDynamicLinkParameters(link, domainUriPrefix) {
+  newDynamicLinkParameters(link, domainURIPrefix) {
     // todo validate args
     //    link string must start with http:// or https://
     //    domainUriPrefix string, must not start with http:// or https:// - without these
-    return new DynamicLinkParameters(link, domainUriPrefix);
+    return new DynamicLinkParameters(link, domainURIPrefix);
   }
 
   buildLink(dynamicLinkParams) {
