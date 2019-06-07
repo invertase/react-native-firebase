@@ -47,7 +47,7 @@ describe('firestore', () => {
     });
 
     it('.fromUint8Array() -> returns new instance of Blob', async () => {
-      const testUInt8Array = new Uint8Array(testBuffer);
+      const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
       const { Blob } = firebase.firestore;
       const myBlob = Blob.fromUint8Array(testUInt8Array);
       myBlob.should.be.instanceOf(Blob);
@@ -56,7 +56,7 @@ describe('firestore', () => {
     });
 
     it('.fromUint8Array() -> throws if arg not instanceof Uint8Array', async () => {
-      const testUInt8Array = new Uint8Array(testBuffer);
+      const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
       const { Blob } = firebase.firestore;
       const myBlob = Blob.fromUint8Array(testUInt8Array);
       myBlob.should.be.instanceOf(Blob);
@@ -102,8 +102,8 @@ describe('firestore', () => {
     it('.toUint8Array() -> returns Uint8Array', async () => {
       const { Blob } = firebase.firestore;
       const myBlob = Blob.fromBase64String(testBase64);
-      const testUInt8Array = new Uint8Array(testBuffer);
-      const testUInt8Array2 = new Uint8Array();
+      const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
+      const testUInt8Array2 = new jet.context.window.Uint8Array();
 
       myBlob.should.be.instanceOf(Blob);
       should.deepEqual(myBlob.toUint8Array(), testUInt8Array);
