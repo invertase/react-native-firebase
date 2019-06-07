@@ -108,7 +108,7 @@ export namespace Links {
     setFallbackUrl(fallbackUrl: string): DynamicLinkParameters;
 
     /**
-     * Sets the versionCode of the minimum version of your app that can open the link.
+     * Sets the version code of the minimum version of your app that can open the link.
      *
      * @param minimumVersion The minimum version.
      */
