@@ -100,7 +100,7 @@ describe('crashlytics()', () => {
   describe('enableCrashlyticsCollection()', () => {
     // failing from XCode 10.1 -> 10.2
     it('should not throw', async () => {
-      if (device.getPlatform() === 'ios') {
+      if (device.getPlatform() !== 'ios') {
         await firebase.crashlytics().enableCrashlyticsCollection();
       }
     });
