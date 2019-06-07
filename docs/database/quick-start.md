@@ -172,4 +172,22 @@ function Games() {
 
 ### Enable Offline Capabilities
 
-*TODO* @salakar
+React Native Firebase provides support for offline data caching, using the native Firebase SDKs.
+
+By enabling persistence, any data that the Firebase Realtime Database client would sync while online persists to disk and is available offline, even when the user or operating system restarts the app. This means your app works as it would online by using the local data stored in the cache. Listener callbacks will continue to fire for local updates. Read more on the [Firebase docs](https://firebase.google.com/docs/database/android/offline-capabilities).
+
+Persistence can be enabled by using the `setPersistenceEnabled()` method. The size of the database cache can also be controlled via the `setPersistenceCacheSizeBytes()` method.
+
+It is important to call these methods as early on in your app lifecycle as possible, before any database call has been triggered. If this does not happen, your persistence preferences will only be applied on the next application start.
+
+```js
+import database from '@react-native-firebase/database';
+
+firebase.database().setPersistenceEnabled(true);
+firebase.database().setPersistenceCacheSizeBytes(2000000); // 2MB
+
+function bootstrapApp() { ... };
+
+// Ensure methods are called before any application logic occurs
+bootstrapApp();
+```
