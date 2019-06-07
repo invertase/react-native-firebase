@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('links()', () => {
+describe('links()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
