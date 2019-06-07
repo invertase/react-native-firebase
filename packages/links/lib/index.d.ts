@@ -29,15 +29,15 @@ import {
 export namespace Links {
   /**
    * The DynamicLinkAnalyticsParameters interface provides functionality to add Google Analytic
-   * based parameters to the created dynamic link.
+   * based parameters to a dynamic link.
    *
    * #### Example
    *
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .analytics.setCampaign('banner')
-   *  .analytics.setContent('BOGOFF');
+   *    .analytics.setCampaign('banner')
+   *    .analytics.setContent('Click Me');
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -84,15 +84,15 @@ export namespace Links {
    * The DynamicLinkAndroidParameters interface provides functionality to configure the behaviour
    * of dynamic links for Android devices.
    *
-   * If declared, the Android package name must be set.
+   * If any parameter is declared then the Android package name must also be set via `setPackageName`
    *
    * #### Example
    *
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .android.setPackageName('io.invertase.testing')
-   *  .android.setMinimumVersion('18');
+   *   .android.setPackageName('io.invertase.testing')
+   *   .android.setMinimumVersion('18');
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -126,16 +126,16 @@ export namespace Links {
    * The DynamicLinkIOSParameters interface provides functionality to configure the behaviour
    * of dynamic links for iOS devices.
    *
-   * If declared, the iOS bundle ID must be set.
+   * If any parameter is declared then the iOS BundleId must also be set via `setBundleId`
    *
    * #### Example
    *
    * ```js
    * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
-   *  .ios.setBundleId('io.invertase.testing')
-   *  .ios.setAppStoreId('123456789')
-   *  .ios.setMinimumVersion('18');
+   *   .ios.setBundleId('io.invertase.testing')
+   *   .ios.setAppStoreId('123456789')
+   *   .ios.setMinimumVersion('18');
    *
    *  const link = await firebase.links().buildLink(linkParams);
    * ```
@@ -151,7 +151,7 @@ export namespace Links {
     /**
      * Sets the iOS bundle ID.
      *
-     * @param bundleId The parameters ID of the iOS app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
+     * @param bundleId The bundle ID of the iOS app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
      */
     setBundleId(bundleId: string): DynamicLinkParameters;
 
@@ -172,7 +172,7 @@ export namespace Links {
     setFallbackUrl(fallbackUrl: string): DynamicLinkParameters;
 
     /**
-     * Sets the parameters ID of the iOS app to use on iPads to open the link. The app must be connected to your project
+     * Sets the bundle ID of the iOS app to use on iPads to open the link. The app must be connected to your project
      * from the Overview page of the Firebase console.
      *
      * @param iPadBundleId The iPad parameters ID of the app.
