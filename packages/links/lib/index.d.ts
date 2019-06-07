@@ -409,7 +409,7 @@ export namespace Links {
    */
   export class Module extends ReactNativeFirebaseModule {
     /**
-     * Builds a dynamic link.
+     * Creates new parameters which enhance the functionality of a created link.
      *
      * To create a DynamicLinkParameters, first populate it by using the setX methods available on the `DynamicLinkParameters` builder classes,
      * then pass it to `firebase.links().buildLink(linkParams)` or `firebase.links().buildShortLink(linkParams, type)`.
