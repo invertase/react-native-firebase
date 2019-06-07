@@ -25,34 +25,34 @@ NSString *const RNFBMetaPrefix = @"rnfirebase_";
 
 @implementation RNFBMeta
 
-  + (BOOL)contains:(NSString *)key {
-    id keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-    return keyValue != nil;
-  }
++ (BOOL)contains:(NSString *)key {
+  id keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
+  return keyValue != nil;
+}
 
-  + (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-    NSNumber *keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-    if (keyValue == nil) return defaultValue;
-    return [keyValue boolValue];
-  }
++ (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
+  NSNumber *keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
+  if (keyValue == nil) return defaultValue;
+  return [keyValue boolValue];
+}
 
-  + (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-    NSString *keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-    if (keyValue == nil) return defaultValue;
-    return keyValue;
-  }
++ (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
+  NSString *keyValue = [[NSBundle mainBundle].infoDictionary valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
+  if (keyValue == nil) return defaultValue;
+  return keyValue;
+}
 
-  + (NSDictionary *)getAll {
-    NSMutableDictionary *allMetaValues = [NSMutableDictionary dictionary];
++ (NSDictionary *)getAll {
+  NSMutableDictionary *allMetaValues = [NSMutableDictionary dictionary];
 
-    NSArray *keys = [[NSBundle mainBundle].infoDictionary allKeys];
-    for (NSString *key in keys) {
-      if ([key hasPrefix:RNFBMetaPrefix]) {
-        allMetaValues[key] = [NSBundle mainBundle].infoDictionary[key];
-      }
+  NSArray *keys = [[NSBundle mainBundle].infoDictionary allKeys];
+  for (NSString *key in keys) {
+    if ([key hasPrefix:RNFBMetaPrefix]) {
+      allMetaValues[key] = [NSBundle mainBundle].infoDictionary[key];
     }
-
-    return allMetaValues;
   }
+
+  return allMetaValues;
+}
 
 @end

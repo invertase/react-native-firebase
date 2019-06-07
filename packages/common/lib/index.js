@@ -84,7 +84,7 @@ export function tryJSONParse(string) {
   }
 }
 
-export function tryJSONStringify(data: mixed): string | null {
+export function tryJSONStringify(data) {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {

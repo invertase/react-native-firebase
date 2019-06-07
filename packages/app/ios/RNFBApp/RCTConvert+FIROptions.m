@@ -19,19 +19,19 @@
 
 @implementation RCTConvert (FIROptions)
 
-  + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-    FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"] GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
-    firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
-    firOptions.projectID = [rawOptions valueForKey:@"projectId"];
-    firOptions.clientID = [rawOptions valueForKey:@"clientId"];
-    firOptions.trackingID = [rawOptions valueForKey:@"gaTrackingId"];
-    firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
-    firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
-    firOptions.androidClientID = [rawOptions valueForKey:@"androidClientId"];
-    firOptions.deepLinkURLScheme = [rawOptions valueForKey:@"deepLinkURLScheme"];
-    firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-    return firOptions;
-  }
++ (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
+  FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"] GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
+  firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
+  firOptions.projectID = [rawOptions valueForKey:@"projectId"];
+  firOptions.clientID = [rawOptions valueForKey:@"clientId"];
+  firOptions.trackingID = [rawOptions valueForKey:@"gaTrackingId"];
+  firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
+  firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
+  firOptions.androidClientID = [rawOptions valueForKey:@"androidClientId"];
+  firOptions.deepLinkURLScheme = [rawOptions valueForKey:@"deepLinkURLScheme"];
+  firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
+  return firOptions;
+}
 
-  RCT_CUSTOM_CONVERTER(FIROptions *, FIROptions, [self convertRawOptions:[self NSDictionary:json]]);
+RCT_CUSTOM_CONVERTER(FIROptions *, FIROptions, [self convertRawOptions:[self NSDictionary:json]]);
 @end

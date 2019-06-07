@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -29,6 +28,7 @@ import '@react-native-firebase/config';
 import '@react-native-firebase/utils';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/fiam';
+import '@react-native-firebase/links';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/storage';

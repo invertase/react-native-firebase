@@ -11,9 +11,11 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
+  'links',
   'ml-natural-language',
   'storage',
   'perf',
+  'links',
   'utils'
 ]
 

@@ -68,7 +68,7 @@ describe('indexing()', () => {
       await device.openURL({
         url,
       });
-      await Utils.sleep(200);
+      await Utils.sleep(3000);
       callback.should.be.calledOnce();
       callback.should.be.calledWith(url);
       unsubscribe();
