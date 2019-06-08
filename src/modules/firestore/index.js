@@ -49,7 +49,7 @@ type DocumentSyncEvent = {
 
 type Settings = {
   host?: string,
-  cacheSizeBytes?: CACHE_SIZE_UNLIMITED | number,
+  cacheSizeBytes?: number,
   persistence?: boolean,
   ssl?: boolean,
   timestampsInSnapshots?: boolean,
