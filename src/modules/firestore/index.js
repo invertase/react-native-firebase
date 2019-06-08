@@ -209,14 +209,6 @@ export default class Firestore extends ModuleBase {
       }
     }
 
-    if (hop(settings, 'cacheSizeBytes') && !isNumber(settings.cacheSizeBytes)) {
-      return Promise.reject(
-        new Error(
-          'Firestore.settings failed: settings.cacheSizeBytes must be number.'
-        )
-      );
-    }
-
     if (hop(settings, 'ssl') && !isBoolean(settings.ssl)) {
       return Promise.reject(
         new Error('Firestore.settings failed: settings.ssl must be boolean.')
