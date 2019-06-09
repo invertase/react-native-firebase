@@ -26,7 +26,7 @@ public class RNFirebaseAdMobRewardedVideo implements RewardedVideoAdListener {
     adMob = adMobInstance;
 
     Activity activity = adMob.getActivity();
-    // Some ads won't work without passing activity, but it is better than make the app crash
+    // Some ads won't work without passing activity, or the app will crash
     if (activity == null) {
       rewardedVideo = MobileAds.getRewardedVideoAdInstance(adMob.getContext());
     } else {
