@@ -434,11 +434,13 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   public void settings(String appName, ReadableMap settings, final Promise promise) {
     FirebaseFirestore firestore = getFirestoreForApp(appName);
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
+    
     if (settings.hasKey("host")) {
       firestoreSettings.setHost(settings.getString("host"));
     } else {
       firestoreSettings.setHost(firestore.getFirestoreSettings().getHost());
     }
+    
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
     } else {
