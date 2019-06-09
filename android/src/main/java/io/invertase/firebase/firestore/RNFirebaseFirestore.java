@@ -444,9 +444,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
     } else {
-      firestoreSettings.setPersistenceEnabled(firestore
-                                                .getFirestoreSettings()
-                                                .isPersistenceEnabled());
+      firestoreSettings.setPersistenceEnabled(firestore.getFirestoreSettings().isPersistenceEnabled());
     }
 
     if (settings.hasKey("cacheSizeBytes")) {
