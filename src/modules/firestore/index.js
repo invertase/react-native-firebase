@@ -24,11 +24,10 @@ import type DocumentSnapshot from './DocumentSnapshot';
 import type App from '../core/app';
 import type QuerySnapshot from './QuerySnapshot';
 
-// Flag firestore to use unlimited cache size
+// A constant indicating the unlimited cache size
 const CACHE_SIZE_UNLIMITED = -1;
 
-// A constant indicating the the minimum cache size that
-// currently is 1MB
+// A constant indicating the minimum cache size (currently 1MB)
 const MIN_CACHE_SIZE = 1048576;
 
 type CollectionSyncEvent = {
