@@ -14,6 +14,7 @@
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:
@@ -22,6 +23,7 @@
         #else
           (nonnull void (^)(NSArray *_Nullable))restorationHandler;
         #endif // __IPHONE_12_0
+
 - (void)sendLink:(NSString *)link;
 
 @end
