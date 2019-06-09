@@ -32,11 +32,11 @@ module.exports.sleep = function sleep(duration) {
  * @return {string}
  */
 module.exports.getReactNativePlatform = function getReactNativePlatform() {
-  if (process.env.CIRCLE_JOB) {
-    if (process.env.CIRCLE_JOB.includes('android')) {
+  if (process.env.TEAMCITY_PROJECT_NAME) {
+    if (process.env.TEAMCITY_BUILDCONF_NAME.includes('android')) {
       return 'android';
     }
-    if (process.env.CIRCLE_JOB.includes('ios')) {
+    if (process.env.TEAMCITY_BUILDCONF_NAME.includes('ios')) {
       return 'ios';
     }
   }
