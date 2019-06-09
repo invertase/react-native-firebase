@@ -24,10 +24,10 @@ import type DocumentSnapshot from './DocumentSnapshot';
 import type App from '../core/app';
 import type QuerySnapshot from './QuerySnapshot';
 
-// A constant indicating the unlimited cache size
+// A flag representing the unlimited cache size
 const CACHE_SIZE_UNLIMITED = -1;
 
-// A constant indicating the minimum cache size (currently 1MB)
+// The minimum cache size in the firebase SDK (currently 1MB)
 const MIN_CACHE_SIZE = 1048576;
 
 type CollectionSyncEvent = {
