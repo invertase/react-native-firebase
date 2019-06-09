@@ -26,6 +26,11 @@ const jet = require('jet/platform/node');
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
+config.configurations['android.emu.debug'].name =
+  process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].name;
+
+console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
+
 const PACKAGES = [
   'app',
   'links',
