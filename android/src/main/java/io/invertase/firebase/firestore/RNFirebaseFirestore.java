@@ -463,9 +463,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     if (settings.hasKey("ssl")) {
       firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
     } else {
-      firestoreSettings.setSslEnabled(firestore
-                                        .getFirestoreSettings()
-                                        .isSslEnabled());
+      firestoreSettings.setSslEnabled(firestore.getFirestoreSettings().isSslEnabled());
     }
 
     if (settings.hasKey("timestampsInSnapshots")) {
