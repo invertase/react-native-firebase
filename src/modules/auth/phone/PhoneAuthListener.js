@@ -75,15 +75,9 @@ export default class PhoneAuthListener {
     // internal events
     this._internalEvents = {
       codeSent: `phone:auth:${this._phoneAuthRequestKey}:onCodeSent`,
-      verificationFailed: `phone:auth:${
-        this._phoneAuthRequestKey
-      }:onVerificationFailed`,
-      verificationComplete: `phone:auth:${
-        this._phoneAuthRequestKey
-      }:onVerificationComplete`,
-      codeAutoRetrievalTimeout: `phone:auth:${
-        this._phoneAuthRequestKey
-      }:onCodeAutoRetrievalTimeout`,
+      verificationFailed: `phone:auth:${this._phoneAuthRequestKey}:onVerificationFailed`,
+      verificationComplete: `phone:auth:${this._phoneAuthRequestKey}:onVerificationComplete`,
+      codeAutoRetrievalTimeout: `phone:auth:${this._phoneAuthRequestKey}:onCodeAutoRetrievalTimeout`,
     };
 
     // user observer events

@@ -1,0 +1,30 @@
+diff --git a/node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj b/node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj
+index 396b2f9ac..cb78c68f9 100644
+--- a/node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj
++++ b/node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj
+@@ -560,6 +560,7 @@
+ 			developmentRegion = English;
+ 			hasScannedForEncodings = 0;
+ 			knownRegions = (
++				English,
+ 				en,
+ 			);
+ 			mainGroup = 3947678D1DBF985400D72256;
+@@ -909,7 +910,7 @@
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SKIP_INSTALL = YES;
+ 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+-				SWIFT_VERSION = 3.0;
++				SWIFT_VERSION = 4.2;
+ 			};
+ 			name = Debug;
+ 		};
+@@ -939,7 +940,7 @@
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.wix.Detox;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				SKIP_INSTALL = YES;
+-				SWIFT_VERSION = 3.0;
++				SWIFT_VERSION = 4.2;
+ 			};
+ 			name = Release;
+ 		};

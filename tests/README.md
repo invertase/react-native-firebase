@@ -28,8 +28,20 @@ Also install tests project iOS Pods.
 
 ```bash
 yarn
-cd tests/ && yarn
-cd tests/ios && pod install --repo-update
+cd tests/ && yarn  # see note below for XCode 10.2
+cd ios && pod install --repo-update
+```
+
+Note: the `cd tests/ && yarn` will fail the first time with XCode 10.2. You must edit `node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj` and alter the 4 `SWIFT_VERSION = 3.0` entries to be `SWIFT_VERSION = 4.0` So for XCode 10.2 you need this:
+
+```bash
+yarn
+cd tests/ && yarn  # this will fail with partial install of detox
+patch -p1 < manual-patches/detox+9.1.2.patch  # alter SWIFT_VERSION to 4.0
+patch -p1 < manual-patches/detox+9.1.2-no-extract.patch # do not re-extract iOS source
+./node_modules/detox/scripts/build_framework.ios.sh # build the patched iOS framework
+yarn # Now re-run and the build works
+cd ios && pod install --repo-update
 ```
 
 ---

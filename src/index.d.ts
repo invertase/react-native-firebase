@@ -2597,6 +2597,8 @@ declare module 'react-native-firebase' {
 
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
 
+        isEqual(otherQuery: Query): boolean;
+
         limit(limit: number): Query;
 
         onSnapshot(
