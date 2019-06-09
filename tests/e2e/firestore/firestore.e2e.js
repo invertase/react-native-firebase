@@ -104,7 +104,9 @@ describe('firestore()', () => {
       }
 
       return Promise.reject(
-        new Error('applied settings with cacheSizeBytes lower then minimal.')
+        new Error(
+          'applied settings with cacheSizeBytes value passed as string.'
+        )
       );
     });
 
