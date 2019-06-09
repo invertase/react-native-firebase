@@ -19,7 +19,7 @@
       restorationHandler:
         #if defined(__IPHONE_12_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0)
           (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
-        #elses
+        #else
           (nonnull void (^)(NSArray *_Nullable))restorationHandler;
         #endif // __IPHONE_12_0
 - (void)sendLink:(NSString *)link;
