@@ -437,9 +437,7 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
     if (settings.hasKey("host")) {
       firestoreSettings.setHost(settings.getString("host"));
     } else {
-      firestoreSettings.setHost(firestore
-                                  .getFirestoreSettings()
-                                  .getHost());
+      firestoreSettings.setHost(firestore.getFirestoreSettings().getHost());
     }
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
