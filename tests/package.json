@@ -37,7 +37,7 @@
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.1.1",
     "detox": "12.5.0",
-    "jet": "^0.4.3",
+    "jet": "^0.4.4",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "patch-package": "^6.1.0",
