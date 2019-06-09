@@ -2111,7 +2111,7 @@ declare module 'react-native-firebase' {
         navigation: NavigationParameters;
         social: SocialParameters;
 
-        constructor(link: string, dynamicLinkDomain: string);
+        constructor(link: string, dynamicLinkDomainOrDomainUriPrefix: string);
       }
 
       interface AnalyticsParameters {

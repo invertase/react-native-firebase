@@ -219,7 +219,16 @@ public class RNFirebaseLinks extends ReactContextBaseJavaModule implements Activ
       .createDynamicLink();
     try {
       builder.setLink(Uri.parse(linkData.getString("link")));
-      builder.setDomainUriPrefix(linkData.getString("dynamicLinkDomain"));
+
+      if (linkData.hasKey("dynamicLinkDomain")) {
+        builder.setDynamicLinkDomain(linkData.getString("dynamicLinkDomain"));
+        Log.w(TAG, "dynamicLinkDomain is deprecated, use domainUriPrefix instead, see API docs for usage");
+      } else {
+        if (!linkData.hasKey("domainUriPrefix")) {
+          throw new RuntimeException("linkData did not contain domainUriPrefix or deprecated dynamicLinkDomain");
+        }
+        builder.setDomainUriPrefix(linkData.getString("domainUriPrefix"));
+      }
       setAnalyticsParameters(linkData.getMap("analytics"), builder);
       setAndroidParameters(linkData.getMap("android"), builder);
       setIosParameters(linkData.getMap("ios"), builder);

@@ -18,6 +18,8 @@ export default class DynamicLink {
 
   _dynamicLinkDomain: string;
 
+  _domainUriPrefix: string;
+
   _ios: IOSParameters;
 
   _itunes: ITunesParameters;
@@ -28,10 +30,15 @@ export default class DynamicLink {
 
   _social: SocialParameters;
 
-  constructor(link: string, dynamicLinkDomain: string) {
+  constructor(link: string, dynamicLinkDomainOrDomainUriPrefix: string) {
     this._analytics = new AnalyticsParameters(this);
     this._android = new AndroidParameters(this);
-    this._dynamicLinkDomain = dynamicLinkDomain;
+
+    if (dynamicLinkDomainOrDomainUriPrefix.startsWith('http')) {
+      this._domainUriPrefix = dynamicLinkDomainOrDomainUriPrefix;
+    } else {
+      this._dynamicLinkDomain = dynamicLinkDomainOrDomainUriPrefix;
+    }
     this._ios = new IOSParameters(this);
     this._itunes = new ITunesParameters(this);
     this._link = link;
@@ -75,6 +82,7 @@ export default class DynamicLink {
     return {
       analytics: this._analytics.build(),
       android: this._android.build(),
+      domainUriPrefix: this._domainUriPrefix,
       dynamicLinkDomain: this._dynamicLinkDomain,
       ios: this._ios.build(),
       itunes: this._itunes.build(),
