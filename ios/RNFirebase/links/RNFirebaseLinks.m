@@ -197,16 +197,18 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 - (FIRDynamicLinkComponents *)buildDynamicLink:(NSDictionary *)linkData {
     @try {
         NSURL *link = [NSURL URLWithString:linkData[@"link"]];
+        FIRDynamicLinkComponents *components;
         if (linkData[@"dynamicLinkDomain"]) {
-          FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link domain:linkData[@"dynamicLinkDomain"]];
+          components = [FIRDynamicLinkComponents componentsWithLink:link domain:linkData[@"dynamicLinkDomain"]];
           DLog(@"dynamicLinkDomain is deprecated, use domainUriPrefix instead, see API docs for usage")
         } else {
           if (!linkData[@"domainUriPrefix"]) {
-              @throw [[NSException alloc] initWithName:@"Exception" reason@"linkData did not contain domainUriPrefix or deprecated dynamicLinkDomain"];
+              @throw [[NSException alloc]
+                      initWithName:@"Exception"
+                      reason:@"neither domainUriPrefix or deprecated dynamicLinkDomain specified"
+                      userInfo:nil];
           }
-          FIRDynamicLinkComponents *components = [[FIRDynamicLinkComponents alloc]
-                                         initWithLink:link
-                                         domainURIPrefix:linkData[@"domainUriPrefix"]];
+          components = [[FIRDynamicLinkComponents alloc] initWithLink:link domainURIPrefix:linkData[@"domainUriPrefix"]];
         }
         
         [self setAnalyticsParameters:linkData[@"analytics"] components:components];
