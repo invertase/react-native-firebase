@@ -47,6 +47,44 @@ describe('crashlytics()', () => {
     });
   });
 
+  describe('recordCustomError()', () => {
+    it('should record an error with a name and message', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase
+          .crashlytics()
+          .recordCustomError('Test Error', 'Really bad error!');
+      }
+    });
+
+    it('should record an error with a name and message and customError', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase
+          .crashlytics()
+          .recordCustomError('Test Error', 'Really bad error!', [
+            { fileName: 'TestFile.js' },
+          ]);
+      }
+    });
+
+    it('should error on invalid args', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase.crashlytics().recordCustomError({}, []);
+      }
+    });
+
+    it('should error on missing required customError property', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase
+          .crashlytics()
+          .recordCustomError('Test Error', 'Really bad error!', [{}]);
+      }
+    });
+  });
+
   describe('setBoolValue()', () => {
     it('should set a boolean value', async () => {
       // failing from XCode 10.1 -> 10.2
@@ -94,6 +132,38 @@ describe('crashlytics()', () => {
     xit('should error on a non a string value', async () => {
       // TODO lib needs validations adding
       await firebase.crashlytics().setUserIdentifier(123456);
+    });
+  });
+
+  describe('setUserName()', () => {
+    it('should set a string value', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase.crashlytics().setUserName('123abc');
+      }
+    });
+
+    it('should error on a non a string value', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase.crashlytics().setUserName(123456);
+      }
+    });
+  });
+
+  describe('setUserEmail()', () => {
+    it('should set a string value', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase.crashlytics().setUserEmail('123abc');
+      }
+    });
+
+    it('should error on a non a string value', async () => {
+      // failing from XCode 10.1 -> 10.2
+      if (device.getPlatform() !== 'ios') {
+        await firebase.crashlytics().setUserEmail(123456);
+      }
     });
   });
 
