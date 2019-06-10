@@ -22,7 +22,14 @@ class RNFirebaseAdmobInterstitial {
   RNFirebaseAdmobInterstitial(final String adUnitString, final RNFirebaseAdMob adMobInstance) {
     adUnit = adUnitString;
     adMob = adMobInstance;
-    interstitialAd = new InterstitialAd(adMob.getContext());
+
+    Activity activity = adMob.getActivity();
+    // Some ads won't work without passing activity, or the app will crash
+    if (activity == null) {
+      interstitialAd = new InterstitialAd(adMob.getContext());
+    } else {
+      interstitialAd = new InterstitialAd(activity);
+    }
     interstitialAd.setAdUnitId(adUnit);
 
     AdListener adListener = new AdListener() {
