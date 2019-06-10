@@ -2732,6 +2732,7 @@ declare module 'react-native-firebase' {
       interface Settings {
         host?: string;
         persistence?: boolean;
+        cacheSizeBytes?: number;
         ssl?: boolean;
         timestampsInSnapshots?: boolean;
       }
