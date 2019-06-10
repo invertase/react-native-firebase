@@ -147,6 +147,15 @@ export function isString(value: mixed): boolean %checks {
 }
 
 /**
+ * Simple is number check
+ * @param value
+ * @return {boolean}
+ */
+export function isNumber(value: mixed): boolean %checks {
+  return typeof value === 'number';
+}
+
+/**
  * Simple is boolean check
  * @param value
  * @return {boolean}
