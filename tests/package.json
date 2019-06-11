@@ -17,39 +17,43 @@
     "test-ios-reuse": "detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd .."
+    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
+    "postinstall": "patch-package"
   },
   "dependencies": {
+    "@invertase/tests-firebase-functions": "^0.0.1",
     "detox": "^9.0.4",
-    "fbjs": "^0.8.16",
-    "firebase-admin": "^5.12.0",
-    "jet": "^0.2.0",
+    "fbjs": "^1.0.0",
+    "firebase-admin": "^8.0.0",
+    "jet": "^0.4.3",
     "jsonwebtoken": "^8.2.1",
-    "mocha": "^5.2.0",
+    "mocha": "^6.1.4",
+    "patch-package": "^6.1.2",
+    "postinstall-postinstall": "^2.0.0",
     "prop-types": "^15.6.1",
     "react": "16.8.3",
-    "react-native": "0.59.3",
+    "react-native": "^0.59.9",
+    "react-native-port-patcher": "^1.0.3",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
-    "sinon": "^6.2.0",
-    "@invertase/tests-firebase-functions": "^0.0.1"
+    "sinon": "^7.3.2"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.0.0",
-    "@react-native-firebase/private-tests-helpers": "^0.0.9",
-    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
     "@babel/runtime": "^7.0.0",
-    "babel-eslint": "^9.0.0",
+    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
+    "@react-native-firebase/private-tests-helpers": "^0.0.9",
+    "babel-eslint": "^10.0.1",
     "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "eslint": "^5.5.0",
     "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-flowtype": "^2.46.3",
+    "eslint-plugin-flowtype": "^3.9.1",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "flow-bin": "^0.78.0",
-    "nyc": "^13.1.0",
+    "flow-bin": "^0.100.0",
+    "nyc": "^14.1.1",
     "rimraf": "^2.6.2"
   },
   "nyc": {
@@ -91,6 +95,12 @@
         "type": "ios.simulator",
         "name": "iPhone X",
         "logLevel": "error"
+      },
+      "ios.ci": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
+        "type": "ios.simulator",
+        "name": "iPhone X"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",

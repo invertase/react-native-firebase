@@ -132,7 +132,7 @@ declare module 'react-native-firebase' {
 
     firestore(): RNFirebase.firestore.Firestore;
 
-    functions(): RNFirebase.functions.Functions;
+    functions(appOrRegion?: string| App, region?: string): RNFirebase.functions.Functions;
 
     iid(): RNFirebase.iid.InstanceId;
 
@@ -928,11 +928,18 @@ declare module 'react-native-firebase' {
       verificationId: string | null;
     }
 
+    interface NativeError extends Error {
+      code: string;
+      message: string;
+      nativeErrorCode?: string;
+      nativeErrorMessage?: string;
+    }
+
     type PhoneAuthSnapshot = {
       state: 'sent' | 'timeout' | 'verified' | 'error';
       verificationId: string;
       code: string | null;
-      error: Error | null;
+      error: NativeError | null;
     };
 
     type PhoneAuthError = {
@@ -2020,6 +2027,13 @@ declare module 'react-native-firebase' {
     }
 
     namespace crashlytics {
+      type customError = {
+        fileName:string,
+        className?:string,
+        functionName?:string,
+        lineNumber?:number,
+        additional?:Object
+      }
       interface Crashlytics {
         /**
          * Forces a crash. Useful for testing your application is set up correctly.
@@ -2035,6 +2049,11 @@ declare module 'react-native-firebase' {
          * Logs a non fatal exception.
          */
         recordError(code: number, message: string): void;
+
+        /**
+         * Logs a custom non fatal exception.
+         */
+        recordCustomError(name:string, message:string, stack?:customError[]):void;
 
         /**
          * Set a boolean value to show alongside any subsequent crash reports.
@@ -2060,6 +2079,16 @@ declare module 'react-native-firebase' {
          * Set the user ID to show alongside any subsequent crash reports.
          */
         setUserIdentifier(userId: string): void;
+
+        /**
+         * Set the user name to show alongside any subsequent crash reports.
+         */
+        setUserName(userName: string): void;
+
+        /**
+         * Set the user email to show alongside any subsequent crash reports.
+         */
+        setUserEmail(userEmail: string): void;
 
         /**
          * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
@@ -2283,6 +2312,11 @@ declare module 'react-native-firebase' {
          * Uppercased + underscored variables of @FunctionsErrorCode
          */
         HttpsErrorCode: HttpsErrorCode;
+        /**
+         * constructor overload:
+         * See https://github.com/invertase/react-native-firebase-docs/blob/master/docs/functions/reference/functions.md
+         */
+        (appOrRegion?: string| App, region?: string): Functions
       }
 
       interface HttpsError extends Error {
@@ -2336,6 +2370,7 @@ declare module 'react-native-firebase' {
         readonly firestore: Firestore;
         readonly id: string;
         readonly parent: DocumentReference;
+        readonly path: string;
 
         add(data: object): Promise<DocumentReference>;
 
@@ -2352,6 +2387,8 @@ declare module 'react-native-firebase' {
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
 
         limit(limit: number): Query;
+
+        isEqual(otherCollectionReference: CollectionReference): boolean;
 
         onSnapshot(
           onNext: Query.ObserverOnNext,
@@ -2582,6 +2619,8 @@ declare module 'react-native-firebase' {
 
         get(options?: Types.GetOptions): Promise<QuerySnapshot>;
 
+        isEqual(otherQuery: Query): boolean;
+
         limit(limit: number): Query;
 
         onSnapshot(
@@ -2693,6 +2732,7 @@ declare module 'react-native-firebase' {
       interface Settings {
         host?: string;
         persistence?: boolean;
+        cacheSizeBytes?: number;
         ssl?: boolean;
         timestampsInSnapshots?: boolean;
       }

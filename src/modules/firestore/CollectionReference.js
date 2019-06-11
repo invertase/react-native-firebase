@@ -49,6 +49,39 @@ export default class CollectionReference {
       : null;
   }
 
+  get path(): string {
+    return this._collectionPath.relativeName;
+  }
+
+  isEqual(otherCollectionReference: CollectionReference) {
+    if (!(otherCollectionReference instanceof CollectionReference)) {
+      throw new Error(
+        'firebase.firestore.CollectionReference.isEqual(*) expects an instance of CollectionReference.'
+      );
+    }
+
+    // check paths match
+    if (this.path !== otherCollectionReference.path) return false;
+
+    // check same firestore app name
+    if (
+      this._firestore.app.name !== otherCollectionReference._firestore.app.name
+    ) {
+      return false;
+    }
+
+    // check same firestore app projectId
+    // noinspection RedundantIfStatementJS
+    if (
+      this._firestore.app.options.projectId !==
+      otherCollectionReference._firestore.app.options.projectId
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   add(data: Object): Promise<DocumentReference> {
     const documentRef = this.doc();
     return documentRef.set(data).then(() => Promise.resolve(documentRef));

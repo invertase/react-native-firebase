@@ -80,8 +80,6 @@ export default class Timestamp {
   }
 
   toString(): string {
-    return `Timestamp(seconds=${this.seconds}, nanoseconds=${
-      this.nanoseconds
-    })`;
+    return `Timestamp(seconds=${this.seconds}, nanoseconds=${this.nanoseconds})`;
   }
 }

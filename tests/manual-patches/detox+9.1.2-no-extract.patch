@@ -1,0 +1,11 @@
+--- a/node_modules/detox/scripts/build_framework.ios.sh	2019-05-25 16:36:22.000000000 -0500
++++ b/node_modules/detox/scripts/build_framework.ios.sh	2019-05-25 16:36:48.000000000 -0500
+@@ -18,7 +18,7 @@
+     buildFramework "${detoxSourcePath}"
+   else
+     detoxSourcePath="${detoxRootPath}"/ios_src
+-    extractSources "${detoxSourcePath}"
++    #extractSources "${detoxSourcePath}"
+     buildFramework "${detoxSourcePath}"
+     rm -fr "${detoxSourcePath}"
+   fi

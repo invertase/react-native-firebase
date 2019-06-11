@@ -1,4 +1,9 @@
 buildscript {
+    ext {
+        buildToolsVersion = "28.0.3"
+        compileSdkVersion = 28
+    }
+
   repositories {
     google()
     maven {
@@ -7,7 +12,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.4.1'
     classpath 'com.google.gms:google-services:4.2.0'
     classpath 'com.google.firebase:firebase-plugins:1.1.5'
     classpath 'io.fabric.tools:gradle:1.25.4'
@@ -42,11 +47,14 @@ allprojects {
   }
 }
 
-subprojects {
-  task listAllDependencies(type: DependencyReportTask) {}
+ext {
+  buildToolsVersion = "28.0.3"
+  minSdkVersion = 18
+  compileSdkVersion = 28
+  targetSdkVersion = 27
+  supportLibVersion = "28.0.0"
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.10.2'
-  distributionUrl = distributionUrl.replace("bin", "all")
+subprojects {
+  task listAllDependencies(type: DependencyReportTask) {}
 }

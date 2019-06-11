@@ -181,6 +181,73 @@ export default class Query {
       .then(nativeData => new QuerySnapshot(this._firestore, this, nativeData));
   }
 
+  isEqual(otherQuery: Query): boolean {
+    if (!(otherQuery instanceof Query)) {
+      throw new Error(
+        'firebase.firestore.Query.isEqual(*) expects an instance of Query.'
+      );
+    }
+
+    if (this._firestore.app.name !== otherQuery._firestore.app.name) {
+      return false;
+    }
+
+    if (
+      this._firestore.app.options.projectId !==
+      otherQuery._firestore.app.options.projectId
+    ) {
+      return false;
+    }
+
+    if (this._fieldFilters.length !== otherQuery._fieldFilters.length) {
+      return false;
+    }
+
+    for (let i = 0; i < this._fieldFilters.length; i++) {
+      const thisFieldFilter = this._fieldFilters[i];
+      const otherFieldFilter = otherQuery._fieldFilters[i];
+      if (
+        thisFieldFilter.fieldPath.string !== otherFieldFilter.fieldPath.string
+      ) {
+        return false;
+      }
+      if (thisFieldFilter.fieldPath.type !== otherFieldFilter.fieldPath.type) {
+        return false;
+      }
+      if (thisFieldFilter.value.type !== otherFieldFilter.value.type) {
+        return false;
+      }
+      if (thisFieldFilter.value.value !== otherFieldFilter.value.value) {
+        return false;
+      }
+      if (thisFieldFilter.operator !== otherFieldFilter.operator) {
+        return false;
+      }
+    }
+
+    if (this._fieldOrders.length !== otherQuery._fieldOrders.length) {
+      return false;
+    }
+
+    for (let i = 0; i < this._fieldOrders.length; i++) {
+      const thisFieldOrder = this._fieldOrders[i];
+      const otherFieldOrder = otherQuery._fieldOrders[i];
+      if (thisFieldOrder.direction !== otherFieldOrder.direction) {
+        return false;
+      }
+      if (
+        thisFieldOrder.fieldPath.string !== otherFieldOrder.fieldPath.string
+      ) {
+        return false;
+      }
+      if (thisFieldOrder.fieldPath.type !== otherFieldOrder.fieldPath.type) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   limit(limit: number): Query {
     // TODO: Validation
     // validate.isInteger('n', n);

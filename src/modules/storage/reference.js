@@ -4,6 +4,7 @@
  */
 import ReferenceBase from '../../utils/ReferenceBase';
 import StorageTask, { UPLOAD_TASK, DOWNLOAD_TASK } from './task';
+import { isIOS } from '../../utils';
 import { getNativeModule } from '../../utils/native';
 import type Storage from './';
 
@@ -85,7 +86,7 @@ export default class StorageReference extends ReferenceBase {
    * Alias to putFile
    * @returns {StorageReference.putFile}
    */
-  get put(): (Object, Object) => StorageTask {
+  get put(): (string, Object) => StorageTask {
     return this.putFile;
   }
 
@@ -95,9 +96,9 @@ export default class StorageReference extends ReferenceBase {
    * @param  {object} metadata An object containing metadata
    * @return {Promise}
    */
-  putFile(filePath: Object, metadata: Object = {}): StorageTask {
-    let _filePath = filePath.replace('file://', '');
-    if (_filePath.includes('%')) _filePath = decodeURI(_filePath);
+  putFile(filePath: string, metadata: Object = {}): StorageTask {
+    let _filePath = isIOS ? filePath.replace('file://', '') : filePath;
+    if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
     return new StorageTask(
       UPLOAD_TASK,
       getNativeModule(this._storage).putFile(this.path, _filePath, metadata),

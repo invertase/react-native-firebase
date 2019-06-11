@@ -41,8 +41,11 @@ describe('iid()', () => {
 
   describe('deleteToken()', () => {
     it('should return nil from deleteToken with arguments', async () => {
-      const authorizedEntity = firebase.iid().app.options.messagingSenderId;
-      const token = await firebase.iid().deleteToken(authorizedEntity, '*');
+      // This call is racy. On my machine this fails about 40% of the time (over 50 reps)
+      // If I sleep 2 seconds while the token does the auto-background fetch it is stable though
+      await sleep(10000);
+      authorizedEntity = firebase.iid().app.options.messagingSenderId;
+      token = await firebase.iid().deleteToken(authorizedEntity, '*');
       should.not.exist(token);
     });
 
