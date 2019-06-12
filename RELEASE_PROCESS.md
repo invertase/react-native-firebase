@@ -17,7 +17,6 @@ This document is an attempt to write down all the steps in the release process f
 1. Update the firebase registration version numbers to match the next version number
    - iOS here: <https://github.com/invertase/react-native-firebase/blob/v5.x.x/ios/RNFirebase/RNFirebase.m#L20>
    - Android here: <https://github.com/invertase/react-native-firebase/blob/v5.x.x/android/src/main/java/io/invertase/firebase/ReactNativeFirebaseAppRegistrar.java#L36>
-1. Update package.json (need guidance here)
 
 ## Package and Deploy
 
