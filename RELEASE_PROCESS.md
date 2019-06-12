@@ -29,6 +29,6 @@ This document is an attempt to write down all the steps in the release process f
 
 ## Release notification
 
-1. discord announcements: invertase / react-native?
+1. Discord announcement: Invertase OSS > React Native Firebase > Announcements (use `@here` in the announcement to notify anyone watching the channel)
 1. twitter?
 1. anyone else?
