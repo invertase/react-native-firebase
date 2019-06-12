@@ -20,7 +20,7 @@
     "prepare": "yarn run clean && yarn run build && yarn run build-flow",
     "precommit": "lint-staged",
     "postinstall": "opencollective-postinstall && echo 'WARNING: react-native-firebase v5 will allow breaking changes in minor versions starting from v5.5.x, this is in order to continue supporting it prior to v6. Info: https://rnfirebase.io/docs/v5.x.x/releases/v5.4.x' || exit 0",
-    "prepublishOnly": "yarn run validate-ts-declarations && yarn run validate-flow-declarations"
+    "prepublishOnly": "yarn run validate:all:ts && yarn run validate:all:flow && yarn run validate:all:js"
   },
   "repository": {
     "type": "git",
