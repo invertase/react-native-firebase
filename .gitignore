@@ -88,3 +88,4 @@ tests/android/app/.project
 tests/android/app/.classpath
 **/*.xcworkspace/**
 tests/functions/firebase-debug.log
+yarn.lock
