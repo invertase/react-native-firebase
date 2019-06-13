@@ -96,6 +96,32 @@ describe('firestore()', () => {
       );
     });
 
+    it('should reject invalid cache sizes', async () => {
+      try {
+        await firebase.firestore().settings({ cacheSizeBytes: '100' });
+      } catch (error) {
+        return Promise.resolve();
+      }
+
+      return Promise.reject(
+        new Error(
+          'applied settings with cacheSizeBytes value passed as string.'
+        )
+      );
+    });
+
+    it('should reject cache sizes lower then the minimum one', async () => {
+      try {
+        await firebase.firestore().settings({ cacheSizeBytes: 100 });
+      } catch (error) {
+        return Promise.resolve();
+      }
+
+      return Promise.reject(
+        new Error('applied settings with cacheSizeBytes lower then minimal.')
+      );
+    });
+
     it('should reject invalid ssl setting', async () => {
       try {
         await firebase.firestore().settings({ ssl: 'fail' });

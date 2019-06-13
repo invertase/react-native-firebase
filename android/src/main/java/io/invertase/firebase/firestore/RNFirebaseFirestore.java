@@ -434,26 +434,35 @@ public class RNFirebaseFirestore extends ReactContextBaseJavaModule {
   public void settings(String appName, ReadableMap settings, final Promise promise) {
     FirebaseFirestore firestore = getFirestoreForApp(appName);
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
+    
     if (settings.hasKey("host")) {
       firestoreSettings.setHost(settings.getString("host"));
     } else {
-      firestoreSettings.setHost(firestore
-                                  .getFirestoreSettings()
-                                  .getHost());
+      firestoreSettings.setHost(firestore.getFirestoreSettings().getHost());
     }
+    
     if (settings.hasKey("persistence")) {
       firestoreSettings.setPersistenceEnabled(settings.getBoolean("persistence"));
     } else {
-      firestoreSettings.setPersistenceEnabled(firestore
-                                                .getFirestoreSettings()
-                                                .isPersistenceEnabled());
+      firestoreSettings.setPersistenceEnabled(firestore.getFirestoreSettings().isPersistenceEnabled());
     }
+
+    if (settings.hasKey("cacheSizeBytes")) {
+      int cacheSizeBytes = settings.getInt("cacheSizeBytes");
+      
+      if (cacheSizeBytes == -1) {
+        firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
+      } else {
+        firestoreSettings.setCacheSizeBytes(cacheSizeBytes);
+      }
+    } else {
+      firestoreSettings.setCacheSizeBytes(firestore.getFirestoreSettings().getCacheSizeBytes());
+    }
+
     if (settings.hasKey("ssl")) {
       firestoreSettings.setSslEnabled(settings.getBoolean("ssl"));
     } else {
-      firestoreSettings.setSslEnabled(firestore
-                                        .getFirestoreSettings()
-                                        .isSslEnabled());
+      firestoreSettings.setSslEnabled(firestore.getFirestoreSettings().isSslEnabled());
     }
 
     if (settings.hasKey("timestampsInSnapshots")) {

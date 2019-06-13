@@ -132,7 +132,7 @@ declare module 'react-native-firebase' {
 
     firestore(): RNFirebase.firestore.Firestore;
 
-    functions(): RNFirebase.functions.Functions;
+    functions(appOrRegion?: string| App, region?: string): RNFirebase.functions.Functions;
 
     iid(): RNFirebase.iid.InstanceId;
 
@@ -2312,6 +2312,11 @@ declare module 'react-native-firebase' {
          * Uppercased + underscored variables of @FunctionsErrorCode
          */
         HttpsErrorCode: HttpsErrorCode;
+        /**
+         * constructor overload:
+         * See https://github.com/invertase/react-native-firebase-docs/blob/master/docs/functions/reference/functions.md
+         */
+        (appOrRegion?: string| App, region?: string): Functions
       }
 
       interface HttpsError extends Error {
@@ -2727,6 +2732,7 @@ declare module 'react-native-firebase' {
       interface Settings {
         host?: string;
         persistence?: boolean;
+        cacheSizeBytes?: number;
         ssl?: boolean;
         timestampsInSnapshots?: boolean;
       }
