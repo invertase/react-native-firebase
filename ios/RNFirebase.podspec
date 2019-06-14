@@ -21,4 +21,10 @@ Pod::Spec.new do |s|
     cs.dependency 'Fabric'
     cs.dependency 'Crashlytics'
   end
+  # allow this package to be used with use_frameworks!
+  s.static_framework = true
+  # fix recursive header flag being skipped by cocoapods when using this as a framework
+  s.xcconfig = {
+    'HEADER_SEARCH_PATHS' => '${PODS_ROOT}/Headers/Public/**'
+  }
 end
