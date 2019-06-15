@@ -2027,6 +2027,13 @@ declare module 'react-native-firebase' {
     }
 
     namespace crashlytics {
+      type customError = {
+        fileName:string,
+        className?:string,
+        functionName?:string,
+        lineNumber?:number,
+        additional?:Object
+      }
       interface Crashlytics {
         /**
          * Forces a crash. Useful for testing your application is set up correctly.
@@ -2042,6 +2049,11 @@ declare module 'react-native-firebase' {
          * Logs a non fatal exception.
          */
         recordError(code: number, message: string): void;
+
+        /**
+         * Logs a custom non fatal exception.
+         */
+        recordCustomError(name:string, message:string, stack?:customError[]):void;
 
         /**
          * Set a boolean value to show alongside any subsequent crash reports.
@@ -2067,6 +2079,16 @@ declare module 'react-native-firebase' {
          * Set the user ID to show alongside any subsequent crash reports.
          */
         setUserIdentifier(userId: string): void;
+
+        /**
+         * Set the user name to show alongside any subsequent crash reports.
+         */
+        setUserName(userName: string): void;
+
+        /**
+         * Set the user email to show alongside any subsequent crash reports.
+         */
+        setUserEmail(userEmail: string): void;
 
         /**
          * Enable Crashlytics reporting. Only avaliable when disabled automatic initialization
