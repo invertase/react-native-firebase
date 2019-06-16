@@ -14,7 +14,7 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:3.4.1'
     classpath 'com.google.gms:google-services:4.2.0'
-    classpath 'com.google.firebase:firebase-plugins:1.1.5'
+    classpath 'com.google.firebase:perf-plugin:1.2.1'
     classpath 'io.fabric.tools:gradle:1.25.4'
   }
 }
