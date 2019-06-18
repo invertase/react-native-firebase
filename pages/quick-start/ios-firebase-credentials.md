@@ -64,6 +64,40 @@ Add the following lines to the file:
 // ...
 ```
 
+> If you're using react-native version 0.60.0-rc.1 you'll need to modify your Podfile to add the Firebase specs.
+
+### Modify Podfile (react native 0.60.0-rc.1 only)
+
+Add to the following file: 
+
+**`ios/Podfile`**
+```ruby
+# Uncomment the next line to define a global platform for your project
+platform :ios, '9.0'
+
+require_relative '../node_modules/@react-native-firebase/app/pod_config'
+
+// ...
+```
+
+Add the following line to the bottom of your {projectName} `do` block:
+```ruby
+target '{projectName}' do
+// ...
+
+react_native_firebase!
+end
+```
+
+In your terminal
+```bash
+cd ios
+pod install
+```
+
+
+
+
 ## Next
 
 <Grid>
