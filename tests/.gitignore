@@ -42,3 +42,4 @@ android/keystores/debug.keystore
 
 google-services.json
 GoogleService-Info.plist
+TestingAVD.log

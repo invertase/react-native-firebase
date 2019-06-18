@@ -43,10 +43,6 @@ import {
   MODULE_NAME as InstanceIdModuleName,
 } from '../iid';
 import {
-  statics as InvitesStatics,
-  MODULE_NAME as InvitesModuleName,
-} from '../invites';
-import {
   statics as LinksStatics,
   MODULE_NAME as LinksModuleName,
 } from '../links';
@@ -82,7 +78,6 @@ import type {
   FirestoreModule,
   FunctionsModule,
   InstanceIdModule,
-  InvitesModule,
   LinksModule,
   MessagingModule,
   NotificationsModule,
@@ -111,8 +106,6 @@ class Firebase {
   functions: FunctionsModule;
 
   iid: InstanceIdModule;
-
-  invites: InvitesModule;
 
   links: LinksModule;
 
@@ -169,11 +162,6 @@ class Firebase {
       'iid',
       InstanceIdStatics,
       InstanceIdModuleName
-    );
-    this.invites = APPS.moduleAndStatics(
-      'invites',
-      InvitesStatics,
-      InvitesModuleName
     );
     this.links = APPS.moduleAndStatics('links', LinksStatics, LinksModuleName);
     this.messaging = APPS.moduleAndStatics(
@@ -252,7 +240,6 @@ export const {
   firestore,
   functions,
   iid,
-  invites,
   links,
   messaging,
   notifications,
