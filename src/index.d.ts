@@ -2437,7 +2437,7 @@ declare module 'react-native-firebase' {
 
       interface DocumentReference {
         readonly firestore: Firestore;
-        readonly id: string | null;
+        readonly id: string;
         readonly parent: CollectionReference;
         readonly path: string;
 
@@ -2526,7 +2526,7 @@ declare module 'react-native-firebase' {
 
       interface DocumentSnapshot {
         readonly exists: boolean;
-        readonly id: string | null;
+        readonly id: string;
         readonly metadata: Types.SnapshotMetadata;
         readonly ref: DocumentReference;
 
