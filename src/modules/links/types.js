@@ -44,7 +44,7 @@ export type NativeSocialParameters = {|
 export type NativeDynamicLink = {|
   analytics: NativeAnalyticsParameters,
   android: NativeAndroidParameters,
-  dynamicLinkDomain: string,
+  domainURIPrefix: string,
   ios: NativeIOSParameters,
   itunes: NativeITunesParameters,
   link: string,
