@@ -46,7 +46,7 @@
 
             if(dict[@"additional"]){
                 CLSStackFrame *f = [CLSStackFrame stackFrame];
-                [f setLibrary: "Additional Parameters"];
+                [f setLibrary: @"Additional Parameters"];
                 [f setSymbol: [dict[@"additional"] stringValue]];
                 [f setFileName: dict[@"fileName"]];
                 [f setLineNumber: [dict[@"lineNumber"] intValue]];
