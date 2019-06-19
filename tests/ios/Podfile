@@ -28,6 +28,7 @@ target 'testing' do
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
   pod 'RNFirebase', :path => '../../ios/RNFirebase.podspec', :version => "~> #{rnfb_version}"
+  pod 'RNFirebase/Crashlytics', :path => '../../ios/RNFirebase.podspec', :version => "~> #{rnfb_version}"
 
   # Pods for ReactNativeFirebaseDemo
   pod 'Firebase/Core', '~> 6.2.0'
