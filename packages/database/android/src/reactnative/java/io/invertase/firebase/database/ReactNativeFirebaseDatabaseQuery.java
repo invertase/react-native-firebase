@@ -17,7 +17,7 @@ package io.invertase.firebase.database;
  *
  */
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableArray;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
