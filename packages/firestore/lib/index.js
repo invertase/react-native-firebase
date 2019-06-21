@@ -20,8 +20,11 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { isFunction, isString } from '@react-native-firebase/common';
 
 import version from './version';
+import FirestorePath from './FirestorePath';
+import FirestoreDocumentReference from './FirestoreDocumentReference';
 
 const statics = {};
 
@@ -29,7 +32,106 @@ const namespace = 'firestore';
 
 const nativeModuleName = 'RNFBFirestoreModule';
 
-class FirebaseFirestoreModule extends FirebaseModule {}
+class FirebaseFirestoreModule extends FirebaseModule {
+  constructor(app, config) {
+    super(app, config);
+    this._referencePath = new FirestorePath();
+  }
+
+  batch() {
+    // TODO
+  }
+
+  clearPersistence() {
+    // TODO not in v5
+  }
+
+  collection(collectionPath) {
+    if (!isString(collectionPath)) {
+      throw new Error(
+        `firebase.app().firestore().collection(*) 'collectionPath' must be a string value.`,
+      );
+    }
+
+    if (collectionPath === '') {
+      throw new Error(
+        `firebase.app().firestore().collection(*) 'collectionPath' must be a non-empty string.`,
+      );
+    }
+
+    const path = this._referencePath.child(collectionPath);
+
+    if (!path.isCollection) {
+      throw new Error(
+        `firebase.app().firestore().collection(*) 'collectionPath' must point to a collection.`,
+      );
+    }
+
+    return new FirestoreCollectionReference(this, path);
+  }
+
+  collectionGroup(collectionId) {
+    if (!isString(collectionId)) {
+      throw new Error(
+        `firebase.app().firestore().collectionGroup(*) 'collectionId' must be a string value.`,
+      );
+    }
+
+    if (collectionId === '') {
+      throw new Error(
+        `firebase.app().firestore().collectionGroup(*) 'collectionId' must be a non-empty string.`,
+      );
+    }
+
+    // TODO
+  }
+
+  disableNetwork() {
+    return this.native.disableNetwork();
+  }
+
+  doc(documentPath) {
+    if (!isString(documentPath)) {
+      throw new Error(`firebase.app().firestore().doc(*) 'documentPath' must be a string value.`);
+    }
+
+    if (documentPath === '') {
+      throw new Error(
+        `firebase.app().firestore().doc(*) 'documentPath' must be a non-empty string.`,
+      );
+    }
+
+    const path = this._referencePath.child(documentPath);
+
+    if (!path.isDocument) {
+      throw new Error(`firebase.app().firestore().doc(*) 'documentPath' must point to a document.`);
+    }
+
+    return new FirestoreDocumentReference(this, path);
+  }
+
+  enableNetwork() {
+    return this.native.enableNetwork();
+  }
+
+  enablePersistence() {
+    // TODO?
+  }
+
+  runTransaction(updateFunction) {
+    if (!isFunction(updateFunction)) {
+      throw new Error(
+        `firebase.app().firestore().runTransaction(*) 'updateFunction' must point to a function.`,
+      );
+    }
+
+    // TODO
+  }
+
+  settings(settings) {
+    // TODO
+  }
+}
 
 // import { SDK_VERSION } from '@react-native-firebase/firestore';
 export const SDK_VERSION = version;
@@ -42,7 +144,7 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseFirestoreModule,
 });
