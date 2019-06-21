@@ -2,18 +2,20 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase - Cloud Storage</h2>
+  <h2 align="center">React Native Firebase - Cloud Storage</h2>
 </p>
 
-<p align="left">
+<p align="center">
   <a href="https://api.rnfirebase.io/coverage/storage/detail"><img src="https://api.rnfirebase.io/coverage/storage/badge?style=flat-square" alt="Coverage"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/storage"><img src="https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/storage"><img src="https://img.shields.io/npm/v/@react-native-firebase/storage.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
-  <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg?style=flat-square" alt="Backers on Open Collective"></a>
-  <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg?style=flat-square" alt="Sponsors on Open Collective"></a>
-  <a href="https://discord.gg/C9aK28N"><img src="https://img.shields.io/discord/295953187817521152.svg?logo=discord&style=flat-square&colorA=7289da&label=discord" alt="Chat"></a>
-  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
+  <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
+</p>
+
+<p align="center">
+  <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
+  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
 </p>
 
 ---
