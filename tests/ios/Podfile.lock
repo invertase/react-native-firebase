@@ -215,7 +215,7 @@ PODS:
   - GTMSessionFetcher/Core (1.2.2)
   - GTMSessionFetcher/Full (1.2.2):
     - GTMSessionFetcher/Core (= 1.2.2)
-  - Jet (0.4.3):
+  - Jet (0.4.4):
     - React
   - leveldb-library (1.20)
   - nanopb (0.3.901):
@@ -497,7 +497,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 04fce34bcd5620c1ee76fb79172105c74a4df335
   GTMOAuth2: e8b6512c896235149df975c41d9a36c868ab7fba
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
-  Jet: ad9ee8e1069e228f48d1aae72d9eb0310be541dd
+  Jet: 28e2deb607658bd5c5d24e3fcb926bb3f7daf59e
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
