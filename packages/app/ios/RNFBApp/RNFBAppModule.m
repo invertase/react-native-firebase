@@ -25,6 +25,11 @@
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 
+#if __has_include(<FirebaseCore/FIRAppInternal.h>)
+  #import <FirebaseCore/FIRAppInternal.h>
+  #define REGISTER_LIB
+#endif
+
 @implementation RNFBAppModule
 
 #pragma mark -
@@ -43,6 +48,20 @@ RCT_EXPORT_MODULE();
 - (RCTBridge *)bridge {
   return [RNFBRCTEventEmitter shared].bridge;
 }
+
+- (id)init {
+  if (self = [super init]) {
+#ifdef REGISTER_LIB
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"6.0.0-alpha.26"];
+    });
+#endif
+  }
+
+  return self;
+}
+
 
 #pragma mark -
 #pragma mark META Methods
