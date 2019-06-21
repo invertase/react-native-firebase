@@ -24,6 +24,7 @@ def firebasePackages = [
   'config',
   'crashlytics',
   'functions',
+  'firestore',
   'fiam',
   'iid',
   'invites',

@@ -31,10 +31,33 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Firestore";
+  private static final String SERVICE_NAME = "Firestore";
+  private final UniversalFirebaseFirestoreModule module;
 
   ReactNativeFirebaseFirestoreModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
+    super(reactContext, SERVICE_NAME);
+    module = new UniversalFirebaseFirestoreModule(reactContext, SERVICE_NAME);
   }
 
+  @ReactMethod
+  public void disableNetwork(String appName, Promise promise) {
+    module.disableNetwork(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void enableNNetwork(String appName, Promise promise) {
+    module.enableNetwork(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
 }

@@ -23,14 +23,14 @@ import {
 import { isFunction, isString } from '@react-native-firebase/common';
 
 import version from './version';
+import FirestoreStatics from './FirestoreStatics';
 import FirestorePath from './FirestorePath';
+import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-
-const statics = {};
 
 const namespace = 'firestore';
 
-const nativeModuleName = 'RNFBFirestoreModule';
+const nativeModuleName = ['RNFBFirestoreModule', 'RNFBFirestoreCollectionModule'];
 
 class FirebaseFirestoreModule extends FirebaseModule {
   constructor(app, config) {
@@ -139,7 +139,7 @@ export const SDK_VERSION = version;
 // import firestore from '@react-native-firebase/firestore';
 // firestore().X(...);
 export default createModuleNamespace({
-  statics,
+  statics: FirestoreStatics,
   version,
   namespace,
   nativeModuleName,

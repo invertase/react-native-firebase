@@ -16,6 +16,18 @@
  */
 
 describe('firestore()', () => {
+
+  describe.only('testing', () => {
+    it('test', async () => {
+      try {
+        const a = await firebase.firestore().collection('v6').get();
+        console.log(a);
+      } catch (e) {
+        throw e;
+      }
+    })
+  });
+
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -24,7 +36,7 @@ describe('firestore()', () => {
     });
 
     // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
+    it('supports multiple apps', async () => {
       firebase.firestore().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -38,7 +50,48 @@ describe('firestore()', () => {
     });
   });
 
-  describe('aMethod()', () => {
-    // TODO
+  describe('batch()', () => {
+
   });
+
+  describe('clearPersistence()', () => {
+
+  });
+
+  describe('collection()', () => {
+    it('throws if path is not a string', () => {
+      try {
+        firebase.firestore().collection(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionPath' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path is empty string', () => {
+      try {
+        firebase.firestore().collection('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionPath' must be a non-empty string`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path does not point to a collection', () => {
+      // try {
+      //   firebase.firestore().collection('');
+      //   return Promise.reject(new Error('Did not throw an Error.'));
+      // } catch (error) {
+      //   error.message.should.containEql(`'collectionPath' must be a non-empty string`);
+      //   return Promise.resolve();
+      // }
+    });
+
+    it('returns a new CollectionReference', () => {
+
+    });
+  });
+
 });

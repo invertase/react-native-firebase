@@ -15,16 +15,14 @@
  *
  */
 
+import { generateFirestoreId, isObject } from '@react-native-firebase/common';
+import FirestoreQuery from './FirestoreQuery';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
-export default class FirestoreCollectionReference {
+export default class FirestoreCollectionReference extends FirestoreQuery {
   constructor(firestore, collectionPath) {
-    this._firestore = firestore;
-    this._collectionPath = collectionPath;
-  }
-
-  get firestore() {
-    return this._firestore;
+    super(firestore, collectionPath, new FirestoreQueryModifiers());
   }
 
   get id() {
@@ -42,13 +40,17 @@ export default class FirestoreCollectionReference {
   }
 
   add(data) {
-    // TODO validate
+    if (!isObject(data)) {
+      throw new Error(`firebase.app().firestore().collection().add(*) 'data' must be an object.`);
+    }
+
     const documentRef = this.doc();
     return documentRef.set(data).then(() => Promise.resolve(documentRef));
   }
 
   doc(documentPath) {
-    const newPath = documentPath || '123'; // TODO auto ID
+    // TODO validate path?
+    const newPath = documentPath || generateFirestoreId();
     const path = this._collectionPath.child(newPath);
 
     if (!path.isDocument) {
