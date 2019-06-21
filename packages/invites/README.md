@@ -1,11 +1,11 @@
-<p align="center">
+<p align="left">
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h4 align="center">React Native Firebase - Invites</h2>
 </p>
 
-<p align="center">
+<p align="left">
   <a href="https://api.rnfirebase.io/coverage/invites/detail"><img src="https://api.rnfirebase.io/coverage/invites/badge?style=flat-square" alt="Coverage"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/invites"><img src="https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=flat-square" alt="NPM downloads"></a>
   <a href="https://www.npmjs.com/package/@react-native-firebase/invites"><img src="https://img.shields.io/npm/v/@react-native-firebase/invites.svg?style=flat-square" alt="NPM version"></a>
@@ -49,10 +49,10 @@ react-native link @react-native-firebase/invites
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="center">  
+  <p align="left">  
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
   </p>
-  <p align="center">  
+  <p align="left">  
     <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
     <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
     <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
