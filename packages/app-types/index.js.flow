@@ -15,40 +15,40 @@
  *
  */
 export type ReactNativeFirebaseModuleAndStatics<M, S = {}> = {
-  (): M;
-  +SDK_VERSION: string;
+  (): M,
+  +SDK_VERSION: string,
 } & S;
 
 export type ReactNativeFirebaseModuleAndStaticsWithApp<M, S = {}> = {
-  (): M;
-  +SDK_VERSION: string;
+  (): M,
+  +SDK_VERSION: string,
 } & S;
 
 export type FirebaseOptions = {
-  appId: string;
-  apiKey?: string;
-  authDomain?: string;
-  databaseURL: string;
-  projectId: string;
-  gaTrackingId?: string;
-  storageBucket: string;
-  messagingSenderId: string;
+  appId: string,
+  apiKey?: string,
+  authDomain?: string,
+  databaseURL: string,
+  projectId: string,
+  gaTrackingId?: string,
+  storageBucket: string,
+  messagingSenderId: string,
 
   /**
    * iOS only
    */
-  clientId?: string;
+  clientId?: string,
 
   /**
    * iOS only
    */
-  androidClientId?: string;
+  androidClientId?: string,
 
   /**
    * iOS only
    */
-  deepLinkURLScheme?: string;
-  [name: string]: any;
+  deepLinkURLScheme?: string,
+  [name: string]: any,
 };
 
 export interface FirebaseAppConfig {
@@ -67,7 +67,7 @@ export interface ReactNativeFirebaseNamespace {
   initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
 
   app: {
-    (name?: string): FirebaseApp;
+    (name?: string): FirebaseApp,
   };
 
   apps: FirebaseApp[];
