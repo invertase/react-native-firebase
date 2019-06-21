@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h4 align="center">React Native Firebase</h2>
+  <h2 align="center">React Native Firebase</h2>
 </p>
 
 <p align="center">
