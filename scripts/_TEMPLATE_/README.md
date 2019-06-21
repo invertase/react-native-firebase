@@ -45,8 +45,16 @@ react-native link @react-native-firebase/_template_
 
 ----
 
-Built and maintained with 💛 by [Invertase](https://invertase.io). 
+<p>
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
+  <p align="center">  
+    Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
+  </p>
+  <p align="center">  
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+  </p>
+</p>
 
-- [💼 Hire Us](https://invertase.io/hire-us)
-- [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
-- [👩‍💻 Work With Us](https://invertase.io/jobs)
+----

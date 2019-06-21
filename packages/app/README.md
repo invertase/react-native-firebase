@@ -29,18 +29,26 @@ react-native link @react-native-firebase/app
 
 ## Documentation
 
- - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=app)
- - [Installation](https://invertase.io/oss/react-native-firebase/v6/app)
- - [Reference](https://invertase.io/oss/react-native-firebase/v6/app/reference)
+- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=app)
+- [Installation](https://invertase.io/oss/react-native-firebase/v6/app)
+- [Reference](https://invertase.io/oss/react-native-firebase/v6/app/reference)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
-Built and maintained with 💛 by [Invertase](https://invertase.io). 
+<p>
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
+  <p align="center">  
+    Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
+  </p>
+  <p align="center">  
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+  </p>
+</p>
 
-- [💼 Hire Us](https://invertase.io/hire-us)
-- [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
-- [👩‍💻 Work With Us](https://invertase.io/jobs)
+---
