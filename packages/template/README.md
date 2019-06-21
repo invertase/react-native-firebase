@@ -21,3 +21,19 @@
 ```
 npx @react-native-community/cli@next init --template=@react-native-firebase/template@alpha <myProjectName>
 ```
+
+---
+
+<p>
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
+  <p align="center">  
+    Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
+  </p>
+  <p align="center">  
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+  </p>
+</p>
+
+---

@@ -16,7 +16,7 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
-----
+---
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
@@ -35,18 +35,26 @@ react-native link @react-native-firebase/auth
 
 ## Documentation
 
- - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=auth)
- - [Installation](https://invertase.io/oss/react-native-firebase/v6/auth)
- - [Reference](https://invertase.io/oss/react-native-firebase/v6/auth/reference)
+- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=auth)
+- [Installation](https://invertase.io/oss/react-native-firebase/v6/auth)
+- [Reference](https://invertase.io/oss/react-native-firebase/v6/auth/reference)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
-Built and maintained with 💛 by [Invertase](https://invertase.io). 
+<p>
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
+  <p align="center">  
+    Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
+  </p>
+  <p align="center">  
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+  </p>
+</p>
 
-- [💼 Hire Us](https://invertase.io/hire-us)
-- [☕️ Sponsor Us](https://opencollective.com/react-native-firebase)
-- [👩‍💻 Work With Us](https://invertase.io/jobs)
+---
