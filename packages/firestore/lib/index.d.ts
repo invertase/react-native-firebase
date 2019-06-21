@@ -81,9 +81,7 @@ export namespace Firestore {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
-
-  }
+  export class Module extends ReactNativeFirebaseModule {}
 }
 
 declare module '@react-native-firebase/firestore' {
@@ -122,10 +120,7 @@ declare module '@react-native-firebase/app-types' {
     /**
      * Firestore
      */
-    firestore: ReactNativeFirebaseModuleAndStatics<
-      Firestore.Module,
-      Firestore.Statics
-    >;
+    firestore: ReactNativeFirebaseModuleAndStatics<Firestore.Module, Firestore.Statics>;
   }
 
   interface FirebaseApp {
