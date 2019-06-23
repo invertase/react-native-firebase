@@ -16,7 +16,7 @@ Let's 'init' a project using the React Native CLI with the React Native Firebase
 #### Init Project from Template
 
 ```bash
-npx @react-native-community/cli@next init --template=@react-native-firebase/template@alpha <myProjectName>
+npx @react-native-community/cli@next init --template=@react-native-firebase/template <myProjectName>
 ```
 
 > Substitute `<myProjectName>` for the name of your new project.
