@@ -10,7 +10,7 @@ description: Get to grips with the basics of the App package in React Native Fir
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/app@alpha
+yarn add @react-native-firebase/app
 ```
 
 ### Initializing Firebase
