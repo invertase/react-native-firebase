@@ -20,7 +20,7 @@
 
 ---
 
-> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
+> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
 With Firebase Remote Config, you can change the behavior and appearance of your app on the fly from the Firebase console, and then track performance in Google Analytics for Firebase. Customize by audience segment, release new content, and split test to validate improvements, all without waiting for app store approval.
 
