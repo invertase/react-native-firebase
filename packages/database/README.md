@@ -1,4 +1,4 @@
-<p align="left">
+<p align="center">
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
