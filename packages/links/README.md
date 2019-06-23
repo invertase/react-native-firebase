@@ -1,8 +1,8 @@
-<p align="left">
+<p align="center">
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase - Links</h2>
+  <h2 align="center">React Native Firebase - Dynamic Links</h2>
 </p>
 
 <p align="center">
@@ -22,9 +22,9 @@
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the latest alpha/beta/next tag release on npm and not the `latest` tagged release for this package.
 
-Links description.
+Dynamic Links are smart URLs that allow you to send existing and potential users to any location within your React Native app. They survive the app install process, so even new users can see the content they're looking for when they open the app for the first time. 
 
-[> Learn More](https://firebase.google.com/products/links/)
+[> Learn More](https://firebase.google.com/products/dynamic-links/)
 
 ## Installation
 
@@ -37,9 +37,9 @@ react-native link @react-native-firebase/links
 
 ## Documentation
 
-- [Guides](#TODO)
-- [Installation](#TODO)
-- [Reference](#TODO)
+- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=links)
+- [Installation](https://invertase.io/oss/react-native-firebase/v6/links)
+- [Reference](https://invertase.io/oss/react-native-firebase/v6/links/reference)
 
 ## License
 
