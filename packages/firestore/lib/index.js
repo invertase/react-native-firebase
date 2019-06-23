@@ -20,13 +20,23 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isFunction, isString } from '@react-native-firebase/common';
+import {
+  isBoolean,
+  isFunction,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
 
 import version from './version';
 import FirestoreStatics from './FirestoreStatics';
 import FirestorePath from './FirestorePath';
 import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreQuery from './FirestoreQuery';
+import FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import FirestoreWriteBatch from './FirestoreWriteBatch';
 
 const namespace = 'firestore';
 
@@ -39,11 +49,12 @@ class FirebaseFirestoreModule extends FirebaseModule {
   }
 
   batch() {
-    // TODO
+    return new FirestoreWriteBatch(this);
   }
 
   clearPersistence() {
     // TODO not in v5
+    // Not available in native SDK?
   }
 
   collection(collectionPath) {
@@ -83,7 +94,19 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    // TODO
+    if (collectionId.indexOf('/') >= 0) {
+      throw new Error(
+        `firebase.app().firestore().collectionGroup(*) 'collectionId' must not contain '/'.`,
+      );
+    }
+
+    // todo validate string (no slashes)
+
+    return new FirestoreQuery(
+      this,
+      this._referencePath.child(collectionId),
+      new FirestoreQueryModifiers().asCollectionGroup(),
+    );
   }
 
   disableNetwork() {
@@ -115,7 +138,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
   }
 
   enablePersistence() {
-    // TODO?
+    // TODO? Covered in settings
+    // Not in native
   }
 
   runTransaction(updateFunction) {
@@ -129,7 +153,73 @@ class FirebaseFirestoreModule extends FirebaseModule {
   }
 
   settings(settings) {
-    // TODO
+    if (!isObject(settings)) {
+      throw new Error(`firebase.app().firestore().settings(*) 'settings' must be an object.`);
+    }
+
+    const keys = Object.keys(settings);
+
+    if (keys.length === 0) {
+      throw new Error(
+        `firebase.app().firestore().settings(*) 'settings' must not be an empty object.`,
+      );
+    }
+
+    const opts = ['cacheSizeBytes', 'host', 'persistence', 'ssl'];
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (!opts.includes(key)) {
+        throw new Error(
+          `firebase.app().firestore().settings(*) 'settings.${key}' is not a valid settings field.`,
+        );
+      }
+    }
+
+    if (!isUndefined(settings.cacheSizeBytes)) {
+      if (!isNumber(settings.cacheSizeBytes)) {
+        throw new Error(
+          `firebase.app().firestore().settings(*) 'settings.cacheSizeBytes' must be a number value.`,
+        );
+      }
+
+      if (
+        settings.cacheSizeBytes !== FirestoreStatics.CACHE_SIZE_UNLIMITED &&
+        settings.cacheSizeBytes < 1048576 // 1MB
+      ) {
+        throw new Error(
+          `firebase.app().firestore().settings(*) 'settings.cacheSizeBytes' the minimum cache size is 1048576 bytes (1MB).`,
+        );
+      }
+    }
+
+    if (!isUndefined(settings.host)) {
+      if (!isString(settings.host)) {
+        throw new Error(
+          `firebase.app().firestore().settings(*) 'settings.host' must be a string value.`,
+        );
+      }
+
+      if (settings.host === '') {
+        throw new Error(
+          `firebase.app().firestore().settings(*) 'settings.host' must not be an empty string.`,
+        );
+      }
+    }
+
+    if (!isUndefined(settings.persistence) && !isBoolean(settings.persistence)) {
+      throw new Error(
+        `firebase.app().firestore().settings(*) 'settings.persistence' must be a boolean value.`,
+      );
+    }
+
+    if (!isUndefined(settings.ssl) && !isBoolean(settings.ssl)) {
+      throw new Error(
+        `firebase.app().firestore().settings(*) 'settings.ssl' must be a boolean value.`,
+      );
+    }
+
+    return this.native.settings(settings);
   }
 }
 

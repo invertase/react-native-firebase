@@ -21,6 +21,11 @@ import android.content.Context;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
+import java.util.Map;
+import java.util.Objects;
 
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
@@ -38,5 +43,49 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
   Task<Void> enableNetwork(String appName) {
     return getFirestoreForApp(appName).enableNetwork();
+  }
+
+  Task<Void> settings(String appName, Map<String, Object> settings) {
+    return Tasks.call(getExecutor(), () -> {
+      FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+      FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
+
+      // settings.cacheSizeBytes
+      if (settings.containsKey("cacheSizeBytes")) {
+        int cacheSizeBytes = (int) settings.get("cacheSizeBytes");
+
+        if (cacheSizeBytes == -1) {
+          firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
+        } else {
+          firestoreSettings.setCacheSizeBytes(cacheSizeBytes);
+        }
+      } else {
+        firestoreSettings.setCacheSizeBytes(firebaseFirestore.getFirestoreSettings().getCacheSizeBytes());
+      }
+
+      // settings.host
+      if (settings.containsKey("host")) {
+        firestoreSettings.setHost((String) Objects.requireNonNull(settings.get("host")));
+      } else {
+        firestoreSettings.setHost(firebaseFirestore.getFirestoreSettings().getHost());
+      }
+
+      // settings.persistence
+      if (settings.containsKey("persistence")) {
+        firestoreSettings.setPersistenceEnabled((boolean) settings.get("persistence"));
+      } else {
+        firestoreSettings.setPersistenceEnabled(firebaseFirestore.getFirestoreSettings().isPersistenceEnabled());
+      }
+
+      // settings.ssl
+      if (settings.containsKey("ssl")) {
+        firestoreSettings.setSslEnabled((boolean) settings.get("ssl"));
+      } else {
+        firestoreSettings.setSslEnabled(firebaseFirestore.getFirestoreSettings().isSslEnabled());
+      }
+
+      firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
+      return null;
+    });
   }
 }

@@ -33,10 +33,12 @@ const DIRECTIONS = {
 };
 
 export default class FirestoreQueryModifiers {
+
   constructor() {
     this._limit = undefined;
     this._filters = [];
     this._orders = [];
+    this._type = 'collection';
   }
 
   get filters() {
@@ -51,6 +53,21 @@ export default class FirestoreQueryModifiers {
     const options = {};
 
     if (this._limit) options.limit = this._limit;
+    // todo other options
+    return options;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  /**
+   * Collection Group
+   */
+
+  asCollectionGroup() {
+    this._type = 'collectionGroup';
+    return this;
   }
 
   /**

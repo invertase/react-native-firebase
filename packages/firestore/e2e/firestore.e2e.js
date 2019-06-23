@@ -19,8 +19,9 @@ describe('firestore()', () => {
 
   describe.only('testing', () => {
     it('test', async () => {
+      // await Utils.sleep(10000);
       try {
-        const a = await firebase.firestore().collection('v6').get();
+        const a = await firebase.firestore().collectionGroup('collectionGroup').get();
         console.log(a);
       } catch (e) {
         throw e;

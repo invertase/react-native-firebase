@@ -30,6 +30,9 @@ import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
+
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Firestore";
   private final UniversalFirebaseFirestoreModule module;
@@ -45,7 +48,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
       if (task.isSuccessful()) {
         promise.resolve(null);
       } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
+        rejectPromiseFirestoreException(promise, task.getException());
       }
     });
   }
@@ -56,7 +59,18 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
       if (task.isSuccessful()) {
         promise.resolve(null);
       } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
+        rejectPromiseFirestoreException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void settings(String appName, ReadableMap settings, Promise promise) {
+    module.settings(appName, toHashMap(settings)).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        rejectPromiseFirestoreException(promise, task.getException());
       }
     });
   }

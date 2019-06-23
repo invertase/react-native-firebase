@@ -60,6 +60,7 @@ export default class FirestoreQuery {
     return this._firestore.native
       .collectionGet(
         this._collectionPath.relativeName,
+        this._modifiers.type,
         this._modifiers.filters,
         this._modifiers.orders,
         this._modifiers.options,

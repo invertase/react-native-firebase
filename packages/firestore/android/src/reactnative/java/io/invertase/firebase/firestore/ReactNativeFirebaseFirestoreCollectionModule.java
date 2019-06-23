@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
@@ -32,6 +33,7 @@ import java.util.concurrent.Executor;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getQueryForFirestore;
 
@@ -46,6 +48,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   public void collectionGet(
     String appName,
     String path,
+    String type,
     ReadableArray filters,
     ReadableArray orders,
     ReadableMap options,
@@ -54,7 +57,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   ) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     ReactNativeFirebaseFirestoreQuery query = new ReactNativeFirebaseFirestoreQuery(
-      getQueryForFirestore(firebaseFirestore, path),
+      getQueryForFirestore(firebaseFirestore, path, type),
       filters,
       orders,
       options
@@ -80,8 +83,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
-        // TODO error handler
-        rejectPromiseWithExceptionMap(promise, task.getException());
+        rejectPromiseFirestoreException(promise, task.getException());
       }
     });
   }

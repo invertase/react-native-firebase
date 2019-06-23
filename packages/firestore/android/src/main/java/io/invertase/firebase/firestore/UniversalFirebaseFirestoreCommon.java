@@ -30,8 +30,13 @@ public class UniversalFirebaseFirestoreCommon {
 
   static Query getQueryForFirestore (
     FirebaseFirestore firebaseFirestore,
-    String path
+    String path,
+    String type
   ) {
+    if ("collectionGroup".equals(type)) {
+      return firebaseFirestore.collectionGroup(path);
+    }
+
     return firebaseFirestore.collection(path);
   }
 }
