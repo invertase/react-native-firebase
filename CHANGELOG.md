@@ -35,7 +35,7 @@ The following modules are **migration only** for now (migrated from v5 to v6 wit
 - no new tests added for them (but all existing tests pass)
 - flow types missing (but have TS types)
 
-More work on these will be done in a later alpha release.
+More work on these will be done in a later pre-v6 release.
 
 | Name                             |                                                                             Downloads                                                                             |                                                 Coverage                                                  |
 | -------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------: |
@@ -63,14 +63,14 @@ Once all the old native installation changes have been removed you can follow th
 1. Install the [@react-native-firebase/app](https://github.com/invertase/react-native-firebase/tree/master/packages/app) NPM package (all modules have a hard dependency requirement on this package):
 
 ```bash
-yarn add @react-native-firebase/app@alpha
+yarn add @react-native-firebase/app
 react-native link @react-native-firebase/app
 ```
 
 2. Install the NPM packages for the Firebase services you'd like to use, e.g. for analytics install [@react-native-firebase/analytics](https://github.com/invertase/react-native-firebase/tree/master/packages/analytics). Repeat this step for each Firebase service you require.
 
 ```bash
-yarn add @react-native-firebase/analytics@alpha
+yarn add @react-native-firebase/analytics
 react-native link @react-native-firebase/analytics
 ```
 
