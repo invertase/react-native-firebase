@@ -52,3 +52,8 @@ The React Native Firebase documentation is a great place to get started, however
 - **[Search](/search):** Using [Algolia](https://www.algolia.com) powered search; every aspect of the library from guides to methods is indexed.
 - **[Releases](/releases):** Keep up to date with the latest changes and features with our comprehensive release notes.
 - **[Community Chat](https://discordapp.com/invite/XsKpw4):** Our active Discord server is a great place to discuss React Native Firebase.
+
+
+----
+
+_React Native logo animation based on [this animation](http://invertase.link/lf-react-logo) by [@reallynattu](http://invertase.link/lf-reallynattu) over at [@LottieFiles](http://invertase.link/lf-twitter) - check them out ✨_ 
