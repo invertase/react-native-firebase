@@ -38,8 +38,7 @@ import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 
   // ..
   protected List<ReactPackage> getPackages() {
-    return Arrays.asList(
-      new MainReactPackage(),
-      new ReactNativeFirebaseAppPackage(),
+    // ..
+      packages.add(new ReactNativeFirebaseAppPackage());
       // ..
 ```
