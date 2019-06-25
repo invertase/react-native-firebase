@@ -21,8 +21,6 @@ package io.invertase.firebase.firestore;
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import javax.annotation.Nullable;
-
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
 
@@ -31,10 +29,10 @@ public class ReactNativeFirebaseFirestoreCommon {
 
   public static void rejectPromiseFirestoreException(Promise promise, Exception exception) {
     if (exception instanceof FirebaseFirestoreException) {
-      UniversalFirestoreException universalException = new UniversalFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
+      UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
       rejectPromiseWithCodeAndMessage(promise, universalException.getCode(), universalException.getMessage());
-    } else if (exception.getCause() instanceof FirebaseFirestoreException) {
-      UniversalFirestoreException universalException = new UniversalFirestoreException((FirebaseFirestoreException) exception.getCause(), exception.getCause().getCause());
+    } else if (exception.getCause() != null && exception.getCause() instanceof FirebaseFirestoreException) {
+      UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception.getCause(), exception.getCause().getCause());
       rejectPromiseWithCodeAndMessage(promise, universalException.getCode(), universalException.getMessage());
     } else {
       rejectPromiseWithExceptionMap(promise, exception);

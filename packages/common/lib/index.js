@@ -91,3 +91,9 @@ export function tryJSONStringify(data) {
     return null;
   }
 }
+
+export function typeOf(value) {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  return typeof value;
+}

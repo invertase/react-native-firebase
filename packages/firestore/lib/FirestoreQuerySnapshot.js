@@ -20,6 +20,7 @@ import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 
 export default class FirestoreQuerySnapshot {
   constructor(firestore, query, nativeData) {
+    console.log(nativeData);
     this._query = query;
     this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
     this._docs = nativeData.documents.map($ => new FirestoreDocumentSnapshot(firestore, $));

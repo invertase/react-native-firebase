@@ -16,7 +16,6 @@
  */
 
 describe('firestore.collection()', () => {
-  // TODO inherits from query
   it('returns the firestore instance', () => {
     const instance = firebase.firestore().collection('foo');
     instance.firestore.app.name.should.eql('[DEFAULT]');
@@ -33,48 +32,22 @@ describe('firestore.collection()', () => {
   it('returns the collection parent', () => {
     const instance1 = firebase.firestore().collection('foo');
     should.equal(instance1.parent, null);
-    // TODO nested from doc
+    const instance2 = firebase
+      .firestore()
+      .collection('foo')
+      .doc('bar')
+      .collection('baz');
+    should.equal(instance2.parent.id, 'bar');
   });
 
   it('returns the firestore path', () => {
     const instance1 = firebase.firestore().collection('foo');
     instance1.path.should.eql('foo');
-    // TODO nested from doc
-  });
-
-  describe('add()', () => {
-    it('throws if data is not an object', () => {
-      try {
-        firebase.firestore().collection('foo').add(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'data' must be an object`);
-        return Promise.resolve();
-      }
-    });
-
-    // TODO test adding
-  });
-
-  describe('doc()', () => {
-    it('throws if path is not a document', () => {
-      try {
-        firebase.firestore().collection('foo').doc('bar/baz');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'documentPath' must point to a document`);
-        return Promise.resolve();
-      }
-    });
-
-    it('generates an ID if no path is provided', () => {
-      const instance = firebase.firestore().collection('foo').doc();
-      should.equal(20, instance.id.length);
-    });
-
-    it('uses path if provided', () => {
-      const instance = firebase.firestore().collection('foo').doc('bar');
-      instance.id.should.eql('bar');
-    });
+    const instance2 = firebase
+      .firestore()
+      .collection('foo')
+      .doc('bar')
+      .collection('baz');
+    instance2.path.should.eql('foo/bar/baz');
   });
 });

@@ -33,6 +33,7 @@ public class ReactNativeFirebaseFirestorePackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new ReactNativeFirebaseFirestoreModule(reactContext));
     modules.add(new ReactNativeFirebaseFirestoreCollectionModule(reactContext));
+    modules.add(new ReactNativeFirebaseFirestoreDocumentModule(reactContext));
     return modules;
   }
 

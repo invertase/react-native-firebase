@@ -15,25 +15,59 @@
  *
  */
 
+import { deepGet } from '@react-native-firebase/common/lib/deeps';
+import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreFieldPath from './FirestoreFieldPath';
+import FirestorePath from './FirestorePath';
+import { extractFieldPathData } from './utils';
+import { parseNativeMap } from './utils/serialize';
+import { isString } from '@react-native-firebase/common';
+
 export default class FirestoreDocumentSnapshot {
   constructor(firestore, nativeData) {
-    this._document = null; // TODO document snapshot
-    this._nativeData = nativeData;
+    this._data = parseNativeMap(firestore, nativeData.data);
+    this._metadata = nativeData.metadata;
+    this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
   }
 
-  get doc() {
-    return this._document;
+  get exists() {
+    return this._data !== undefined;
   }
 
-  get newIndex() {
-    return this._nativeData.newIndex;
+  get id() {
+    return this._ref.id;
   }
 
-  get oldIndex() {
-    return this._nativeData.oldIndex;
+  get metadata() {
+    return this._metadata;
   }
 
-  get type() {
-    return this._nativeData.type;
+  get ref() {
+    return this._ref;
+  }
+
+  data(options) {
+    // todo options
+    return this._data;
+  }
+
+  get(fieldPath, options) {
+    // todo valid path (no start end ., or ..
+    // todo validate string or instance
+
+    if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
+      throw new Error('bad fieldpath TODO');
+    }
+
+    if (fieldPath instanceof FirestoreFieldPath) {
+      return extractFieldPathData(this._data, fieldPath._segments);
+    }
+    // todo options
+
+    return deepGet(this._data, fieldPath);
+  }
+
+  isEqual(other) {
+    // todo
   }
 }

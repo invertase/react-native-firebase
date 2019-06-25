@@ -19,7 +19,7 @@ package io.invertase.firebase.firestore;
 
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-public class UniversalFirestoreException extends Exception {
+public class UniversalFirebaseFirestoreException extends Exception {
 
   private final String code;
   private final String message;
@@ -33,7 +33,7 @@ public class UniversalFirestoreException extends Exception {
     return message;
   }
 
-  UniversalFirestoreException(FirebaseFirestoreException nativeException, Throwable cause) {
+  UniversalFirebaseFirestoreException(FirebaseFirestoreException nativeException, Throwable cause) {
     super(nativeException.getMessage(), cause);
 
     String code;

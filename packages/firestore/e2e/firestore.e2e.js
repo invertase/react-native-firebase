@@ -16,18 +16,30 @@
  */
 
 describe('firestore()', () => {
-
-  describe.only('testing', () => {
-    it('test', async () => {
-      // await Utils.sleep(10000);
-      try {
-        const a = await firebase.firestore().collectionGroup('collectionGroup').get();
-        console.log(a);
-      } catch (e) {
-        throw e;
-      }
-    })
-  });
+  // describe('testing', () => {
+  //   it('test', async () => {
+  //     try {
+  //       // const docsnap = await firebase.firestore().collection('v6').doc('tests_collectionGroup').get();
+  //       // // console.log(docsnap);
+  //       // const a = await firebase.firestore().collection('v6')
+  //       //   .endAt(docsnap)
+  //       //   .get();
+  //       // console.log(a);
+  //
+  //       return new Promise(res => {
+  //         firebase
+  //           .firestore()
+  //           .collection('v6s')
+  //           .onSnapshot({includeMetadataChanges: true}, {
+  //             next: console.log,
+  //             error: console.log,
+  //           });
+  //       });
+  //     } catch (e) {
+  //       throw e;
+  //     }
+  //   });
+  // });
 
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
@@ -51,13 +63,9 @@ describe('firestore()', () => {
     });
   });
 
-  describe('batch()', () => {
+  describe('batch()', () => {});
 
-  });
-
-  describe('clearPersistence()', () => {
-
-  });
+  describe('clearPersistence()', () => {});
 
   describe('collection()', () => {
     it('throws if path is not a string', () => {
@@ -81,18 +89,163 @@ describe('firestore()', () => {
     });
 
     it('throws if path does not point to a collection', () => {
-      // try {
-      //   firebase.firestore().collection('');
-      //   return Promise.reject(new Error('Did not throw an Error.'));
-      // } catch (error) {
-      //   error.message.should.containEql(`'collectionPath' must be a non-empty string`);
-      //   return Promise.resolve();
-      // }
+      try {
+        firebase.firestore().collection('foo/bar');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionPath' must point to a collection`);
+        return Promise.resolve();
+      }
     });
 
     it('returns a new CollectionReference', () => {
-
+      const collectionReference = firebase.firestore().collection('foo');
+      should.equal(collectionReference.constructor.name, 'FirestoreCollectionReference');
+      collectionReference.path.should.eql('foo');
     });
   });
 
+  describe('collectionGroup()', () => {
+    it('throws if id is not a string', () => {
+      try {
+        firebase.firestore().collectionGroup(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionId' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if id is empty', () => {
+      try {
+        firebase.firestore().collectionGroup('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionId' must be a non-empty string`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if id contains forward-slash', () => {
+      try {
+        firebase.firestore().collectionGroup('foo/bar');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'collectionId' must not contain '/'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a new query instance', () => {
+      const query = firebase.firestore().collectionGroup('foo');
+      should.equal(query.constructor.name, 'FirestoreQuery');
+    });
+  });
+
+  describe('disableNetwork() & enableNetwork()', () => {
+    it('disables and enables with no errors', async () => {
+      await firebase.firestore().disableNetwork();
+      await firebase.firestore().enableNetwork();
+    });
+  });
+
+  describe('settings()', () => {
+    it('throws if settings is not an object', () => {
+      try {
+        firebase.firestore().settings('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings' must be an object`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if settings is an empty object', () => {
+      try {
+        firebase.firestore().settings({});
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings' must not be an empty object`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if passing an incorrect setting key', () => {
+      try {
+        firebase.firestore().settings({ foo: 'bar' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.foo' is not a valid settings field`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if cacheSizeBytes is not a number', () => {
+      try {
+        firebase.firestore().settings({ cacheSizeBytes: 'foo' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.cacheSizeBytes' must be a number value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if cacheSizeBytes is less than 1MB', () => {
+      try {
+        firebase.firestore().settings({ cacheSizeBytes: 123 });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.cacheSizeBytes' the minimum cache size`);
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts an unlimited cache size', () => {
+      firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+    });
+
+    it('throws if host is not a string', () => {
+      try {
+        firebase.firestore().settings({ host: 123 });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.host' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if host is an empty string', () => {
+      try {
+        firebase.firestore().settings({ host: '' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.host' must not be an empty string`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if persistence is not a boolean', () => {
+      try {
+        firebase.firestore().settings({ persistence: 'true' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.persistence' must be a boolean value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if ssl is not a boolean', () => {
+      try {
+        firebase.firestore().settings({ ssl: 'true' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'settings.ssl' must be a boolean value`);
+        return Promise.resolve();
+      }
+    });
+
+    xit('calls with no errors', () => {
+      // TODO
+    });
+  });
 });

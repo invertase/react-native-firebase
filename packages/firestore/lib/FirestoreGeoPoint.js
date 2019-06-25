@@ -15,9 +15,36 @@
  *
  */
 
+import { isNumber, isFinite, isUndefined } from '@react-native-firebase/common';
+
 export default class FirestoreGeoPoint {
   constructor(latitude, longitude) {
-    // todo validate
+    if (isUndefined(latitude) || isUndefined(longitude)) {
+      throw new Error(
+        `firebase.app().firestore.GeoPoint constructor expected latitude and longitude values.`,
+      );
+    }
+
+    if (!isNumber(latitude)) {
+      throw new Error(`firebase.app().firestore.GeoPoint 'latitude' must be a number value.`);
+    }
+
+    if (!isNumber(longitude)) {
+      throw new Error(`firebase.app().firestore.GeoPoint 'longitude' must be a number value.`);
+    }
+
+    if (!isFinite(latitude) || latitude < -90 || latitude > 90) {
+      throw new Error(
+        `firebase.app().firestore.GeoPoint 'longitude' must be a number between -90 and 90, but was: ${latitude}.`,
+      );
+    }
+
+    if (!isFinite(longitude) || longitude < -180 || longitude > 180) {
+      throw new Error(
+        `firebase.app().firestore.GeoPoint 'longitude' must be a number between -180 and 180, but was: ${longitude}.`,
+      );
+    }
+
     this._latitude = latitude;
     this._longitude = longitude;
   }
@@ -28,5 +55,15 @@ export default class FirestoreGeoPoint {
 
   get longitude() {
     return this._longitude;
+  }
+
+  isEqual(other) {
+    if (!(other instanceof FirestoreGeoPoint)) {
+      throw new Error(
+        `firebase.app().firestore.GeoPoint.isEqual(*) 'other' expected an instance of GeoPoint.`,
+      );
+    }
+
+    return this._latitude === other._latitude && this._longitude === other._longitude;
   }
 }

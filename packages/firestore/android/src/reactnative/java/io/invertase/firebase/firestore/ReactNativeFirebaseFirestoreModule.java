@@ -54,7 +54,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void enableNNetwork(String appName, Promise promise) {
+  public void enableNetwork(String appName, Promise promise) {
     module.enableNetwork(appName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(null);

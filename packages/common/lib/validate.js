@@ -79,6 +79,15 @@ export function isNumber(value) {
 }
 
 /**
+ * Simple finite check
+ * @param value
+ * @returns {boolean}
+ */
+export function isFinite(value) {
+  return Number.isFinite(value);
+}
+
+/**
  * Simple is boolean check
  *
  * @param value

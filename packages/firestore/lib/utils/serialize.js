@@ -15,7 +15,12 @@
  *
  */
 
+import { typeOf } from '@react-native-firebase/common';
 import FirestoreDocumentReference from '../FirestoreDocumentReference';
+import { DOCUMENT_ID } from '../FirestoreFieldPath';
+import FirestoreFieldValue from '../FirestoreFieldValue';
+import FirestoreGeoPoint from '../FirestoreGeoPoint';
+import FirestoreTimestamp from '../FirestoreTimestamp';
 
 /**
  *
@@ -109,7 +114,7 @@ export function buildTypeMap(value) {
       };
     }
 
-    if (value instanceof GeoPoint) {
+    if (value instanceof FirestoreGeoPoint) {
       return {
         type: 'geopoint',
         value: {
@@ -119,7 +124,7 @@ export function buildTypeMap(value) {
       };
     }
 
-    if (value instanceof Timestamp) {
+    if (value instanceof FirestoreTimestamp) {
       return {
         type: 'timestamp',
         value: {
@@ -144,7 +149,7 @@ export function buildTypeMap(value) {
     }
 
     // TODO: Salakar: Refactor in v6 - add internal `type` flag
-    if (value instanceof FieldValue) {
+    if (value instanceof FirestoreFieldValue) {
       return {
         type: 'fieldvalue',
         value: {
@@ -227,11 +232,11 @@ export function parseTypeMap(firestore, typeMap) {
   }
 
   if (type === 'geopoint') {
-    return new GeoPoint(value.latitude, value.longitude);
+    return new FirestoreGeoPoint(value.latitude, value.longitude);
   }
 
   if (type === 'timestamp') {
-    return new Timestamp(value.seconds, value.nanoseconds);
+    return new FirestoreTimestamp(value.seconds, value.nanoseconds);
   }
 
   if (type === 'date') {

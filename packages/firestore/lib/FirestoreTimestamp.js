@@ -15,13 +15,20 @@
  *
  */
 
+import { isNumber } from '@react-native-firebase/common';
+
 export default class FirestoreTimestamp {
   static now() {
     return FirestoreTimestamp.fromMillis(Date.now());
   }
 
   static fromDate(date) {
-    // todo validate date
+    if (!(date instanceof Date)) {
+      throw new Error(
+        `firebase.app().firestore.Timestamp.fromDate(*) 'date' expected a valid Date object.`,
+      );
+    }
+
     return FirestoreTimestamp.fromMillis(date.getTime());
   }
 
@@ -32,22 +39,34 @@ export default class FirestoreTimestamp {
   }
 
   constructor(seconds, nanoseconds) {
+    if (!isNumber(seconds)) {
+      throw new Error(`firebase.app().firestore.Timestamp 'seconds' expected a number value.`);
+    }
+
+    if (!isNumber(nanoseconds)) {
+      throw new Error(`firebase.app().firestore.Timestamp 'nanoseconds' expected a number value.`);
+    }
+
     if (nanoseconds < 0) {
-      throw new Error(`Timestamp nanoseconds out of range: ${nanoseconds}`);
+      throw new Error(
+        `firebase.app().firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`,
+      );
     }
 
     if (nanoseconds >= 1e9) {
-      throw new Error(`Timestamp nanoseconds out of range: ${nanoseconds}`);
+      throw new Error(
+        `firebase.app().firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`,
+      );
     }
 
     // Midnight at the beginning of 1/1/1 is the earliest Firestore supports.
     if (seconds < -62135596800) {
-      throw new Error(`Timestamp seconds out of range: ${seconds}`);
+      throw new Error(`firebase.app().firestore.Timestamp 'seconds' out of range: ${seconds}`);
     }
 
     // This will break in the year 10,000.
     if (seconds >= 253402300800) {
-      throw new Error(`Timestamp seconds out of range: ${seconds}`);
+      throw new Error(`firebase.app().firestore.Timestamp 'seconds' out of range: ${seconds}`);
     }
 
     this._seconds = seconds;
@@ -64,7 +83,9 @@ export default class FirestoreTimestamp {
 
   isEqual(other) {
     if (!(other instanceof FirestoreTimestamp)) {
-      throw Error('TODO');
+      throw Error(
+        `firebase.app().firestore.Timestamp.isEqual(*) 'other' expected an instance of Timestamp.`,
+      );
     }
 
     return other.seconds === this._seconds && other.nanoseconds === this._nanoseconds;

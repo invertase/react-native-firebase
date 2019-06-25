@@ -49,7 +49,6 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
   }
 
   doc(documentPath) {
-    // TODO validate path?
     const newPath = documentPath || generateFirestoreId();
     const path = this._collectionPath.child(newPath);
 

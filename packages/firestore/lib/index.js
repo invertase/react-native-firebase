@@ -37,24 +37,31 @@ import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
+import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 
 const namespace = 'firestore';
 
-const nativeModuleName = ['RNFBFirestoreModule', 'RNFBFirestoreCollectionModule'];
+const nativeModuleName = [
+  'RNFBFirestoreModule',
+  'RNFBFirestoreCollectionModule',
+  'RNFBFirestoreDocumentModule',
+];
+
+const nativeEvents = [
+  'firestore_collection_sync_event',
+  'firestore_document_sync_event',
+  'firestore_transaction_event',
+];
 
 class FirebaseFirestoreModule extends FirebaseModule {
   constructor(app, config) {
     super(app, config);
     this._referencePath = new FirestorePath();
+    this._transactionHandler = new FirestoreTransactionHandler(this);
   }
 
   batch() {
     return new FirestoreWriteBatch(this);
-  }
-
-  clearPersistence() {
-    // TODO not in v5
-    // Not available in native SDK?
   }
 
   collection(collectionPath) {
@@ -100,8 +107,6 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    // todo validate string (no slashes)
-
     return new FirestoreQuery(
       this,
       this._referencePath.child(collectionId),
@@ -137,11 +142,6 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return this.native.enableNetwork();
   }
 
-  enablePersistence() {
-    // TODO? Covered in settings
-    // Not in native
-  }
-
   runTransaction(updateFunction) {
     if (!isFunction(updateFunction)) {
       throw new Error(
@@ -149,7 +149,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    // TODO
+    return this._transactionHandler._add(updateFunction);
   }
 
   settings(settings) {
@@ -219,6 +219,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
+    // TODO promise or? see database
     return this.native.settings(settings);
   }
 }
@@ -233,7 +234,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseFirestoreModule,

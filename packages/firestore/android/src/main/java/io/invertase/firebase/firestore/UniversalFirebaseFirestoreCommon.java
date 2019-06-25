@@ -18,6 +18,7 @@ package io.invertase.firebase.firestore;
  */
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -38,5 +39,9 @@ public class UniversalFirebaseFirestoreCommon {
     }
 
     return firebaseFirestore.collection(path);
+  }
+
+  static DocumentReference getDocumentForFirestore(FirebaseFirestore firebaseFirestore, String path) {
+    return firebaseFirestore.document(path);
   }
 }

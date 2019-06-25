@@ -15,14 +15,24 @@
  *
  */
 
-export const DOCUMENT_ID = new FieldPath('__name__');
-
 export default class FirestoreFieldPath {
   static documentId() {
     return DOCUMENT_ID;
   }
 
   constructor(...segments) {
+    if (segments.length === 0) {
+      throw new Error(
+        `firebase.app().firestore.FieldPath cannot construct FieldPath with no segments`,
+      );
+    }
+
     this._segments = segments;
   }
+
+  _toPath() {
+    return this._segments.join('.');
+  }
 }
+
+export const DOCUMENT_ID = new FirestoreFieldPath('__name__');

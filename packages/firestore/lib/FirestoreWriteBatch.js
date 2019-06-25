@@ -15,7 +15,19 @@
  *
  */
 
+import {
+  hasOwnProperty,
+  isArray,
+  isBoolean,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
+
 import { buildNativeMap } from './utils/serialize';
+import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreFieldPath from './FirestoreFieldPath';
+import { parseUpdateArgs } from './utils';
 
 export default class FirestoreWriteBatch {
   constructor(firestore) {
@@ -27,32 +39,126 @@ export default class FirestoreWriteBatch {
     return this._firestore.native.documentBatch(this._writes);
   }
 
-  delete(docRef) {
-    // todo validate is docref
-    // todo validate is optional precondition?
+  delete(documentRef) {
+    if (!(documentRef instanceof FirestoreDocumentReference)) {
+      throw new Error(
+        `firebase.app().firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.`,
+      );
+    }
+
+    if (documentRef.firestore.app !== this._firestore.app) {
+      throw new Error(
+        `firebase.app().firestore.batch().delete(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+      );
+    }
+
     this._writes.push({
-      path: docRef.path,
+      path: documentRef.path,
       type: 'DELETE',
     });
+
+    return this;
   }
 
-  set(docRef, data, options) {
-    // todo validate is docRef
-    // todo validate is valid data
-    // todo validate is optional precondition?
+  set(documentRef, data, options) {
+    if (!(documentRef instanceof FirestoreDocumentReference)) {
+      throw new Error(
+        `firebase.app().firestore.batch().set(*) 'documentRef' expected instance of a DocumentReference.`,
+      );
+    }
+
+    if (documentRef.firestore.app !== this._firestore.app) {
+      throw new Error(
+        `firebase.app().firestore.batch().set(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+      );
+    }
+
+    if (!isObject(data)) {
+      throw new Error(`firebase.app().firestore.batch().set(_, *) 'data' must be an object.`);
+    }
+
+    const mergeOptions = {};
+
+    if (!isUndefined(options)) {
+      if (!isObject(options)) {
+        throw new Error(
+          `firebase.app().firestore().batch().set(_, _, *) 'options' must be an object.`,
+        );
+      }
+
+      if (hasOwnProperty(options, 'merge') && hasOwnProperty(options, 'mergeFields')) {
+        throw new Error(
+          `firebase.app().firestore().batch().set(_, _, *) 'options' must not contain both 'merge' & 'mergeFields'.`,
+        );
+      }
+
+      if (!isUndefined(options.merge)) {
+        if (!isBoolean(options.merge)) {
+          throw new Error(
+            `firebase.app().firestore().batch().set(_, _, *) 'options.merge' must be a boolean value.`,
+          );
+        }
+
+        mergeOptions.merge = true;
+      }
+
+      if (!isUndefined(options.mergeFields)) {
+        if (!isArray(options.mergeFields)) {
+          throw new Error(
+            `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' must be an array.`,
+          );
+        }
+
+        mergeOptions.mergeFields = [];
+
+        for (let i = 0; i < options.mergeFields.length; i++) {
+          const field = options.mergeFields[i];
+          if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
+            throw new Error(
+              `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
+            );
+          }
+
+          // TODO FieldPath isnt handled native? Is this ok?
+          if (field instanceof FirestoreFieldPath) {
+            mergeOptions.mergeFields.push(field._toPath());
+          } else {
+            mergeOptions.mergeFields.push(field);
+          }
+        }
+      }
+    }
+
     this._writes.push({
-      path: docRef.path,
+      path: documentRef.path,
       type: 'SET',
       data: buildNativeMap(data),
-      options,
+      options: mergeOptions,
     });
   }
 
-  update(docRef, ...args) {
-    // todo validate is docref
-    const data = {}; // todo parseUpdateArgs
+  update(documentRef, ...args) {
+    if (!(documentRef instanceof FirestoreDocumentReference)) {
+      throw new Error(
+        `firebase.app().firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.`,
+      );
+    }
+
+    if (documentRef.firestore.app !== this._firestore.app) {
+      throw new Error(
+        `firebase.app().firestore.batch().delete(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+      );
+    }
+
+    let data;
+    try {
+      data = parseUpdateArgs(args);
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().batch().update(_, *) ${e.message}`);
+    }
+
     this._writes.push({
-      path: docRef.path,
+      path: documentRef.path,
       type: 'UPDATE',
       data: buildNativeMap(data),
     });

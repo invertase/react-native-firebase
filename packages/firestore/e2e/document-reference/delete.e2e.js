@@ -15,27 +15,16 @@
  *
  */
 
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-
-export default class FirestoreDocumentChange {
-  constructor(firestore, nativeData) {
-    this._document = new FirestoreDocumentSnapshot(firestore, nativeData.document);
-    this._nativeData = nativeData;
-  }
-
-  get doc() {
-    return this._document;
-  }
-
-  get newIndex() {
-    return this._nativeData.newIndex;
-  }
-
-  get oldIndex() {
-    return this._nativeData.oldIndex;
-  }
-
-  get type() {
-    return this._nativeData.type;
-  }
-}
+describe('firestore.doc().delete()', () => {
+  it('deletes a document', async () => {
+    const ref = firebase.firestore().doc('v6/deleteme');
+    await ref.set({ foo: 'bar' });
+    const snapshot1 = await ref.get();
+    snapshot1.id.should.equal('deleteme');
+    snapshot1.exists.should.equal(true);
+    await ref.delete();
+    const snapshot2 = await ref.get();
+    snapshot2.id.should.equal('deleteme');
+    snapshot2.exists.should.equal(false);
+  });
+});

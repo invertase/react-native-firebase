@@ -48,7 +48,7 @@ import javax.annotation.Nullable;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
-class FirestoreSerialize {
+class ReactNativeFirebaseFirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
 
   // Keys
