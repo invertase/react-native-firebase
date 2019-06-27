@@ -17,7 +17,6 @@
 
 export default class FirestorePath {
   static fromName(name) {
-    if (!name) return new FirestorePath();
     const parts = name.split('/');
     return new FirestorePath(parts);
   }

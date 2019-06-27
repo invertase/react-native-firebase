@@ -15,6 +15,10 @@
  *
  */
 
+import { isString } from '@react-native-firebase/common';
+
+const RESERVED = new RegExp('[~*/\\[\\]]');
+
 export default class FirestoreFieldPath {
   static documentId() {
     return DOCUMENT_ID;
@@ -23,11 +27,30 @@ export default class FirestoreFieldPath {
   constructor(...segments) {
     if (segments.length === 0) {
       throw new Error(
-        `firebase.app().firestore.FieldPath cannot construct FieldPath with no segments`,
+        `firebase.app().firestore.FieldPath cannot construct FieldPath with no segments.`,
       );
     }
 
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (!isString(segment) || segment === '') {
+        throw new Error(
+          `firebase.app().firestore.FieldPath invalid segment at index ${i}, expected a non-empty string.`,
+        );
+      }
+    }
+
     this._segments = segments;
+  }
+
+  isEqual(other) {
+    if (!(other instanceof FirestoreFieldPath)) {
+      throw new Error(
+        `firebase.app().firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.`,
+      );
+    }
+
+    return this._toPath() === other._toPath();
   }
 
   _toPath() {
@@ -36,3 +59,25 @@ export default class FirestoreFieldPath {
 }
 
 export const DOCUMENT_ID = new FirestoreFieldPath('__name__');
+
+export function fromDotSeparatedString(path) {
+  if (!isString(path)) {
+    throw new Error(`Invalid field path. Paths cannot be an empty string.`);
+  }
+
+  if (path === '' || path.startsWith('.') || path.endsWith('.') || path.indexOf('..') > 0) {
+    throw new Error(
+      `Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.`,
+    );
+  }
+
+  const found = path.search(RESERVED);
+
+  if (found > 0) {
+    throw new Error(
+      `Invalid field path (${path}). Paths must not contain '~', '*', '/', '[', or ']'.`,
+    );
+  }
+
+  return new FirestoreFieldPath(...path.split('.'));
+}

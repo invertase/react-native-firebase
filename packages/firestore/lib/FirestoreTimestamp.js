@@ -15,7 +15,7 @@
  *
  */
 
-import { isNumber } from '@react-native-firebase/common';
+import { isNumber, isDate } from '@react-native-firebase/common';
 
 export default class FirestoreTimestamp {
   static now() {
@@ -23,7 +23,7 @@ export default class FirestoreTimestamp {
   }
 
   static fromDate(date) {
-    if (!(date instanceof Date)) {
+    if (!isDate(date)) {
       throw new Error(
         `firebase.app().firestore.Timestamp.fromDate(*) 'date' expected a valid Date object.`,
       );

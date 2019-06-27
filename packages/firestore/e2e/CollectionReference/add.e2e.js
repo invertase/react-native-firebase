@@ -40,5 +40,6 @@ describe('firestore.collection().add()', () => {
     const docSnap = await docRef.get();
     docSnap.data().should.eql(jet.contextify(data));
     docSnap.exists.should.eql(true);
+    await docRef.delete();
   });
 });

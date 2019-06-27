@@ -143,6 +143,7 @@ describe('firestore.doc().set()', () => {
     });
     const snapshot2 = await ref.get();
     snapshot2.data().should.eql(jet.contextify(merged));
+    await ref.delete();
   });
 
   it('merges specific fields', async () => {
@@ -159,5 +160,6 @@ describe('firestore.doc().set()', () => {
     });
     const snapshot2 = await ref.get();
     snapshot2.data().should.eql(jet.contextify(merged));
+    await ref.delete();
   });
 });

@@ -37,12 +37,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SnapshotMetadata;
+import com.google.protobuf.DoubleValue;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -50,6 +53,26 @@ import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
 class ReactNativeFirebaseFirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
+
+  // Bridge Map
+  private static final int INT_NAN = 0;
+  private static final int INT_NEGATIVE_INFINITY = 1;
+  private static final int INT_POSITIVE_INFINITY = 2;
+  private static final int INT_NULL = 3;
+  private static final int INT_DOCUMENTID = 4;
+  private static final int INT_BOOLEAN_TRUE = 5;
+  private static final int INT_BOOLEAN_FALSE = 6;
+  private static final int INT_NUMBER = 7;
+  private static final int INT_STRING = 8;
+  private static final int INT_STRING_EMPTY = 9;
+  private static final int INT_ARRAY = 10;
+  private static final int INT_REFERENCE = 11;
+  private static final int INT_GEOPOINT = 12;
+  private static final int INT_TIMESTAMP = 13;
+  private static final int INT_BLOB = 14;
+  private static final int INT_FIELDVALUE = 15;
+  private static final int INT_OBJECT = 16;
+  private static final int INT_UNKNOWN = -999;
 
   // Keys
   private static final String TYPE = "type";
@@ -71,30 +94,6 @@ class ReactNativeFirebaseFirestoreSerialize {
   private static final String KEY_DOC_CHANGE_OLD_INDEX = "oldIndex";
   private static final String KEY_META_HAS_PENDING_WRITES = "hasPendingWrites";
 
-  // Types
-  private static final String TYPE_NAN = "nan";
-  private static final String TYPE_NULL = "null";
-  private static final String TYPE_BLOB = "blob";
-  private static final String TYPE_DATE = "date";
-  private static final String TYPE_ARRAY = "array";
-  private static final String TYPE_STRING = "string";
-  private static final String TYPE_NUMBER = "number";
-  private static final String TYPE_OBJECT = "object";
-  private static final String TYPE_BOOLEAN = "boolean";
-  private static final String TYPE_GEOPOINT = "geopoint";
-  private static final String TYPE_TIMESTAMP = "timestamp";
-  private static final String TYPE_INFINITY = "infinity";
-  private static final String TYPE_REFERENCE = "reference";
-  private static final String TYPE_DOCUMENTID = "documentid";
-  private static final String TYPE_FIELDVALUE = "fieldvalue";
-  private static final String TYPE_FIELDVALUE_DELETE = "delete";
-  private static final String TYPE_FIELDVALUE_TIMESTAMP = "timestamp";
-  private static final String TYPE_FIELDVALUE_INCREMENT = "increment";
-  private static final String TYPE_FIELDVALUE_UNION = "union";
-  private static final String TYPE_FIELDVALUE_REMOVE = "remove";
-  private static final String TYPE_FIELDVALUE_TYPE = "type";
-  private static final String TYPE_FIELDVALUE_ELEMENTS = "elements";
-
   // Document Change Types
   private static final String CHANGE_ADDED = "added";
   private static final String CHANGE_MODIFIED = "modified";
@@ -107,15 +106,15 @@ class ReactNativeFirebaseFirestoreSerialize {
    * @return WritableMap
    */
   static WritableMap snapshotToWritableMap(DocumentSnapshot documentSnapshot) {
-    WritableMap metadata = Arguments.createMap();
+    WritableArray metadata = Arguments.createArray();
     WritableMap documentMap = Arguments.createMap();
     SnapshotMetadata snapshotMetadata = documentSnapshot.getMetadata();
 
-    // build metadata
-    metadata.putBoolean(KEY_META_FROM_CACHE, snapshotMetadata.isFromCache());
-    metadata.putBoolean(KEY_META_HAS_PENDING_WRITES, snapshotMetadata.hasPendingWrites());
+    // build metadata array: 0 = fromCache, 1 = hasPendingWrites
+    metadata.pushBoolean(snapshotMetadata.isFromCache());
+    metadata.pushBoolean(snapshotMetadata.hasPendingWrites());
 
-    documentMap.putMap(KEY_META, metadata);
+    documentMap.putArray(KEY_META, metadata);
     documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
     if (documentSnapshot.exists()) {
       documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
@@ -221,8 +220,8 @@ class ReactNativeFirebaseFirestoreSerialize {
     WritableMap writableMap = Arguments.createMap();
 
     for (Map.Entry<String, Object> entry : map.entrySet()) {
-      WritableMap typeMap = buildTypeMap(entry.getValue());
-      writableMap.putMap(entry.getKey(), typeMap);
+      WritableArray typeMap = buildTypeMap(entry.getValue());
+      writableMap.putArray(entry.getKey(), typeMap);
     }
 
     return writableMap;
@@ -238,136 +237,128 @@ class ReactNativeFirebaseFirestoreSerialize {
     WritableArray writableArray = Arguments.createArray();
 
     for (Object item : array) {
-      WritableMap typeMap = buildTypeMap(item);
-      writableArray.pushMap(typeMap);
+      WritableArray typeArray = buildTypeMap(item);
+      writableArray.pushArray(typeArray);
     }
 
     return writableArray;
   }
 
-  /**
-   * Convert an Object to a type map for use in JS land to convert to JS equivalent.
-   *
-   * @param value Object
-   * @return WritableMap
-   */
-  private static WritableMap buildTypeMap(Object value) {
-    WritableMap typeMap = Arguments.createMap();
+  private static WritableArray buildTypeMap(Object value) {
+    WritableArray typeArray = Arguments.createArray();
 
     if (value == null) {
-      typeMap.putString(TYPE, TYPE_NULL);
-      typeMap.putNull(VALUE);
-      return typeMap;
+      typeArray.pushInt(INT_NULL);
+      return typeArray;
     }
 
     if (value instanceof Boolean) {
-      typeMap.putString(TYPE, TYPE_BOOLEAN);
-      typeMap.putBoolean(VALUE, (Boolean) value);
-      return typeMap;
+      Boolean boolValue = (Boolean) value;
+      if (boolValue) {
+        typeArray.pushInt(INT_BOOLEAN_TRUE);
+      } else {
+        typeArray.pushInt(INT_BOOLEAN_FALSE);
+      }
+      return typeArray;
     }
 
     if (value instanceof Integer) {
-      typeMap.putString(TYPE, TYPE_NUMBER);
-      typeMap.putDouble(VALUE, ((Integer) value).doubleValue());
-      return typeMap;
+      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushDouble(((Integer) value).doubleValue());
+      return typeArray;
     }
 
     if (value instanceof Double) {
       Double doubleValue = (Double) value;
 
       if (Double.isInfinite(doubleValue)) {
-        typeMap.putString(TYPE, TYPE_INFINITY);
-        return typeMap;
+        if (doubleValue.equals(Double.NEGATIVE_INFINITY)) {
+          typeArray.pushInt(INT_NEGATIVE_INFINITY);
+          return typeArray;
+        }
+
+        if (doubleValue.equals(Double.POSITIVE_INFINITY)) {
+          typeArray.pushInt(INT_POSITIVE_INFINITY);
+          return typeArray;
+        }
       }
 
       if (Double.isNaN(doubleValue)) {
-        typeMap.putString(TYPE, TYPE_NAN);
-        return typeMap;
+        typeArray.pushInt(INT_NAN);
+        return typeArray;
       }
 
-      typeMap.putString(TYPE, TYPE_NUMBER);
-      typeMap.putDouble(VALUE, doubleValue);
-      return typeMap;
+      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushDouble(doubleValue);
+      return typeArray;
     }
 
     if (value instanceof Float) {
-      typeMap.putString(TYPE, TYPE_NUMBER);
-      typeMap.putDouble(VALUE, ((Float) value).doubleValue());
-      return typeMap;
+      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushDouble(((Float) value).doubleValue());
+      return typeArray;
     }
 
     if (value instanceof Long) {
-      typeMap.putString(TYPE, TYPE_NUMBER);
-      typeMap.putDouble(VALUE, ((Long) value).doubleValue());
-      return typeMap;
+      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushDouble(((Long) value).doubleValue());
+      return typeArray;
     }
 
     if (value instanceof String) {
-      typeMap.putString(TYPE, TYPE_STRING);
-      typeMap.putString(VALUE, (String) value);
-      return typeMap;
-    }
-
-    if (value instanceof Date) {
-      typeMap.putString(TYPE, TYPE_DATE);
-      typeMap.putDouble(VALUE, ((Date) value).getTime());
-      return typeMap;
+      typeArray.pushInt(INT_STRING);
+      typeArray.pushString((String) value);
+      return typeArray;
     }
 
     if (Map.class.isAssignableFrom(value.getClass())) {
-      typeMap.putString(TYPE, TYPE_OBJECT);
-      typeMap.putMap(VALUE, objectMapToWritable((Map<String, Object>) value));
-      return typeMap;
+      typeArray.pushInt(INT_OBJECT);
+      typeArray.pushMap(objectMapToWritable((Map<String, Object>) value));
+      return typeArray;
     }
 
     if (List.class.isAssignableFrom(value.getClass())) {
-      typeMap.putString(TYPE, TYPE_ARRAY);
+      typeArray.pushInt(INT_ARRAY);
       List<Object> list = (List<Object>) value;
       Object[] array = list.toArray(new Object[list.size()]);
-      typeMap.putArray(VALUE, objectArrayToWritable(array));
-      return typeMap;
+      typeArray.pushArray(objectArrayToWritable(array));
+      return typeArray;
     }
 
     if (value instanceof DocumentReference) {
-      typeMap.putString(TYPE, TYPE_REFERENCE);
-      typeMap.putString(VALUE, ((DocumentReference) value).getPath());
-      return typeMap;
+      typeArray.pushInt(INT_REFERENCE);
+      typeArray.pushString(((DocumentReference) value).getPath());
+      return typeArray;
     }
 
-
     if (value instanceof Timestamp) {
-      WritableMap timestampMap = Arguments.createMap();
-
-      timestampMap.putDouble(KEY_SECONDS, ((Timestamp) value).getSeconds());
-      timestampMap.putInt(KEY_NANOSECONDS, ((Timestamp) value).getNanoseconds());
-
-      typeMap.putString(TYPE, TYPE_TIMESTAMP);
-      typeMap.putMap(VALUE, timestampMap);
-      return typeMap;
+      typeArray.pushInt(INT_TIMESTAMP);
+      WritableArray timestampArray = Arguments.createArray();
+      timestampArray.pushDouble(((Timestamp) value).getSeconds());
+      timestampArray.pushInt(((Timestamp) value).getNanoseconds());
+      typeArray.pushArray(timestampArray);
+      return typeArray;
     }
 
     if (value instanceof GeoPoint) {
-      WritableMap geoPoint = Arguments.createMap();
-
-      geoPoint.putDouble(KEY_LATITUDE, ((GeoPoint) value).getLatitude());
-      geoPoint.putDouble(KEY_LONGITUDE, ((GeoPoint) value).getLongitude());
-
-      typeMap.putMap(VALUE, geoPoint);
-      typeMap.putString(TYPE, TYPE_GEOPOINT);
-
-      return typeMap;
+      typeArray.pushInt(INT_GEOPOINT);
+      WritableArray geopointArray = Arguments.createArray();
+      geopointArray.pushDouble(((GeoPoint) value).getLatitude());
+      geopointArray.pushDouble(((GeoPoint) value).getLongitude());
+      typeArray.pushArray(geopointArray);
+      return typeArray;
     }
 
     if (value instanceof Blob) {
-      typeMap.putString(TYPE, TYPE_BLOB);
-      typeMap.putString(VALUE, Base64.encodeToString(((Blob) value).toBytes(), Base64.NO_WRAP));
-      return typeMap;
+      typeArray.pushInt(INT_BLOB);
+      typeArray.pushString(Base64.encodeToString(((Blob) value).toBytes(), Base64.NO_WRAP));
+      return typeArray;
     }
 
     Log.w(TAG, "Unknown object of type " + value.getClass());
-    typeMap.putString(TYPE, TYPE_NULL);
-    typeMap.putNull(VALUE);
-    return typeMap;
+
+    typeArray.pushInt(INT_UNKNOWN);
+    return typeArray;
   }
 
   /**
@@ -387,7 +378,7 @@ class ReactNativeFirebaseFirestoreSerialize {
     ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      map.put(key, parseTypeMap(firestore, readableMap.getMap(key)));
+      map.put(key, parseTypeMap(firestore, readableMap.getArray(key)));
     }
 
     return map;
@@ -408,124 +399,80 @@ class ReactNativeFirebaseFirestoreSerialize {
     if (readableArray == null) return list;
 
     for (int i = 0; i < readableArray.size(); i++) {
-      list.add(parseTypeMap(firestore, readableArray.getMap(i)));
+      list.add(parseTypeMap(firestore, readableArray.getArray(i)));
     }
 
     return list;
   }
 
-  /**
-   * Convert a JS type to a Firestore type
-   *
-   * @param firestore FirebaseFirestore
-   * @param typeMap   ReadableMap
-   * @return Object
-   */
-  static Object parseTypeMap(FirebaseFirestore firestore, ReadableMap typeMap) {
-    String type = typeMap.getString(TYPE);
+  static Object parseTypeMap(FirebaseFirestore firestore, ReadableArray typeArray) {
+    int value = typeArray.getInt(0);
 
-    if (TYPE_NULL.equals(type)) {
-      return null;
+    switch (value) {
+      case INT_NAN:
+        return Double.NaN;
+      case INT_NEGATIVE_INFINITY:
+        return Double.NEGATIVE_INFINITY;
+      case INT_POSITIVE_INFINITY:
+        return Double.POSITIVE_INFINITY;
+      case INT_NULL:
+        return null;
+      case INT_DOCUMENTID:
+        return FieldPath.documentId();
+      case INT_BOOLEAN_TRUE:
+        return true;
+      case INT_BOOLEAN_FALSE:
+          return false;
+      case INT_NUMBER:
+        return typeArray.getDouble(1);
+      case INT_STRING:
+        return typeArray.getString(1);
+      case INT_STRING_EMPTY:
+        return "";
+      case INT_ARRAY:
+        return parseReadableArray(firestore, typeArray.getArray(1));
+      case INT_REFERENCE:
+        return firestore.document(Objects.requireNonNull(typeArray.getString(1)));
+      case INT_GEOPOINT:
+        ReadableArray geopointArray = typeArray.getArray(1);
+        return new GeoPoint(Objects.requireNonNull(geopointArray).getDouble(0), geopointArray.getDouble(1));
+      case INT_TIMESTAMP:
+        ReadableArray timestampArray = typeArray.getArray(1);
+        return new Timestamp((long) Objects.requireNonNull(timestampArray).getDouble(0), timestampArray.getInt(1));
+      case INT_BLOB:
+        return Blob.fromBytes(Base64.decode(typeArray.getString(1), Base64.NO_WRAP));
+      case INT_FIELDVALUE:
+        String fieldValueType = typeArray.getString(1);
+
+        if (Objects.requireNonNull(fieldValueType).equals("timestamp")) {
+          return FieldValue.serverTimestamp();
+        }
+
+        if (Objects.requireNonNull(fieldValueType).equals("increment")) {
+          return FieldValue.increment(typeArray.getDouble(2));
+        }
+
+        if (Objects.requireNonNull(fieldValueType).equals("delete")) {
+          return FieldValue.delete();
+        }
+
+        if (Objects.requireNonNull(fieldValueType).equals("array_union")) {
+          ReadableArray elements = typeArray.getArray(2);
+          return FieldValue.arrayUnion(parseReadableArray(firestore, elements).toArray());
+        }
+
+        if (Objects.requireNonNull(fieldValueType).equals("array_remove")) {
+          ReadableArray elements = typeArray.getArray(2);
+          return FieldValue.arrayRemove(parseReadableArray(firestore, elements).toArray());
+        }
+      case INT_OBJECT:
+        return parseReadableMap(firestore, typeArray.getMap(1));
+      case INT_UNKNOWN:
+      default:
+        return null;
     }
-
-    if (TYPE_BOOLEAN.equals(type)) {
-      return typeMap.getBoolean(VALUE);
-    }
-
-    if (TYPE_NAN.equals(type)) {
-      return Double.NaN;
-    }
-
-    if (TYPE_NUMBER.equals(type)) {
-      return typeMap.getDouble(VALUE);
-    }
-
-    if (TYPE_INFINITY.equals(type)) {
-      return Double.POSITIVE_INFINITY;
-    }
-
-    if (TYPE_STRING.equals(type)) {
-      return typeMap.getString(VALUE);
-    }
-
-    if (TYPE_ARRAY.equals(type)) {
-      return parseReadableArray(firestore, typeMap.getArray(VALUE));
-    }
-
-    if (TYPE_OBJECT.equals(type)) {
-      return parseReadableMap(firestore, typeMap.getMap(VALUE));
-    }
-
-    if (TYPE_DATE.equals(type)) {
-      Double time = typeMap.getDouble(VALUE);
-      return new Date(time.longValue());
-    }
-
-    /* --------------------------
-     *  Firestore Specific Types
-     * -------------------------- */
-
-    if (TYPE_DOCUMENTID.equals(type)) {
-      return FieldPath.documentId();
-    }
-
-    if (TYPE_GEOPOINT.equals(type)) {
-      ReadableMap geoPoint = typeMap.getMap(VALUE);
-      return new GeoPoint(geoPoint.getDouble(KEY_LATITUDE), geoPoint.getDouble(KEY_LONGITUDE));
-    }
-
-    if (TYPE_BLOB.equals(type)) {
-      String base64String = typeMap.getString(VALUE);
-      return Blob.fromBytes(Base64.decode(base64String, Base64.NO_WRAP));
-    }
-
-    if (TYPE_REFERENCE.equals(type)) {
-      String path = typeMap.getString(VALUE);
-      return firestore.document(path);
-    }
-
-    if (TYPE_TIMESTAMP.equals(type)) {
-      ReadableMap timestampMap = typeMap.getMap(VALUE);
-
-      return new Timestamp(
-        (long) timestampMap.getDouble(KEY_SECONDS),
-        timestampMap.getInt(KEY_NANOSECONDS)
-      );
-    }
-
-    if (TYPE_FIELDVALUE.equals(type)) {
-      ReadableMap fieldValueMap = typeMap.getMap(VALUE);
-      String fieldValueType = fieldValueMap.getString(TYPE_FIELDVALUE_TYPE);
-
-      if (TYPE_FIELDVALUE_TIMESTAMP.equals(fieldValueType)) {
-        return FieldValue.serverTimestamp();
-      }
-
-      if (TYPE_FIELDVALUE_INCREMENT.equals(fieldValueType)) {
-        return FieldValue.increment(fieldValueMap.getDouble(TYPE_FIELDVALUE_ELEMENTS));
-      }
-
-      if (TYPE_FIELDVALUE_DELETE.equals(fieldValueType)) {
-        return FieldValue.delete();
-      }
-
-      if (TYPE_FIELDVALUE_UNION.equals(fieldValueType)) {
-        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
-        return FieldValue.arrayUnion(parseReadableArray(firestore, elements).toArray());
-      }
-
-      if (TYPE_FIELDVALUE_REMOVE.equals(fieldValueType)) {
-        ReadableArray elements = fieldValueMap.getArray(TYPE_FIELDVALUE_ELEMENTS);
-        return FieldValue.arrayRemove(parseReadableArray(firestore, elements).toArray());
-      }
-
-      Log.w(TAG, "Unknown FieldValue type: " + fieldValueType);
-      return null;
-    }
-
-    Log.w(TAG, "Unknown object of type " + type);
-    return null;
   }
+
 
   /**
    * Parse JS batches array

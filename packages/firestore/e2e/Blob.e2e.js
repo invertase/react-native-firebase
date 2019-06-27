@@ -120,7 +120,4 @@ describe('firestore.Blob', () => {
     should.deepEqual(myBlob.toUint8Array(), testUInt8Array);
     should.notDeepEqual(myBlob.toUint8Array(), testUInt8Array2);
   });
-
-  // TODO full tests
-  // https://github.com/invertase/react-native-firebase/blob/v5.x.x/tests/e2e/firestore/blob.e2e.js#L120
 });

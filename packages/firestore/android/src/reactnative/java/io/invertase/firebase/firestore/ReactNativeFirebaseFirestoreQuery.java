@@ -71,66 +71,66 @@ public class ReactNativeFirebaseFirestoreQuery {
   }
 
   private void applyFilters(ReadableArray filters) {
-    for (int i = 0; i < filters.size(); i++) {
-      ReadableMap filter = filters.getMap(i);
-      ReadableMap fieldPathMap = Objects.requireNonNull(filter).getMap("fieldPath");
-      String fieldPathType = Objects.requireNonNull(fieldPathMap).getString("type");
-
-      String operator = filter.getString("operator");
-      ReadableMap jsValue = filter.getMap("value");
-      Object value = parseTypeMap(firebaseFirestore, Objects.requireNonNull(jsValue));
-
-      if (Objects.requireNonNull(fieldPathType).equals("string")) {
-        String fieldPath = Objects.requireNonNull(fieldPathMap.getString("string"));
-        switch (Objects.requireNonNull(operator)) {
-          case "EQUAL":
-            query = query.whereEqualTo(fieldPath, value);
-            break;
-          case "GREATER_THAN":
-            query = query.whereGreaterThan(fieldPath, value);
-            break;
-          case "GREATER_THAN_OR_EQUAL":
-            query = query.whereGreaterThanOrEqualTo(fieldPath, value);
-            break;
-          case "LESS_THAN":
-            query = query.whereLessThan(fieldPath, value);
-            break;
-          case "LESS_THAN_OR_EQUAL":
-            query = query.whereLessThanOrEqualTo(fieldPath, value);
-            break;
-          case "ARRAY_CONTAINS":
-            query = query.whereArrayContains(fieldPath, value);
-            break;
-        }
-      } else {
-        ReadableArray fieldPathElements = fieldPathMap.getArray("elements");
-        String[] fieldPathArray = new String[fieldPathElements.size()];
-        for (int j = 0; j < fieldPathElements.size(); j++) {
-          fieldPathArray[j] = fieldPathElements.getString(j);
-        }
-        FieldPath fieldPath = FieldPath.of(fieldPathArray);
-        switch (operator) {
-          case "EQUAL":
-            query = query.whereEqualTo(fieldPath, value);
-            break;
-          case "GREATER_THAN":
-            query = query.whereGreaterThan(fieldPath, value);
-            break;
-          case "GREATER_THAN_OR_EQUAL":
-            query = query.whereGreaterThanOrEqualTo(fieldPath, value);
-            break;
-          case "LESS_THAN":
-            query = query.whereLessThan(fieldPath, value);
-            break;
-          case "LESS_THAN_OR_EQUAL":
-            query = query.whereLessThanOrEqualTo(fieldPath, value);
-            break;
-          case "ARRAY_CONTAINS":
-            query = query.whereArrayContains(fieldPath, value);
-            break;
-        }
-      }
-    }
+//    for (int i = 0; i < filters.size(); i++) {
+//      ReadableMap filter = filters.getMap(i);
+//      ReadableMap fieldPathMap = Objects.requireNonNull(filter).getMap("fieldPath");
+//      String fieldPathType = Objects.requireNonNull(fieldPathMap).getString("type");
+//
+//      String operator = filter.getString("operator");
+//      ReadableMap jsValue = filter.getMap("value");
+//      Object value = parseTypeMap(firebaseFirestore, Objects.requireNonNull(jsValue));
+//
+//      if (Objects.requireNonNull(fieldPathType).equals("string")) {
+//        String fieldPath = Objects.requireNonNull(fieldPathMap.getString("string"));
+//        switch (Objects.requireNonNull(operator)) {
+//          case "EQUAL":
+//            query = query.whereEqualTo(fieldPath, value);
+//            break;
+//          case "GREATER_THAN":
+//            query = query.whereGreaterThan(fieldPath, value);
+//            break;
+//          case "GREATER_THAN_OR_EQUAL":
+//            query = query.whereGreaterThanOrEqualTo(fieldPath, value);
+//            break;
+//          case "LESS_THAN":
+//            query = query.whereLessThan(fieldPath, value);
+//            break;
+//          case "LESS_THAN_OR_EQUAL":
+//            query = query.whereLessThanOrEqualTo(fieldPath, value);
+//            break;
+//          case "ARRAY_CONTAINS":
+//            query = query.whereArrayContains(fieldPath, value);
+//            break;
+//        }
+//      } else {
+//        ReadableArray fieldPathElements = fieldPathMap.getArray("elements");
+//        String[] fieldPathArray = new String[fieldPathElements.size()];
+//        for (int j = 0; j < fieldPathElements.size(); j++) {
+//          fieldPathArray[j] = fieldPathElements.getString(j);
+//        }
+//        FieldPath fieldPath = FieldPath.of(fieldPathArray);
+//        switch (operator) {
+//          case "EQUAL":
+//            query = query.whereEqualTo(fieldPath, value);
+//            break;
+//          case "GREATER_THAN":
+//            query = query.whereGreaterThan(fieldPath, value);
+//            break;
+//          case "GREATER_THAN_OR_EQUAL":
+//            query = query.whereGreaterThanOrEqualTo(fieldPath, value);
+//            break;
+//          case "LESS_THAN":
+//            query = query.whereLessThan(fieldPath, value);
+//            break;
+//          case "LESS_THAN_OR_EQUAL":
+//            query = query.whereLessThanOrEqualTo(fieldPath, value);
+//            break;
+//          case "ARRAY_CONTAINS":
+//            query = query.whereArrayContains(fieldPath, value);
+//            break;
+//        }
+//      }
+//    }
   }
 
   private void applyOrders(ReadableArray orders) {

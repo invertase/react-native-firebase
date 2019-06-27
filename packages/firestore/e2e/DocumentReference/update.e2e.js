@@ -66,6 +66,7 @@ describe('firestore.doc().update()', () => {
     await ref.update(data2);
     const snapshot2 = await ref.get();
     snapshot2.data().should.eql(jet.contextify(data2));
+    await ref.delete();
   });
 
   it('updates data with an key/value pairs', async () => {
@@ -84,5 +85,6 @@ describe('firestore.doc().update()', () => {
     };
     const snapshot2 = await ref.get();
     snapshot2.data().should.eql(jet.contextify(expected));
+    await ref.delete();
   });
 });

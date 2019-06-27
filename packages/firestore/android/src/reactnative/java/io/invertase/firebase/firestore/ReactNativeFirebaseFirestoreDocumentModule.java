@@ -104,26 +104,28 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   public void documentSet(String appName, String path, ReadableMap data, ReadableMap options, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
-    Map<String, Object> settableData = parseReadableMap(firebaseFirestore, data);
 
-    Task<Void> setTask;
 
-    if (options.hasKey("merge") && options.getBoolean("merge")) {
-      setTask = documentReference.set(settableData, SetOptions.merge());
-    } else if (options.hasKey("mergeFields")) {
-      List<String> fields = new ArrayList<>();
+    Tasks.call(getExecutor(), () -> parseReadableMap(firebaseFirestore, data)).continueWithTask(getExecutor(), task -> {
+      Task<Void> setTask;
+      Map<String, Object> settableData = Objects.requireNonNull(task.getResult());
 
-      for (Object object : Objects.requireNonNull(options.getArray("mergeFields")).toArrayList()) {
-        fields.add((String) object);
+      if (options.hasKey("merge") && options.getBoolean("merge")) {
+        setTask = documentReference.set(settableData, SetOptions.merge());
+      } else if (options.hasKey("mergeFields")) {
+        List<String> fields = new ArrayList<>();
+
+        for (Object object : Objects.requireNonNull(options.getArray("mergeFields")).toArrayList()) {
+          fields.add((String) object);
+        }
+
+        setTask = documentReference.set(settableData, SetOptions.mergeFields(fields));
+      } else {
+        setTask = documentReference.set(settableData);
       }
 
-      setTask = documentReference.set(settableData, SetOptions.mergeFields(fields));
-    } else {
-      setTask = documentReference.set(settableData);
-    }
-
-    // TODO can't wrap in Tasks.call? Never executes
-    setTask.addOnCompleteListener(task -> {
+      return setTask;
+    }).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(null);
       } else {
@@ -136,9 +138,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   public void documentUpdate(String appName, String path, ReadableMap data, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
-    Map<String, Object> updateData = parseReadableMap(firebaseFirestore, data);
 
-    documentReference.update(updateData)
+    Tasks.call(getExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+      .continueWithTask(getExecutor(), task -> documentReference.update(Objects.requireNonNull(task.getResult())))
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(null);

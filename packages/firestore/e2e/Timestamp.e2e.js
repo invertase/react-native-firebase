@@ -142,7 +142,7 @@ describe('firestore.Timestamp', () => {
       }
     });
 
-    xit('returns a new instance', () => {
+    it('returns a new instance', () => {
       const ts = firebase.firestore.Timestamp.fromDate(new Date());
       should.equal(ts.constructor.name, 'FirestoreTimestamp');
     });
@@ -153,18 +153,5 @@ describe('firestore.Timestamp', () => {
       const ts = firebase.firestore.Timestamp.fromMillis(123);
       should.equal(ts.constructor.name, 'FirestoreTimestamp');
     });
-  });
-
-  xit('sets & returns correctly', async () => {
-    const date = new Date();
-    const ts = firebase.firestore.Timestamp.fromDate(new Date());
-    const ref = firebase.firestore().doc('v6/timestamp');
-    await ref.set({
-       timestamp: ts,
-    });
-    const snapshot = await ref.get();
-    const timestamp = snapshot.data().timestamp;
-    should.equal(timestamp.constructor.name, 'FirestoreTimestamp');
-    timestamp.seconds.should.equal(date.getTime() / 1000);
   });
 });

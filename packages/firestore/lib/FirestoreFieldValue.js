@@ -15,51 +15,78 @@
  *
  */
 
+import { isArray, isNumber } from '@react-native-firebase/common';
 import { buildNativeArray } from './utils/serialize';
 
 export const TypeFieldValueDelete = 'delete';
 export const TypeFieldValueIncrement = 'increment';
-export const TypeFieldValueRemove = 'remove';
-export const TypeFieldValueUnion = 'union';
+export const TypeFieldValueRemove = 'array_remove';
+export const TypeFieldValueUnion = 'array_union';
 export const TypeFieldValueTimestamp = 'timestamp';
 
+function validateArrayElements(elements) {
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+
+    if (element instanceof FirestoreFieldValue) {
+      throw new Error(`FieldValue instance cannot be used with other FieldValue methods.`);
+    }
+
+    if (isArray(element)) {
+      throw new Error(`Nested arrays are not supported`);
+    }
+  }
+}
+
 export default class FirestoreFieldValue {
-  static delete() {
-    return new FirestoreFieldValue(TypeFieldValueDelete);
-  }
+  constructor(internal = false, type, elements) {
+    if (internal === false) {
+      throw new Error(
+        'firebase.firestore.FieldValue constructor is private, use FieldValue.<field>() instead.',
+      );
+    }
 
-  static increment(n) {
-    return new FirestoreFieldValue(TypeFieldValueIncrement, n);
-  }
-
-  static serverTimestamp() {
-    return new FirestoreFieldValue(TypeFieldValueTimestamp);
-  }
-
-  static arrayUnion(...elements) {
-    // TODO Salakar: v6: validate elements, any primitive or FirestoreReference allowed
-    // TODO Salakar: v6: explicitly deny use of serverTimestamp - only allowed on set/update
-    // TODO Salakar: v6: explicitly deny use of nested arrays - not supported on sdk
-    return new FirestoreFieldValue(TypeFieldValueUnion, buildNativeArray(elements));
-  }
-
-  static arrayRemove(...elements) {
-    // TODO Salakar: v6: validate elements, any primitive or FirestoreReference allowed
-    // TODO Salakar: v6: explicitly deny use of serverTimestamp - only allowed on set/update
-    // TODO Salakar: v6: explicitly deny use of nested arrays - not supported on sdk
-    return new FieldValue(TypeFieldValueRemove, buildNativeArray(elements));
-  }
-
-  constructor(type, elements) {
     this._type = type;
     this._elements = elements;
   }
 
-  get type() {
-    return this._type;
+  static delete() {
+    return new FirestoreFieldValue(true, TypeFieldValueDelete);
   }
 
-  get elements() {
-    return this._elements;
+  static increment(n) {
+    if (!isNumber(n)) {
+      throw new Error(`firebase.firestore.FieldValue.increment(*) 'n' expected a number value.`);
+    }
+
+    return new FirestoreFieldValue(true, TypeFieldValueIncrement, n);
+  }
+
+  static serverTimestamp() {
+    return new FirestoreFieldValue(true, TypeFieldValueTimestamp);
+  }
+
+  static arrayUnion(...elements) {
+    try {
+      validateArrayElements(elements);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore.FieldValue.arrayUnion(*) 'elements' called with invalid data. ${e.message}`,
+      );
+    }
+
+    return new FirestoreFieldValue(true, TypeFieldValueUnion, buildNativeArray(elements));
+  }
+
+  static arrayRemove(...elements) {
+    try {
+      validateArrayElements(elements);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore.FieldValue.arrayRemove(*) 'elements' called with invalid data. ${e.message}`,
+      );
+    }
+
+    return new FirestoreFieldValue(true, TypeFieldValueRemove, buildNativeArray(elements));
   }
 }

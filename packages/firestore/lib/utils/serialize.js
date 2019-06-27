@@ -15,12 +15,25 @@
  *
  */
 
-import { typeOf } from '@react-native-firebase/common';
+import {
+  isArray,
+  isBoolean,
+  isDate,
+  isNull,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
+
+import { getTypeMapInt, getTypeMapName } from './typemap';
 import FirestoreDocumentReference from '../FirestoreDocumentReference';
 import { DOCUMENT_ID } from '../FirestoreFieldPath';
 import FirestoreFieldValue from '../FirestoreFieldValue';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
 import FirestoreTimestamp from '../FirestoreTimestamp';
+import FirestorePath from '../FirestorePath';
+import FirestoreBlob from '../FirestoreBlob';
 
 /**
  *
@@ -32,7 +45,7 @@ export function buildNativeMap(data) {
     const keys = Object.keys(data);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      const typeMap = buildTypeMap(data[key]);
+      const typeMap = generateNativeData(data[key]);
       if (typeMap) nativeData[key] = typeMap;
     }
   }
@@ -49,7 +62,7 @@ export function buildNativeArray(array) {
   if (array) {
     for (let i = 0; i < array.length; i++) {
       const value = array[i];
-      const typeMap = buildTypeMap(value);
+      const typeMap = generateNativeData(value);
       if (typeMap) nativeArray.push(typeMap);
     }
   }
@@ -57,116 +70,88 @@ export function buildNativeArray(array) {
 }
 
 /**
+ * Creates a lightweight array of an object value to be sent over the bridge.
+ * The type is convered to an integer which is handled on the native side
+ * to create the correct types.
+ *
+ * Example: [7, 'some string'];
  *
  * @param value
  * @returns {*}
  */
-export function buildTypeMap(value) {
-  const type = typeOf(value);
-
+export function generateNativeData(value) {
   if (Number.isNaN(value)) {
-    return {
-      type: 'nan',
-      value: null,
-    };
+    return getTypeMapInt('nan');
   }
 
-  if (value === Infinity) {
-    return {
-      type: 'infinity',
-      value: null,
-    };
+  if (value === Number.NEGATIVE_INFINITY) {
+    return getTypeMapInt('-infinity');
   }
 
-  if (value === null || value === undefined) {
-    return {
-      type: 'null',
-      value: null,
-    };
+  if (value === Number.POSITIVE_INFINITY) {
+    return getTypeMapInt('infinity');
+  }
+
+  if (isNull(value) || isUndefined(value)) {
+    return getTypeMapInt('null');
   }
 
   if (value === DOCUMENT_ID) {
-    return {
-      type: 'documentid',
-      value: null,
-    };
+    return getTypeMapInt('documentid');
   }
 
-  if (type === 'boolean' || type === 'number' || type === 'string') {
-    return {
-      type,
-      value,
-    };
+  if (isBoolean(value)) {
+    if (value === true) return getTypeMapInt('booleanTrue');
+    return getTypeMapInt('booleanFalse');
   }
 
-  if (type === 'array') {
-    return {
-      type,
-      value: buildNativeArray(value),
-    };
+  if (isNumber(value)) {
+    return getTypeMapInt('number', value);
   }
 
-  if (type === 'object') {
+  if (isString(value)) {
+    if (value === '') return getTypeMapInt('stringEmpty');
+    return getTypeMapInt('string', value);
+  }
+
+  if (isArray(value)) {
+    return getTypeMapInt('array', buildNativeArray(value));
+  }
+
+  if (isObject(value)) {
     if (value instanceof FirestoreDocumentReference) {
-      return {
-        type: 'reference',
-        value: value.path,
-      };
+      return getTypeMapInt('reference', value.path);
     }
 
     if (value instanceof FirestoreGeoPoint) {
-      return {
-        type: 'geopoint',
-        value: {
-          latitude: value.latitude,
-          longitude: value.longitude,
-        },
-      };
+      return getTypeMapInt('geopoint', [value.latitude, value.longitude]);
+    }
+
+    // Handle Date objects are Timestamps as per web sdk
+    if (isDate(value)) {
+      const timestamp = FirestoreTimestamp.fromDate(value);
+      return getTypeMapInt('timestamp', [timestamp.seconds, timestamp.nanoseconds]);
     }
 
     if (value instanceof FirestoreTimestamp) {
-      return {
-        type: 'timestamp',
-        value: {
-          seconds: value.seconds,
-          nanoseconds: value.nanoseconds,
-        },
-      };
+      return getTypeMapInt('timestamp', [value.seconds, value.nanoseconds]);
     }
 
-    if (value instanceof Date) {
-      return {
-        type: 'date',
-        value: value.getTime(),
-      };
+    if (value instanceof FirestoreBlob) {
+      return getTypeMapInt('blob', value.toBase64());
     }
 
-    if (value instanceof Blob) {
-      return {
-        type: 'blob',
-        value: value.toBase64(),
-      };
-    }
-
-    // TODO: Salakar: Refactor in v6 - add internal `type` flag
     if (value instanceof FirestoreFieldValue) {
-      return {
-        type: 'fieldvalue',
-        value: {
-          elements: value.elements,
-          type: value.type,
-        },
-      };
+      return getTypeMapInt('fieldvalue', [value._type, value._elements]);
     }
 
-    return {
-      type: 'object',
-      value: buildNativeMap(value),
-    };
+    return getTypeMapInt('object', buildNativeMap(value));
   }
 
+  // eslint-disable-next-line no-console
   console.warn(`Unknown data type received ${type}`);
-  return null;
+
+  return getTypeMapInt('unknown');
 }
 
 /**
@@ -178,10 +163,10 @@ export function parseNativeMap(firestore, nativeData) {
   let data;
   if (nativeData) {
     data = {};
-    const keys = Object.keys(nativeData);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      data[key] = parseTypeMap(firestore, nativeData[key]);
+    const entries = Object.entries(nativeData);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, typeArray] = entries[i];
+      data[key] = parseNativeData(firestore, typeArray);
     }
   }
   return data;
@@ -197,64 +182,60 @@ export function parseNativeArray(firestore, nativeArray) {
   const array = [];
   if (nativeArray) {
     for (let i = 0; i < nativeArray.length; i++) {
-      array.push(parseTypeMap(firestore, nativeArray[i]));
+      array.push(parseNativeData(firestore, nativeArray[i]));
     }
   }
   return array;
 }
 
 /**
+ * Data returned from native is constructed in the same way it sent to keep
+ * payloads over the bridge as small as possible. The index matches to a type
+ * which is then created on JS land.
+ *
+ * Example: [7, 'string']
  *
  * @param firestore
- * @param typeMap
+ * @param nativeArray
  * @returns *
  */
-export function parseTypeMap(firestore, typeMap) {
-  const { type, value } = typeMap;
-  if (type === 'null') {
-    return null;
-  }
+export function parseNativeData(firestore, nativeArray) {
+  const [int, value] = nativeArray;
+  const type = getTypeMapName(int);
 
-  if (type === 'boolean' || type === 'number' || type === 'string') {
-    return value;
+  switch (type) {
+    case 'nan':
+      return NaN;
+    case '-infinity':
+      return -Infinity;
+    case 'infinity':
+      return Infinity;
+    case 'null':
+      return null;
+    case 'booleanTrue':
+      return true;
+    case 'booleanFalse':
+      return false;
+    case 'number':
+    case 'string':
+      return value;
+    case 'stringEmpty':
+      return '';
+    case 'array':
+      return parseNativeArray(firestore, value);
+    case 'object':
+      return parseNativeMap(firestore, value);
+    case 'reference':
+      return new FirestoreDocumentReference(firestore, FirestorePath.fromName(value));
+    case 'geopoint':
+      return new FirestoreGeoPoint(value[0], value[1]);
+    case 'timestamp':
+      return new FirestoreTimestamp(value[0], value[1]);
+    case 'blob':
+      return FirestoreBlob.fromBase64String(value);
+    default:
+      // eslint-disable-next-line no-console
+      console.warn(`Unknown data type received from native channel: ${type}`);
+      return value;
   }
-
-  if (type === 'array') {
-    return parseNativeArray(firestore, value);
-  }
-
-  if (type === 'object') {
-    return parseNativeMap(firestore, value);
-  }
-
-  if (type === 'reference') {
-    return new FirestoreDocumentReference(firestore, Path.fromName(value));
-  }
-
-  if (type === 'geopoint') {
-    return new FirestoreGeoPoint(value.latitude, value.longitude);
-  }
-
-  if (type === 'timestamp') {
-    return new FirestoreTimestamp(value.seconds, value.nanoseconds);
-  }
-
-  if (type === 'date') {
-    return new Date(value);
-  }
-
-  if (type === 'blob') {
-    return Blob.fromBase64String(value);
-  }
-
-  if (type === 'infinity') {
-    return Infinity;
-  }
-
-  if (type === 'nan') {
-    return NaN;
-  }
-
-  console.warn(`Unknown data type received ${type}`);
-  return value;
 }

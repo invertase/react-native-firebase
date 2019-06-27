@@ -51,6 +51,18 @@ export function isObject(value) {
 }
 
 /**
+ * Simple is date check
+ * https://stackoverflow.com/a/44198641
+ * @param value
+ * @returns {boolean}
+ */
+export function isDate(value) {
+  // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
+  // eslint-disable-next-line no-restricted-globals
+  return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
+}
+
+/**
  * Simple is function check
  *
  * @param value

@@ -15,16 +15,16 @@
  *
  */
 
-import { deepGet } from '@react-native-firebase/common/lib/deeps';
+import { isString } from '@react-native-firebase/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import FirestoreFieldPath from './FirestoreFieldPath';
+import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestorePath from './FirestorePath';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
-import { isString } from '@react-native-firebase/common';
 
 export default class FirestoreDocumentSnapshot {
   constructor(firestore, nativeData) {
+    console.log(nativeData);
     this._data = parseNativeMap(firestore, nativeData.data);
     this._metadata = nativeData.metadata;
     this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
@@ -39,7 +39,8 @@ export default class FirestoreDocumentSnapshot {
   }
 
   get metadata() {
-    return this._metadata;
+    const [fromCache, hasPendingWrites] = this._metadata;
+    return { fromCache, hasPendingWrites };
   }
 
   get ref() {
@@ -47,24 +48,54 @@ export default class FirestoreDocumentSnapshot {
   }
 
   data(options) {
+    // const snapshotOptions = {};
+    //
+    // if (!isUndefined(options)) {
+    //   if (!isObject(options)) {
+    //     throw new Error(
+    //       `firebase.app().firestore() DocumentSnapshot.data(*) 'options' expected an object if defined.`,
+    //     );
+    //   }
+    //
+    //   if (
+    //     options.serverTimestamps &&
+    //     options.serverTimestamps !== 'estimate' &&
+    //     options.serverTimestamps !== 'previous' &&
+    //     options.serverTimestamps !== 'none'
+    //   ) {
+    //     throw new Error(
+    //       `firebase.app().firestore() DocumentSnapshot.data(*) 'options.serverTimestamps' expected one of 'estimate', 'previous' or 'none'.`,
+    //     );
+    //   }
+    // }
+
     // todo options
     return this._data;
   }
 
   get(fieldPath, options) {
-    // todo valid path (no start end ., or ..
-    // todo validate string or instance
-
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
-      throw new Error('bad fieldpath TODO');
+      throw new Error(
+        `firebase.app().firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.`,
+      );
     }
 
-    if (fieldPath instanceof FirestoreFieldPath) {
-      return extractFieldPathData(this._data, fieldPath._segments);
-    }
-    // todo options
+    let path;
 
-    return deepGet(this._data, fieldPath);
+    if (isString(fieldPath)) {
+      try {
+        path = fromDotSeparatedString(fieldPath);
+      } catch (e) {
+        throw new Error(
+          `firebase.app().firestore() DocumentSnapshot.get(*) 'fieldPath' ${e.message}.`,
+        );
+      }
+    } else {
+      // Is already field path
+      path = fieldPath;
+    }
+
+    return extractFieldPathData(this._data, path._segments);
   }
 
   isEqual(other) {

@@ -26,7 +26,7 @@ import {
 
 import { buildNativeMap } from './utils/serialize';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import FirestoreFieldPath from './FirestoreFieldPath';
+import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import { parseUpdateArgs } from './utils';
 
 export default class FirestoreWriteBatch {
@@ -115,16 +115,25 @@ export default class FirestoreWriteBatch {
           const field = options.mergeFields[i];
           if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
             throw new Error(
-              `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
+              `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}.`,
             );
           }
 
-          // TODO FieldPath isnt handled native? Is this ok?
-          if (field instanceof FirestoreFieldPath) {
-            mergeOptions.mergeFields.push(field._toPath());
+          let path;
+
+          if (isString(field)) {
+            try {
+              path = fromDotSeparatedString(field);
+            } catch (e) {
+              throw new Error(
+                `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' ${e.message}.`,
+              );
+            }
           } else {
-            mergeOptions.mergeFields.push(field);
+            path = field;
           }
+
+          mergeOptions.mergeFields.push(path._toPath());
         }
       }
     }
