@@ -72,10 +72,12 @@ Describe your issue here
 <details><summary>Click To Expand</summary>
 <p>
 
-#### Have you converted to AndroidX
-- Your application is an AndroidX application? Yes / No
-- You are using android/gradle.settings:jetifier=true for android compatibility? Yes / No
-- You are using npm package jetifier for react-native compability? Yes / No
+#### Have you converted to AndroidX?
+
+<!--- Mark any options that apply below -->
+- [ ] my application is an AndroidX application?
+- [ ] I am using `android/gradle.settings` `jetifier=true` for Android compatibility?
+- [ ] I am using the NPM package `jetifier` for react-native compatibility?
 
 #### `android/build.gradle`:
 
