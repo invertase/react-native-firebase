@@ -237,7 +237,7 @@ declare module 'react-native-firebase' {
     namespace storage {
       interface StorageStatics {
         TaskState: TaskState;
-        TaskEvent: TaskState;
+        TaskEvent: TaskEvent;
         Native?: {
           MAIN_BUNDLE_PATH: string;
           CACHES_DIRECTORY_PATH: string;
