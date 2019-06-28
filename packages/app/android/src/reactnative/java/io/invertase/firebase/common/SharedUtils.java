@@ -85,6 +85,17 @@ public class SharedUtils {
   }
 
 
+  public static WritableMap getExceptionMap(Exception exception) {
+    WritableMap exceptionMap = Arguments.createMap();
+    String code = "unknown";
+    String message = exception.getMessage();
+    exceptionMap.putString("code", code);
+    exceptionMap.putString("nativeErrorCode", code);
+    exceptionMap.putString("message", message);
+    exceptionMap.putString("nativeErrorMessage", message);
+    return exceptionMap;
+  }
+
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
     Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
