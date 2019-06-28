@@ -17,12 +17,18 @@ import WriteBatch from './WriteBatch';
 import TransactionHandler from './TransactionHandler';
 import Timestamp from './Timestamp';
 import Transaction from './Transaction';
-import { isBoolean, isObject, isString, hop } from '../../utils';
+import { isBoolean, isObject, isString, isNumber, hop } from '../../utils';
 import { getNativeModule } from '../../utils/native';
 
 import type DocumentSnapshot from './DocumentSnapshot';
 import type App from '../core/app';
 import type QuerySnapshot from './QuerySnapshot';
+
+// A flag representing the unlimited cache size
+const CACHE_SIZE_UNLIMITED = -1;
+
+// The minimum cache size in the firebase SDK (currently 1MB)
+const MIN_CACHE_SIZE = 1048576;
 
 type CollectionSyncEvent = {
   appName: string,
@@ -42,6 +48,7 @@ type DocumentSyncEvent = {
 
 type Settings = {
   host?: string,
+  cacheSizeBytes?: number,
   persistence?: boolean,
   ssl?: boolean,
   timestampsInSnapshots?: boolean,
@@ -180,6 +187,27 @@ export default class Firestore extends ModuleBase {
         )
       );
     }
+
+    if (hop(settings, 'cacheSizeBytes')) {
+      if (!isNumber(settings.cacheSizeBytes)) {
+        return Promise.reject(
+          new Error(
+            'Firestore.settings failed: settings.cacheSizeBytes must be number.'
+          )
+        );
+      }
+      if (
+        settings.cacheSizeBytes !== CACHE_SIZE_UNLIMITED &&
+        settings.cacheSizeBytes < MIN_CACHE_SIZE
+      ) {
+        return Promise.reject(
+          new Error(
+            `Firestore.settings failed: settings.cacheSizeBytes must be set to ${MIN_CACHE_SIZE} at least bytes.`
+          )
+        );
+      }
+    }
+
     if (hop(settings, 'ssl') && !isBoolean(settings.ssl)) {
       return Promise.reject(
         new Error('Firestore.settings failed: settings.ssl must be boolean.')
@@ -264,6 +292,7 @@ export const statics = {
   FieldValue,
   GeoPoint,
   Timestamp,
+  CACHE_SIZE_UNLIMITED,
   enableLogging(enabled: boolean): void {
     // DEPRECATED: Remove method in v4.1.0
     console.warn(

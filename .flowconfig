@@ -1,4 +1,5 @@
 [ignore]
+
 ; We fork some components by platform
 .*/*[.]android.js
 
@@ -24,6 +25,9 @@
 
 # Ignore tests project
 .*/tests/.*
+
+[untyped]
+.*/node_modules/.*
 
 [include]
 
