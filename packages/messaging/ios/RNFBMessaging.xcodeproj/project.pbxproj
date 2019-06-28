@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMessagingModule.m */; };
+		DA26951322C6AFFC00241B22 /* RNFBMessagingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		2744B98221F45429004F8E3F /* libRNFBMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBMessagingModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMessagingModule.h; path = RNFBMessaging/RNFBMessagingModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBMessagingModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingModule.m; path = RNFBMessaging/RNFBMessagingModule.m; sourceTree = SOURCE_ROOT; };
+		DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingDelegate.m; sourceTree = "<group>"; };
+		DA26951422C6B00A00241B22 /* RNFBMessagingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,10 +53,10 @@
 		2744B98321F45429004F8E3F /* RNFBMessaging */ = {
 			isa = PBXGroup;
 			children = (
-				2744B9A121F48736004F8E3F /* converters */,
-				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBMessagingModule.h */,
 				2744B98521F45429004F8E3F /* RNFBMessagingModule.m */,
+				DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */,
+				DA26951422C6B00A00241B22 /* RNFBMessagingDelegate.h */,
 			);
 			path = RNFBMessaging;
 			sourceTree = "<group>";
@@ -107,6 +110,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3323F52AAFE26B7384BE4DE3;
@@ -125,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */,
+				DA26951322C6AFFC00241B22 /* RNFBMessagingDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

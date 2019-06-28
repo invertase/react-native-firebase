@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,17 +18,20 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule, FIRMessagingDelegate>
+@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate>
+
+@property _Nullable RCTPromiseRejectBlock pendingPromiseReject;
+@property _Nullable RCTPromiseResolveBlock pendingPromiseResolve;
 
 + (_Nonnull instancetype) sharedInstance;
 
-
 #if !TARGET_OS_TV
-- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
+// TODO only used for Notifications Module - for handover
+//- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
+//- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
 #endif
 
 @end
