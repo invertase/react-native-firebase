@@ -33,14 +33,26 @@ export default class FirestoreWriteBatch {
   constructor(firestore) {
     this._firestore = firestore;
     this._writes = [];
+    this._committed = false;
+  }
+
+  _verifyNotCommitted(method) {
+    if (this._committed) {
+      throw new Error(
+        `firebase.app().firestore.batch().${method}(*) A write batch can no longer be used after commit() has been called.`,
+      );
+    }
   }
 
   commit() {
+    this._verifyNotCommitted('commit');
+    this._committed = true;
     if (this._writes.length === 0) return Promise.resolve();
     return this._firestore.native.documentBatch(this._writes);
   }
 
   delete(documentRef) {
+    this._verifyNotCommitted('delete');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
         `firebase.app().firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.`,
@@ -62,6 +74,7 @@ export default class FirestoreWriteBatch {
   }
 
   set(documentRef, data, options) {
+    this._verifyNotCommitted('set');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
         `firebase.app().firestore.batch().set(*) 'documentRef' expected instance of a DocumentReference.`,
@@ -150,6 +163,7 @@ export default class FirestoreWriteBatch {
   }
 
   update(documentRef, ...args) {
+    this._verifyNotCommitted('update');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
         `firebase.app().firestore.batch().update(*) 'documentRef' expected instance of a DocumentReference.`,
