@@ -46,6 +46,30 @@ describe('firestore.FieldPath', () => {
     }
   });
 
+  it('should throw if string fieldPath is invalid', () => {
+    try {
+      // Dummy create
+      firebase.firestore().collection('foo')
+        .where('.foo', '<', 123);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`Invalid field path`);
+      return Promise.resolve();
+    }
+  });
+
+  it('should throw if string fieldPath contains invalid characters', () => {
+    try {
+      // Dummy create
+      firebase.firestore().collection('foo')
+        .where('foo/bar', '<', 123);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`Paths must not contain`);
+      return Promise.resolve();
+    }
+  });
+
   it('should provide access to segments as array', () => {
     const expect = ['foo', 'bar', 'baz'];
     const path = new firebase.firestore.FieldPath('foo', 'bar', 'baz');

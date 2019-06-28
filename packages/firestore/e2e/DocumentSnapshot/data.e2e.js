@@ -50,7 +50,7 @@ describe('firestore().doc() -> snapshot.data()', () => {
     // TODO
   });
 
-  it.only('handles all data types', async () => {
+  it('handles all data types', async () => {
     await Utils.sleep(3000);
     const types = {
       string: '123456',
@@ -133,6 +133,6 @@ describe('firestore().doc() -> snapshot.data()', () => {
     // Blob
     data.blob.toBase64.should.be.a.Function();
 
-    // await ref.delete();
+    await ref.delete();
   });
 });

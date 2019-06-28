@@ -149,7 +149,7 @@ export function generateNativeData(value) {
   }
 
   // eslint-disable-next-line no-console
-  console.warn(`Unknown data type received ${type}`);
+  console.warn(`Unknown data type received ${value}`);
 
   return getTypeMapInt('unknown');
 }

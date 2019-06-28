@@ -18,15 +18,15 @@
 import { isString } from '@react-native-firebase/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import FirestorePath from './FirestorePath';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
 
 export default class FirestoreDocumentSnapshot {
   constructor(firestore, nativeData) {
-    console.log(nativeData);
     this._data = parseNativeMap(firestore, nativeData.data);
-    this._metadata = nativeData.metadata;
+    this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
     this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
   }
 
@@ -39,8 +39,7 @@ export default class FirestoreDocumentSnapshot {
   }
 
   get metadata() {
-    const [fromCache, hasPendingWrites] = this._metadata;
-    return { fromCache, hasPendingWrites };
+    return this._metadata;
   }
 
   get ref() {

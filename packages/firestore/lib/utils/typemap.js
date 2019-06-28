@@ -35,7 +35,7 @@ const MAP = {
   blob: 14,
   fieldvalue: 15,
   object: 16,
-  unknown: 999,
+  unknown: -999,
 };
 
 const MAP_ENTRIES = Object.entries(MAP);

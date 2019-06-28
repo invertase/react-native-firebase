@@ -16,6 +16,7 @@
  */
 
 import { isObject, isString } from '@react-native-firebase/common';
+import FirestoreFieldPath from '../FirestoreFieldPath';
 
 export function extractFieldPathData(data, segmenets) {
   if (!isObject(data)) {
@@ -48,7 +49,7 @@ export function parseUpdateArgs(args) {
       const value = args[i + 1];
       if (isString(key)) {
         data[key] = value;
-      } else if (key instanceof FieldPath) {
+      } else if (key instanceof FirestoreFieldPath) {
         data = mergeFieldPathData(data, key._segments, value);
       } else {
         throw new Error(`argument at index ${i} must be a string or FieldPath`);

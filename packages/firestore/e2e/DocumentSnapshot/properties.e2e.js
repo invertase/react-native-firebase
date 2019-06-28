@@ -42,6 +42,12 @@ describe('firestore().doc() -> snapshot', () => {
     await ref1.delete();
   });
 
+  it('.metadata -> returns a SnapshotMetadata instance', async () => {
+    const ref = firebase.firestore().doc('v6/exists');
+    const snapshot = await ref.get();
+    snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+  });
+
   it('.ref -> returns the correct document ref', async () => {
     const ref1 = firebase.firestore().doc('v6/exists');
     const ref2 = firebase.firestore().doc('v6/idonotexist');

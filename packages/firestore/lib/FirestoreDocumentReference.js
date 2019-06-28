@@ -74,7 +74,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return new FirestoreCollectionReference(this, path);
+    return new FirestoreCollectionReference(this._firestore, path);
   }
 
   delete() {
@@ -161,7 +161,6 @@ export default class FirestoreDocumentReference {
             );
           }
 
-          // TODO FieldPath isnt handled native? Is this ok?
           if (field instanceof FirestoreFieldPath) {
             mergeOptions.mergeFields.push(field._toPath());
           } else {

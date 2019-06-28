@@ -19,23 +19,34 @@ import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 
 export default class FirestoreDocumentChange {
   constructor(firestore, nativeData) {
-    this._document = new FirestoreDocumentSnapshot(firestore, nativeData.document);
+    this._firestore = firestore;
     this._nativeData = nativeData;
   }
 
   get doc() {
-    return this._document;
+    return new FirestoreDocumentSnapshot(this._firestore, this._nativeData.doc);
   }
 
   get newIndex() {
-    return this._nativeData.newIndex;
+    return this._nativeData.ni;
   }
 
   get oldIndex() {
-    return this._nativeData.oldIndex;
+    return this._nativeData.oi;
   }
 
   get type() {
-    return this._nativeData.type;
+    switch (this._nativeData.type) {
+      case 'a':
+        return 'added';
+      case 'm':
+        return 'modified';
+      case 'r':
+        return 'removed';
+      default:
+        // eslint-disable-next-line no-console
+        console.warn(`Unknown DocumentChange type recieved: ${this._nativeData.type}`);
+        return 'unknown';
+    }
   }
 }

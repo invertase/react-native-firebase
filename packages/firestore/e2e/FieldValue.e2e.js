@@ -86,6 +86,7 @@ describe('firestore.FieldValue', () => {
       await ref.update({ bar: firebase.firestore.FieldValue.delete() });
       const snapshot = await ref.get();
       snapshot.data().should.eql(jet.contextify({ foo: 'bar' }));
+      await ref.delete();
     });
   });
 

@@ -61,10 +61,6 @@ export default class FirestoreFieldPath {
 export const DOCUMENT_ID = new FirestoreFieldPath('__name__');
 
 export function fromDotSeparatedString(path) {
-  if (!isString(path)) {
-    throw new Error(`Invalid field path. Paths cannot be an empty string.`);
-  }
-
   if (path === '' || path.startsWith('.') || path.endsWith('.') || path.indexOf('..') > 0) {
     throw new Error(
       `Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.`,

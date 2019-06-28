@@ -76,28 +76,21 @@ class ReactNativeFirebaseFirestoreSerialize {
 
   // Keys
   private static final String TYPE = "type";
-  private static final String VALUE = "value";
   private static final String KEY_DATA = "data";
   private static final String KEY_PATH = "path";
   private static final String KEY_META = "metadata";
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_OPTIONS = "options";
-  private static final String KEY_SECONDS = "seconds";
-  private static final String KEY_NANOSECONDS = "nanoseconds";
-  private static final String KEY_LATITUDE = "latitude";
-  private static final String KEY_LONGITUDE = "longitude";
   private static final String KEY_DOCUMENTS = "documents";
   private static final String KEY_DOC_CHANGE_TYPE = "type";
-  private static final String KEY_META_FROM_CACHE = "fromCache";
-  private static final String KEY_DOC_CHANGE_DOCUMENT = "document";
-  private static final String KEY_DOC_CHANGE_NEW_INDEX = "newIndex";
-  private static final String KEY_DOC_CHANGE_OLD_INDEX = "oldIndex";
-  private static final String KEY_META_HAS_PENDING_WRITES = "hasPendingWrites";
+  private static final String KEY_DOC_CHANGE_DOCUMENT = "doc";
+  private static final String KEY_DOC_CHANGE_NEW_INDEX = "ni";
+  private static final String KEY_DOC_CHANGE_OLD_INDEX = "oi";
 
   // Document Change Types
-  private static final String CHANGE_ADDED = "added";
-  private static final String CHANGE_MODIFIED = "modified";
-  private static final String CHANGE_REMOVED = "removed";
+  private static final String CHANGE_ADDED = "a";
+  private static final String CHANGE_MODIFIED = "m";
+  private static final String CHANGE_REMOVED = "r";
 
   /**
    * Convert a DocumentSnapshot instance into a React Native WritableMap
@@ -130,7 +123,7 @@ class ReactNativeFirebaseFirestoreSerialize {
    * @return WritableMap
    */
   static WritableMap snapshotToWritableMap(QuerySnapshot querySnapshot) {
-    WritableMap metadata = Arguments.createMap();
+    WritableArray metadata = Arguments.createArray();
     WritableMap writableMap = Arguments.createMap();
     WritableArray documents = Arguments.createArray();
 
@@ -138,20 +131,17 @@ class ReactNativeFirebaseFirestoreSerialize {
     List<DocumentSnapshot> documentSnapshots = querySnapshot.getDocuments();
     List<DocumentChange> documentChanges = querySnapshot.getDocumentChanges();
 
-    // convert documents documents
+    // set documents
     for (DocumentSnapshot documentSnapshot : documentSnapshots) {
       documents.pushMap(snapshotToWritableMap(documentSnapshot));
     }
-
-    // build metadata
-    metadata.putBoolean(KEY_META_FROM_CACHE, snapshotMetadata.isFromCache());
-    metadata.putBoolean(KEY_META_HAS_PENDING_WRITES, snapshotMetadata.hasPendingWrites());
+    writableMap.putArray(KEY_DOCUMENTS, documents);
 
     // set metadata
-    writableMap.putMap(KEY_META, metadata);
-
-    // set documents
-    writableMap.putArray(KEY_DOCUMENTS, documents);
+    // build metadata array: 0 = fromCache, 1 = hasPendingWrites
+    metadata.pushBoolean(snapshotMetadata.isFromCache());
+    metadata.pushBoolean(snapshotMetadata.hasPendingWrites());
+    writableMap.putArray(KEY_META, metadata);
 
     // set document changes
     writableMap.putArray(
@@ -442,14 +432,15 @@ class ReactNativeFirebaseFirestoreSerialize {
       case INT_BLOB:
         return Blob.fromBytes(Base64.decode(typeArray.getString(1), Base64.NO_WRAP));
       case INT_FIELDVALUE:
-        String fieldValueType = typeArray.getString(1);
+        ReadableArray fieldValueArray = typeArray.getArray(1);
+        String fieldValueType = Objects.requireNonNull(fieldValueArray).getString(0);
 
         if (Objects.requireNonNull(fieldValueType).equals("timestamp")) {
           return FieldValue.serverTimestamp();
         }
 
         if (Objects.requireNonNull(fieldValueType).equals("increment")) {
-          return FieldValue.increment(typeArray.getDouble(2));
+          return FieldValue.increment(fieldValueArray.getDouble(1));
         }
 
         if (Objects.requireNonNull(fieldValueType).equals("delete")) {
@@ -457,12 +448,12 @@ class ReactNativeFirebaseFirestoreSerialize {
         }
 
         if (Objects.requireNonNull(fieldValueType).equals("array_union")) {
-          ReadableArray elements = typeArray.getArray(2);
+          ReadableArray elements = fieldValueArray.getArray(1);
           return FieldValue.arrayUnion(parseReadableArray(firestore, elements).toArray());
         }
 
         if (Objects.requireNonNull(fieldValueType).equals("array_remove")) {
-          ReadableArray elements = typeArray.getArray(2);
+          ReadableArray elements = fieldValueArray.getArray(1);
           return FieldValue.arrayRemove(parseReadableArray(firestore, elements).toArray());
         }
       case INT_OBJECT:
@@ -475,7 +466,7 @@ class ReactNativeFirebaseFirestoreSerialize {
 
 
   /**
-   * Parse JS batches array
+   * Parse JS batches array from batch().commit()
    *
    * @param firestore     FirebaseFirestore
    * @param readableArray ReadableArray

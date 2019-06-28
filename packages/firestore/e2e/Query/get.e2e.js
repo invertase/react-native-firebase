@@ -16,5 +16,73 @@
  */
 
 describe('firestore().collection().get()', () => {
+  it('throws if get options is not an object', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .get(123);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'options' must be an object is provided`);
+      return Promise.resolve();
+    }
+  });
 
+  it('throws if get options.source is not valid', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .get({
+          source: 'foo',
+        });
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        `'options' GetOptions.source must be one of 'default', 'server' or 'cache'`,
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it('returns a QuerySnapshot', async () => {
+    const docRef = firebase
+      .firestore()
+      .collection('v6')
+      .doc('nestedcollection');
+    const colRef = docRef.collection('get');
+    const snapshot = await colRef.get();
+
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+  });
+
+  it('returns a correct cache setting (true)', async () => {
+    const docRef = firebase
+      .firestore()
+      .collection('v6')
+      .doc('nestedcollection');
+    const colRef = docRef.collection('get');
+    const snapshot = await colRef.get({
+      source: 'cache',
+    });
+
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+    snapshot.metadata.fromCache.should.be.True();
+  });
+
+  it('returns a correct cache setting (false)', async () => {
+    const docRef = firebase
+      .firestore()
+      .collection('v6')
+      .doc('nestedcollection');
+    const colRef = docRef.collection('get');
+    await colRef.get(); // Puts it in cache
+    const snapshot = await colRef.get({
+      source: 'server',
+    });
+
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+    snapshot.metadata.fromCache.should.be.False();
+  });
 });

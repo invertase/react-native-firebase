@@ -23,11 +23,13 @@ import {
   isString,
   isUndefined,
   generateFirestoreId,
+  hasOwnProperty,
+  isBoolean,
 } from '@react-native-firebase/common';
 
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import FirestoreFieldPath from './FirestoreFieldPath';
+import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 
 export default class FirestoreQuery {
   constructor(firestore, collectionPath, modifiers) {
@@ -106,7 +108,7 @@ export default class FirestoreQuery {
   }
 
   get(options) {
-    if (!isUndefined(options) && isObject(options)) {
+    if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         `firebase.app().firestore()...collection().get(*) 'options' must be an object is provided.`,
       );
@@ -151,17 +153,18 @@ export default class FirestoreQuery {
   }
 
   onSnapshot(...args) {
+    /* eslint-disable prefer-destructuring */
     if (args.length === 0) {
       throw new Error(
         `firebase.app().firestore().collection().onSnapshot(*) expected at least one argument.`,
       );
     }
 
+    // Ignore onComplete as its never used
     const NOOP = () => {};
     const snapshotListenOptions = {};
     let callback = NOOP;
     let onError = NOOP;
-    let onComplete = NOOP;
     let onNext = NOOP;
 
     /**
@@ -174,10 +177,6 @@ export default class FirestoreQuery {
       if (isFunction(args[1])) {
         onNext = args[0];
         onError = args[1];
-        /**
-         * .onSnapshot((snapshot) => {}, (error) => {}, onComplete = {})
-         */
-        if (isFunction(args[2])) onComplete = args[3];
       } else {
         /**
          * .onSnapshot((snapshot, error) => {})
@@ -190,7 +189,6 @@ export default class FirestoreQuery {
      * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
      */
     if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
-      if (args[0].complete) onComplete = args[0].complete;
       if (args[0].error) onError = args[0].error;
       if (args[0].next) onNext = args[0].next;
     }
@@ -204,11 +202,12 @@ export default class FirestoreQuery {
         /**
          * .onSnapshot(SnapshotListenOptions, Function);
          */
-
         if (isFunction(args[2])) {
+          /**
+           * .onSnapshot(SnapshotListenOptions, (snapshot) => {}, (error) => {});
+           */
           onNext = args[1];
           onError = args[2];
-          if (isFunction(args[3])) onComplete = args[3];
         } else {
           /**
            * .onSnapshot(SnapshotListenOptions, (s, e) => {};
@@ -219,33 +218,30 @@ export default class FirestoreQuery {
         /**
          * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
          */
-        if (isFunction(args[1].complete)) onComplete = args[1].complete;
         if (isFunction(args[1].error)) onError = args[1].error;
         if (isFunction(args[1].next)) onNext = args[1].next;
-      } else {
-        /**
-         * .onSnapshot(SnapshotListenOptions, (snapshot) => {});
-         */
-        if (isFunction(args[1])) {
-          onNext = args[1];
-        }
-        /**
-         * .onSnapshot(SnapshotListenOptions, (snapshot) => {}, (error) => {});
-         */
-        if (isFunction(args[2])) {
-          onError = args[2];
-        }
       }
     }
 
-    if (!isFunction(callback)) {
-    } // todo error
+    if (hasOwnProperty(snapshotListenOptions, 'includeMetadataChanges')) {
+      if (!isBoolean(snapshotListenOptions.includeMetadataChanges)) {
+        throw new Error(
+          `firebase.app().firestore().collection().onSnapshot(*) 'options' SnapshotOptions.includeMetadataChanges must be a boolean value.`,
+        );
+      }
+    }
+
     if (!isFunction(onNext)) {
-    } // todo error
-    if (!isFunction(onComplete)) {
-    } // todo error
+      throw new Error(
+        `firebase.app().firestore().collection().onSnapshot(*) 'observer.next' or 'onNext' expected a function.`,
+      );
+    }
+
     if (!isFunction(onError)) {
-    } // todo error
+      throw new Error(
+        `firebase.app().firestore().collection().onSnapshot(*) 'observer.error' or 'onError' expected a function.`,
+      );
+    }
 
     function handleSuccess(querySnapshot) {
       callback(querySnapshot, null);
@@ -345,15 +341,23 @@ export default class FirestoreQuery {
       );
     }
 
-    if (isString(fieldPath) && fieldPath === '') {
-      throw new Error(
-        `firebase.app().firestore().collection().where(*) 'fieldPath' must not be an empty string.`,
-      );
+    let path;
+
+    if (isString(fieldPath)) {
+      try {
+        path = fromDotSeparatedString(fieldPath);
+      } catch (e) {
+        throw new Error(
+          `firebase.app().firestore().collection().where(*) 'fieldPath' ${e.message}.`,
+        );
+      }
+    } else {
+      path = fieldPath;
     }
 
     if (!this._modifiers.isValidOperator(opStr)) {
       throw new Error(
-        `firebase.app().firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '=', '==', '>', '>=', '<', '<=' or 'array-contains'.`,
+        `firebase.app().firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=' or 'array-contains'.`,
       );
     }
 
@@ -369,7 +373,14 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.where(fieldPath, opStr, value);
+    const modifiers = this._modifiers.where(path, opStr, value);
+
+    try {
+      modifiers.validateWhere();
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().collection().where() ${e.message}`);
+    }
+
     modifiers.validateWhere();
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);

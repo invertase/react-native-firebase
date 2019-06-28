@@ -36,6 +36,7 @@ export default class FirestoreWriteBatch {
   }
 
   commit() {
+    if (this._writes.length === 0) return Promise.resolve();
     return this._firestore.native.documentBatch(this._writes);
   }
 
@@ -48,7 +49,7 @@ export default class FirestoreWriteBatch {
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.app().firestore.batch().delete(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+        `firebase.app().firestore.batch().delete(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
       );
     }
 
@@ -69,7 +70,7 @@ export default class FirestoreWriteBatch {
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.app().firestore.batch().set(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+        `firebase.app().firestore.batch().set(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
       );
     }
 
@@ -144,18 +145,26 @@ export default class FirestoreWriteBatch {
       data: buildNativeMap(data),
       options: mergeOptions,
     });
+
+    return this;
   }
 
   update(documentRef, ...args) {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.app().firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.`,
+        `firebase.app().firestore.batch().update(*) 'documentRef' expected instance of a DocumentReference.`,
       );
     }
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.app().firestore.batch().delete(*) 'documentRef' provided DocumentReference os from a different Firestore instance.`,
+        `firebase.app().firestore.batch().update(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
+      );
+    }
+
+    if (args.length === 0) {
+      throw new Error(
+        `firebase.app().firestore.batch().update(_, *) Invalid arguments. Expected update object or list of key/value pairs.`,
       );
     }
 
@@ -171,5 +180,7 @@ export default class FirestoreWriteBatch {
       type: 'UPDATE',
       data: buildNativeMap(data),
     });
+
+    return this;
   }
 }

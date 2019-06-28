@@ -153,50 +153,57 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   @ReactMethod
   public void documentBatch(String appName, ReadableArray writes, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-    WriteBatch batch = firebaseFirestore.batch();
-    List<Object> writesArray = parseDocumentBatches(firebaseFirestore, writes);
 
-    for (Object w : writesArray) {
-      Map<String, Object> write = (Map) w;
-      String type = (String) write.get("type");
-      String path = (String) write.get("path");
-      Map<String, Object> data = (Map) write.get("data");
+    Tasks.call(getExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
+      .continueWithTask(getExecutor(), task -> {
+        WriteBatch batch = firebaseFirestore.batch();
+        List<Object> writesArray = task.getResult();
 
-      DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
+        for (Object w : writesArray) {
+          Map<String, Object> write = (Map) w;
+          String type = (String) write.get("type");
+          String path = (String) write.get("path");
+          Map<String, Object> data = (Map) write.get("data");
 
-      switch (type) {
-        case "DELETE":
-          batch = batch.delete(documentReference);
-          break;
-        case "UPDATE":
-          batch = batch.update(documentReference, data);
-          break;
-        case "SET":
-          Map<String, Object> options = (Map) write.get("options");
+          DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-          if (options.containsKey("merge") && (boolean) options.get("merge")) {
-            batch = batch.set(documentReference, data, SetOptions.merge());
-          } else if (options.containsKey("mergeFields")) {
-            List<String> fields = new ArrayList<>();
+          switch (Objects.requireNonNull(type)) {
+            case "DELETE":
+              batch = batch.delete(documentReference);
+              break;
+            case "UPDATE":
+              batch = batch.update(documentReference, Objects.requireNonNull(data));
+              break;
+            case "SET":
+              Map<String, Object> options = (Map) write.get("options");
 
-            for (Object object : Objects.requireNonNull((List) options.get("mergeFields"))) {
-              fields.add((String) object);
-            }
+              if (Objects.requireNonNull(options).containsKey("merge") && (boolean) options.get("merge")) {
+                batch = batch.set(documentReference, Objects.requireNonNull(data), SetOptions.merge());
+              } else if (options.containsKey("mergeFields")) {
+                List<String> fields = new ArrayList<>();
 
-            batch = batch.set(documentReference, data, SetOptions.mergeFields(fields));
-          } else {
-            batch = batch.set(documentReference, data);
+                for (Object object : Objects.requireNonNull((List) options.get("mergeFields"))) {
+                  fields.add((String) object);
+                }
+
+                batch = batch.set(documentReference, Objects.requireNonNull(data), SetOptions.mergeFields(fields));
+              } else {
+                batch = batch.set(documentReference, Objects.requireNonNull(data));
+              }
+
+              break;
           }
-          break;
-      }
+        }
 
-      batch.commit().addOnCompleteListener(task -> {
+        return batch.commit();
+      })
+      .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(null);
         } else {
           rejectPromiseFirestoreException(promise, task.getException());
         }
       });
-    }
   }
 }
+

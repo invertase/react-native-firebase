@@ -15,16 +15,17 @@
  *
  */
 
+import { isFunction } from '@react-native-firebase/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 
 export default class FirestoreQuerySnapshot {
   constructor(firestore, query, nativeData) {
-    console.log(nativeData);
     this._query = query;
     this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
     this._docs = nativeData.documents.map($ => new FirestoreDocumentSnapshot(firestore, $));
-    this._metadata = nativeData.metadata;
+    this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
   }
 
   get docs() {
@@ -54,7 +55,11 @@ export default class FirestoreQuerySnapshot {
   }
 
   forEach(callback, thisArg) {
-    // TODO validate
+    if (!isFunction(callback)) {
+      throw new Error(
+        `firebase.app().firestore() QuerySnapshot.forEach(*) 'callback' expected a function.`,
+      );
+    }
 
     const cb = thisArg ? callback.bind(thisArg) : callback;
 

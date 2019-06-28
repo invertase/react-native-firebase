@@ -63,7 +63,12 @@ describe('firestore()', () => {
     });
   });
 
-  describe('batch()', () => {});
+  describe('batch()', () => {
+    it('returns a new WriteBatch instance', () => {
+      const instance = firebase.firestore().batch();
+      instance.constructor.name.should.eql('FirestoreWriteBatch');
+    });
+  });
 
   describe('clearPersistence()', () => {});
 
@@ -147,6 +152,10 @@ describe('firestore()', () => {
       await firebase.firestore().disableNetwork();
       await firebase.firestore().enableNetwork();
     });
+  });
+
+  xdescribe('runTransaction()', () => {
+
   });
 
   describe('settings()', () => {

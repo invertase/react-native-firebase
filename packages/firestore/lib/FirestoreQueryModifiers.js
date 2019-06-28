@@ -16,11 +16,9 @@
  */
 
 import { isNumber } from '@react-native-firebase/common';
-import FirestoreFieldPath from './FirestoreFieldPath';
-import { buildTypeMap, buildNativeArray } from './utils/serialize';
+import { generateNativeData, buildNativeArray } from './utils/serialize';
 
 const OPERATORS = {
-  '=': 'EQUAL',
   '==': 'EQUAL',
   '>': 'GREATER_THAN',
   '>=': 'GREATER_THAN_OR_EQUAL',
@@ -134,9 +132,9 @@ export default class FirestoreQueryModifiers {
 
   where(fieldPath, opStr, value) {
     const filter = {
-      fieldPath: this._buildNativeFieldPath(fieldPath),
+      fieldPath: fieldPath._toPath(),
       operator: OPERATORS[opStr],
-      value: buildTypeMap(value),
+      value: generateNativeData(value),
     };
 
     this._filters = this._filters.concat(filter);
@@ -161,23 +159,11 @@ export default class FirestoreQueryModifiers {
 
       // Check the set value is the same as the new one
       if (INEQUALITY[filter.operator] && hasInequality) {
-        let masterInequalityValue;
-        if (hasInequality.fieldPath.type === 'string') {
-          masterInequalityValue = hasInequality.fieldPath.string;
-        } else {
-          masterInequalityValue = hasInequality.fieldPath.elements.join('.');
-        }
-
-        let currentInequalityValue;
-        if (filter.fieldPath.type === 'string') {
-          currentInequalityValue = filter.fieldPath.string;
-        } else {
-          currentInequalityValue = filter.fieldPath.elements.join('.');
-        }
-
-        if (masterInequalityValue !== currentInequalityValue) {
+        if (hasInequality.fieldPath !== filter.fieldPath) {
           throw new Error(
-            `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${masterInequalityValue}' and '${currentInequalityValue}'`,
+            `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${
+              hasInequality.fieldPath
+            }' and '${filter.fieldPath}'`,
           );
         }
       }
@@ -194,7 +180,7 @@ export default class FirestoreQueryModifiers {
 
   orderBy(fieldPath, directionStr) {
     const order = {
-      fieldPath: this._buildNativeFieldPath(fieldPath),
+      fieldPath: fieldPath._toPath(),
       direction: directionStr ? DIRECTIONS[directionStr.toLowerCase()] : DIRECTIONS.asc,
     };
 
@@ -217,19 +203,5 @@ export default class FirestoreQueryModifiers {
         }
       }
     }
-  }
-
-  _buildNativeFieldPath(fieldPath) {
-    if (fieldPath instanceof FirestoreFieldPath) {
-      return {
-        elements: fieldPath._segments,
-        type: 'fieldpath',
-      };
-    }
-
-    return {
-      string: fieldPath,
-      type: 'string',
-    };
   }
 }
