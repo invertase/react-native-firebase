@@ -4,7 +4,7 @@ This document is an attempt to write down all the steps in the release process f
 
 ## Testing
 
-- Make sure android and ios e2e tests work locally. **THIS IS VITAL** as android does not run e2e in CI, and it caught a problem just before 5.4.3 release for instance
+- Make sure android and ios e2e tests work locally. If you aren't sure it works locally, it isn't ready.
 - Make sure full CI runs complete successfully
 
 ## Documentation
@@ -14,7 +14,7 @@ This document is an attempt to write down all the steps in the release process f
 
 ## SDK Version numbers
 
-1. Update the firebase registration version numbers to match the next version number
+1. Update and commit the firebase registration version numbers to match the next version number
    - iOS here: <https://github.com/invertase/react-native-firebase/blob/v5.x.x/ios/RNFirebase/RNFirebase.m#L20>
    - Android here: <https://github.com/invertase/react-native-firebase/blob/v5.x.x/android/src/main/java/io/invertase/firebase/ReactNativeFirebaseAppRegistrar.java#L36>
 

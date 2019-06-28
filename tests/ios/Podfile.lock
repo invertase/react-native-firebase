@@ -6,66 +6,66 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.3):
     - BoringSSL-GRPC/Interface (= 0.0.3)
   - BoringSSL-GRPC/Interface (0.0.3)
-  - Crashlytics (3.13.1):
-    - Fabric (~> 1.10.1)
+  - Crashlytics (3.13.2):
+    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
-  - Fabric (1.10.1)
-  - Firebase/AdMob (6.2.0):
+  - Fabric (1.10.2)
+  - Firebase/AdMob (6.3.0):
     - Firebase/CoreOnly
     - Google-Mobile-Ads-SDK (~> 7.44)
-  - Firebase/Auth (6.2.0):
+  - Firebase/Auth (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 6.1.1)
-  - Firebase/Core (6.2.0):
+    - FirebaseAuth (~> 6.1.2)
+  - Firebase/Core (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 6.0.1)
-  - Firebase/CoreOnly (6.2.0):
-    - FirebaseCore (= 6.0.2)
-  - Firebase/Database (6.2.0):
+    - FirebaseAnalytics (= 6.0.2)
+  - Firebase/CoreOnly (6.3.0):
+    - FirebaseCore (= 6.0.3)
+  - Firebase/Database (6.3.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 6.0.0)
-  - Firebase/DynamicLinks (6.2.0):
+  - Firebase/DynamicLinks (6.3.0):
     - Firebase/CoreOnly
     - FirebaseDynamicLinks (~> 4.0.0)
-  - Firebase/Firestore (6.2.0):
+  - Firebase/Firestore (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 1.3.2)
-  - Firebase/Functions (6.2.0):
+    - FirebaseFirestore (~> 1.4.0)
+  - Firebase/Functions (6.3.0):
     - Firebase/CoreOnly
     - FirebaseFunctions (~> 2.5.1)
-  - Firebase/Messaging (6.2.0):
+  - Firebase/Messaging (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 4.0.2)
-  - Firebase/Performance (6.2.0):
+    - FirebaseMessaging (~> 4.1.0)
+  - Firebase/Performance (6.3.0):
     - Firebase/CoreOnly
-    - FirebasePerformance (~> 3.0.0)
-  - Firebase/RemoteConfig (6.2.0):
+    - FirebasePerformance (~> 3.1.0)
+  - Firebase/RemoteConfig (6.3.0):
     - Firebase/CoreOnly
-    - FirebaseRemoteConfig (~> 4.0.0)
-  - Firebase/Storage (6.2.0):
+    - FirebaseRemoteConfig (~> 4.1.0)
+  - Firebase/Storage (6.3.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 3.2.1)
   - FirebaseABTesting (3.0.0):
     - FirebaseCore (~> 6.0)
     - Protobuf (~> 3.5)
-  - FirebaseAnalytics (6.0.1):
+  - FirebaseAnalytics (6.0.2):
     - FirebaseCore (~> 6.0)
-    - FirebaseInstanceID (~> 4.1)
-    - GoogleAppMeasurement (= 6.0.1)
+    - FirebaseInstanceID (~> 4.2)
+    - GoogleAppMeasurement (= 6.0.2)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
   - FirebaseAnalyticsInterop (1.2.0)
-  - FirebaseAuth (6.1.1):
+  - FirebaseAuth (6.1.2):
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.2)
     - GoogleUtilities/Environment (~> 6.2)
     - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseAuthInterop (1.0.0)
-  - FirebaseCore (6.0.2):
+  - FirebaseCore (6.0.3):
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/Logger (~> 6.0)
   - FirebaseDatabase (6.0.0):
@@ -75,15 +75,15 @@ PODS:
   - FirebaseDynamicLinks (4.0.0):
     - FirebaseAnalyticsInterop (~> 1.0)
     - FirebaseCore (~> 6.0)
-  - FirebaseFirestore (1.3.2):
+  - FirebaseFirestore (1.4.0):
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.0)
-    - FirebaseFirestore/abseil-cpp (= 1.3.2)
+    - FirebaseFirestore/abseil-cpp (= 1.4.0)
     - "gRPC-C++ (= 0.0.9)"
     - leveldb-library (~> 1.20)
     - nanopb (~> 0.3.901)
     - Protobuf (~> 3.1)
-  - FirebaseFirestore/abseil-cpp (1.3.2):
+  - FirebaseFirestore/abseil-cpp (1.4.0):
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.0)
     - "gRPC-C++ (= 0.0.9)"
@@ -94,11 +94,11 @@ PODS:
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseInstanceID (4.1.1):
+  - FirebaseInstanceID (4.2.0):
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
-  - FirebaseMessaging (4.0.2):
+  - FirebaseMessaging (4.1.0):
     - FirebaseAnalyticsInterop (~> 1.1)
     - FirebaseCore (~> 6.0)
     - FirebaseInstanceID (~> 4.1)
@@ -107,10 +107,10 @@ PODS:
     - GoogleUtilities/Reachability (~> 6.2)
     - GoogleUtilities/UserDefaults (~> 6.2)
     - Protobuf (~> 3.1)
-  - FirebasePerformance (3.0.0):
+  - FirebasePerformance (3.1.0):
     - FirebaseCore (~> 6.0)
-    - FirebaseInstanceID (~> 4.0)
-    - FirebaseRemoteConfig (~> 4.0)
+    - FirebaseInstanceID (~> 4.2)
+    - FirebaseRemoteConfig (~> 4.1)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - GoogleUtilities/Environment (~> 6.0)
@@ -118,10 +118,10 @@ PODS:
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.5)
-  - FirebaseRemoteConfig (4.0.0):
+  - FirebaseRemoteConfig (4.1.0):
     - FirebaseABTesting (~> 3.0)
     - FirebaseCore (~> 6.0)
-    - FirebaseInstanceID (~> 4.0)
+    - FirebaseInstanceID (~> 4.2)
     - GoogleUtilities/Environment (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - Protobuf (~> 3.5)
@@ -134,9 +134,9 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - Google-Mobile-Ads-SDK (7.44.0):
+  - Google-Mobile-Ads-SDK (7.45.0):
     - GoogleAppMeasurement (~> 6.0)
-  - GoogleAppMeasurement (6.0.1):
+  - GoogleAppMeasurement (6.0.2):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
@@ -243,26 +243,32 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (5.4.3):
+  - RNFirebase (5.5.3):
+    - Firebase/Core
+    - React
+    - RNFirebase/Crashlytics (= 5.5.3)
+  - RNFirebase/Crashlytics (5.5.3):
+    - Crashlytics
+    - Fabric
     - Firebase/Core
     - React
   - yoga (0.59.9.React)
 
 DEPENDENCIES:
-  - Crashlytics (~> 3.13.1)
+  - Crashlytics (~> 3.13.2)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - Fabric (~> 1.10.1)
-  - Firebase/AdMob (~> 6.2.0)
-  - Firebase/Auth (~> 6.2.0)
-  - Firebase/Core (~> 6.2.0)
-  - Firebase/Database (~> 6.2.0)
-  - Firebase/DynamicLinks (~> 6.2.0)
-  - Firebase/Firestore (~> 6.2.0)
-  - Firebase/Functions (~> 6.2.0)
-  - Firebase/Messaging (~> 6.2.0)
-  - Firebase/Performance (~> 6.2.0)
-  - Firebase/RemoteConfig (~> 6.2.0)
-  - Firebase/Storage (~> 6.2.0)
+  - Fabric (~> 1.10.2)
+  - Firebase/AdMob (~> 6.3.0)
+  - Firebase/Auth (~> 6.3.0)
+  - Firebase/Core (~> 6.3.0)
+  - Firebase/Database (~> 6.3.0)
+  - Firebase/DynamicLinks (~> 6.3.0)
+  - Firebase/Firestore (~> 6.3.0)
+  - Firebase/Functions (~> 6.3.0)
+  - Firebase/Messaging (~> 6.3.0)
+  - Firebase/Performance (~> 6.3.0)
+  - Firebase/RemoteConfig (~> 6.3.0)
+  - Firebase/Storage (~> 6.3.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - GoogleSignIn (~> 4.4)
@@ -321,36 +327,36 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
-    :version: "~> 5.4.3"
+    :version: "~> 5.5.3"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
-  Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
+  Crashlytics: 611738c7847f8291a1a51084e35987b86ba6b3ee
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
-  Fabric: f6f21452846788bb44595d73e9909d79d328e617
-  Firebase: 5965bac23e7fcb5fa6d926ed429c9ecef8a2014e
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
+  Firebase: 8432d732974498afd5987e9001a05f90f1a3d625
   FirebaseABTesting: a32c488eb75089a61eb3d86db061dfb909d765db
-  FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
+  FirebaseAnalytics: 470ddab7253b21ad5a40bebd4a9903d7ae19386a
   FirebaseAnalyticsInterop: efbe45c8385ec626e29f9525e5ebd38520dfb6c1
-  FirebaseAuth: 80879f0e9f2c5f40686d5b42f6ccb3cd5dce78ea
+  FirebaseAuth: 7fa2cc010b93770831a4e7a60651b52c3b8d111a
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
-  FirebaseCore: b0f0262acebfa540e5f97b3832dbb13186980822
+  FirebaseCore: 68f8a7f50cdae542715d4e86afa37c4067217dcb
   FirebaseDatabase: f48e067716864be2b855cf716b927ef375d6cfa0
   FirebaseDynamicLinks: 25fc45fdf2557ee2ee630999c301245d8911792e
-  FirebaseFirestore: d9c55dfd0cd648f420cc8340c4940dc3eab2d860
+  FirebaseFirestore: 75768d91aad491eccdc02202b8161cff9872300e
   FirebaseFunctions: 5af7c35d1c5e41608fecbb667eb6c4e672e318d0
-  FirebaseInstanceID: cdb3827746d53ece7ae87a5c51c25c3055443366
-  FirebaseMessaging: 20b6626c41be7840aed7a3dd9a14003efae3d588
-  FirebasePerformance: 3dd8dbe6eb1258b8d148eb33768f6aa6e1684127
-  FirebaseRemoteConfig: 40f75c6ea20a52bf65ef44e3898910dd5b57c532
+  FirebaseInstanceID: f20243a1d828e0e9a3798b995174dedc16f1b32a
+  FirebaseMessaging: 0ac5310133e6ada4cdd44d42e92038855214a5e9
+  FirebasePerformance: 1cf814c294cb0f6e0d36cde0760d09835b13c9ce
+  FirebaseRemoteConfig: 7c64ecec5ca63d7c6b304509c3a6f9a036d403d4
   FirebaseStorage: 926d41552072b9fee67aa645760f05f87b7ce604
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  Google-Mobile-Ads-SDK: 1e72b4f438d997ab0f2ee62b3a7b0cbcc87c47cb
-  GoogleAppMeasurement: 51d8d9ea48f0ca44484d29cfbdef976fbd4fc336
+  Google-Mobile-Ads-SDK: f76d0f6b67445d64928f3ba1235ad85483fa8537
+  GoogleAppMeasurement: a35a645835bae31b6bdc0576396bc23908f12a22
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GoogleUtilities: 996e0db07153674fd1b54b220fda3a3dc3547cba
@@ -361,9 +367,9 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
-  RNFirebase: 723f5f6a88316c856f753f701c3233b851cf1f49
+  RNFirebase: 89f454d446b53a66a0e9213a8029a2189bf82bce
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
-PODFILE CHECKSUM: 0abd441968529f547ce87e8462d8fee10932f600
+PODFILE CHECKSUM: feef0c4f34228d3c5ab705dba16291e71608a2c7
 
-COCOAPODS: 1.7.1
+COCOAPODS: 1.7.2
