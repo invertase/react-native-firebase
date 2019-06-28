@@ -72,6 +72,13 @@ Describe your issue here
 <details><summary>Click To Expand</summary>
 <p>
 
+#### Have you converted to AndroidX?
+
+<!--- Mark any options that apply below -->
+- [ ] my application is an AndroidX application?
+- [ ] I am using `android/gradle.settings` `jetifier=true` for Android compatibility?
+- [ ] I am using the NPM package `jetifier` for react-native compatibility?
+
 #### `android/build.gradle`:
 
 ```groovy
@@ -129,6 +136,8 @@ Describe your issue here
   - [ ] **iOS** but have not tested behavior on Android
   - [ ] **Android** but have not tested behavior on iOS
   - [ ] Both
+- **`react-native-firebase` version you're using that has this issue:**
+  - `e.g. 5.4.3`
 - **`Firebase` module(s) you're using that has the issue:**
   - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
