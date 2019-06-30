@@ -1,6 +1,8 @@
 package io.invertase.firebase.messaging;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
@@ -88,6 +90,38 @@ class ReactNativeFirebaseMessagingSerializer {
     messageMap.putDouble(KEY_TTL, remoteMessage.getTtl());
     messageMap.putDouble(KEY_SENT_TIME, remoteMessage.getSentTime());
     return messageMap;
+  }
+
+  static RemoteMessage remoteMessageFromReadableMap(ReadableMap readableMap) {
+    RemoteMessage.Builder builder = new RemoteMessage.Builder(readableMap.getString(KEY_TO));
+
+    if (readableMap.hasKey(KEY_TTL)) {
+      builder.setTtl(readableMap.getInt(KEY_TTL));
+    }
+
+    if (readableMap.hasKey(KEY_MESSAGE_ID)) {
+      builder.setMessageId(readableMap.getString(KEY_MESSAGE_ID));
+    }
+
+    if (readableMap.hasKey(KEY_MESSAGE_TYPE)) {
+      builder.setMessageType(readableMap.getString(KEY_MESSAGE_TYPE));
+    }
+
+    if (readableMap.hasKey(KEY_COLLAPSE_KEY)) {
+      builder.setCollapseKey(readableMap.getString(KEY_COLLAPSE_KEY));
+    }
+
+    if (readableMap.hasKey(KEY_DATA)) {
+      ReadableMap messageData = readableMap.getMap(KEY_DATA);
+      ReadableMapKeySetIterator iterator = messageData.keySetIterator();
+
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        builder.addData(key, messageData.getString(key));
+      }
+    }
+
+    return builder.build();
   }
 
 }
