@@ -17,4 +17,14 @@ Pod::Spec.new do |s|
   s.source_files        = 'RNFirebase/**/*.{h,m}'
   s.dependency          'React'
   s.dependency          'Firebase/Core'
+  s.subspec 'Crashlytics' do |cs|
+    cs.dependency 'Fabric'
+    cs.dependency 'Crashlytics'
+  end
+  # allow this package to be used with use_frameworks!
+  s.static_framework = true
+  # fix recursive header flag being skipped by cocoapods when using this as a framework
+  s.xcconfig = {
+    'HEADER_SEARCH_PATHS' => '${PODS_ROOT}/Headers/Public/**'
+  }
 end

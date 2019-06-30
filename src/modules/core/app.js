@@ -17,7 +17,6 @@ import Database, { NAMESPACE as DatabaseNamespace } from '../database';
 import Firestore, { NAMESPACE as FirestoreNamespace } from '../firestore';
 import Functions, { NAMESPACE as FunctionsNamespace } from '../functions';
 import InstanceId, { NAMESPACE as InstanceIdNamespace } from '../iid';
-import Invites, { NAMESPACE as InvitesNamespace } from '../invites';
 import Links, { NAMESPACE as LinksNamespace } from '../links';
 import Messaging, { NAMESPACE as MessagingNamespace } from '../messaging';
 import Notifications, {
@@ -59,8 +58,6 @@ export default class App {
   functions: () => Functions;
 
   iid: () => InstanceId;
-
-  invites: () => Invites;
 
   links: () => Links;
 
@@ -106,7 +103,6 @@ export default class App {
     this.firestore = APPS.appModule(this, FirestoreNamespace, Firestore);
     this.functions = APPS.appModule(this, FunctionsNamespace, Functions);
     this.iid = APPS.appModule(this, InstanceIdNamespace, InstanceId);
-    this.invites = APPS.appModule(this, InvitesNamespace, Invites);
     this.links = APPS.appModule(this, LinksNamespace, Links);
     this.messaging = APPS.appModule(this, MessagingNamespace, Messaging);
     this.notifications = APPS.appModule(
