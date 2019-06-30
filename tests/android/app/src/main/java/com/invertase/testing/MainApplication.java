@@ -23,6 +23,7 @@ import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
 import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
 import io.invertase.firebase.iid.ReactNativeFirebaseIidPackage;
 import io.invertase.firebase.invites.ReactNativeFirebaseInvitesPackage;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLNaturalLanguagePackage;
 import io.invertase.firebase.perf.ReactNativeFirebasePerfPackage;
 import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
@@ -51,6 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseMLNaturalLanguagePackage(),
         new ReactNativeFirebaseStoragePackage(),
         new ReactNativeFirebaseFunctionsPackage(),
+        new ReactNativeFirebaseMessagingPackage(),
         new ReactNativeFirebaseFiamPackage(),
         new ReactNativeFirebaseIidPackage(),
         new ReactNativeFirebasePerfPackage(),

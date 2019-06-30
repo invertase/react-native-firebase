@@ -30,6 +30,7 @@ import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/fiam';
 import '@react-native-firebase/links';
 import '@react-native-firebase/functions';
+import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/storage';
 import '@react-native-firebase/iid';

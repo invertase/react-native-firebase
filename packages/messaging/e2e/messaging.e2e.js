@@ -15,30 +15,35 @@
  *
  */
 
-describe('messaging()', () => {
+describe.only('messaging()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
       should.exist(app.messaging);
       app.messaging().app.should.equal(app);
     });
-
-    // removing as pending if module.options.hasMultiAppSupport = true
-    xit('supports multiple apps', async () => {
-      firebase.messaging().app.name.should.equal('[DEFAULT]');
-
-      firebase
-        .messaging(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
-
-      firebase
-        .app('secondaryFromNative')
-        .messaging()
-        .app.name.should.equal('secondaryFromNative');
-    });
   });
 
   describe('aMethod()', () => {
-    // TODO
+    it('accessible from firebase.app()', async () => {
+      const spy = sinon.spy();
+      const unsub = firebase.messaging().onMessage(spy);
+      const token = await firebase.messaging().getToken();
+      // await device.sendToHome();
+      await TestsAPI.messaging().sendToDevice(token, {
+        data: {
+          foo: 'bar',
+          doop: 'boop',
+        },
+        // notification: {
+        //   title: 'hello',
+        //   body: 'world',
+        // },
+      });
+      await Utils.spyToBeCalledOnceAsync(spy);
+      // await device.launchApp({ newInstance: false });
+      console.dir(spy.firstCall.args[0]);
+      unsub();
+    });
   });
 });

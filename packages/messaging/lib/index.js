@@ -49,7 +49,11 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   onMessage(nextOrObserver) {
-    // todo
+    const subscription = this.emitter.addListener('messaging_message_received', nextOrObserver);
+
+    return () => {
+      subscription.remove();
+    };
   }
 
   onTokenRefresh() {
