@@ -18,8 +18,8 @@ target 'MyProject' do
 use_frameworks!
 
 # Pods for PodTest
-pod 'Fabric', '~> 1.10.1'
-pod 'Crashlytics', '~> 3.13.1'
+pod 'Fabric', {{ ios.fabric.tools }}'
+pod 'Crashlytics', '~> {{ ios.firebase.crashlytics }}'
 
 end
 ```
