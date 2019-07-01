@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions,import/no-unresolved,import/first,import/no-extraneous-dependencies */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -23,15 +22,18 @@ import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
 import '@react-native-firebase/auth';
+import '@react-native-firebase/database';
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/config';
 import '@react-native-firebase/utils';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/fiam';
+import '@react-native-firebase/links';
 import '@react-native-firebase/functions';
-import '@react-native-firebase/mlkit';
+import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/storage';
 import '@react-native-firebase/iid';
+import '@react-native-firebase/indexing';
 import '@react-native-firebase/invites';
 import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';

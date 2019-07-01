@@ -1,4 +1,4 @@
-platform :ios, '10.0'
+platform :ios, '9.0'
 require_relative '../node_modules/@react-native-firebase/app/pod_config'
 
 install! 'cocoapods', :deterministic_uuids => false
@@ -15,6 +15,7 @@ target 'testing' do
     'RCTNetwork',
     'RCTImage',
     'RCTWebSocket',
+    'RCTLinkingIOS',
   ]
 
   pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"

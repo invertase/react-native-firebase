@@ -57,13 +57,13 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}) {
     if (!isString(name)) {
       throw new Error(
-        `firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.`,
+        "firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.",
       );
     }
 
     if (!isUndefined(params) && !isObject(params)) {
       throw new Error(
-        `firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.`,
+        "firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.",
       );
     }
 
@@ -82,10 +82,11 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     // maximum number of allowed params check
-    if (params && Object.keys(params).length > 25)
+    if (params && Object.keys(params).length > 25) {
       throw new Error(
         'firebase.analytics().logEvent(_, *): Maximum number of parameters exceeded (25).',
       );
+    }
 
     // Parameter names can be up to 24 characters long and must start with an
     // alphabetic character and contain only alphanumeric characters and

@@ -15,7 +15,7 @@
  *
  */
 
-import {ReactNativeFirebaseNamespace} from "@react-native-firebase/app-types";
+import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
 
 /**
  * @firebase firebase

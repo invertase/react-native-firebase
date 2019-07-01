@@ -439,12 +439,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     if (actionCodeSettings == null) {
       firebaseAuth
         .sendPasswordResetEmail(email)
-        .addOnCompleteListener(listener);
+        .addOnCompleteListener(getExecutor(), listener);
     } else {
       ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
       firebaseAuth
         .sendPasswordResetEmail(email, settings)
-        .addOnCompleteListener(listener);
+        .addOnCompleteListener(getExecutor(), listener);
     }
   }
 
@@ -480,7 +480,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
     firebaseAuth
       .sendSignInLinkToEmail(email, settings)
-      .addOnCompleteListener(listener);
+      .addOnCompleteListener(getExecutor(), listener);
   }
 
 
@@ -504,7 +504,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     if (user != null) {
       user
         .delete()
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "delete:onComplete:success");
             promiseNoUser(promise, false);
@@ -539,7 +539,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     } else {
       user
         .reload()
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "reload:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -587,12 +587,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (actionCodeSettings == null) {
         user
           .sendEmailVerification()
-          .addOnCompleteListener(listener);
+          .addOnCompleteListener(getExecutor(), listener);
       } else {
         ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
         user
           .sendEmailVerification(settings)
-          .addOnCompleteListener(listener);
+          .addOnCompleteListener(getExecutor(), listener);
       }
     }
   }
@@ -617,7 +617,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     } else {
       user
         .updateEmail(email)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "updateEmail:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -650,7 +650,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     } else {
       user
         .updatePassword(password)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "updatePassword:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -706,7 +706,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       Log.d(TAG, "updatePhoneNumber");
       user
         .updatePhoneNumber(credential)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "updatePhoneNumber:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -753,7 +753,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
       user
         .updateProfile(profileUpdates)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "updateProfile:onComplete:success");
             promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -789,7 +789,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       Log.d(TAG, "signInWithCredential");
       firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "signInWithCredential:onComplete:success");
             promiseWithAuthResult(task.getResult(), promise);
@@ -837,7 +837,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         // User has been automatically verified, log them in
         firebaseAuth
           .signInWithCredential(phoneAuthCredential)
-          .addOnCompleteListener(task -> {
+          .addOnCompleteListener(getExecutor(), task -> {
             if (task.isSuccessful()) {
               // onAuthStateChanged will pick up the user change
               Log.d(
@@ -947,7 +947,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       verificationCode
     );
 
-    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+    firebaseAuth.signInWithCredential(credential).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         Log.d(
           TAG,
@@ -1118,7 +1118,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     firebaseAuth
       .confirmPasswordReset(code, newPassword)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "confirmPasswordReset:onComplete:success");
           promiseNoUser(promise, false);
@@ -1145,7 +1145,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     firebaseAuth
       .applyActionCode(code)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "applyActionCode:onComplete:success");
           promiseWithUser(firebaseAuth.getCurrentUser(), promise);
@@ -1170,7 +1170,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     firebaseAuth
       .checkActionCode(code)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "checkActionCode:onComplete:success");
           ActionCodeResult result = Objects.requireNonNull(task.getResult());
@@ -1248,7 +1248,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (user != null) {
         user
           .linkWithCredential(credential)
-          .addOnCompleteListener(task -> {
+          .addOnCompleteListener(getExecutor(), task -> {
             if (task.isSuccessful()) {
               Log.d(TAG, "link:onComplete:success");
               promiseWithAuthResult(task.getResult(), promise);
@@ -1274,7 +1274,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     if (user != null) {
       user
         .unlink(providerId)
-        .addOnCompleteListener(task -> {
+        .addOnCompleteListener(getExecutor(), task -> {
           if (task.isSuccessful()) {
             Log.d(TAG, "unlink:onComplete:success");
             promiseWithUser(Objects.requireNonNull(task.getResult()).getUser(), promise);
@@ -1315,7 +1315,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (user != null) {
         user
           .reauthenticateAndRetrieveData(credential)
-          .addOnCompleteListener(task -> {
+          .addOnCompleteListener(getExecutor(), task -> {
             if (task.isSuccessful()) {
               Log.d(TAG, "reauthenticate:onComplete:success");
               promiseWithAuthResult(task.getResult(), promise);
@@ -1411,7 +1411,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     user
       .getIdToken(forceRefresh)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "getIdToken:onComplete:success");
           GetTokenResult tokenResult = task.getResult();
@@ -1446,7 +1446,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     user
       .getIdToken(forceRefresh)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "getIdTokenResult:onComplete:success");
           GetTokenResult tokenResult = task.getResult();
@@ -1514,7 +1514,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     firebaseAuth
       .fetchSignInMethodsForEmail(email)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
           List<String> providers = Objects.requireNonNull(task.getResult()).getSignInMethods();
@@ -1571,7 +1571,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     firebaseAuth
       .verifyPasswordResetCode(code)
-      .addOnCompleteListener(task -> {
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           Log.d(TAG, "verifyPasswordResetCode:onComplete:success");
           promise.resolve(task.getResult());

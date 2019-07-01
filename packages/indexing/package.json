@@ -1,0 +1,36 @@
+{
+  "name": "@react-native-firebase/indexing",
+  "version": "0.0.26",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - App Indexing",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/indexing"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "goolge search",
+    "app indexing"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "*"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "0.0.26",
+    "@react-native-firebase/common": "0.0.26"
+  },
+  "gitHead": "639c15d4b8ba8a972f0fe17fcc285b4a6e4af320",
+  "publishConfig": {
+    "access": "public"
+  }
+}

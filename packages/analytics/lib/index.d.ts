@@ -17,8 +17,8 @@
 
 import {
   ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
   ReactNativeFirebaseModuleAndStatics,
+  ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -93,8 +93,8 @@ export namespace Analytics {
     logEvent(name: string, params: { [key: string]: string }): Promise<void>;
 
     /**
-     * If true, allows the device to collect analytical data and send it to Firebase.
-     * Useful for GDPR.
+     * If true, allows the device to collect analytical data and send it to
+     * Firebase. Useful for GDPR.
      *
      * #### Example
      *
@@ -166,7 +166,8 @@ export namespace Analytics {
      * await firebase.analytics().setUserId(null);
      * ```
      *
-     * @param id Set to null to remove a previously assigned id from analytics events
+     * @param id Set to null to remove a previously assigned id from analytics
+     * events
      */
     setUserId(id: string | null): Promise<void>;
 
@@ -240,10 +241,7 @@ declare module '@react-native-firebase/analytics' {
  */
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
-    analytics: ReactNativeFirebaseModuleAndStatics<
-      Analytics.Module,
-      Analytics.Statics
-    >;
+    analytics: ReactNativeFirebaseModuleAndStatics<Analytics.Module, Analytics.Statics>;
   }
 
   interface FirebaseApp {

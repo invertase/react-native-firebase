@@ -27,7 +27,7 @@ const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');
 const reactNativePath = resolve(__dirname, './node_modules/react-native');
 
-const isDirectory = source => statSync(source).isDirectory();
+const isDirectory = source => statSync(source).isDirectory() && !source.includes('/template');
 const firebaseModules = readdirSync(packagesDir)
   .map(name => join(packagesDir, name))
   .filter(isDirectory);
@@ -43,9 +43,14 @@ const config = {
     hasteImplModulePath: join(reactNativePath, 'jest/hasteImpl'),
     blackListRE: createBlacklist([
       /.*\/__fixtures__\/.*/,
+      /.*\/template\/project\/node_modules\/react-native\/.*/,
       new RegExp(`^${escape(resolve(rootDir, 'docs'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/ios'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'packages/template/project'))}\\/.*$`),
+      new RegExp(`^${escape(resolve(rootDir, 'packages/template/project/node_modules'))}\\/.*$`),
+      new RegExp(
+        `^${escape(resolve(rootDir, 'packages/template/project/node_modules/react-native'))}\\/.*$`,
+      ),
       new RegExp(`^${escape(resolve(rootDir, 'tests/e2e'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),

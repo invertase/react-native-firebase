@@ -19,18 +19,8 @@
 import React, { Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View } from 'react-native';
 
-// import '@react-native-firebase/analytics';
-// import '@react-native-firebase/config';
-// import '@react-native-firebase/utils';
-// import '@react-native-firebase/crashlytics';
-// import '@react-native-firebase/fiam';
-// import '@react-native-firebase/functions';
-// import '@react-native-firebase/mlkit';
-// import '@react-native-firebase/storage';
-// import '@react-native-firebase/iid';
-// import '@react-native-firebase/invites';
-// import '@react-native-firebase/perf';
-import '@react-native-firebase/auth';
+import '@react-native-firebase/links';
+import '@react-native-firebase/invites';
 import firebase from '@react-native-firebase/app';
 
 class Root extends Component {
@@ -44,27 +34,47 @@ class Root extends Component {
   }
 
   async runSingleTest() {
-    // const random = Utils.randString(12, '#aA');
-    const random = 'adsdgdfgh2612';
-    const email = `${random}@${random}.com`;
+    const invite = firebase.invites().createInvitation('foo', 'bar');
+    const androidInvite = invite.android;
+    const inviteParams = {
+      android: undefined,
+      androidClientId: 'androidClientId',
+      androidMinimumVersionCode: 1337,
+      callToActionText: 'callToActionText',
+      iosClientId: 'iosClientId',
+    };
+    const androidInviteParams = {
+      additionalReferralParameters: {
+        a: 'b',
+        c: 'd',
+      },
+      emailHtmlContent: 'emailHtmlContent',
+      emailSubject: 'emailSubject',
+      googleAnalyticsTrackingId: 'googleAnalyticsTrackingId',
+    };
 
-    const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
+    invite.setAndroidClientId(inviteParams.androidClientId);
+    invite.setAndroidMinimumVersionCode(inviteParams.androidMinimumVersionCode);
 
-    console.log('After create user', user);
+    // invite.setCustomImage(inviteParams.customImage);
+    // invite.setDeepLink(inviteParams.deepLink);
+    invite.setIOSClientId(inviteParams.iosClientId);
 
-    // Test
-    const token = await user.getIdToken();
+    androidInvite.setAdditionalReferralParameters(androidInviteParams.additionalReferralParameters);
 
-    console.log('After create token', token);
+    androidInvite.setEmailHtmlContent(androidInviteParams.emailHtmlContent);
+    androidInvite.setEmailSubject(androidInviteParams.emailSubject);
+    androidInvite.setGoogleAnalyticsTrackingId(androidInviteParams.googleAnalyticsTrackingId);
 
-    // Assertions
-    // token.should.be.a.String();
-    // token.length.should.be.greaterThan(24);
-
-    // Clean up
-    await firebase.auth().currentUser.delete();
-
-    console.log('After delete user', token);
+    const ids = await firebase.invites().sendInvitation(invite);
+    console.warn(ids);
+    console.warn('FOOO');
+    await firebase
+      .links()
+      .getInitialLink()
+      .then(link => {
+        console.warn(`outer${link}`);
+      });
   }
 
   render() {

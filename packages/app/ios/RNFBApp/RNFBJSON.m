@@ -21,69 +21,69 @@
 @property(nonatomic, strong) NSDictionary *firebaseJson;
 @end
 
-NSString *const RNFBJSONBundleKey = @"firebase_json_raw";
-
 @implementation RNFBJSON
 
++ (instancetype)shared {
+  static dispatch_once_t once;
   static RNFBJSON *sharedInstance;
 
-  + (void)load {
+  dispatch_once(&once, ^{
     sharedInstance = [[RNFBJSON alloc] init];
+    NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
+
+    if (firebaseJsonRaw == nil) {
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
+      return;
+    }
+
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:firebaseJsonRaw options:0];
+
+    if (data == nil) {
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
+      return;
+    }
+
+    NSError *jsonError = nil;
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+    if (jsonError != nil) {
+      sharedInstance.firebaseJson = [NSDictionary dictionary];
+      return;
+    }
+
+    sharedInstance.firebaseJson = dictionary;
+  });
+
+  return sharedInstance;
+}
+
+- (BOOL)contains:(NSString *)key {
+  return [_firebaseJson valueForKey:key] != nil;
+}
+
+- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
+  if ([_firebaseJson valueForKey:key] == nil)
+    return defaultValue;
+  NSNumber *boolean = [_firebaseJson valueForKey:key];
+  return [boolean boolValue];
+}
+
+- (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
+  if ([_firebaseJson valueForKey:key] == nil)
+    return defaultValue;
+  NSString *string = [_firebaseJson valueForKey:key];
+  return string;
+}
+
+- (NSDictionary *)getAll {
+  return [[NSDictionary alloc] initWithDictionary:_firebaseJson copyItems:YES];
+}
+
+- (NSString *)getRawJSON {
+  NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
+  if (firebaseJsonRaw == nil) {
+    return @"{}";
   }
 
-  - (instancetype)init {
-    self = [super init];
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:RNFBJSONBundleKey];
-
-      if (firebaseJsonRaw == nil) {
-        self.firebaseJson = [NSDictionary dictionary];
-        return;
-      }
-
-      NSData *data = [[NSData alloc] initWithBase64EncodedString:firebaseJsonRaw options:0];
-
-      if (data == nil) {
-        self.firebaseJson = [NSDictionary dictionary];
-        return;
-      }
-
-      NSError *jsonError = nil;
-      NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-      if (jsonError != nil) {
-        self.firebaseJson = [NSDictionary dictionary];
-        return;
-      }
-
-      self.firebaseJson = dictionary;
-    });
-
-    return self;
-  }
-
-  - (BOOL)contains:(NSString *)key {
-    return [_firebaseJson valueForKey:key] != nil;
-  }
-
-  - (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-    if ([_firebaseJson valueForKey:key] == nil) return defaultValue;
-    NSNumber *boolean = [_firebaseJson valueForKey:key];
-    return [boolean boolValue];
-  }
-
-  - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-    if ([_firebaseJson valueForKey:key] == nil) return defaultValue;
-    NSString *string = [_firebaseJson valueForKey:key];
-    return string;
-  }
-
-  - (NSDictionary *)getAll {
-    return [[NSDictionary alloc] initWithDictionary:_firebaseJson copyItems:YES];
-  }
-
-  + (RNFBJSON *)shared {
-    return sharedInstance;
-  }
+  return firebaseJsonRaw;
+}
 @end

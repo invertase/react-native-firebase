@@ -22,11 +22,18 @@ require('@react-native-firebase/private-tests-helpers');
 
 const detox = require('detox');
 const jet = require('jet/platform/node');
+
 const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
+config.configurations['android.emu.debug'].name =
+  process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].name;
+
+console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
+
 const PACKAGES = [
   'app',
+  'links',
   'iid',
   'perf',
   'fiam',
@@ -35,19 +42,23 @@ const PACKAGES = [
   'config',
   'crashlytics',
   'utils',
-  // 'mlkit',
+  'ml-natural-language',
   'invites',
   'fiam',
   'auth',
-  // 'firestore',
-  'links',
-  // 'messaging',
+  'database',
   'storage',
+  'indexing',
+  // 'firestore',
+  // 'messaging',
+  // 'ml-vision',
+  // 'ml-automl',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
   requirePackageTests(PACKAGES[i]);
 }
+
 before(async () => {
   await detox.init(config);
   await jet.init();
@@ -73,12 +84,12 @@ beforeEach(async function beforeEach() {
       console.warn(`   🔴  Retry #${retry - 1} failed...`);
     }
 
-    console.warn(`️   ->  Retrying... (${retry})`);
-    await Utils.sleep(3000);
+    console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
+    await Utils.sleep(1000 * retry);
   }
 });
 
 after(async () => {
-  console.log('Cleaning up...');
+  console.log(' ✨ Tests Complete ✨ ');
   await device.terminateApp();
 });
