@@ -20,6 +20,8 @@
 // BEEN WARNED 🙃
 require('@react-native-firebase/private-tests-helpers');
 
+global.TestAdminApi = new TestingApi();
+
 const detox = require('detox');
 const jet = require('jet/platform/node');
 
@@ -33,23 +35,23 @@ console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
 
 const PACKAGES = [
   'app',
-  'links',
-  'iid',
-  'perf',
-  'fiam',
-  'functions',
-  'analytics',
-  'config',
-  'crashlytics',
-  'utils',
-  'ml-natural-language',
-  'invites',
-  'fiam',
-  'auth',
-  'database',
-  'storage',
-  'indexing',
-  // 'firestore',
+  // 'links',
+  // 'iid',
+  // 'perf',
+  // 'fiam',
+  // 'functions',
+  // 'analytics',
+  // 'config',
+  // 'crashlytics',
+  // 'utils',
+  // 'ml-natural-language',
+  // 'invites',
+  // 'fiam',
+  // 'auth',
+  // 'database',
+  // 'storage',
+  // 'indexing',
+  'firestore',
   // 'messaging',
   // 'ml-vision',
   // 'ml-automl',

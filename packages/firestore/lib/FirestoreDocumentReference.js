@@ -15,19 +15,17 @@
  *
  */
 
+import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import {
+  generateFirestoreId,
   isObject,
   isString,
-  isArray,
   isUndefined,
-  hasOwnProperty,
-  isBoolean,
 } from '@react-native-firebase/common';
 import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import FirestoreFieldPath from './FirestoreFieldPath';
 import { buildNativeMap } from './utils/serialize';
-import { parseUpdateArgs } from './utils';
+import { parseSetOptions, parseUpdateArgs, parseSnapshotArgs } from './utils';
 
 export default class FirestoreDocumentReference {
   constructor(firestore, documentPath) {
@@ -110,8 +108,60 @@ export default class FirestoreDocumentReference {
     // https://github.com/invertase/react-native-firebase/blob/v5.x.x/src/modules/firestore/DocumentReference.js#L63
   }
 
-  onSnapshot(observer) {
-    // TODO
+  onSnapshot(...args) {
+    /* eslint-disable prefer-destructuring */
+
+    let snapshotListenOptions;
+    let callback;
+    let onNext;
+    let onError;
+
+    try {
+      const options = parseSnapshotArgs(args);
+      snapshotListenOptions = options.snapshotListenOptions;
+      callback = options.callback;
+      onNext = options.onNext;
+      onError = options.onError;
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().doc().onSnapshot(*) ${e.message}`);
+    }
+
+    function handleSuccess(querySnapshot) {
+      callback(querySnapshot, null);
+      onNext(querySnapshot);
+    }
+
+    function handleError(error) {
+      callback(null, error);
+      onError(error);
+    }
+
+    const listenerId = generateFirestoreId();
+
+    const onSnapshotSubscription = this._firestore.emitter.addListener(
+      this._firestore.eventNameForApp('firestore_document_sync_event'),
+      event => {
+        if (event.body.error) {
+          handleError(NativeError.fromEvent(event.body.error, 'firestore'));
+        } else {
+          const documentSnapshot = new FirestoreDocumentSnapshot(
+            this._firestore,
+            this,
+            event.body.snapshot,
+          );
+          handleSuccess(documentSnapshot);
+        }
+      },
+    );
+
+    const unsubscribe = () => {
+      onSnapshotSubscription.remove();
+      this._firestore.native.documentOffSnapshot(listenerId);
+    };
+
+    this._firestore.native.documentOnSnapshot(this.path, listenerId, snapshotListenOptions);
+
+    return unsubscribe;
   }
 
   set(data, options) {
@@ -119,58 +169,14 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.app().firestore().doc().set(*) 'data' must be an object.`);
     }
 
-    const mergeOptions = {};
-
-    if (!isUndefined(options)) {
-      if (!isObject(options)) {
-        throw new Error(
-          `firebase.app().firestore().doc().set(_, *) 'options' must be an object.`,
-        );
-      }
-
-      if (hasOwnProperty(options, 'merge') && hasOwnProperty(options, 'mergeFields')) {
-        throw new Error(
-          `firebase.app().firestore().doc().set(_, *) 'options' must not contain both 'merge' & 'mergeFields'.`,
-        );
-      }
-
-      if (!isUndefined(options.merge)) {
-        if (!isBoolean(options.merge)) {
-          throw new Error(
-            `firebase.app().firestore().doc().set(_, *) 'options.merge' must be a boolean value.`,
-          );
-        }
-
-        mergeOptions.merge = true;
-      }
-
-      if (!isUndefined(options.mergeFields)) {
-        if (!isArray(options.mergeFields)) {
-          throw new Error(
-            `firebase.app().firestore().doc().set(_, *) 'options.mergeFields' must be an array.`,
-          );
-        }
-
-        mergeOptions.mergeFields = [];
-
-        for (let i = 0; i < options.mergeFields.length; i++) {
-          const field = options.mergeFields[i];
-          if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
-            throw new Error(
-              `firebase.app().firestore().doc().set(_, *) 'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
-            );
-          }
-
-          if (field instanceof FirestoreFieldPath) {
-            mergeOptions.mergeFields.push(field._toPath());
-          } else {
-            mergeOptions.mergeFields.push(field);
-          }
-        }
-      }
+    let setOptions;
+    try {
+      setOptions = parseSetOptions(options);
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().doc().set(_, *) ${e.message}.`);
     }
 
-    return this._firestore.native.documentSet(this.path, buildNativeMap(data), mergeOptions);
+    return this._firestore.native.documentSet(this.path, buildNativeMap(data), setOptions);
   }
 
   update(...args) {

@@ -15,19 +15,11 @@
  *
  */
 
-import {
-  hasOwnProperty,
-  isArray,
-  isBoolean,
-  isObject,
-  isString,
-  isUndefined,
-} from '@react-native-firebase/common';
+import { isObject } from '@react-native-firebase/common';
 
 import { buildNativeMap } from './utils/serialize';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
-import { parseUpdateArgs } from './utils';
+import { parseSetOptions, parseUpdateArgs } from './utils';
 
 export default class FirestoreWriteBatch {
   constructor(firestore) {
@@ -91,72 +83,18 @@ export default class FirestoreWriteBatch {
       throw new Error(`firebase.app().firestore.batch().set(_, *) 'data' must be an object.`);
     }
 
-    const mergeOptions = {};
-
-    if (!isUndefined(options)) {
-      if (!isObject(options)) {
-        throw new Error(
-          `firebase.app().firestore().batch().set(_, _, *) 'options' must be an object.`,
-        );
-      }
-
-      if (hasOwnProperty(options, 'merge') && hasOwnProperty(options, 'mergeFields')) {
-        throw new Error(
-          `firebase.app().firestore().batch().set(_, _, *) 'options' must not contain both 'merge' & 'mergeFields'.`,
-        );
-      }
-
-      if (!isUndefined(options.merge)) {
-        if (!isBoolean(options.merge)) {
-          throw new Error(
-            `firebase.app().firestore().batch().set(_, _, *) 'options.merge' must be a boolean value.`,
-          );
-        }
-
-        mergeOptions.merge = true;
-      }
-
-      if (!isUndefined(options.mergeFields)) {
-        if (!isArray(options.mergeFields)) {
-          throw new Error(
-            `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' must be an array.`,
-          );
-        }
-
-        mergeOptions.mergeFields = [];
-
-        for (let i = 0; i < options.mergeFields.length; i++) {
-          const field = options.mergeFields[i];
-          if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
-            throw new Error(
-              `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}.`,
-            );
-          }
-
-          let path;
-
-          if (isString(field)) {
-            try {
-              path = fromDotSeparatedString(field);
-            } catch (e) {
-              throw new Error(
-                `firebase.app().firestore().batch().set(_, _, *) 'options.mergeFields' ${e.message}.`,
-              );
-            }
-          } else {
-            path = field;
-          }
-
-          mergeOptions.mergeFields.push(path._toPath());
-        }
-      }
+    let setOptions;
+    try {
+      setOptions = parseSetOptions(options);
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().doc().set(_, *) ${e.message}.`);
     }
 
     this._writes.push({
       path: documentRef.path,
       type: 'SET',
       data: buildNativeMap(data),
-      options: mergeOptions,
+      options: setOptions,
     });
 
     return this;

@@ -30,6 +30,7 @@ import {
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import { parseSnapshotArgs } from './utils';
 
 export default class FirestoreQuery {
   constructor(firestore, collectionPath, modifiers) {
@@ -171,93 +172,20 @@ export default class FirestoreQuery {
 
   onSnapshot(...args) {
     /* eslint-disable prefer-destructuring */
-    if (args.length === 0) {
-      throw new Error(
-        `firebase.app().firestore().collection().onSnapshot(*) expected at least one argument.`,
-      );
-    }
 
-    // Ignore onComplete as its never used
-    const NOOP = () => {};
-    const snapshotListenOptions = {};
-    let callback = NOOP;
-    let onError = NOOP;
-    let onNext = NOOP;
+    let snapshotListenOptions;
+    let callback;
+    let onNext;
+    let onError;
 
-    /**
-     * .onSnapshot(Function...
-     */
-    if (isFunction(args[0])) {
-      /**
-       * .onSnapshot((snapshot) => {}, (error) => {}
-       */
-      if (isFunction(args[1])) {
-        onNext = args[0];
-        onError = args[1];
-      } else {
-        /**
-         * .onSnapshot((snapshot, error) => {})
-         */
-        callback = args[0];
-      }
-    }
-
-    /**
-     * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
-     */
-    if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
-      if (args[0].error) onError = args[0].error;
-      if (args[0].next) onNext = args[0].next;
-    }
-
-    /**
-     * .onSnapshot(SnapshotListenOptions, ...
-     */
-    if (isObject(args[0]) && args[0].includeMetadataChanges !== undefined) {
-      snapshotListenOptions.includeMetadataChanges = args[0].includeMetadataChanges;
-      if (isFunction(args[1])) {
-        /**
-         * .onSnapshot(SnapshotListenOptions, Function);
-         */
-        if (isFunction(args[2])) {
-          /**
-           * .onSnapshot(SnapshotListenOptions, (snapshot) => {}, (error) => {});
-           */
-          onNext = args[1];
-          onError = args[2];
-        } else {
-          /**
-           * .onSnapshot(SnapshotListenOptions, (s, e) => {};
-           */
-          callback = args[1];
-        }
-      } else if (isObject(args[1])) {
-        /**
-         * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
-         */
-        if (isFunction(args[1].error)) onError = args[1].error;
-        if (isFunction(args[1].next)) onNext = args[1].next;
-      }
-    }
-
-    if (hasOwnProperty(snapshotListenOptions, 'includeMetadataChanges')) {
-      if (!isBoolean(snapshotListenOptions.includeMetadataChanges)) {
-        throw new Error(
-          `firebase.app().firestore().collection().onSnapshot(*) 'options' SnapshotOptions.includeMetadataChanges must be a boolean value.`,
-        );
-      }
-    }
-
-    if (!isFunction(onNext)) {
-      throw new Error(
-        `firebase.app().firestore().collection().onSnapshot(*) 'observer.next' or 'onNext' expected a function.`,
-      );
-    }
-
-    if (!isFunction(onError)) {
-      throw new Error(
-        `firebase.app().firestore().collection().onSnapshot(*) 'observer.error' or 'onError' expected a function.`,
-      );
+    try {
+      const options = parseSnapshotArgs(args);
+      snapshotListenOptions = options.snapshotListenOptions;
+      callback = options.callback;
+      onNext = options.onNext;
+      onError = options.onError;
+    } catch (e) {
+      throw new Error(`firebase.app().firestore().collection().onSnapshot(*) ${e.message}`);
     }
 
     function handleSuccess(querySnapshot) {

@@ -17,27 +17,35 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.MetadataChanges;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
@@ -53,6 +61,71 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   public ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    Iterator refIterator = documentSnapshotListeners.entrySet().iterator();
+    while (refIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) refIterator.next();
+      ListenerRegistration listenerRegistration = (ListenerRegistration) pair.getValue();
+      listenerRegistration.remove();
+      refIterator.remove(); // avoids a ConcurrentModificationException
+    }
+  }
+
+  @ReactMethod
+  public void documentOnSnapshot(
+    String appName,
+    String path,
+    String listenerId,
+    ReadableMap listenerOptions
+  ) {
+    if (documentSnapshotListeners.containsKey(listenerId)) {
+      return;
+    }
+
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
+
+
+    final EventListener<DocumentSnapshot> listener = (documentSnapshot, exception) -> {
+      if (exception != null) {
+        ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
+        if (listenerRegistration != null) {
+          listenerRegistration.remove();
+        }
+        sendOnSnapshotError(appName, listenerId, exception);
+      } else {
+        sendOnSnapshotEvent(appName, listenerId, documentSnapshot);
+      }
+    };
+
+    MetadataChanges metadataChanges;
+
+    if (listenerOptions != null && listenerOptions.hasKey("includeMetadataChanges")
+      && listenerOptions.getBoolean("includeMetadataChanges")) {
+      metadataChanges = MetadataChanges.INCLUDE;
+    } else {
+      metadataChanges = MetadataChanges.EXCLUDE;
+    }
+
+    ListenerRegistration listenerRegistration = documentReference.addSnapshotListener(
+      metadataChanges,
+      listener
+    );
+
+    documentSnapshotListeners.put(listenerId, listenerRegistration);
+  }
+
+  @ReactMethod
+  public void documentOffSnapshot(String appName, String listenerId) {
+    ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+    }
   }
 
   @ReactMethod
@@ -204,6 +277,50 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
           rejectPromiseFirestoreException(promise, task.getException());
         }
       });
+  }
+
+  private void sendOnSnapshotEvent(String appName, String listenerId, DocumentSnapshot documentSnapshot) {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap(documentSnapshot)).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        WritableMap body = Arguments.createMap();
+        body.putMap("snapshot", task.getResult());
+
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+        emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+          ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
+          body,
+          appName,
+          listenerId
+        ));
+      } else {
+        sendOnSnapshotError(appName, listenerId, task.getException());
+      }
+    });
+  }
+
+  private void sendOnSnapshotError(String appName, String listenerId, Exception exception) {
+    WritableMap body = Arguments.createMap();
+    WritableMap error = Arguments.createMap();
+
+    if (exception instanceof FirebaseFirestoreException) {
+      UniversalFirebaseFirestoreException firestoreException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
+      error.putString("code", firestoreException.getCode());
+      error.putString("message", firestoreException.getMessage());
+    } else {
+      error.putString("code", "unknown");
+      error.putString("message", "An unknown error occurred");
+    }
+
+    body.putMap("error", error);
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+    emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+      ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
+      body,
+      appName,
+      listenerId
+    ));
   }
 }
 

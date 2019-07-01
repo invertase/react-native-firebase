@@ -15,7 +15,15 @@
  *
  */
 
-import { isObject, isString } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isArray,
+  isBoolean,
+  isFunction,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
 import FirestoreFieldPath from '../FirestoreFieldPath';
 
 export function extractFieldPathData(data, segmenets) {
@@ -59,6 +67,57 @@ export function parseUpdateArgs(args) {
   return data;
 }
 
+/**
+ *
+ * @param options
+ */
+export function parseSetOptions(options) {
+  const out = {};
+
+  if (isUndefined(options)) return out;
+
+  if (!isObject(options)) {
+    throw new Error(`'options' must be an object.`);
+  }
+
+  if (hasOwnProperty(options, 'merge') && hasOwnProperty(options, 'mergeFields')) {
+    throw new Error(`'options' must not contain both 'merge' & 'mergeFields'.`);
+  }
+
+  if (!isUndefined(options.merge)) {
+    if (!isBoolean(options.merge)) {
+      throw new Error(`'options.merge' must be a boolean value.`);
+    }
+
+    out.merge = true;
+  }
+
+  if (!isUndefined(options.mergeFields)) {
+    if (!isArray(options.mergeFields)) {
+      throw new Error(`'options.mergeFields' must be an array.`);
+    }
+
+    out.mergeFields = [];
+
+    for (let i = 0; i < options.mergeFields.length; i++) {
+      const field = options.mergeFields[i];
+      if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
+        throw new Error(
+          `'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
+        );
+      }
+
+      if (field instanceof FirestoreFieldPath) {
+        out.mergeFields.push(field._toPath());
+      } else {
+        out.mergeFields.push(field);
+      }
+    }
+  }
+
+  return out;
+}
+
 function buildFieldPathData(segments, value) {
   if (segments.length === 1) {
     return {
@@ -87,4 +146,91 @@ export function mergeFieldPathData(data, segments, value) {
     ...data,
     [segments[0]]: buildFieldPathData(segments.slice(1), value),
   };
+}
+
+export function parseSnapshotArgs(args) {
+  /* eslint-disable prefer-destructuring */
+
+  if (args.length === 0) {
+    throw new Error(`expected at least one argument.`);
+  }
+
+  // Ignore onComplete as its never used
+  const NOOP = () => {};
+  const snapshotListenOptions = {};
+  let callback = NOOP;
+  let onError = NOOP;
+  let onNext = NOOP;
+
+  /**
+   * .onSnapshot(Function...
+   */
+  if (isFunction(args[0])) {
+    /**
+     * .onSnapshot((snapshot) => {}, (error) => {}
+     */
+    if (isFunction(args[1])) {
+      onNext = args[0];
+      onError = args[1];
+    } else {
+      /**
+       * .onSnapshot((snapshot, error) => {})
+       */
+      callback = args[0];
+    }
+  }
+
+  /**
+   * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
+   */
+  if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
+    if (args[0].error) onError = args[0].error;
+    if (args[0].next) onNext = args[0].next;
+  }
+
+  /**
+   * .onSnapshot(SnapshotListenOptions, ...
+   */
+  if (isObject(args[0]) && args[0].includeMetadataChanges !== undefined) {
+    snapshotListenOptions.includeMetadataChanges = args[0].includeMetadataChanges;
+    if (isFunction(args[1])) {
+      /**
+       * .onSnapshot(SnapshotListenOptions, Function);
+       */
+      if (isFunction(args[2])) {
+        /**
+         * .onSnapshot(SnapshotListenOptions, (snapshot) => {}, (error) => {});
+         */
+        onNext = args[1];
+        onError = args[2];
+      } else {
+        /**
+         * .onSnapshot(SnapshotListenOptions, (s, e) => {};
+         */
+        callback = args[1];
+      }
+    } else if (isObject(args[1])) {
+      /**
+       * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
+       */
+      if (isFunction(args[1].error)) onError = args[1].error;
+      if (isFunction(args[1].next)) onNext = args[1].next;
+    }
+  }
+
+  if (hasOwnProperty(snapshotListenOptions, 'includeMetadataChanges')) {
+    if (!isBoolean(snapshotListenOptions.includeMetadataChanges)) {
+      throw new Error(`'options' SnapshotOptions.includeMetadataChanges must be a boolean value.`);
+    }
+  }
+
+  if (!isFunction(onNext)) {
+    throw new Error(`'observer.next' or 'onNext' expected a function.`);
+  }
+
+  if (!isFunction(onError)) {
+    throw new Error(`'observer.error' or 'onError' expected a function.`);
+  }
+
+  return { snapshotListenOptions, callback, onNext, onError };
 }
