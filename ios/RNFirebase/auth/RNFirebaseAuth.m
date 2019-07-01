@@ -55,7 +55,6 @@ RCT_EXPORT_MODULE();
     [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
     [authStateHandlers removeObjectForKey:key];
   }
-  [authStateKeys release];
   
   NSArray *idTokenKeys = [idTokenHandlers allKeys];
   for(NSString* key in idTokenKeys) {
@@ -63,7 +62,6 @@ RCT_EXPORT_MODULE();
     [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
     [idTokenHandlers removeObjectForKey:key];
   }
-  [idTokenKeys release];
 }
 
 - (void)invalidate {
@@ -75,7 +73,6 @@ RCT_EXPORT_MODULE();
       [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
       [authStateHandlers removeObjectForKey:key];
   }
-  [authStateKeys release];
   
   NSArray *idTokenKeys = [idTokenHandlers allKeys];
   for(NSString* key in idTokenKeys) {
@@ -83,7 +80,6 @@ RCT_EXPORT_MODULE();
       [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
       [idTokenHandlers removeObjectForKey:key];
   }
-  [idTokenKeys release];
 }
 
 /**
