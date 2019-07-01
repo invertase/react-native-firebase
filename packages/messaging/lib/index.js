@@ -20,6 +20,9 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { isIOS, isAndroid } from '@react-native-firebase/common';
+
+import { AppRegistry } from 'react-native';
 
 import version from './version';
 
@@ -48,56 +51,95 @@ class FirebaseMessagingModule extends FirebaseModule {
     );
   }
 
-  onMessage(nextOrObserver) {
-    const subscription = this.emitter.addListener('messaging_message_received', nextOrObserver);
-
+  onMessage(nextOnly) {
+    const subscription = this.emitter.addListener('messaging_message_received', nextOnly);
     return () => {
       subscription.remove();
     };
   }
 
-  onTokenRefresh() {
-    // todo
+  onTokenRefresh(nextOnly) {
+    const subscription = this.emitter.addListener('messaging_token_refresh', nextOnly);
+    return () => {
+      subscription.remove();
+    };
   }
 
+  /**
+   * @platform ios
+   */
   requestPermission() {
+    if (isAndroid) return Promise.resolve();
     return this.native.requestPermission();
   }
 
   /**
-   * Additional methods
+   * @platform ios
    */
+  registerForRemoteNotifications() {
+    if (isAndroid) return Promise.resolve();
+    return this.native.registerForRemoteNotifications();
+  }
+
+  /**
+   * @platform ios
+   */
+  getAPNSToken() {
+    if (isAndroid) return Promise.resolve(null);
+    return this.native.getAPNSToken();
+  }
 
   hasPermission() {
     return this.native.hasPermission();
   }
 
-  /**
-   * Native SDK
-   */
-
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
-  onDeletedMessages() {
-    // todo
+  onDeletedMessages(nextOnly) {
+    const subscription = this.emitter.addListener('messaging_message_deleted', nextOnly);
+    return () => {
+      subscription.remove();
+    };
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
-  onMessageSent() {
-    // todo
+  onMessageSent(nextOnly) {
+    const subscription = this.emitter.addListener('messaging_message_sent', nextOnly);
+    return () => {
+      subscription.remove();
+    };
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
-  onSendError() {
+  onSendError(nextOnly) {
+    const subscription = this.emitter.addListener('messaging_message_send_error', nextOnly);
+    return () => {
+      subscription.remove();
+    };
+  }
+
+  /**
+   * @platform android
+   */
+  setBackgroundMessageHandler(handler) {
+    if (isIOS) return;
+    AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => handler);
+  }
+
+  sendMessage(remoteMessage) {
+    // todo
+  }
+
+  subscribeToTopic(topic) {
+    // todo
+  }
+
+  unsubscribeFromTopic(topic) {
     // todo
   }
 
   /**
    * unsupported
    */
-
-  setBackgroundMessageHandler() {
-    // todo unsupported warning
-  }
 
   useServiceWorker() {
     // todo unsupported warning

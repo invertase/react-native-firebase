@@ -24,26 +24,46 @@ describe.only('messaging()', () => {
     });
   });
 
-  describe('aMethod()', () => {
-    it('accessible from firebase.app()', async () => {
+  describe('onMessage()', () => {
+    android.it('receives messages when the app is in the foreground', async () => {
       const spy = sinon.spy();
-      const unsub = firebase.messaging().onMessage(spy);
+      const unsubscribe = firebase.messaging().onMessage(spy);
       const token = await firebase.messaging().getToken();
-      // await device.sendToHome();
       await TestsAPI.messaging().sendToDevice(token, {
         data: {
           foo: 'bar',
           doop: 'boop',
         },
-        // notification: {
-        //   title: 'hello',
-        //   body: 'world',
-        // },
       });
       await Utils.spyToBeCalledOnceAsync(spy);
-      // await device.launchApp({ newInstance: false });
-      console.dir(spy.firstCall.args[0]);
-      unsub();
+      unsubscribe();
+      spy.firstCall.args[0].should.be.an.Object();
+      spy.firstCall.args[0].data.should.be.an.Object();
+      spy.firstCall.args[0].data.foo.should.eql('bar');
+    });
+  });
+
+  describe('setBackgroundMessageHandler()', () => {
+    android.it('receives messages when the app is in the background', async () => {
+      const spy = sinon.spy();
+      const token = await firebase.messaging().getToken();
+      firebase.messaging().setBackgroundMessageHandler(remoteMessage => {
+        spy(remoteMessage);
+        return Promise.resolve();
+      });
+
+      await device.sendToHome();
+      await TestsAPI.messaging().sendToDevice(token, {
+        data: {
+          foo: 'bar',
+          doop: 'boop',
+        },
+      });
+      await Utils.spyToBeCalledOnceAsync(spy);
+      await device.launchApp({ newInstance: false });
+      spy.firstCall.args[0].should.be.an.Object();
+      spy.firstCall.args[0].data.should.be.an.Object();
+      spy.firstCall.args[0].data.foo.should.eql('bar');
     });
   });
 });
