@@ -15,9 +15,11 @@
  *
  */
 
-
+const { wipe } = require('../helpers');
 
 describe('firestore().doc() -> snapshot', () => {
+  before(() => wipe());
+
   it('.exists -> returns a boolean for exists', async () => {
     const ref1 = firebase.firestore().doc('v6/exists');
     const ref2 = firebase.firestore().doc('v6/idonotexist');

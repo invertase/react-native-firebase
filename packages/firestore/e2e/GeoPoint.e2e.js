@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('./helpers');
+
 describe('firestore.GeoPoint', () => {
+  before(() => wipe());
+
   it('throws if invalid number of arguments', () => {
     try {
       new firebase.firestore.GeoPoint(123);

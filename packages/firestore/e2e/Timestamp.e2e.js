@@ -87,6 +87,17 @@ describe('firestore.Timestamp', () => {
   });
 
   describe('isEqual()', () => {
+    it('throws if invalid other is procided', () => {
+      try {
+        const ts = new firebase.firestore.Timestamp(123, 1234);
+        ts.isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'other' expected an instance of Timestamp`);
+        return Promise.resolve();
+      }
+    });
+
     it('returns false if not equal', () => {
       const ts1 = new firebase.firestore.Timestamp(123, 123456);
       const ts2 = new firebase.firestore.Timestamp(1234, 123456);

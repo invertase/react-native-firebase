@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('./helpers');
+
 describe('firestore.FieldValue', () => {
+  before(() => wipe());
+
   it('should throw if constructed manually', () => {
     try {
       new firebase.firestore.FieldValue();

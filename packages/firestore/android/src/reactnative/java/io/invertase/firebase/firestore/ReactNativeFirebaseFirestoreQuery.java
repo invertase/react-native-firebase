@@ -42,6 +42,7 @@ import static io.invertase.firebase.common.RCTConvertFirebase.readableMapToFireb
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableArray;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseTypeMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
 
@@ -120,12 +121,88 @@ public class ReactNativeFirebaseFirestoreQuery {
       query = query.limit(limit);
     }
 
+    if (options.hasKey("startAt")) {
+      ReadableArray option = options.getArray("startAt");
+      String type = option.getString(0);
+
+      if ("fields".equals(type)) {
+        List<Object> fieldList = parseReadableArray(firebaseFirestore, option.getArray(1));
+        query = query.startAt(Objects.requireNonNull(fieldList.toArray()));
+      }
+
+      if ("snapshot".equals(type)) {
+        List<Object> keys = toArrayList(Objects.requireNonNull(option.getArray(1)));
+        List<Object> values = parseReadableArray(firebaseFirestore, option.getArray(2));
+
+        for (Object k : keys) {
+          query = query.orderBy((String) k);
+        }
+
+        query = query.startAt(Objects.requireNonNull(values.toArray()));
+      }
+    }
+
+    if (options.hasKey("startAfter")) {
+      ReadableArray option = options.getArray("startAfter");
+      String type = option.getString(0);
+
+      if ("fields".equals(type)) {
+        List<Object> fieldList = parseReadableArray(firebaseFirestore, option.getArray(1));
+        query = query.startAfter(Objects.requireNonNull(fieldList.toArray()));
+      }
+
+      if ("snapshot".equals(type)) {
+        List<Object> keys = toArrayList(Objects.requireNonNull(option.getArray(1)));
+        List<Object> values = parseReadableArray(firebaseFirestore, option.getArray(2));
+
+        for (Object k : keys) {
+          query = query.orderBy((String) k);
+        }
+
+        query = query.startAfter(Objects.requireNonNull(values.toArray()));
+      }
+    }
+
     if (options.hasKey("endAt")) {
-      List<Object> endAtList = parseReadableArray(
-        firebaseFirestore,
-        options.getArray("endAt")
-      );
-      query = query.endAt(Objects.requireNonNull(endAtList.toArray()));
+      ReadableArray option = options.getArray("endAt");
+      String type = option.getString(0);
+
+      if ("fields".equals(type)) {
+        List<Object> fieldList = parseReadableArray(firebaseFirestore, option.getArray(1));
+        query = query.endAt(Objects.requireNonNull(fieldList.toArray()));
+      }
+
+      if ("snapshot".equals(type)) {
+        List<Object> keys = toArrayList(Objects.requireNonNull(option.getArray(1)));
+        List<Object> values = parseReadableArray(firebaseFirestore, option.getArray(2));
+
+        for (Object k : keys) {
+          query = query.orderBy((String) k);
+        }
+
+        query = query.endAt(Objects.requireNonNull(values.toArray()));
+      }
+    }
+
+    if (options.hasKey("endBefore")) {
+      ReadableArray option = options.getArray("endBefore");
+      String type = option.getString(0);
+
+      if ("fields".equals(type)) {
+        List<Object> fieldList = parseReadableArray(firebaseFirestore, option.getArray(1));
+        query = query.endBefore(Objects.requireNonNull(fieldList.toArray()));
+      }
+
+      if ("snapshot".equals(type)) {
+        List<Object> keys = toArrayList(Objects.requireNonNull(option.getArray(1)));
+        List<Object> values = parseReadableArray(firebaseFirestore, option.getArray(2));
+
+        for (Object k : keys) {
+          query = query.orderBy((String) k);
+        }
+
+        query = query.endBefore(Objects.requireNonNull(values.toArray()));
+      }
     }
   }
 }

@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore().collection().get()', () => {
+  before(() => wipe());
+
   it('throws if get options is not an object', () => {
     try {
       firebase

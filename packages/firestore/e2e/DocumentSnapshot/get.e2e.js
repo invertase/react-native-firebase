@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore().doc() -> snapshot.get()', () => {
+  before(() => wipe());
+
   it('throws if invalid fieldPath argument', async () => {
     const ref = firebase.firestore().doc('v6/foo');
     const snapshot = await ref.get();

@@ -15,31 +15,10 @@
  *
  */
 
+const { wipe } = require('./helpers');
+
 describe('firestore()', () => {
-  // describe('testing', () => {
-  //   it('test', async () => {
-  //     try {
-  //       // const docsnap = await firebase.firestore().collection('v6').doc('tests_collectionGroup').get();
-  //       // // console.log(docsnap);
-  //       // const a = await firebase.firestore().collection('v6')
-  //       //   .endAt(docsnap)
-  //       //   .get();
-  //       // console.log(a);
-  //
-  //       return new Promise(res => {
-  //         firebase
-  //           .firestore()
-  //           .collection('v6s')
-  //           .onSnapshot({includeMetadataChanges: true}, {
-  //             next: console.log,
-  //             error: console.log,
-  //           });
-  //       });
-  //     } catch (e) {
-  //       throw e;
-  //     }
-  //   });
-  // });
+  before(() => wipe());
 
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
@@ -110,7 +89,45 @@ describe('firestore()', () => {
     });
   });
 
-  describe('collectionGroup()', () => {
+  describe('doc()', () => {
+    it('throws if path is not a string', () => {
+      try {
+        firebase.firestore().doc(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'documentPath' must be a string value`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path is empty string', () => {
+      try {
+        firebase.firestore().doc('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'documentPath' must be a non-empty string`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path does not point to a document', () => {
+      try {
+        firebase.firestore().doc('foo/bar/baz');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'documentPath' must point to a document`);
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a new DocumentReference', () => {
+      const docRef = firebase.firestore().doc('foo/bar');
+      should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
+      docRef.path.should.eql('foo/bar');
+    });
+  });
+
+    describe('collectionGroup()', () => {
     it('throws if id is not a string', () => {
       try {
         firebase.firestore().collectionGroup(123);

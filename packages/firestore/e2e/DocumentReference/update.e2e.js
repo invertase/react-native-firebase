@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.doc().update()', () => {
+  before(() => wipe());
+
   it('throws if no arguments are provided', () => {
     try {
       firebase

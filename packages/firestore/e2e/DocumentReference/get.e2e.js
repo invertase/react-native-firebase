@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.doc().get()', () => {
+  before(() => wipe());
+
   it('throws if get options are not an object', () => {
     try {
       firebase

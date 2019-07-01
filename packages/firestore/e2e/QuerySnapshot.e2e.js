@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('./helpers');
+
 describe('firestore.QuerySnapshot', () => {
+  before(() => wipe());
+
   it('is returned from a collection get()', async () => {
     const snapshot = await firebase.firestore().collection('v6')
       .get();
@@ -74,12 +78,32 @@ describe('firestore.QuerySnapshot', () => {
     snapshot.size.should.be.Number();
   });
 
-  // TODO
-  xdescribe('docChanges()', () => {
-
+  // TODO SnapshotListenerOptions
+  describe('docChanges()', () => {
+    it('returns an array of DocumentChange instances', async () => {
+      const colRef = firebase.firestore().collection('v6');
+      colRef.add({});
+      const snapshot = await colRef.limit(1).get();
+      const changes = snapshot.docChanges();
+      changes.should.be.Array();
+      changes.length.should.be.eql(1);
+      changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+    });
   });
 
   describe('forEach()', () => {
+    it('throws if callback is not a function', async () => {
+      try {
+        const colRef = firebase.firestore().collection('v6');
+        const snapshot = await colRef.limit(1).get();
+        snapshot.forEach(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'callback' expected a function`);
+        return Promise.resolve();
+      }
+    });
+
     it('calls back a function', async () => {
       const colRef = firebase.firestore().collection('v6');
       colRef.add({});

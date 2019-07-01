@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.collection()', () => {
+  before(() => wipe());
+
   it('returns the firestore instance', () => {
     const instance = firebase.firestore().collection('foo');
     instance.firestore.app.name.should.eql('[DEFAULT]');

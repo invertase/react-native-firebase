@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.collection().add()', () => {
+  before(() => wipe());
+
   it('throws if data is not an object', () => {
     try {
       firebase

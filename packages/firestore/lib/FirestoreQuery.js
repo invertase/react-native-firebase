@@ -17,14 +17,14 @@
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import {
+  generateFirestoreId,
+  hasOwnProperty,
+  isBoolean,
   isFunction,
   isNull,
   isObject,
   isString,
   isUndefined,
-  generateFirestoreId,
-  hasOwnProperty,
-  isBoolean,
 } from '@react-native-firebase/common';
 
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
@@ -42,18 +42,19 @@ export default class FirestoreQuery {
     return this._firestore;
   }
 
-  endAt(docOrField, ...fields) {
+  _handleQueryCursor(cursor, docOrField, fields) {
+    // TODO ehesp - what cant be accepted?
     if (isUndefined(docOrField)) {
       throw new Error(
-        `firebase.app().firestore()...collection().endAt(*) Expected a DocumentSnapshot or list of field values but got undefined.`,
+        `firebase.app().firestore().collection().${cursor}(*) Expected a DocumentSnapshot or list of field values but got undefined.`,
       );
     }
 
-    // DocumentSnapshot param
+    // Handles cases where the first arg is a DocumentSnapshot
     if (docOrField instanceof FirestoreDocumentSnapshot) {
       if (fields.length > 0) {
         throw new Error(
-          `firebase.app().firestore()...collection().endAt(*) Too many arguments provided. Expected DocumentSnapshot or list of field values.`,
+          `firebase.app().firestore().collection().${cursor}(*) Too many arguments provided. Expected DocumentSnapshot or list of field values.`,
         );
       }
 
@@ -61,56 +62,72 @@ export default class FirestoreQuery {
 
       if (!documentSnapshot.exists) {
         throw new Error(
-          `firebase.app().firestore()...collection().endAt(*) Can't use a DocumentSnapshot that doesn't exist.`,
+          `firebase.app().firestore().collection().${cursor}(*) Can't use a DocumentSnapshot that doesn't exist.`,
         );
       }
 
-      // TODO How to handle a single endAt document snapshot?
-      // TODO needs to be built on the native side?
-      // No orderBy available
-      if (this._modifiers.orders.length === 0) {
-        // const modifiers = this._modifiers.orderBy(FirestoreFieldPath.documentId());
-        // modifiers.setDocumentSnapshotCursor('endAt', documentSnapshot);
-        // return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
-        throw Error('TODO');
+      const currentOrders = this._modifiers.orders;
+
+      // If no orders, build custom query
+      if (currentOrders.length === 0) {
+        return this._modifiers.setDocumentSnapshotCursor(cursor, documentSnapshot);
       }
 
       const values = [];
 
-      for (let i = 0; i < this._modifiers.orders.length; i++) {
-        const order = this._modifiers.orders[i];
-        if (order.fieldPath.type === 'string') {
-          values.push(documentSnapshot.get(order.fieldPath.string));
-        } else if (order.fieldPath.type === 'fieldpath') {
-          values.push(documentSnapshot.get(new FirestoreFieldPath(...order.fieldPath.elements)));
+      for (let i = 0; i < currentOrders.length; i++) {
+        const order = currentOrders[i];
+        const value = documentSnapshot.get(order.fieldPath);
+
+        if (value === undefined) {
+          throw new Error(
+            `firebase.app().firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${
+              order.fieldPath
+            }' (used as the orderBy) does not exist.`,
+          );
         }
+
+        values.push(value);
       }
 
-      const modifiers = this._modifiers.setFieldsCursor('endAt', values);
-      return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+      return this._modifiers.setFieldsCursor(cursor, values);
     }
 
-    // List of fields
+    /**
+     * Assumes list of field values to query by. Orders must be of equal length.
+     */
+
     const allFields = [docOrField].concat(fields);
 
     if (allFields.length > this._modifiers.orders.length) {
       throw new Error(
-        `firebase.app().firestore()...collection().endAt(*) Too many arguments provided. The number of arguments must be less than or equal to the number of orderBy() clauses.`,
+        `firebase.app().firestore().collection().${cursor}(*) Too many arguments provided. The number of arguments must be less than or equal to the number of orderBy() clauses.`,
       );
     }
 
-    const modifiers = this._modifiers.setFieldsCursor('endAt', allFields);
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return this._modifiers.setFieldsCursor(cursor, allFields);
   }
 
-  endBefore(snapshot) {
-    // TODO 2 signatures https://firebase.google.com/docs/reference/js/firebase.firestore.Query#end-at
+  endAt(docOrField, ...fields) {
+    return new FirestoreQuery(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('endAt', docOrField, fields),
+    );
+  }
+
+  endBefore(docOrField, ...fields) {
+    return new FirestoreQuery(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('endBefore', docOrField, fields),
+    );
   }
 
   get(options) {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
-        `firebase.app().firestore()...collection().get(*) 'options' must be an object is provided.`,
+        `firebase.app().firestore().collection().get(*) 'options' must be an object is provided.`,
       );
     }
 
@@ -122,7 +139,7 @@ export default class FirestoreQuery {
       options.source !== 'cache'
     ) {
       throw new Error(
-        `firebase.app().firestore()...collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.`,
+        `firebase.app().firestore().collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.`,
       );
     }
 
@@ -296,10 +313,18 @@ export default class FirestoreQuery {
       );
     }
 
-    if (isString(fieldPath) && fieldPath === '') {
-      throw new Error(
-        `firebase.app().firestore().collection().orderBy(*) 'fieldPath' must not be an empty string.`,
-      );
+    let path;
+
+    if (isString(fieldPath)) {
+      try {
+        path = fromDotSeparatedString(fieldPath);
+      } catch (e) {
+        throw new Error(
+          `firebase.app().firestore().collection().orderBy(*) 'fieldPath' ${e.message}.`,
+        );
+      }
+    } else {
+      path = fieldPath;
     }
 
     if (!isUndefined(directionStr) && !this._modifiers.isValidDirection(directionStr)) {
@@ -320,18 +345,25 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.orderBy(fieldPath, directionStr);
-    // TODO validate https://github.com/firebase/firebase-js-sdk/blob/master/packages/firestore/src/api/database.ts#L2010
+    const modifiers = this._modifiers.orderBy(path, directionStr);
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
   }
 
-  startAfter(snapshot) {
-    // TODO 2 signatures https://firebase.google.com/docs/reference/js/firebase.firestore.Query#end-at
+  startAfter(docOrField, ...fields) {
+    return new FirestoreQuery(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('startAfter', docOrField, fields),
+    );
   }
 
-  startAt(snapshot) {
-    // TODO 2 signatures https://firebase.google.com/docs/reference/js/firebase.firestore.Query#end-at
+  startAt(docOrField, ...fields) {
+    return new FirestoreQuery(
+      this._firestore,
+      this._collectionPath,
+      this._handleQueryCursor('startAt', docOrField, fields),
+    );
   }
 
   where(fieldPath, opStr, value) {

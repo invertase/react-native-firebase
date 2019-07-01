@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore().collection().limit()', () => {
+  before(() => wipe());
+
   it('throws if limit is invalid', () => {
     try {
       firebase

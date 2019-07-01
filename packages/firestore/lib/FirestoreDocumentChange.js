@@ -17,6 +17,12 @@
 
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 
+const TYPE_MAP = {
+  a: 'added',
+  m: 'modified',
+  r: 'removed',
+};
+
 export default class FirestoreDocumentChange {
   constructor(firestore, nativeData) {
     this._firestore = firestore;
@@ -36,17 +42,6 @@ export default class FirestoreDocumentChange {
   }
 
   get type() {
-    switch (this._nativeData.type) {
-      case 'a':
-        return 'added';
-      case 'm':
-        return 'modified';
-      case 'r':
-        return 'removed';
-      default:
-        // eslint-disable-next-line no-console
-        console.warn(`Unknown DocumentChange type recieved: ${this._nativeData.type}`);
-        return 'unknown';
-    }
+    return TYPE_MAP[this._nativeData.type];
   }
 }

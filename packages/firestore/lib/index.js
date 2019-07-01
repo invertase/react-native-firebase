@@ -145,7 +145,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
   runTransaction(updateFunction) {
     if (!isFunction(updateFunction)) {
       throw new Error(
-        `firebase.app().firestore().runTransaction(*) 'updateFunction' must point to a function.`,
+        `firebase.app().firestore().runTransaction(*) 'updateFunction' must be a function.`,
       );
     }
 

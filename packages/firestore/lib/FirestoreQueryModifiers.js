@@ -16,7 +16,8 @@
  */
 
 import { isNumber } from '@react-native-firebase/common';
-import { generateNativeData, buildNativeArray } from './utils/serialize';
+import { flatten } from '@react-native-firebase/common/lib/deeps';
+import { generateNativeData, buildNativeArray, buildNativeMap } from './utils/serialize';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -64,8 +65,11 @@ export default class FirestoreQueryModifiers {
     const options = {};
 
     if (this._limit) options.limit = this._limit;
+    if (this._startAt) options.startAt = this._startAt;
+    if (this._startAfter) options.startAfter = this._startAfter;
     if (this._endAt) options.endAt = this._endAt;
-    // todo other options
+    if (this._endBefore) options.endBefore = this._endBefore;
+
     return options;
   }
 
@@ -73,14 +77,21 @@ export default class FirestoreQueryModifiers {
     return this._type;
   }
 
-  // TODO how to do this?
   setDocumentSnapshotCursor(cursor, documentSnapshot) {
-    this[`_${cursor}`] = buildNativeArray([documentSnapshot.ref.path]);
+    // Creates a flat object of key (nested . paths) and values
+    const flattenedSnapshot = flatten(documentSnapshot.data());
+
+    this[`_${cursor}`] = [
+      'snapshot',
+      Object.keys(flattenedSnapshot),
+      buildNativeArray(Object.values(flattenedSnapshot)),
+    ];
+
     return this;
   }
 
   setFieldsCursor(cursor, fields) {
-    this[`_${cursor}`] = buildNativeArray(fields);
+    this[`_${cursor}`] = ['fields', buildNativeArray(fields)];
     return this;
   }
 
@@ -167,6 +178,23 @@ export default class FirestoreQueryModifiers {
           );
         }
       }
+    }
+
+    let hasArrayContains;
+
+    for (let i = 0; i < this._filters.length; i++) {
+      const filter = this._filters[i];
+      // Skip if no array-contains
+      if (filter.operator !== OPERATORS['array-contains']) {
+        continue;
+      }
+
+      if (!hasArrayContains) {
+        hasArrayContains = true;
+        continue;
+      }
+
+      throw new Error(`Invalid query. Queries only support a single array-contains filter.`);
     }
   }
 

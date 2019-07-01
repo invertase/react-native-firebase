@@ -15,6 +15,8 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 // Used to create a Blob
 const blobObject = { hello: 'world' };
 const blobString = JSON.stringify(blobObject);
@@ -22,6 +24,8 @@ const blobBuffer = Buffer.from(blobString);
 const blobBase64 = blobBuffer.toString('base64');
 
 describe('firestore().doc() -> snapshot.data()', () => {
+  before(() => wipe());
+
   it('returns undefined if documet does not exist', async () => {
     const ref = firebase.firestore().doc('v6/idonotexist');
     const snapshot = await ref.get();

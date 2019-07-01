@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.doc().set()', () => {
+  before(() => wipe());
+
   it('throws if data is not an object', () => {
     try {
       firebase

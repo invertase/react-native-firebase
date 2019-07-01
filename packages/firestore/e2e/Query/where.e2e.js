@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore().collection().where()', () => {
+  before(() => wipe());
+
   it('throws if fieldPath is invalid', () => {
     try {
       firebase
@@ -51,6 +55,20 @@ describe('firestore().collection().where()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`'opStr' is invalid`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if query contains multiple array-contains', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'array-contains', 123)
+        .where('foo.bar', 'array-contains', 123);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`Queries only support a single array-contains filter`);
       return Promise.resolve();
     }
   });

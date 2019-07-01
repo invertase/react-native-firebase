@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.doc().delete()', () => {
+  before(() => wipe());
+
   it('deletes a document', async () => {
     const ref = firebase.firestore().doc('v6/deleteme');
     await ref.set({ foo: 'bar' });

@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('./helpers');
+
 describe('firestore.SnapshotMetadata', () => {
+  before(() => wipe());
+
   it('.fromCache -> returns a boolean', async () => {
     const ref1 = firebase.firestore().collection('v6');
     const ref2 = firebase.firestore().doc('v6/idonotexist');

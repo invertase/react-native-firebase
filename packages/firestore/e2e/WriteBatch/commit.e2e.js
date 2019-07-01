@@ -15,7 +15,11 @@
  *
  */
 
-describe.only('firestore.WriteBatch.commit()', () => {
+const { wipe } = require('../helpers');
+
+describe('firestore.WriteBatch.commit()', () => {
+  before(() => wipe());
+
   it('returns a Promise', () => {
     const commit = firebase
       .firestore()

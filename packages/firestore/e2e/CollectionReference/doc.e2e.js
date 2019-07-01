@@ -15,7 +15,11 @@
  *
  */
 
+const { wipe } = require('../helpers');
+
 describe('firestore.collection().doc()', () => {
+  before(() => wipe());
+
   it('throws if path is not a document', () => {
     try {
       firebase
