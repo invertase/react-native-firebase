@@ -33,9 +33,19 @@ const namespace = 'messaging';
 const nativeModuleName = 'RNFBMessagingModule';
 
 class FirebaseMessagingModule extends FirebaseModule {
-  /**
-   * Web SDK
-   */
+  constructor(...args) {
+    super(...args);
+    this._isAutoInitEnabled = this.native.isAutoInitEnabled || true;
+  }
+
+  get isAutoInitEnabled() {
+    return this._isAutoInitEnabled;
+  }
+
+  setAutoInitEnabled(enabled) {
+    this._isAutoInitEnabled = enabled;
+    return this.native.setAutoInitEnabled(enabled);
+  }
 
   getToken(authorizedEntity, scope) {
     return this.native.getToken(
@@ -126,15 +136,15 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   sendMessage(remoteMessage) {
-    // todo
+    return this.native.sendMessage(remoteMessage.build());
   }
 
   subscribeToTopic(topic) {
-    // todo
+    return this.native.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic) {
-    // todo
+    return this.native.unsubscribeFromTopic(topic);
   }
 
   /**

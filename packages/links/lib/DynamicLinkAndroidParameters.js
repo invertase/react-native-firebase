@@ -15,7 +15,7 @@
  *
  */
 
-import MutatableParams from './MutatableParams';
+import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 
 export default class DynamicLinkAndroidParameters extends MutatableParams {
   setFallbackUrl(fallbackUrl) {

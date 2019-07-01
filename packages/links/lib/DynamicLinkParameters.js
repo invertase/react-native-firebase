@@ -15,13 +15,14 @@
  *
  */
 
+import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+
 import DynamicLinkAnalyticsParameters from './DynamicLinkAnalyticsParameters';
 import DynamicLinkAndroidParameters from './DynamicLinkAndroidParameters';
 import DynamicLinkIOSParameters from './DynamicLinkIOSParameters';
 import DynamicLinkItunesParameters from './DynamicLinkItunesParameters';
 import DynamicLinkNavigationParameters from './DynamicLinkNavigationParameters';
 import DynamicLinkSocialParameters from './DynamicLinkSocialParameters';
-import MutatableParams from './MutatableParams';
 
 export default class DynamicLinkParameters extends MutatableParams {
   constructor(link, domainURIPrefix) {
