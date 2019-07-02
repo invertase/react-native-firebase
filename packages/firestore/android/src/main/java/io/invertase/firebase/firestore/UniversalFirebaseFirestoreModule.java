@@ -52,7 +52,8 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
       // settings.cacheSizeBytes
       if (settings.containsKey("cacheSizeBytes")) {
-        int cacheSizeBytes = (int) settings.get("cacheSizeBytes");
+        Double cacheSizeBytesDouble = (Double) settings.get("cacheSizeBytes");
+        int cacheSizeBytes = cacheSizeBytesDouble.intValue();
 
         if (cacheSizeBytes == -1) {
           firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);

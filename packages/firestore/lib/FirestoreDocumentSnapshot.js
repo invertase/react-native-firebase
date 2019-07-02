@@ -16,7 +16,7 @@
  */
 
 import { isString } from '@react-native-firebase/common';
-import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreDocumentReference, { provideDocumentSnapshotClass } from './FirestoreDocumentReference';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import FirestorePath from './FirestorePath';
@@ -118,3 +118,6 @@ export default class FirestoreDocumentSnapshot {
     return thisData === otherData;
   }
 }
+
+// To avoid React Native require cycle
+provideDocumentSnapshotClass(FirestoreDocumentSnapshot);

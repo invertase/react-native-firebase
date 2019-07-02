@@ -124,9 +124,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     if (documentPath === '') {
-      throw new Error(
-        `firebase.firestore().doc(*) 'documentPath' must be a non-empty string.`,
-      );
+      throw new Error(`firebase.firestore().doc(*) 'documentPath' must be a non-empty string.`);
     }
 
     const path = this._referencePath.child(documentPath);
@@ -159,12 +157,6 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     const keys = Object.keys(settings);
 
-    if (keys.length === 0) {
-      throw new Error(
-        `firebase.firestore().settings(*) 'settings' must not be an empty object.`,
-      );
-    }
-
     const opts = ['cacheSizeBytes', 'host', 'persistence', 'ssl'];
 
     for (let i = 0; i < keys.length; i++) {
@@ -195,9 +187,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     if (!isUndefined(settings.host)) {
       if (!isString(settings.host)) {
-        throw new Error(
-          `firebase.firestore().settings(*) 'settings.host' must be a string value.`,
-        );
+        throw new Error(`firebase.firestore().settings(*) 'settings.host' must be a string value.`);
       }
 
       if (settings.host === '') {
@@ -214,12 +204,9 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     if (!isUndefined(settings.ssl) && !isBoolean(settings.ssl)) {
-      throw new Error(
-        `firebase.firestore().settings(*) 'settings.ssl' must be a boolean value.`,
-      );
+      throw new Error(`firebase.firestore().settings(*) 'settings.ssl' must be a boolean value.`);
     }
 
-    // TODO promise or? see database
     return this.native.settings(settings);
   }
 }

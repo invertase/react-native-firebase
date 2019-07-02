@@ -22,10 +22,20 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/common';
-import FirestoreCollectionReference from './FirestoreCollectionReference';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+
 import { buildNativeMap } from './utils/serialize';
 import { parseSetOptions, parseUpdateArgs, parseSnapshotArgs } from './utils';
+
+// To avoid React Native require cycle warnings
+let FirestoreCollectionReference = null;
+export function provideCollectionReferenceClass(collectionReference) {
+  FirestoreCollectionReference = collectionReference;
+}
+
+let FirestoreDocumentSnapshot = null;
+export function provideDocumentSnapshotClass(documentSnapshot) {
+  FirestoreDocumentSnapshot = documentSnapshot;
+}
 
 export default class FirestoreDocumentReference {
   constructor(firestore, documentPath) {
@@ -43,7 +53,6 @@ export default class FirestoreDocumentReference {
 
   get parent() {
     const parentPath = this._documentPath.parent();
-    // TODO circular ref?
     return new FirestoreCollectionReference(this._firestore, parentPath);
   }
 

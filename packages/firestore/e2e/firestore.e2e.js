@@ -212,16 +212,6 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if settings is an empty object', () => {
-      try {
-        firebase.firestore().settings({});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'settings' must not be an empty object`);
-        return Promise.resolve();
-      }
-    });
-
     it('throws if passing an incorrect setting key', () => {
       try {
         firebase.firestore().settings({ foo: 'bar' });
@@ -296,8 +286,9 @@ describe('firestore()', () => {
       }
     });
 
-    xit('calls with no errors', () => {
-      // TODO
+    it('calls with no errors', async () => {
+      await firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+      await firebase.firestore().settings({});
     });
   });
 });

@@ -17,7 +17,7 @@
 
 import { generateFirestoreId, isObject } from '@react-native-firebase/common';
 import FirestoreQuery from './FirestoreQuery';
-import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestoreDocumentReference, { provideCollectionReferenceClass } from './FirestoreDocumentReference';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
 export default class FirestoreCollectionReference extends FirestoreQuery {
@@ -61,3 +61,6 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
     return new FirestoreDocumentReference(this._firestore, path);
   }
 }
+
+// To avoid React Native require cycle warnings
+provideCollectionReferenceClass(FirestoreCollectionReference);
