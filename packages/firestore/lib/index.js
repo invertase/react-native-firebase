@@ -67,13 +67,13 @@ class FirebaseFirestoreModule extends FirebaseModule {
   collection(collectionPath) {
     if (!isString(collectionPath)) {
       throw new Error(
-        `firebase.app().firestore().collection(*) 'collectionPath' must be a string value.`,
+        `firebase.firestore().collection(*) 'collectionPath' must be a string value.`,
       );
     }
 
     if (collectionPath === '') {
       throw new Error(
-        `firebase.app().firestore().collection(*) 'collectionPath' must be a non-empty string.`,
+        `firebase.firestore().collection(*) 'collectionPath' must be a non-empty string.`,
       );
     }
 
@@ -81,7 +81,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     if (!path.isCollection) {
       throw new Error(
-        `firebase.app().firestore().collection(*) 'collectionPath' must point to a collection.`,
+        `firebase.firestore().collection(*) 'collectionPath' must point to a collection.`,
       );
     }
 
@@ -91,19 +91,19 @@ class FirebaseFirestoreModule extends FirebaseModule {
   collectionGroup(collectionId) {
     if (!isString(collectionId)) {
       throw new Error(
-        `firebase.app().firestore().collectionGroup(*) 'collectionId' must be a string value.`,
+        `firebase.firestore().collectionGroup(*) 'collectionId' must be a string value.`,
       );
     }
 
     if (collectionId === '') {
       throw new Error(
-        `firebase.app().firestore().collectionGroup(*) 'collectionId' must be a non-empty string.`,
+        `firebase.firestore().collectionGroup(*) 'collectionId' must be a non-empty string.`,
       );
     }
 
     if (collectionId.indexOf('/') >= 0) {
       throw new Error(
-        `firebase.app().firestore().collectionGroup(*) 'collectionId' must not contain '/'.`,
+        `firebase.firestore().collectionGroup(*) 'collectionId' must not contain '/'.`,
       );
     }
 
@@ -120,19 +120,19 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
   doc(documentPath) {
     if (!isString(documentPath)) {
-      throw new Error(`firebase.app().firestore().doc(*) 'documentPath' must be a string value.`);
+      throw new Error(`firebase.firestore().doc(*) 'documentPath' must be a string value.`);
     }
 
     if (documentPath === '') {
       throw new Error(
-        `firebase.app().firestore().doc(*) 'documentPath' must be a non-empty string.`,
+        `firebase.firestore().doc(*) 'documentPath' must be a non-empty string.`,
       );
     }
 
     const path = this._referencePath.child(documentPath);
 
     if (!path.isDocument) {
-      throw new Error(`firebase.app().firestore().doc(*) 'documentPath' must point to a document.`);
+      throw new Error(`firebase.firestore().doc(*) 'documentPath' must point to a document.`);
     }
 
     return new FirestoreDocumentReference(this, path);
@@ -145,7 +145,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
   runTransaction(updateFunction) {
     if (!isFunction(updateFunction)) {
       throw new Error(
-        `firebase.app().firestore().runTransaction(*) 'updateFunction' must be a function.`,
+        `firebase.firestore().runTransaction(*) 'updateFunction' must be a function.`,
       );
     }
 
@@ -154,14 +154,14 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
   settings(settings) {
     if (!isObject(settings)) {
-      throw new Error(`firebase.app().firestore().settings(*) 'settings' must be an object.`);
+      throw new Error(`firebase.firestore().settings(*) 'settings' must be an object.`);
     }
 
     const keys = Object.keys(settings);
 
     if (keys.length === 0) {
       throw new Error(
-        `firebase.app().firestore().settings(*) 'settings' must not be an empty object.`,
+        `firebase.firestore().settings(*) 'settings' must not be an empty object.`,
       );
     }
 
@@ -171,7 +171,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       const key = keys[i];
       if (!opts.includes(key)) {
         throw new Error(
-          `firebase.app().firestore().settings(*) 'settings.${key}' is not a valid settings field.`,
+          `firebase.firestore().settings(*) 'settings.${key}' is not a valid settings field.`,
         );
       }
     }
@@ -179,7 +179,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     if (!isUndefined(settings.cacheSizeBytes)) {
       if (!isNumber(settings.cacheSizeBytes)) {
         throw new Error(
-          `firebase.app().firestore().settings(*) 'settings.cacheSizeBytes' must be a number value.`,
+          `firebase.firestore().settings(*) 'settings.cacheSizeBytes' must be a number value.`,
         );
       }
 
@@ -188,7 +188,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
         settings.cacheSizeBytes < 1048576 // 1MB
       ) {
         throw new Error(
-          `firebase.app().firestore().settings(*) 'settings.cacheSizeBytes' the minimum cache size is 1048576 bytes (1MB).`,
+          `firebase.firestore().settings(*) 'settings.cacheSizeBytes' the minimum cache size is 1048576 bytes (1MB).`,
         );
       }
     }
@@ -196,26 +196,26 @@ class FirebaseFirestoreModule extends FirebaseModule {
     if (!isUndefined(settings.host)) {
       if (!isString(settings.host)) {
         throw new Error(
-          `firebase.app().firestore().settings(*) 'settings.host' must be a string value.`,
+          `firebase.firestore().settings(*) 'settings.host' must be a string value.`,
         );
       }
 
       if (settings.host === '') {
         throw new Error(
-          `firebase.app().firestore().settings(*) 'settings.host' must not be an empty string.`,
+          `firebase.firestore().settings(*) 'settings.host' must not be an empty string.`,
         );
       }
     }
 
     if (!isUndefined(settings.persistence) && !isBoolean(settings.persistence)) {
       throw new Error(
-        `firebase.app().firestore().settings(*) 'settings.persistence' must be a boolean value.`,
+        `firebase.firestore().settings(*) 'settings.persistence' must be a boolean value.`,
       );
     }
 
     if (!isUndefined(settings.ssl) && !isBoolean(settings.ssl)) {
       throw new Error(
-        `firebase.app().firestore().settings(*) 'settings.ssl' must be a boolean value.`,
+        `firebase.firestore().settings(*) 'settings.ssl' must be a boolean value.`,
       );
     }
 

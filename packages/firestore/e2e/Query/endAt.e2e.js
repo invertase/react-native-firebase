@@ -126,15 +126,16 @@ describe('firestore().collection().endAt()', () => {
   });
 
   it('ends at snapshot field values', async () => {
+    // await Utils.sleep(3000);
     const colRef = firebase.firestore().collection('v6/endsAt/snapshotFields');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
 
     await Promise.all([
-      doc1.set({ foo: 1, bar: { value: 'a' } }),
-      doc2.set({ foo: 2, bar: { value: 'b' } }),
-      doc3.set({ foo: 3, bar: { value: 'c' } }),
+      doc1.set({ foo: 1, bar: { value: 3 } }),
+      doc2.set({ foo: 2, bar: { value: 2 } }),
+      doc3.set({ foo: 3, bar: { value: 1 } }),
     ]);
 
     const endAt = await doc2.get();
@@ -145,11 +146,11 @@ describe('firestore().collection().endAt()', () => {
       .get();
 
     qs.docs.length.should.eql(2);
-    qs.docs[0].id.should.eql('doc1');
+    qs.docs[0].id.should.eql('doc3');
     qs.docs[1].id.should.eql('doc2');
   });
 
-  xit('ends at snapshot', async () => {
+  it('ends at snapshot', async () => {
     const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

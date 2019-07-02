@@ -80,7 +80,14 @@ export namespace Firestore {
     /**
      * Add a new document to this collection with the specified data, assigning it a document ID automatically.
      *
-     * TODO Example
+     * #### Example
+     *
+     * ```js
+     * const documentRef = await firebase.firestore().collection('users').add({
+     *   name: 'Ada Lovelace',
+     *   age: 30,
+     * });
+     * ```
      *
      * @param data An Object containing the data for the new document.
      */
@@ -90,14 +97,140 @@ export namespace Firestore {
      * Get a DocumentReference for the document within the collection at the specified path. If no
      * path is specified, an automatically-generated unique ID will be used for the returned DocumentReference.
      *
-     * TODO Example
+     * #### Example
+     *
+     * ```js
+     * await firebase.firestore().collection('users').doc('alovelace').set({
+     *   name: 'Ada Lovelace',
+     *   age: 30,
+     * });
+     * ```
      *
      * @param documentPath A slash-separated path to a document.
      */
     doc(documentPath?: string): DocumentReference;
   }
 
-  export interface Query {}
+  /**
+   *
+   */
+  export interface Query {
+    /**
+     * Creates and returns a new Query that ends at the provided document (inclusive). The end
+     * position is relative to the order of the query. The document must contain all of the
+     * fields provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endAt(user);
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to end at.
+     */
+    endAt(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that ends at the provided fields relative to the order of the query.
+     * The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or less
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endAt(30);
+     * ```
+     *
+     * @param fieldValues The field values to end this query at, in order of the query's order by.
+     */
+    endAt(...fieldValues: any[]): Query;
+
+    /**
+     * Creates and returns a new Query that ends before the provided document (exclusive). The end
+     * position is relative to the order of the query. The document must contain all of the fields
+     * provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to, but not including, a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endBefore(user);
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to end before.
+     */
+    endBefore(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that ends before the provided fields relative to the order of
+     * the query. The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 29 or less
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endBefore(30);
+     * ```
+     *
+     * @param fieldValues The field values to end this query before, in order of the query's order by.
+     */
+    endBefore(...fieldValues: any[]): Query;
+
+    get(options?: GetOptions): Promise<QuerySnapshot>;
+
+    isEqual(other: Query): boolean;
+
+    /**
+     * Creates and returns a new Query where the results are limited to the specified number of documents.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get 10 users in order of age
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .limit(10)
+     *   .get();
+     * ```
+     *
+     * @param limit The maximum number of items to return.
+     */
+    limit(limit: number): Query;
+
+    onSnapshot(): Function;
+
+    /**
+     * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of ascending.
+     *
+     * * #### Example
+     *
+     * @param fieldPath
+     * @param directionStr
+     */
+    orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection): Query;
+  }
 
   export interface DocumentReference {
     /**
@@ -123,7 +256,11 @@ export namespace Firestore {
     /**
      * Gets a `CollectionReference` instance that refers to the collection at the specified path.
      *
-     * TODO Example
+     * #### Example
+     *
+     * ```js
+     * const collectionRef = firebase.firestore().doc('users/alovelace').collection('orders');
+     * ```
      *
      * @param collectionPath A slash-separated path to a collection.
      */
@@ -131,6 +268,12 @@ export namespace Firestore {
 
     /**
      * Deletes the document referred to by this DocumentReference.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.firestore().doc('users/alovelace').delete();
+     * ```
      *
      * The Promise is resolved once the document has been successfully deleted from the backend
      * (Note that it won't resolve while you're offline).
@@ -197,6 +340,8 @@ export namespace Firestore {
     update(field: string | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
   }
 
+  export interface QuerySnapshot {}
+
   export interface DocumentSnapshot {}
 
   export interface DocumentData {}
@@ -210,6 +355,8 @@ export namespace Firestore {
   export interface FieldPath {}
 
   export interface FieldValue {}
+
+  export interface OrderByDirection {}
 
   export interface Statics {}
 
@@ -235,14 +382,18 @@ export namespace Firestore {
    *
    */
   export class Module extends ReactNativeFirebaseModule {
+    /**
+     *
+     */
     batch(): WriteBatch;
+
     collection(collectionPath: string): CollectionReference;
     collectionGroup(collectionId: string): Query;
     disableNetwork(): Promise<void>;
     doc(documentPath: string): DocumentReference;
     enableNetwork(): Promise<void>;
     runTransaction(): Promise<void>; // TODO
-    settings(settings: Settings): Promise<void>; // TODO promise or not?
+    settings(settings: Settings): Promise<void>;
   }
 }
 

@@ -62,7 +62,7 @@ public class UniversalFirebaseFirestoreException extends Exception {
         break;
       case FAILED_PRECONDITION:
         code = "failed-precondition";
-        message = "Operation was rejected because the system is not in a state required for the operation's execution.";
+        message = "Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
         break;
       case INTERNAL:
         code = "internal";

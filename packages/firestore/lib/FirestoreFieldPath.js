@@ -27,7 +27,7 @@ export default class FirestoreFieldPath {
   constructor(...segments) {
     if (segments.length === 0) {
       throw new Error(
-        `firebase.app().firestore.FieldPath cannot construct FieldPath with no segments.`,
+        `firebase.firestore.FieldPath cannot construct FieldPath with no segments.`,
       );
     }
 
@@ -35,7 +35,7 @@ export default class FirestoreFieldPath {
       const segment = segments[i];
       if (!isString(segment) || segment === '') {
         throw new Error(
-          `firebase.app().firestore.FieldPath invalid segment at index ${i}, expected a non-empty string.`,
+          `firebase.firestore.FieldPath invalid segment at index ${i}, expected a non-empty string.`,
         );
       }
     }
@@ -46,7 +46,7 @@ export default class FirestoreFieldPath {
   isEqual(other) {
     if (!(other instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.app().firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.`,
+        `firebase.firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.`,
       );
     }
 

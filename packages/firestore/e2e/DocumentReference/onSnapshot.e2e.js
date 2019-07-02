@@ -17,7 +17,7 @@
 
 const { wipe } = require('../helpers');
 
-describe.only('firestore().doc().onSnapshot()', () => {
+describe('firestore().doc().onSnapshot()', () => {
   before(() => wipe());
 
   it('throws if no arguments are provided', () => {

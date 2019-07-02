@@ -125,7 +125,7 @@ describe('firestore().collection().where()', () => {
       .firestore()
       .collection('v6')
       .where('foo.bar', '>', 123)
-      .where('foo.bar', '>', 1234);
+      .where(new firebase.firestore.FieldPath('foo', 'bar'), '>', 1234);
   });
 
   it('returns with where equal filter', async () => {

@@ -127,7 +127,7 @@ describe('firestore()', () => {
     });
   });
 
-    describe('collectionGroup()', () => {
+  describe('collectionGroup()', () => {
     it('throws if id is not a string', () => {
       try {
         firebase.firestore().collectionGroup(123);
@@ -162,6 +162,34 @@ describe('firestore()', () => {
       const query = firebase.firestore().collectionGroup('foo');
       should.equal(query.constructor.name, 'FirestoreQuery');
     });
+
+    it('performs a collection group query', async () => {
+      const docRef1 = firebase.firestore().doc('v6/collectionGroup1');
+      const docRef2 = firebase.firestore().doc('v6/collectionGroup2');
+      const docRef3 = firebase.firestore().doc('v6/collectionGroup3');
+
+      await Promise.all([
+        docRef1.collection('collectionGroup').add({ value: 1 }),
+        docRef1.collection('collectionGroup').add({ value: 2 }),
+
+        docRef2.collection('collectionGroup').add({ value: 1 }),
+        docRef2.collection('collectionGroup').add({ value: 2 }),
+
+        docRef3.collection('collectionGroup').add({ value: 1 }),
+        docRef3.collection('collectionGroup').add({ value: 2 }),
+      ]);
+
+      const querySnapshot = await firebase
+        .firestore()
+        .collectionGroup('collectionGroup')
+        .where('value', '==', 2)
+        .get();
+
+      querySnapshot.size.should.eql(3);
+      querySnapshot.forEach(ds => {
+        ds.data().value.should.eql(2);
+      });
+    });
   });
 
   describe('disableNetwork() & enableNetwork()', () => {
@@ -171,9 +199,7 @@ describe('firestore()', () => {
     });
   });
 
-  xdescribe('runTransaction()', () => {
-
-  });
+  xdescribe('runTransaction()', () => {});
 
   describe('settings()', () => {
     it('throws if settings is not an object', () => {

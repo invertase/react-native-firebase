@@ -57,7 +57,7 @@ export default class FirestoreQuerySnapshot {
   forEach(callback, thisArg) {
     if (!isFunction(callback)) {
       throw new Error(
-        `firebase.app().firestore() QuerySnapshot.forEach(*) 'callback' expected a function.`,
+        `firebase.firestore() QuerySnapshot.forEach(*) 'callback' expected a function.`,
       );
     }
 
@@ -69,7 +69,32 @@ export default class FirestoreQuerySnapshot {
   }
 
   isEqual(other) {
-    // TODO validate
-    return false;
+    if (!(other instanceof FirestoreQuerySnapshot)) {
+      throw new Error(
+        `firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.`,
+      );
+    }
+
+    // Simple checks first
+    if (
+      this.empty !== other.empty ||
+      this.size !== other.size ||
+      !this.metadata.isEqual(other.metadata)
+    ) {
+      return false;
+    }
+
+    // Expensive check
+    // Each doc must be in order & have the same data
+    for (let i = 0; i < this.docs.length; i++) {
+      const thisDoc = this.docs[i];
+      const otherDoc = other.docs[i];
+
+      if (!thisDoc.isEqual(otherDoc)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

@@ -21,7 +21,9 @@ describe('firestore.QuerySnapshot', () => {
   before(() => wipe());
 
   it('is returned from a collection get()', async () => {
-    const snapshot = await firebase.firestore().collection('v6')
+    const snapshot = await firebase
+      .firestore()
+      .collection('v6')
       .get();
 
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
@@ -29,7 +31,9 @@ describe('firestore.QuerySnapshot', () => {
 
   it('is returned from a collection onSnapshot()', async () => {
     const callback = sinon.spy();
-    firebase.firestore().collection('v6')
+    firebase
+      .firestore()
+      .collection('v6')
       .onSnapshot(callback);
     await Utils.sleep(800);
     callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
@@ -132,8 +136,85 @@ describe('firestore.QuerySnapshot', () => {
     });
   });
 
-  // TODO
-  xdescribe('isEqual()', () => {
+  describe('isEqual()', () => {
+    it('throws if other is not a QuerySnapshot', async () => {
+      try {
+        const qs = await firebase
+          .firestore()
+          .collection('v6')
+          .get();
+        qs.isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'other' expected a QuerySnapshot instance`);
+        return Promise.resolve();
+      }
+    });
 
+    it('returns false if not equal (simple checks)', async () => {
+      const colRef = firebase.firestore().collection('v6');
+      // Ensure a doc exists
+      await colRef.add({});
+
+      const qs = await colRef.get();
+
+      const querySnap1 = await firebase
+        .firestore()
+        .collection('v6/querysnapshot/querySnapshotIsEqual')
+        .get();
+
+      const eq1 = qs.isEqual(querySnap1);
+
+      eq1.should.be.False();
+    });
+
+    it('returns false if not equal (expensive checks)', async () => {
+      const colRef = firebase.firestore().collection('v6/querysnapshot/querySnapshotIsEqual-False');
+      // Ensure a doc exists
+      const docRef = colRef.doc('firstdoc');
+      await docRef.set({
+        foo: 'bar',
+        bar: {
+          foo: 1,
+        },
+      });
+
+      // Grab snapshot
+      const qs1 = await colRef.get();
+
+      // Update same collection
+      await docRef.update({
+        bar: {
+          foo: 2,
+        },
+      });
+
+      const qs2 = await colRef.get();
+
+      const eq1 = qs1.isEqual(qs2);
+
+      eq1.should.be.False();
+    });
+
+    it('returns true when equal', async () => {
+      const colRef = firebase.firestore().collection('v6/querysnapshot/querySnapshotIsEqual-True');
+
+      await Promise.all([
+        colRef.add({ foo: 'bar' }),
+        colRef.add({ foo: 1 }),
+        colRef.add({
+          foo: {
+            foo: 'bar',
+          },
+        }),
+      ]);
+
+      const qs1 = await colRef.get();
+      const qs2 = await colRef.get();
+
+      const eq = qs1.isEqual(qs2);
+
+      eq.should.be.True();
+    });
   });
 });

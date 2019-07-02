@@ -18,6 +18,7 @@
 import { isNumber } from '@react-native-firebase/common';
 import { flatten } from '@react-native-firebase/common/lib/deeps';
 import { generateNativeData, buildNativeArray, buildNativeMap } from './utils/serialize';
+import FirestoreFieldPath from './FirestoreFieldPath';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -77,21 +78,8 @@ export default class FirestoreQueryModifiers {
     return this._type;
   }
 
-  setDocumentSnapshotCursor(cursor, documentSnapshot) {
-    // Creates a flat object of key (nested . paths) and values
-    const flattenedSnapshot = flatten(documentSnapshot.data());
-
-    this[`_${cursor}`] = [
-      'snapshot',
-      Object.keys(flattenedSnapshot),
-      buildNativeArray(Object.values(flattenedSnapshot)),
-    ];
-
-    return this;
-  }
-
   setFieldsCursor(cursor, fields) {
-    this[`_${cursor}`] = ['fields', buildNativeArray(fields)];
+    this[`_${cursor}`] = buildNativeArray(fields);
     return this;
   }
 
@@ -216,18 +204,37 @@ export default class FirestoreQueryModifiers {
     return this;
   }
 
-  validateOrderBy(field) {
+  validateOrderBy() {
+    // Ensure order hasn't been called on the same field
+    if (this._orders.length > 1) {
+      const orders = this._orders.map($ => $.fieldPath);
+      const set = new Set(orders);
+
+      if (set.size !== orders.length) {
+        throw new Error(`Invalid query. Order by clause cannot contain duplicate fields.`);
+      }
+    }
+
     // Skip if no where filters or already validated
-    if (!this._filters.length || this._orders.length > 0) {
+    if (this._filters.length === 0 || this._orders.length > 1) {
       return;
     }
 
-    // TODO validate
-    // FirebaseError: Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field 'foo' and so you must also use 'foo' as your first Query.orderBy(), but your first Query.orderBy() is on field 'food' instead.
+    // Ensure the first order field path is equal to the inequality filter field path
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
+      // Inequality filter
       if (INEQUALITY[filter.operator]) {
-        if (filter.fieldPath.type === 'string') {
+        if (filter.fieldPath !== this._orders[0].fieldPath) {
+          throw new Error(
+            `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${
+              filter.fieldPath
+            }' and so you must also use '${
+              filter.fieldPath
+            }' as your first Query.orderBy(), but your first Query.orderBy() is on field '${
+              this._orders[0].fieldPath
+            }' instead`,
+          );
         }
       }
     }

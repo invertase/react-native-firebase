@@ -90,7 +90,6 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-
     final EventListener<DocumentSnapshot> listener = (documentSnapshot, exception) -> {
       if (exception != null) {
         ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);

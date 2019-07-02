@@ -26,6 +26,7 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
 
   public static final String COLLECTION_EVENT_SYNC = "firestore_collection_sync_event";
   public static final String DOCUMENT_EVENT_SYNC = "firestore_document_sync_event";
+  public static final String TRANSCTION_EVENT_SYNC = "firestore_transaction_event";
 
   private String eventName;
   private WritableMap eventBody;

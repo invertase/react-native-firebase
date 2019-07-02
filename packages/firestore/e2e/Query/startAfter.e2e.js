@@ -17,7 +17,7 @@
 
 const { wipe } = require('../helpers');
 
-describe.only('firestore().collection().startAfter()', () => {
+describe('firestore().collection().startAfter()', () => {
   before(() => wipe());
 
   it('throws if no argument provided', () => {
@@ -103,7 +103,7 @@ describe.only('firestore().collection().startAfter()', () => {
     }
   });
 
-  it.only('starts after field values', async () => {
+  it('starts after field values', async () => {
     const colRef = firebase.firestore().collection('v6/startAfter/collection');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -147,7 +147,7 @@ describe.only('firestore().collection().startAfter()', () => {
     qs.docs[0].id.should.eql('doc3');
   });
 
-  xit('startAfter snapshot', async () => {
+  it('startAfter snapshot', async () => {
     const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

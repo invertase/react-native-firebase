@@ -24,7 +24,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/common';
-import FirestoreFieldPath from '../FirestoreFieldPath';
+import FirestoreFieldPath, { fromDotSeparatedString } from '../FirestoreFieldPath';
 
 export function extractFieldPathData(data, segmenets) {
   if (!isObject(data)) {
@@ -105,6 +105,16 @@ export function parseSetOptions(options) {
         throw new Error(
           `'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
         );
+      }
+
+      let path = field;
+
+      if (isString(path)) {
+        try {
+          path = fromDotSeparatedString(field);
+        } catch (e) {
+          throw new Error(`'options.mergeFields' ${e.message}`);
+        }
       }
 
       if (field instanceof FirestoreFieldPath) {

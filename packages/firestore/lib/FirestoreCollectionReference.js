@@ -41,7 +41,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
 
   add(data) {
     if (!isObject(data)) {
-      throw new Error(`firebase.app().firestore().collection().add(*) 'data' must be an object.`);
+      throw new Error(`firebase.firestore().collection().add(*) 'data' must be an object.`);
     }
 
     const documentRef = this.doc();
@@ -54,7 +54,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
 
     if (!path.isDocument) {
       throw new Error(
-        `firebase.app().firestore().collection().doc(*) 'documentPath' must point to a document.`,
+        `firebase.firestore().collection().doc(*) 'documentPath' must point to a document.`,
       );
     }
 

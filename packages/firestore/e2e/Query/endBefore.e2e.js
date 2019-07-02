@@ -17,7 +17,7 @@
 
 const { wipe } = require('../helpers');
 
-describe('firestore().collection().starAt()', () => {
+describe('firestore().collection().endBefore()', () => {
   before(() => wipe());
 
   it('throws if no argument provided', () => {
@@ -25,7 +25,7 @@ describe('firestore().collection().starAt()', () => {
       firebase
         .firestore()
         .collection('v6')
-        .startAt();
+        .endBefore();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -41,7 +41,7 @@ describe('firestore().collection().starAt()', () => {
         .firestore()
         .collection('v6')
         .orderBy('foo')
-        .startAt('bar', 'baz');
+        .endBefore('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`The number of arguments must be less than or equal`);
@@ -58,7 +58,7 @@ describe('firestore().collection().starAt()', () => {
       firebase
         .firestore()
         .collection('v6')
-        .startAt(doc, 'baz');
+        .endBefore(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`Expected DocumentSnapshot or list of field values`);
@@ -75,7 +75,7 @@ describe('firestore().collection().starAt()', () => {
       firebase
         .firestore()
         .collection('v6')
-        .startAt(doc);
+        .endBefore(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`Can't use a DocumentSnapshot that doesn't exist`);
@@ -93,7 +93,7 @@ describe('firestore().collection().starAt()', () => {
         .firestore()
         .collection('v6')
         .orderBy('foo.baz')
-        .startAt(snap);
+        .endBefore(snap);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -103,8 +103,8 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('starts at field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAt/collection');
+  it('ends before field values', async () => {
+    const colRef = firebase.firestore().collection('v6/endBefore/collection');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -117,52 +117,49 @@ describe('firestore().collection().starAt()', () => {
 
     const qs = await colRef
       .orderBy('bar.value', 'desc')
-      .startAt(2)
+      .endBefore(2)
       .get();
 
-    qs.docs.length.should.eql(2);
-    qs.docs[0].id.should.eql('doc2');
-    qs.docs[1].id.should.eql('doc1');
+    qs.docs.length.should.eql(1);
+    qs.docs[0].id.should.eql('doc3');
   });
 
-  it('starts at snapshot field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAt/snapshotFields');
+  it('ends before snapshot field values', async () => {
+    const colRef = firebase.firestore().collection('v6/endBefore/snapshotFields');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
 
     await Promise.all([
-      doc1.set({ foo: 1, bar: { value: 'a' } }),
-      doc2.set({ foo: 2, bar: { value: 'b' } }),
-      doc3.set({ foo: 3, bar: { value: 'c' } }),
+      doc1.set({ foo: 1, bar: { value: 3 } }),
+      doc2.set({ foo: 2, bar: { value: 2 } }),
+      doc3.set({ foo: 3, bar: { value: 1 } }),
     ]);
 
-    const startAt = await doc2.get();
+    const endBefore = await doc2.get();
 
     const qs = await colRef
       .orderBy('bar.value')
-      .startAt(startAt)
+      .endBefore(endBefore)
       .get();
 
-    qs.docs.length.should.eql(2);
-    qs.docs[0].id.should.eql('doc2');
-    qs.docs[1].id.should.eql('doc3');
+    qs.docs.length.should.eql(1);
+    qs.docs[0].id.should.eql('doc3');
   });
 
-  it('startAt at snapshot', async () => {
-    const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
+  it('ends before snapshot', async () => {
+    const colRef = firebase.firestore().collection('v6/endBefore/snapshot');
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
 
     await Promise.all([doc1.set({ foo: 1 }), doc2.set({ foo: 1 }), doc3.set({ foo: 1 })]);
 
-    const startAt = await doc2.get();
+    const endBefore = await doc2.get();
 
-    const qs = await colRef.startAt(startAt).get();
+    const qs = await colRef.endBefore(endBefore).get();
 
-    qs.docs.length.should.eql(2);
-    qs.docs[0].id.should.eql('doc2');
-    qs.docs[1].id.should.eql('doc3');
+    qs.docs.length.should.eql(1);
+    qs.docs[0].id.should.eql('doc1');
   });
 });

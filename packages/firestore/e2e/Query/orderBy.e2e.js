@@ -33,6 +33,19 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
+  it('throws if fieldPath string is invalid', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('foo')
+        .orderBy('.foo.bar');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`'fieldPath' Invalid field path`);
+      return Promise.resolve();
+    }
+  });
+
   it('throws if direction string is not valid', () => {
     try {
       firebase
@@ -46,12 +59,16 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  xit('throws if a startAt()/startAfter() has already been set', () => {
+  it('throws if a startAt()/startAfter() has already been set', async () => {
     try {
+      const doc = firebase.firestore().doc('v6/startATstartAfter');
+      await doc.set({ foo: 'bar' });
+      const snapshot = await doc.get();
+
       firebase
         .firestore()
         .collection('foo')
-        .startAt('123')
+        .startAt(snapshot)
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -60,16 +77,48 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  xit('throws if a endAt()/endBefore() has already been set', () => {
+  it('throws if a endAt()/endBefore() has already been set', async () => {
     try {
+      const doc = firebase.firestore().doc('v6/endAtendBefore');
+      await doc.set({ foo: 'bar' });
+      const snapshot = await doc.get();
+
       firebase
         .firestore()
         .collection('foo')
-        .startAt('123')
+        .endAt(snapshot)
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(`You must not call endAt() or endBefore()`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if path is not the same as an inequality query', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('foo')
+        .where('foo', '>', 123)
+        .orderBy('bar');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`You have a where filter with an inequality`);
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if duplicating the order field path', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('foo')
+        .orderBy('foo.bar')
+        .orderBy('foo.bar');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`Order by clause cannot contain duplicate fields`);
       return Promise.resolve();
     }
   });
@@ -94,7 +143,7 @@ describe('firestore().collection().orderBy()', () => {
     await colRef.add({ value: 3 });
     await colRef.add({ value: 2 });
 
-    const snapshot = await colRef.orderBy('value', 'desc').get();
+    const snapshot = await colRef.orderBy(new firebase.firestore.FieldPath('value'), 'desc').get();
     const expected = [3, 2, 1];
 
     snapshot.forEach((docSnap, i) => {

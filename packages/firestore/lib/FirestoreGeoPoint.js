@@ -21,27 +21,27 @@ export default class FirestoreGeoPoint {
   constructor(latitude, longitude) {
     if (isUndefined(latitude) || isUndefined(longitude)) {
       throw new Error(
-        `firebase.app().firestore.GeoPoint constructor expected latitude and longitude values.`,
+        `firebase.firestore.GeoPoint constructor expected latitude and longitude values.`,
       );
     }
 
     if (!isNumber(latitude)) {
-      throw new Error(`firebase.app().firestore.GeoPoint 'latitude' must be a number value.`);
+      throw new Error(`firebase.firestore.GeoPoint 'latitude' must be a number value.`);
     }
 
     if (!isNumber(longitude)) {
-      throw new Error(`firebase.app().firestore.GeoPoint 'longitude' must be a number value.`);
+      throw new Error(`firebase.firestore.GeoPoint 'longitude' must be a number value.`);
     }
 
     if (!isFinite(latitude) || latitude < -90 || latitude > 90) {
       throw new Error(
-        `firebase.app().firestore.GeoPoint 'longitude' must be a number between -90 and 90, but was: ${latitude}.`,
+        `firebase.firestore.GeoPoint 'longitude' must be a number between -90 and 90, but was: ${latitude}.`,
       );
     }
 
     if (!isFinite(longitude) || longitude < -180 || longitude > 180) {
       throw new Error(
-        `firebase.app().firestore.GeoPoint 'longitude' must be a number between -180 and 180, but was: ${longitude}.`,
+        `firebase.firestore.GeoPoint 'longitude' must be a number between -180 and 180, but was: ${longitude}.`,
       );
     }
 
@@ -60,7 +60,7 @@ export default class FirestoreGeoPoint {
   isEqual(other) {
     if (!(other instanceof FirestoreGeoPoint)) {
       throw new Error(
-        `firebase.app().firestore.GeoPoint.isEqual(*) 'other' expected an instance of GeoPoint.`,
+        `firebase.firestore.GeoPoint.isEqual(*) 'other' expected an instance of GeoPoint.`,
       );
     }
 

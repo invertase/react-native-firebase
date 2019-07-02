@@ -52,7 +52,7 @@ export default class FirestoreDocumentSnapshot {
     // if (!isUndefined(options)) {
     //   if (!isObject(options)) {
     //     throw new Error(
-    //       `firebase.app().firestore() DocumentSnapshot.data(*) 'options' expected an object if defined.`,
+    //       `firebase.firestore() DocumentSnapshot.data(*) 'options' expected an object if defined.`,
     //     );
     //   }
     //
@@ -63,7 +63,7 @@ export default class FirestoreDocumentSnapshot {
     //     options.serverTimestamps !== 'none'
     //   ) {
     //     throw new Error(
-    //       `firebase.app().firestore() DocumentSnapshot.data(*) 'options.serverTimestamps' expected one of 'estimate', 'previous' or 'none'.`,
+    //       `firebase.firestore() DocumentSnapshot.data(*) 'options.serverTimestamps' expected one of 'estimate', 'previous' or 'none'.`,
     //     );
     //   }
     // }
@@ -75,7 +75,7 @@ export default class FirestoreDocumentSnapshot {
   get(fieldPath, options) {
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.app().firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.`,
+        `firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.`,
       );
     }
 
@@ -85,9 +85,7 @@ export default class FirestoreDocumentSnapshot {
       try {
         path = fromDotSeparatedString(fieldPath);
       } catch (e) {
-        throw new Error(
-          `firebase.app().firestore() DocumentSnapshot.get(*) 'fieldPath' ${e.message}.`,
-        );
+        throw new Error(`firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' ${e.message}.`);
       }
     } else {
       // Is already field path
@@ -98,6 +96,23 @@ export default class FirestoreDocumentSnapshot {
   }
 
   isEqual(other) {
-    // todo
+    if (!(other instanceof FirestoreDocumentSnapshot)) {
+      throw new Error(
+        `firebase.firestore() DocumentSnapshot.isEqual(*) 'other' expected a DocumentSnapshot instance.`,
+      );
+    }
+
+    if (
+      this.exists !== other.exists ||
+      !this.metadata.isEqual(other.metadata) ||
+      !this.ref.isEqual(other.ref)
+    ) {
+      return false;
+    }
+
+    const thisData = JSON.stringify(this.data());
+    const otherData = JSON.stringify(other.data());
+
+    return thisData === otherData;
   }
 }

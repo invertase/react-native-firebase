@@ -71,7 +71,9 @@ export default class FirestoreFieldValue {
       validateArrayElements(elements);
     } catch (e) {
       throw new Error(
-        `firebase.firestore.FieldValue.arrayUnion(*) 'elements' called with invalid data. ${e.message}`,
+        `firebase.firestore.FieldValue.arrayUnion(*) 'elements' called with invalid data. ${
+          e.message
+        }`,
       );
     }
 
@@ -83,10 +85,25 @@ export default class FirestoreFieldValue {
       validateArrayElements(elements);
     } catch (e) {
       throw new Error(
-        `firebase.firestore.FieldValue.arrayRemove(*) 'elements' called with invalid data. ${e.message}`,
+        `firebase.firestore.FieldValue.arrayRemove(*) 'elements' called with invalid data. ${
+          e.message
+        }`,
       );
     }
 
     return new FirestoreFieldValue(true, TypeFieldValueRemove, buildNativeArray(elements));
+  }
+
+  isEqual(other) {
+    if (!(other instanceof FirestoreFieldValue)) {
+      throw new Error(
+        `firebase.firestore.FieldValue.isEqual(*) 'other' expected a FieldValue instance.`,
+      );
+    }
+
+    return (
+      this._type === other._type &&
+      JSON.stringify(this._elements) === JSON.stringify(other._elements)
+    );
   }
 }

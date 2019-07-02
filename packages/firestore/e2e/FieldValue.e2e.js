@@ -30,6 +30,41 @@ describe('firestore.FieldValue', () => {
     }
   });
 
+  describe('isEqual()', () => {
+    it('throws if other is not a FieldValue', () => {
+      try {
+        firebase.firestore.FieldValue.increment(1).isEqual(1);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'other' expected a FieldValue instance`);
+        return Promise.resolve();
+      }
+    });
+
+    it('returns false if not equal', () => {
+      const fv = firebase.firestore.FieldValue.increment(1);
+
+      const fieldValue1 = firebase.firestore.FieldValue.increment(2);
+      const fieldValue2 = firebase.firestore.FieldValue.arrayRemove('123');
+
+      const eql1 = fv.isEqual(fieldValue1);
+      const eql2 = fv.isEqual(fieldValue2);
+
+      eql1.should.be.False();
+      eql2.should.be.False();
+    });
+
+    it('returns true if equal', () => {
+      const fv = firebase.firestore.FieldValue.arrayUnion(1, '123', 3);
+
+      const fieldValue1 = firebase.firestore.FieldValue.arrayUnion(1, '123', 3);
+
+      const eql1 = fv.isEqual(fieldValue1);
+
+      eql1.should.be.True();
+    });
+  });
+
   describe('increment()', () => {
     it('throws if value is not a number', () => {
       try {
