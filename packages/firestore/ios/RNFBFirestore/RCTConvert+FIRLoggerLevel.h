@@ -15,11 +15,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
-#import <RNFBApp/RNFBSharedUtils.h>
-#import <React/RCTBridgeModule.h>
 
-@interface RNFBFirestoreModule : NSObject <RCTBridgeModule>
-
+@interface RCTConvert (FIRLoggerLevel)
++ (FIRLoggerLevel)convertStringLogLevel:(NSString *)rawString;
 @end

@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,11 +16,13 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <Firebase/Firebase.h>
-#import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTBridgeModule.h>
+#import <Firebase/Firebase.h>
 
-@interface RNFBFirestoreModule : NSObject <RCTBridgeModule>
+@interface RNFBFirestoreCommon : NSObject
+
++ (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp;
+
++ (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 
 @end

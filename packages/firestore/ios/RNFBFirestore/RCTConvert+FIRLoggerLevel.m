@@ -15,11 +15,20 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <Firebase/Firebase.h>
-#import <RNFBApp/RNFBSharedUtils.h>
-#import <React/RCTBridgeModule.h>
+#import "RCTConvert+FIRLoggerLevel.h"
 
-@interface RNFBFirestoreModule : NSObject <RCTBridgeModule>
+@implementation RCTConvert (FIRLoggerLevel)
 
++ (FIRLoggerLevel)convertStringLogLevel:(NSString *)rawString {
+  if ([@"debug" isEqualToString:rawString]) {
+    return FIRLoggerLevelDebug;
+  } else if ([@"error" isEqualToString:rawString]) {
+    return FIRLoggerLevelError;
+  } else {
+    return FIRLoggerLevelMin;
+  }
+}
+
+RCT_CUSTOM_CONVERTER(FIRLoggerLevel, FIRLoggerLevel, [self convertStringLogLevel:[self NSString:json]]);
 @end
+
