@@ -17,16 +17,11 @@ package io.invertase.firebase.firestore;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -40,6 +35,15 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   ReactNativeFirebaseFirestoreModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
     module = new UniversalFirebaseFirestoreModule(reactContext, SERVICE_NAME);
+  }
+
+  @ReactMethod
+  public void setLogLevel(String logLevel) {
+    if ("debug".equals(logLevel) || "error".equals(logLevel)) {
+      FirebaseFirestore.setLoggingEnabled(true);
+    } else {
+      FirebaseFirestore.setLoggingEnabled(false);
+    }
   }
 
   @ReactMethod

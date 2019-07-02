@@ -48,9 +48,9 @@ export default class FirestoreQuerySnapshot {
     return this._docs.length;
   }
 
-  docChanges(options) {
-    // TODO validate
-    // TODO use options
+  docChanges() {
+    // TODO: ehesp: https://github.com/firebase/firebase-js-sdk/blob/master/packages/firestore/src/api/database.ts#L2110
+    // The web sdk supports SnapshotListenerOptions but cant work out what impact this has on the data.
     return this._changes;
   }
 

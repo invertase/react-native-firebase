@@ -15,6 +15,8 @@
  *
  */
 
+import { NativeModules } from 'react-native';
+
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';
@@ -30,7 +32,14 @@ export default {
 
   CACHE_SIZE_UNLIMITED: -1,
 
-  setLogLevel(level) {
-    // TODO
+  setLogLevel(logLevel) {
+    if (logLevel !== 'debug' && logLevel !== 'error' && logLevel !== 'silent') {
+      throw new Error(
+        `firebase.firestore.setLogLevel(*) 'logLevel' expected one of 'debug', 'error' or 'silent'`,
+      );
+    }
+
+    const native = NativeModules.RNFBFirestoreModule;
+    native.setLogLevel(logLevel);
   },
-}
+};

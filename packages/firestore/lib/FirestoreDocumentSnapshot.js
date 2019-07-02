@@ -46,7 +46,8 @@ export default class FirestoreDocumentSnapshot {
     return this._ref;
   }
 
-  data(options) {
+  data() {
+    // TODO: ehesp: Figure out how to handle this.
     // const snapshotOptions = {};
     //
     // if (!isUndefined(options)) {
@@ -68,11 +69,12 @@ export default class FirestoreDocumentSnapshot {
     //   }
     // }
 
-    // todo options
     return this._data;
   }
 
-  get(fieldPath, options) {
+  get(fieldPath) {
+    // TODO: ehesp: How are SnapshotOptions handled?
+
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
         `firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.`,

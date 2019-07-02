@@ -16,9 +16,7 @@
  */
 
 import { isNumber } from '@react-native-firebase/common';
-import { flatten } from '@react-native-firebase/common/lib/deeps';
-import { generateNativeData, buildNativeArray, buildNativeMap } from './utils/serialize';
-import FirestoreFieldPath from './FirestoreFieldPath';
+import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 const OPERATORS = {
   '==': 'EQUAL',

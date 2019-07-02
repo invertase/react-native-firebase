@@ -83,7 +83,7 @@ export default class FirestoreTransaction {
     }
 
     this._commandBuffer.push({
-      type: 'set',
+      type: 'SET',
       path: documentRef.path,
       data: buildNativeMap(data),
       options: setOptions,
@@ -109,7 +109,7 @@ export default class FirestoreTransaction {
     }
 
     this._commandBuffer.push({
-      type: 'update',
+      type: 'UPDATE',
       path: documentRef.path,
       data: buildNativeMap(data),
     });
@@ -125,7 +125,7 @@ export default class FirestoreTransaction {
     }
 
     this._commandBuffer.push({
-      type: 'delete',
+      type: 'DELETE',
       path: documentRef.path,
     });
 
