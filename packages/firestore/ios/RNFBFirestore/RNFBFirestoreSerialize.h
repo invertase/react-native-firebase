@@ -19,16 +19,24 @@
 #import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
 
-@interface RNFBFirestoreCommon : NSObject
+@interface RNFBFirestoreSerialize : NSObject
 
-+ (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp;
++ (NSDictionary *)querySnapshotToDictionary:(FIRQuerySnapshot *)snapshot;
 
-+ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
++ (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange;
 
-+ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore path:(NSString *)path type:(NSString *)type;
++ (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot;
 
-+ (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
++ (NSDictionary *)serializeDictionary:(NSDictionary *)dictionary;
 
-+ (NSArray *)getCodeAndMessage:(NSError *)error;
++ (NSArray *)serializeArray:(NSArray *)array;
+
++ (NSArray *)buildTypeMap:(id)value;
+
++ (NSDictionary *)parseNSDictionary:(FIRFirestore *)firestore dictionary:(NSDictionary *)dictionary;
+
++ (NSArray *)parseNSArray:(FIRFirestore *)firestore array:(NSArray *)array;
+
++ (id)parseTypeMap:(FIRFirestore *)firestore typeMap:(NSArray *)typeMap;
 
 @end

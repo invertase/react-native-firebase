@@ -201,7 +201,7 @@ describe('firestore()', () => {
 
   xdescribe('runTransaction()', () => {});
 
-  describe('settings()', () => {
+  xdescribe('settings()', () => {
     it('throws if settings is not an object', () => {
       try {
         firebase.firestore().settings('foo');

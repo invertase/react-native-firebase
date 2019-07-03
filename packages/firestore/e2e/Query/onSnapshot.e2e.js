@@ -246,7 +246,8 @@ describe('firestore().collection().onSnapshot()', () => {
           },
         );
 
-      await Utils.sleep(800);
+      // spyToBeCalledOnceAsync(spy: Function, timeout = 5000): Promise<void>
+      await Utils.spyToBeCalledOnceAsync(onNext); // TODO make sure you change all the other tests to use this, will fail on slower machinces
       onNext.should.be.calledOnce();
       onError.should.be.callCount(0);
       onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');

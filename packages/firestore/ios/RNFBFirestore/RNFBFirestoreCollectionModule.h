@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,19 +15,16 @@
  *
  */
 
-#import <React/RCTBridgeModule.h>
+#import <Foundation/Foundation.h>
 #import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
+#import <React/RCTBridgeModule.h>
+#import <RNFBFirestoreQuery.h>
+#import <RNFBFirestoreCommon.h>
+#import <RNFBFirestoreSerialize.h>
 
-@interface RNFBFirestoreCommon : NSObject
+static NSString *const KEY_INCLUDE_METADATA_CHANGES = @"includeMetadataChanges";
 
-+ (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp;
-
-+ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
-
-+ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore path:(NSString *)path type:(NSString *)type;
-
-+ (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
-
-+ (NSArray *)getCodeAndMessage:(NSError *)error;
+@interface RNFBFirestoreCollectionModule : NSObject <RCTBridgeModule>
 
 @end

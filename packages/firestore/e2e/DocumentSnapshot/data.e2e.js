@@ -55,7 +55,6 @@ describe('firestore().doc() -> snapshot.data()', () => {
   });
 
   it('handles all data types', async () => {
-    await Utils.sleep(3000);
     const types = {
       string: '123456',
       stringEmpty: '',

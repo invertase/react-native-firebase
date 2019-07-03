@@ -23,10 +23,21 @@
 #pragma mark -
 #pragma mark Module Setup
 
+static dispatch_queue_t firestoreQueue;
+
+- (id) init {
+  self = [super init];
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    firestoreQueue = dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+  });
+  return self;
+}
+
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+  return firestoreQueue;
 }
 
 #pragma mark -
@@ -75,9 +86,7 @@ RCT_EXPORT_METHOD(settings:
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
   FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
 
-  // TODO
-  // Make sure the dispatch queue is set correctly
-  // firestoreSettings.dispatchQueue = firestoreQueue;
+   firestoreSettings.dispatchQueue = firestoreQueue;
 
   if (settings[@"host"]) {
     firestoreSettings.host = settings[@"host"];
@@ -110,6 +119,8 @@ RCT_EXPORT_METHOD(settings:
   } else {
     firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
   }
+
+  firestore.settings = firestoreSettings;
 }
 
 @end

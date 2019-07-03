@@ -153,6 +153,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('updates an existing array', async () => {
+      await Utils.sleep(3000);
       const ref = firebase.firestore().doc('v6/arrayunion');
       await ref.set({
         foo: [1, 2],

@@ -296,8 +296,12 @@ class ReactNativeFirebaseFirestoreSerialize {
     }
 
     if (value instanceof String) {
-      typeArray.pushInt(INT_STRING);
-      typeArray.pushString((String) value);
+      if (value == "") {
+        typeArray.pushInt(INT_STRING_EMPTY);
+      } else {
+        typeArray.pushInt(INT_STRING);
+        typeArray.pushString((String) value);
+      }
       return typeArray;
     }
 

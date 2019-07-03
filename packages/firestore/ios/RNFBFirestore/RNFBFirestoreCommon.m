@@ -22,14 +22,30 @@
 @implementation RNFBFirestoreCommon
 
 + (FIRFirestore *)getFirestoreForApp
-    :(FIRApp *) app
-{
+    :(FIRApp *)app {
   return [FIRFirestore firestoreForApp:app];
+}
+
++ (FIRDocumentReference *)getDocumentForFirestore
+    :(FIRFirestore *)firestore
+                                             path:(NSString *)path {
+  return [firestore documentWithPath:path];
+}
+
++ (FIRQuery *)getQueryForFirestore
+    :(FIRFirestore *)firestore
+                              path:(NSString *)path
+                              type:(NSString *)type {
+  if ([type isEqualToString:@"collectionGroup"]) {
+    return [firestore collectionGroupWithID:path];
+  }
+
+  return [firestore collectionWithPath:path];
 }
 
 + (void)promiseRejectFirestoreException
     :(RCTPromiseRejectBlock)reject
-                                 error:(NSError *)error {
+                                  error:(NSError *)error {
   NSArray *codeAndMessage = [self getCodeAndMessage:error];
   [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
       @"code": (NSString *) codeAndMessage[0],
@@ -37,7 +53,7 @@
   }];
 }
 
-+ (NSArray *) getCodeAndMessage:(NSError *)error {
++ (NSArray *)getCodeAndMessage:(NSError *)error {
   NSString *code = @"unknown";
 
   if (error == nil) {
