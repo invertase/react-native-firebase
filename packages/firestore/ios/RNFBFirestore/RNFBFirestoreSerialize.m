@@ -22,6 +22,7 @@
 
 static NSString *const KEY_PATH = @"path";
 static NSString *const KEY_DATA = @"data";
+static NSString *const KEY_EXISTS = @"exists";
 static NSString *const KEY_CHANGES = @"changes";
 static NSString *const KEY_METADATA = @"metadata";
 static NSString *const KEY_DOCUMENTS = @"documents";
@@ -176,6 +177,7 @@ enum TYPE_MAP {
   documentMap[KEY_METADATA] = metadata;
 
   documentMap[KEY_PATH] = snapshot.reference.path;
+  documentMap[KEY_EXISTS] = @(snapshot.exists);
 
   if (snapshot.exists) {
     documentMap[KEY_DATA] = [self serializeDictionary:snapshot.data];

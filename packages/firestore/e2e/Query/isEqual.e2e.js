@@ -33,9 +33,18 @@ describe('firestore().collection().isEqual()', () => {
     const query = firebase.firestore().collection('v6');
 
     const q1 = firebase.firestore(firebase.app('secondaryFromNative')).collection('v6');
-    const q2 = firebase.firestore().collection('v6').where('foo', '==', 'bar');
-    const q3 = firebase.firestore().collection('v6').orderBy('foo');
-    const q4 = firebase.firestore().collection('v6').limit(3);
+    const q2 = firebase
+      .firestore()
+      .collection('v6')
+      .where('foo', '==', 'bar');
+    const q3 = firebase
+      .firestore()
+      .collection('v6')
+      .orderBy('foo');
+    const q4 = firebase
+      .firestore()
+      .collection('v6')
+      .limit(3);
 
     const eql1 = query.isEqual(q1);
     const eql2 = query.isEqual(q2);

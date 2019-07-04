@@ -26,7 +26,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.common.util.CollectionUtils;
 import com.google.common.collect.Iterables;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
@@ -40,11 +39,8 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SnapshotMetadata;
-import com.google.protobuf.DoubleValue;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +77,7 @@ class ReactNativeFirebaseFirestoreSerialize {
   private static final String TYPE = "type";
   private static final String KEY_DATA = "data";
   private static final String KEY_PATH = "path";
+  private static final String KEY_EXISTS = "exists";
   private static final String KEY_META = "metadata";
   private static final String KEY_CHANGES = "changes";
   private static final String KEY_OPTIONS = "options";
@@ -112,8 +109,12 @@ class ReactNativeFirebaseFirestoreSerialize {
 
     documentMap.putArray(KEY_META, metadata);
     documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
+    documentMap.putBoolean(KEY_EXISTS, documentSnapshot.exists());
+
     if (documentSnapshot.exists()) {
-      documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
+      if (documentSnapshot.getData() != null) {
+        documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData()));
+      }
     }
 
     return documentMap;
@@ -138,14 +139,14 @@ class ReactNativeFirebaseFirestoreSerialize {
       // If not listening to metadata changes, send the data back to JS land with a flag
       // indicating the data does not include these changes
       writableMap.putBoolean("excludesMetadataChanges", true);
-      writableMap.putArray("changes", documentChangesToWritableArray(documentChangesList, null));
+      writableMap.putArray(KEY_CHANGES, documentChangesToWritableArray(documentChangesList, null));
     } else {
       // If listening to metadata changes, get the changes list with document changes array.
       // To indicate whether a document change was because of metadata change, we check whether
       // its in the raw list by document key.
       writableMap.putBoolean("excludesMetadataChanges", false);
       List<DocumentChange> documentMetadataChangesList = querySnapshot.getDocumentChanges(MetadataChanges.INCLUDE);
-      writableMap.putArray("changes", documentChangesToWritableArray(documentMetadataChangesList, documentChangesList));
+      writableMap.putArray(KEY_CHANGES, documentChangesToWritableArray(documentMetadataChangesList, documentChangesList));
     }
 
     SnapshotMetadata snapshotMetadata = querySnapshot.getMetadata();
@@ -444,7 +445,7 @@ class ReactNativeFirebaseFirestoreSerialize {
       case INT_BOOLEAN_TRUE:
         return true;
       case INT_BOOLEAN_FALSE:
-          return false;
+        return false;
       case INT_NUMBER:
         return typeArray.getDouble(1);
       case INT_STRING:

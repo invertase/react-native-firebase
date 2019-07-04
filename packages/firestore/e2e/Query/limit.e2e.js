@@ -43,9 +43,7 @@ describe('firestore().collection().limit()', () => {
   });
 
   it('limits the number of documents', async () => {
-    const colRef = firebase
-      .firestore()
-      .collection('v6');
+    const colRef = firebase.firestore().collection('v6');
 
     // Add 3
     await colRef.add({});

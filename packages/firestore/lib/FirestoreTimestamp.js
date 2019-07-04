@@ -48,15 +48,11 @@ export default class FirestoreTimestamp {
     }
 
     if (nanoseconds < 0) {
-      throw new Error(
-        `firebase.firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`,
-      );
+      throw new Error(`firebase.firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`);
     }
 
     if (nanoseconds >= 1e9) {
-      throw new Error(
-        `firebase.firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`,
-      );
+      throw new Error(`firebase.firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`);
     }
 
     // Midnight at the beginning of 1/1/1 is the earliest Firestore supports.

@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(documentBatch:
 }
 
 - (void)sendSnapshotEvent:(FIRApp *)firApp
-    listenerId:(nonnull NSNumber *)listenerId
+               listenerId:(nonnull NSNumber *)listenerId
                  snapshot:(FIRDocumentSnapshot *)snapshot {
   NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC body:@{
@@ -266,7 +266,7 @@ RCT_EXPORT_METHOD(documentBatch:
 }
 
 - (void)sendSnapshotError:(FIRApp *)firApp
-    listenerId:(nonnull NSNumber *)listenerId
+               listenerId:(nonnull NSNumber *)listenerId
                     error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC body:@{

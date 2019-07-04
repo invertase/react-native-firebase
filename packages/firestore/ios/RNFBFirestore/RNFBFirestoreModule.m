@@ -25,7 +25,7 @@
 
 static dispatch_queue_t firestoreQueue;
 
-- (id) init {
+- (id)init {
   self = [super init];
   static dispatch_once_t once;
   dispatch_once(&once, ^{
@@ -86,7 +86,7 @@ RCT_EXPORT_METHOD(settings:
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
   FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
 
-   firestoreSettings.dispatchQueue = firestoreQueue;
+  firestoreSettings.dispatchQueue = firestoreQueue;
 
   if (settings[@"host"]) {
     firestoreSettings.host = settings[@"host"];

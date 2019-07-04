@@ -20,7 +20,6 @@ package io.invertase.firebase.firestore;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
@@ -97,7 +96,6 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   /**
    * Wait for signalBufferReceived to signal condition
-   *
    */
   void await() {
     lock.lock();
@@ -124,9 +122,13 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
     return commandBuffer;
   }
 
-  int getTransactionId() { return transactionId; }
+  int getTransactionId() {
+    return transactionId;
+  }
 
-  String getAppName() { return appName; }
+  String getAppName() {
+    return appName;
+  }
 
   /**
    * Get and resolve a DocumentSnapshot from transaction.get(ref);

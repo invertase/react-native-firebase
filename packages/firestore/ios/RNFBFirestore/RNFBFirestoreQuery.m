@@ -21,11 +21,11 @@
 
 @implementation RNFBFirestoreQuery
 
-- (id) initWithModifiers:(FIRFirestore *)firestore
-                   query:(FIRQuery *)query
-                 filters:(NSArray *)filters
-                  orders:(NSArray *)orders
-                 options:(NSDictionary *)options {
+- (id)initWithModifiers:(FIRFirestore *)firestore
+                  query:(FIRQuery *)query
+                filters:(NSArray *)filters
+                 orders:(NSArray *)orders
+                options:(NSDictionary *)options {
   self = [super init];
 
   if (self) {
@@ -60,7 +60,7 @@
       _query = [_query queryWhereField:fieldPath isEqualTo:value];
     } else if ([operator isEqualToString:@"GREATER_THAN"]) {
       _query = [_query queryWhereField:fieldPath isGreaterThan:value];
-    } else if([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
+    } else if ([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
       _query = [_query queryWhereField:fieldPath isGreaterThanOrEqualTo:value];
     } else if ([operator isEqualToString:@"LESS_THAN"]) {
       _query = [_query queryWhereField:fieldPath isLessThan:value];
@@ -82,7 +82,7 @@
   }
 }
 
-- (void) applyOptions {
+- (void)applyOptions {
   if (_options[@"limit"]) {
     _query = [_query queryLimitedTo:[_options[@"limit"] intValue]];
   }

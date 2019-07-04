@@ -49,7 +49,9 @@ describe('firestore.FieldPath', () => {
   it('should throw if string fieldPath is invalid', () => {
     try {
       // Dummy create
-      firebase.firestore().collection('foo')
+      firebase
+        .firestore()
+        .collection('foo')
         .where('.foo', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -61,7 +63,9 @@ describe('firestore.FieldPath', () => {
   it('should throw if string fieldPath contains invalid characters', () => {
     try {
       // Dummy create
-      firebase.firestore().collection('foo')
+      firebase
+        .firestore()
+        .collection('foo')
         .where('foo/bar', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {

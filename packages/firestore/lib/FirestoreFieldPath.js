@@ -26,9 +26,7 @@ export default class FirestoreFieldPath {
 
   constructor(...segments) {
     if (segments.length === 0) {
-      throw new Error(
-        `firebase.firestore.FieldPath cannot construct FieldPath with no segments.`,
-      );
+      throw new Error(`firebase.firestore.FieldPath cannot construct FieldPath with no segments.`);
     }
 
     for (let i = 0; i < segments.length; i++) {

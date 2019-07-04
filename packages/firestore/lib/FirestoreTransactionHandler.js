@@ -75,7 +75,7 @@ export default class FirestoreTransactionHandler {
       // TODO must it actually return a promise? Can't find any usages of it without one...
       if (!possiblePromise || !possiblePromise.then) {
         finalError = new Error(
-          'Update function for `firestore.runTransaction(updateFunction)` must return a Promise.'
+          'Update function for `firestore.runTransaction(updateFunction)` must return a Promise.',
         );
       } else {
         pendingResult = await possiblePromise;
@@ -100,10 +100,7 @@ export default class FirestoreTransactionHandler {
     transaction._pendingResult = pendingResult;
 
     // send the buffered update/set/delete commands for native to process
-    return this._firestore.native.transactionApplyBuffer(
-      id,
-      transaction._commandBuffer
-    );
+    return this._firestore.native.transactionApplyBuffer(id, transaction._commandBuffer);
   }
 
   _handleError(event) {

@@ -16,7 +16,9 @@
  */
 
 import { isString } from '@react-native-firebase/common';
-import FirestoreDocumentReference, { provideDocumentSnapshotClass } from './FirestoreDocumentReference';
+import FirestoreDocumentReference, {
+  provideDocumentSnapshotClass,
+} from './FirestoreDocumentReference';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import FirestorePath from './FirestorePath';
@@ -28,10 +30,11 @@ export default class FirestoreDocumentSnapshot {
     this._data = parseNativeMap(firestore, nativeData.data);
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
     this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
+    this._exists = nativeData.exists;
   }
 
   get exists() {
-    return this._data !== undefined;
+    return this._exists;
   }
 
   get id() {

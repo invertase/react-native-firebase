@@ -41,9 +41,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
       snapshot.get('');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(
-        `'fieldPath' Invalid field path`,
-      );
+      error.message.should.containEql(`'fieldPath' Invalid field path`);
       return Promise.resolve();
     }
   });
@@ -56,9 +54,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
       snapshot.get('.foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(
-        `'fieldPath' Invalid field path`,
-      );
+      error.message.should.containEql(`'fieldPath' Invalid field path`);
       return Promise.resolve();
     }
   });
@@ -71,9 +67,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
       snapshot.get('foo.');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(
-        `'fieldPath' Invalid field path`,
-      );
+      error.message.should.containEql(`'fieldPath' Invalid field path`);
       return Promise.resolve();
     }
   });
@@ -86,9 +80,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
       snapshot.get('foo..bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(
-        `'fieldPath' Invalid field path`,
-      );
+      error.message.should.containEql(`'fieldPath' Invalid field path`);
       return Promise.resolve();
     }
   });

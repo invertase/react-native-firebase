@@ -17,7 +17,9 @@
 
 import { generateFirestoreId, isObject } from '@react-native-firebase/common';
 import FirestoreQuery from './FirestoreQuery';
-import FirestoreDocumentReference, { provideCollectionReferenceClass } from './FirestoreDocumentReference';
+import FirestoreDocumentReference, {
+  provideCollectionReferenceClass,
+} from './FirestoreDocumentReference';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
 export default class FirestoreCollectionReference extends FirestoreQuery {

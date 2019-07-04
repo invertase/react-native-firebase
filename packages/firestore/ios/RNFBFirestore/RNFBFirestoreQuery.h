@@ -29,6 +29,7 @@
 @property FIRQuery *query;
 
 - (FIRQuery *)instance;
+
 - (id)initWithModifiers:(FIRFirestore *)firestore query:(FIRQuery *)query filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options;
 
 @end

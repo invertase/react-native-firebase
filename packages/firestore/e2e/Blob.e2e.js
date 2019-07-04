@@ -47,7 +47,7 @@ describe('firestore.Blob', () => {
     should.deepEqual(
       JSON.parse(myBlob._binaryString),
       testObject,
-      'Expected Blob _binaryString internals to serialize to json and match test object'
+      'Expected Blob _binaryString internals to serialize to json and match test object',
     );
   });
 
@@ -83,7 +83,7 @@ describe('firestore.Blob', () => {
     should.equal(
       myBlob.toString().includes(testBase64),
       true,
-      'toString() should return a string that includes the base64'
+      'toString() should return a string that includes the base64',
     );
   });
 

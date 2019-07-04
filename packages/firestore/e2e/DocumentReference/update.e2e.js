@@ -28,7 +28,9 @@ describe('firestore.doc().update()', () => {
         .update();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`expected at least 1 argument but was called with 0 arguments`);
+      error.message.should.containEql(
+        `expected at least 1 argument but was called with 0 arguments`,
+      );
       return Promise.resolve();
     }
   });
