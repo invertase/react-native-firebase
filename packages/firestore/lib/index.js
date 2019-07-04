@@ -58,6 +58,21 @@ class FirebaseFirestoreModule extends FirebaseModule {
     super(app, config);
     this._referencePath = new FirestorePath();
     this._transactionHandler = new FirestoreTransactionHandler(this);
+
+    // Fan out native events
+    this.emitter.addListener(this.eventNameForApp('firestore_collection_sync_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`firestore_collection_sync_event:${event.listenerId}`),
+        event,
+      );
+    });
+
+    this.emitter.addListener(this.eventNameForApp('firestore_document_sync_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`firestore_document_sync_event:${event.listenerId}`),
+        event,
+      );
+    });
   }
 
   batch() {

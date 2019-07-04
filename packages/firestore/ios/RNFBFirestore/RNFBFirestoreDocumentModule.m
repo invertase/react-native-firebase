@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSString *listenerId in documentSnapshotListeners) {
+  for (NSNumber *listenerId in documentSnapshotListeners) {
     id <FIRListenerRegistration> listener = documentSnapshotListeners[listenerId];
     [listener remove];
     [documentSnapshotListeners removeObjectForKey:listenerId];
@@ -60,7 +60,7 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(documentOnSnapshot:
   (FIRApp *) firebaseApp
     :(NSString *)path
-    :(NSString *)listenerId
+    :(nonnull NSNumber *)listenerId
     :(NSDictionary *)listenerOptions
 ) {
   if (documentSnapshotListeners[listenerId]) {
@@ -78,9 +78,9 @@ RCT_EXPORT_METHOD(documentOnSnapshot:
         [listener remove];
         [documentSnapshotListeners removeObjectForKey:listenerId];
       }
-      [weakSelf sendSnapshotError:firebaseApp error:error];
+      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
     } else {
-      [weakSelf sendSnapshotEvent:firebaseApp snapshot:snapshot];
+      [weakSelf sendSnapshotEvent:firebaseApp listenerId:listenerId snapshot:snapshot];
     }
   };
 
@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(documentOnSnapshot:
 
 RCT_EXPORT_METHOD(documentOffSnapshot:
   (FIRApp *) firebaseApp
-    :(NSString *)listenerId
+    :(nonnull NSNumber *)listenerId
 ) {
   id <FIRListenerRegistration> listener = documentSnapshotListeners[listenerId];
   if (listener) {
@@ -253,10 +253,12 @@ RCT_EXPORT_METHOD(documentBatch:
 }
 
 - (void)sendSnapshotEvent:(FIRApp *)firApp
+    listenerId:(nonnull NSNumber *)listenerId
                  snapshot:(FIRDocumentSnapshot *)snapshot {
   NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"listenerId": listenerId,
       @"body": @{
           @"snapshot": serialized,
       }
@@ -264,10 +266,12 @@ RCT_EXPORT_METHOD(documentBatch:
 }
 
 - (void)sendSnapshotError:(FIRApp *)firApp
+    listenerId:(nonnull NSNumber *)listenerId
                     error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"listenerId": listenerId,
       @"body": @{
           @"error": @{
               @"code": codeAndMessage[0],

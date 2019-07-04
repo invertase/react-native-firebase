@@ -57,18 +57,66 @@ enum TYPE_MAP {
 };
 
 // Native QuerySnapshot -> NSDictionary (for JS)
-+ (NSDictionary *)querySnapshotToDictionary:(FIRQuerySnapshot *)snapshot {
++ (NSDictionary *)querySnapshotToDictionary
+    :(NSString *)source
+                                   snapshot:(FIRQuerySnapshot *)snapshot
+                     includeMetadataChanges:(BOOL)includeMetadataChanges {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *snapshotMap = [[NSMutableDictionary alloc] init];
 
-  NSMutableArray *documents = [[NSMutableArray alloc] init];
+  snapshotMap[@"source"] = source;
+
   NSMutableArray *changes = [[NSMutableArray alloc] init];
 
   FIRSnapshotMetadata *snapshotMetadata = snapshot.metadata;
   NSArray *documentSnapshots = snapshot.documents;
-  NSArray *documentChanges = snapshot.documentChanges;
+  NSArray *documentChangesList = snapshot.documentChanges;
+
+  if (includeMetadataChanges == false) {
+    // If not listening to metadata changes, send the data back to JS land with a flag
+    // indicating the data does not include these changes
+    snapshotMap[@"excludesMetadataChanges"] = @(true);
+    for (FIRDocumentChange *documentChange in documentChangesList) {
+      [changes addObject:[self documentChangeToDictionary:documentChange isMetadataChange:false]];
+    }
+  } else {
+    // If listening to metadata changes, get the changes list with document changes array.
+    // To indicate whether a document change was because of metadata change, we check whether
+    // its in the raw list by document key.
+    snapshotMap[@"excludesMetadataChanges"] = @(false);
+    NSArray *documentMetadataChangesList = [snapshot documentChangesWithIncludeMetadataChanges:true];
+
+    for (FIRDocumentChange *documentMetadataChange in documentMetadataChangesList) {
+      bool isMetadataChange = NO;
+
+      NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(FIRDocumentChange *docChange, NSDictionary *bindings) {
+        if (
+            [[[docChange document] documentID] isEqualToString:[[documentMetadataChange document] documentID]] &&
+                [docChange newIndex] == [documentMetadataChange newIndex] &&
+                [docChange oldIndex] == [documentMetadataChange oldIndex] &&
+                [docChange type] == [documentMetadataChange type]
+            ) {
+          return YES;
+        }
+
+        return NO;
+      }];
+
+      FIRDocumentChange *exists = [documentChangesList filteredArrayUsingPredicate:predicate].firstObject;
+
+      if (exists == nil) {
+        isMetadataChange = YES;
+      }
+
+      [changes addObject:[self documentChangeToDictionary:documentMetadataChange isMetadataChange:isMetadataChange]];
+    }
+  }
+
+  snapshotMap[KEY_CHANGES] = changes;
+
 
   //set documents
+  NSMutableArray *documents = [[NSMutableArray alloc] init];
   for (FIRDocumentSnapshot *documentSnapshot in documentSnapshots) {
     [documents addObject:[self documentSnapshotToDictionary:documentSnapshot]];
   }
@@ -80,18 +128,14 @@ enum TYPE_MAP {
   metadata[1] = @(snapshotMetadata.hasPendingWrites);
   snapshotMap[KEY_METADATA] = metadata;
 
-  for (FIRDocumentChange *documentChange in documentChanges) {
-    [changes addObject:[self documentChangeToDictionary:documentChange]];
-  }
-
-  // set document changes
-  snapshotMap[KEY_CHANGES] = changes;
-
   return snapshotMap;
 }
 
-+ (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange {
++ (NSDictionary *)documentChangeToDictionary
+    :(FIRDocumentChange *)documentChange
+                            isMetadataChange:(BOOL)isMetadataChange {
   NSMutableDictionary *changeMap = [[NSMutableDictionary alloc] init];
+  changeMap[@"isMetadataChange"] = @(isMetadataChange);
 
   if (documentChange.type == FIRDocumentChangeTypeAdded) {
     changeMap[KEY_DOC_CHANGE_TYPE] = CHANGE_ADDED;
@@ -115,7 +159,7 @@ enum TYPE_MAP {
   if (documentChange.oldIndex == NSNotFound || documentChange.oldIndex == 4294967295 || documentChange.oldIndex == MAX_VAL) {
     changeMap[KEY_DOC_CHANGE_OLD_INDEX] = @([@(-1) doubleValue]);
   } else {
-    changeMap[KEY_DOC_CHANGE_OLD_INDEX] =  @([@(documentChange.oldIndex) doubleValue]);
+    changeMap[KEY_DOC_CHANGE_OLD_INDEX] = @([@(documentChange.oldIndex) doubleValue]);
   }
 
   return changeMap;
@@ -222,8 +266,8 @@ enum TYPE_MAP {
     FIRTimestamp *firTimestamp = (FIRTimestamp *) value;
     int64_t seconds = (int64_t) firTimestamp.seconds;
     int32_t nanoseconds = (int32_t) firTimestamp.nanoseconds;
-    timestampArray[0]= @(seconds);
-    timestampArray[1]= @(nanoseconds);
+    timestampArray[0] = @(seconds);
+    timestampArray[1] = @(nanoseconds);
     typeArray[1] = timestampArray;
     return typeArray;
   }
@@ -298,7 +342,7 @@ enum TYPE_MAP {
 // Parses JS Array to Native Array
 + (NSArray *)parseNSArray
     :(FIRFirestore *)firestore
-                     array:(NSArray *)array {
+                    array:(NSArray *)array {
   NSMutableArray *arrayValues = [[NSMutableArray alloc] init];
 
   if (array == nil) return arrayValues;

@@ -27,6 +27,7 @@ export default class FirestoreDocumentChange {
   constructor(firestore, nativeData) {
     this._firestore = firestore;
     this._nativeData = nativeData;
+    this._isMetadataChange = nativeData.isMetadataChange;
   }
 
   get doc() {

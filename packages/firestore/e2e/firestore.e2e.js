@@ -287,7 +287,9 @@ describe('firestore()', () => {
     });
 
     it('calls with no errors', async () => {
-      await firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+      await firebase
+        .firestore()
+        .settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
       await firebase.firestore().settings({});
     });
   });

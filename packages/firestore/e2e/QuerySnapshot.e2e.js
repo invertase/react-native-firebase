@@ -82,8 +82,53 @@ describe('firestore.QuerySnapshot', () => {
     snapshot.size.should.be.Number();
   });
 
-  // TODO SnapshotListenerOptions
   describe('docChanges()', () => {
+    it('throws if options is not an object', async () => {
+      try {
+        const colRef = firebase.firestore().collection('v6');
+        const snapshot = await colRef.limit(1).get();
+        snapshot.docChanges(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'options' expected an object`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if options.includeMetadataChanges is not a boolean', async () => {
+      try {
+        const colRef = firebase.firestore().collection('v6');
+        const snapshot = await colRef.limit(1).get();
+        snapshot.docChanges({ includeMetadataChanges: 123 });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'options.includeMetadataChanges' expected a boolean`);
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async () => {
+      const callback = sinon.spy();
+      const colRef = firebase.firestore().collection('v6');
+      const unsub = colRef.onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        callback,
+      );
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+      const snapshot = callback.args[0][0];
+
+      try {
+        snapshot.docChanges({ includeMetadataChanges: true });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`To include metadata changes with your document changes`);
+        return Promise.resolve();
+      }
+    });
+
     it('returns an array of DocumentChange instances', async () => {
       const colRef = firebase.firestore().collection('v6');
       colRef.add({});
@@ -92,6 +137,40 @@ describe('firestore.QuerySnapshot', () => {
       changes.should.be.Array();
       changes.length.should.be.eql(1);
       changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+    });
+
+    it('returns the correct number of document changes if listening to metadata changes', async () => {
+      const callback = sinon.spy();
+      const colRef = firebase.firestore().collection('v6/metadatachanges/true-true');
+      const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
+      await colRef.add({ foo: 'bar' });
+      await Utils.spyToBeCalledTimesAsync(callback, 3);
+      unsub();
+
+      const snap1 = callback.args[0][0];
+      const snap2 = callback.args[1][0];
+      const snap3 = callback.args[2][0];
+
+      snap1.docChanges({ includeMetadataChanges: true }).length.should.be.eql(1);
+      snap2.docChanges({ includeMetadataChanges: true }).length.should.be.eql(0);
+      snap3.docChanges({ includeMetadataChanges: true }).length.should.be.eql(1);
+    });
+
+    it('returns the correct number of document changes if listening to metadata changes, but not including them in docChanges', async () => {
+      const callback = sinon.spy();
+      const colRef = firebase.firestore().collection('v6/metadatachanges/true-false');
+      const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
+      await colRef.add({ foo: 'bar' });
+      await Utils.spyToBeCalledTimesAsync(callback, 3);
+      unsub();
+
+      const snap1 = callback.args[0][0];
+      const snap2 = callback.args[1][0];
+      const snap3 = callback.args[2][0];
+
+      snap1.docChanges({ includeMetadataChanges: false }).length.should.be.eql(1);
+      snap2.docChanges({ includeMetadataChanges: false }).length.should.be.eql(0);
+      snap3.docChanges({ includeMetadataChanges: false }).length.should.be.eql(0);
     });
   });
 

@@ -15,7 +15,7 @@
  *
  */
 
-import { isFunction } from '@react-native-firebase/common';
+import { isBoolean, isFunction, isObject, isUndefined } from '@react-native-firebase/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
@@ -23,6 +23,8 @@ import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 export default class FirestoreQuerySnapshot {
   constructor(firestore, query, nativeData) {
     this._query = query;
+    this._source = nativeData.source;
+    this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
     this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
     this._docs = nativeData.documents.map($ => new FirestoreDocumentSnapshot(firestore, $));
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
@@ -48,10 +50,44 @@ export default class FirestoreQuerySnapshot {
     return this._docs.length;
   }
 
-  docChanges() {
-    // TODO: ehesp: https://github.com/firebase/firebase-js-sdk/blob/master/packages/firestore/src/api/database.ts#L2110
-    // The web sdk supports SnapshotListenerOptions but cant work out what impact this has on the data.
-    return this._changes;
+  docChanges(options) {
+    if (!isUndefined(options) && !isObject(options)) {
+      throw new Error(
+        `firebase.firestore() QuerySnapshot.docChanges(*) 'options' expected an object.`,
+      );
+    }
+
+    let includeMetaDataChanges = false;
+
+    if (options) {
+      if (!isBoolean(options.includeMetadataChanges)) {
+        throw new Error(
+          `firebase.firestore() QuerySnapshot.docChanges(*) 'options.includeMetadataChanges' expected a boolean.`,
+        );
+      }
+
+      includeMetaDataChanges = options.includeMetadataChanges;
+    }
+
+    // A get query should always return the document changes from native
+    if (this._source === 'get') {
+      return this._changes;
+    }
+
+    if (includeMetaDataChanges && this._excludesMetadataChanges) {
+      throw new Error(
+        `firebase.firestore() QuerySnapshot.docChanges() To include metadata changes with your document changes, you must also pass { includeMetadataChanges:true } to onSnapshot().`,
+      );
+    }
+
+    return this._changes.filter($ => {
+      // Remove all changes that have come from metadata changes list
+      if (!includeMetaDataChanges) {
+        return $._isMetadataChange === false;
+      }
+
+      return true;
+    });
   }
 
   forEach(callback, thisArg) {

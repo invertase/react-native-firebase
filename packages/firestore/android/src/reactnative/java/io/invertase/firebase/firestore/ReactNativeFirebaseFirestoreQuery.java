@@ -58,7 +58,7 @@ public class ReactNativeFirebaseFirestoreQuery {
   public Task<WritableMap> get(Executor executor, Source source) {
     return Tasks.call(executor, () -> {
       QuerySnapshot querySnapshot = Tasks.await(this.query.get(source));
-      return snapshotToWritableMap(querySnapshot);
+      return snapshotToWritableMap("get", querySnapshot, null);
     });
   }
 

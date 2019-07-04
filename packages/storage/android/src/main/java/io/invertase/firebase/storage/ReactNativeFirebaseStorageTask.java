@@ -84,7 +84,8 @@ class ReactNativeFirebaseStorageTask {
 
   static void destroyAllTasks() {
     for (int i = 0, size = PENDING_TASKS.size(); i < size; i++) {
-      ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(i);
+      int key = PENDING_TASKS.keyAt(i);
+      ReactNativeFirebaseStorageTask reactNativeFirebaseStorageTask = PENDING_TASKS.get(key);
       reactNativeFirebaseStorageTask.cancel();
     }
     PENDING_TASKS.clear();

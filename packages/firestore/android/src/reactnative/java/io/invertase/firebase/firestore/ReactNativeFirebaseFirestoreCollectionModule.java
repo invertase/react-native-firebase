@@ -17,6 +17,8 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import android.util.SparseArray;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,16 +32,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
-import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -50,7 +48,7 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
-  private static Map<String, ListenerRegistration> collectionSnapshotListeners = new HashMap<>();
+  private static SparseArray<ListenerRegistration> collectionSnapshotListeners = new SparseArray<>();
 
   public ReactNativeFirebaseFirestoreCollectionModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
@@ -60,13 +58,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
 
-    Iterator refIterator = collectionSnapshotListeners.entrySet().iterator();
-    while (refIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) refIterator.next();
-      ListenerRegistration listenerRegistration = (ListenerRegistration) pair.getValue();
+    for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
+      int key = collectionSnapshotListeners.keyAt(i);
+      ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(key);
       listenerRegistration.remove();
-      refIterator.remove(); // avoids a ConcurrentModificationException
     }
+    collectionSnapshotListeners.clear();
   }
 
   @ReactMethod
@@ -77,10 +74,10 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     ReadableArray filters,
     ReadableArray orders,
     ReadableMap options,
-    String listenerId,
+    int listenerId,
     ReadableMap listenerOptions
   ) {
-    if (collectionSnapshotListeners.containsKey(listenerId)) {
+    if (collectionSnapshotListeners.get(listenerId) != null) {
       return;
     }
 
@@ -93,18 +90,6 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       options
     );
 
-    final EventListener<QuerySnapshot> listener = (querySnapshot, exception) -> {
-      if (exception != null) {
-        ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
-        if (listenerRegistration != null) {
-          listenerRegistration.remove();
-        }
-        sendOnSnapshotError(appName, listenerId, exception);
-      } else {
-        sendOnSnapshotEvent(appName, listenerId, querySnapshot);
-      }
-    };
-
     MetadataChanges metadataChanges;
 
     if (listenerOptions != null && listenerOptions.hasKey("includeMetadataChanges")
@@ -113,6 +98,19 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     } else {
       metadataChanges = MetadataChanges.EXCLUDE;
     }
+
+    final EventListener<QuerySnapshot> listener = (querySnapshot, exception) -> {
+      if (exception != null) {
+        ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
+        if (listenerRegistration != null) {
+          listenerRegistration.remove();
+          collectionSnapshotListeners.remove(listenerId);
+        }
+        sendOnSnapshotError(appName, listenerId, exception);
+      } else {
+        sendOnSnapshotEvent(appName, listenerId, querySnapshot, metadataChanges);
+      }
+    };
 
     ListenerRegistration listenerRegistration = firestoreQuery.query.addSnapshotListener(
       metadataChanges,
@@ -125,11 +123,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void collectionOffSnapshot(
     String appName,
-    String listenerId
+    int listenerId
   ) {
-    ListenerRegistration listenerRegistration = collectionSnapshotListeners.remove(listenerId);
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
+      collectionSnapshotListeners.remove(listenerId);
     }
   }
 
@@ -178,8 +177,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       });
   }
 
-  private void sendOnSnapshotEvent(String appName, String listenerId, QuerySnapshot querySnapshot) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap(querySnapshot)).addOnCompleteListener(task -> {
+  private void sendOnSnapshotEvent(String appName, int listenerId, QuerySnapshot querySnapshot, MetadataChanges metadataChanges) {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap("onSnapshot", querySnapshot, metadataChanges)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         WritableMap body = Arguments.createMap();
         body.putMap("snapshot", task.getResult());
@@ -198,7 +197,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     });
   }
 
-  private void sendOnSnapshotError(String appName, String listenerId, Exception exception) {
+  private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 

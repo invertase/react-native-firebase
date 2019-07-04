@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSString *listenerId in collectionSnapshotListeners) {
+  for (NSNumber *listenerId in collectionSnapshotListeners) {
     id <FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
     [listener remove];
     [collectionSnapshotListeners removeObjectForKey:listenerId];
@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:
     :(NSArray *)filters
     :(NSArray *)orders
     :(NSDictionary *)options
-    :(NSString *)listenerId
+    :(nonnull NSNumber *)listenerId
     :(NSDictionary *)listenerOptions
 ) {
   if (collectionSnapshotListeners[listenerId]) {
@@ -76,6 +76,11 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:
 
   RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore query:query filters:filters orders:orders options:options];
 
+  BOOL includeMetadataChanges = NO;
+  if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
+    includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
+  }
+
   __weak RNFBFirestoreCollectionModule *weakSelf = self;
   id listenerBlock = ^(FIRQuerySnapshot *snapshot, NSError *error) {
     if (error) {
@@ -84,17 +89,11 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:
         [listener remove];
         [collectionSnapshotListeners removeObjectForKey:listenerId];
       }
-      [weakSelf sendSnapshotError:firebaseApp error:error];
+      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
     } else {
-      [weakSelf sendSnapshotEvent:firebaseApp snapshot:snapshot];
+      [weakSelf sendSnapshotEvent:firebaseApp listenerId:listenerId snapshot:snapshot includeMetadataChanges:includeMetadataChanges];
     }
   };
-
-  BOOL includeMetadataChanges = NO;
-  if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
-    includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
-  }
-
 
   id <FIRListenerRegistration> listener = [[firestoreQuery instance] addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges listener:listenerBlock];
   collectionSnapshotListeners[listenerId] = listener;
@@ -102,7 +101,7 @@ RCT_EXPORT_METHOD(collectionOnSnapshot:
 
 RCT_EXPORT_METHOD(collectionOffSnapshot:
   (FIRApp *) firebaseApp
-    :(NSString *)listenerId
+    :(nonnull NSNumber *)listenerId
 ) {
   id <FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
   if (listener) {
@@ -145,17 +144,20 @@ RCT_EXPORT_METHOD(collectionGet:
     if (error) {
       return [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:snapshot];
+      NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"get" snapshot:snapshot includeMetadataChanges:false];
       resolve(serialized);
     }
   }];
 }
 
 - (void)sendSnapshotEvent:(FIRApp *)firApp
-                 snapshot:(FIRQuerySnapshot *)snapshot {
-  NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:snapshot];
+               listenerId:(nonnull NSNumber *)listenerId
+                 snapshot:(FIRQuerySnapshot *)snapshot
+   includeMetadataChanges:(BOOL)includeMetadataChanges {
+  NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"onSnapshot" snapshot:snapshot includeMetadataChanges:includeMetadataChanges];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"listenerId": listenerId,
       @"body": @{
           @"snapshot": serialized,
       }
@@ -163,10 +165,12 @@ RCT_EXPORT_METHOD(collectionGet:
 }
 
 - (void)sendSnapshotError:(FIRApp *)firApp
+               listenerId:(nonnull NSNumber *)listenerId
                     error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"listenerId": listenerId,
       @"body": @{
           @"error": @{
               @"code": codeAndMessage[0],

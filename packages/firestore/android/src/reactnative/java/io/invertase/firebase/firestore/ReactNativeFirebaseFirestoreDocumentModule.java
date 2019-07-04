@@ -17,6 +17,8 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import android.util.SparseArray;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -57,7 +59,8 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.g
 
 public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreDocument";
-  private static Map<String, ListenerRegistration> documentSnapshotListeners = new HashMap<>();
+  private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
+
 
   public ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
@@ -67,23 +70,22 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
 
-    Iterator refIterator = documentSnapshotListeners.entrySet().iterator();
-    while (refIterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) refIterator.next();
-      ListenerRegistration listenerRegistration = (ListenerRegistration) pair.getValue();
+    for (int i = 0, size = documentSnapshotListeners.size(); i < size; i++) {
+      int key = documentSnapshotListeners.keyAt(i);
+      ListenerRegistration listenerRegistration = documentSnapshotListeners.get(key);
       listenerRegistration.remove();
-      refIterator.remove(); // avoids a ConcurrentModificationException
     }
+    documentSnapshotListeners.clear();
   }
 
   @ReactMethod
   public void documentOnSnapshot(
     String appName,
     String path,
-    String listenerId,
+    int listenerId,
     ReadableMap listenerOptions
   ) {
-    if (documentSnapshotListeners.containsKey(listenerId)) {
+    if (documentSnapshotListeners.get(listenerId) != null) {
       return;
     }
 
@@ -92,9 +94,10 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
     final EventListener<DocumentSnapshot> listener = (documentSnapshot, exception) -> {
       if (exception != null) {
-        ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
+        ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
         if (listenerRegistration != null) {
           listenerRegistration.remove();
+          documentSnapshotListeners.remove(listenerId);
         }
         sendOnSnapshotError(appName, listenerId, exception);
       } else {
@@ -120,10 +123,11 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentOffSnapshot(String appName, String listenerId) {
-    ListenerRegistration listenerRegistration = documentSnapshotListeners.remove(listenerId);
+  public void documentOffSnapshot(String appName, int listenerId) {
+    ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
+      documentSnapshotListeners.remove(listenerId);
     }
   }
 
@@ -278,7 +282,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
       });
   }
 
-  private void sendOnSnapshotEvent(String appName, String listenerId, DocumentSnapshot documentSnapshot) {
+  private void sendOnSnapshotEvent(String appName, int listenerId, DocumentSnapshot documentSnapshot) {
     Tasks.call(getExecutor(), () -> snapshotToWritableMap(documentSnapshot)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         WritableMap body = Arguments.createMap();
@@ -298,7 +302,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     });
   }
 
-  private void sendOnSnapshotError(String appName, String listenerId, Exception exception) {
+  private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 

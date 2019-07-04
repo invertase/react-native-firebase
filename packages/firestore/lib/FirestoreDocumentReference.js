@@ -37,6 +37,8 @@ export function provideDocumentSnapshotClass(documentSnapshot) {
   FirestoreDocumentSnapshot = documentSnapshot;
 }
 
+let _id = 0;
+
 export default class FirestoreDocumentReference {
   constructor(firestore, documentPath) {
     this._firestore = firestore;
@@ -152,10 +154,10 @@ export default class FirestoreDocumentReference {
       onError(error);
     }
 
-    const listenerId = generateFirestoreId();
+    const listenerId = _id++;
 
     const onSnapshotSubscription = this._firestore.emitter.addListener(
-      this._firestore.eventNameForApp('firestore_document_sync_event'),
+      this._firestore.eventNameForApp(`firestore_document_sync_event:${listenerId}`),
       event => {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));

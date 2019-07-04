@@ -31,7 +31,7 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
   private String eventName;
   private WritableMap eventBody;
   private String appName;
-  private String listenerId;
+  private int listenerId;
 
   private static final String KEY_ID = "listenerId";
   private static final String KEY_BODY = "body";
@@ -43,7 +43,7 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
     String eventName,
     WritableMap eventBody,
     String appName,
-    String listenerId
+    int listenerId
   ) {
     this.eventName = eventName;
     this.eventBody = eventBody;
@@ -59,7 +59,7 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
   @Override
   public WritableMap getEventBody() {
     WritableMap event = Arguments.createMap();
-    event.putString(KEY_ID, listenerId);
+    event.putInt(KEY_ID, listenerId);
     event.putMap(KEY_BODY, eventBody);
     event.putString(KEY_APP_NAME, appName);
     event.putString(KEY_EVENT_NAME, eventName);
