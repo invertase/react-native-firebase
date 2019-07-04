@@ -21,7 +21,12 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
+//#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+//@import UserNotifications;
+//@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
+//#else
 @interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate>
+//#endif
 
 @property _Nullable RCTPromiseRejectBlock pendingPromiseReject;
 @property _Nullable RCTPromiseResolveBlock pendingPromiseResolve;

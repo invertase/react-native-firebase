@@ -48,6 +48,8 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   getToken(authorizedEntity, scope) {
+    // todo validate arg 0, string, optional
+    // todo validate arg 1, string, optional
     return this.native.getToken(
       authorizedEntity || this.app.options.messagingSenderId,
       scope || 'FCM',
@@ -55,6 +57,8 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   deleteToken(authorizedEntity, scope) {
+    // todo validate arg 0, string, optional
+    // todo validate arg 1, string, optional
     return this.native.deleteToken(
       authorizedEntity || this.app.options.messagingSenderId,
       scope || 'FCM',
@@ -62,6 +66,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   onMessage(nextOnly) {
+    // todo validate arg, function
     const subscription = this.emitter.addListener('messaging_message_received', nextOnly);
     return () => {
       subscription.remove();
@@ -69,6 +74,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   onTokenRefresh(nextOnly) {
+    // todo validate arg, function
     const subscription = this.emitter.addListener('messaging_token_refresh', nextOnly);
     return () => {
       subscription.remove();
@@ -105,6 +111,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
   onDeletedMessages(nextOnly) {
+    // todo validate arg, function
     const subscription = this.emitter.addListener('messaging_message_deleted', nextOnly);
     return () => {
       subscription.remove();
@@ -113,6 +120,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
   onMessageSent(nextOnly) {
+    // todo validate arg, function
     const subscription = this.emitter.addListener('messaging_message_sent', nextOnly);
     return () => {
       subscription.remove();
@@ -121,6 +129,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
   onSendError(nextOnly) {
+    // todo validate arg, function
     const subscription = this.emitter.addListener('messaging_message_send_error', nextOnly);
     return () => {
       subscription.remove();
@@ -132,18 +141,22 @@ class FirebaseMessagingModule extends FirebaseModule {
    */
   setBackgroundMessageHandler(handler) {
     if (isIOS) return;
+    // todo validate arg, function
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => handler);
   }
 
   sendMessage(remoteMessage) {
+    // todo validate arg instance of MessagingRemoteMessaging
     return this.native.sendMessage(remoteMessage.build());
   }
 
   subscribeToTopic(topic) {
+    // todo validate arg, string, no /
     return this.native.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic) {
+    // todo validate arg, string, no /
     return this.native.unsubscribeFromTopic(topic);
   }
 

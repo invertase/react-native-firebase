@@ -69,7 +69,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   return firAppDictionary;
 }
 
-+ (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception; {
++ (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception {
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 
   [userInfo setValue:@(YES) forKey:@"fatal"];
@@ -83,7 +83,20 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   reject(exception.name, exception.reason, error);
 }
 
-+ (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo; {
++ (void)rejectPromiseWithNSError:(RCTPromiseRejectBlock)reject error:(NSError *)error {
+  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+
+  [userInfo setValue:@(NO) forKey:@"fatal"];
+  [userInfo setValue:@"unknown" forKey:@"code"];
+  [userInfo setValue:error.localizedDescription forKey:@"message"];
+  [userInfo setValue:@(error.code) forKey:@"nativeErrorCode"];
+  [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
+
+  NSError *newErrorWithUserInfo = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
+  reject(@"unknown", error.localizedDescription, newErrorWithUserInfo);
+}
+
++ (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo {
   NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
   reject(userInfo[@"code"], userInfo[@"message"], error);
 }
