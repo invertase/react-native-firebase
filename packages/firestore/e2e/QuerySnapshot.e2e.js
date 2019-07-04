@@ -35,7 +35,7 @@ describe('firestore.QuerySnapshot', () => {
       .firestore()
       .collection('v6')
       .onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledOnceAsync(callback);
     callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
   });
 

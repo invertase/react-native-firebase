@@ -50,7 +50,8 @@ describe('firestore().doc().onSnapshot()', () => {
       .doc('v6/foo')
       .onSnapshot(callback);
 
-    await Utils.sleep(1300);
+    await Utils.spyToBeCalledOnceAsync(callback);
+
     callback.should.be.calledOnce();
     callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
     should.equal(callback.args[0][1], null);
@@ -64,7 +65,8 @@ describe('firestore().doc().onSnapshot()', () => {
       .doc('nope/nope')
       .onSnapshot(callback);
 
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledOnceAsync(callback);
+
     callback.should.be.calledOnce();
     callback.args[0][1].code.should.containEql('firestore/permission-denied');
     should.equal(callback.args[0][0], null);
@@ -80,7 +82,8 @@ describe('firestore().doc().onSnapshot()', () => {
         .doc('v6/foo')
         .onSnapshot(onNext, onError);
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
       onNext.should.be.calledOnce();
       onError.should.be.callCount(0);
       onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
@@ -96,7 +99,8 @@ describe('firestore().doc().onSnapshot()', () => {
         .doc('nope/nope')
         .onSnapshot(onNext, onError);
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onError);
+
       onError.should.be.calledOnce();
       onNext.should.be.callCount(0);
       onError.args[0][0].code.should.containEql('firestore/permission-denied');
@@ -117,7 +121,8 @@ describe('firestore().doc().onSnapshot()', () => {
           error: onError,
         });
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
       onNext.should.be.calledOnce();
       onError.should.be.callCount(0);
       onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
@@ -136,7 +141,8 @@ describe('firestore().doc().onSnapshot()', () => {
           error: onError,
         });
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onError);
+
       onError.should.be.calledOnce();
       onNext.should.be.callCount(0);
       onError.args[0][0].code.should.containEql('firestore/permission-denied');
@@ -158,7 +164,8 @@ describe('firestore().doc().onSnapshot()', () => {
           callback,
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(callback);
+
       callback.should.be.calledOnce();
       callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
       should.equal(callback.args[0][1], null);
@@ -177,7 +184,8 @@ describe('firestore().doc().onSnapshot()', () => {
           callback,
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(callback);
+
       callback.should.be.calledOnce();
       callback.args[0][1].code.should.containEql('firestore/permission-denied');
       should.equal(callback.args[0][0], null);
@@ -198,7 +206,8 @@ describe('firestore().doc().onSnapshot()', () => {
           onError,
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
       onNext.should.be.calledOnce();
       onError.should.be.callCount(0);
       onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
@@ -220,7 +229,8 @@ describe('firestore().doc().onSnapshot()', () => {
           onError,
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onError);
+
       onError.should.be.calledOnce();
       onNext.should.be.callCount(0);
       onError.args[0][0].code.should.containEql('firestore/permission-denied');
@@ -246,7 +256,8 @@ describe('firestore().doc().onSnapshot()', () => {
           },
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
       onNext.should.be.calledOnce();
       onError.should.be.callCount(0);
       onNext.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
@@ -270,7 +281,8 @@ describe('firestore().doc().onSnapshot()', () => {
           },
         );
 
-      await Utils.sleep(800);
+      await Utils.spyToBeCalledOnceAsync(onError);
+
       onError.should.be.calledOnce();
       onNext.should.be.callCount(0);
       onError.args[0][0].code.should.containEql('firestore/permission-denied');
@@ -331,12 +343,12 @@ describe('firestore().doc().onSnapshot()', () => {
     const doc = firebase.firestore().doc('v6/unsub');
 
     const unsub = doc.onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledOnceAsync(callback);
     await doc.set({ foo: 'bar' });
     unsub();
     await Utils.sleep(800);
     await doc.set({ foo: 'bar2' });
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledTimesAsync(callback, 2);
     callback.should.be.callCount(2);
   });
 });

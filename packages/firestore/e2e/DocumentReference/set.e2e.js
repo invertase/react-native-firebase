@@ -151,7 +151,6 @@ describe('firestore.doc().set()', () => {
   });
 
   it('merges specific fields', async () => {
-    await Utils.sleep(3000);
     const ref = firebase.firestore().doc('v6/merge');
     const data1 = { foo: '123', bar: 123, baz: '456' };
     const data2 = { foo: '234', bar: 234, baz: '678' };

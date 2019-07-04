@@ -34,7 +34,6 @@ describe('firestore.collection().add()', () => {
   });
 
   it('adds a new document', async () => {
-    await Utils.sleep(3000);
     const data = { foo: 'bar' };
     const docRef = await firebase
       .firestore()

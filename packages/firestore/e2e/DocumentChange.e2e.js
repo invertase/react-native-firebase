@@ -41,7 +41,7 @@ describe('firestore.DocumentChange', () => {
     // Subscribe to changes
     const callback = sinon.spy();
     const unsub = colRef.onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledOnceAsync(callback);
 
     // Validate docChange item exists
     callback.should.be.calledOnce();
@@ -83,7 +83,7 @@ describe('firestore.DocumentChange', () => {
     // Subscribe to changes
     const callback = sinon.spy();
     const unsub = colRef.orderBy('value').onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.spyToBeCalledOnceAsync(callback);
 
     // Validate docChange item exists
     callback.should.be.calledOnce();
