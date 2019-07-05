@@ -78,23 +78,23 @@
   }];
 }
 
-// Listen for data messages in the foreground
+// ----------------------
+//      DATA Message
+// --------------------\/
+
+//  |-> ---------------------
+//      App in Foreground
+//   ------------------------
 - (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
-//      @"token": fcmToken
-  }];
-//  NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
-//  [self sendJSEvent:self name:MESSAGING_MESSAGE_RECEIVED body:message];
+  // TODO send message event
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{}];
 }
 
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
 // To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
-- (void)messaging:(nonnull FIRMessaging *)messaging
-didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-//  NSDictionary *message = [self parseFIRMessagingRemoteMessage:remoteMessage];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
-//      @"token": fcmToken
-  }];
+- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+  // TODO send message event
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{}];
 }
 
 

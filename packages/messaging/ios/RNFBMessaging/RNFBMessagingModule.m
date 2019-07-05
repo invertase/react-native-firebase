@@ -139,7 +139,7 @@ RCT_EXPORT_METHOD(requestPermission:
   if (RCTRunningInAppExtension()) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unavailable-in-extension",
-        @"message": @"requestPermission can not be called in App Extensions"} mutableCopy];
+        @"message": @"requestPermission can not be called in App Extensions"} mutableCopy]];
     return;
   }
 
@@ -161,7 +161,7 @@ RCT_EXPORT_METHOD(requestPermission:
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unsupported-platform-version",
-        @"message": @"requestPermission can not be called on this version of iOS, minimum version is iOS 10."} mutableCopy];
+        @"message": @"requestPermission can not be called on this version of iOS, minimum version is iOS 10."} mutableCopy]];
   }
 
 
@@ -172,7 +172,8 @@ RCT_EXPORT_METHOD(requestPermission:
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject) {
+    : (RCTPromiseRejectBlock) reject
+) {
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
     return resolve(nil);
   }
@@ -183,7 +184,8 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
 
 RCT_EXPORT_METHOD(unregisterForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject) {
+    :(RCTPromiseRejectBlock) reject
+) {
   [[UIApplication sharedApplication] unregisterForRemoteNotifications];
   resolve(nil);
 }
@@ -192,20 +194,15 @@ RCT_EXPORT_METHOD(unregisterForRemoteNotifications:
 // Non Web SDK methods
 RCT_EXPORT_METHOD(hasPermission:
   (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      BOOL hasPermission = [RCTConvert BOOL:@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone)];
+    :(RCTPromiseRejectBlock) reject
+) {
+  if (@available(iOS 10.0, *)) {
+    [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+      BOOL hasPermission = [RCTConvert BOOL:@(settings.alertSetting == UNNotificationSettingEnabled)];
       resolve(@(hasPermission));
-    });
+    }];
   } else {
-    if (@available(iOS 10.0, *)) {
-      [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-        BOOL hasPermission = [RCTConvert BOOL:@(settings.alertSetting == UNNotificationSettingEnabled)];
-        resolve(@(hasPermission));
-      }];
-    }
+    // TODO error
   }
 }
 
@@ -213,9 +210,11 @@ RCT_EXPORT_METHOD(hasPermission:
 RCT_EXPORT_METHOD(sendMessage:
   (NSDictionary *) message
     :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject) {
+    :(RCTPromiseRejectBlock) reject
+) {
   if (!message[@"to"]) {
     reject(@"messaging/invalid-message", @"The supplied message is missing a 'to' field", nil);
+    // TODO return
   }
   NSString *to = message[@"to"];
   NSString *messageId = message[@"messageId"];
@@ -223,15 +222,14 @@ RCT_EXPORT_METHOD(sendMessage:
   NSDictionary *data = message[@"data"];
 
   [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-
-  // TODO: Listen for send success / errors
   resolve(nil);
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic:
   (NSString *) topic
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject) {
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
   [[FIRMessaging messaging] subscribeToTopic:topic completion:^(NSError *error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
@@ -243,10 +241,9 @@ RCT_EXPORT_METHOD(subscribeToTopic:
 
 RCT_EXPORT_METHOD(unsubscribeFromTopic:
   (NSString *) topic
-      resolve:
-      (RCTPromiseResolveBlock) resolve
-      reject:
-      (RCTPromiseRejectBlock) reject) {
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
   [[FIRMessaging messaging] unsubscribeFromTopic:topic completion:^(NSError *error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];

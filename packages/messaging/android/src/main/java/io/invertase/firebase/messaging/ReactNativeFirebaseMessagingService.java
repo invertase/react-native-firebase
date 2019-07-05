@@ -45,7 +45,7 @@ public class ReactNativeFirebaseMessagingService extends FirebaseMessagingServic
     //  NOTIFICATION Message
     // --------------------\/
     // with no data
-    if (remoteMessage.getNotification() != null) {
+    if (remoteMessage.getNotification() != null && remoteMessage.getData().size() == 0) {
       // TODO broadcast intent when notifications module ready
       return;
     }

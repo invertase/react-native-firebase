@@ -55,11 +55,20 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-
+  // FCM Data messages come through here if they specify content-available=true
+  // Pass them over to the RNFirebaseMessaging handler instead
+  if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
+    // TODO send message event
+  }
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-
+  // FCM Data messages come through here if they specify content-available=true
+  // Pass them over to the RNFirebaseMessaging handler instead
+  if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
+    // TODO send message event
+    completionHandler(UIBackgroundFetchResultNoData);
+  }
 }
 
 
