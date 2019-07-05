@@ -106,7 +106,7 @@ export namespace Messaging {
   export class Module extends ReactNativeFirebaseModule {
     newRemoteMessage(): RemoteMessageBuilder;
 
-    get isAutoInitEnabled(): true;
+    get isAutoInitEnabled(): boolean;
 
     setAutoInitEnabled(enabled: boolean): Promise<void>;
 
