@@ -97,10 +97,7 @@ declare module '@react-native-firebase/utils' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const UtilsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Utils.Module,
-    Utils.Statics
-  >;
+  const UtilsDefaultExport: ReactNativeFirebaseModuleAndStatics<Utils.Module, Utils.Statics>;
   /**
    * @example
    * ```js
@@ -121,10 +118,7 @@ declare module '@react-native-firebase/app-types' {
      * and related services inside React Native, e.g. Test Lab helpers
      * and Google Play Services version helpers.
      */
-    utils: ReactNativeFirebaseModuleAndStatics<
-      Utils.Module,
-      Utils.Statics
-    >;
+    utils: ReactNativeFirebaseModuleAndStatics<Utils.Module, Utils.Statics>;
   }
 
   interface FirebaseApp {

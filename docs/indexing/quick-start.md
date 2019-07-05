@@ -10,7 +10,7 @@ description: Get to grips with the basics of App Indexing in React Native Fireba
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/indexing@alpha
+yarn add @react-native-firebase/indexing
 ```
 
 Setup your application by following the platform specific instructions:
