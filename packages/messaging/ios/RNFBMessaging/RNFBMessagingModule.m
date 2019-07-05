@@ -54,7 +54,8 @@ RCT_EXPORT_MODULE();
 
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [NSMutableDictionary new];
-  constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled]);
+  constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
+  constants[@"isRegisteredForRemoteNotifications"] = @([RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
   return constants;
 }
 
@@ -158,11 +159,9 @@ RCT_EXPORT_METHOD(requestPermission:
       }
     }];
   } else {
-    // TODO iOS 9 support can be added here
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unsupported-platform-version",
         @"message": @"requestPermission can not be called on this version of iOS, minimum version is iOS 10."} mutableCopy];
-    return;
   }
 
 
@@ -174,9 +173,21 @@ RCT_EXPORT_METHOD(requestPermission:
 RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject) {
+  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+    return resolve(nil);
+  }
+
   [[UIApplication sharedApplication] registerForRemoteNotifications];
   resolve(nil);
 }
+
+RCT_EXPORT_METHOD(unregisterForRemoteNotifications:
+  (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject) {
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  resolve(nil);
+}
+
 
 // Non Web SDK methods
 RCT_EXPORT_METHOD(hasPermission:
