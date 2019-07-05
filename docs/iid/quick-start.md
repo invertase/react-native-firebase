@@ -10,7 +10,7 @@ description: Using Instance ID in your React Native application.
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/iid@alpha
+yarn add @react-native-firebase/iid
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor>. iOS requires no additional steps.

@@ -37,7 +37,7 @@
     "npm:publish:6:beta": "lerna publish from-package --dist-tag beta --no-git-reset",
     "npm:publish:6:rc": "lerna publish from-package --dist-tag rc --no-git-reset",
     "npm:publish:alpha:nightly": "lerna publish from-package --canary --preid alpha --dist-tag alpha --no-git-reset",
-    "npm:publish:release": "echo '!!🔴!! RELEASE !!🔴!!' && echo '!!!!! RELEASE !!!!!!' && lerna publish from-package"
+    "npm:publish:release": "echo '!!🔴!! RELEASE !!🔴!!' && echo '!!!!! RELEASE !!!!!!' && lerna publish from-package --dist-tag latest --no-git-reset"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -87,9 +87,11 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "packages/template/project",
       "tests"
     ],
     "nohoist": [
+      "packages/template/project/react-native", "packages/template/project/react-native/**",
       "detox",
       "**/detox",
       "**/detox/**",

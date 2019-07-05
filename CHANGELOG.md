@@ -7,16 +7,18 @@ Firebase API Coverage.
 Many of the manual native installation steps for Android & iOS have been removed / internally automated
 and most modules can now be used just by linking it (e.g. `react-native link @react-native-firebase/analytics`).
 
-The following modules are completed and published to NPM on the `alpha` tag ready to be consumed:
+The following modules are completed and published to NPM and ready to be consumed (as patch versions only, until all modules are ready, at which point they will all be published starting from v6.0.0):
 
 | Name                                                      |                                                                                            Downloads                                                                                            |                                                                Coverage                                                                 |
 | --------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: |
 | [Analytics](/packages/analytics)                          |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics)           |           [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail)           |
 | [App](/packages/app)                                      |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)                 |                 [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)                 |
 | [App Invites](/packages/invites)                          |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)             |             [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)             |
+| [App Indexing](/packages/indexing)                        |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/indexing.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/indexing)            |            [![badge](https://api.rnfirebase.io/coverage/indexing/badge)](https://api.rnfirebase.io/coverage/indexing/detail)            |
 | [Cloud Functions](/packages/functions)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)           |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
 | [Cloud Storage](/packages/storage)                        |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)             |             [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)             |
 | [Crashlytics](/packages/crashlytics)                      |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics)         |         [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail)         |
+| [Dynamic Links](/packages/links)                          |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/links.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/links)               |               [![badge](https://api.rnfirebase.io/coverage/links/badge)](https://api.rnfirebase.io/coverage/links/detail)               |
 | [In-app Messaging](/packages/fiam)                        |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)                |                [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)                |
 | [Instance ID](/packages/iid)                              |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language ](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
@@ -33,7 +35,7 @@ The following modules are **migration only** for now (migrated from v5 to v6 wit
 - no new tests added for them (but all existing tests pass)
 - flow types missing (but have TS types)
 
-More work on these will be done in a later alpha release.
+More work on these will be done in a later pre-v6 release.
 
 | Name                             |                                                                             Downloads                                                                             |                                                 Coverage                                                  |
 | -------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------: |
@@ -61,14 +63,14 @@ Once all the old native installation changes have been removed you can follow th
 1. Install the [@react-native-firebase/app](https://github.com/invertase/react-native-firebase/tree/master/packages/app) NPM package (all modules have a hard dependency requirement on this package):
 
 ```bash
-yarn add @react-native-firebase/app@alpha
+yarn add @react-native-firebase/app
 react-native link @react-native-firebase/app
 ```
 
 2. Install the NPM packages for the Firebase services you'd like to use, e.g. for analytics install [@react-native-firebase/analytics](https://github.com/invertase/react-native-firebase/tree/master/packages/analytics). Repeat this step for each Firebase service you require.
 
 ```bash
-yarn add @react-native-firebase/analytics@alpha
+yarn add @react-native-firebase/analytics
 react-native link @react-native-firebase/analytics
 ```
 
@@ -108,6 +110,7 @@ await analytics().setUserId('12345678');
 - [INTERNAL] Improved error codes & handling for all Firebase services;
   - Standardised native error to JS conversion
   - [DEVEX] Native promise rejection errors now contain additional properties to aid debugging
+  - All React Native Firebase native methods should now always return an Error to JS - even if the Error occurred due to native code.
 - [BUGFIX] All native events are now queued natively until a JS listener is registered. This fixes several race conditions for events like `onMessage`, `onNotification`, `onLink` etc where the event would trigger before JS was ready.
 - [NEW][🔥] In an effort to further reduce manual native code changes when integrating and configuring React Native Firebase; we have added support for configuring various Firebase services & features via a `firebase.json` file in your project root.
 - [NEW][ios] CocoaPods static framework support for all modules (you can use `use_frameworks!` without issues relating to this lib)
@@ -122,6 +125,15 @@ await analytics().setUserId('12345678');
   - Firebase services such as Performance Monitoring & Remote Config require the default app to be initialised through the plist/json file.
 - [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
 - [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
+
+## App Indexing (indexing) - **[NEW]**
+
+Support for handling an incoming app index URL has been added to React Native Firebase.
+
+- [NEW] Handle the app opening via an app indexing URL with `indexing().getInitialURL()`.
+- [NEW] Setup a realtime event listener to handle app indexing URL opening whilst the app is active with `indexing().onOpenURL()`.
+
+> Support for Android events will be integrated post-v6 release. For now this is purely a wrapper around `Linking` in React Native.
 
 ## App Invites (invites)
 
@@ -160,6 +172,15 @@ await analytics().setUserId('12345678');
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
+## Dynamic Links (links)
+
+- [NEW][ios][🔥] Manually adding `AppDelegate` methods to support receiving Dynamic Link open events is no longer required, we swizzle this at runtime and automatically intercept the required events.
+- [BUGFIX] Links should now always be accessible via `onLink` & `getInitialLink`
+  - This fix is a side-effect of the bugfix mentioned above in the `all modules` section ('`All native events are now queued natively`')
+- [BREAKING] Creating a Dynamic Link builder via `new firebase.links.DynamicLink(link, domainURIPrefix)` has been deprecated, use `firebase.links().newDynamicLinkParameters(link, domainURIPrefix)` instead.
+- [BREAKING] Some previously allowed parameter configurations will now throw an argument error, e.g. trying to set any `DynamicLinkIOSParameters` param without providing an iOS bundle id will now error.
+  - these configurations were incorrect to begin with but were never flagged to user code so may have gone unnoticed
+
 ## Functions (functions)
 
 - [BUGFIX] Fixed an issue where `useFunctionsEmulator` does not persist natively (Firebase iOS SDK requires chaining this method before other calls and does not modify the instance, Android however persists this)
@@ -185,6 +206,18 @@ The Performance Monitoring API has had a significant API change as originally hi
 - [BREAKING] `firebase.perf.Trace.getMetric` will now return 0 if a metric could not be found
 - [NEW] Added support for `firebase.perf().isPerformanceCollectionEnabled: boolean`
 - [NEW] Added `firebase.perf().startTrace(identifier: string): Promise<Trace>;` as a convenience method to create and immediately start a Trace
+
+## Realtime Database (database)
+
+The Realtime Database module has had a large re-write, fixing various inconsistencies against the web SDK, along with improving data serialization on the native side by moving intensive serialization work off the UI thread.
+
+- [BREAKING][bugfix] The `Reference` class now extends a `Query` class (to match the web SDK). Currently in v5 everything is within the `Reference` class, allowing for incorrect behaviour such as chaining a reference only method to a query, e.g. `ref().orderByKey().once()`. This is now not possible and will cause a standard JavaScript error.
+- [BREAKING][bugfix] Internal validation for all methods has now been added. With v5 in some cases, incorrect values would be passed along to native and causing native exceptions/potential crashes.
+- [BREAKING][bugfix] All query based modifiers are now validated as per the Web SDK spec. In v5 it is possible to chain queries which are not allowed together causing native errors (e.g. `.orderByKey().orderByPriority()`, `.startAt('foo', 'bar').orderByKey()` etc). Doing so in v6 will now throw an error to keep it in-line with the Web SDK.
+- [BREAKING][bugfix] `Reference.push` now correctly mimics the Web SDK, returning a thenable reference.
+- [NEW] `DatabaseSnapshot.forEach` now returns the current index key.
+- [NEW] Many methods were missing an `onComplete` handler, which is now implemented as per the Web SDK.
+- [BUGFIX] `DatabaseSnapshot.forEach` correct iterates over "array" fields in the database.
 
 ## Remote Config (config)
 
@@ -272,27 +305,6 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 ```
 
 > ML Kit Translate APIs to come in a later release.
-
-## Realtime Database (database)
-
-The Realtime Database module has had a large re-write, fixing various inconsistencies against the web SDK, along with improving data serialization on the native side by moving intensive work to separate threads. 
-
-- [BREAKING][BUGFIX] The `Reference` class now extends a `Query` class (to match the web SDK). Currently in v5 everything is within the `Reference` class, allowing for incorrect behaviour such as chaining a reference only method to a query, e.g. `ref().orderByKey().once()`. This is now not possible and will cause a standard JavaScript error.
-- [BREAKING][BUGFIX] Internal validation for all methods has now been added. With v5 in some cases, incorrect values would be passed to causing native exceptions and potential crashes if not handled.
-- [BREAKING][BUGFIX] All query based modifiers are now validated as per the Web SDK spec. In v5 it is possible to chain queries which are not allowed together causing native errors (e.g. `.orderByKey().orderByPriority()`, `.startAt('foo', 'bar').orderByKey()` etc). Doing so in v6 will now throw an error to keep in-line with the Web SDK.
-- [BREAKING][BUGFIX] `Reference.push` now correctly mimics the Web SDK, returning a thenable reference.
-- [NEW] `DatabaseSnapshot.forEach` now returns the current index key.
-- [NEW] Many methods were missing an `onComplete` handler, which is now implemented as per the Web SDK.
-- [BUGFIX] `DatabaseSnapshot.forEach` correct iterates over "array" fields in the database.
-
-## App Indexing (indexing) - **[NEW]**
-
-Support for handling an incoming app index URL has been added to React Native Firebase.
-
-- [NEW] Handle the app opening via an app indexing URL with `indexing().getInitialURL()`.
-- [NEW] Setup a realtime event listener to handle app indexing URL opening whilst the app is active with `indexing().onOpenURL()`.
-
-> Support for Android events will be integrated post-v6 release.
 
 ## Utils
 

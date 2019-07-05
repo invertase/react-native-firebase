@@ -36,7 +36,7 @@ import { AccessToken } from 'react-native-fbsdk';
 
 const data = await AccessToken.getCurrentAccessToken();
 
-if (data) {
+if (!data) {
   throw new Error('Something went wrong obtaining access token');
 }
 ```
