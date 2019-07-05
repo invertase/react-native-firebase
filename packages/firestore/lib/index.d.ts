@@ -375,7 +375,112 @@ export namespace Firestore {
      */
     limit(limit: number): Query;
 
-    onSnapshot(): Function;
+    /**
+     * Attaches a listener for `QuerySnapshot` events.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot({
+     *     error: (e) => console.error(e),
+     *     next: (querySnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param observer A single object containing `next` and `error` callbacks.
+     */
+    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot({
+     *     includeMetadataChanges: true,
+     *   }, {
+     *     error: (e) => console.error(e),
+     *     next: (querySnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param options Options controlling the listen behavior.
+     * @param observer A single object containing `next` and `error` callbacks.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      observer: { complete?: Function; error?: Function; next?: Function },
+    ): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot(
+     *     (querySnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot(
+     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
+     *     (querySnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param options Options controlling the listen behavior.
+     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      onNext: Function,
+      onError?: Function,
+      onCompletion?: Function,
+    ): Function;
 
     /**
      * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of ascending.
@@ -483,9 +588,111 @@ export namespace Firestore {
     isEqual(other: DocumentReference): boolean;
 
     /**
-     * TODO multiple signatures
+     * Attaches a listener for DocumentSnapshot events.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().doc('users/alovelace')
+     *   .onSnapshot({
+     *     error: (e) => console.error(e),
+     *     next: (documentSnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(): Function;
+    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+
+    /**
+     * Attaches a listener for DocumentSnapshot events with snapshot listener options.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().doc('users/alovelace')
+     *   .onSnapshot({
+     *     includeMetadataChanges: true,
+     *   }, {
+     *     error: (e) => console.error(e),
+     *     next: (documentSnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param options Options controlling the listen behavior.
+     * @param observer A single object containing `next` and `error` callbacks.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      observer: { complete?: Function; error?: Function; next?: Function },
+    ): Function;
+
+    /**
+     * Attaches a listener for DocumentSnapshot events.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().doc('users/alovelace')
+     *   .onSnapshot(
+     *     (documentSnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param onNext A callback to be called every time a new `DocumentSnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
+
+    /**
+     * Attaches a listener for DocumentSnapshot events with snapshot listener options.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().doc('users/alovelace')
+     *   .onSnapshot(
+     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
+     *     (documentSnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param options Options controlling the listen behavior.
+     * @param onNext A callback to be called every time a new `DocumentSnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      onNext: Function,
+      onError?: Function,
+      onCompletion?: Function,
+    ): Function;
 
     /**
      * Writes to the document referred to by this DocumentReference. If the document does not yet
