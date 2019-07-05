@@ -18,7 +18,13 @@
 import { Base64, isString } from '@react-native-firebase/common';
 
 export default class FirestoreBlob {
-  constructor(binaryString) {
+  constructor(internal = false, binaryString) {
+    if (internal === false) {
+      throw new Error(
+        'firebase.firestore.Blob constructor is private, use Blob.<field>() instead.',
+      );
+    }
+
     this._binaryString = binaryString;
   }
 
@@ -35,7 +41,7 @@ export default class FirestoreBlob {
       );
     }
 
-    return new FirestoreBlob(Base64.atob(base64));
+    return new FirestoreBlob(true, Base64.atob(base64));
   }
 
   /**
@@ -49,7 +55,7 @@ export default class FirestoreBlob {
       throw new Error('firestore.Blob.fromUint8Array expects an instance of Uint8Array');
     }
 
-    return new FirestoreBlob(Array.prototype.map.call(array, $ => String.fromCharCode($)).join(''));
+    return new FirestoreBlob(true, Array.prototype.map.call(array, $ => String.fromCharCode($)).join(''));
   }
 
   /**

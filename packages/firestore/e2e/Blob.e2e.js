@@ -26,6 +26,17 @@ const testBufferLarge = Buffer.from(testStringLarge);
 const testBase64Large = testBufferLarge.toString('base64');
 
 describe('firestore.Blob', () => {
+
+  it('should throw if constructed manually', () => {
+    try {
+      new firebase.firestore.Blob();
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(`constructor is private`);
+      return Promise.resolve();
+    }
+  });
+
   it('should be exported as a static', () => {
     const { Blob } = firebase.firestore;
     should.exist(Blob);
