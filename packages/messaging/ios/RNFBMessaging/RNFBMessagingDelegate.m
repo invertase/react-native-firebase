@@ -35,9 +35,9 @@
     sharedInstance.pendingPromiseResolve = nil;
     [FIRMessaging messaging].delegate = sharedInstance;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:sharedInstance];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:sharedInstance];
+    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:nil];
   });
   return sharedInstance;
 }
