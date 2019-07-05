@@ -36,6 +36,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._isAutoInitEnabled = this.native.isAutoInitEnabled || true;
+    this._isRegisteredForRemoteNotifcations = this.native.isRegisteredForRemoteNotifcations || true;
   }
 
   get isAutoInitEnabled() {
@@ -94,7 +95,25 @@ class FirebaseMessagingModule extends FirebaseModule {
    */
   registerForRemoteNotifications() {
     if (isAndroid) return Promise.resolve();
+    this._isRegisteredForRemoteNotifcations = true;
     return this.native.registerForRemoteNotifications();
+  }
+
+  /**
+   * @platform ios
+   */
+  get isRegisteredForRemoteNotifications() {
+    if (isAndroid) return true;
+    return this._isRegisteredForRemoteNotifcations;
+  }
+
+  /**
+   * @platform ios
+   */
+  unregisterForRemoteNotifications() {
+    if (isAndroid) return Promise.resolve();
+    this._isRegisteredForRemoteNotifcations = false;
+    return this.native.unregisterForRemoteNotifications();
   }
 
   /**

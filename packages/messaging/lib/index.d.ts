@@ -62,9 +62,35 @@ export namespace Messaging {
     // firebase.messaging.* static props go here
   }
 
+  export interface RemoteMessage {
+    collapseKey: string;
+
+    messageId: string;
+
+    messageType: string;
+
+    to: string;
+
+    ttl: number;
+
+    data: { [key: string]: string };
+  }
+
+  export interface RemoteMessageBuilder {
+    setCollapseKey(collapseKey: string): RemoteMessageBuilder;
+
+    setMessageId(messageId: string): RemoteMessageBuilder;
+
+    setMessageType(messageType: string): RemoteMessageBuilder;
+
+    setTo(to: string): RemoteMessageBuilder;
+
+    setTtl(ttl: number): RemoteMessageBuilder;
+
+    setData(data: { [key: string]: string }): RemoteMessageBuilder;
+  }
+
   /**
-   * // TODO CHOOSE THIS ---------------------------------------
-   *
    * The Firebase Messaging service interface.
    *
    * > This module is available for the default app only.
@@ -76,31 +102,68 @@ export namespace Messaging {
    * ```js
    * const defaultAppMessaging = firebase.messaging();
    * ```
-   *
-   * // TODO OR THIS -------------------------------------------
-   *
-   * The Firebase Messaging service is available for the default app or a given app.
-   *
-   * #### Example 1
-   *
-   * Get the messaging instance for the **default app**:
-   *
-   * ```js
-   * const messagingForDefaultApp = firebase.messaging();
-   * ```
-   *
-   * #### Example 2
-   *
-   * Get the messaging instance for a **secondary app**:
-   *˚
-   * ```js
-   * const otherApp = firebase.app('otherApp');
-   * const messagingForOtherApp = firebase.messaging(otherApp);
-   * ```
-   *
    */
   export class Module extends ReactNativeFirebaseModule {
-    // firebase.messaging().* methods & props go here
+    newRemoteMessage(): RemoteMessageBuilder;
+
+    get isAutoInitEnabled(): true;
+
+    setAutoInitEnabled(enabled: boolean): Promise<void>;
+
+    getToken(authorizedEntity: string, scope: string = 'FCM'): Promise<string>;
+
+    deleteToken(authorizedEntity: string, scope: string = 'FCM'): Promise<void>;
+
+    onMessage(listener: (message: RemoteMessage) => {}): Function;
+
+    onTokenRefresh(listener: (token: string) => {}): Function;
+
+    /**
+     * @platform ios
+     */
+    requestPermission(): Promise<boolean>;
+
+    /**
+     * @platform ios
+     */
+    registerForRemoteNotifications(): Promise<void>;
+
+    /**
+     * @platform ios
+     */
+    isRegisteredForRemoteNotifications: boolean;
+
+    /**
+     * @platform ios
+     */
+    unregisterForRemoteNotifications(): Promise<void>;
+
+    /**
+     * @platform ios
+     */
+    getAPNSToken(): Promise<string>;
+
+    hasPermission(): Promise<boolean>;
+
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
+    onDeletedMessages(listener: Function): Function;
+
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
+    onMessageSent(listener: (messageId: string) => {}): Function;
+
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
+    onSendError(listener: { messageId: string; error: Error }): Function;
+
+    /**
+     * @platform android
+     */
+    setBackgroundMessageHandler(handler: (message: RemoteMessage) => {});
+
+    sendMessage(message: RemoteMessageBuilder): Promise<void>;
+
+    subscribeToTopic(topic: string): Promise<void>;
+
+    unsubscribeFromTopic(topic: string): Promise<void>;
   }
 }
 
