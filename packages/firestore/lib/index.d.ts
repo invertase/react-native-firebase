@@ -59,117 +59,39 @@ import {
  */
 export namespace Firestore {
   /**
-   * A write batch, used to perform multiple writes as a single atomic unit.
-   *
-   * A WriteBatch object can be acquired by calling `firestore.batch()`. It provides methods for adding
-   * writes to the write batch. None of the writes will be committed (or visible locally) until
-   * `WriteBatch.commit()` is called.
-   *
-   * Unlike transactions, write batches are persisted offline and therefore are preferable when you don't need to
-   * condition your writes on read data.
+   * An immutable object representing an array of bytes.
    */
-  export interface WriteBatch {
+  export class Blob {
     /**
-     * Commits all of the writes in this write batch as a single atomic unit.
+     * Creates a new Blob from the given Base64 string, converting it to bytes.
      *
-     * Returns a Promise resolved once all of the writes in the batch have been successfully written
-     * to the backend as an atomic unit. Note that it won't resolve while you're offline.
-     *
-     * #### Example
-     *
-     * ```js
-     * const batch = firebase.firestore().batch();
-     *
-     * // Perform batch operations...
-     *
-     * await batch.commit();
-     * ```
+     * @param base64 The Base64 string used to create the Blob object.
      */
-    commit(): Promise<void>;
+    static fromBase64String(base64: string): Blob;
 
     /**
-     * Deletes the document referred to by the provided `DocumentReference`.
+     * Creates a new Blob from the given Uint8Array.
      *
-     * #### Example
-     *
-     * ```js
-     * const batch = firebase.firestore().batch();
-     * const docRef = firebase.firestore().doc('users/alovelace');
-     *
-     * batch.delete(docRef);
-     * ```
-     *
-     * @param documentRef A reference to the document to be deleted.
+     * @param array The Uint8Array used to create the Blob object.
      */
-    delete(documentRef: DocumentReference): WriteBatch;
+    static fromUint8Array(array: Uint8Array): Blob;
 
     /**
-     * Writes to the document referred to by the provided DocumentReference. If the document does
-     * not exist yet, it will be created. If you pass SetOptions, the provided data can be merged
-     * into the existing document.
+     * Returns true if this `Blob` is equal to the provided one.
      *
-     * #### Example
-     *
-     * ```js
-     * const batch = firebase.firestore().batch();
-     * const docRef = firebase.firestore().doc('users/dsmith');
-     *
-     * batch.set(docRef, {
-     *   name: 'David Smith',
-     *   age: 25,
-     * });
-     * ```
-     *
-     * @param documentRef A reference to the document to be set.
-     * @param data An object of the fields and values for the document.
-     * @param options An object to configure the set behavior.
+     * @param other The `Blob` to compare against.
      */
-    set(documentRef: DocumentReference, data: { [key]: value }, options?: SetOptions): WriteBatch;
+    isEqual(other: Blob): Blob;
 
     /**
-     * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to a document that does not exist.
-     *
-     * #### Example
-     *
-     * ```js
-     * const batch = firebase.firestore().batch();
-     * const docRef = firebase.firestore().doc('users/alovelace');
-     *
-     * batch.update(docRef, {
-     *   city: 'SF',
-     * });
-     * ```
-     *
-     * @param documentRef A reference to the document to be updated.
-     * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
+     * Returns the bytes of a Blob as a Base64-encoded string.
      */
-    update(documentRef: DocumentReference, data: { [key]: value }): WriteBatch;
+    toBase64(): string;
 
     /**
-     * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
-     *
-     * Nested fields can be update by providing dot-separated field path strings or by providing FieldPath objects.
-     *
-     * #### Example
-     *
-     * ```js
-     * const batch = firebase.firestore().batch();
-     * const docRef = firebase.firestore().doc('users/alovelace');
-     *
-     * batch.update(docRef, 'city', 'SF', 'age', 31);
-     * ```
-     *
-     * @param documentRef A reference to the document to be updated.
-     * @param field The first field to update.
-     * @param value The first value.
-     * @param moreFieldAndValues Additional key value pairs.
+     * Returns the bytes of a Blob in a new Uint8Array.
      */
-    update(
-      documentRef: DocumentReference,
-      field: string | FieldPath,
-      value: any,
-      ...moreFieldAndValues: any[]
-    ): WriteBatch;
+    toUint8Array(): Uint8Array;
   }
 
   /**
@@ -228,281 +150,44 @@ export namespace Firestore {
   }
 
   /**
-   *
+   * A DocumentChange represents a change to the documents matching a query. It contains the document affected and the
+   * type of change that occurred.
    */
-  export interface Query {
+  export interface DocumentChange {
     /**
-     * Creates and returns a new Query that ends at the provided document (inclusive). The end
-     * position is relative to the order of the query. The document must contain all of the
-     * fields provided in the orderBy of this query.
-     *
-     * #### Example
-     *
-     * ```js
-     * const user = await firebase.firestore().doc('users/alovelace').get();
-     *
-     * // Get all users up to a specific user in order of age
-     * const querySnapshot = await firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .endAt(user);
-     * ```
-     *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
-     *
-     * @param snapshot The snapshot of the document to end at.
+     * The document affected by this change.
      */
-    endAt(snapshot: DocumentSnapshot): Query;
+    doc: DocumentSnapshot;
 
     /**
-     * Creates and returns a new Query that ends at the provided fields relative to the order of the query.
-     * The order of the field values must match the order of the order by clauses of the query.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Get all users who's age is 30 or less
-     * const querySnapshot = await firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .endAt(30);
-     * ```
-     *
-     * @param fieldValues The field values to end this query at, in order of the query's order by.
+     * The index of the changed document in the result set immediately after this `DocumentChange`
+     * (i.e. supposing that all prior `DocumentChange` objects and the current `DocumentChange` object have been applied).
+     * Is -1 for 'removed' events.
      */
-    endAt(...fieldValues: any[]): Query;
+    newIndex: number;
 
     /**
-     * Creates and returns a new Query that ends before the provided document (exclusive). The end
-     * position is relative to the order of the query. The document must contain all of the fields
-     * provided in the orderBy of this query.
-     *
-     * #### Example
-     *
-     * ```js
-     * const user = await firebase.firestore().doc('users/alovelace').get();
-     *
-     * // Get all users up to, but not including, a specific user in order of age
-     * const querySnapshot = await firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .endBefore(user);
-     * ```
-     *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
-     *
-     * @param snapshot The snapshot of the document to end before.
+     * The index of the changed document in the result set immediately prior to this `DocumentChange` (i.e.
+     * supposing that all prior `DocumentChange` objects have been applied). Is -1 for 'added' events.
      */
-    endBefore(snapshot: DocumentSnapshot): Query;
+    oldIndex: number;
 
     /**
-     * Creates and returns a new Query that ends before the provided fields relative to the order of
-     * the query. The order of the field values must match the order of the order by clauses of the query.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Get all users who's age is 29 or less
-     * const querySnapshot = await firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .endBefore(30);
-     * ```
-     *
-     * @param fieldValues The field values to end this query before, in order of the query's order by.
+     * The type of change ('added', 'modified', or 'removed').
      */
-    endBefore(...fieldValues: any[]): Query;
-
-    /**
-     * Executes the query and returns the results as a QuerySnapshot.
-     *
-     * Note: By default, get() attempts to provide up-to-date data when possible by waiting for data from the server,
-     * but it may return cached data or fail if you are offline and the server cannot be reached. This behavior can be
-     * altered via the `GetOptions` parameter.
-     *
-     * #### Example
-     *
-     * ```js
-     * const querySnapshot = await firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .get({
-     *     source: 'server',
-     *   });
-     * ```
-     *
-     * @param options An object to configure the get behavior.
-     */
-    get(options?: GetOptions): Promise<QuerySnapshot>;
-
-    /**
-     * Returns true if this Query is equal to the provided one.
-     *
-     * #### Example
-     *
-     * ```js
-     * const query = firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age');
-     *
-     * // false
-     * query.isEqual(
-     *   firebase.firestore()
-     *     .collection('users')
-     *     .orderBy('name')
-     * );
-     * ```
-     *
-     * @param other The `Query` to compare against.
-     */
-    isEqual(other: Query): boolean;
-
-    /**
-     * Creates and returns a new Query where the results are limited to the specified number of documents.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Get 10 users in order of age
-     * const querySnapshot = firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age')
-     *   .limit(10)
-     *   .get();
-     * ```
-     *
-     * @param limit The maximum number of items to return.
-     */
-    limit(limit: number): Query;
-
-    /**
-     * Attaches a listener for `QuerySnapshot` events.
-     *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
-     *
-     * Returns an unsubscribe function to stop listening to events.
-     *
-     * #### Example
-     *
-     * ```js
-     * const unsubscribe = firebase.firestore().collection('users')
-     *   .onSnapshot({
-     *     error: (e) => console.error(e),
-     *     next: (querySnapshot) => {},
-     *   });
-     *
-     * unsubscribe();
-     * ```
-     *
-     * @param observer A single object containing `next` and `error` callbacks.
-     */
-    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
-
-    /**
-     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
-     *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
-     *
-     * Returns an unsubscribe function to stop listening to events.
-     *
-     * #### Example
-     *
-     * ```js
-     * const unsubscribe = firebase.firestore().collection('users')
-     *   .onSnapshot({
-     *     includeMetadataChanges: true,
-     *   }, {
-     *     error: (e) => console.error(e),
-     *     next: (querySnapshot) => {},
-     *   });
-     *
-     * unsubscribe();
-     * ```
-     *
-     * @param options Options controlling the listen behavior.
-     * @param observer A single object containing `next` and `error` callbacks.
-     */
-    onSnapshot(
-      options: SnapshotListenOptions,
-      observer: { complete?: Function; error?: Function; next?: Function },
-    ): Function;
-
-    /**
-     * Attaches a listener for `QuerySnapshot` events.
-     *
-     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
-     *
-     * Returns an unsubscribe function to stop listening to events.
-     *
-     * #### Example
-     *
-     * ```js
-     * const unsubscribe = firebase.firestore().collection('users')
-     *   .onSnapshot(
-     *     (querySnapshot) => {}, // onNext
-     *     (error) => console.error(error), // onError
-     *   );
-     *
-     * unsubscribe();
-     * ```
-     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
-     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
-     * @param onCompletion An optional function which will never be called.
-     */
-    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
-
-    /**
-     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
-     *
-     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
-     *
-     * Returns an unsubscribe function to stop listening to events.
-     *
-     * #### Example
-     *
-     * ```js
-     * const unsubscribe = firebase.firestore().collection('users')
-     *   .onSnapshot(
-     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
-     *     (querySnapshot) => {}, // onNext
-     *     (error) => console.error(error), // onError
-     *   );
-     *
-     * unsubscribe();
-     * ```
-     * @param options Options controlling the listen behavior.
-     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
-     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
-     * @param onCompletion An optional function which will never be called.
-     */
-    onSnapshot(
-      options: SnapshotListenOptions,
-      onNext: Function,
-      onError?: Function,
-      onCompletion?: Function,
-    ): Function;
-
-    /**
-     * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of ascending.
-     *
-     * * #### Example
-     *
-     * #### Example
-     *
-     * ```js
-     * // Get users in order of age, descending
-     * const querySnapshot = firebase.firestore()
-     *   .collection('users')
-     *   .orderBy('age', 'desc')
-     *   .get();
-     * ```
-     *
-     * @param fieldPath The field to sort by. Either a string or FieldPath instance.
-     * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
-     */
-    orderBy(fieldPath: string | FieldPath, directionStr?: 'asc' | 'desc'): Query;
+    type: DocumentChangeType;
   }
 
+  /**
+   * The type of a DocumentChange may be 'added', 'removed', or 'modified'.
+   */
+  export type DocumentChangeType = 'added' | 'removed' | 'modified';
+
+  /**
+   * A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen
+   * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
+   * to create a `CollectionReference` to a subcollection.
+   */
   export interface DocumentReference {
     /**
      * The Firestore instance the document is in. This is useful for performing transactions, for example.
@@ -755,139 +440,6 @@ export namespace Firestore {
      */
     update(field: string | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
   }
-
-  /**
-   * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
-   * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
-   * can be determined via the `empty` and `size` properties.
-   */
-  export interface QuerySnapshot {
-    /**
-     * An array of all the documents in the `QuerySnapshot`.
-     */
-    docs: DocumentSnapshot[];
-
-    /**
-     * True if there are no documents in the `QuerySnapshot`.
-     */
-    empty: boolean;
-
-    /**
-     * Metadata about this snapshot, concerning its source and if it has local modifications.
-     */
-    metadata: SnapshotMetadata;
-
-    /**
-     * The query on which you called get or `onSnapshot` in order to `get` this `QuerySnapshot`.
-     */
-    query: Query;
-
-    /**
-     * The number of documents in the `QuerySnapshot`.
-     */
-    size: number;
-
-    /**
-     * Returns an array of the documents changes since the last snapshot. If this is the first snapshot, all documents
-     * will be in the list as added changes.
-     *
-     * To include metadata changes, ensure that the `onSnapshot()` method includes metadata changes.
-     *
-     * #### Example
-     *
-     * ```js
-     * firebase.firestore().collection('users')
-     *   .onSnapshot((querySnapshot) => {
-     *     console.log('Metadata Changes', querySnapshot.docChanges());
-     *   });
-     * ```
-     *
-     * #### Example - With metadata changes
-     *
-     * ```js
-     * firebase.firestore().collection('users')
-     *   .onSnapshot({ includeMetadataChanges: true }, (querySnapshot) => {
-     *     console.log('Metadata Changes', querySnapshot.docChanges({
-     *       includeMetadataChanges: true,
-     *     }));
-     *   });
-     * ```
-     *
-     * @param options `SnapshotListenOptions` that control whether metadata-only changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger snapshot events.
-     */
-    docChanges(options?: SnapshotListenOptions): DocumentChange[];
-
-    /**
-     * Enumerates all of the documents in the `QuerySnapshot`.
-     *
-     * #### Example
-     *
-     * ```js
-     * const querySnapshot = await firebase.firestore().collection('users').get();
-     *
-     * querySnapshot.forEach((documentSnapshot) => {
-     *   console.log('User', documentSnapshot.data());
-     * })
-     * ```
-     *
-     * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
-     * @param thisArg The this binding for the callback.
-     */
-    forEach(callback: Function, thisArg?: any): void;
-
-    /**
-     * Returns true if this `QuerySnapshot` is equal to the provided one.
-     *
-     * #### Example
-     *
-     * ```js
-     * const querySnapshot1 = await firebase.firestore().collection('users').limit(5).get();
-     * const querySnapshot2 = await firebase.firestore().collection('users').limit(10).get();
-     *
-     * // false
-     * querySnapshot1.isEqual(querySnapshot2);
-     * ```
-     *
-     * > This operation can be resource intensive when dealing with large datasets.
-     *
-     * @param other The `QuerySnapshot` to compare against.
-     */
-    isEqual(other: QuerySnapshot): boolean;
-  }
-
-  /**
-   * A DocumentChange represents a change to the documents matching a query. It contains the document affected and the
-   * type of change that occurred.
-   */
-  export interface DocumentChange {
-    /**
-     * The document affected by this change.
-     */
-    doc: DocumentSnapshot;
-
-    /**
-     * The index of the changed document in the result set immediately after this `DocumentChange`
-     * (i.e. supposing that all prior `DocumentChange` objects and the current `DocumentChange` object have been applied).
-     * Is -1 for 'removed' events.
-     */
-    newIndex: number;
-
-    /**
-     * The index of the changed document in the result set immediately prior to this `DocumentChange` (i.e.
-     * supposing that all prior `DocumentChange` objects have been applied). Is -1 for 'added' events.
-     */
-    oldIndex: number;
-
-    /**
-     * The type of change ('added', 'modified', or 'removed').
-     */
-    type: DocumentChangeType;
-  }
-
-  /**
-   * The type of a DocumentChange may be 'added', 'removed', or 'modified'.
-   */
-  export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
   /**
    * A DocumentSnapshot contains data read from a document in your Firestore database. The data can be extracted with
@@ -1221,6 +773,382 @@ export namespace Firestore {
   }
 
   /**
+   * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
+   * adding filters and ordering.
+   */
+  export interface Query {
+    /**
+     * Creates and returns a new Query that ends at the provided document (inclusive). The end
+     * position is relative to the order of the query. The document must contain all of the
+     * fields provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endAt(user);
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to end at.
+     */
+    endAt(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that ends at the provided fields relative to the order of the query.
+     * The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or less
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endAt(30);
+     * ```
+     *
+     * @param fieldValues The field values to end this query at, in order of the query's order by.
+     */
+    endAt(...fieldValues: any[]): Query;
+
+    /**
+     * Creates and returns a new Query that ends before the provided document (exclusive). The end
+     * position is relative to the order of the query. The document must contain all of the fields
+     * provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to, but not including, a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endBefore(user);
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to end before.
+     */
+    endBefore(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that ends before the provided fields relative to the order of
+     * the query. The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 29 or less
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .endBefore(30);
+     * ```
+     *
+     * @param fieldValues The field values to end this query before, in order of the query's order by.
+     */
+    endBefore(...fieldValues: any[]): Query;
+
+    /**
+     * Executes the query and returns the results as a QuerySnapshot.
+     *
+     * Note: By default, get() attempts to provide up-to-date data when possible by waiting for data from the server,
+     * but it may return cached data or fail if you are offline and the server cannot be reached. This behavior can be
+     * altered via the `GetOptions` parameter.
+     *
+     * #### Example
+     *
+     * ```js
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .get({
+     *     source: 'server',
+     *   });
+     * ```
+     *
+     * @param options An object to configure the get behavior.
+     */
+    get(options?: GetOptions): Promise<QuerySnapshot>;
+
+    /**
+     * Returns true if this Query is equal to the provided one.
+     *
+     * #### Example
+     *
+     * ```js
+     * const query = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age');
+     *
+     * // false
+     * query.isEqual(
+     *   firebase.firestore()
+     *     .collection('users')
+     *     .orderBy('name')
+     * );
+     * ```
+     *
+     * @param other The `Query` to compare against.
+     */
+    isEqual(other: Query): boolean;
+
+    /**
+     * Creates and returns a new Query where the results are limited to the specified number of documents.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get 10 users in order of age
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .limit(10)
+     *   .get();
+     * ```
+     *
+     * @param limit The maximum number of items to return.
+     */
+    limit(limit: number): Query;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot({
+     *     error: (e) => console.error(e),
+     *     next: (querySnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param observer A single object containing `next` and `error` callbacks.
+     */
+    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
+     *
+     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot({
+     *     includeMetadataChanges: true,
+     *   }, {
+     *     error: (e) => console.error(e),
+     *     next: (querySnapshot) => {},
+     *   });
+     *
+     * unsubscribe();
+     * ```
+     *
+     * @param options Options controlling the listen behavior.
+     * @param observer A single object containing `next` and `error` callbacks.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      observer: { complete?: Function; error?: Function; next?: Function },
+    ): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot(
+     *     (querySnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
+
+    /**
+     * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
+     *
+     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().collection('users')
+     *   .onSnapshot(
+     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
+     *     (querySnapshot) => {}, // onNext
+     *     (error) => console.error(error), // onError
+     *   );
+     *
+     * unsubscribe();
+     * ```
+     * @param options Options controlling the listen behavior.
+     * @param onNext A callback to be called every time a new `QuerySnapshot` is available.
+     * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
+     * @param onCompletion An optional function which will never be called.
+     */
+    onSnapshot(
+      options: SnapshotListenOptions,
+      onNext: Function,
+      onError?: Function,
+      onCompletion?: Function,
+    ): Function;
+
+    /**
+     * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of ascending.
+     *
+     * * #### Example
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get users in order of age, descending
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age', 'desc')
+     *   .get();
+     * ```
+     *
+     * @param fieldPath The field to sort by. Either a string or FieldPath instance.
+     * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
+     */
+    orderBy(fieldPath: string | FieldPath, directionStr?: 'asc' | 'desc'): Query;
+  }
+
+  /**
+   * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
+   * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
+   * can be determined via the `empty` and `size` properties.
+   */
+  export interface QuerySnapshot {
+    /**
+     * An array of all the documents in the `QuerySnapshot`.
+     */
+    docs: DocumentSnapshot[];
+
+    /**
+     * True if there are no documents in the `QuerySnapshot`.
+     */
+    empty: boolean;
+
+    /**
+     * Metadata about this snapshot, concerning its source and if it has local modifications.
+     */
+    metadata: SnapshotMetadata;
+
+    /**
+     * The query on which you called get or `onSnapshot` in order to `get` this `QuerySnapshot`.
+     */
+    query: Query;
+
+    /**
+     * The number of documents in the `QuerySnapshot`.
+     */
+    size: number;
+
+    /**
+     * Returns an array of the documents changes since the last snapshot. If this is the first snapshot, all documents
+     * will be in the list as added changes.
+     *
+     * To include metadata changes, ensure that the `onSnapshot()` method includes metadata changes.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.firestore().collection('users')
+     *   .onSnapshot((querySnapshot) => {
+     *     console.log('Metadata Changes', querySnapshot.docChanges());
+     *   });
+     * ```
+     *
+     * #### Example - With metadata changes
+     *
+     * ```js
+     * firebase.firestore().collection('users')
+     *   .onSnapshot({ includeMetadataChanges: true }, (querySnapshot) => {
+     *     console.log('Metadata Changes', querySnapshot.docChanges({
+     *       includeMetadataChanges: true,
+     *     }));
+     *   });
+     * ```
+     *
+     * @param options `SnapshotListenOptions` that control whether metadata-only changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger snapshot events.
+     */
+    docChanges(options?: SnapshotListenOptions): DocumentChange[];
+
+    /**
+     * Enumerates all of the documents in the `QuerySnapshot`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const querySnapshot = await firebase.firestore().collection('users').get();
+     *
+     * querySnapshot.forEach((documentSnapshot) => {
+     *   console.log('User', documentSnapshot.data());
+     * })
+     * ```
+     *
+     * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
+     * @param thisArg The this binding for the callback.
+     */
+    forEach(callback: Function, thisArg?: any): void;
+
+    /**
+     * Returns true if this `QuerySnapshot` is equal to the provided one.
+     *
+     * #### Example
+     *
+     * ```js
+     * const querySnapshot1 = await firebase.firestore().collection('users').limit(5).get();
+     * const querySnapshot2 = await firebase.firestore().collection('users').limit(10).get();
+     *
+     * // false
+     * querySnapshot1.isEqual(querySnapshot2);
+     * ```
+     *
+     * > This operation can be resource intensive when dealing with large datasets.
+     *
+     * @param other The `QuerySnapshot` to compare against.
+     */
+    isEqual(other: QuerySnapshot): boolean;
+  }
+
+  /**
    * An options object that configures the behavior of set() calls in `DocumentReference`, `WriteBatch` and `Transaction`.
    * These calls can be configured to perform granular merges instead of overwriting the target documents in their entirety
    * by providing a `SetOptions` with `merge: true`.
@@ -1380,39 +1308,174 @@ export namespace Firestore {
   }
 
   /**
-   * An immutable object representing an array of bytes.
+   * A reference to a transaction. The `Transaction` object passed to a transaction's updateFunction provides the methods to
+   * read and write data within the transaction context. See `Firestore.runTransaction()`.
    */
-  export class Blob {
+  export interface Transaction {
     /**
-     * Creates a new Blob from the given Base64 string, converting it to bytes.
+     * Deletes the document referred to by the provided DocumentReference.
      *
-     * @param base64 The Base64 string used to create the Blob object.
+     * @param documentRef A reference to the document to be deleted.
      */
-    static fromBase64String(base64: string): Blob;
+    delete(documentRef: DocumentReference): Transaction;
 
     /**
-     * Creates a new Blob from the given Uint8Array.
+     * Reads the document referenced by the provided DocumentReference.
      *
-     * @param array The Uint8Array used to create the Blob object.
+     * @param documentRef A reference to the document to be read.
      */
-    static fromUint8Array(array: Uint8Array): Blob;
+    get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
 
     /**
-     * Returns true if this `Blob` is equal to the provided one.
+     * Writes to the document referred to by the provided `DocumentReference`. If the document does not exist yet,
+     * it will be created. If you pass `SetOptions`, the provided data can be merged into the existing document.
      *
-     * @param other The `Blob` to compare against.
+     * @param documentRef A reference to the document to be set.
+     * @param data An object of the fields and values for the document.
+     * @param options An object to configure the set behavior.
      */
-    isEqual(other: Blob): Blob;
+    set(documentRef: DocumentReference, data: { [key]: value }, options?: SetOptions): Transaction;
 
     /**
-     * Returns the bytes of a Blob as a Base64-encoded string.
+     * Updates fields in the document referred to by the provided `DocumentReference`. The update will fail if applied
+     * to a document that does not exist.
+     *
+     * @param documentRef A reference to the document to be updated.
+     * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    toBase64(): string;
+    update(documentRef: DocumentReference, data: { [key]: value }): Transaction;
 
     /**
-     * Returns the bytes of a Blob in a new Uint8Array.
+     * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to
+     * a document that does not exist.
+     *
+     * Nested fields can be updated by providing dot-separated field path strings or by providing FieldPath objects.
+     *
+     * @param documentRef A reference to the document to be updated.
+     * @param field The first field to update.
+     * @param value The first value.
+     * @param moreFieldsAndValues Additional key/value pairs.
      */
-    toUint8Array(): Uint8Array;
+    update(
+      documentRef: DocumentReference,
+      field: string | FieldPath,
+      value: any,
+      ...moreFieldsAndValues: any[]
+    ): Transaction;
+  }
+
+  /**
+   * A write batch, used to perform multiple writes as a single atomic unit.
+   *
+   * A WriteBatch object can be acquired by calling `firestore.batch()`. It provides methods for adding
+   * writes to the write batch. None of the writes will be committed (or visible locally) until
+   * `WriteBatch.commit()` is called.
+   *
+   * Unlike transactions, write batches are persisted offline and therefore are preferable when you don't need to
+   * condition your writes on read data.
+   */
+  export interface WriteBatch {
+    /**
+     * Commits all of the writes in this write batch as a single atomic unit.
+     *
+     * Returns a Promise resolved once all of the writes in the batch have been successfully written
+     * to the backend as an atomic unit. Note that it won't resolve while you're offline.
+     *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     *
+     * // Perform batch operations...
+     *
+     * await batch.commit();
+     * ```
+     */
+    commit(): Promise<void>;
+
+    /**
+     * Deletes the document referred to by the provided `DocumentReference`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * batch.delete(docRef);
+     * ```
+     *
+     * @param documentRef A reference to the document to be deleted.
+     */
+    delete(documentRef: DocumentReference): WriteBatch;
+
+    /**
+     * Writes to the document referred to by the provided DocumentReference. If the document does
+     * not exist yet, it will be created. If you pass SetOptions, the provided data can be merged
+     * into the existing document.
+     *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     * const docRef = firebase.firestore().doc('users/dsmith');
+     *
+     * batch.set(docRef, {
+     *   name: 'David Smith',
+     *   age: 25,
+     * });
+     * ```
+     *
+     * @param documentRef A reference to the document to be set.
+     * @param data An object of the fields and values for the document.
+     * @param options An object to configure the set behavior.
+     */
+    set(documentRef: DocumentReference, data: { [key]: value }, options?: SetOptions): WriteBatch;
+
+    /**
+     * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to a document that does not exist.
+     *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * batch.update(docRef, {
+     *   city: 'SF',
+     * });
+     * ```
+     *
+     * @param documentRef A reference to the document to be updated.
+     * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
+     */
+    update(documentRef: DocumentReference, data: { [key]: value }): WriteBatch;
+
+    /**
+     * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
+     *
+     * Nested fields can be update by providing dot-separated field path strings or by providing FieldPath objects.
+     *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * batch.update(docRef, 'city', 'SF', 'age', 31);
+     * ```
+     *
+     * @param documentRef A reference to the document to be updated.
+     * @param field The first field to update.
+     * @param value The first value.
+     * @param moreFieldAndValues Additional key value pairs.
+     */
+    update(
+      documentRef: DocumentReference,
+      field: string | FieldPath,
+      value: any,
+      ...moreFieldAndValues: any[]
+    ): WriteBatch;
   }
 
   /**
