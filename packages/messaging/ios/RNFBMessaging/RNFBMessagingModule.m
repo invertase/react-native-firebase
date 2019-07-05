@@ -16,12 +16,12 @@
  */
 
 #import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
-#import "RCTConvert.h"
 #import "RNFBMessagingDelegate.h"
 #import "RNFBMessagingAppDelegateInterceptor.h"
 
@@ -177,8 +177,8 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
     return resolve(nil);
   }
 
+  [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
   [[UIApplication sharedApplication] registerForRemoteNotifications];
-  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(unregisterForRemoteNotifications:

@@ -22,6 +22,4 @@
 
 @interface RNFBMessagingModule : NSObject <RCTBridgeModule, FIRMessagingDelegate>
 
-+ (_Nonnull instancetype) sharedInstance;
-
 @end

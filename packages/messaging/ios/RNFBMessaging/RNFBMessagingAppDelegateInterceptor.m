@@ -16,6 +16,7 @@
  */
 
 #import "RNFBMessagingAppDelegateInterceptor.h"
+#import "RNFBSharedUtils.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
@@ -32,13 +33,25 @@
   return sharedInstance;
 }
 
+- (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject {
+  _registerPromiseResolver = resolve;
+  _registerPromiseRejecter = reject;
+}
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-
+  if (_registerPromiseResolver != nil) {
+    _registerPromiseResolver(nil);
+    _registerPromiseResolver = nil;
+    _registerPromiseRejecter = nil;
+  }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-
+  if (_registerPromiseRejecter != nil) {
+    [RNFBSharedUtils rejectPromiseWithNSError:_registerPromiseRejecter error:error];
+    _registerPromiseResolver = nil;
+    _registerPromiseRejecter = nil;
+  }
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
