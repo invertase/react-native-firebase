@@ -16,9 +16,9 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingDelegate.h"
-#import "RCTUtils.h"
 
 //#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 //@import UserNotifications;
@@ -26,7 +26,7 @@
 
 @implementation RNFBMessagingDelegate
 
-+ (instancetype)shared {
++ (instancetype)sharedInstance {
   static dispatch_once_t once;
   static RNFBMessagingDelegate *sharedInstance;
   dispatch_once(&once, ^{
@@ -35,39 +35,45 @@
     sharedInstance.pendingPromiseResolve = nil;
     [FIRMessaging messaging].delegate = sharedInstance;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-//    if (@available(iOS 10.0, *)) {
-//      [UNUserNotificationCenter currentNotificationCenter].delegate = sharedInstance;
-//    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:sharedInstance];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:sharedInstance];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:sharedInstance];
   });
   return sharedInstance;
 }
 
 
 #pragma mark -
-#pragma mark AppDelegate Methods
+#pragma mark UNUserNotificationCenter Methods
 
-
-- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo {
- // TODO send message received event
+- (void)sendDataMessageFailure:(NSNotification *)notification {
+  NSDictionary *userInfo = notification.userInfo;
+  NSError *error = (NSError *) userInfo[@"error"];
+  NSString *messageID = (NSString *) userInfo[@"messageID"];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_send_error" body:@{
+      @"messageId": messageID,
+      @"error": @{
+          @"code": @"unknown",
+          @"message": error.localizedDescription
+      }
+  }];
 }
 
-
-- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings {
-  // TODO resolve/reject any pending promise on shared instance
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
-
+- (void)sendDataMessageSuccess:(NSNotification *)notification {
+  NSDictionary *userInfo = notification.userInfo;
+  NSString *messageID = (NSString *) userInfo[@"messageID"];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_sent" body:@{
+      @"messageId": messageID
+  }];
 }
+
+- (void)didDeleteMessagesOnServer {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_deleted" body:@{}];
+}
+
 
 #pragma mark -
 #pragma mark FIRMessagingDelegate Methods
-
-/**
- private static final String EVENT_MESSAGE_SENT = "messaging_message_sent";
-  private static final String EVENT_MESSAGES_DELETED = "messaging_message_deleted";
-  private static final String EVENT_MESSAGE_RECEIVED = "messaging_message_received";
-  private static final String EVENT_MESSAGE_SEND_ERROR = "messaging_message_send_error";
-  private static final String EVENT_NEW_TOKEN = "messaging_token_refresh";
- */
 
 // Listen for FCM tokens
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {

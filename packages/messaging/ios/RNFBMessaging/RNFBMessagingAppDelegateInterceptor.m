@@ -21,19 +21,34 @@
 
 @implementation RNFBMessagingAppDelegateInterceptor
 
-+ (instancetype)shared {
++ (instancetype)sharedInstance {
   static dispatch_once_t once;
   static RNFBMessagingAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBMessagingAppDelegateInterceptor alloc] init];
+    [GULAppDelegateSwizzler proxyOriginalDelegateIncludingAPNSMethods];
+    [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
   });
   return sharedInstance;
 }
 
-+ (void)load {
-  [GULAppDelegateSwizzler proxyOriginalDelegateIncludingAPNSMethods];
-  [GULAppDelegateSwizzler registerAppDelegateInterceptor:[self shared]];
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+
 }
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+
+}
+
 
 
 @end

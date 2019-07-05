@@ -25,7 +25,7 @@
 //@import UserNotifications;
 //@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 //#else
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate>
+@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 //#endif
 
 @property _Nullable RCTPromiseRejectBlock pendingPromiseReject;

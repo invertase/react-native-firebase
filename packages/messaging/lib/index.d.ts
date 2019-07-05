@@ -114,6 +114,10 @@ export namespace Messaging {
 
     deleteToken(authorizedEntity: string, scope: string = 'FCM'): Promise<void>;
 
+    /**
+     *
+     * @param listener
+     */
     onMessage(listener: (message: RemoteMessage) => {}): Function;
 
     onTokenRefresh(listener: (token: string) => {}): Function;
@@ -141,7 +145,7 @@ export namespace Messaging {
     /**
      * @platform ios
      */
-    getAPNSToken(): Promise<string>;
+    getAPNSToken(): Promise<string | null>;
 
     hasPermission(): Promise<boolean>;
 

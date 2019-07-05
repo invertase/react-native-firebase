@@ -25,7 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNFBMessagingAppDelegateInterceptor : NSObject <UIApplicationDelegate>
 
-+ (instancetype)shared;
++ (instancetype)sharedInstance;
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo;
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
 
 @end
 

@@ -22,6 +22,8 @@
 #import "RNFBMessagingModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RCTConvert.h"
+#import "RNFBMessagingDelegate.h"
+#import "RNFBMessagingAppDelegateInterceptor.h"
 
 
 @implementation RNFBMessagingModule
@@ -29,6 +31,17 @@
 #pragma mark Module Setup
 
 RCT_EXPORT_MODULE();
+
+
+- (id)init {
+  self = [super init];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [RNFBMessagingDelegate sharedInstance];
+    [RNFBMessagingAppDelegateInterceptor sharedInstance];
+  });
+  return self;
+}
 
 - (dispatch_queue_t)methodQueue {
   return dispatch_get_main_queue();
@@ -38,40 +51,62 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
+
+- (NSDictionary *)constantsToExport {
+  NSMutableDictionary *constants = [NSMutableDictionary new];
+  constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled]);
+  return constants;
+}
+
+
 #pragma mark -
 #pragma mark Firebase Messaging Methods
 
-RCT_EXPORT_METHOD(getToken:
-  (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
-  if (initialToken) {
-    resolve(initialToken);
-    initialToken = nil;
-  } else if ([[FIRMessaging messaging] FCMToken]) {
-    resolve([[FIRMessaging messaging] FCMToken]);
-  } else {
-    NSString *senderId = [[FIRApp defaultApp] options].GCMSenderID;
-    [[FIRMessaging messaging] retrieveFCMTokenForSenderID:senderId completion:^(NSString *_Nullable FCMToken, NSError *_Nullable error) {
-      if (error) {
-        reject(@"messaging/fcm-token-error", @"Failed to retrieve FCM token.", error);
-      } else if (FCMToken) {
-        resolve(FCMToken);
-      } else {
-        resolve([NSNull null]);
-      }
-    }];
+
+RCT_EXPORT_METHOD(setAutoInitEnabled:
+  (BOOL) enabled
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  @try {
+    [FIRMessaging messaging].autoInitEnabled = enabled;
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
+
+  return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(deleteToken:
-  (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
-  NSString *senderId = [[FIRApp defaultApp] options].GCMSenderID;
-  [[FIRMessaging messaging] deleteFCMTokenForSenderID:senderId completion:^(NSError *_Nullable error) {
+
+RCT_EXPORT_METHOD(getToken:
+  (NSString *) authorizedEntity
+    :(NSString *) scope
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  NSDictionary *options = nil;
+  if ([FIRMessaging messaging].APNSToken) {
+    options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
+  }
+  [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
     if (error) {
-      reject(@"messaging/fcm-token-error", @"Failed to delete FCM token.", error);
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve(identity);
+    }
+  }];
+}
+
+
+RCT_EXPORT_METHOD(deleteToken:
+  (NSString *) authorizedEntity
+    :(NSString *) scope
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  [[FIRInstanceID instanceID] deleteTokenWithAuthorizedEntity:authorizedEntity scope:scope handler:^(NSError *_Nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
     } else {
       resolve([NSNull null]);
     }
@@ -81,8 +116,8 @@ RCT_EXPORT_METHOD(deleteToken:
 
 RCT_EXPORT_METHOD(getAPNSToken:
   (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
+    : (RCTPromiseRejectBlock) reject
+) {
   NSData *apnsToken = [FIRMessaging messaging].APNSToken;
   if (apnsToken) {
     const char *data = [apnsToken bytes];
@@ -108,7 +143,13 @@ RCT_EXPORT_METHOD(requestPermission:
   }
 
   if (@available(iOS 10.0, *)) {
-    UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+    UNAuthorizationOptions authOptions;
+    if (@available(iOS 12.0, *)) {
+      authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+    } else {
+      authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+    }
+
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
       if (error) {
         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
@@ -132,7 +173,7 @@ RCT_EXPORT_METHOD(requestPermission:
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
-      : (RCTPromiseRejectBlock) reject) {
+    : (RCTPromiseRejectBlock) reject) {
   [[UIApplication sharedApplication] registerForRemoteNotifications];
   resolve(nil);
 }
@@ -160,10 +201,8 @@ RCT_EXPORT_METHOD(hasPermission:
 
 RCT_EXPORT_METHOD(sendMessage:
   (NSDictionary *) message
-      resolve:
-      (RCTPromiseResolveBlock) resolve
-      reject:
-      (RCTPromiseRejectBlock) reject) {
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject) {
   if (!message[@"to"]) {
     reject(@"messaging/invalid-message", @"The supplied message is missing a 'to' field", nil);
   }
@@ -180,12 +219,15 @@ RCT_EXPORT_METHOD(sendMessage:
 
 RCT_EXPORT_METHOD(subscribeToTopic:
   (NSString *) topic
-      resolve:
-      (RCTPromiseResolveBlock) resolve
-      reject:
-      (RCTPromiseRejectBlock) reject) {
-  [[FIRMessaging messaging] subscribeToTopic:topic];
-  resolve(nil);
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject) {
+  [[FIRMessaging messaging] subscribeToTopic:topic completion:^(NSError *error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve(nil);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(unsubscribeFromTopic:
@@ -194,8 +236,13 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic:
       (RCTPromiseResolveBlock) resolve
       reject:
       (RCTPromiseRejectBlock) reject) {
-  [[FIRMessaging messaging] unsubscribeFromTopic:topic];
-  resolve(nil);
+  [[FIRMessaging messaging] unsubscribeFromTopic:topic completion:^(NSError *error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve(nil);
+    }
+  }];
 }
 
 
