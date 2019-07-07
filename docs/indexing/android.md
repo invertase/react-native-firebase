@@ -3,7 +3,7 @@ title: Android Setup | App Indexing
 description: Setup your Android application to handle app indexed URLs.
 ---
 
-# Android Setup
+# Android Manual Linking
 
 Your Android application needs to be setup to detect whether URLs which a user navigates to on your device are to be
 handled by your application.

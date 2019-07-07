@@ -3,9 +3,7 @@ title: Android Setup
 description: Manually integrate ML Kit Natural Language into your Android application.
 ---
 
-# Android Setup
-
-## Manual Android Integration
+# Android Manual Linking
 
 > The following steps are only required if your environment does not have access to React Native
 > auto-linking.

@@ -3,7 +3,7 @@ title: iOS Setup | App Indexing
 description: Setup your iOS application to handle app indexed URLs.
 ---
 
-# iOS Setup
+# iOS Manual Linking
 
 To handle indexed URLs within your iOS app, the URL definition needs to be added to your project using XCode.
 
