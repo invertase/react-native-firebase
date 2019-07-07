@@ -28,17 +28,20 @@ _DSYM_PLIST="${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.pli
 
 _PLIST_ENTRY_KEYS=(
   'firebase_crashlytics_collection_enabled'            #1
-  'firebase_json_raw'                                  #2 - must always be last entry
+  'FirebaseMessagingAutoInitEnabled'                   #2
+  'firebase_json_raw'                                  #3 - must always be last entry
 )
 
 _PLIST_ENTRY_TYPES=(
   'bool'                                               #1
-  'string'                                             #2 - must always be last entry
+  'bool'                                               #2
+  'string'                                             #3 - must always be last entry
 )
 
 _PLIST_ENTRY_VALUES=(
   'NO'                                                 #1
-  'e30='                                               #2 - must always be last entry - base64 of {}
+  'YES'                                                #2
+  'e30='                                               #3 - must always be last entry - base64 of {}
 )
 
 function setPlistValue {
@@ -69,10 +72,16 @@ while true; do
 done
 
 if [[ ${_SEARCH_RESULT} ]]; then
+  __JSON_OUTPUT_RAW=`cat ${_SEARCH_RESULT}`
   _SEARCH_RESULT="'$_SEARCH_RESULT'"
   _JSON_OUTPUT=`python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('${_SEARCH_RESULT}').read())['${_JSON_ROOT}'])))' || echo "e30="`
   _PLIST_ENTRY_VALUES[${#_PLIST_ENTRY_VALUES[@]}-1]="${_JSON_OUTPUT}"
   echo "info:      firebase.json value: ${_JSON_OUTPUT}"
+
+  # TODO figure out a better way to do this
+  if [[ ${__JSON_OUTPUT_RAW} == *"\"messaging_auto_init_enabled\": false"* ]]; then
+    _PLIST_ENTRY_VALUES[${#_PLIST_ENTRY_VALUES[@]}-2]="NO"
+  fi
 else
   echo "warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase."
 fi;

@@ -156,7 +156,6 @@ RCT_EXPORT_METHOD(requestPermission:
         @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
 
-
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIApplication sharedApplication] registerForRemoteNotifications];
   });

@@ -13,8 +13,7 @@
     "ml_vision_barcode_model" : true,
 
     "messaging_auto_init_enabled": true,
-    "messaging_android_headless_task_timeout": 60000,
-
+    "messaging_android_headless_task_timeout": 30000,
 
     "TODO_ml_natural_language_translate_model" : true,
     "TODO_analytics_auto_collection_enabled": true,
