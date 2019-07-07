@@ -207,6 +207,7 @@ Support for handling an incoming app index URL has been added to React Native Fi
 - [NEW][iOS] added support for `unregisterForRemoteNotifications(): Promise<void>;`
 - [NEW][iOS] `requestPermission` on iOS 12+ devices now uses the `UNAuthorizationOptionProvisional` option to request permission
   - this allows you to immediately start sending 'quiet' notifications to your users without their explicit permission, i.e., on a trial basis. `requestPermission` with this option will no longer show a permission request dialog to your user. [Learn More](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/)
+  - [[WWDC 2018 Video]](https://developer.apple.com/videos/play/wwdc2018/710/) (30:00 onwards)
 - [NEW] added support for `isAutoInitEnabled: boolean;`
 - [NEW] added support for `setAutoInitEnabled(enabled: boolean): Promise<void>;`
 - [NEW] added support for disabling messaging auto initialisation via the new `firebase.json` configuration file
