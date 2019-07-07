@@ -11,7 +11,7 @@ TODO
 
 ## Next
 
-There are no more integration steps for Messaging on iOS. 
+There are no more integration steps for Messaging on iOS. 🎉
 
 ## Previous
 
