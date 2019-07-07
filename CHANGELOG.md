@@ -221,6 +221,10 @@ Support for handling an incoming app index URL has been added to React Native Fi
 - [BREAKING][iOS] any the manually added `AppDelegate.m` changes for messaging on v5 are longer required - you can safely remove them (search for `RNFirebaseMessaging` in your `AppDelegate`)
   - Many manual code changes that existed in v5 are now automatically handled for you in v6
 - [BREAKING] constructing a `RemoteMessage` instance via `new firebase.messaging.RemoteMessage()` is no longer supported, use `firebase.messaging().newRemoteMessage()` to retrieve an new remote message builder instance.
+- [BREAKING][iOS] the minimum supported iOS version is now 10
+  - iOS 9 or lower only accounts for 0.% of all iPhone devices
+  - to see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/)
+  - community contributions that add iOS 9 support are welcome
 
 ## Performance Monitoring (perf)
 
