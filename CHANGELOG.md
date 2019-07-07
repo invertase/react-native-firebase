@@ -203,6 +203,9 @@ Support for handling an incoming app index URL has been added to React Native Fi
 - [NEW] added support for `onMessageSent` events, an event that indicates a message (with id) was successfully sent
 - [NEW] added support for `onDeletedMessages` events, an event that indicates the FCM server deleted pending messages
   - when your app instance receives this event, it should perform a full sync with your app server if it relies on message data
+- [NEW] `getToken` & `deleteToken` now optionally support `authorizedEntity` & `scope` arguments
+  - `authorizedEntity` - defaults to `firebase.app().options.messagingSenderId`
+  - `scope` - defaults to `FCM`
 - [NEW][iOS] added support for `isRegisteredForRemoteNotifications: boolean;`
 - [NEW][iOS] added support for `unregisterForRemoteNotifications(): Promise<void>;`
 - [NEW][iOS] `requestPermission` on iOS 12+ devices now uses the `UNAuthorizationOptionProvisional` option to request permission
