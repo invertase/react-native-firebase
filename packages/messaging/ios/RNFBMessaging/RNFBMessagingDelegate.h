@@ -21,22 +21,8 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
-//#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-//@import UserNotifications;
-//@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
-//#else
 @interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
-//#endif
-
-@property _Nullable RCTPromiseRejectBlock pendingPromiseReject;
-@property _Nullable RCTPromiseResolveBlock pendingPromiseResolve;
 
 + (_Nonnull instancetype) sharedInstance;
-
-#if !TARGET_OS_TV
-// TODO only used for Notifications Module - for handover
-//- (void)didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo;
-//- (void)didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
-#endif
 
 @end

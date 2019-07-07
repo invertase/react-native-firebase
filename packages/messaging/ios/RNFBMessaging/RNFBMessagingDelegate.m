@@ -19,6 +19,8 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingDelegate.h"
+#import "RNFBMessagingSerializer.h"
+
 
 @implementation RNFBMessagingDelegate
 
@@ -27,12 +29,15 @@
   static RNFBMessagingDelegate *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBMessagingDelegate alloc] init];
-    sharedInstance.pendingPromiseReject = nil;
-    sharedInstance.pendingPromiseResolve = nil;
+
     [FIRMessaging messaging].delegate = sharedInstance;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+
+    // JS -> `onSendError`
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:nil];
+    // JS -> `onMessageSent`
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:nil];
+    // JS -> `onDeletedMessages`
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:nil];
   });
   return sharedInstance;
@@ -42,6 +47,7 @@
 #pragma mark -
 #pragma mark UNUserNotificationCenter Methods
 
+// JS -> `onSendError`
 - (void)sendDataMessageFailure:(NSNotification *)notification {
   NSDictionary *userInfo = notification.userInfo;
   NSError *error = (NSError *) userInfo[@"error"];
@@ -55,6 +61,7 @@
   }];
 }
 
+// JS -> `onMessageSent`
 - (void)sendDataMessageSuccess:(NSNotification *)notification {
   NSDictionary *userInfo = notification.userInfo;
   NSString *messageID = (NSString *) userInfo[@"messageID"];
@@ -63,6 +70,7 @@
   }];
 }
 
+// JS -> `onDeletedMessages`
 - (void)didDeleteMessagesOnServer {
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_deleted" body:@{}];
 }
@@ -71,7 +79,12 @@
 #pragma mark -
 #pragma mark FIRMessagingDelegate Methods
 
-// Listen for FCM tokens
+// ----------------------
+//     TOKEN Message
+// --------------------\/
+
+
+// JS -> `onTokenRefresh`
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh" body:@{
       @"token": fcmToken
@@ -82,19 +95,11 @@
 //      DATA Message
 // --------------------\/
 
-//  |-> ---------------------
-//      App in Foreground
-//   ------------------------
-- (void)applicationReceivedRemoteMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  // TODO send message event
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{}];
-}
-
+// JS -> `onMessage`
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
 // To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
 - (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  // TODO send message event
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{}];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
 }
 
 

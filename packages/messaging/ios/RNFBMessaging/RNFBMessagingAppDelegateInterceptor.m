@@ -15,10 +15,13 @@
  *
  */
 
-#import "RNFBMessagingAppDelegateInterceptor.h"
-#import "RNFBSharedUtils.h"
+#import <React/RCTConvert.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+
+#import "RNFBMessagingAppDelegateInterceptor.h"
+#import "RNFBMessagingSerializer.h"
 
 @implementation RNFBMessagingAppDelegateInterceptor
 
@@ -33,19 +36,22 @@
   return sharedInstance;
 }
 
+// used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
 - (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject {
   _registerPromiseResolver = resolve;
   _registerPromiseRejecter = reject;
 }
 
+// called when `registerForRemoteNotifications` completes successfully
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   if (_registerPromiseResolver != nil) {
-    _registerPromiseResolver(nil);
+    _registerPromiseResolver(@([RCTConvert BOOL:@([UIApplication sharedApplication].isRegisteredForRemoteNotifications)]));
     _registerPromiseResolver = nil;
     _registerPromiseRejecter = nil;
   }
 }
 
+// called when `registerForRemoteNotifications` fails to complete
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
   if (_registerPromiseRejecter != nil) {
     [RNFBSharedUtils rejectPromiseWithNSError:_registerPromiseRejecter error:error];
@@ -54,23 +60,22 @@
   }
 }
 
+// APNS - only called on iOS versions less than v10 (which isn't officially supported, added here for ease later on)
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-  // FCM Data messages come through here if they specify content-available=true
-  // Pass them over to the RNFirebaseMessaging handler instead
-  if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
-    // TODO send message event
+  // send message event for remote notifications that have also have data
+  if (userInfo[@"aps"] && ((NSDictionary *) userInfo[@"aps"]).count >= 1 && userInfo[@"aps"][@"content-available"]) {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
   }
 }
 
+// APNS - only called on iOS versions greater than or equal to v10 (this one is officially supported)
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  // FCM Data messages come through here if they specify content-available=true
-  // Pass them over to the RNFirebaseMessaging handler instead
-  if (userInfo[@"aps"] && ((NSDictionary*)userInfo[@"aps"]).count == 1 && userInfo[@"aps"][@"content-available"]) {
-    // TODO send message event
+  // send message event for remote notifications that have also have data
+  if (userInfo[@"aps"] && ((NSDictionary *) userInfo[@"aps"]).count >= 1 && userInfo[@"aps"][@"content-available"]) {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
+    // complete immediately
     completionHandler(UIBackgroundFetchResultNoData);
   }
 }
-
-
 
 @end

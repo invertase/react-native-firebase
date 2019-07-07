@@ -18,11 +18,12 @@
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBMessagingDelegate.h"
+#import "RNFBMessagingSerializer.h"
 #import "RNFBMessagingAppDelegateInterceptor.h"
 
 
@@ -32,11 +33,11 @@
 
 RCT_EXPORT_MODULE();
 
-
 - (id)init {
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    // ensure shared instances are initialized early
     [RNFBMessagingDelegate sharedInstance];
     [RNFBMessagingAppDelegateInterceptor sharedInstance];
   });
@@ -51,14 +52,12 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
-
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
   constants[@"isRegisteredForRemoteNotifications"] = @([RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
   return constants;
 }
-
 
 #pragma mark -
 #pragma mark Firebase Messaging Methods
@@ -77,7 +76,6 @@ RCT_EXPORT_METHOD(setAutoInitEnabled:
 
   return resolve([NSNull null]);
 }
-
 
 RCT_EXPORT_METHOD(getToken:
   (NSString *) authorizedEntity
@@ -98,7 +96,6 @@ RCT_EXPORT_METHOD(getToken:
   }];
 }
 
-
 RCT_EXPORT_METHOD(deleteToken:
   (NSString *) authorizedEntity
     :(NSString *) scope
@@ -114,19 +111,13 @@ RCT_EXPORT_METHOD(deleteToken:
   }];
 }
 
-
 RCT_EXPORT_METHOD(getAPNSToken:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
   NSData *apnsToken = [FIRMessaging messaging].APNSToken;
   if (apnsToken) {
-    const char *data = [apnsToken bytes];
-    NSMutableString *token = [NSMutableString string];
-    for (NSInteger i = 0; i < apnsToken.length; i++) {
-      [token appendFormat:@"%02.2hhX", data[i]];
-    }
-    resolve([token copy]);
+    resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
     resolve([NSNull null]);
   }
@@ -159,9 +150,10 @@ RCT_EXPORT_METHOD(requestPermission:
       }
     }];
   } else {
+    // TODO community iOS 9 support could be added here with `registerUserNotificationSettings:settings` & `didRegisterUserNotificationSettings`
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unsupported-platform-version",
-        @"message": @"requestPermission can not be called on this version of iOS, minimum version is iOS 10."} mutableCopy]];
+        @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
 
 
@@ -175,7 +167,7 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
     : (RCTPromiseRejectBlock) reject
 ) {
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    return resolve(nil);
+    return resolve(@([RCTConvert BOOL:@(YES)]));
   }
 
   [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
@@ -190,8 +182,6 @@ RCT_EXPORT_METHOD(unregisterForRemoteNotifications:
   resolve(nil);
 }
 
-
-// Non Web SDK methods
 RCT_EXPORT_METHOD(hasPermission:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
@@ -202,25 +192,22 @@ RCT_EXPORT_METHOD(hasPermission:
       resolve(@(hasPermission));
     }];
   } else {
-    // TODO error
+    // TODO community iOS 9 support could be added here via application `currentUserNotificationSettings`.types != UIUserNotificationTypeNone
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+        @"code": @"unsupported-platform-version",
+        @"message": @"hasPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
 }
-
 
 RCT_EXPORT_METHOD(sendMessage:
   (NSDictionary *) message
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  if (!message[@"to"]) {
-    reject(@"messaging/invalid-message", @"The supplied message is missing a 'to' field", nil);
-    // TODO return
-  }
   NSString *to = message[@"to"];
-  NSString *messageId = message[@"messageId"];
   NSNumber *ttl = message[@"ttl"];
   NSDictionary *data = message[@"data"];
-
+  NSString *messageId = message[@"messageId"];
   [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
   resolve(nil);
 }
@@ -252,6 +239,5 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic:
     }
   }];
 }
-
 
 @end

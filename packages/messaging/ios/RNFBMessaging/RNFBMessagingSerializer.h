@@ -20,25 +20,12 @@
 #import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
 
-
-static NSString *const KEY_COLLAPSE_KEY_SRC = @"collapse_key";
-static NSString *const KEY_MESSAGE_TYPE_SRC = @"message_type";
-static NSString *const KEY_TTL_SRC = @"google.ttl";
-static NSString *const KEY_SENT_TIME_SRC = @"google.c.a.ts";
-static NSString *const KEY_MESSAGE_ID_SRC = @"gcm.message_id";
-
-static NSString *const KEY_COLLAPSE_KEY = @"collapseKey";
-static NSString *const KEY_MESSAGE_ID = @"messageId";
-static NSString *const KEY_MESSAGE_TYPE = @"messageType";
-static NSString *const KEY_FROM = @"from";
-static NSString *const KEY_SENT_TIME = @"sentTime";
-static NSString *const KEY_TO = @"to";
-static NSString *const KEY_TTL = @"ttl";
-
-static NSString *const KEY_ERROR = @"error";
-
 @interface RNFBMessagingSerializer : NSObject
 
-- (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage;
++ (NSString *) APNSTokenFromNSData:(NSData *)tokenData;
+
++ (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage;
+
++ (NSDictionary *)remoteMessageAppDataToDict:(NSDictionary *)appData withMessageId:(nullable NSString *)messageId;
 
 @end
