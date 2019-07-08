@@ -109,7 +109,6 @@
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
       "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
       "packageInstance": "new RNFirebasePackage()"
     }
