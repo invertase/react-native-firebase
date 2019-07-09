@@ -133,7 +133,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    this.native.setPersistenceEnabled(enabled);
+    return this.native.setPersistenceEnabled(enabled);
   }
 
   /**
@@ -147,7 +147,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    this.native.setLoggingEnabled(enabled);
+    return this.native.setLoggingEnabled(enabled);
   }
 
   /**
@@ -173,7 +173,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    this.native.setPersistenceCacheSizeBytes(bytes);
+    return this.native.setPersistenceCacheSizeBytes(bytes);
   }
 }
 
