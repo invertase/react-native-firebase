@@ -37,9 +37,9 @@ import java.util.Map;
 import io.invertase.firebase.common.SharedUtils;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-public class UniversalFirebaseMLVisionTextModule extends UniversalFirebaseModule {
+public class UniversalFirebaseMLVisionTextRecognitionModule extends UniversalFirebaseModule {
 
-  UniversalFirebaseMLVisionTextModule(Context context, String serviceName) {
+  UniversalFirebaseMLVisionTextRecognitionModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 

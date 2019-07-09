@@ -1,3 +1,5 @@
+apply from: file("./../../app/android/firebase-json.gradle")
+
 def mlModels = [
   'ml_vision_face_model',
   'ml_vision_image_label_model',

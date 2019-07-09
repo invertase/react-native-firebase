@@ -27,25 +27,26 @@ import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class RNFirebaseMLVisionTextModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "MLVisionText";
-  private final UniversalFirebaseMLVisionTextModule module;
+public class RNFirebaseMLVisionFaceDetectorModule extends ReactNativeFirebaseModule {
+  private static final String SERVICE_NAME = "MLVisionFaceDetector";
+  private final UniversalFirebaseMLVisionFaceDetectorModule module;
 
-  RNFirebaseMLVisionTextModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionFaceDetectorModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    this.module = new UniversalFirebaseMLVisionTextModule(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLVisionFaceDetectorModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
-  public void processImage(
+  public void detectInImage(
     String appName,
     String stringUri,
+    ReadableMap faceDetectorOptionsMap,
     Promise promise
   ) {
-    module.processImageLocal(appName, stringUri)
+    module.detectInImage(appName, stringUri, Arguments.toBundle(faceDetectorOptionsMap))
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
-          promise.resolve(Arguments.makeNativeMap(task.getResult()));
+          promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
         } else {
           String[] errorCodeAndMessage = UniversalFirebaseMLVisionCommon.getErrorCodeAndMessageFromException(
             task.getException());
@@ -58,4 +59,5 @@ public class RNFirebaseMLVisionTextModule extends ReactNativeFirebaseModule {
         }
       });
   }
+
 }

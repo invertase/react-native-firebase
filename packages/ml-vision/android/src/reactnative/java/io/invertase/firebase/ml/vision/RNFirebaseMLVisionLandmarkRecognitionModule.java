@@ -18,13 +18,12 @@ package io.invertase.firebase.ml.vision;
  */
 
 import com.facebook.react.bridge.ReactApplicationContext;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class RNFirebaseMLVisionObjectDetectionModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "MLVisionObjectDetection";
+public class RNFirebaseMLVisionLandmarkRecognitionModule extends ReactNativeFirebaseModule {
+  private static final String TAG = "MLVisionLandmarkRecognition";
 
-  RNFirebaseMLVisionObjectDetectionModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionLandmarkRecognitionModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 

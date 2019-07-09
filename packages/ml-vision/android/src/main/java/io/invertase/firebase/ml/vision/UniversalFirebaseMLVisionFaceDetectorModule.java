@@ -42,9 +42,9 @@ import java.util.Objects;
 import io.invertase.firebase.common.SharedUtils;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-public class UniversalFirebaseMLVisionFaceModule extends UniversalFirebaseModule {
+public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFirebaseModule {
 
-  UniversalFirebaseMLVisionFaceModule(Context context, String serviceName) {
+  UniversalFirebaseMLVisionFaceDetectorModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 

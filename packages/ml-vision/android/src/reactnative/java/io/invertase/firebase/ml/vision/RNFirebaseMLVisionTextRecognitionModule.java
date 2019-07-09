@@ -21,32 +21,28 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-
-import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class RNFirebaseMLVisionFaceModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "MLVisionFace";
-  private final UniversalFirebaseMLVisionFaceModule module;
+public class RNFirebaseMLVisionTextRecognitionModule extends ReactNativeFirebaseModule {
+  private static final String SERVICE_NAME = "MLVisionTextRecognition";
+  private final UniversalFirebaseMLVisionTextRecognitionModule module;
 
-  RNFirebaseMLVisionFaceModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionTextRecognitionModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    this.module = new UniversalFirebaseMLVisionFaceModule(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLVisionTextRecognitionModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
-  public void detectInImage(
+  public void processImage(
     String appName,
     String stringUri,
-    ReadableMap faceDetectorOptionsMap,
     Promise promise
   ) {
-    module.detectInImage(appName, stringUri, Arguments.toBundle(faceDetectorOptionsMap))
+    module.processImageLocal(appName, stringUri)
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
-          promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
+          promise.resolve(Arguments.makeNativeMap(task.getResult()));
         } else {
           String[] errorCodeAndMessage = UniversalFirebaseMLVisionCommon.getErrorCodeAndMessageFromException(
             task.getException());
@@ -59,5 +55,4 @@ public class RNFirebaseMLVisionFaceModule extends ReactNativeFirebaseModule {
         }
       });
   }
-
 }
