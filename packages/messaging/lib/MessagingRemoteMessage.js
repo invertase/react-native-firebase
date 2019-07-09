@@ -19,11 +19,15 @@ import { generateFirestoreId } from '@react-native-firebase/common';
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 
 export default class MessagingRemoteMessage extends MutatableParams {
-  constructor() {
+  constructor(messagingSenderId) {
     super();
     this.set('data', {});
     this.set('ttl', 3600);
     this.set('messageId', generateFirestoreId());
+
+    if (messagingSenderId) {
+      this.set('to', `${messagingSenderId}@fcm.googleapis.com`);
+    }
   }
 
   setCollapseKey(collapseKey) {
