@@ -172,6 +172,32 @@ declare module '@react-native-firebase/app-types' {
     fiam: ReactNativeFirebaseModuleAndStatics<Fiam.Module, Fiam.Statics>;
   }
 
+  interface FirebaseJSON {
+    /**
+     * Disable or enable auto collection & receiving of in-app messages and data collection.
+     *
+     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+     * This can be overridden in JavaScript.
+     *
+     * #### Example
+     *
+     * ```json
+     * // <project-root>/firebase.json
+     * {
+     *   "react-native": {
+     *     "fiam_auto_collection_enabled": false
+     *   }
+     * }
+     * ```
+     *
+     * ```js
+     * // Re-enable in-app messaging, e.g. once user has granted permission:
+     * await firebase.perf().setAutomaticDataCollectionEnabled(true);
+     * ```
+     */
+    fiam_auto_collection_enabled: boolean;
+  }
+
   interface FirebaseApp {
     /**
      * Firebase In-App Messaging helps you engage users who are actively using your app by sending

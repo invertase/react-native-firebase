@@ -78,7 +78,7 @@ export namespace Messaging {
     messageId: string;
 
     /**
-     * The message type for the message.
+     * The message type of the message.
      */
     messageType: string;
 
@@ -252,9 +252,8 @@ export namespace Messaging {
      * initialization is enabled, which updates the device identifier and configuration data needed
      * for messaging to Firebase.
      *
-     * TODO: ehesp
-     *
-     * To ensure first app opens have an initial value set, set the argument in firebase.json.
+     * To ensure first app opens have an initial value set, set the argument in the `firebase.json`
+     * config.
      *
      * #### Example
      *
@@ -648,6 +647,31 @@ declare module '@react-native-firebase/messaging' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     messaging: ReactNativeFirebaseModuleAndStatics<Messaging.Module, Messaging.Statics>;
+  }
+
+  interface FirebaseJSON {
+    /**
+     * Set whether database persistence is enabled or disabled.
+     *
+     * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
+     *
+     * #### Example
+     *
+     * ```json
+     * // <project-root>/firebase.json
+     * {
+     *   "react-native": {
+     *     "messaging_auto_init_enabled": false
+     *   }
+     * }
+     * ```
+     *
+     * ```js
+     * // Re-enable database persistence
+     * await firebase.messaging().setAutoInitEnabled(true);
+     * ```
+     */
+    messaging_auto_init_enabled: boolean;
   }
 
   interface FirebaseApp {

@@ -134,6 +134,10 @@ export interface FirebaseApp {
   delete(): Promise<void>;
 }
 
+export interface FirebaseJSON {
+
+}
+
 export interface ReactNativeFirebaseNamespace {
   /**
    * Create (and initialize) a FirebaseApp.
