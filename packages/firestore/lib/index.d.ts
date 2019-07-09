@@ -1310,17 +1310,52 @@ export namespace Firestore {
   /**
    * A reference to a transaction. The `Transaction` object passed to a transaction's updateFunction provides the methods to
    * read and write data within the transaction context. See `Firestore.runTransaction()`.
+   *
+   * A transaction consists of any number of `get()` operations followed by any number of write operations such as set(),
+   * `update()`, or `delete()`. In the case of a concurrent edit, Cloud Firestore runs the entire transaction again. For example,
+   * if a transaction reads documents and another client modifies any of those documents, Cloud Firestore retries the transaction.
+   * This feature ensures that the transaction runs on up-to-date and consistent data.
+   *
+   * Transactions never partially apply writes. All writes execute at the end of a successful transaction.
+   *
+   * When using transactions, note that:
+   *   - Read operations must come before write operations.
+   *   - A function calling a transaction (transaction function) might run more than once if a concurrent edit affects a document that the transaction reads.
+   *   - Transaction functions should not directly modify application state (return a value from the `updateFunction`).
+   *   - Transactions will fail when the client is offline.
    */
   export interface Transaction {
     /**
-     * Deletes the document referred to by the provided DocumentReference.
+     * Deletes the document referred to by the provided `DocumentReference`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * await firebase.firestore().runTransaction((transaction) => {
+     *   return transaction.delete(docRef);
+     * });
+     * ```
      *
      * @param documentRef A reference to the document to be deleted.
      */
     delete(documentRef: DocumentReference): Transaction;
 
     /**
-     * Reads the document referenced by the provided DocumentReference.
+     * Reads the document referenced by the provided `DocumentReference`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * await firebase.firestore().runTransaction(async (transaction) => {
+     *   const snapshot = await transaction.get(docRef);
+     *    // use snapshot with transaction (see set() or update())
+     *    ...
+     * });
+     * ```
      *
      * @param documentRef A reference to the document to be read.
      */
@@ -1329,6 +1364,22 @@ export namespace Firestore {
     /**
      * Writes to the document referred to by the provided `DocumentReference`. If the document does not exist yet,
      * it will be created. If you pass `SetOptions`, the provided data can be merged into the existing document.
+     *
+     * #### Example
+     *
+     * ```js
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * await firebase.firestore().runTransaction((transaction) => {
+     *   const snapshot = await transaction.get(docRef);
+     *   const snapshotData = snapshot.data();
+     *
+     *   return transaction.set(docRef, {
+     *     ...data,
+     *     age: 30, // new field
+     *   });
+     * });
+     * ```
      *
      * @param documentRef A reference to the document to be set.
      * @param data An object of the fields and values for the document.
@@ -1340,6 +1391,20 @@ export namespace Firestore {
      * Updates fields in the document referred to by the provided `DocumentReference`. The update will fail if applied
      * to a document that does not exist.
      *
+     * #### Example
+     *
+     * ```js
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * await firebase.firestore().runTransaction((transaction) => {
+     *   const snapshot = await transaction.get(docRef);
+     *
+     *   return transaction.update(docRef, {
+     *     age: snapshot.data().age + 1,
+     *   });
+     * });
+     * ```
+     *
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
@@ -1350,6 +1415,18 @@ export namespace Firestore {
      * a document that does not exist.
      *
      * Nested fields can be updated by providing dot-separated field path strings or by providing FieldPath objects.
+     *
+     * #### Example
+     *
+     * ```js
+     * const docRef = firebase.firestore().doc('users/alovelace');
+     *
+     * await firebase.firestore().runTransaction((transaction) => {
+     *   const snapshot = await transaction.get(docRef);
+     *
+     *   return transaction.update(docRef, 'age', snapshot.data().age + 1);
+     * });
+     * ```
      *
      * @param documentRef A reference to the document to be updated.
      * @param field The first field to update.
@@ -1554,16 +1631,126 @@ export namespace Firestore {
    */
   export class Module extends ReactNativeFirebaseModule {
     /**
+     * Creates a write batch, used for performing multiple writes as a single atomic operation.
+     * The maximum number of writes allowed in a single WriteBatch is 500, but note that each usage
+     * of `FieldValue.serverTimestamp()`, `FieldValue.arrayUnion()`, `FieldValue.arrayRemove()`, or `FieldValue.increment()`
+     * inside a WriteBatch counts as an additional write.
      *
+     * #### Example
+     *
+     * ```js
+     * const batch = firebase.firestore().batch();
+     * batch.delete(...);
+     * ```
      */
     batch(): WriteBatch;
 
+    /**
+     * Gets a `CollectionReference` instance that refers to the collection at the specified path.
+     *
+     * #### Example
+     *
+     * ```js
+     * const collectionReference = firebase.firestore().collection('users');
+     * ```
+     *
+     * @param collectionPath A slash-separated path to a collection.
+     */
     collection(collectionPath: string): CollectionReference;
+
+    /**
+     * Creates and returns a new Query that includes all documents in the database that are contained
+     * in a collection or subcollection with the given collectionId.
+     *
+     * #### Example
+     *
+     * ```js
+     * const collectionGroup = firebase.firestore().collection('orders');
+     * ```
+     *
+     * @param collectionId Identifies the collections to query over. Every collection or subcollection with this ID as the last segment of its path will be included. Cannot contain a slash.
+     */
     collectionGroup(collectionId: string): Query;
+
+    /**
+     * Disables network usage for this instance. It can be re-enabled via `enableNetwork()`. While the
+     * network is disabled, any snapshot listeners or get() calls will return results from cache, and any
+     * write operations will be queued until the network is restored.
+     *
+     * Returns a promise that is resolved once the network has been disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.firestore().disableNetwork();
+     * ```
+     */
     disableNetwork(): Promise<void>;
+
+    /**
+     * Gets a `DocumentReference` instance that refers to the document at the specified path.
+     *
+     * #### Example
+     *
+     * ```js
+     * const documentReference = firebase.firestore().doc('users/alovelace');
+     * ```
+     *
+     * @param documentPath A slash-separated path to a document.
+     */
     doc(documentPath: string): DocumentReference;
+
+    /**
+     * Re-enables use of the network for this Firestore instance after a prior call to `disableNetwork()`.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.firestore().enableNetwork();
+     * ```
+     */
     enableNetwork(): Promise<void>;
-    runTransaction(): Promise<void>; // TODO
+
+    /**
+     * Executes the given `updateFunction` and then attempts to commit the changes applied within the transaction.
+     * If any document read within the transaction has changed, Cloud Firestore retries the `updateFunction`.
+     * If it fails to commit after 5 attempts, the transaction fails.
+     *
+     * The maximum number of writes allowed in a single transaction is 500, but note that each usage of
+     * `FieldValue.serverTimestamp()`, `FieldValue.arrayUnion()`, `FieldValue.arrayRemove()`, or `FieldValue.increment()`
+     * inside a transaction counts as an additional write.
+     *
+     * #### Example
+     *
+     * ```js
+     * const cityRef = firebase.firestore().doc('cities/SF');
+     *
+     * await firebase.firestore()
+     *   .runTransaction(async (transaction) => {
+     *     const snapshot = await transaction.get(cityRef);
+     *     await transaction.update(cityRef, {
+     *       population: snapshot.data().population + 1,
+     *     });
+     *   });
+     * ```
+     */
+    runTransaction(updateFunction: (transaction: Transaction) => Promise): Promise<any>;
+
+    /**
+     * Specifies custom settings to be used to configure the Firestore instance. Must be set before invoking any other methods.
+     *
+     * #### Example
+     *
+     * ```js
+     * const settings = {
+     *   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+     * };
+     *
+     * await firebase.firestore().settings(settings);
+     * ```
+     *
+     * @param settings A `Settings` object.
+     */
     settings(settings: Settings): Promise<void>;
   }
 }
