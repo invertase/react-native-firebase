@@ -243,11 +243,11 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNFirebase (5.5.3):
+  - RNFirebase (5.5.5):
     - Firebase/Core
     - React
-    - RNFirebase/Crashlytics (= 5.5.3)
-  - RNFirebase/Crashlytics (5.5.3):
+    - RNFirebase/Crashlytics (= 5.5.5)
+  - RNFirebase/Crashlytics (5.5.5):
     - Crashlytics
     - Fabric
     - Firebase/Core
@@ -327,7 +327,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNFirebase:
     :path: "../../ios/RNFirebase.podspec"
-    :version: "~> 5.5.3"
+    :version: "~> 5.5.5"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -366,10 +366,10 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 3f617b9a6e73605565086864c9bc26b2bf2dd5a3
-  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
-  RNFirebase: 89f454d446b53a66a0e9213a8029a2189bf82bce
-  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
+  RNFirebase: ca408d6bee0ca9383bd0cfe84f40b01370b8ad4d
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
 PODFILE CHECKSUM: feef0c4f34228d3c5ab705dba16291e71608a2c7
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.5.3

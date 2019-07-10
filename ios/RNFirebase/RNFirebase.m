@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE(RNFirebase);
     if (self != nil) {
       DLog(@"Setting up RNFirebase instance");
 #ifdef REGISTER_LIB
-      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"5.5.4"];
+      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"5.5.5"];
 #endif
     }
     return self;
