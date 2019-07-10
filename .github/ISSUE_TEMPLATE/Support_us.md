@@ -1,13 +1,13 @@
 ---
 name: 🤝 Support React Native Firebase
 about: Please help to keep RNFirebase supported and maintained 🤘
-
 ---
+
 ## Supporting RNFirebase
 
 RNFirebase is an Apache-2.0 licensed open source project. It's an independent project with its ongoing development made possible entirely thanks to the support by these awesome [sponsors](#sponsors) and [backers](#backers). If you'd like to join them, please consider:
 
-* [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
+- [Become a backer or sponsor on Open Collective](https://opencollective.com/react-native-firebase).
 
 ### Sponsors
 
