@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise */
+
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,11 +18,46 @@
  */
 
 class Rectangle {
-  constructor(nativeRectArray) {
-    this._left = nativeRectArray[0] || 0;
-    this._top = nativeRectArray[1] || 0;
-    this._right = nativeRectArray[2] || 0;
-    this._bottom = nativeRectArray[3] || 0;
+  /**
+   *
+   * @param left
+   * @param top
+   * @param right
+   * @param bottom
+   */
+  constructor(left, top, right, bottom) {
+    this._left = left || 0;
+    this._top = top || 0;
+    this._right = right || 0;
+    this._bottom = bottom || 0;
+  }
+
+  /**
+   * Set the rectangle's coordinates to the specified values.
+   *
+   * @param left
+   * @param top
+   * @param right
+   * @param bottom
+   */
+  set(left, top, right, bottom) {
+    // todo arg validate number for all args
+    // todo arg validate left <= right
+    // todo arg validate top <= bottom
+    this._left = left;
+    this._top = top;
+    this._right = right;
+    this._bottom = bottom;
+  }
+
+  /**
+   * Copy the coordinates from the source rectangle into this rectangle.
+   *
+   * @param otherRect Rectangle
+   */
+  setFromRectangle(otherRect) {
+    // todo arg instance of Rectangle check
+    this.set(otherRect.left, otherRect.top, otherRect.right, otherRect.bottom);
   }
 
   get top() {
@@ -76,6 +113,7 @@ class Rectangle {
 
   /**
    * Returns whether two rectangles intersect.
+   *
    * @param otherRect Rectangle
    * @returns {boolean}
    */
@@ -87,6 +125,33 @@ class Rectangle {
       this.top < otherRect.bottom &&
       otherRect.top < this.bottom
     );
+  }
+
+  /**
+   * If the rectangle specified intersects this
+   * rectangle, return true and set this rectangle to that intersection,
+   * otherwise return false and do not change this rectangle. No check is
+   * performed to see if either rectangle is empty. Note: To just test for
+   * intersection, use {@link #intersectsRectangle(otherRect: Rectangle)}.
+   *
+   * @param otherRect
+   * @returns {boolean}
+   */
+  intersectRectangle(otherRect) {
+    // todo arg instance of Rectangle check
+    if (
+      this.left < otherRect.right &&
+      otherRect.left < this.right &&
+      this.top < otherRect.bottom &&
+      otherRect.top < this.bottom
+    ) {
+      if (this.left < otherRect.left) this._left = otherRect.left;
+      if (this.top < otherRect.top) this._top = otherRect.top;
+      if (this.right > otherRect.right) this._right = otherRect.right;
+      if (this.bottom > otherRect.bottom) this._bottom = otherRect.bottom;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -112,10 +177,29 @@ class Rectangle {
   }
 
   /**
+   * Returns true if this Rectangle has the same bounding box as the specified Rectangle.
+   *
+   * @param otherRect
+   * @returns {boolean}
+   */
+  isEqual(otherRect) {
+    // todo arg instance of Point check
+    return this.toString() === otherRect.toString();
+  }
+
+  /**
    * Returns this rectangle as an array of [left, top, right, bottom]
    * @returns {*[]}
    */
   toArray() {
     return [this.left, this.top, this.right, this.bottom];
+  }
+
+  /**
+   * Returns this rectangle as an string, e.g Rectangle[left, top, right, bottom]
+   * @returns {string}
+   */
+  toString() {
+    return `Rectangle[${this.left}, ${this.top}, ${this.right}, ${this.bottom}]`;
   }
 }
