@@ -19,31 +19,32 @@ package io.invertase.firebase.ml.vision;
 
 
 import android.content.Context;
-
+import android.os.Bundle;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentText;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentTextRecognizer;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
+import io.invertase.firebase.common.SharedUtils;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.invertase.firebase.common.SharedUtils;
-import io.invertase.firebase.common.UniversalFirebaseModule;
+class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseModule {
 
-public class UniversalFirebaseMLVisionTextRecognitionModule extends UniversalFirebaseModule {
-
-  UniversalFirebaseMLVisionTextRecognitionModule(Context context, String serviceName) {
+  UniversalFirebaseMLVisionTextRecognizerModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 
-  public Task<Map<String, Object>> processImageLocal(
+  Task<Map<String, Object>> textRecognizerProcessImage(
     String appName,
     String stringUri
   ) {
@@ -51,6 +52,7 @@ public class UniversalFirebaseMLVisionTextRecognitionModule extends UniversalFir
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance(firebaseApp)
         .getOnDeviceTextRecognizer();
+
       FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         getContext(),
         SharedUtils.getUri(stringUri)
@@ -61,6 +63,48 @@ public class UniversalFirebaseMLVisionTextRecognitionModule extends UniversalFir
       return getFirebaseVisionTextMap(result);
     });
   }
+
+  Task<Map<String, Object>> cloudTextRecognizerProcessImage(
+    String appName,
+    String stringUri,
+    Bundle cloudTextRecognizerOptions
+  ) {
+    return Tasks.call(getExecutor(), () -> {
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance(firebaseApp)
+        .getCloudTextRecognizer();
+
+      FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+        getContext(),
+        SharedUtils.getUri(stringUri)
+      );
+
+      FirebaseVisionText result = Tasks.await(detector.processImage(image));
+
+      return getFirebaseVisionTextMap(result);
+    });
+  }
+
+//  Task<Map<String, Object>> cloudDocumentTextRecognizerProcessImage(
+//    String appName,
+//    String stringUri,
+//    Bundle cloudDocumentTextRecognizerOptions
+//    ) {
+//    return Tasks.call(getExecutor(), () -> {
+//      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+//      FirebaseVisionDocumentTextRecognizer detector = FirebaseVision.getInstance(firebaseApp)
+//        .getCloudDocumentTextRecognizer();
+//
+//      FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+//        getContext(),
+//        SharedUtils.getUri(stringUri)
+//      );
+//
+//      FirebaseVisionDocumentText result = Tasks.await(detector.processImage(image));
+//
+//      return getFirebaseVisionTextMap(result);
+//    });
+//  }
 
   private Map<String, Object> getFirebaseVisionTextMap(FirebaseVisionText visionText) {
     Map<String, Object> firebaseVisionTextMap = new HashMap<>(2);

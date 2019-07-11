@@ -17,29 +17,26 @@ package io.invertase.firebase.ml.vision;
  *
  */
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-
+import com.facebook.react.bridge.*;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class RNFirebaseMLVisionTextRecognitionModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "MLVisionTextRecognition";
-  private final UniversalFirebaseMLVisionTextRecognitionModule module;
+public class RNFirebaseMLVisionTextRecognizerModule extends ReactNativeFirebaseModule {
+  private static final String SERVICE_NAME = "MLVisionTextRecognizer";
+  private final UniversalFirebaseMLVisionTextRecognizerModule module;
 
-  RNFirebaseMLVisionTextRecognitionModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionTextRecognizerModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    this.module = new UniversalFirebaseMLVisionTextRecognitionModule(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLVisionTextRecognizerModule(reactContext, SERVICE_NAME);
   }
 
+
   @ReactMethod
-  public void detectTextInImage(
+  public void textRecognizerProcessImage(
     String appName,
     String stringUri,
     Promise promise
   ) {
-    module.processImageLocal(appName, stringUri)
+    module.textRecognizerProcessImage(appName, stringUri)
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(Arguments.makeNativeMap(task.getResult()));
@@ -54,5 +51,25 @@ public class RNFirebaseMLVisionTextRecognitionModule extends ReactNativeFirebase
           );
         }
       });
+  }
+
+  @ReactMethod
+  public void cloudTextRecognizerProcessImage(
+    String appName,
+    String stringUri,
+    ReadableMap cloudTextRecognizerOptions,
+    Promise promise
+  ) {
+    // todo
+  }
+
+  @ReactMethod
+  public void cloudDocumentTextRecognizerProcessImage(
+    String appName,
+    String stringUri,
+    ReadableMap cloudDocumentTextRecognizerOptions,
+    Promise promise
+  ) {
+    // todo
   }
 }
