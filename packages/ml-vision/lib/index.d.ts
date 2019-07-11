@@ -1071,14 +1071,26 @@ export namespace MLKitVision {
      */
     textRecognizerProcessImage(imageFilePath: string): Promise<VisionText>;
 
+    /**
+     * Detect text from a local image file using the cloud (Firebase) model.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param cloudTextRecognizerOptions An instance of `VisionCloudTextRecognizerOptions`.
+     */
     cloudTextRecognizerProcessImage(
       imageFilePath: string,
-      cloudTextRecognizerOptions: VisionCloudTextRecognizerOptions,
+      cloudTextRecognizerOptions?: VisionCloudTextRecognizerOptions,
     ): Promise<VisionText>;
 
+    /**
+     * Detect text within a document using a local image file from the cloud (Firebase) model.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param cloudDocumentTextRecognizerOptions An instance of `VisionCloudDocumentTextRecognizerOptions`.
+     */
     cloudDocumentTextRecognizerProcessImage(
       imageFilePath: string,
-      cloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions,
+      cloudDocumentTextRecognizerOptions?: VisionCloudDocumentTextRecognizerOptions,
     ): Promise<VisionDocumentText>;
 
     /**
@@ -1135,6 +1147,12 @@ export namespace MLKitVision {
       cloudImageLabelerOptions?: VisionCloudImageLabelerOptions,
     ): Promise<VisionImageLabel[]>;
 
+    /**
+     * TODO
+     *
+     * @param imageFilePath
+     * @param barcodeDetectorOptions
+     */
     barcodeDetectorProcessImage(
       imageFilePath: string,
       barcodeDetectorOptions: VisionBarcodeDetectorOptions,
