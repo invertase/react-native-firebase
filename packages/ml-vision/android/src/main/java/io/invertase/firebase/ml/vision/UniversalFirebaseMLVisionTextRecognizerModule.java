@@ -42,7 +42,7 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
   private static final String KEY_RECOGNIZED_LANGUAGES = "recognizedLanguages";
   private static final String KEY_ELEMENTS = "elements";
   private static final String KEY_LINES = "lines";
-  private static final String KEY_TEXT_BLOCKS = "textBlocks";
+  private static final String KEY_TEXT_BLOCKS = "blocks";
   private static final String KEY_ENFORCE_CERT_FINGERPRINT_MATCH = "enforceCertFingerprintMatch";
   private static final String KEY_MODEL_TYPE = "modelType";
   private static final String KEY_HINTED_LANGUAGES = "hintedLanguages";
