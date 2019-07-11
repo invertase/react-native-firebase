@@ -48,7 +48,7 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
     super(context, serviceName);
   }
 
-  public Task<List<Map<String, Object>>> detectInImage(
+  public Task<List<Map<String, Object>>> faceDetectorProcessImage(
     String appName,
     String stringUri,
     Bundle faceDetectorOptionsBundle
@@ -68,6 +68,7 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
 
       for (FirebaseVisionFace visionFaceRaw : visionFacesRaw) {
         Map<String, Object> visionFaceFormatted = new HashMap<>();
+
         visionFaceFormatted.put(
           "boundingBox",
           SharedUtils.rectToIntArray(visionFaceRaw.getBoundingBox())

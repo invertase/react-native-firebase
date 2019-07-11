@@ -16,7 +16,71 @@
  */
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+import { isNumber } from '@react-native-firebase/common';
 
 export default class VisionFaceDetectorOptions extends MutatableParams {
-  // TODO
+  constructor() {
+    super();
+    this.set('classificationMode', 1);
+    this.set('contourMode', 1);
+    this.set('landmarkMode', 1);
+    this.set('minFaceSize', 0.1);
+    this.set('performanceMode', 1);
+  }
+
+  setClassificationMode(classificationMode) {
+    if (classificationMode !== 1 && classificationMode !== 2) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setClassificationMode(*) 'classificationMode' invalid classification mode. Expected VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS or VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS.`,
+      );
+    }
+
+    return this.set('classificationMode', classificationMode);
+  }
+
+  setContourMode(contourMode) {
+    if (contourMode !== 1 && contourMode !== 2) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setContourMode(*) 'contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.`,
+      );
+    }
+
+    return this.set('classificationMode', contourMode);
+  }
+
+  setLandmarkMode(landmarkMode) {
+    if (landmarkMode !== 1 && landmarkMode !== 2) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setLandmarkMode(*) 'landmarkMode' invalid landmark mode. Expected VisionFaceDetectorLandmarkMode.NO_LANDMARKS or VisionFaceDetectorLandmarkMode.ALL_LANDMARKS.`,
+      );
+    }
+
+    return this.set('classificationMode', contourMode);
+  }
+
+  setMinFaceSize(minFaceSize) {
+    if (!isNumber(minFaceSize)) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setMinFaceSize(*) 'minFaceSize' expected a number value between 0 & 1.`,
+      );
+    }
+
+    if (minFaceSize < 0 || minFaceSize > 1) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setMinFaceSize(*) 'minFaceSize' expected value to be between 0 & 1.`,
+      );
+    }
+
+    return this.set('minFaceSize', minFaceSize);
+  }
+
+  setPerformanceMode(performanceMode) {
+    if (performanceMode !== 1 && performanceMode !== 2) {
+      throw new Error(
+        `firebase.mlKitVision() VisionFaceDetectorOptions.setPerformanceMode(*) 'performanceMode' invalid performance mode. Expected VisionFaceDetectorPerformanceMode.FAST or VisionFaceDetectorPerformanceMode.ACCURATE.`,
+      );
+    }
+
+    return this.set('performanceMode', performanceMode);
+  }
 }

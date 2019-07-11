@@ -38,6 +38,10 @@ import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions
 import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
 import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
+import VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassificationMode';
+import VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
+import VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
+import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
 
 const statics = {
   VisionPoint,
@@ -50,6 +54,10 @@ const statics = {
   VisionCloudLandmarkRecognizerOptions,
   VisionCloudDocumentTextRecognizerOptions,
   VisionCloudTextRecognizerModelType,
+  VisionFaceDetectorClassificationMode,
+  VisionFaceDetectorContourMode,
+  VisionFaceDetectorLandmarkMode,
+  VisionFaceDetectorPerformanceMode,
 };
 
 const namespace = 'mlKitVision';
@@ -63,7 +71,31 @@ const nativeModuleName = [
 
 class FirebaseMlKitVisionModule extends FirebaseModule {
   faceDetectorProcessImage(localImageFilePath, faceDetectorOptions) {
-    // todo
+    validateOptionalNativeDependencyExists(
+      'ml_vision_image_label_model',
+      'ML Kit Vision Face Detector',
+      !!this.native.imageLabelerProcessImage,
+    );
+
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().faceDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(faceDetectorOptions) &&
+      !(faceDetectorOptions instanceof VisionFaceDetectorOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().faceDetectorProcessImage(_, *) 'faceDetectorOptions' expected an instance of VisionFaceDetectorOptions.`,
+      );
+    }
+
+    return this.native.faceDetectorProcessImage(
+      toFilePath(localImageFilePath),
+      faceDetectorOptions ? faceDetectorOptions.toJSON() : {},
+    );
   }
 
   textRecognizerProcessImage(localImageFilePath) {
@@ -195,3 +227,7 @@ export VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions
 export VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 export VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
 export VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
+export VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassificationMode';
+export VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
+export VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
+export VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
