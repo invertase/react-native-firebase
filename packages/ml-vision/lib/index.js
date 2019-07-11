@@ -38,7 +38,6 @@ import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions
 import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
 
-
 const statics = {
   VisionPoint,
   VisionRectangle,
@@ -91,11 +90,18 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     );
 
     if (!isString(localImageFilePath)) {
-      // throw
+      throw new Error(
+        `firebase.mlKitVision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
     }
 
-    if (!isUndefined(imageLabelerOptions) && !(imageLabelerOptions instanceof VisionImageLabelerOptions)) {
-      // throw
+    if (
+      !isUndefined(imageLabelerOptions) &&
+      !(imageLabelerOptions instanceof VisionImageLabelerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().imageLabelerProcessImage(_, *) 'imageLabelerOptions' expected an instance of VisionImageLabelerOptions.`,
+      );
     }
 
     return this.native.imageLabelerProcessImage(
@@ -104,7 +110,6 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     );
   }
 
-  // image labeler
   cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
     validateOptionalNativeDependencyExists(
       'ml_vision_image_label_model',
@@ -112,10 +117,24 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
       !!this.native.imageLabelerProcessImage,
     );
 
-    // todo validate
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(cloudImageLabelerOptions) &&
+      !(cloudImageLabelerOptions instanceof VisionCloudImageLabelerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().cloudImageLabelerProcessImage(_, *) 'cloudImageLabelerOptions' expected an instance of VisionCloudImageLabelerOptions.`,
+      );
+    }
+
     return this.native.cloudImageLabelerProcessImage(
-      localImageFilePath,
-      cloudImageLabelerOptions || {},
+      toFilePath(localImageFilePath),
+      cloudImageLabelerOptions ? cloudImageLabelerOptions.toJSON() : {},
     );
   }
 

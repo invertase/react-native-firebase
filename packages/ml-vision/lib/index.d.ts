@@ -89,18 +89,78 @@ export namespace MLKitVision {
    *
    * For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned.
    * The default threshold is 0.5.
+   *
+   * #### Example
+   *
+   * ```js
+   * const labelerOptions = new VisionImageLabelerOptions();
+   * labelerOptions.setConfidenceThreshold(0.8);
+   *
+   * await firebase.mlKitVision().imageLabelerProcessImage(filePath, labelerOptions);
+   * ```
    */
   export class VisionImageLabelerOptions {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
+     *
+     * #### Example
+     *
+     * ```js
+     * const labelerOptions = new VisionImageLabelerOptions();
+     * labelerOptions.setConfidenceThreshold(0.8);
+     * ```
      *
      * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionImageLabelerOptions;
   }
 
+  /**
+   * Options for cloud image labeler. Confidence threshold could be provided for the label detection.
+   *
+   * For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned. The default threshold is 0.5.
+   *
+   * Note: at most 20 labels will be returned for cloud image labeler.
+   *
+   * #### Example
+   *
+   * ```js
+   * const labelerOptions = new VisionCloudImageLabelerOptions();
+   * labelerOptions.setConfidenceThreshold(0.8);
+   *
+   * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, labelerOptions);
+   * ```
+   */
   export class VisionCloudImageLabelerOptions {
-    // todo
+    /**
+     * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
+     *
+     * > Do not set this for debug build if you use simulators to test.
+     *
+     * #### Example
+     *
+     * ```js
+     * const labelerOptions = new VisionCloudImageLabelerOptions();
+     * labelerOptions.enforceCertFingerprintMatch();
+     *
+     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, labelerOptions);
+     * ```
+     */
+    enforceCertFingerprintMatch(): VisionCloudImageLabelerOptions;
+
+    /**
+     * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
+     *
+     * #### Example
+     *
+     * ```js
+     * const labelerOptions = new VisionCloudImageLabelerOptions();
+     * labelerOptions.setConfidenceThreshold(0.8);
+     * ```
+     *
+     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
+     */
+    setConfidenceThreshold(confidenceThreshold: number): VisionCloudImageLabelerOptions;
   }
 
   export class VisionBarcodeDetectorOptions {

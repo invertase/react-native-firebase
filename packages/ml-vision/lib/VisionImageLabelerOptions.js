@@ -16,16 +16,27 @@
  */
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+import { isNumber } from '@react-native-firebase/common';
 
 export default class VisionImageLabelerOptions extends MutatableParams {
   constructor() {
     super();
     this.set('confidenceThreshold', 0.5);
-
   }
 
   setConfidenceThreshold(confidenceThreshold) {
-    // todo validate
+    if (!isNumber(confidenceThreshold)) {
+      throw new Error(
+        `firebase.mlKitVision() VisionImageLabelerOptions.setConfidenceThreshold(*) 'confidenceThreshold' expected a number value between 0 & 1.`,
+      );
+    }
+
+    if (confidenceThreshold < 0 || confidenceThreshold > 1) {
+      throw new Error(
+        `firebase.mlKitVision() VisionImageLabelerOptions.setConfidenceThreshold(*) 'confidenceThreshold' expected value to be between 0 & 1.`,
+      );
+    }
+
     return this.set('confidenceThreshold', confidenceThreshold);
   }
 }

@@ -16,41 +16,226 @@
  */
 
 describe.only('mlkit.label', () => {
-  it('test local', async () => {
-    const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-    await firebase
-      .storage()
-      .ref('vision/crab.jpg')
-      .getFile(downloadTo);
+  describe('imageLabelerProcessImage()', () => {
+    it('should throw if image path is not a string', () => {
+      try {
+        firebase.mlKitVision().imageLabelerProcessImage(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        return Promise.resolve();
+      }
+    });
 
-    const res = await firebase.mlKitVision().imageLabelerProcessImage(downloadTo);
+    it('should throw if options are not a valid instance', () => {
+      try {
+        firebase.mlKitVision().imageLabelerProcessImage('foo', {});
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          `'imageLabelerOptions' expected an instance of VisionImageLabelerOptions`,
+        );
+        return Promise.resolve();
+      }
+    });
 
-    res.should.be.Array();
-    res.length.should.be.greaterThan(0);
+    it('should return a local label array', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/crab.jpg')
+        .getFile(downloadTo);
 
-    res.forEach(i => {
-      i.text.should.be.String();
-      i.entityId.should.be.String();
-      i.confidence.should.be.Number();
+      const res = await firebase.mlKitVision().imageLabelerProcessImage(downloadTo);
+
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.text.should.be.String();
+        i.entityId.should.be.String();
+        i.confidence.should.be.Number();
+      });
     });
   });
 
-  it('test cloud', async () => {
-    const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-    await firebase
-      .storage()
-      .ref('vision/crab.jpg')
-      .getFile(downloadTo);
+  describe('cloudImageLabelerProcessImage()', () => {
+    it('should throw if image path is not a string', () => {
+      try {
+        firebase.mlKitVision().cloudImageLabelerProcessImage(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        return Promise.resolve();
+      }
+    });
 
-    const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo);
+    it('should throw if options are not a valid instance', () => {
+      try {
+        firebase.mlKitVision().cloudImageLabelerProcessImage('foo', {});
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          `'cloudImageLabelerOptions' expected an instance of VisionCloudImageLabelerOptions`,
+        );
+        return Promise.resolve();
+      }
+    });
 
-    res.should.be.Array();
-    res.length.should.be.greaterThan(0);
+    it('should return a cloud label array', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/crab.jpg')
+        .getFile(downloadTo);
 
-    res.forEach(i => {
-      i.text.should.be.String();
-      i.entityId.should.be.String();
-      i.confidence.should.be.Number();
+      const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo);
+
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.text.should.be.String();
+        i.entityId.should.be.String();
+        i.confidence.should.be.Number();
+      });
+    });
+  });
+
+  describe('VisionImageLabelerOptions.setConfidenceThreshold()', () => {
+    it('should throw if confidence threshold is not a number', () => {
+      try {
+        const options = new firebase.mlKitVision.VisionImageLabelerOptions();
+        options.setConfidenceThreshold('0.5');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          `'confidenceThreshold' expected a number value between 0 & 1`,
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('should throw if confidence threshold is between 0 & 1', () => {
+      try {
+        const options = new firebase.mlKitVision.VisionImageLabelerOptions();
+        options.setConfidenceThreshold(1.1);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'confidenceThreshold' expected value to be between 0 & 1`);
+        return Promise.resolve();
+      }
+    });
+
+    it('should return the class', () => {
+      const options = new firebase.mlKitVision.VisionImageLabelerOptions().setConfidenceThreshold(
+        0.8,
+      );
+
+      options.constructor.name.should.eql('VisionImageLabelerOptions');
+    });
+
+    it('should accept options and return local labels', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/crab.jpg')
+        .getFile(downloadTo);
+
+      const options = new firebase.mlKitVision.VisionImageLabelerOptions();
+      options.setConfidenceThreshold(0.8);
+
+      const res = await firebase.mlKitVision().imageLabelerProcessImage(downloadTo, options);
+
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.text.should.be.String();
+        i.entityId.should.be.String();
+        i.confidence.should.be.Number();
+      });
+    });
+  });
+
+  describe('VisionCloudImageLabelerOptions', () => {
+    describe('setConfidenceThreshold()', () => {
+      it('should throw if confidence threshold is not a number', () => {
+        try {
+          const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+          options.setConfidenceThreshold('0.5');
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'confidenceThreshold' expected a number value between 0 & 1`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('should throw if confidence threshold is between 0 & 1', () => {
+        try {
+          const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+          options.setConfidenceThreshold(1.1);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'confidenceThreshold' expected value to be between 0 & 1`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('should return the class', () => {
+        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions().setConfidenceThreshold(
+          0.8,
+        );
+
+        options.constructor.name.should.eql('VisionCloudImageLabelerOptions');
+      });
+
+      it('should accept options and return cloud labels', async () => {
+        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+        await firebase
+          .storage()
+          .ref('vision/crab.jpg')
+          .getFile(downloadTo);
+
+        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+        options.setConfidenceThreshold(0.8);
+
+        const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo, options);
+
+        res.should.be.Array();
+        res.length.should.be.greaterThan(0);
+
+        res.forEach(i => {
+          i.text.should.be.String();
+          i.entityId.should.be.String();
+          i.confidence.should.be.Number();
+        });
+      });
+    });
+
+    xdescribe('enforceCertFingerprintMatch()', () => {
+      it('test', async () => {
+        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+        await firebase
+          .storage()
+          .ref('vision/crab.jpg')
+          .getFile(downloadTo);
+
+        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+        options.enforceCertFingerprintMatch();
+
+        try {
+          await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo, options);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          // TODO is error correct?
+          return Promise.resolve();
+        }
+      });
     });
   });
 });
