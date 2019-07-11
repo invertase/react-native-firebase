@@ -45,6 +45,7 @@ import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMo
 import VisionFaceLandmarkType from './VisionFaceLandmarkType';
 import VisionFaceContourType from './VisionFaceContourType';
 import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
+import VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
 
 const statics = {
   VisionPoint,
@@ -64,6 +65,7 @@ const statics = {
   VisionFaceLandmarkType,
   VisionFaceContourType,
   VisionCloudLandmarkRecognizerModelType,
+  VisionDocumentTextRecognizedBreakType,
 };
 
 const namespace = 'mlKitVision';
@@ -269,3 +271,4 @@ export VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMo
 export VisionFaceLandmarkType from './VisionFaceLandmarkType';
 export VisionFaceContourType from './VisionFaceContourType';
 export VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
+export VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
