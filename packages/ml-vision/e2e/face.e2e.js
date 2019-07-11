@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('mlkit.face', () => {
+describe('mlkit.face', () => {
   describe('faceDetectorProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
@@ -39,8 +39,7 @@ describe.only('mlkit.face', () => {
       }
     });
 
-    it('sdf', async () => {
-      await Utils.sleep(3000);
+    it('returns basic face object with no options enabled', async () => {
       const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
       await firebase
         .storage()
@@ -49,7 +48,204 @@ describe.only('mlkit.face', () => {
 
       const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo);
 
-      console.log(res);
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        // Currently disabled
+        i.trackingId.should.eql(-1);
+
+        i.rightEyeOpenProbability.should.eql(-1);
+        i.leftEyeOpenProbability.should.eql(-1);
+        i.smilingProbability.should.eql(-1);
+
+        i.landmarks.length.should.eql(0);
+        i.faceContours.length.should.eql(0);
+
+        i.boundingBox.length.should.eql(4);
+
+        i.headEulerAngleZ.should.be.Number();
+        i.headEulerAngleY.should.be.Number();
+      });
+    });
+
+    it('returns classifications if enabled', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/faces.jpg')
+        .getFile(downloadTo);
+
+      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
+      o.setClassificationMode(2);
+
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.rightEyeOpenProbability.should.greaterThan(-1);
+        i.leftEyeOpenProbability.should.greaterThan(-1);
+        i.smilingProbability.should.greaterThan(-1);
+      });
+    });
+
+    it('returns landmarks if enabled', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/faces.jpg')
+        .getFile(downloadTo);
+
+      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
+      o.setLandmarkMode(2);
+
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.landmarks.length.should.be.greaterThan(0);
+
+        i.landmarks.forEach(l => {
+          l.type.should.be.Number();
+          l.position.length.should.be.eql(2);
+          l.position.forEach(p => p.should.be.Number());
+        });
+      });
+    });
+
+    it('returns contours if enabled', async () => {
+      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
+      await firebase
+        .storage()
+        .ref('vision/faces.jpg')
+        .getFile(downloadTo);
+
+      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
+      o.setContourMode(2);
+
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      res.should.be.Array();
+      res.length.should.be.greaterThan(0);
+
+      res.forEach(i => {
+        i.faceContours.length.should.be.greaterThan(0);
+
+        i.faceContours.forEach(l => {
+          l.type.should.be.Number();
+          l.points.length.should.be.greaterThan(1);
+          l.points.forEach(p => {
+            p.should.be.Array();
+            p.length.should.be.eql(2);
+          });
+        });
+      });
+    });
+  });
+
+  describe.only('VisionFaceDetectorOptions', () => {
+    describe('setClassificationMode()', () => {
+      it('throws if mode is incorrect', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(3);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'classificationMode' invalid classification mode`);
+          return Promise.resolve();
+        }
+      });
+
+      it('sets classification and returns an instance', () => {
+        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(
+          firebase.mlKitVision.VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS,
+        );
+
+        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(
+          firebase.mlKitVision.VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
+        );
+
+        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
+        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+      });
+    });
+
+    describe('setContourMode()', () => {
+      it('throws if mode is incorrect', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(3);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'contourMode' invalid contour mode`);
+          return Promise.resolve();
+        }
+      });
+
+      it('sets contour mode and returns an instance', () => {
+        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+          firebase.mlKitVision.VisionFaceDetectorContourMode.NO_CONTOURS,
+        );
+
+        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+          firebase.mlKitVision.VisionFaceDetectorContourMode.ALL_CONTOURS,
+        );
+
+        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
+        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+      });
+    });
+
+    describe('setPerformanceMode()', () => {
+      it('throws if mode is incorrect', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(3);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'performanceMode' invalid performance mode`);
+          return Promise.resolve();
+        }
+      });
+
+      it('sets contour mode and returns an instance', () => {
+        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+          firebase.mlKitVision.VisionFaceDetectorPerformanceMode.FAST,
+        );
+
+        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+          firebase.mlKitVision.VisionFaceDetectorPerformanceMode.ACCURATE,
+        );
+
+        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
+        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+      });
+    });
+
+    describe('setMinFaceSize()', () => {
+      it('throws if size is not a number', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize('0.5');
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'minFaceSize' expected a number value between 0 & 1`);
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if size is not valid', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize(-1);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'minFaceSize' expected value to be between 0 & 1`);
+          return Promise.resolve();
+        }
+      });
+
+      it('sets face size and returns an instance', () => {
+        const i = new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize(0.5);
+
+        i.constructor.name.should.eql('VisionFaceDetectorOptions');
+      });
     });
   });
 });

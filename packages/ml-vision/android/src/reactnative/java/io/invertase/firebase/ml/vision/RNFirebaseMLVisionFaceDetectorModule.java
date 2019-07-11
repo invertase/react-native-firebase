@@ -23,8 +23,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-import java.util.Objects;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionFaceDetectorModule extends ReactNativeFirebaseModule {
