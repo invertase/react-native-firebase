@@ -21,14 +21,12 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 
 @SuppressWarnings("unused")
 public class ReactNativeFirebaseMLVisionPackage implements ReactPackage {
@@ -39,6 +37,7 @@ public class ReactNativeFirebaseMLVisionPackage implements ReactPackage {
     modules.add(new RNFirebaseMLVisionBarcodeScannerModule(reactContext));
     modules.add(new RNFirebaseMLVisionTextRecognizerModule(reactContext));
     modules.add(new RNFirebaseMLVisionLandmarkRecognizerModule(reactContext));
+    modules.add(new RNFirebaseMLVisionDocumentTextRecognizerModule(reactContext));
 
     if (ReactNativeFirebaseJSON
       .getSharedInstance()

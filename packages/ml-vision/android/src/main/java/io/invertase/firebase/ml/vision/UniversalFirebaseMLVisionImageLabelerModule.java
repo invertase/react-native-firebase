@@ -20,7 +20,6 @@ package io.invertase.firebase.ml.vision;
 
 import android.content.Context;
 import android.os.Bundle;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
@@ -30,22 +29,22 @@ import com.google.firebase.ml.vision.label.FirebaseVisionCloudImageLabelerOption
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceImageLabelerOptions;
+import io.invertase.firebase.common.SharedUtils;
+import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.invertase.firebase.common.SharedUtils;
-import io.invertase.firebase.common.UniversalFirebaseModule;
+import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.*;
 
-public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFirebaseModule {
-
+class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFirebaseModule {
   UniversalFirebaseMLVisionImageLabelerModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 
-  public Task<List<Map<String, Object>>> imageLabelerProcessImage(String appName, String stringUri, Bundle imageLabelerOptions) {
+  Task<List<Map<String, Object>>> imageLabelerProcessImage(String appName, String stringUri, Bundle imageLabelerOptions) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseVisionOnDeviceImageLabelerOptions options = getOnDeviceImageLabelerOptions(imageLabelerOptions);
@@ -62,7 +61,7 @@ public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFireba
     });
   }
 
-  public Task<List<Map<String, Object>>> cloudImageLabelerProcessImage(String appName, String stringUri, Bundle cloudImageLabelerOptions) {
+  Task<List<Map<String, Object>>> cloudImageLabelerProcessImage(String appName, String stringUri, Bundle cloudImageLabelerOptions) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseVisionCloudImageLabelerOptions options = getCloudImageLabelerOptions(cloudImageLabelerOptions);
@@ -86,9 +85,9 @@ public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFireba
     for (FirebaseVisionImageLabel visionImageLabel : visionImageLabels) {
       Map<String, Object> visionImageLabelFormatted = new HashMap<>();
 
-      visionImageLabelFormatted.put("confidence", visionImageLabel.getConfidence());
-      visionImageLabelFormatted.put("entityId", visionImageLabel.getEntityId());
-      visionImageLabelFormatted.put("text", visionImageLabel.getText());
+      visionImageLabelFormatted.put(KEY_CONFIDENCE, visionImageLabel.getConfidence());
+      visionImageLabelFormatted.put(KEY_ENTITY_ID, visionImageLabel.getEntityId());
+      visionImageLabelFormatted.put(KEY_TEXT, visionImageLabel.getText());
 
       visionLabelsFormatted.add(visionImageLabelFormatted);
     }
@@ -99,8 +98,8 @@ public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFireba
   private FirebaseVisionOnDeviceImageLabelerOptions getOnDeviceImageLabelerOptions(Bundle imageLabelerOptionsBundle) {
     FirebaseVisionOnDeviceImageLabelerOptions.Builder builder = new FirebaseVisionOnDeviceImageLabelerOptions.Builder();
 
-    if (imageLabelerOptionsBundle.containsKey("confidenceThreshold")) {
-      builder.setConfidenceThreshold(imageLabelerOptionsBundle.getFloat("confidenceThreshold"));
+    if (imageLabelerOptionsBundle.containsKey(KEY_CONFIDENCE_THRESHOLD)) {
+      builder.setConfidenceThreshold(imageLabelerOptionsBundle.getFloat(KEY_CONFIDENCE_THRESHOLD));
     }
 
     return builder.build();
@@ -110,13 +109,13 @@ public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFireba
     FirebaseVisionCloudImageLabelerOptions.Builder builder = new FirebaseVisionCloudImageLabelerOptions.Builder();
 
     if (
-      cloudImageLabelerOptionsBundle.containsKey("enforceCertFingerprintMatch") &&
-        cloudImageLabelerOptionsBundle.getBoolean("enforceCertFingerprintMatch")
+      cloudImageLabelerOptionsBundle.containsKey(KEY_ENFORCE_CERT_FINGERPRINT_MATCH) &&
+        cloudImageLabelerOptionsBundle.getBoolean(KEY_ENFORCE_CERT_FINGERPRINT_MATCH)
     ) {
       builder.enforceCertFingerprintMatch();
     }
 
-    builder.setConfidenceThreshold(cloudImageLabelerOptionsBundle.getFloat("confidenceThreshold", (float) 0.5));
+    builder.setConfidenceThreshold(cloudImageLabelerOptionsBundle.getFloat(KEY_CONFIDENCE_THRESHOLD, (float) 0.5));
 
     return builder.build();
   }

@@ -71,10 +71,11 @@ const statics = {
 const namespace = 'mlKitVision';
 const nativeModuleName = [
   'RNFBMLVisionFaceDetectorModule',
-  'RNFBMLVisionTextRecognizerModule',
   'RNFBMLVisionImageLabelerModule',
+  'RNFBMLVisionTextRecognizerModule',
   'RNFBMLVisionBarcodeDetectorModule',
   'RNFBMLVisionLandmarkRecognizerModule',
+  'RNFBMLVisionDocumentTextRecognizerModule',
 ];
 
 class FirebaseMlKitVisionModule extends FirebaseModule {
@@ -144,7 +145,20 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
         `firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
       );
     }
-    // todo
+
+    if (
+      !isUndefined(cloudDocumentTextRecognizerOptions) &&
+      !(cloudDocumentTextRecognizerOptions instanceof VisionCloudDocumentTextRecognizerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(_, *) 'cloudDocumentTextRecognizerOptions' expected an instance of VisionCloudDocumentTextRecognizerOptions.`,
+      );
+    }
+
+    return this.native.cloudDocumentTextRecognizerProcessImage(
+      toFilePath(localImageFilePath),
+      cloudDocumentTextRecognizerOptions ? cloudDocumentTextRecognizerOptions.toJSON() : {},
+    );
   }
 
   cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {

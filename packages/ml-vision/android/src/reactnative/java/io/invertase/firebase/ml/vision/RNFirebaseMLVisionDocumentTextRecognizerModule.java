@@ -20,23 +20,26 @@ package io.invertase.firebase.ml.vision;
 import com.facebook.react.bridge.*;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class RNFirebaseMLVisionLandmarkRecognizerModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "MLVisionLandmarkRecognizer";
-  private UniversalFirebaseMLVisionLandmarkRecognizerModule module;
+public class RNFirebaseMLVisionDocumentTextRecognizerModule extends ReactNativeFirebaseModule {
+  private static final String SERVICE_NAME = "MLVisionDocumentTextRecognizer";
+  private final UniversalFirebaseMLVisionDocumentTextRecognizerModule module;
 
-  RNFirebaseMLVisionLandmarkRecognizerModule(ReactApplicationContext reactContext) {
+  RNFirebaseMLVisionDocumentTextRecognizerModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
-    this.module = new UniversalFirebaseMLVisionLandmarkRecognizerModule(reactContext, SERVICE_NAME);
+    this.module = new UniversalFirebaseMLVisionDocumentTextRecognizerModule(reactContext, SERVICE_NAME);
   }
 
   @ReactMethod
-  public void cloudLandmarkRecognizerProcessImage(String appName, String stringUri, ReadableMap cloudLandmarkRecognizerOptions, Promise promise) {
-    module.cloudLandmarkRecognizerProcessImage(appName, stringUri, Arguments.toBundle(cloudLandmarkRecognizerOptions))
-      .addOnCompleteListener(task -> {
+  public void cloudDocumentTextRecognizerProcessImage(
+    String appName,
+    String stringUri,
+    ReadableMap cloudDocumentTextRecognizerOptions,
+    Promise promise
+  ) {
+    module.cloudDocumentTextRecognizerProcessImage(appName, stringUri, Arguments.toBundle(cloudDocumentTextRecognizerOptions))
+      .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
-          promise.resolve(
-            Arguments.makeNativeArray(task.getResult())
-          );
+          promise.resolve(Arguments.makeNativeMap(task.getResult()));
         } else {
           String[] errorCodeAndMessage = UniversalFirebaseMLVisionCommon.getErrorCodeAndMessageFromException(
             task.getException());

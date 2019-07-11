@@ -20,35 +20,26 @@ package io.invertase.firebase.ml.vision;
 
 import android.content.Context;
 import android.os.Bundle;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
-import com.google.firebase.ml.vision.face.FirebaseVisionFace;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import com.google.firebase.ml.vision.face.*;
 import io.invertase.firebase.common.SharedUtils;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFirebaseModule {
+import java.util.*;
 
+import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.*;
+
+class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFirebaseModule {
   UniversalFirebaseMLVisionFaceDetectorModule(Context context, String serviceName) {
     super(context, serviceName);
   }
 
-  public Task<List<Map<String, Object>>> faceDetectorProcessImage(
+  Task<List<Map<String, Object>>> faceDetectorProcessImage(
     String appName,
     String stringUri,
     Bundle faceDetectorOptionsBundle
@@ -70,22 +61,22 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
         Map<String, Object> visionFaceFormatted = new HashMap<>();
 
         visionFaceFormatted.put(
-          "boundingBox",
+          KEY_BOUNDING_BOX,
           SharedUtils.rectToIntArray(visionFaceRaw.getBoundingBox())
         );
-        visionFaceFormatted.put("headEulerAngleY", visionFaceRaw.getHeadEulerAngleY());
-        visionFaceFormatted.put("headEulerAngleZ", visionFaceRaw.getHeadEulerAngleZ());
+        visionFaceFormatted.put(KEY_HEAD_EULER_ANGLE_Y, visionFaceRaw.getHeadEulerAngleY());
+        visionFaceFormatted.put(KEY_HEAD_EULER_ANGLE_Z, visionFaceRaw.getHeadEulerAngleZ());
         visionFaceFormatted.put(
-          "leftEyeOpenProbability",
+          KEY_LEFT_EYE_OPEN_PROBABILITY,
           visionFaceRaw.getLeftEyeOpenProbability()
         );
         visionFaceFormatted.put(
-          "rightEyeOpenProbability",
+          KEY_RIGHT_EYE_OPEN_PROBABILITY,
           visionFaceRaw.getRightEyeOpenProbability()
         );
 
-        visionFaceFormatted.put("smilingProbability", visionFaceRaw.getSmilingProbability());
-        visionFaceFormatted.put("trackingId", visionFaceRaw.getTrackingId());
+        visionFaceFormatted.put(KEY_SMILING_PROBABILITY, visionFaceRaw.getSmilingProbability());
+        visionFaceFormatted.put(KEY_TRACKING_ID, visionFaceRaw.getTrackingId());
 
         List<Map<String, Object>> faceContoursFormatted;
 
@@ -109,7 +100,7 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
           faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.NOSE_BOTTOM)));
         }
 
-        visionFaceFormatted.put("faceContours", faceContoursFormatted);
+        visionFaceFormatted.put(KEY_FACE_CONTOURS, faceContoursFormatted);
 
         List<Map<String, Object>> faceLandmarksFormatted = new ArrayList<>(14);
         if (visionFaceRaw.getLandmark(FirebaseVisionFaceLandmark.MOUTH_BOTTOM) != null) {
@@ -172,7 +163,7 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
           );
         }
 
-        visionFaceFormatted.put("landmarks", faceLandmarksFormatted);
+        visionFaceFormatted.put(KEY_LANDMARKS, faceLandmarksFormatted);
         visionFacesFormatted.add(visionFaceFormatted);
       }
 
@@ -182,26 +173,25 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
 
   private Map<String, Object> getLandmarkMap(FirebaseVisionFaceLandmark visionFaceLandmark) {
     Map<String, Object> visionFaceLandmarkMap = new HashMap<>();
-    visionFaceLandmarkMap.put("type", visionFaceLandmark.getLandmarkType());
-    visionFaceLandmarkMap.put("position", getVisionPointMap(visionFaceLandmark.getPosition()));
+    visionFaceLandmarkMap.put(KEY_TYPE, visionFaceLandmark.getLandmarkType());
+    visionFaceLandmarkMap.put(KEY_POSITION, getVisionPointMap(visionFaceLandmark.getPosition()));
     return visionFaceLandmarkMap;
   }
 
   private float[] getVisionPointMap(FirebaseVisionPoint visionPoint) {
-    // noinspection ConstantConditions
     return new float[]{visionPoint.getX(), visionPoint.getY()};
   }
 
   private Map<String, Object> getContourMap(FirebaseVisionFaceContour visionFaceContour) {
     Map<String, Object> visionFaceContourMap = new HashMap<>();
-    visionFaceContourMap.put("type", visionFaceContour.getFaceContourType());
+    visionFaceContourMap.put(KEY_TYPE, visionFaceContour.getFaceContourType());
     List<FirebaseVisionPoint> pointsListRaw = visionFaceContour.getPoints();
     List<float[]> pointsListFormatted = new ArrayList<>(pointsListRaw.size());
     for (FirebaseVisionPoint pointRaw : pointsListRaw) {
       pointsListFormatted.add(getVisionPointMap(pointRaw));
     }
-    visionFaceContourMap.put("type", visionFaceContour.getFaceContourType());
-    visionFaceContourMap.put("points", pointsListFormatted);
+    visionFaceContourMap.put(KEY_TYPE, visionFaceContour.getFaceContourType());
+    visionFaceContourMap.put(KEY_POINTS, pointsListFormatted);
 
     return visionFaceContourMap;
   }
@@ -210,12 +200,12 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
   private FirebaseVisionFaceDetectorOptions getFaceDetectorOptions(Bundle faceDetectorOptionsBundle) {
     FirebaseVisionFaceDetectorOptions.Builder builder = new FirebaseVisionFaceDetectorOptions.Builder();
 
-    if (faceDetectorOptionsBundle.getBoolean("enableTracking")) {
+    if (faceDetectorOptionsBundle.getBoolean(KEY_ENABLE_TRACKING)) {
       builder.enableTracking();
     }
 
-    if (faceDetectorOptionsBundle.containsKey("classificationMode")) {
-      int classificationMode = (int) faceDetectorOptionsBundle.getDouble("classificationMode");
+    if (faceDetectorOptionsBundle.containsKey(KEY_CLASSIFICATION_MODE)) {
+      int classificationMode = (int) faceDetectorOptionsBundle.getDouble(KEY_CLASSIFICATION_MODE);
       switch (classificationMode) {
         case FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS:
           builder.setClassificationMode(FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS);
@@ -229,8 +219,8 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
       }
     }
 
-    if (faceDetectorOptionsBundle.containsKey("contourMode")) {
-      int contourMode = (int) faceDetectorOptionsBundle.getDouble("contourMode");
+    if (faceDetectorOptionsBundle.containsKey(KEY_CONTOUR_MODE)) {
+      int contourMode = (int) faceDetectorOptionsBundle.getDouble(KEY_CONTOUR_MODE);
       switch (contourMode) {
         case FirebaseVisionFaceDetectorOptions.NO_CONTOURS:
           builder.setContourMode(FirebaseVisionFaceDetectorOptions.NO_CONTOURS);
@@ -244,8 +234,8 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
       }
     }
 
-    if (faceDetectorOptionsBundle.containsKey("landmarkMode")) {
-      int landmarkMode = (int) faceDetectorOptionsBundle.getDouble("landmarkMode");
+    if (faceDetectorOptionsBundle.containsKey(KEY_LANDMARK_MODE)) {
+      int landmarkMode = (int) faceDetectorOptionsBundle.getDouble(KEY_LANDMARK_MODE);
       switch (landmarkMode) {
         case FirebaseVisionFaceDetectorOptions.NO_LANDMARKS:
           builder.setLandmarkMode(FirebaseVisionFaceDetectorOptions.NO_LANDMARKS);
@@ -259,13 +249,13 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
       }
     }
 
-    if (faceDetectorOptionsBundle.containsKey("minFaceSize")) {
-      float minFaceSize = (float) faceDetectorOptionsBundle.getDouble("minFaceSize");
+    if (faceDetectorOptionsBundle.containsKey(KEY_MIN_FACE_SIZE)) {
+      float minFaceSize = (float) faceDetectorOptionsBundle.getDouble(KEY_MIN_FACE_SIZE);
       builder.setMinFaceSize(minFaceSize);
     }
 
-    if (faceDetectorOptionsBundle.containsKey("performanceMode")) {
-      int performanceMode = (int) faceDetectorOptionsBundle.getDouble("performanceMode");
+    if (faceDetectorOptionsBundle.containsKey(KEY_PERFORMANCE_MODE)) {
+      int performanceMode = (int) faceDetectorOptionsBundle.getDouble(KEY_PERFORMANCE_MODE);
       switch (performanceMode) {
         case FirebaseVisionFaceDetectorOptions.FAST:
           builder.setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST);
@@ -281,6 +271,4 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
 
     return builder.build();
   }
-
-
 }

@@ -18,6 +18,8 @@ package io.invertase.firebase.ml.vision;
  */
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionBarcodeScannerModule extends ReactNativeFirebaseModule {
@@ -25,6 +27,11 @@ public class RNFirebaseMLVisionBarcodeScannerModule extends ReactNativeFirebaseM
 
   RNFirebaseMLVisionBarcodeScannerModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+  }
+
+  @ReactMethod
+  public void barcodeDetectorProcessImage(String appName, String stringUri, ReadableMap barcodeDetectorOptions) {
+
   }
 
 }

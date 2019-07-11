@@ -17,5 +17,4 @@
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 
-export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {
-}
+export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {}

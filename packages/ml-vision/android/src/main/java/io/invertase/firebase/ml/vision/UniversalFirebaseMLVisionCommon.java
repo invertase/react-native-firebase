@@ -4,7 +4,45 @@ import com.google.firebase.ml.common.FirebaseMLException;
 
 import javax.annotation.Nullable;
 
-public class UniversalFirebaseMLVisionCommon {
+class UniversalFirebaseMLVisionCommon {
+  static final String KEY_BOUNDING_BOX = "boundingBox";
+  static final String KEY_TEXT = "text";
+  static final String KEY_CONFIDENCE = "confidence";
+  static final String KEY_CONFIDENCE_THRESHOLD = "confidenceThreshold";
+  static final String KEY_RECOGNIZED_LANGUAGES = "recognizedLanguages";
+  static final String KEY_TEXT_BLOCKS = "blocks";
+  static final String KEY_ENFORCE_CERT_FINGERPRINT_MATCH = "enforceCertFingerprintMatch";
+  static final String KEY_HINTED_LANGUAGES = "hintedLanguages";
+  static final String KEY_RECOGNIZED_BREAK = "recognizedBreak";
+  static final String KEY_SYMBOLS = "symbols";
+  static final String KEY_WORDS = "words";
+  static final String KEY_PARAGRAPHS = "paragraphs";
+  static final String KEY_CORNER_POINTS = "cornerPoints";
+  static final String KEY_ELEMENTS = "elements";
+  static final String KEY_LINES = "lines";
+  static final String KEY_MODEL_TYPE = "modelType";
+  static final String KEY_ENTITY_ID = "entityId";
+  static final String KEY_LANDMARK = "landmark";
+  static final String KEY_LOCATIONS = "locations";
+  static final String KEY_MAX_RESULTS = "maxResults";
+  static final String KEY_MODEL = "model";
+  static final String KEY_TYPE = "type";
+  static final String KEY_POINTS = "points";
+  static final String KEY_CLASSIFICATION_MODE = "classificationMode";
+  static final String KEY_ENABLE_TRACKING = "enableTracking";
+  static final String KEY_POSITION = "position";
+  static final String KEY_LANDMARKS = "landmarks";
+  static final String KEY_FACE_CONTOURS = "faceContours";
+  static final String KEY_TRACKING_ID = "trackingId";
+  static final String KEY_SMILING_PROBABILITY = "smilingProbability";
+  static final String KEY_LEFT_EYE_OPEN_PROBABILITY = "leftEyeOpenProbability";
+  static final String KEY_RIGHT_EYE_OPEN_PROBABILITY = "rightEyeOpenProbability";
+  static final String KEY_HEAD_EULER_ANGLE_Y = "headEulerAngleY";
+  static final String KEY_HEAD_EULER_ANGLE_Z = "headEulerAngleZ";
+  static final String KEY_CONTOUR_MODE = "contourMode";
+  static final String KEY_LANDMARK_MODE = "landmarkMode";
+  static final String KEY_MIN_FACE_SIZE = "minFaceSize";
+  static final String KEY_PERFORMANCE_MODE = "performanceMode";
 
   static String[] getErrorCodeAndMessageFromException(@Nullable Exception possibleMLException) {
     String code = "unknown";

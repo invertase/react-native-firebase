@@ -17,12 +17,7 @@ package io.invertase.firebase.ml.vision;
  *
  */
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-
+import com.facebook.react.bridge.*;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionImageLabelerModule extends ReactNativeFirebaseModule {

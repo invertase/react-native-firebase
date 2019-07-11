@@ -34,19 +34,9 @@ import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.*;
 
-class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseModule {
-  private static final String KEY_BOUNDING_BOX = "boundingBox";
-  private static final String KEY_TEXT = "text";
-  private static final String KEY_CONFIDENCE = "confidence";
-  private static final String KEY_CORNER_POINTS = "cornerPoints";
-  private static final String KEY_RECOGNIZED_LANGUAGES = "recognizedLanguages";
-  private static final String KEY_ELEMENTS = "elements";
-  private static final String KEY_LINES = "lines";
-  private static final String KEY_TEXT_BLOCKS = "blocks";
-  private static final String KEY_ENFORCE_CERT_FINGERPRINT_MATCH = "enforceCertFingerprintMatch";
-  private static final String KEY_MODEL_TYPE = "modelType";
-  private static final String KEY_HINTED_LANGUAGES = "hintedLanguages";
+import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.*;
 
+class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseModule {
   UniversalFirebaseMLVisionTextRecognizerModule(Context context, String serviceName) {
     super(context, serviceName);
   }
