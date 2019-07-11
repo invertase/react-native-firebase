@@ -25,20 +25,27 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.document.FirebaseVisionDocumentText;
-import com.google.firebase.ml.vision.document.FirebaseVisionDocumentTextRecognizer;
+import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
 import io.invertase.firebase.common.SharedUtils;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseModule {
+  private static final String KEY_BOUNDING_BOX = "boundingBox";
+  private static final String KEY_TEXT = "text";
+  private static final String KEY_CONFIDENCE = "confidence";
+  private static final String KEY_CORNER_POINTS = "cornerPoints";
+  private static final String KEY_RECOGNIZED_LANGUAGES = "recognizedLanguages";
+  private static final String KEY_ELEMENTS = "elements";
+  private static final String KEY_LINES = "lines";
+  private static final String KEY_TEXT_BLOCKS = "textBlocks";
+  private static final String KEY_ENFORCE_CERT_FINGERPRINT_MATCH = "enforceCertFingerprintMatch";
+  private static final String KEY_MODEL_TYPE = "modelType";
+  private static final String KEY_HINTED_LANGUAGES = "hintedLanguages";
 
   UniversalFirebaseMLVisionTextRecognizerModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -59,7 +66,6 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
       );
 
       FirebaseVisionText result = Tasks.await(detector.processImage(image));
-
       return getFirebaseVisionTextMap(result);
     });
   }
@@ -71,8 +77,9 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
   ) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseVisionCloudTextRecognizerOptions options = getCloudTextRecognizerOptions(cloudTextRecognizerOptions);
       FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance(firebaseApp)
-        .getCloudTextRecognizer();
+        .getCloudTextRecognizer(options);
 
       FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         getContext(),
@@ -80,9 +87,34 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
       );
 
       FirebaseVisionText result = Tasks.await(detector.processImage(image));
-
       return getFirebaseVisionTextMap(result);
     });
+  }
+
+  private FirebaseVisionCloudTextRecognizerOptions getCloudTextRecognizerOptions(Bundle cloudTextRecognizerOptions) {
+    FirebaseVisionCloudTextRecognizerOptions.Builder builder = new FirebaseVisionCloudTextRecognizerOptions.Builder();
+
+    if (
+      cloudTextRecognizerOptions.containsKey(KEY_ENFORCE_CERT_FINGERPRINT_MATCH) &&
+        cloudTextRecognizerOptions.getBoolean(KEY_ENFORCE_CERT_FINGERPRINT_MATCH)
+    ) {
+      builder.enforceCertFingerprintMatch();
+    }
+
+    if (cloudTextRecognizerOptions.containsKey(KEY_MODEL_TYPE)) {
+      int modelType = (int) cloudTextRecognizerOptions.getDouble(KEY_MODEL_TYPE);
+      if (modelType == FirebaseVisionCloudTextRecognizerOptions.DENSE_MODEL) {
+        builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.DENSE_MODEL);
+      } else if (modelType == FirebaseVisionCloudTextRecognizerOptions.SPARSE_MODEL) {
+        builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.SPARSE_MODEL);
+      }
+    }
+
+    if (cloudTextRecognizerOptions.containsKey(KEY_HINTED_LANGUAGES)) {
+      builder.setLanguageHints(Objects.requireNonNull(cloudTextRecognizerOptions.getStringArrayList(KEY_HINTED_LANGUAGES)));
+    }
+
+    return builder.build();
   }
 
 //  Task<Map<String, Object>> cloudDocumentTextRecognizerProcessImage(
@@ -108,8 +140,8 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
 
   private Map<String, Object> getFirebaseVisionTextMap(FirebaseVisionText visionText) {
     Map<String, Object> firebaseVisionTextMap = new HashMap<>(2);
-    firebaseVisionTextMap.put("text", visionText.getText());
-    firebaseVisionTextMap.put("textBlocks", getVisionTextBlocksList(visionText.getTextBlocks()));
+    firebaseVisionTextMap.put(KEY_TEXT, visionText.getText());
+    firebaseVisionTextMap.put(KEY_TEXT_BLOCKS, getVisionTextBlocksList(visionText.getTextBlocks()));
     return firebaseVisionTextMap;
   }
 
@@ -118,24 +150,24 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
 
     for (FirebaseVisionText.TextBlock textBlockRaw : textBlocks) {
       Map<String, Object> textBlockFormatted = new HashMap<>(6);
+
       textBlockFormatted.put(
-        "boundingBox",
+        KEY_BOUNDING_BOX,
         SharedUtils.rectToIntArray(textBlockRaw.getBoundingBox())
       );
-      textBlockFormatted.put("text", textBlockRaw.getText());
-
+      textBlockFormatted.put(KEY_TEXT, textBlockRaw.getText());
       //noinspection ConstantConditions
-      textBlockFormatted.put("confidence", textBlockRaw.getConfidence());
+      textBlockFormatted.put(KEY_CONFIDENCE, textBlockRaw.getConfidence());
       textBlockFormatted.put(
-        "cornerPoints",
+        KEY_CORNER_POINTS,
         SharedUtils.pointsToIntsList(textBlockRaw.getCornerPoints())
       );
       textBlockFormatted.put(
-        "recognizedLanguages",
+        KEY_RECOGNIZED_LANGUAGES,
         getRecognizedLanguagesList(textBlockRaw.getRecognizedLanguages())
       );
-      textBlockFormatted.put("lines", getLinesList(textBlockRaw.getLines()));
 
+      textBlockFormatted.put(KEY_LINES, getLinesList(textBlockRaw.getLines()));
       textBlocksFormattedList.add(textBlockFormatted);
     }
 
@@ -148,17 +180,16 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
     for (FirebaseVisionText.Line lineRaw : lineList) {
       Map<String, Object> lineFormatted = new HashMap<>(6);
 
-      lineFormatted.put("boundingBox", SharedUtils.rectToIntArray(lineRaw.getBoundingBox()));
-      lineFormatted.put("text", lineRaw.getText());
-
+      lineFormatted.put(KEY_BOUNDING_BOX, SharedUtils.rectToIntArray(lineRaw.getBoundingBox()));
+      lineFormatted.put(KEY_TEXT, lineRaw.getText());
       //noinspection ConstantConditions
-      lineFormatted.put("confidence", lineRaw.getConfidence());
-      lineFormatted.put("cornerPoints", SharedUtils.pointsToIntsList(lineRaw.getCornerPoints()));
+      lineFormatted.put(KEY_CONFIDENCE, lineRaw.getConfidence());
+      lineFormatted.put(KEY_CORNER_POINTS, SharedUtils.pointsToIntsList(lineRaw.getCornerPoints()));
       lineFormatted.put(
-        "recognizedLanguages",
+        KEY_RECOGNIZED_LANGUAGES,
         getRecognizedLanguagesList(lineRaw.getRecognizedLanguages())
       );
-      lineFormatted.put("elements", getElementsList(lineRaw.getElements()));
+      lineFormatted.put(KEY_ELEMENTS, getElementsList(lineRaw.getElements()));
       linesListFormatted.add(lineFormatted);
     }
 
@@ -171,16 +202,16 @@ class UniversalFirebaseMLVisionTextRecognizerModule extends UniversalFirebaseMod
     for (FirebaseVisionText.Element elementRaw : elementList) {
       Map<String, Object> elementFormatted = new HashMap<>(5);
 
-      elementFormatted.put("text", elementRaw.getText());
+      elementFormatted.put(KEY_TEXT, elementRaw.getText());
       //noinspection ConstantConditions
-      elementFormatted.put("confidence", elementRaw.getConfidence());
-      elementFormatted.put("boundingBox", SharedUtils.rectToIntArray(elementRaw.getBoundingBox()));
+      elementFormatted.put(KEY_CONFIDENCE, elementRaw.getConfidence());
+      elementFormatted.put(KEY_BOUNDING_BOX, SharedUtils.rectToIntArray(elementRaw.getBoundingBox()));
       elementFormatted.put(
-        "cornerPoints",
+        KEY_CORNER_POINTS,
         SharedUtils.pointsToIntsList(elementRaw.getCornerPoints())
       );
       elementFormatted.put(
-        "recognizedLanguages",
+        KEY_RECOGNIZED_LANGUAGES,
         getRecognizedLanguagesList(elementRaw.getRecognizedLanguages())
       );
       elementsListFormatted.add(elementFormatted);

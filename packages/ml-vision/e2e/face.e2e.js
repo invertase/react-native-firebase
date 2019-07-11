@@ -15,7 +15,17 @@
  *
  */
 
+let testImageFile;
+
 describe('mlkit.face', () => {
+  before(async () => {
+    testImageFile = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
+    await firebase
+      .storage()
+      .ref('vision/faces.jpg')
+      .getFile(testImageFile);
+  });
+
   describe('faceDetectorProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
@@ -40,13 +50,7 @@ describe('mlkit.face', () => {
     });
 
     it('returns basic face object with no options enabled', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/faces.jpg')
-        .getFile(downloadTo);
-
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -70,16 +74,10 @@ describe('mlkit.face', () => {
     });
 
     it('returns classifications if enabled', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/faces.jpg')
-        .getFile(downloadTo);
-
       const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
       o.setClassificationMode(2);
 
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -91,16 +89,10 @@ describe('mlkit.face', () => {
     });
 
     it('returns landmarks if enabled', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/faces.jpg')
-        .getFile(downloadTo);
-
       const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
       o.setLandmarkMode(2);
 
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -116,16 +108,10 @@ describe('mlkit.face', () => {
     });
 
     it('returns contours if enabled', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/faces.jpg')
-        .getFile(downloadTo);
-
       const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
       o.setContourMode(2);
 
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(downloadTo, o);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -144,7 +130,7 @@ describe('mlkit.face', () => {
     });
   });
 
-  describe.only('VisionFaceDetectorOptions', () => {
+  describe('VisionFaceDetectorOptions', () => {
     describe('setClassificationMode()', () => {
       it('throws if mode is incorrect', () => {
         try {
