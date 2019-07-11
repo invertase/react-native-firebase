@@ -514,7 +514,7 @@ export namespace MLKitVision {
     text: string;
 
     /**
-     * Gets an array VisionTextBlock, which is a block of text that can be further decomposed to an array of VisionTextLine.
+     * Gets an array `VisionTextBlock`, which is a block of text that can be further decomposed to an array of `VisionTextLine`.
      */
     textBlocks: VisionTextBlock[];
   }
