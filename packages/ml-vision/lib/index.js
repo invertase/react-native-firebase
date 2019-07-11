@@ -65,7 +65,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   }
 
   textRecognizerProcessImage(localImageFilePath) {
-    // todo
+    return this.native.textRecognizerProcessImage(localImageFilePath);
   }
 
   cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {

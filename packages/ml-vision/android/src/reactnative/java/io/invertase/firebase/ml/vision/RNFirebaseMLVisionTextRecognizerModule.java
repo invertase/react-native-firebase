@@ -29,7 +29,6 @@ public class RNFirebaseMLVisionTextRecognizerModule extends ReactNativeFirebaseM
     this.module = new UniversalFirebaseMLVisionTextRecognizerModule(reactContext, SERVICE_NAME);
   }
 
-
   @ReactMethod
   public void textRecognizerProcessImage(
     String appName,
@@ -60,7 +59,21 @@ public class RNFirebaseMLVisionTextRecognizerModule extends ReactNativeFirebaseM
     ReadableMap cloudTextRecognizerOptions,
     Promise promise
   ) {
-    // todo
+    module.cloudTextRecognizerProcessImage(appName, stringUri, Arguments.toBundle(cloudTextRecognizerOptions))
+      .addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(Arguments.makeNativeMap(task.getResult()));
+        } else {
+          String[] errorCodeAndMessage = UniversalFirebaseMLVisionCommon.getErrorCodeAndMessageFromException(
+            task.getException());
+          rejectPromiseWithCodeAndMessage(
+            promise,
+            errorCodeAndMessage[0],
+            errorCodeAndMessage[1],
+            errorCodeAndMessage[2]
+          );
+        }
+      });
   }
 
   @ReactMethod

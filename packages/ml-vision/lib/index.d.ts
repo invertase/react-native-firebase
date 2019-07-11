@@ -70,16 +70,6 @@ export namespace MLKitVision {
     VisionCloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions;
   }
 
-  export class VisionPoint {
-    x: number;
-    y: number;
-    // todo
-  }
-
-  export class VisionRectangle {
-    // todo
-  }
-
   export class VisionFaceDetectorOptions {
     // todo
   }
@@ -180,6 +170,96 @@ export namespace MLKitVision {
   }
 
   /**
+   * A Rectangle holds four number coordinates relative to the processed image.
+   * Rectangle are represented as [left, top, right, bottom].
+   *
+   * Used by Vision Text Recognizer, Face Detector & Landmark Recognition APIs.
+   */
+  export type VisionRectangle = [number, number, number, number];
+
+  /**
+   * A point holds two number coordinates relative to the processed image.
+   * Points are represented as [x, y].
+   *
+   * Used by Vision Text Recognizer, Face Detector & Landmark Recognition APIs.
+   */
+  export type VisionPoint = [number, number];
+
+  /**
+   * A hierarchical representation of texts recognized in an image.
+   */
+  export interface VisionText {
+    /**
+     * Retrieve the recognized text as a string.
+     */
+    text: string;
+
+    /**
+     * Gets an array VisionTextBlock, which is a block of text that can be further decomposed to an array of VisionTextLine.
+     */
+    textBlocks: VisionTextBlock[];
+  }
+
+  /**
+   * A shared type that all Vision Text components inherit from
+   */
+  export interface VisionTextBase {
+    /**
+     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a VisionTextBlock, and left-to-right within a VisionTextLine.
+     */
+    text: string;
+
+    /**
+     * The confidence of the recognized text. It only return valid result from cloud recognizers. For on-device text recognition, the confidence is always null.
+     */
+    confidence: null | number;
+
+    /**
+     * Gets a list of recognized languages. (Cloud API only. On-Device returns empty array)
+     *
+     * A language is the BCP-47 language code, such as "en-US" or "sr-Latn".
+     */
+    recognizedLanguages: String[];
+
+    /**
+     * Returns the bounding rectangle of the detected text.
+     */
+    boundingBox: VisionRectangle;
+
+    /**
+     * Gets the four corner points in clockwise direction starting with top-left. Due to the possible perspective distortions, this is not necessarily a rectangle. Parts of the region could be outside of the image.
+     */
+    cornerPoints: VisionPoint[];
+  }
+
+  /**
+   * Represents a block of text (similar to a paragraph).
+   */
+  export interface VisionTextBlock extends VisionTextBase {
+    /**
+     * Gets an Array of VisionTextLine's that make up this text block.
+     */
+    lines: VisionTextLine[];
+  }
+
+  /**
+   * Represents a line of text.
+   */
+  export interface VisionTextLine extends VisionTextBase {
+    /**
+     * Gets an Array of VisionTextElement's that make up this text block.
+     *
+     * An element is roughly equivalent to a space-separated "word" in most Latin languages, or a character in others. For instance, if a word is split between two lines by a hyphen, each part is encoded as a separate Element.
+     */
+    elements: VisionTextElement[];
+  }
+
+  /**
+   * Roughly equivalent to a space-separated "word" in most Latin languages, or a character in others. For instance, if a word is split between two lines by a hyphen, each part is encoded as a separate Element.
+   */
+  export interface VisionTextElement extends VisionTextBase {}
+
+  /**
    * Represents an image label return from `imageLabelerProcessImage()` and `cloudImageLabelerProcessImage()`.
    */
   export interface VisionImageLabel {
@@ -226,7 +306,12 @@ export namespace MLKitVision {
       faceDetectorOptions: VisionFaceDetectorOptions,
     ): Promise<TODO>;
 
-    textRecognizerProcessImage(imageFilePath: string): Promise<TODO>;
+    /**
+     * Detect text from a local image file using the on-device model.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     */
+    textRecognizerProcessImage(imageFilePath: string): Promise<VisionText>;
 
     cloudTextRecognizerProcessImage(
       imageFilePath: string,
