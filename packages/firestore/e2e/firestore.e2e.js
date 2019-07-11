@@ -199,9 +199,19 @@ describe('firestore()', () => {
     });
   });
 
-  xdescribe('runTransaction()', () => {});
+  describe('runTransaction()', () => {
+    it('throws if updateFunction is not a function', () => {
+      try {
+        firebase.firestore().runTransaction('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'updateFunction' must be a function`);
+        return Promise.resolve();
+      }
+    });
+  });
 
-  xdescribe('settings()', () => {
+  describe('settings()', () => {
     it('throws if settings is not an object', () => {
       try {
         firebase.firestore().settings('foo');
@@ -284,13 +294,6 @@ describe('firestore()', () => {
         error.message.should.containEql(`'settings.ssl' must be a boolean value`);
         return Promise.resolve();
       }
-    });
-
-    it('calls with no errors', async () => {
-      await firebase
-        .firestore()
-        .settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
-      await firebase.firestore().settings({});
     });
   });
 });

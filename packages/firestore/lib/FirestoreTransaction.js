@@ -25,8 +25,6 @@ export default class FirestoreTransaction {
   constructor(firestore, meta) {
     this._firestore = firestore;
     this._meta = meta;
-    this._pendingResult = undefined;
-    this._commandBuffer = [];
   }
 
   /**
@@ -36,6 +34,7 @@ export default class FirestoreTransaction {
    * @private
    */
   _prepare() {
+    this._calledGetCount = 0;
     this._commandBuffer = [];
     this._pendingResult = undefined;
   }
@@ -50,6 +49,7 @@ export default class FirestoreTransaction {
       );
     }
 
+    this._calledGetCount++;
     return this._firestore.native
       .transactionGetDocument(this._meta.id, documentRef.path)
       .then(data => new FirestoreDocumentSnapshot(this._firestore, data));
@@ -67,9 +67,9 @@ export default class FirestoreTransaction {
       );
     }
 
-    if (!isObject(data) || Object.keys(data).length === 0) {
+    if (!isObject(data)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.set(_, *) 'data' expected an object with key value pairs.`,
+        `firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..`,
       );
     }
 

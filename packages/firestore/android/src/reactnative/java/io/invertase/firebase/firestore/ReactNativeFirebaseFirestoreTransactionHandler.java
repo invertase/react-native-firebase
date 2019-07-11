@@ -17,19 +17,12 @@ package io.invertase.firebase.firestore;
  *
  */
 
-import android.support.annotation.Nullable;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,8 +31,8 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   private final ReentrantLock lock;
   private final Condition condition;
-  boolean aborted = false;
-  boolean timeout = false;
+  public boolean aborted = false;
+  public boolean timeout = false;
   private String appName;
   private long timeoutAt;
   private int transactionId;
@@ -133,39 +126,11 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
   /**
    * Get and resolve a DocumentSnapshot from transaction.get(ref);
    *
-   * @param executor
    * @param documentReference
    */
-  Task<DocumentSnapshot> getDocument(Executor executor, DocumentReference documentReference) {
+  DocumentSnapshot getDocument(DocumentReference documentReference) throws FirebaseFirestoreException {
     updateInternalTimeout();
-    return Tasks.call(executor, () -> firestoreTransaction.get(documentReference));
-  }
-
-  /**
-   * Event map for `firestore_transaction_event` events.
-   *
-   * @param error
-   * @param type
-   * @return
-   */
-  WritableMap createEventMap(@Nullable FirebaseFirestoreException error, String type) {
-    WritableMap eventMap = Arguments.createMap();
-
-    eventMap.putInt("id", transactionId);
-    eventMap.putString("appName", appName);
-
-    if (error != null) {
-      eventMap.putString("type", "error");
-      UniversalFirebaseFirestoreException exception = new UniversalFirebaseFirestoreException(error, error.getCause());
-      WritableMap errorMap = Arguments.createMap();
-      errorMap.putString("code", exception.getCode());
-      errorMap.putString("message", exception.getMessage());
-      eventMap.putMap("error", errorMap);
-    } else {
-      eventMap.putString("type", type);
-    }
-
-    return eventMap;
+    return firestoreTransaction.get(documentReference);
   }
 
   /*

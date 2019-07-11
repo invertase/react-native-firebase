@@ -16,8 +16,8 @@
  */
 
 export default class NativeFirebaseError extends Error {
-  static fromEvent(errorEvent, namespace) {
-    return new NativeFirebaseError({ userInfo: errorEvent }, new Error().stack, namespace);
+  static fromEvent(errorEvent, namespace, stack) {
+    return new NativeFirebaseError({ userInfo: errorEvent }, stack || new Error().stack, namespace);
   }
 
   constructor(nativeError, jsStack, namespace) {

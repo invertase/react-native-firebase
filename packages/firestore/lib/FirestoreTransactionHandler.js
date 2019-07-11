@@ -16,6 +16,7 @@
  */
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import FirestoreTransaction from './FirestoreTransaction';
 
 let transactionId = 0;
 
@@ -37,6 +38,7 @@ export default class FirestoreTransactionHandler {
   }
 
   _onTransactionEvent(event) {
+    // eslint-disable-next-line default-case
     switch (event.body.type) {
       case 'update':
         this._handleUpdate(event);
@@ -47,13 +49,11 @@ export default class FirestoreTransactionHandler {
       case 'complete':
         this._handleComplete(event);
         break;
-      default:
-        break;
     }
   }
 
   async _handleUpdate(event) {
-    const { id } = event;
+    const { listenerId: id } = event;
 
     // abort if no longer exists js side
     if (!this._pending[id]) return this._remove(id);
@@ -72,14 +72,13 @@ export default class FirestoreTransactionHandler {
       const possiblePromise = updateFunction(transaction);
 
       // validate user has returned a promise in their update function
-      // TODO must it actually return a promise? Can't find any usages of it without one...
       if (!possiblePromise || !possiblePromise.then) {
-        finalError = new Error(
-          'Update function for `firestore.runTransaction(updateFunction)` must return a Promise.',
+        throw new Error(
+          `firebase.firestore().runTransaction(*) 'updateFunction' must return a Promise.`,
         );
-      } else {
-        pendingResult = await possiblePromise;
       }
+
+      pendingResult = await possiblePromise;
     } catch (exception) {
       // exception can still be falsey if user `Promise.reject();` 's with no args
       // so we track the exception with a updateFailed boolean to ensure no fall-through
@@ -99,24 +98,47 @@ export default class FirestoreTransactionHandler {
     // native emits that the transaction is final
     transaction._pendingResult = pendingResult;
 
+    if (
+      transaction._calledGetCount > 0 &&
+      transaction._calledGetCount !== transaction._commandBuffer.length
+    ) {
+      return meta.reject(
+        new Error(
+          'firebase.firestore().runTransaction() Every document read in a transaction must also be written.',
+        ),
+      );
+    }
+
     // send the buffered update/set/delete commands for native to process
     return this._firestore.native.transactionApplyBuffer(id, transaction._commandBuffer);
   }
 
+  /**
+   * Reject the promise with a native error event
+   *
+   * @param event
+   * @private
+   */
   _handleError(event) {
-    const { id, body } = event;
+    const { listenerId: id, body } = event;
     const { error } = body;
     const { meta } = this._pending[id];
 
     if (meta && error) {
-      // TODO check stack
-      const errorAndStack = new NativeError(error, meta.stack, 'firestore');
+      const errorAndStack = NativeError.fromEvent(error, 'firestore', meta.stack);
       meta.reject(errorAndStack);
     }
   }
 
+  /**
+   * Once the transaction has completed on native, resolve the promise with any
+   * pending results
+   *
+   * @param event
+   * @private
+   */
   _handleComplete(event) {
-    const { id } = event;
+    const { listenerId: id } = event;
     const { meta, transaction } = this._pending[id];
 
     if (meta) {
@@ -124,6 +146,13 @@ export default class FirestoreTransactionHandler {
     }
   }
 
+  /**
+   * Internally adds a transaction execution function to the queue
+   *
+   * @param updateFunction
+   * @returns {Promise<any>}
+   * @private
+   */
   _add(updateFunction) {
     const id = generateTransactionId();
 
@@ -138,24 +167,31 @@ export default class FirestoreTransactionHandler {
 
     this._pending[id] = {
       meta,
-      transaction: null, // todo
+      transaction: new FirestoreTransaction(this._firestore, meta),
     };
 
     return new Promise((resolve, reject) => {
       this._firestore.native.transactionBegin(id);
 
-      meta.resolve = r => {
-        resolve(r);
+      meta.resolve = result => {
         this._remove(id);
+        resolve(result);
       };
 
-      meta.reject = e => {
-        reject(e);
+      meta.reject = error => {
         this._remove(id);
+        reject(error);
       };
     });
   }
 
+  /**
+   * Internally removes the transaction once it has resolved
+   * or rejected
+   *
+   * @param id
+   * @private
+   */
   _remove(id) {
     this._firestore.native.transactionDispose(id);
     delete this._pending[id];

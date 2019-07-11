@@ -42,14 +42,6 @@ describe('firestore.Blob', () => {
     should.exist(Blob);
   });
 
-  it('.constructor() -> returns new instance of Blob', async () => {
-    const { Blob } = firebase.firestore;
-    const myBlob = new Blob(testStringLarge);
-    myBlob.should.be.instanceOf(Blob);
-    myBlob._binaryString.should.equal(testStringLarge);
-    myBlob.toBase64().should.equal(testBase64Large);
-  });
-
   it('.fromBase64String() -> returns new instance of Blob', async () => {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);

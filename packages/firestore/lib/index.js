@@ -45,6 +45,7 @@ const nativeModuleName = [
   'RNFBFirestoreModule',
   'RNFBFirestoreCollectionModule',
   'RNFBFirestoreDocumentModule',
+  'RNFBFirestoreTransactionModule',
 ];
 
 const nativeEvents = [

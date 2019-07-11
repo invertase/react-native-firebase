@@ -29,18 +29,20 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
@@ -54,6 +56,19 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     super(reactContext, SERVICE_NAME);
   }
 
+  @Override
+  public void onCatalystInstanceDestroy() {
+    for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
+      int key = transactionHandlers.keyAt(i);
+      ReactNativeFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(key);
+      if (transactionHandler != null) {
+        transactionHandler.abort();
+      }
+    }
+
+    transactionHandlers.clear();
+  }
+
   @ReactMethod
   public void transactionGetDocument(String appName, int transactionId, String path, Promise promise) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
@@ -65,16 +80,15 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(getExecutor(), () -> {
-      DocumentSnapshot snapshot = Tasks.await(transactionHandler.getDocument(getExecutor(), documentReference));
-      return snapshotToWritableMap(snapshot);
-    }).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    Tasks
+      .call(getExecutor(), () -> snapshotToWritableMap(transactionHandler.getDocument(documentReference)))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
   }
 
   @ReactMethod
@@ -98,35 +112,28 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
   @ReactMethod
   public void transactionBegin(String appName, int transactionId) {
-    ReactNativeFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(transactionId);
-
+    ReactNativeFirebaseFirestoreTransactionHandler transactionHandler = new ReactNativeFirebaseFirestoreTransactionHandler(appName, transactionId);
     transactionHandlers.put(transactionId, transactionHandler);
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
 
-    AsyncTask.execute(() -> getFirestoreForApp(appName)
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+    // Provides its own executor
+    firebaseFirestore
       .runTransaction((Transaction.Function<Void>) transaction -> {
         transactionHandler.resetState(transaction);
 
-        // emit the update cycle to JS land using an async task
-        // otherwise it gets blocked by the pending lock await
         AsyncTask.execute(() -> {
-          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
           WritableMap eventMap = Arguments.createMap();
-          eventMap.putString("type", "UPDATE");
+          eventMap.putString("type", "update");
 
-//          emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-//            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
-//            eventMap,
-//            transactionHandler.getAppName(),
-//            transactionHandler.getTransactionId()
-//          ));
-
-//          WritableMap eventMap = transactionHandler.createEventMap(null, "update");
-//                Utils.sendEvent(
-//                  getReactApplicationContext(),
-//                  "firestore_transaction_event",
-//                  eventMap
-//                );
+          // Send an update signal to JS - telling it to now run the transaction
+          emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            eventMap,
+            transactionHandler.getAppName(),
+            transactionHandler.getTransactionId()
+          ));
         });
 
         // wait for a signal to be received from JS land code
@@ -156,46 +163,43 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
           return null;
         }
 
+        // iterate over the user buffer running transactions in order
         for (int i = 0, size = buffer.size(); i < size; i++) {
-          ReadableMap data;
+          Map<String, Object> serialized;
+
           ReadableMap command = buffer.getMap(i);
-          String path = command.getString("path");
+          String path = Objects.requireNonNull(command).getString("path");
           String type = command.getString("type");
           DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
           switch (Objects.requireNonNull(type)) {
             case "SET":
-              data = command.getMap("data");
+              serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
               ReadableMap options = command.getMap("options");
-              Map<String, Object> setData = parseReadableMap(
-                getFirestoreForApp(appName),
-                data
-              );
 
-              if (options != null && options.hasKey("merge") && options.getBoolean("merge")) {
-                transaction.set(documentReference, setData, SetOptions.merge());
+              if (Objects.requireNonNull(options).hasKey("merge") && options.getBoolean("merge")) {
+                transaction.set(documentReference, serialized, SetOptions.merge());
+              } else if (options.hasKey("mergeFields")) {
+                List<String> fields = new ArrayList<>();
+                ReadableArray fieldPaths = options.getArray("mergeFields");
+
+                for (Object object : toArrayList(fieldPaths)) {
+                  fields.add((String) object);
+                }
+
+                transaction.set(documentReference, serialized, SetOptions.mergeFields(fields));
               } else {
-                transaction.set(documentReference, setData);
+                transaction.set(documentReference, serialized);
               }
-              break;
 
+              break;
             case "UPDATE":
-              data = command.getMap("data");
-
-              Map<String, Object> updateData = parseReadableMap(
-                getFirestoreForApp(appName),
-                data
-              );
-
-              transaction.update(documentReference, updateData);
+              serialized = parseReadableMap(firebaseFirestore, command.getMap("data"));
+              transaction.update(documentReference, serialized);
               break;
-
-            case "delete":
+            case "DELETE":
               transaction.delete(documentReference);
               break;
-
-            default:
-              throw new IllegalArgumentException("Unknown command type at index " + i + ".");
           }
         }
 
@@ -206,46 +210,36 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
           return;
         }
 
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-
+        WritableMap eventMap = Arguments.createMap();
 
         if (task.isSuccessful()) {
+          eventMap.putString("type", "complete");
 
+          emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            eventMap,
+            transactionHandler.getAppName(),
+            transactionHandler.getTransactionId()
+          ));
         } else {
+          eventMap.putString("type", "error");
 
+          Exception exception = task.getException();
+          WritableMap errorMap = Arguments.createMap();
+
+          UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
+          errorMap.putString("code", universalException.getCode());
+          errorMap.putString("message", universalException.getMessage());
+
+          eventMap.putMap("error", errorMap);
+
+          emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            eventMap,
+            transactionHandler.getAppName(),
+            transactionHandler.getTransactionId()
+          ));
         }
-      }));
-//      .addOnSuccessListener(new OnSuccessListener<Void>() {
-//        @Override
-//        public void onSuccess(Void aVoid) {
-//          if (!transactionHandler.aborted) {
-//            Log.d(TAG, "Transaction onSuccess!");
-//            WritableMap eventMap = transactionHandler.createEventMap(null, "complete");
-//            Utils.sendEvent(
-//              getReactApplicationContext(),
-//              "firestore_transaction_event",
-//              eventMap
-//            );
-//          }
-//        }
-//      })
-//      .addOnFailureListener(new OnFailureListener() {
-//        @Override
-//        public void onFailure(@Nonnull Exception e) {
-//          if (!transactionHandler.aborted) {
-//            Log.w(TAG, "Transaction onFailure.", e);
-//            WritableMap eventMap = transactionHandler.createEventMap(
-//              (FirebaseFirestoreException) e,
-//              "error"
-//            );
-//            Utils.sendEvent(
-//              getReactApplicationContext(),
-//              "firestore_transaction_event",
-//              eventMap
-//            );
-//          }
-//        }
-//      })
-//    );
+      });
   }
 }

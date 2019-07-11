@@ -14,6 +14,7 @@
 		8B9B6AE922CC9DBD0062975D /* RNFBFirestoreSerialize.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AE822CC9DBD0062975D /* RNFBFirestoreSerialize.m */; };
 		8B9B6AED22CCE11D0062975D /* RNFBFirestoreCollectionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AEC22CCE11D0062975D /* RNFBFirestoreCollectionModule.m */; };
 		8B9B6AF122CCE2B90062975D /* RNFBFirestoreQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AF022CCE2B90062975D /* RNFBFirestoreQuery.m */; };
+		8B9B6AF722D634AC0062975D /* RNFBFirestoreTransactionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,8 @@
 		8B9B6AEC22CCE11D0062975D /* RNFBFirestoreCollectionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreCollectionModule.m; sourceTree = "<group>"; };
 		8B9B6AEF22CCE2AF0062975D /* RNFBFirestoreQuery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreQuery.h; sourceTree = "<group>"; };
 		8B9B6AF022CCE2B90062975D /* RNFBFirestoreQuery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreQuery.m; sourceTree = "<group>"; };
+		8B9B6AF522D634A00062975D /* RNFBFirestoreTransactionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreTransactionModule.h; sourceTree = "<group>"; };
+		8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,8 @@
 				8B9B6AEC22CCE11D0062975D /* RNFBFirestoreCollectionModule.m */,
 				8B9B6AEF22CCE2AF0062975D /* RNFBFirestoreQuery.h */,
 				8B9B6AF022CCE2B90062975D /* RNFBFirestoreQuery.m */,
+				8B9B6AF522D634A00062975D /* RNFBFirestoreTransactionModule.h */,
+				8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.m */,
 			);
 			path = RNFBFirestore;
 			sourceTree = "<group>";
@@ -157,6 +162,7 @@
 				8B9B6AE522CC9AC50062975D /* RNFBFirestoreDocumentModule.m in Sources */,
 				8B9B6AED22CCE11D0062975D /* RNFBFirestoreCollectionModule.m in Sources */,
 				8B21821222CB9C4700A0A296 /* RCTConvert+FIRLoggerLevel.m in Sources */,
+				8B9B6AF722D634AC0062975D /* RNFBFirestoreTransactionModule.m in Sources */,
 				8B627A8122CB9ECD0056BCB3 /* RNFBFirestoreCommon.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBFirestoreModule.m in Sources */,
 				8B9B6AE922CC9DBD0062975D /* RNFBFirestoreSerialize.m in Sources */,
