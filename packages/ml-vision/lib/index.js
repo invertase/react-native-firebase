@@ -115,7 +115,19 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
       );
     }
 
-    // todo
+    if (
+      !isUndefined(cloudTextRecognizerOptions) &&
+      !(cloudTextRecognizerOptions instanceof VisionCloudTextRecognizerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().cloudTextRecognizerProcessImage(_, *) 'cloudTextRecognizerOptions' expected an instance of VisionCloudTextRecognizerOptions.`,
+      );
+    }
+
+    return this.native.cloudTextRecognizerProcessImage(
+      toFilePath(localImageFilePath),
+      cloudTextRecognizerOptions ? cloudTextRecognizerOptions.toJSON() : {},
+    );
   }
 
   cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
