@@ -20,6 +20,12 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import {
+  isString,
+  isUndefined,
+  toFilePath,
+  validateOptionalNativeDependencyExists,
+} from '@react-native-firebase/common';
 
 import version from './version';
 import VisionPoint from './VisionPoint';
@@ -77,12 +83,59 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
   // image labeler
   imageLabelerProcessImage(localImageFilePath, imageLabelerOptions) {
-    // todo
+    validateOptionalNativeDependencyExists(
+      'ml_vision_image_label_model',
+      'ML Kit Vision Image Labeler',
+      !!this.native.imageLabelerProcessImage,
+    );
+
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(imageLabelerOptions) &&
+      !(imageLabelerOptions instanceof VisionImageLabelerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().imageLabelerProcessImage(_, *) 'imageLabelerOptions' expected an instance of VisionImageLabelerOptions.`,
+      );
+    }
+
+    return this.native.imageLabelerProcessImage(
+      toFilePath(localImageFilePath),
+      imageLabelerOptions ? imageLabelerOptions.toJSON() : {},
+    );
   }
 
-  // image labeler
   cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
-    // todo
+    validateOptionalNativeDependencyExists(
+      'ml_vision_image_label_model',
+      'ML Kit Vision Image Labeler',
+      !!this.native.imageLabelerProcessImage,
+    );
+
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(cloudImageLabelerOptions) &&
+      !(cloudImageLabelerOptions instanceof VisionCloudImageLabelerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().cloudImageLabelerProcessImage(_, *) 'cloudImageLabelerOptions' expected an instance of VisionCloudImageLabelerOptions.`,
+      );
+    }
+
+    return this.native.cloudImageLabelerProcessImage(
+      toFilePath(localImageFilePath),
+      cloudImageLabelerOptions ? cloudImageLabelerOptions.toJSON() : {},
+    );
   }
 
   barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
@@ -101,7 +154,7 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseMlKitVisionModule,
 });

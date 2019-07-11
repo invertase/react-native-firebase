@@ -15,6 +15,8 @@
  *
  */
 
+import { Platform } from 'react-native';
+
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
 export function objectKeyValuesAreStrings(object) {
@@ -139,7 +141,7 @@ export function validateOptionalNativeDependencyExists(firebaseJsonKey, apiName,
   errorMessage += apiName;
   errorMessage += ` please set the 'react-native' -> '${firebaseJsonKey}' key to true in your firebase.json file`;
 
-  if (isAndroid) {
+  if (Platform.OS === 'android') {
     errorMessage += ' and rebuild your Android app.';
   } else {
     errorMessage +=
