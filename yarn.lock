@@ -1911,16 +1911,6 @@
     eslint-plugin-react-native "3.6.0"
     prettier "1.16.4"
 
-"@react-native-firebase/app-types@6.0.0-alpha.22":
-  version "6.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.0.0-alpha.22.tgz#323ca124b555f9d9dce658d3810943bdcc6b0893"
-  integrity sha512-H4cRyzm2Jfe7PvpOMB+/xoM0iOrmqW96LAl+MSdt7M5BfCxusheCKccfGn6Ve3CBnIrW3Mfa/riJGNatUCfZKA==
-
-"@react-native-firebase/common@6.0.0-alpha.22":
-  version "6.0.0-alpha.22"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/common/-/common-6.0.0-alpha.22.tgz#ed54db6f4ecd69072fc9fe97fb5e11e8eba6504c"
-  integrity sha512-F8bKo4u5VEWbvFFsszvtL7oQ9iL7I2a5dDvKpR7Ml8NUdj8ijQAV/uKVKj0sn1ve3kD8RfOg5BBjLX1RxjJvwQ==
-
 "@react-native-firebase/private-tests-firebase-functions@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/private-tests-firebase-functions/-/private-tests-firebase-functions-0.0.1.tgz#bbee243641e92a3d50925cb95e95dbcd28f7fc27"

@@ -47,10 +47,10 @@ const statics = {
 const namespace = 'mlKitVision';
 const nativeModuleName = [
   'RNFBMLVisionFaceDetectorModule',
-  'RNFBMLVisionTextRecognitionModule',
+  'RNFBMLVisionTextRecognizerModule',
   'RNFBMLVisionImageLabelerModule',
-  'RNFBMLVisionBarcodeScannerModule',
-  'RNFBMLVisionLandmarkRecognitionModule',
+  'RNFBMLVisionBarcodeDetectorModule',
+  'RNFBMLVisionLandmarkRecognizerModule',
 ];
 
 class FirebaseMlKitVisionModule extends FirebaseModule {
