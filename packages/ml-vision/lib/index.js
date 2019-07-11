@@ -31,6 +31,7 @@ import VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
 import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
 import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
+import { validateOptionalNativeDependencyExists } from '@react-native-firebase/common';
 
 const statics = {
   VisionPoint,
@@ -77,12 +78,22 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
   // image labeler
   imageLabelerProcessImage(localImageFilePath, imageLabelerOptions) {
-    // todo
+    validateOptionalNativeDependencyExists(
+      'ml_vision_image_label_model',
+      'ML Kit Vision Image Labeler',
+      !!this.native.imageLabelerProcessImage,
+    );
+    // todo validate
+    return this.native.imageLabelerProcessImage(localImageFilePath, imageLabelerOptions || {});
   }
 
   // image labeler
   cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
-    // todo
+    // todo validate
+    return this.native.cloudImageLabelerProcessImage(
+      localImageFilePath,
+      cloudImageLabelerOptions || {},
+    );
   }
 
   barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
