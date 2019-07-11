@@ -642,7 +642,7 @@ export namespace MLKitVision {
    */
   export interface VisionTextBase {
     /**
-     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a VisionTextBlock, and left-to-right within a VisionTextLine.
+     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a `VisionTextBlock`, and left-to-right within a `VisionTextLine`.
      */
     text: string;
 
@@ -708,7 +708,7 @@ export namespace MLKitVision {
     text: string;
 
     /**
-     * Re turns a opaque entity ID. IDs are available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+     * Returns an opaque entity ID. IDs are available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
      */
     entityId: string;
 
@@ -735,7 +735,7 @@ export namespace MLKitVision {
      * When 'left' and 'right' are used, they are relative to the subject in the image. For example, the `LEFT_EYE`
      * landmark is the subject's left eye, not the eye that is on the left when viewing the image.
      */
-    faceContours: void;
+    faceContours: VisionFaceContour[];
 
     /**
      * Returns the rotation of the face about the vertical axis of the image. Positive euler y is when the face turns
@@ -801,7 +801,7 @@ export namespace MLKitVision {
    */
   export enum VisionFaceLandmarkType {
     /**
-     *  The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
+     * The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
      */
     LEFT_CHEEK = 1,
 
@@ -833,12 +833,11 @@ export namespace MLKitVision {
     /**
      * The midpoint between the subject's nostrils where the nose meets the face.
      */
-
     NOSE_BASE = 6,
+
     /**
      * The midpoint between the subject's right mouth corner and the outer corner of the subject's right eye.
      */
-
     RIGHT_CHEEK = 7,
 
     /**
@@ -986,10 +985,6 @@ export namespace MLKitVision {
    * standard. Values must be within normalized ranges.
    */
   export type VisionLatLng = [number, number];
-
-  export interface TODO {
-    // todo placeholder
-  }
 
   /**
    * The Firebase ML Kit service interface.
