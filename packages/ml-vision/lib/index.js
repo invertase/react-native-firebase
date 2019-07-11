@@ -63,6 +63,7 @@ const statics = {
   VisionFaceDetectorPerformanceMode,
   VisionFaceLandmarkType,
   VisionFaceContourType,
+  VisionCloudLandmarkRecognizerModelType,
 };
 
 const namespace = 'mlKitVision';

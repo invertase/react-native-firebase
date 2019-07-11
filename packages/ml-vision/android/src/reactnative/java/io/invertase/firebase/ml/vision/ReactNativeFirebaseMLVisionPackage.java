@@ -38,7 +38,7 @@ public class ReactNativeFirebaseMLVisionPackage implements ReactPackage {
     List<NativeModule> modules = new ArrayList<>();
     modules.add(new RNFirebaseMLVisionBarcodeScannerModule(reactContext));
     modules.add(new RNFirebaseMLVisionTextRecognizerModule(reactContext));
-    modules.add(new RNFirebaseMLVisionLandmarkRecognitionModule(reactContext));
+    modules.add(new RNFirebaseMLVisionLandmarkRecognizerModule(reactContext));
 
     if (ReactNativeFirebaseJSON
       .getSharedInstance()

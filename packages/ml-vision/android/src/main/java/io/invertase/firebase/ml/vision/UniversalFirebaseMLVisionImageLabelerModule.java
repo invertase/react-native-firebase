@@ -99,7 +99,9 @@ public class UniversalFirebaseMLVisionImageLabelerModule extends UniversalFireba
   private FirebaseVisionOnDeviceImageLabelerOptions getOnDeviceImageLabelerOptions(Bundle imageLabelerOptionsBundle) {
     FirebaseVisionOnDeviceImageLabelerOptions.Builder builder = new FirebaseVisionOnDeviceImageLabelerOptions.Builder();
 
-    builder.setConfidenceThreshold(imageLabelerOptionsBundle.getFloat("confidenceThreshold", (float) 0.5));
+    if (imageLabelerOptionsBundle.containsKey("confidenceThreshold")) {
+      builder.setConfidenceThreshold(imageLabelerOptionsBundle.getFloat("confidenceThreshold"));
+    }
 
     return builder.build();
   }
