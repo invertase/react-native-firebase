@@ -179,9 +179,27 @@ export namespace MLKitVision {
     // todo
   }
 
+  /**
+   * Represents an image label return from `imageLabelerProcessImage()` and `cloudImageLabelerProcessImage()`.
+   */
   export interface VisionImageLabel {
+    /**
+     * Returns a detected label from the given image. The label returned here is in English only.
+     *
+     * Use `entityId` to retrieve a unique id.
+     */
     text: string;
+
+    /**
+     * Re turns a opaque entity ID. IDs are available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+     */
     entityId: string;
+
+    /**
+     * Gets overall confidence of the result.
+     *
+     * Range between 0 (low confidence) and 1 (high confidence).
+     */
     confidence: number;
   }
 
@@ -226,9 +244,20 @@ export namespace MLKitVision {
     ): Promise<TODO>;
 
     /**
+     * Returns an array of labels (as `VisionImageLabel`) of a given local image file path. Label detection is done
+     * on device, resulting in faster results but less descriptive.
      *
-     * @param imageFilePath
-     * @param imageLabelerOptions
+     * #### Example
+     *
+     * ```js
+     * const options = new firebase.mlKitVision.VisionImageLabelerOptions();
+     * options.setConfidenceThreshold(0.8);
+     *
+     * const labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, options);
+     * ```
+     *
+     * @param imageFilePath A local image file path.
+     * @param imageLabelerOptions An optional instance of `VisionImageLabelerOptions`.
      */
     imageLabelerProcessImage(
       imageFilePath: string,
@@ -236,9 +265,20 @@ export namespace MLKitVision {
     ): Promise<VisionImageLabel[]>;
 
     /**
+     * Returns an array of labels (as `VisionImageLabel`) of a given local image file path. Label detection is done
+     * on cloud (Firebase), resulting in slower results but more descriptive.
      *
-     * @param imageFilePath
-     * @param cloudImageLabelerOptions
+     * #### Example
+     *
+     * ```js
+     * const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+     * options.setConfidenceThreshold(0.8);
+     *
+     * const labels = await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, options);
+     * ```
+     *
+     * @param imageFilePath A local image file path.
+     * @param cloudImageLabelerOptions An optional instance of `VisionCloudImageLabelerOptions`.
      */
     cloudImageLabelerProcessImage(
       imageFilePath: string,
