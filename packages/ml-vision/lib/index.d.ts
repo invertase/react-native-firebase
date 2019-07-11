@@ -161,7 +161,7 @@ export namespace MLKitVision {
      *
      * @param minFaceSize The smallest head size to search for relative to the size of the image, in the range of 0.0 and 1.0. For example, a setting of 0.5 would indicate that detected faces need to fill at least half of the image width. The default size is 0.1.
      */
-    setMinFaceSize(minFaceSize: number): VisionFaceDetectorLandmarkMode;
+    setMinFaceSize(minFaceSize: number): VisionFaceDetectorOptions;
 
     /**
      * Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,
@@ -176,7 +176,7 @@ export namespace MLKitVision {
       performanceMode:
         | VisionFaceDetectorPerformanceMode.FAST
         | VisionFaceDetectorPerformanceMode.ACCURATE,
-    ): VisionFaceDetectorLandmarkMode;
+    ): VisionFaceDetectorOptions;
   }
 
   /**
@@ -198,6 +198,8 @@ export namespace MLKitVision {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
      *
+     * Defaults to 0.5.
+     *
      * #### Example
      *
      * ```js
@@ -205,7 +207,7 @@ export namespace MLKitVision {
      * labelerOptions.setConfidenceThreshold(0.8);
      * ```
      *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
+     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionImageLabelerOptions;
   }
@@ -246,6 +248,8 @@ export namespace MLKitVision {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
      *
+     * Defaults to 0.5.
+     *
      * #### Example
      *
      * ```js
@@ -253,7 +257,7 @@ export namespace MLKitVision {
      * labelerOptions.setConfidenceThreshold(0.8);
      * ```
      *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
+     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionCloudImageLabelerOptions;
   }
@@ -274,7 +278,7 @@ export namespace MLKitVision {
     enforceCertFingerprintMatch(): VisionCloudLandmarkRecognizerOptions;
 
     /**
-     * Sets maximum number of results of this type.
+     * Sets the maximum number of results of this type.
      *
      * Defaults to 10.
      *
@@ -347,6 +351,8 @@ export namespace MLKitVision {
      * Sets model type for cloud text recognition. The two models SPARSE_MODEL and DENSE_MODEL handle different text densities in an image.
      *
      * See `VisionCloudTextRecognizerModelType` for types.
+     *
+     * Defaults to `VisionCloudTextRecognizerModelType.SPARSE_MODEL`.
      *
      * #### Example
      *
@@ -561,7 +567,7 @@ export namespace MLKitVision {
     text: string;
 
     /**
-     * Gets an array VisionTextBlock, which is a block of text that can be further decomposed to an array of VisionTextLine.
+     * Gets an array `VisionTextBlock`, which is a block of text that can be further decomposed to an array of `VisionTextLine`.
      */
     blocks: VisionTextBlock[];
   }
@@ -689,7 +695,7 @@ export namespace MLKitVision {
    */
   export interface VisionTextBase {
     /**
-     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a VisionTextBlock, and left-to-right within a VisionTextLine.
+     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a `VisionTextBlock`, and left-to-right within a `VisionTextLine`.
      */
     text: string;
 
@@ -755,7 +761,7 @@ export namespace MLKitVision {
     text: string;
 
     /**
-     * Re turns a opaque entity ID. IDs are available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+     * Returns an opaque entity ID. IDs are available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
      */
     entityId: string;
 
@@ -782,7 +788,7 @@ export namespace MLKitVision {
      * When 'left' and 'right' are used, they are relative to the subject in the image. For example, the `LEFT_EYE`
      * landmark is the subject's left eye, not the eye that is on the left when viewing the image.
      */
-    faceContours: void;
+    faceContours: VisionFaceContour[];
 
     /**
      * Returns the rotation of the face about the vertical axis of the image. Positive euler y is when the face turns
@@ -848,7 +854,7 @@ export namespace MLKitVision {
    */
   export enum VisionFaceLandmarkType {
     /**
-     *  The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
+     * The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
      */
     LEFT_CHEEK = 1,
 
@@ -880,12 +886,11 @@ export namespace MLKitVision {
     /**
      * The midpoint between the subject's nostrils where the nose meets the face.
      */
-
     NOSE_BASE = 6,
+
     /**
      * The midpoint between the subject's right mouth corner and the outer corner of the subject's right eye.
      */
-
     RIGHT_CHEEK = 7,
 
     /**
@@ -1034,10 +1039,6 @@ export namespace MLKitVision {
    */
   export type VisionLatLng = [number, number];
 
-  export interface TODO {
-    // todo placeholder
-  }
-
   /**
    * The Firebase ML Kit service interface.
    *
@@ -1052,6 +1053,12 @@ export namespace MLKitVision {
    * ```
    */
   export class Module extends ReactNativeFirebaseModule {
+    /**
+     * Detects faces from a local image file.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param faceDetectorOptions An optional instance of `VisionFaceDetectorOptions`.
+     */
     faceDetectorProcessImage(
       imageFilePath: string,
       faceDetectorOptions?: VisionFaceDetectorOptions,
@@ -1064,14 +1071,26 @@ export namespace MLKitVision {
      */
     textRecognizerProcessImage(imageFilePath: string): Promise<VisionText>;
 
+    /**
+     * Detect text from a local image file using the cloud (Firebase) model.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param cloudTextRecognizerOptions An instance of `VisionCloudTextRecognizerOptions`.
+     */
     cloudTextRecognizerProcessImage(
       imageFilePath: string,
-      cloudTextRecognizerOptions: VisionCloudTextRecognizerOptions,
+      cloudTextRecognizerOptions?: VisionCloudTextRecognizerOptions,
     ): Promise<VisionText>;
 
+    /**
+     * Detect text within a document using a local image file from the cloud (Firebase) model.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param cloudDocumentTextRecognizerOptions An instance of `VisionCloudDocumentTextRecognizerOptions`.
+     */
     cloudDocumentTextRecognizerProcessImage(
       imageFilePath: string,
-      cloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions,
+      cloudDocumentTextRecognizerOptions?: VisionCloudDocumentTextRecognizerOptions,
     ): Promise<VisionDocumentText>;
 
     /**
@@ -1128,6 +1147,12 @@ export namespace MLKitVision {
       cloudImageLabelerOptions?: VisionCloudImageLabelerOptions,
     ): Promise<VisionImageLabel[]>;
 
+    /**
+     * TODO
+     *
+     * @param imageFilePath
+     * @param barcodeDetectorOptions
+     */
     barcodeDetectorProcessImage(
       imageFilePath: string,
       barcodeDetectorOptions: VisionBarcodeDetectorOptions,
