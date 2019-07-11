@@ -520,6 +520,11 @@ export namespace MLKitVision {
   }
 
   /**
+   * A hierarchical representation of document text recognized in an image.
+   */
+  export interface VisionDocumentText extends VisionText {}
+
+  /**
    * A shared type that all Vision Text components inherit from
    */
   export interface VisionTextBase {
@@ -908,12 +913,12 @@ export namespace MLKitVision {
     cloudTextRecognizerProcessImage(
       imageFilePath: string,
       cloudTextRecognizerOptions: VisionCloudTextRecognizerOptions,
-    ): Promise<TODO>;
+    ): Promise<VisionText>;
 
     cloudDocumentTextRecognizerProcessImage(
       imageFilePath: string,
       cloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions,
-    ): Promise<TODO>;
+    ): Promise<VisionDocumentText>;
 
     /**
      * Returns an array of landmarks (as `VisionLandmark`) of a given local image file path. Landmark detection
