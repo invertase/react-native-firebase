@@ -207,12 +207,37 @@ describe('mlkit.face', () => {
       });
 
       it('sets contour mode and returns an instance', () => {
-        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
           firebase.mlKitVision.VisionFaceDetectorPerformanceMode.FAST,
         );
 
-        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
+        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
           firebase.mlKitVision.VisionFaceDetectorPerformanceMode.ACCURATE,
+        );
+
+        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
+        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+      });
+    });
+
+    describe('setLandmarkMode()', () => {
+      it('throws if mode is incorrect', () => {
+        try {
+          new firebase.mlKitVision.VisionFaceDetectorOptions().setLandmarkMode(3);
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(`'landmarkMode' invalid landmark mode`);
+          return Promise.resolve();
+        }
+      });
+
+      it('sets landmark mode and returns an instance', () => {
+        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setLandmarkMode(
+          firebase.mlKitVision.VisionFaceDetectorLandmarkMode.NO_LANDMARKS,
+        );
+
+        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
+          firebase.mlKitVision.VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
         );
 
         i1.constructor.name.should.eql('VisionFaceDetectorOptions');

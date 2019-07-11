@@ -60,7 +60,10 @@ export default class VisionFaceDetectorOptions extends MutatableParams {
   }
 
   setLandmarkMode(landmarkMode) {
-    if (landmarkMode !== 1 && landmarkMode !== 2) {
+    if (
+      landmarkMode !== VisionFaceDetectorLandmarkMode.NO_LANDMARKS &&
+      landmarkMode !== VisionFaceDetectorLandmarkMode.ALL_LANDMARKS
+    ) {
       throw new Error(
         `firebase.mlKitVision() VisionFaceDetectorOptions.setLandmarkMode(*) 'landmarkMode' invalid landmark mode. Expected VisionFaceDetectorLandmarkMode.NO_LANDMARKS or VisionFaceDetectorLandmarkMode.ALL_LANDMARKS.`,
       );
