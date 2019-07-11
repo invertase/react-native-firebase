@@ -413,15 +413,15 @@ export namespace MLKitVision {
    *
    * Defaults to `SPARSE_MODEL`
    */
-  export interface VisionCloudTextRecognizerModelType {
+  export enum VisionCloudTextRecognizerModelType {
     /**
      * Dense model type. It is more suitable for well-formatted dense text.
      */
-    SPARSE_MODEL: 1;
+    SPARSE_MODEL = 1,
     /**
      * Sparse model type. It is more suitable for sparse text.
      */
-    DENSE_MODEL: 2;
+    DENSE_MODEL = 2,
   }
 
   /**
@@ -932,21 +932,16 @@ export namespace MLKitVision {
 
 export const VisionPoint = MLKitVision.VisionPoint;
 export const VisionRectangle = MLKitVision.VisionRectangle;
-
 export const VisionFaceDetectorOptions = MLKitVision.VisionFaceDetectorOptions;
 export const VisionFaceLandmarkType = MLKitVision.VisionFaceLandmarkType;
 export const VisionFaceContourType = MLKitVision.VisionFaceContourType;
 
 export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
-
 export const VisionBarcodeDetectorOptions = MLKitVision.VisionBarcodeDetectorOptions;
-
 export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
-
 export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
 
-export const VisionCloudTextRecognizerModelType =
-  {} & MLKitVision.VisionCloudTextRecognizerModelType;
+export const VisionCloudTextRecognizerModelType = MLKitVision.VisionCloudTextRecognizerModelType;
 export const VisionCloudLandmarkRecognizerOptions =
   MLKitVision.VisionCloudLandmarkRecognizerOptions;
 export const VisionCloudDocumentTextRecognizerOptions =
