@@ -465,6 +465,231 @@ export namespace MLKitVision {
     confidence: number;
   }
 
+  /**
+   * Represents a face returned from `faceDetectorProcessImage()`.
+   */
+  export interface VisionFace {
+    /**
+     * Returns the axis-aligned bounding rectangle of the detected face.
+     */
+    boundingBox: VisionRectangle;
+
+    /**
+     * Represent a face contour. A contour is a list of points on a detected face, such as the mouth.
+     *
+     * When 'left' and 'right' are used, they are relative to the subject in the image. For example, the `LEFT_EYE`
+     * landmark is the subject's left eye, not the eye that is on the left when viewing the image.
+     */
+    faceContours: void;
+
+    /**
+     * Returns the rotation of the face about the vertical axis of the image. Positive euler y is when the face turns
+     * toward the right side of the of the image that is being processed.
+     */
+    headEulerAngleY: number;
+
+    /**
+     * Returns the rotation of the face about the axis pointing out of the image. Positive euler z is a
+     * counter-clockwise rotation within the image plane.
+     */
+    headEulerAngleZ: number;
+
+    /**
+     * Returns an array of `VisionFaceLandmark`.
+     *
+     * Returns an empty array if the landmark mode has not been enabled via `setLandmarkMode()`.
+     */
+    landmarks: VisionFaceLandmark[];
+
+    /**
+     * Returns a value between 0.0 and 1.0 giving a probability that the face's left eye is open.
+     *
+     * Returns -1 if the classification mode has not been enabled via `setClassificationMode()`.
+     */
+    leftEyeOpenProbability: number;
+
+    /**
+     * Returns a value between 0.0 and 1.0 giving a probability that the face's right eye is open.
+     *
+     * Returns -1 if the classification mode has not been enabled via `setClassificationMode()`.
+     */
+    rightEyeOpenProbability: number;
+
+    /**
+     * Returns a value between 0.0 and 1.0 giving a probability that the face is smiling.
+     *
+     * Returns -1 if the classification mode has not been enabled via `setClassificationMode()`.
+     */
+    smilingProbability: number;
+  }
+
+  /**
+   * Represent a face landmark. A landmark is a point on a detected face, such as an eye, nose, or mouth.
+   *
+   * When 'left' and 'right' are used, they are relative to the subject in the image.  For example, the `LEFT_EYE` landmark
+   * is the subject's left eye, not the eye that is on the left when viewing the image.
+   */
+  export interface VisionFaceLandmark {
+    /**
+     * Returns the landmark type.
+     */
+    type: VisionFaceLandmarkType;
+
+    /**
+     * Gets a 2D point for landmark position, where (0, 0) is the upper-left corner of the image.
+     */
+    position: VisionPoint[];
+  }
+
+  /**
+   * Landmark types for a face.
+   */
+  export enum VisionFaceLandmarkType {
+    /**
+     * 	The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
+     */
+    LEFT_CHEEK = 1,
+
+    /**
+     * The midpoint of the subject's left ear tip and left ear lobe.
+     */
+    LEFT_EAR = 3,
+
+    /**
+     * The center of the subject's left eye cavity.
+     */
+    LEFT_EYE = 4,
+
+    /**
+     * The center of the subject's bottom lip.
+     */
+    MOUTH_BOTTOM = 0,
+
+    /**
+     * The subject's left mouth corner where the lips meet.
+     */
+    MOUTH_LEFT = 5,
+
+    /**
+     * The subject's right mouth corner where the lips meet.
+     */
+    MOUTH_RIGHT = 11,
+
+    /**
+     * The midpoint between the subject's nostrils where the nose meets the face.
+     */
+
+    NOSE_BASE = 6,
+    /**
+     * The midpoint between the subject's right mouth corner and the outer corner of the subject's right eye.
+     */
+
+    RIGHT_CHEEK = 7,
+
+    /**
+     * The midpoint of the subject's right ear tip and right ear lobe.
+     */
+    RIGHT_EAR = 9,
+
+    /**
+     * The center of the subject's right eye cavity.
+     */
+    RIGHT_EYE = 10,
+  }
+
+  /**
+   * Represent a face contour. A contour is a list of points on a detected face, such as the mouth.
+   * When 'left' and 'right' are used, they are relative to the subject in the image. For example, the `LEFT_EYE` landmark
+   * is the subject's left eye, not the eye that is on the left when viewing the image.
+   */
+  export interface VisionFaceContour {
+    /**
+     * Returns the contour type.
+     */
+    type: VisionFaceContourType;
+
+    /**
+     * Gets a list of 2D points for this face contour, where (0, 0) is the upper-left corner of the image. The point is
+     * guaranteed to be within the bounds of the image.
+     */
+    points: VisionPoint[];
+  }
+
+  /**
+   * Countour type for a face.
+   */
+  export enum VisionFaceContourType {
+    /**
+     * All points of a face contour.
+     */
+    ALL_POINTS = 1,
+
+    /**
+     * The outline of the subject's face.
+     */
+    FACE = 2,
+
+    /**
+     * The outline of the subject's left eye cavity.
+     */
+    LEFT_EYE = 7,
+
+    /**
+     * The bottom outline of the subject's left eyebrow.
+     */
+    LEFT_EYEBROW_BOTTOM = 4,
+
+    /**
+     * The top outline of the subject's left eyebrow.
+     */
+    LEFT_EYEBROW_TOP = 3,
+
+    /**
+     * The bottom outline of the subject's lower lip.
+     */
+    LOWER_LIP_BOTTOM = 12,
+
+    /**
+     * The top outline of the subject's lower lip.
+     */
+    LOWER_LIP_TOP = 11,
+
+    /**
+     * The outline of the subject's nose bridge.
+     */
+    NOSE_BOTTOM = 14,
+
+    /**
+     * The outline of the subject's nose bridge.
+     */
+    NOSE_BRIDGE = 13,
+
+    /**
+     * The outline of the subject's right eye cavity.
+     */
+    RIGHT_EYE = 8,
+
+    /**
+     * The bottom outline of the subject's right eyebrow.
+     */
+    RIGHT_EYEBROW_BOTTOM = 6,
+
+    /**
+     * The top outline of the subject's right eyebrow.
+     */
+    RIGHT_EYEBROW_TOP = 5,
+
+    /**
+     * The bottom outline of the subject's upper lip.
+     */
+    UPPER_LIP_BOTTOM = 10,
+
+    /**
+     * The top outline of the subject's upper lip.
+     */
+    UPPER_LIP_TOP = 9,
+  }
+
   export interface TODO {
     // todo placeholder
   }
@@ -486,7 +711,7 @@ export namespace MLKitVision {
     faceDetectorProcessImage(
       imageFilePath: string,
       faceDetectorOptions: VisionFaceDetectorOptions,
-    ): Promise<TODO>;
+    ): Promise<VisionFace[]>;
 
     /**
      * Detect text from a local image file using the on-device model.
