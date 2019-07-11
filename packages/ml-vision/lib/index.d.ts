@@ -427,32 +427,32 @@ export namespace MLKitVision {
   /**
    * Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
    */
-  export interface VisionFaceDetectorClassificationMode {
+  export enum VisionFaceDetectorClassificationMode {
     /**
      * Disables collection of classifier information.
      */
-    NO_CLASSIFICATIONS: number;
+    NO_CLASSIFICATIONS = 1,
 
     /**
      * Enables collection of classifier information.
      */
-    ALL_CLASSIFICATIONS: number;
+    ALL_CLASSIFICATIONS = 2,
   }
 
   /**
    * Sets whether to detect contours or not. Processing time increases as the number of contours to search for increases,
    * so detecting all contours will increase the overall detection time.
    */
-  export interface VisionFaceDetectorContourMode {
+  export enum VisionFaceDetectorContourMode {
     /**
      * Disables collection of contour information.
      */
-    NO_CONTOURS: number;
+    NO_CONTOURS = 1,
 
     /**
      * Enables collection of contour information.
      */
-    ALL_CONTOURS: number;
+    ALL_CONTOURS = 2,
   }
 
   /**
@@ -460,16 +460,16 @@ export namespace MLKitVision {
    * search for increases, so detecting all landmarks will increase the overall detection time. Detecting
    * landmarks can improve pose estimation.
    */
-  export interface VisionFaceDetectorLandmarkMode {
+  export enum VisionFaceDetectorLandmarkMode {
     /**
      * Disables collection of landmark information.
      */
-    NO_LANDMARKS: number;
+    NO_LANDMARKS = 1,
 
     /**
      * Enables collection of landmark information.
      */
-    ALL_LANDMARKS: number;
+    ALL_LANDMARKS = 2,
   }
 
   /**
@@ -477,19 +477,19 @@ export namespace MLKitVision {
    * choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster
    * mode will generally result in detecting fewer faces.
    */
-  export interface VisionFaceDetectorPerformanceMode {
+  export enum VisionFaceDetectorPerformanceMode {
     /**
      * Indicates a preference for speed in extended settings that may make an accuracy vs. speed trade-off. This will
      * tend to detect fewer faces and may be less precise in determining values such as position, but will run faster.
      */
-    FAST: number;
+    FAST = 1,
 
     /**
      * Indicates a preference for accuracy in extended settings that may make an accuracy vs. speed trade-off.
      * This will tend to detect more faces and may be more precise in determining values such as position, at the cost
      * of speed.
      */
-    ACCURATE: number;
+    ACCURATE = 2,
   }
 
   /**
