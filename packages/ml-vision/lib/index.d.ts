@@ -271,16 +271,111 @@ export namespace MLKitVision {
     // todo
   }
 
-  export class VisionCloudTextRecognizerOptions {
-    // todo
-  }
-
   export class VisionCloudLandmarkRecognizerOptions {
     // todo
   }
 
+  /**
+   * Options for cloud text recognizer.
+   *
+   * #### Example
+   *
+   * ```js
+   * import { VisionCloudTextRecognizerOptions } from '@react-native-firebase/ml-vision';
+   *
+   * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
+   * textRecognizerOptions.enforceCertFingerprintMatch();
+   * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
+   * ```
+   */
+  export class VisionCloudTextRecognizerOptions {
+    /**
+     * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
+     *
+     * > Do not set this for debug build if you use simulators to test.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { VisionCloudTextRecognizerOptions, firebase } from '@react-native-firebase/ml-vision';
+     *
+     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
+     * textRecognizerOptions.enforceCertFingerprintMatch();
+     *
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * ```
+     */
+    enforceCertFingerprintMatch(): VisionCloudTextRecognizerOptions;
+
+    /**
+     * Sets model type for cloud text recognition. The two models SPARSE_MODEL and DENSE_MODEL handle different text densities in an image.
+     *
+     * See `VisionCloudTextRecognizerModelType` for types.
+     *
+     * #### Example
+     *
+     * ```js
+     * import {
+     *   firebase,
+     *   VisionCloudTextRecognizerModelType,
+     *   VisionCloudTextRecognizerOptions
+     * } from '@react-native-firebase/ml-vision';
+     *
+     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
+     * textRecognizerOptions.setModelType(VisionCloudTextRecognizerModelType.DENSE_MODEL);
+     *
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * ```
+     */
+    setModelType(
+      modelType:
+        | VisionCloudTextRecognizerModelType.SPARSE_MODEL
+        | VisionCloudTextRecognizerModelType.DENSE_MODEL,
+    ): VisionCloudTextRecognizerOptions;
+
+    /**
+     * Sets language hints. In most cases, not setting this yields the best results since it enables automatic language
+     * detection. For languages based on the Latin alphabet, setting language hints is not needed. In rare cases, when
+     * the language of the text in the image is known, setting a hint will help get better results (although it will be a
+     * significant hindrance if the hint is wrong).
+     *
+     * Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.
+     *
+     * #### Example
+     *
+     * ```js
+     * import {
+     *   firebase,
+     *   VisionCloudTextRecognizerOptions
+     * } from '@react-native-firebase/ml-vision';
+     *
+     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
+     * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
+     *
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * ```
+     */
+    setLanguageHints(hintedLanguages: string[]): VisionCloudTextRecognizerOptions;
+  }
+
   export class VisionCloudDocumentTextRecognizerOptions {
     // todo
+  }
+
+  /**
+   * The cloud model type used for in VisionCloudTextRecognizerOptions & VisionCloudDocumentTextRecognizerOptions
+   *
+   * Defaults to `SPARSE_MODEL`
+   */
+  export interface VisionCloudTextRecognizerModelType {
+    /**
+     * Dense model type. It is more suitable for well-formatted dense text.
+     */
+    SPARSE_MODEL: 1;
+    /**
+     * Sparse model type. It is more suitable for sparse text.
+     */
+    DENSE_MODEL: 2;
   }
 
   /**
@@ -791,6 +886,8 @@ export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
 export const VisionBarcodeDetectorOptions = MLKitVision.VisionBarcodeDetectorOptions;
 export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
 export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
+export const VisionCloudTextRecognizerModelType =
+  {} & MLKitVision.VisionCloudTextRecognizerModelType;
 export const VisionCloudLandmarkRecognizerOptions =
   MLKitVision.VisionCloudLandmarkRecognizerOptions;
 export const VisionCloudDocumentTextRecognizerOptions =
