@@ -16,5 +16,28 @@
  */
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
+import { isArray, isString } from '@react-native-firebase/common';
 
-export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {}
+export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {
+  constructor() {
+    super();
+    this.set('enforceCertFingerprintMatch', false);
+    this.set('modelType', VisionCloudTextRecognizerModelType.SPARSE_MODEL);
+  }
+
+  enforceCertFingerprintMatch() {
+    return this.set('enforceCertFingerprintMatch', true);
+  }
+
+  setLanguageHints(hintedLanguages) {
+    // quick check the first entry is a string only
+    if (!isArray(hintedLanguages) || !hintedLanguages.length || !isString(hintedLanguages[0])) {
+      throw new Error(
+        `firebase.mlKitVision() VisionCloudTextRecognizerOptions.setLanguageHints(*) 'hintedLanguages' must be an non empty array of strings.`,
+      );
+    }
+
+    return this.set('hintedLanguages', hintedLanguages);
+  }
+}

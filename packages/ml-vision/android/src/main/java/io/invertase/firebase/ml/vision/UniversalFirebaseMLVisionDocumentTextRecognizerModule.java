@@ -32,6 +32,7 @@ import com.google.firebase.ml.vision.text.RecognizedLanguage;
 import io.invertase.firebase.common.SharedUtils;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.*;
@@ -204,7 +205,8 @@ class UniversalFirebaseMLVisionDocumentTextRecognizerModule extends UniversalFir
     return symbolFormatted;
   }
 
-  private Map<String, Object> getRecognizedBreakMap(FirebaseVisionDocumentText.RecognizedBreak recognizedBreakRaw) {
+  private Map<String, Object> getRecognizedBreakMap(@Nullable FirebaseVisionDocumentText.RecognizedBreak recognizedBreakRaw) {
+    if (recognizedBreakRaw == null) return null;
     Map<String, Object> recognizedBreakFormatted = new HashMap<>(2);
     recognizedBreakFormatted.put("breakType", recognizedBreakRaw.getDetectedBreakType());
     recognizedBreakFormatted.put("isPrefix", recognizedBreakRaw.getIsPrefix());

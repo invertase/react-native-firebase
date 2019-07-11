@@ -15,7 +15,17 @@
  *
  */
 
-describe('mlkit.label', () => {
+let testImageFile;
+
+describe.only('mlkit.vision.label', () => {
+  before(async () => {
+    testImageFile = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+    await firebase
+      .storage()
+      .ref('vision/crab.jpg')
+      .getFile(testImageFile);
+  });
+
   describe('imageLabelerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
@@ -40,13 +50,7 @@ describe('mlkit.label', () => {
     });
 
     it('should return a local label array', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/crab.jpg')
-        .getFile(downloadTo);
-
-      const res = await firebase.mlKitVision().imageLabelerProcessImage(downloadTo);
+      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -83,13 +87,7 @@ describe('mlkit.label', () => {
     });
 
     it('should return a cloud label array', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/crab.jpg')
-        .getFile(downloadTo);
-
-      const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo);
+      const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -136,16 +134,10 @@ describe('mlkit.label', () => {
     });
 
     it('should accept options and return local labels', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/crab.jpg')
-        .getFile(downloadTo);
-
       const options = new firebase.mlKitVision.VisionImageLabelerOptions();
       options.setConfidenceThreshold(0.8);
 
-      const res = await firebase.mlKitVision().imageLabelerProcessImage(downloadTo, options);
+      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, options);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -195,16 +187,12 @@ describe('mlkit.label', () => {
       });
 
       it('should accept options and return cloud labels', async () => {
-        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-        await firebase
-          .storage()
-          .ref('vision/crab.jpg')
-          .getFile(downloadTo);
-
         const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
         options.setConfidenceThreshold(0.8);
 
-        const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo, options);
+        const res = await firebase
+          .mlKitVision()
+          .cloudImageLabelerProcessImage(testImageFile, options);
 
         res.should.be.Array();
         res.length.should.be.greaterThan(0);
@@ -217,24 +205,11 @@ describe('mlkit.label', () => {
       });
     });
 
-    xdescribe('enforceCertFingerprintMatch()', () => {
-      it('test', async () => {
-        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
-        await firebase
-          .storage()
-          .ref('vision/crab.jpg')
-          .getFile(downloadTo);
-
-        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-        options.enforceCertFingerprintMatch();
-
-        try {
-          await firebase.mlKitVision().cloudImageLabelerProcessImage(downloadTo, options);
-          return Promise.reject(new Error('Did not throw an Error.'));
-        } catch (error) {
-          // TODO is error correct?
-          return Promise.resolve();
-        }
+    describe('enforceCertFingerprintMatch()', () => {
+      it('enforceCertFingerprintMatch()', () => {
+        const o = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
+        o.enforceCertFingerprintMatch();
+        o.get('enforceCertFingerprintMatch').should.equal(true);
       });
     });
   });

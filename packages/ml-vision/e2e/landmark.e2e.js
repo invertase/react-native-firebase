@@ -14,8 +14,16 @@
  * limitations under the License.
  *
  */
+let testImageFile;
+describe.only('mlkit.vision.landmark', () => {
+  before(async () => {
+    testImageFile = `${firebase.storage.Path.DocumentDirectory}/landmark.jpg`;
+    await firebase
+      .storage()
+      .ref('vision/landmark.jpg')
+      .getFile(testImageFile);
+  });
 
-describe.only('mlkit.landmark', () => {
   describe('cloudLandmarkRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
@@ -40,13 +48,7 @@ describe.only('mlkit.landmark', () => {
     });
 
     it('should return an array of landmark information', async () => {
-      const downloadTo = `${firebase.storage.Path.DocumentDirectory}/landmark.jpg`;
-      await firebase
-        .storage()
-        .ref('vision/landmark.jpg')
-        .getFile(downloadTo);
-
-      const res = await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(downloadTo);
+      const res = await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -93,16 +95,11 @@ describe.only('mlkit.landmark', () => {
       });
 
       it('limits the maximum results', async () => {
-        await Utils.sleep(3000);
-        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/landmark.jpg`;
-        await firebase
-          .storage()
-          .ref('vision/landmark.jpg')
-          .getFile(downloadTo);
-
         const o = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setMaxResults(3);
 
-        const res = await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(downloadTo, o);
+        const res = await firebase
+          .mlKitVision()
+          .cloudLandmarkRecognizerProcessImage(testImageFile, o);
 
         // TODO SDK returns random number of results on native
         // 1 = 0 result
@@ -135,18 +132,13 @@ describe.only('mlkit.landmark', () => {
       });
 
       it('uses a latest model', async () => {
-        await Utils.sleep(3000);
-        const downloadTo = `${firebase.storage.Path.DocumentDirectory}/landmark.jpg`;
-        await firebase
-          .storage()
-          .ref('vision/landmark.jpg')
-          .getFile(downloadTo);
-
         const o = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setModelType(
           firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
         );
 
-        const res = await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(downloadTo, o);
+        const res = await firebase
+          .mlKitVision()
+          .cloudLandmarkRecognizerProcessImage(testImageFile, o);
         res.should.be.Array();
       });
     });

@@ -575,27 +575,17 @@ export namespace MLKitVision {
   /**
    * Represents a block of text.
    */
-  export interface VisionDocumentTextBlock extends VisionTextBase {
+  export interface VisionDocumentTextBlock extends VisionDocumentTextBase {
     /**
      * Gets an Array of `VisionDocumentTextParagraph`s that make up this block.
      */
     paragraphs: VisionDocumentTextParagraph[];
-
-    /**
-     * Gets the recognized break - the detected start or end of a structural component.
-     */
-    recognizedBreak: VisionDocumentTextRecognizedBreak;
   }
 
   /**
    * A structural unit of text representing a number of words in certain order.
    */
-  export interface VisionDocumentTextParagraph extends VisionTextBase {
-    /**
-     * Gets the recognized break - the detected start or end of a structural component.
-     */
-    recognizedBreak: VisionDocumentTextRecognizedBreak;
-
+  export interface VisionDocumentTextParagraph extends VisionDocumentTextBase {
     /**
      * Gets an Array of `VisionDocumentTextWord`s that make up this paragraph.
      *
@@ -607,12 +597,7 @@ export namespace MLKitVision {
   /**
    * A single word representation.
    */
-  export interface VisionDocumentTextWord extends VisionTextBase {
-    /**
-     * Gets the recognized break - the detected start or end of a structural component.
-     */
-    recognizedBreak: VisionDocumentTextRecognizedBreak;
-
+  export interface VisionDocumentTextWord extends VisionDocumentTextBase {
     /**
      * Gets an Array of `VisionDocumentTextSymbol`s that make up this word.
      * The order of the symbols follows the natural reading order.
@@ -623,12 +608,7 @@ export namespace MLKitVision {
   /**
    * A single symbol representation.
    */
-  export interface VisionDocumentTextSymbol extends VisionTextBase {
-    /**
-     * Gets the recognized break - the detected start or end of a structural component.
-     */
-    recognizedBreak: VisionDocumentTextRecognizedBreak;
-  }
+  export interface VisionDocumentTextSymbol extends VisionDocumentTextBase {}
 
   /**
    * Enum representing the detected break type.
@@ -678,6 +658,37 @@ export namespace MLKitVision {
      * Returns true if break prepends an element.
      */
     isPrefix: boolean;
+  }
+  /**
+   * A shared type that all VisionDocumentText components inherit from
+   */
+  export interface VisionDocumentTextBase {
+    /**
+     * Gets the recognized text as a string. Returned in reading order for the language. For Latin, this is top to bottom within a `VisionTextBlock`, and left-to-right within a `VisionTextLine`.
+     */
+    text: string;
+
+    /**
+     * The confidence of the recognized text. It only return valid result from cloud recognizers. For on-device text recognition, the confidence is always null.
+     */
+    confidence: null | number;
+
+    /**
+     * Gets a list of recognized languages. (Cloud API only. On-Device returns empty array)
+     *
+     * A language is the BCP-47 language code, such as "en-US" or "sr-Latn".
+     */
+    recognizedLanguages: String[];
+
+    /**
+     * Returns the bounding rectangle of the detected text.
+     */
+    boundingBox: VisionRectangle;
+
+    /**
+     * Gets the recognized break - the detected start or end of a structural component.
+     */
+    recognizedBreak: VisionDocumentTextRecognizedBreak;
   }
 
   /**

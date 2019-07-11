@@ -71,7 +71,7 @@ function textBaseElementValidate(textBase, cloud = false) {
 
 let testImageFile;
 
-describe('mlkit.vision.text', () => {
+describe.only('mlkit.vision.text', () => {
   before(async () => {
     testImageFile = `${firebase.storage.Path.DocumentDirectory}/text.png`;
     await firebase
@@ -93,10 +93,10 @@ describe('mlkit.vision.text', () => {
     it('should return a VisionText representation for an image', async () => {
       const res = await firebase.mlKitVision().textRecognizerProcessImage(testImageFile);
       res.text.should.be.a.String();
-      res.textBlocks.should.be.an.Array();
-      res.textBlocks.length.should.be.greaterThan(0);
+      res.blocks.should.be.an.Array();
+      res.blocks.length.should.be.greaterThan(0);
 
-      res.textBlocks.forEach(textBlock => {
+      res.blocks.forEach(textBlock => {
         textBaseElementValidate(textBlock);
         textBlock.lines.should.be.an.Array();
         textBlock.lines.length.should.be.greaterThan(0);
@@ -213,10 +213,10 @@ describe('mlkit.vision.text', () => {
     it('should return a VisionText representation for an image', async () => {
       const res = await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile);
       res.text.should.be.a.String();
-      res.textBlocks.should.be.an.Array();
-      res.textBlocks.length.should.be.greaterThan(0);
+      res.blocks.should.be.an.Array();
+      res.blocks.length.should.be.greaterThan(0);
 
-      res.textBlocks.forEach(textBlock => {
+      res.blocks.forEach(textBlock => {
         textBaseElementValidate(textBlock, true);
         textBlock.lines.should.be.an.Array();
         textBlock.lines.length.should.be.greaterThan(0);

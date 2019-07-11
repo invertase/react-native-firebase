@@ -17,7 +17,7 @@
 
 let testImageFile;
 
-describe('mlkit.face', () => {
+describe.only('mlkit.vision.face', () => {
   before(async () => {
     testImageFile = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
     await firebase
