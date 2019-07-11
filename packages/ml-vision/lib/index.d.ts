@@ -303,7 +303,7 @@ export namespace MLKitVision {
     /**
      * Stable model would be used.
      */
-    STABLE_MODEL = 1, // TODO change to correct ones
+    STABLE_MODEL = 1,
 
     /**
      * Latest model would be used.
