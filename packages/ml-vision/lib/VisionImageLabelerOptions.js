@@ -18,5 +18,14 @@
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 
 export default class VisionImageLabelerOptions extends MutatableParams {
-  // TODO
+  constructor() {
+    super();
+    this.set('confidenceThreshold', 0.5);
+
+  }
+
+  setConfidenceThreshold(confidenceThreshold) {
+    // todo validate
+    return this.set('confidenceThreshold', confidenceThreshold);
+  }
 }

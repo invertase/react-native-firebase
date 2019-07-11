@@ -20,6 +20,12 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import {
+  isString,
+  isUndefined,
+  toFilePath,
+  validateOptionalNativeDependencyExists,
+} from '@react-native-firebase/common';
 
 import version from './version';
 import VisionPoint from './VisionPoint';
@@ -31,7 +37,7 @@ import VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
 import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
 import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
-import { validateOptionalNativeDependencyExists } from '@react-native-firebase/common';
+
 
 const statics = {
   VisionPoint,
@@ -83,12 +89,29 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
       'ML Kit Vision Image Labeler',
       !!this.native.imageLabelerProcessImage,
     );
-    // todo validate
-    return this.native.imageLabelerProcessImage(localImageFilePath, imageLabelerOptions || {});
+
+    if (!isString(localImageFilePath)) {
+      // throw
+    }
+
+    if (!isUndefined(imageLabelerOptions) && !(imageLabelerOptions instanceof VisionImageLabelerOptions)) {
+      // throw
+    }
+
+    return this.native.imageLabelerProcessImage(
+      toFilePath(localImageFilePath),
+      imageLabelerOptions ? imageLabelerOptions.toJSON() : {},
+    );
   }
 
   // image labeler
   cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
+    validateOptionalNativeDependencyExists(
+      'ml_vision_image_label_model',
+      'ML Kit Vision Image Labeler',
+      !!this.native.imageLabelerProcessImage,
+    );
+
     // todo validate
     return this.native.cloudImageLabelerProcessImage(
       localImageFilePath,
@@ -112,7 +135,7 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseMlKitVisionModule,
 });
