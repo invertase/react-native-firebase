@@ -18,18 +18,26 @@
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 import { isNumber } from '@react-native-firebase/common';
 
+import VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassificationMode';
+import VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
+import VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
+import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
+
 export default class VisionFaceDetectorOptions extends MutatableParams {
   constructor() {
     super();
-    this.set('classificationMode', 1);
-    this.set('contourMode', 1);
-    this.set('landmarkMode', 1);
+    this.set('classificationMode', VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS);
+    this.set('contourMode', VisionFaceDetectorContourMode.NO_CONTOURS);
+    this.set('landmarkMode', VisionFaceDetectorLandmarkMode.NO_LANDMARKS);
     this.set('minFaceSize', 0.1);
-    this.set('performanceMode', 1);
+    this.set('performanceMode', VisionFaceDetectorPerformanceMode.FAST);
   }
 
   setClassificationMode(classificationMode) {
-    if (classificationMode !== 1 && classificationMode !== 2) {
+    if (
+      classificationMode !== VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS &&
+      classificationMode !== VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
+    ) {
       throw new Error(
         `firebase.mlKitVision() VisionFaceDetectorOptions.setClassificationMode(*) 'classificationMode' invalid classification mode. Expected VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS or VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS.`,
       );
@@ -39,23 +47,29 @@ export default class VisionFaceDetectorOptions extends MutatableParams {
   }
 
   setContourMode(contourMode) {
-    if (contourMode !== 1 && contourMode !== 2) {
+    if (
+      contourMode !== VisionFaceDetectorContourMode.NO_CONTOURS &&
+      contourMode !== VisionFaceDetectorContourMode.ALL_CONTOURS
+    ) {
       throw new Error(
         `firebase.mlKitVision() VisionFaceDetectorOptions.setContourMode(*) 'contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.`,
       );
     }
 
-    return this.set('classificationMode', contourMode);
+    return this.set('contourMode', contourMode);
   }
 
   setLandmarkMode(landmarkMode) {
-    if (landmarkMode !== 1 && landmarkMode !== 2) {
+    if (
+      landmarkMode !== VisionFaceDetectorLandmarkMode.NO_LANDMARKS &&
+      landmarkMode !== VisionFaceDetectorLandmarkMode.ALL_LANDMARKS
+    ) {
       throw new Error(
         `firebase.mlKitVision() VisionFaceDetectorOptions.setLandmarkMode(*) 'landmarkMode' invalid landmark mode. Expected VisionFaceDetectorLandmarkMode.NO_LANDMARKS or VisionFaceDetectorLandmarkMode.ALL_LANDMARKS.`,
       );
     }
 
-    return this.set('classificationMode', contourMode);
+    return this.set('landmarkMode', landmarkMode);
   }
 
   setMinFaceSize(minFaceSize) {
@@ -75,7 +89,10 @@ export default class VisionFaceDetectorOptions extends MutatableParams {
   }
 
   setPerformanceMode(performanceMode) {
-    if (performanceMode !== 1 && performanceMode !== 2) {
+    if (
+      performanceMode !== VisionFaceDetectorPerformanceMode.FAST &&
+      performanceMode !== VisionFaceDetectorPerformanceMode.ACCURATE
+    ) {
       throw new Error(
         `firebase.mlKitVision() VisionFaceDetectorOptions.setPerformanceMode(*) 'performanceMode' invalid performance mode. Expected VisionFaceDetectorPerformanceMode.FAST or VisionFaceDetectorPerformanceMode.ACCURATE.`,
       );

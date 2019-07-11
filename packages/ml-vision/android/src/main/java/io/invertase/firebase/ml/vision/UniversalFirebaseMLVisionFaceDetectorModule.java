@@ -87,21 +87,28 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
         visionFaceFormatted.put("smilingProbability", visionFaceRaw.getSmilingProbability());
         visionFaceFormatted.put("trackingId", visionFaceRaw.getTrackingId());
 
-        List<Map<String, Object>> faceContoursFormatted = new ArrayList<>(14);
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.ALL_POINTS)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.FACE)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_TOP)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_BOTTOM)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_BOTTOM)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYE)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYE)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.UPPER_LIP_TOP)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.UPPER_LIP_BOTTOM)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LOWER_LIP_TOP)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LOWER_LIP_BOTTOM)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.NOSE_BRIDGE)));
-        faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.NOSE_BOTTOM)));
+        List<Map<String, Object>> faceContoursFormatted;
+
+        if (options.getContourMode() == FirebaseVisionFaceDetectorOptions.NO_CONTOURS) {
+          faceContoursFormatted = new ArrayList<>(0);
+        } else {
+          faceContoursFormatted = new ArrayList<>(14);
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.ALL_POINTS)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.FACE)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_TOP)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYEBROW_BOTTOM)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_TOP)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYEBROW_BOTTOM)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LEFT_EYE)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.RIGHT_EYE)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.UPPER_LIP_TOP)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.UPPER_LIP_BOTTOM)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LOWER_LIP_TOP)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.LOWER_LIP_BOTTOM)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.NOSE_BRIDGE)));
+          faceContoursFormatted.add(getContourMap(visionFaceRaw.getContour(FirebaseVisionFaceContour.NOSE_BOTTOM)));
+        }
+
         visionFaceFormatted.put("faceContours", faceContoursFormatted);
 
         List<Map<String, Object>> faceLandmarksFormatted = new ArrayList<>(14);
@@ -182,7 +189,7 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
 
   private float[] getVisionPointMap(FirebaseVisionPoint visionPoint) {
     // noinspection ConstantConditions
-    return new float[]{visionPoint.getX(), visionPoint.getY(), visionPoint.getZ()};
+    return new float[]{visionPoint.getX(), visionPoint.getY()};
   }
 
   private Map<String, Object> getContourMap(FirebaseVisionFaceContour visionFaceContour) {
@@ -208,7 +215,8 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
     }
 
     if (faceDetectorOptionsBundle.containsKey("classificationMode")) {
-      switch (faceDetectorOptionsBundle.getInt("classificationMode")) {
+      int classificationMode = (int) faceDetectorOptionsBundle.getDouble("classificationMode");
+      switch (classificationMode) {
         case FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS:
           builder.setClassificationMode(FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS);
           break;
@@ -222,7 +230,8 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
     }
 
     if (faceDetectorOptionsBundle.containsKey("contourMode")) {
-      switch (faceDetectorOptionsBundle.getInt("contourMode")) {
+      int contourMode = (int) faceDetectorOptionsBundle.getDouble("contourMode");
+      switch (contourMode) {
         case FirebaseVisionFaceDetectorOptions.NO_CONTOURS:
           builder.setContourMode(FirebaseVisionFaceDetectorOptions.NO_CONTOURS);
           break;
@@ -236,7 +245,8 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
     }
 
     if (faceDetectorOptionsBundle.containsKey("landmarkMode")) {
-      switch (faceDetectorOptionsBundle.getInt("landmarkMode")) {
+      int landmarkMode = (int) faceDetectorOptionsBundle.getDouble("landmarkMode");
+      switch (landmarkMode) {
         case FirebaseVisionFaceDetectorOptions.NO_LANDMARKS:
           builder.setLandmarkMode(FirebaseVisionFaceDetectorOptions.NO_LANDMARKS);
           break;
@@ -250,11 +260,13 @@ public class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFireba
     }
 
     if (faceDetectorOptionsBundle.containsKey("minFaceSize")) {
-      builder.setMinFaceSize(faceDetectorOptionsBundle.getFloat("minFaceSize"));
+      float minFaceSize = (float) faceDetectorOptionsBundle.getDouble("minFaceSize");
+      builder.setMinFaceSize(minFaceSize);
     }
 
     if (faceDetectorOptionsBundle.containsKey("performanceMode")) {
-      switch (faceDetectorOptionsBundle.getInt("performanceMode")) {
+      int performanceMode = (int) faceDetectorOptionsBundle.getDouble("performanceMode");
+      switch (performanceMode) {
         case FirebaseVisionFaceDetectorOptions.FAST:
           builder.setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST);
           break;
