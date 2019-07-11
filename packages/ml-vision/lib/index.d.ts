@@ -510,13 +510,126 @@ export namespace MLKitVision {
     /**
      * Gets an array VisionTextBlock, which is a block of text that can be further decomposed to an array of VisionTextLine.
      */
-    textBlocks: VisionTextBlock[];
+    blocks: VisionTextBlock[];
+  }
+
+  /**
+   * Represents a block of text.
+   */
+  export interface VisionDocumentTextBlock extends VisionTextBase {
+    /**
+     * Gets an Array of `VisionDocumentTextParagraph`s that make up this block.
+     */
+    paragraphs: VisionDocumentTextParagraph[];
+
+    /**
+     * Gets the recognized break - the detected start or end of a structural component.
+     */
+    recognizedBreak: VisionDocumentTextRecognizedBreak;
+  }
+
+  /**
+   * A structural unit of text representing a number of words in certain order.
+   */
+  export interface VisionDocumentTextParagraph extends VisionTextBase {
+    /**
+     * Gets the recognized break - the detected start or end of a structural component.
+     */
+    recognizedBreak: VisionDocumentTextRecognizedBreak;
+
+    /**
+     * Gets an Array of `VisionDocumentTextWord`s that make up this paragraph.
+     *
+     * Returns an empty list if no Word is found.
+     */
+    words: VisionDocumentTextWord[];
+  }
+
+  /**
+   * A single word representation.
+   */
+  export interface VisionDocumentTextWord extends VisionTextBase {
+    /**
+     * Gets the recognized break - the detected start or end of a structural component.
+     */
+    recognizedBreak: VisionDocumentTextRecognizedBreak;
+
+    /**
+     * Gets an Array of `VisionDocumentTextSymbol`s that make up this word.
+     * The order of the symbols follows the natural reading order.
+     */
+    symbols: VisionDocumentTextSymbol[];
+  }
+
+  /**
+   * A single symbol representation.
+   */
+  export interface VisionDocumentTextSymbol extends VisionTextBase {
+    /**
+     * Gets the recognized break - the detected start or end of a structural component.
+     */
+    recognizedBreak: VisionDocumentTextRecognizedBreak;
+  }
+
+  /**
+   * Enum representing the detected break type.
+   */
+  export enum VisionDocumentTextRecognizedBreakType {
+    /**
+     * Line-wrapping break.
+     */
+    EOL_SURE_SPACE = 3,
+
+    /**
+     * End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.
+     */
+    HYPHEN = 4,
+
+    /**
+     * Line break that ends a paragraph.
+     */
+    LINE_BREAK = 5,
+
+    /**
+     * Regular space.
+     */
+    SPACE = 1,
+
+    /**
+     * Sure space (very wide).
+     */
+    SURE_SPACE = 2,
+
+    /**
+     * Unknown break label type.
+     */
+    UNKNOWN = 0,
+  }
+
+  /**
+   * A recognized break is the detected start or end of a structural component.
+   */
+  export interface VisionDocumentTextRecognizedBreak {
+    /**
+     * Gets detected break type.
+     */
+    breakType: VisionDocumentTextRecognizedBreakType;
+
+    /**
+     * Returns true if break prepends an element.
+     */
+    isPrefix: boolean;
   }
 
   /**
    * A hierarchical representation of document text recognized in an image.
    */
-  export interface VisionDocumentText extends VisionText {}
+  export interface VisionDocumentText extends VisionText {
+    /**
+     * Gets an array `VisionTextBlock`, which is a block of text that can be further decomposed to an array of `VisionDocumentTextParagraph`.
+     */
+    blocks: VisionDocumentTextBlock[];
+  }
 
   /**
    * A shared type that all Vision Text components inherit from
@@ -992,6 +1105,8 @@ export const VisionFaceDetectorContourMode = MLKitVision.VisionFaceDetectorConto
 export const VisionFaceDetectorLandmarkMode = MLKitVision.VisionFaceDetectorLandmarkMode;
 export const VisionFaceDetectorPerformanceMode = MLKitVision.VisionFaceDetectorPerformanceMode;
 
+export const VisionDocumentTextRecognizedBreakType =
+  MLKitVision.VisionDocumentTextRecognizedBreakType;
 export const VisionCloudLandmarkRecognizerModelType =
   MLKitVision.VisionCloudLandmarkRecognizerModelType;
 
