@@ -42,6 +42,9 @@ import VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassifica
 import VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
 import VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
 import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
+import VisionFaceLandmarkType from './VisionFaceLandmarkType';
+import VisionFaceContourType from './VisionFaceContourType';
+import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 
 const statics = {
   VisionPoint,
@@ -58,6 +61,8 @@ const statics = {
   VisionFaceDetectorContourMode,
   VisionFaceDetectorLandmarkMode,
   VisionFaceDetectorPerformanceMode,
+  VisionFaceLandmarkType,
+  VisionFaceContourType,
 };
 
 const namespace = 'mlKitVision';
@@ -72,7 +77,7 @@ const nativeModuleName = [
 class FirebaseMlKitVisionModule extends FirebaseModule {
   faceDetectorProcessImage(localImageFilePath, faceDetectorOptions) {
     validateOptionalNativeDependencyExists(
-      'ml_vision_image_label_model',
+      'ml_vision_face_model',
       'ML Kit Vision Face Detector',
       !!this.native.imageLabelerProcessImage,
     );
@@ -127,9 +132,26 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     // todo
   }
 
-  // cloud only
   cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {
-    // todo
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(cloudLandmarkRecognizerOptions) &&
+      !(cloudLandmarkRecognizerOptions instanceof VisionCloudLandmarkRecognizerOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(_, *) 'cloudLandmarkRecognizerOptions' expected an instance of VisionCloudLandmarkRecognizerOptions.`,
+      );
+    }
+
+    return this.native.cloudLandmarkRecognizerProcessImage(
+      toFilePath(localImageFilePath),
+      cloudLandmarkRecognizerOptions ? cloudLandmarkRecognizerOptions.toJSON() : {},
+    );
   }
 
   // image labeler
@@ -231,3 +253,6 @@ export VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassifica
 export VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
 export VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
 export VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
+export VisionFaceLandmarkType from './VisionFaceLandmarkType';
+export VisionFaceContourType from './VisionFaceContourType';
+export VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';

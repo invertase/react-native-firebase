@@ -16,7 +16,42 @@
  */
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+import { isNumber } from '@react-native-firebase/common';
+
+import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 
 export default class VisionCloudLandmarkRecognizerOptions extends MutatableParams {
-  // TODO
+  constructor() {
+    super();
+    this.set('enforceCertFingerprintMatch', false);
+    this.set('maxResults', 10);
+    this.set('model', VisionCloudLandmarkRecognizerModelType.STABLE_MODEL);
+  }
+
+  enforceCertFingerprintMatch() {
+    return this.set('enforceCertFingerprintMatch', true);
+  }
+
+  setMaxResults(maxResults) {
+    if (!isNumber(maxResults)) {
+      throw new Error(
+        `firebase.mlKitVision() VisionCloudLandmarkRecognizerOptions.setMaxResults(*) 'maxResults' expected a number value.`,
+      );
+    }
+
+    return this.set('maxResults', maxResults);
+  }
+
+  setModelType(model) {
+    if (
+      model !== VisionCloudLandmarkRecognizerModelType.STABLE_MODEL &&
+      model !== VisionCloudLandmarkRecognizerModelType.LATEST_MODEL
+    ) {
+      throw new Error(
+        `firebase.mlKitVision() VisionCloudLandmarkRecognizerOptions.setModelType(*) 'model' invalid model. Expected VisionCloudLandmarkRecognizerModelType.STABLE_MODEL or VisionCloudLandmarkRecognizerModelType.LATEST_MODEL.`,
+      );
+    }
+
+    return this.set('model', model);
+  }
 }

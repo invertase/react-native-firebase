@@ -15,7 +15,15 @@
  *
  */
 
-import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
-
-export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {
-}
+export default {
+  LEFT_CHEEK: 1,
+  LEFT_EAR: 3,
+  LEFT_EYE: 4,
+  MOUTH_BOTTOM: 0,
+  MOUTH_LEFT: 5,
+  MOUTH_RIGHT: 11,
+  NOSE_BASE: 6,
+  RIGHT_CHEEK: 7,
+  RIGHT_EAR: 9,
+  RIGHT_EYE: 10,
+};

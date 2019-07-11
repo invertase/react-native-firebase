@@ -72,6 +72,7 @@ export namespace MLKitVision {
     VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
     VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
     VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
+    VisionCloudLandmarkRecognizerModelType: VisionCloudLandmarkRecognizerModelType;
   }
 
   export class VisionPoint {
@@ -271,8 +272,53 @@ export namespace MLKitVision {
     // todo
   }
 
+  /**
+   * Detector for finding popular natural and man-made structures within an image.
+   */
   export class VisionCloudLandmarkRecognizerOptions {
-    // todo
+    /**
+     * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
+     *
+     * > Do not set this for debug build if you use simulators to test.
+     */
+    enforceCertFingerprintMatch(): VisionCloudLandmarkRecognizerOptions;
+
+    /**
+     * Sets maximum number of results of this type.
+     *
+     * Defaults to 10.
+     *
+     * @param maxResults The maximum number of results to return.
+     */
+    setMaxResults(maxResults: number): VisionCloudLandmarkRecognizerOptions;
+
+    /**
+     * Sets model type for the detection.
+     *
+     * Defaults to `VisionCloudLandmarkRecognizerModelType.STABLE_MODEL`.
+     *
+     * @param model A stable or latest model used for detection.
+     */
+    setModelType(
+      model:
+        | VisionCloudLandmarkRecognizerModelType.STABLE_MODEL
+        | VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
+    ): VisionCloudLandmarkRecognizerOptions;
+  }
+
+  /**
+   * Model types for cloud landmark recognition.
+   */
+  export enum VisionCloudLandmarkRecognizerModelType {
+    /**
+     * Stable model would be used.
+     */
+    STABLE_MODEL = 1, // TODO change to correct ones
+
+    /**
+     * Latest model would be used.
+     */
+    LATEST_MODEL = 2,
   }
 
   /**
@@ -805,7 +851,7 @@ export namespace MLKitVision {
   export class Module extends ReactNativeFirebaseModule {
     faceDetectorProcessImage(
       imageFilePath: string,
-      faceDetectorOptions: VisionFaceDetectorOptions,
+      faceDetectorOptions?: VisionFaceDetectorOptions,
     ): Promise<VisionFace[]>;
 
     /**
@@ -825,9 +871,14 @@ export namespace MLKitVision {
       cloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions,
     ): Promise<TODO>;
 
+    /**
+     *
+     * @param imageFilePath
+     * @param cloudLandmarkRecognizerOptions
+     */
     cloudLandmarkRecognizerProcessImage(
       imageFilePath: string,
-      cloudLandmarkRecognizerOptions: VisionCloudLandmarkRecognizerOptions,
+      cloudLandmarkRecognizerOptions?: VisionCloudLandmarkRecognizerOptions,
     ): Promise<TODO>;
 
     /**
@@ -881,17 +932,28 @@ export namespace MLKitVision {
 
 export const VisionPoint = MLKitVision.VisionPoint;
 export const VisionRectangle = MLKitVision.VisionRectangle;
+
 export const VisionFaceDetectorOptions = MLKitVision.VisionFaceDetectorOptions;
+export const VisionFaceLandmarkType = MLKitVision.VisionFaceLandmarkType;
+export const VisionFaceContourType = MLKitVision.VisionFaceContourType;
+
 export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
+
 export const VisionBarcodeDetectorOptions = MLKitVision.VisionBarcodeDetectorOptions;
+
 export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
+
 export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
+
 export const VisionCloudTextRecognizerModelType =
   {} & MLKitVision.VisionCloudTextRecognizerModelType;
 export const VisionCloudLandmarkRecognizerOptions =
   MLKitVision.VisionCloudLandmarkRecognizerOptions;
 export const VisionCloudDocumentTextRecognizerOptions =
   MLKitVision.VisionCloudDocumentTextRecognizerOptions;
+
+export const VisionCloudLandmarkRecognizerModelType =
+  MLKitVision.VisionCloudLandmarkRecognizerModelType;
 
 declare module '@react-native-firebase/ml-vision' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
