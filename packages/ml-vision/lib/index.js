@@ -37,6 +37,7 @@ import VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
 import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
 import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
+import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
 
 const statics = {
   VisionPoint,
@@ -48,6 +49,7 @@ const statics = {
   VisionCloudTextRecognizerOptions,
   VisionCloudLandmarkRecognizerOptions,
   VisionCloudDocumentTextRecognizerOptions,
+  VisionCloudTextRecognizerModelType,
 };
 
 const namespace = 'mlKitVision';
@@ -65,14 +67,31 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   }
 
   textRecognizerProcessImage(localImageFilePath) {
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().textRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
     return this.native.textRecognizerProcessImage(localImageFilePath);
   }
 
   cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
     // todo
   }
 
   cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
     // todo
   }
 
@@ -175,3 +194,4 @@ export VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
 export VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
 export VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
 export VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
+export VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
