@@ -68,6 +68,10 @@ export namespace MLKitVision {
     VisionCloudTextRecognizerOptions: VisionCloudTextRecognizerOptions;
     VisionCloudLandmarkRecognizerOptions: VisionCloudLandmarkRecognizerOptions;
     VisionCloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions;
+    VisionFaceDetectorClassificationMode: VisionFaceDetectorClassificationMode;
+    VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
+    VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
+    VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
   }
 
   export class VisionPoint {
@@ -80,8 +84,108 @@ export namespace MLKitVision {
     // todo
   }
 
+  /**
+   * Options for vision face detector.
+   *
+   * #### Example
+   *
+   * ```js
+   * const options = new VisionFaceDetectorOptions();
+   *
+   * options.setClassificationMode(
+   *   VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
+   * );
+   *
+   * options.setPerformanceMode(
+   *   VisionFaceDetectorPerformanceMode.ACCURATE
+   * );
+   * ```
+   */
   export class VisionFaceDetectorOptions {
-    // todo
+    /**
+     * Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
+     *
+     * Defaults to `VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS`.
+     *
+     * #### Example
+     *
+     * ```js
+     * const options = new VisionFaceDetectorOptions();
+     *
+     * options.setClassificationMode(
+     *   VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
+     * );
+     * ```
+     *
+     * @param classificationMode The classification mode used by the detector.
+     */
+    setClassificationMode(
+      classificationMode:
+        | VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS
+        | VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
+    ): VisionFaceDetectorOptions;
+
+    /**
+     * Sets whether to detect no contours or all contours. Processing time increases as the number of contours to search
+     * for increases, so detecting all contours will increase the overall detection time. Note that it would return up
+     * to 5 faces contours.
+     *
+     * Defaults to `VisionFaceDetectorContourMode.NO_CONTOURS`.
+     *
+     * @param contourMode The contour mode used by the detector.
+     */
+    setContourMode(
+      contourMode:
+        | VisionFaceDetectorContourMode.NO_CONTOURS
+        | VisionFaceDetectorContourMode.ALL_CONTOURS,
+    ): VisionFaceDetectorOptions;
+
+    /**
+     * Sets whether to detect no landmarks or all landmarks. Processing time increases as the number of landmarks to
+     * search for increases, so detecting all landmarks will increase the overall detection time. Detecting landmarks
+     * can improve pose estimation.
+     *
+     * Defaults to `VisionFaceDetectorLandmarkMode.NO_LANDMARKS`.
+     *
+     * @param landmarkMode The performance mode used by the detector.
+     */
+    setLandmarkMode(
+      landmarkMode:
+        | VisionFaceDetectorLandmarkMode.NO_LANDMARKS
+        | VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
+    ): VisionFaceDetectorOptions;
+
+    /**
+     * Sets the smallest desired face size, expressed as a proportion of the width of the head to the image width. For
+     * example, if a value of 0.1 is specified then the smallest face to search for is roughly 10% of the width of the
+     * image being searched.
+     *
+     * Setting the min face size is a performance vs. accuracy trade-off: setting the face size smaller will enable the
+     * detector to find smaller faces but detection will take longer; setting the face size larger will exclude smaller
+     * faces but will run faster.
+     *
+     * This is not a hard limit on face size; the detector may find faces slightly smaller than specified.
+     *
+     * Defaults to 0.1.
+     *
+     * @param minFaceSize The smallest head size to search for relative to the size of the image, in the range of 0.0 and 1.0. For example, a setting of 0.5 would indicate that detected faces need to fill at least half of the image width. The default size is 0.1.
+     */
+    setMinFaceSize(minFaceSize: number): VisionFaceDetectorLandmarkMode;
+
+    /**
+     * Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,
+     * choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster mode will
+     * generally result in detecting fewer faces.
+     *
+     * Defaults to `VisionFaceDetectorPerformanceMode.FAST`.
+     *
+     * @param performanceMode Fast/accurate trade-off mode.
+     */
+    setPerformanceMode(
+      performanceMode:
+        | VisionFaceDetectorPerformanceMode.FAST
+        | VisionFaceDetectorPerformanceMode.ACCURATE,
+    ): VisionFaceDetectorLandmarkMode;
   }
 
   /**
@@ -177,6 +281,74 @@ export namespace MLKitVision {
 
   export class VisionCloudDocumentTextRecognizerOptions {
     // todo
+  }
+
+  /**
+   * Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
+   */
+  export interface VisionFaceDetectorClassificationMode {
+    /**
+     * Disables collection of classifier information.
+     */
+    NO_CLASSIFICATIONS: number;
+
+    /**
+     * Enables collection of classifier information.
+     */
+    ALL_CLASSIFICATIONS: number;
+  }
+
+  /**
+   * Sets whether to detect contours or not. Processing time increases as the number of contours to search for increases,
+   * so detecting all contours will increase the overall detection time.
+   */
+  export interface VisionFaceDetectorContourMode {
+    /**
+     * Disables collection of contour information.
+     */
+    NO_CONTOURS: number;
+
+    /**
+     * Enables collection of contour information.
+     */
+    ALL_CONTOURS: number;
+  }
+
+  /**
+   * Sets whether to detect no landmarks or all landmarks. Processing time increases as the number of landmarks to
+   * search for increases, so detecting all landmarks will increase the overall detection time. Detecting
+   * landmarks can improve pose estimation.
+   */
+  export interface VisionFaceDetectorLandmarkMode {
+    /**
+     * Disables collection of landmark information.
+     */
+    NO_LANDMARKS: number;
+
+    /**
+     * Enables collection of landmark information.
+     */
+    ALL_LANDMARKS: number;
+  }
+
+  /**
+   * Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,
+   * choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster
+   * mode will generally result in detecting fewer faces.
+   */
+  export interface VisionFaceDetectorPerformanceMode {
+    /**
+     * Indicates a preference for speed in extended settings that may make an accuracy vs. speed trade-off. This will
+     * tend to detect fewer faces and may be less precise in determining values such as position, but will run faster.
+     */
+    FAST: number;
+
+    /**
+     * Indicates a preference for accuracy in extended settings that may make an accuracy vs. speed trade-off.
+     * This will tend to detect more faces and may be more precise in determining values such as position, at the cost
+     * of speed.
+     */
+    ACCURATE: number;
   }
 
   /**

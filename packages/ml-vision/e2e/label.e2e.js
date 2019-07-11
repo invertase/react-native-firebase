@@ -15,7 +15,7 @@
  *
  */
 
-describe.only('mlkit.label', () => {
+describe('mlkit.label', () => {
   describe('imageLabelerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {

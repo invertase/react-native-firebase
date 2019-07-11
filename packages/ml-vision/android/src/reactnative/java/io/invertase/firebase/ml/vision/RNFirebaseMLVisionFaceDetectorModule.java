@@ -37,16 +37,18 @@ public class RNFirebaseMLVisionFaceDetectorModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void detectFaces(
+  public void faceDetectorProcessImage(
     String appName,
     String stringUri,
     ReadableMap faceDetectorOptionsMap,
     Promise promise
   ) {
-    module.detectInImage(appName, stringUri, Arguments.toBundle(faceDetectorOptionsMap))
+    module.faceDetectorProcessImage(appName, stringUri, Arguments.toBundle(faceDetectorOptionsMap))
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
-          promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));
+          promise.resolve(
+            Arguments.makeNativeArray(task.getResult())
+          );
         } else {
           String[] errorCodeAndMessage = UniversalFirebaseMLVisionCommon.getErrorCodeAndMessageFromException(
             task.getException());
