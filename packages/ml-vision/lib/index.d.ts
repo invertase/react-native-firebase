@@ -161,7 +161,7 @@ export namespace MLKitVision {
      *
      * @param minFaceSize The smallest head size to search for relative to the size of the image, in the range of 0.0 and 1.0. For example, a setting of 0.5 would indicate that detected faces need to fill at least half of the image width. The default size is 0.1.
      */
-    setMinFaceSize(minFaceSize: number): VisionFaceDetectorLandmarkMode;
+    setMinFaceSize(minFaceSize: number): VisionFaceDetectorOptions;
 
     /**
      * Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,
@@ -176,7 +176,7 @@ export namespace MLKitVision {
       performanceMode:
         | VisionFaceDetectorPerformanceMode.FAST
         | VisionFaceDetectorPerformanceMode.ACCURATE,
-    ): VisionFaceDetectorLandmarkMode;
+    ): VisionFaceDetectorOptions;
   }
 
   /**
@@ -198,6 +198,8 @@ export namespace MLKitVision {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
      *
+     * Defaults to 0.5.
+     *
      * #### Example
      *
      * ```js
@@ -205,7 +207,7 @@ export namespace MLKitVision {
      * labelerOptions.setConfidenceThreshold(0.8);
      * ```
      *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
+     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionImageLabelerOptions;
   }
@@ -246,6 +248,8 @@ export namespace MLKitVision {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
      *
+     * Defaults to 0.5.
+     *
      * #### Example
      *
      * ```js
@@ -253,7 +257,7 @@ export namespace MLKitVision {
      * labelerOptions.setConfidenceThreshold(0.8);
      * ```
      *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0]. Default is 0.5.
+     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionCloudImageLabelerOptions;
   }
@@ -274,7 +278,7 @@ export namespace MLKitVision {
     enforceCertFingerprintMatch(): VisionCloudLandmarkRecognizerOptions;
 
     /**
-     * Sets maximum number of results of this type.
+     * Sets the maximum number of results of this type.
      *
      * Defaults to 10.
      *
@@ -347,6 +351,8 @@ export namespace MLKitVision {
      * Sets model type for cloud text recognition. The two models SPARSE_MODEL and DENSE_MODEL handle different text densities in an image.
      *
      * See `VisionCloudTextRecognizerModelType` for types.
+     *
+     * Defaults to `VisionCloudTextRecognizerModelType.SPARSE_MODEL`.
      *
      * #### Example
      *
@@ -881,6 +887,12 @@ export namespace MLKitVision {
    * ```
    */
   export class Module extends ReactNativeFirebaseModule {
+    /**
+     * Detects faces from a local image file.
+     *
+     * @param imageFilePath A local path to an image on the device.
+     * @param faceDetectorOptions An optional instance of `VisionFaceDetectorOptions`.
+     */
     faceDetectorProcessImage(
       imageFilePath: string,
       faceDetectorOptions?: VisionFaceDetectorOptions,
