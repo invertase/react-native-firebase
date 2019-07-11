@@ -394,8 +394,61 @@ export namespace MLKitVision {
     setLanguageHints(hintedLanguages: string[]): VisionCloudTextRecognizerOptions;
   }
 
+  /**
+   * Options for the cloud document text recognizer.
+   *
+   * #### Example
+   *
+   * ```js
+   * import { VisionCloudDocumentTextRecognizerOptions } from '@react-native-firebase/ml-vision';
+   *
+   * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
+   * docTextRecognizerOptions.enforceCertFingerprintMatch();
+   * docTextRecognizerOptions.setHintedLanguages(['fr', 'de']);
+   * ```
+   */
   export class VisionCloudDocumentTextRecognizerOptions {
-    // todo
+    /**
+     * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
+     *
+     * > Do not set this for debug build if you use simulators to test.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { VisionCloudDocumentTextRecognizerOptions, firebase } from '@react-native-firebase/ml-vision';
+     *
+     * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
+     * docTextRecognizerOptions.enforceCertFingerprintMatch();
+     *
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, docTextRecognizerOptions);
+     * ```
+     */
+    enforceCertFingerprintMatch(): VisionCloudDocumentTextRecognizerOptions;
+
+    /**
+     * Sets language hints. In most cases, not setting this yields the best results since it enables automatic language
+     * detection. For languages based on the Latin alphabet, setting language hints is not needed. In rare cases, when
+     * the language of the text in the image is known, setting a hint will help get better results (although it will be a
+     * significant hindrance if the hint is wrong).
+     *
+     * Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.
+     *
+     * #### Example
+     *
+     * ```js
+     * import {
+     *   firebase,
+     *   VisionCloudDocumentTextRecognizerOptions
+     * } from '@react-native-firebase/ml-vision';
+     *
+     * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
+     * docTextRecognizerOptions.setHintedLanguages(['fr', 'de']);
+     *
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, docTextRecognizerOptions);
+     * ```
+     */
+    setLanguageHints(hintedLanguages: string[]): VisionCloudDocumentTextRecognizerOptions;
   }
 
   /**
