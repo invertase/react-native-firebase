@@ -37,7 +37,7 @@ public class RNFirebaseMLVisionFaceDetectorModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void detectInImage(
+  public void detectFaces(
     String appName,
     String stringUri,
     ReadableMap faceDetectorOptionsMap,

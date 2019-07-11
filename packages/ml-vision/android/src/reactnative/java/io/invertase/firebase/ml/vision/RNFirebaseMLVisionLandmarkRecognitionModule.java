@@ -17,7 +17,10 @@ package io.invertase.firebase.ml.vision;
  *
  */
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class RNFirebaseMLVisionLandmarkRecognitionModule extends ReactNativeFirebaseModule {
@@ -27,4 +30,9 @@ public class RNFirebaseMLVisionLandmarkRecognitionModule extends ReactNativeFire
     super(reactContext, TAG);
   }
 
+
+  @ReactMethod
+  public void recognizeText(String text, ReadableMap options, Promise promise) {
+    // TODO
+  }
 }

@@ -17,7 +17,7 @@
  *
  */
 
-class Rectangle {
+export default class VisionRectangle {
   /**
    *
    * @param left
@@ -53,10 +53,10 @@ class Rectangle {
   /**
    * Copy the coordinates from the source rectangle into this rectangle.
    *
-   * @param otherRect Rectangle
+   * @param otherRect VisionRectangle
    */
   setFromRectangle(otherRect) {
-    // todo arg instance of Rectangle check
+    // todo arg instance of VisionRectangle check
     this.set(otherRect.left, otherRect.top, otherRect.right, otherRect.bottom);
   }
 
@@ -86,11 +86,11 @@ class Rectangle {
 
   /**
    * Returns whether the first rectangle contains the second rectangle.
-   * @param otherRect Rectangle
+   * @param otherRect VisionRectangle
    * @returns {boolean}
    */
   containsRectangle(otherRect) {
-    // todo arg instance of Rectangle check
+    // todo arg instance of VisionRectangle check
     return (
       !this.isEmpty() &&
       this.left <= otherRect.left &&
@@ -114,11 +114,11 @@ class Rectangle {
   /**
    * Returns whether two rectangles intersect.
    *
-   * @param otherRect Rectangle
+   * @param otherRect VisionRectangle
    * @returns {boolean}
    */
   intersectsRectangle(otherRect) {
-    // todo arg instance of Rectangle check
+    // todo arg instance of VisionRectangle check
     return (
       this.left < otherRect.right &&
       otherRect.left < this.right &&
@@ -132,13 +132,13 @@ class Rectangle {
    * rectangle, return true and set this rectangle to that intersection,
    * otherwise return false and do not change this rectangle. No check is
    * performed to see if either rectangle is empty. Note: To just test for
-   * intersection, use {@link #intersectsRectangle(otherRect: Rectangle)}.
+   * intersection, use {@link #intersectsRectangle(otherRect: VisionRectangle)}.
    *
    * @param otherRect
    * @returns {boolean}
    */
   intersectRectangle(otherRect) {
-    // todo arg instance of Rectangle check
+    // todo arg instance of VisionRectangle check
     if (
       this.left < otherRect.right &&
       otherRect.left < this.right &&
@@ -177,13 +177,13 @@ class Rectangle {
   }
 
   /**
-   * Returns true if this Rectangle has the same bounding box as the specified Rectangle.
+   * Returns true if this VisionRectangle has the same bounding box as the specified VisionRectangle.
    *
    * @param otherRect
    * @returns {boolean}
    */
   isEqual(otherRect) {
-    // todo arg instance of Point check
+    // todo arg instance of VisionPoint check
     return this.toString() === otherRect.toString();
   }
 
@@ -196,7 +196,7 @@ class Rectangle {
   }
 
   /**
-   * Returns this rectangle as an string, e.g Rectangle[left, top, right, bottom]
+   * Returns this rectangle as an string, e.g VisionRectangle[left, top, right, bottom]
    * @returns {string}
    */
   toString() {

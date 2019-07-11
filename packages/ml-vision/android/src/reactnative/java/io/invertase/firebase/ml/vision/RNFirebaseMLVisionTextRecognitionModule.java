@@ -34,7 +34,7 @@ public class RNFirebaseMLVisionTextRecognitionModule extends ReactNativeFirebase
   }
 
   @ReactMethod
-  public void processImage(
+  public void detectTextInImage(
     String appName,
     String stringUri,
     Promise promise

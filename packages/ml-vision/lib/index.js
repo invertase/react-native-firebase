@@ -22,8 +22,27 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import version from './version';
+import VisionPoint from './VisionPoint';
+import VisionRectangle from './VisionRectangle';
+import VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
+import VisionImageLabelerOptions from './VisionImageLabelerOptions';
+import VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';
+import VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
+import VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
+import VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
+import VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';
 
-const statics = {};
+const statics = {
+  VisionPoint,
+  VisionRectangle,
+  VisionFaceDetectorOptions,
+  VisionImageLabelerOptions,
+  VisionBarcodeDetectorOptions,
+  VisionCloudImageLabelerOptions,
+  VisionCloudTextRecognizerOptions,
+  VisionCloudLandmarkRecognizerOptions,
+  VisionCloudDocumentTextRecognizerOptions,
+};
 
 const namespace = 'mlKitVision';
 const nativeModuleName = [
@@ -35,7 +54,40 @@ const nativeModuleName = [
 ];
 
 class FirebaseMlKitVisionModule extends FirebaseModule {
-  // TODO
+  faceDetectorProcessImage(localImageFilePath, faceDetectorOptions) {
+    // todo
+  }
+
+  textRecognizerProcessImage(localImageFilePath) {
+    // todo
+  }
+
+  cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {
+    // todo
+  }
+
+  cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
+    // todo
+  }
+
+  // cloud only
+  cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {
+    // todo
+  }
+
+  // image labeler
+  imageLabelerProcessImage(localImageFilePath, imageLabelerOptions) {
+    // todo
+  }
+
+  // image labeler
+  cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
+    // todo
+  }
+
+  barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
+    // todo
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/ml-vision';
@@ -58,3 +110,15 @@ export default createModuleNamespace({
 // mlKitVision().X(...);
 // firebase.mlKitVision().X(...);
 export const firebase = getFirebaseRoot();
+
+// e.g.
+// // import { VisionPoint } from '@react-native-firebase/ml-vision';
+export VisionPoint from './VisionPoint';
+export VisionRectangle from './VisionRectangle';
+export VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
+export VisionImageLabelerOptions from './VisionImageLabelerOptions';
+export VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';
+export VisionCloudImageLabelerOptions from './VisionCloudImageLabelerOptions';
+export VisionCloudTextRecognizerOptions from './VisionCloudTextRecognizerOptions';
+export VisionCloudLandmarkRecognizerOptions from './VisionCloudLandmarkRecognizerOptions';
+export VisionCloudDocumentTextRecognizerOptions from './VisionCloudDocumentTextRecognizerOptions';

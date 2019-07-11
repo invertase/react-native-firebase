@@ -2,6 +2,10 @@ import '@react-native-firebase/storage';
 import '@react-native-firebase/perf';
 import '@react-native-firebase/functions';
 
+import { VisionPoint } from '@react-native-firebase/ml-vision';
+const moo = new VisionPoint();
+console.log(moo.x);
+
 //
 // const foo = async () => {
 //   const task = firebase

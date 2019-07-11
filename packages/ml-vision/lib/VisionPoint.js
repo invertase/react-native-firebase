@@ -17,7 +17,7 @@
  *
  */
 
-class Point {
+export default class VisionPoint {
   constructor(x, y) {
     this._x = x || 0;
     this._y = y || 0;
@@ -38,10 +38,10 @@ class Point {
   /**
    * Copy the coordinates from the source point into this point.
    *
-   * @param otherPoint Point
+   * @param otherPoint VisionPoint
    */
   setFromPoint(otherPoint) {
-    // todo arg instance of Point check
+    // todo arg instance of VisionPoint check
     this.set(otherPoint.x, otherPoint.y);
   }
 
@@ -54,13 +54,13 @@ class Point {
   }
 
   /**
-   * Returns true if this Point has the same coordinates as the specified Point.
+   * Returns true if this VisionPoint has the same coordinates as the specified VisionPoint.
    *
    * @param otherPoint
    * @returns {boolean}
    */
   isEqual(otherPoint) {
-    // todo arg instance of Point check
+    // todo arg instance of VisionPoint check
     return this.toString() === otherPoint.toString();
   }
 
@@ -73,7 +73,7 @@ class Point {
   }
 
   /**
-   * Returns this point as an string, e.g Point[x, y]
+   * Returns this point as an string, e.g VisionPoint[x, y]
    * @returns {string}
    */
   toString() {
