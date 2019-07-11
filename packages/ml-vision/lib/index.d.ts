@@ -72,6 +72,7 @@ export namespace MLKitVision {
     VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
     VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
     VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
+    VisionCloudLandmarkRecognizerModelType: VisionCloudLandmarkRecognizerModelType;
   }
 
   export class VisionPoint {
@@ -271,8 +272,53 @@ export namespace MLKitVision {
     // todo
   }
 
+  /**
+   * Detector for finding popular natural and man-made structures within an image.
+   */
   export class VisionCloudLandmarkRecognizerOptions {
-    // todo
+    /**
+     * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
+     *
+     * > Do not set this for debug build if you use simulators to test.
+     */
+    enforceCertFingerprintMatch(): VisionCloudLandmarkRecognizerOptions;
+
+    /**
+     * Sets maximum number of results of this type.
+     *
+     * Defaults to 10.
+     *
+     * @param maxResults The maximum number of results to return.
+     */
+    setMaxResults(maxResults: number): VisionCloudLandmarkRecognizerOptions;
+
+    /**
+     * Sets model type for the detection.
+     *
+     * Defaults to `VisionCloudLandmarkRecognizerModelType.STABLE_MODEL`.
+     *
+     * @param model A stable or latest model used for detection.
+     */
+    setModelType(
+      model:
+        | VisionCloudLandmarkRecognizerModelType.STABLE_MODEL
+        | VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
+    ): VisionCloudLandmarkRecognizerOptions;
+  }
+
+  /**
+   * Model types for cloud landmark recognition.
+   */
+  export enum VisionCloudLandmarkRecognizerModelType {
+    /**
+     * Stable model would be used.
+     */
+    STABLE_MODEL = 1, // TODO change to correct ones
+
+    /**
+     * Latest model would be used.
+     */
+    LATEST_MODEL = 2,
   }
 
   /**
@@ -381,32 +427,32 @@ export namespace MLKitVision {
   /**
    * Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
    */
-  export interface VisionFaceDetectorClassificationMode {
+  export enum VisionFaceDetectorClassificationMode {
     /**
      * Disables collection of classifier information.
      */
-    NO_CLASSIFICATIONS: number;
+    NO_CLASSIFICATIONS = 1,
 
     /**
      * Enables collection of classifier information.
      */
-    ALL_CLASSIFICATIONS: number;
+    ALL_CLASSIFICATIONS = 2,
   }
 
   /**
    * Sets whether to detect contours or not. Processing time increases as the number of contours to search for increases,
    * so detecting all contours will increase the overall detection time.
    */
-  export interface VisionFaceDetectorContourMode {
+  export enum VisionFaceDetectorContourMode {
     /**
      * Disables collection of contour information.
      */
-    NO_CONTOURS: number;
+    NO_CONTOURS = 1,
 
     /**
      * Enables collection of contour information.
      */
-    ALL_CONTOURS: number;
+    ALL_CONTOURS = 2,
   }
 
   /**
@@ -414,16 +460,16 @@ export namespace MLKitVision {
    * search for increases, so detecting all landmarks will increase the overall detection time. Detecting
    * landmarks can improve pose estimation.
    */
-  export interface VisionFaceDetectorLandmarkMode {
+  export enum VisionFaceDetectorLandmarkMode {
     /**
      * Disables collection of landmark information.
      */
-    NO_LANDMARKS: number;
+    NO_LANDMARKS = 1,
 
     /**
      * Enables collection of landmark information.
      */
-    ALL_LANDMARKS: number;
+    ALL_LANDMARKS = 2,
   }
 
   /**
@@ -431,19 +477,19 @@ export namespace MLKitVision {
    * choosing the more accurate mode will generally result in longer runtime, whereas choosing the faster
    * mode will generally result in detecting fewer faces.
    */
-  export interface VisionFaceDetectorPerformanceMode {
+  export enum VisionFaceDetectorPerformanceMode {
     /**
      * Indicates a preference for speed in extended settings that may make an accuracy vs. speed trade-off. This will
      * tend to detect fewer faces and may be less precise in determining values such as position, but will run faster.
      */
-    FAST: number;
+    FAST = 1,
 
     /**
      * Indicates a preference for accuracy in extended settings that may make an accuracy vs. speed trade-off.
      * This will tend to detect more faces and may be more precise in determining values such as position, at the cost
      * of speed.
      */
-    ACCURATE: number;
+    ACCURATE = 2,
   }
 
   /**
@@ -805,7 +851,7 @@ export namespace MLKitVision {
   export class Module extends ReactNativeFirebaseModule {
     faceDetectorProcessImage(
       imageFilePath: string,
-      faceDetectorOptions: VisionFaceDetectorOptions,
+      faceDetectorOptions?: VisionFaceDetectorOptions,
     ): Promise<VisionFace[]>;
 
     /**
@@ -825,9 +871,14 @@ export namespace MLKitVision {
       cloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions,
     ): Promise<TODO>;
 
+    /**
+     *
+     * @param imageFilePath
+     * @param cloudLandmarkRecognizerOptions
+     */
     cloudLandmarkRecognizerProcessImage(
       imageFilePath: string,
-      cloudLandmarkRecognizerOptions: VisionCloudLandmarkRecognizerOptions,
+      cloudLandmarkRecognizerOptions?: VisionCloudLandmarkRecognizerOptions,
     ): Promise<TODO>;
 
     /**
@@ -882,15 +933,22 @@ export namespace MLKitVision {
 export const VisionPoint = MLKitVision.VisionPoint;
 export const VisionRectangle = MLKitVision.VisionRectangle;
 export const VisionFaceDetectorOptions = MLKitVision.VisionFaceDetectorOptions;
+export const VisionFaceLandmarkType = MLKitVision.VisionFaceLandmarkType;
+export const VisionFaceContourType = MLKitVision.VisionFaceContourType;
+
 export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
 export const VisionBarcodeDetectorOptions = MLKitVision.VisionBarcodeDetectorOptions;
 export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
 export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
+
 export const VisionCloudTextRecognizerModelType = MLKitVision.VisionCloudTextRecognizerModelType;
 export const VisionCloudLandmarkRecognizerOptions =
   MLKitVision.VisionCloudLandmarkRecognizerOptions;
 export const VisionCloudDocumentTextRecognizerOptions =
   MLKitVision.VisionCloudDocumentTextRecognizerOptions;
+
+export const VisionCloudLandmarkRecognizerModelType =
+  MLKitVision.VisionCloudLandmarkRecognizerModelType;
 
 declare module '@react-native-firebase/ml-vision' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
