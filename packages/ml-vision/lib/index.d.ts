@@ -17,8 +17,8 @@
 
 import {
   ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
   ReactNativeFirebaseModuleAndStatics,
+  ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -73,16 +73,6 @@ export namespace MLKitVision {
     VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
     VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
     VisionCloudLandmarkRecognizerModelType: VisionCloudLandmarkRecognizerModelType;
-  }
-
-  export class VisionPoint {
-    x: number;
-    y: number;
-    // todo
-  }
-
-  export class VisionRectangle {
-    // todo
   }
 
   /**
@@ -687,7 +677,7 @@ export namespace MLKitVision {
    */
   export enum VisionFaceLandmarkType {
     /**
-     * 	The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
+     *  The midpoint between the subject's left mouth corner and the outer corner of the subject's left eye.
      */
     LEFT_CHEEK = 1,
 
@@ -831,6 +821,48 @@ export namespace MLKitVision {
     UPPER_LIP_TOP = 9,
   }
 
+  /**
+   * Represents a detected landmark returned from `cloudLandmarkRecognizerProcessImage()`.
+   */
+  export interface VisionLandmark {
+    /**
+     * Gets image region of the detected landmark. Returns null if nothing was detected
+     */
+    boundingBox: VisionRectangle | void;
+
+    /**
+     * Gets overall confidence of the result. Ranging between 0 & 1.
+     */
+    confidence: number;
+
+    /**
+     * Gets opaque entity ID. Some IDs may be available in [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph/).
+     */
+    entityId: string;
+
+    /**
+     * Gets the detected landmark.
+     */
+    landmark: string;
+
+    /**
+     * Gets the location information for the detected entity.
+     *
+     * Multiple FirebaseVisionLatLng elements can be present because one location may indicate the location of the scene
+     * in the image, and another location may indicate the location of the place where the image was taken.
+     * Location information is usually present for landmarks.
+     */
+    locations: VisionLatLng[];
+  }
+
+  /**
+   * An object representing a latitude/longitude pair. This is expressed as a pair of doubles representing degrees latitude and degrees longitude.
+   *
+   * Unless specified otherwise, this must conform to the [WGS84](https://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf)
+   * standard. Values must be within normalized ranges.
+   */
+  export type VisionLatLng = [number, number];
+
   export interface TODO {
     // todo placeholder
   }
@@ -872,14 +904,16 @@ export namespace MLKitVision {
     ): Promise<TODO>;
 
     /**
+     * Returns an array of landmarks (as `VisionLandmark`) of a given local image file path. Landmark detection
+     * is done on cloud (Firebase).
      *
-     * @param imageFilePath
-     * @param cloudLandmarkRecognizerOptions
+     * @param imageFilePath A local image file path.
+     * @param cloudLandmarkRecognizerOptions An optional instance of `VisionCloudLandmarkRecognizerOptions`.
      */
     cloudLandmarkRecognizerProcessImage(
       imageFilePath: string,
       cloudLandmarkRecognizerOptions?: VisionCloudLandmarkRecognizerOptions,
-    ): Promise<TODO>;
+    ): Promise<VisionLandmark[]>;
 
     /**
      * Returns an array of labels (as `VisionImageLabel`) of a given local image file path. Label detection is done
@@ -946,6 +980,12 @@ export const VisionCloudLandmarkRecognizerOptions =
   MLKitVision.VisionCloudLandmarkRecognizerOptions;
 export const VisionCloudDocumentTextRecognizerOptions =
   MLKitVision.VisionCloudDocumentTextRecognizerOptions;
+
+export const VisionFaceDetectorClassificationMode =
+  MLKitVision.VisionFaceDetectorClassificationMode;
+export const VisionFaceDetectorContourMode = MLKitVision.VisionFaceDetectorContourMode;
+export const VisionFaceDetectorLandmarkMode = MLKitVision.VisionFaceDetectorLandmarkMode;
+export const VisionFaceDetectorPerformanceMode = MLKitVision.VisionFaceDetectorPerformanceMode;
 
 export const VisionCloudLandmarkRecognizerModelType =
   MLKitVision.VisionCloudLandmarkRecognizerModelType;
