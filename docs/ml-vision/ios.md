@@ -1,6 +1,6 @@
 ---
 title: iOS Setup
-description: Manually integrate ML Kit Natural Language APIs into your iOS application.
+description: Manually integrate ML Kit Vision APIs into your iOS application.
 ---
 
 # iOS Manual Linking

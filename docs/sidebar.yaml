@@ -200,6 +200,18 @@
     - text: iOS Setup
       to: "/ios"
 
+- module: ml-vision
+  group: ML Kit Vision
+  children:
+    - text: Overview
+      to: "/"
+    - text: Quick Start
+      to: "/quick-start"
+    - text: Android Setup
+      to: "/android"
+    - text: iOS Setup
+      to: "/ios"
+
 - module: notifications
   group: Notifications
   children:
