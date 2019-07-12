@@ -47,9 +47,9 @@ describe('mlKitLanguage()', () => {
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql(
-          "You attempted to use an optional ML Kit API that's not enabled natively",
+          "You attempted to use an optional API that's not enabled natively",
         );
-        e.message.should.containEql('Language ID');
+        e.message.should.containEql('Language Identification');
         firebase.mlKitLanguage()._nativeModule.identifyLanguage = method;
         Object.freeze(firebase.mlKitLanguage()._nativeModule);
         return Promise.resolve();
@@ -68,7 +68,7 @@ describe('mlKitLanguage()', () => {
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql(
-          "You attempted to use an optional ML Kit API that's not enabled natively",
+          "You attempted to use an optional API that's not enabled natively",
         );
         e.message.should.containEql('Smart Replies');
         firebase.mlKitLanguage()._nativeModule.getSuggestedReplies = method;
