@@ -19,6 +19,7 @@ import {
   ReactNativeFirebaseModule,
   ReactNativeFirebaseNamespace,
   ReactNativeFirebaseModuleAndStatics,
+  NativeFirebaseError,
 } from '@react-native-firebase/app-types';
 
 /**
@@ -204,6 +205,29 @@ export namespace Messaging {
      * @param data An object of data.
      */
     setData(data: { [key: string]: string }): RemoteMessageBuilder;
+  }
+
+  /**
+   * An event that is received when a message fails to send.
+   *
+   * ### Example
+   *
+   * ```js
+   * firebase.messaging().onSendError(event => {
+   *   console.log(event.messageId);
+   *   console.log(event.error);
+   * });
+   */
+  export interface SendErrorEvent {
+    /**
+     * The id of the message that failed to send
+     */
+    messageId: string;
+
+    /**
+     * A native firebase error that indicates the failure reason.
+     */
+    error: NativeFirebaseError;
   }
 
   /**
@@ -555,7 +579,7 @@ export namespace Messaging {
      *
      * @param listener
      */
-    onSendError(listener: { messageId: string; error: Error }): Function;
+    onSendError(listener: (evt: SendErrorEvent) => any): Function;
 
     /**
      * On Android, set a message handler function which is called when the app is in the background
