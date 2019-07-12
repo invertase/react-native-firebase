@@ -20,7 +20,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
-#import <RNFBInvites/RNFBInvitesModule.h>
 #import <React/RCTLinkingManager.h>
 
 @import Firebase;

@@ -20,6 +20,8 @@
 // BEEN WARNED 🙃
 require('@react-native-firebase/private-tests-helpers');
 
+global.TestAdminApi = new TestingApi();
+
 const detox = require('detox');
 const jet = require('jet/platform/node');
 
@@ -51,7 +53,7 @@ const PACKAGES = [
   'storage',
   'indexing',
   'messaging',
-  // 'firestore',
+  'firestore',
   // 'ml-vision',
   // 'ml-automl',
 ];

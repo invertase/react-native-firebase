@@ -10,6 +10,8 @@
     "jest": true
   },
   "rules": {
+    "no-new": 0,
+    "no-continue": 0,
     "no-extend-native": 0,
     "import/no-dynamic-require": 0,
     "global-require": "off",
