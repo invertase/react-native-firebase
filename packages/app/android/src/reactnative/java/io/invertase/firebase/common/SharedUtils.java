@@ -51,8 +51,8 @@ public class SharedUtils {
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
   public static int[] rectToIntArray(@Nullable Rect rect) {
-    if (rect == null) return new int[]{};
-    return new int[]{rect.top, rect.left, rect.bottom, rect.right};
+    if (rect == null || rect.isEmpty()) return new int[]{};
+    return new int[]{rect.left, rect.top, rect.right, rect.bottom};
   }
 
   public static int[] pointToIntArray(@Nullable Point point) {
