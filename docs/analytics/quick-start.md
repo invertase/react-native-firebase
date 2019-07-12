@@ -59,8 +59,8 @@ import analytics from '@react-native-firebase/analytics';
 
 async function onSignIn(user) {
   await Promise.all([
-     analytics().setUserId(user.uid),
-     analytics().setUserProperty('account_balance', user.balance),
+    analytics().setUserId(user.uid),
+    analytics().setUserProperty('account_balance', user.balance),
   ]);
 }
 ```
@@ -68,7 +68,7 @@ async function onSignIn(user) {
 ### Tracking screen names
 
 Similar to Analytics on the web, it's important to understand the user journey within your application, for example
-tracking drop off points during a e-commerce transaction flow. The Analytics package provides a method called 
+tracking drop off points during a e-commerce transaction flow. The Analytics package provides a method called
 `setCurrentScreen` to help track this.
 
 ```js
@@ -81,12 +81,12 @@ function BasketScreen() {
     // Set & override the MainActivity screen name
     await analytics().setCurrentScreen(screen, screen);
   }
-  
+
   // Track a screen view once the component has mounted
   useEffect(() => {
     trackScreenView('BasketScreen');
   }, []);
-  
+
   return <View />;
 }
 ```
@@ -96,10 +96,10 @@ function BasketScreen() {
 In some cases, resetting all analytics data is required on certain events such as signing out of the application.
 To achieve this call the `resetAnalyticsData` method.
 
- ```js
- import analytics from '@react-native-firebase/analytics';
- 
+```js
+import analytics from '@react-native-firebase/analytics';
+
 async function onSignOut() {
   await analytics().resetAnalyticsData();
 }
- ```
+```

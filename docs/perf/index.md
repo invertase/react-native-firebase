@@ -1,12 +1,12 @@
 ---
 title: Performance Monitoring
-description: Firebase Performance Monitoring is a service that helps you to gain insight into the performance characteristics of your iOS and Android apps. 
+description: Firebase Performance Monitoring is a service that helps you to gain insight into the performance characteristics of your iOS and Android apps.
 ---
 
 # Performance Monitoring
 
-React Native Firebase provides native integration with Performance Monitoring to gain insight into 
-key performance characteristics within your React Native application. The library works out of the box, 
+React Native Firebase provides native integration with Performance Monitoring to gain insight into
+key performance characteristics within your React Native application. The library works out of the box,
 however provides a simple API to track custom trace and HTTP request metrics.
 
 <Youtube id="0EHSPFvH7vk" />
@@ -44,7 +44,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-perf)

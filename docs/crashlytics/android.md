@@ -1,6 +1,6 @@
 ---
 title: Android Setup
-description: Manually integrate Crashlytics into your Android application. 
+description: Manually integrate Crashlytics into your Android application.
 ---
 
 # Android Setup
@@ -11,11 +11,12 @@ description: Manually integrate Crashlytics into your Android application.
 
 ### Add Fabric Gradle Tools
 
-These steps are required, if you do not add these your app will most likely crash at startup with the following Error: *"The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration. Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."*
+These steps are required, if you do not add these your app will most likely crash at startup with the following Error: _"The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration. Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."_
 
-#### Add the Fabric Maven repository 
+#### Add the Fabric Maven repository
 
-**`android/build.gradle`**: 
+**`android/build.gradle`**:
+
 ```groovy{6-8}
 // ..
 buildscript {
@@ -32,7 +33,8 @@ buildscript {
 
 #### Add the Fabric Tools Plugin dependency
 
-**`android/build.gradle`**: 
+**`android/build.gradle`**:
+
 ```groovy{6}
 // ..
 buildscript {
@@ -47,8 +49,8 @@ buildscript {
 
 #### Apply the Fabric Tools Plugin to your app
 
+**`android/app/build.gradle`**:
 
-**`android/app/build.gradle`**: 
 ```groovy{2}
 apply plugin: 'com.android.application' // apply after this line
 apply plugin: 'io.fabric'
@@ -59,9 +61,10 @@ apply plugin: 'io.fabric'
 
 > OPTIONAL
 
-Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture crashes originating from the Yoga layout engine. 
+Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture crashes originating from the Yoga layout engine.
 
-**`android/app/build.gradle`**: 
+**`android/app/build.gradle`**:
+
 ```groovy{4-6}
 // ..
 apply plugin: 'io.fabric'
@@ -74,7 +77,6 @@ crashlytics {
 # Android Manual Linking
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking. 
-
+> auto-linking.
 
 TODO

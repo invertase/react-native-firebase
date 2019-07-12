@@ -20,7 +20,7 @@ yarn add @react-native-firebase/crashlytics
 The Crashlytics package will automatically report on any fatal application crash. Both native and JavaScript
 crashes along with unhandled promise rejections are captured with full stack traces.
 
-The package provides a JavaScript API to create your own crash reports and/or send additional information 
+The package provides a JavaScript API to create your own crash reports and/or send additional information
 with crash reports to the Firebase console for a better debugging experience.
 
 Once installed, import the Crashlytics package into your project:
@@ -37,7 +37,7 @@ import { firebase } from '@react-native-firebase/crashlytics';
 
 ### Testing crashes
 
-The Crashlytics package provides a `crash` method which is provided to ensure crash reports are correctly 
+The Crashlytics package provides a `crash` method which is provided to ensure crash reports are correctly
 being sent to the Firebase console and can be used with your own test suite. Any `log` methods called before
 sending a crash report and sent with the crash report.
 
@@ -47,7 +47,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 function forceCrash() {
   crashlytics.log('Testing crash');
   crashlytics.crash();
-} 
+}
 ```
 
 ### Handling non-fatal crashes
@@ -57,21 +57,17 @@ where an error occurs but is caught by your own code as a bailout method. To
 send a stack trace, pass a [JavaScript Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
 to the `recordError` method.
 
- ```js
- import crashlytics from '@react-native-firebase/crashlytics';
- 
+```js
+import crashlytics from '@react-native-firebase/crashlytics';
+
 function sendReport() {
-  crashlytics().recordError(
-    new Error(
-      'Error with a stack trace'
-    )
-  );
+  crashlytics().recordError(new Error('Error with a stack trace'));
 }
- ```
+```
 
 ### Additional crash attributes
 
-It is possible to provide additional attributes which are sent with crash reports. This helps with debugging and 
+It is possible to provide additional attributes which are sent with crash reports. This helps with debugging and
 localising the error. To set additional attributes call the `set*` methods.
 
 ```js
@@ -84,7 +80,7 @@ async function onSignIn(user) {
     crashlytics().setUserEmail(user.email),
     crashlytics().setAttribute('credits', user.credits),
   ]);
-  
+
   crashlytics.crash();
 }
 ```

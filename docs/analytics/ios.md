@@ -1,6 +1,6 @@
 ---
 title: iOS Setup
-description: Manually integrate Analytics into your iOS application. 
+description: Manually integrate Analytics into your iOS application.
 ---
 
 # iOS Manual Linking
@@ -8,11 +8,12 @@ description: Manually integrate Analytics into your iOS application.
 ## Manual iOS Integration via CocoaPods
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> auto-linking.
 
 #### Add Analytics Pod
 
 **`ios/Podfile`**:
+
 ```ruby{4}
 // ..
 target 'app' do
@@ -23,7 +24,7 @@ end
 
 ## Manual iOS Integration via Frameworks
 
-*TODO*
+_TODO_
 
 ## Device Identification
 
@@ -32,6 +33,7 @@ If you would like to enable Firebase Analytics to generate automatic audience me
 The way to do this using Cocoapods is to add this to your Podfile (though please use [the most current Pod version](https://cocoapods.org/pods/GoogleIDFASupport) supported by react-native-firebase):
 
 **`ios/Podfile`**:
+
 ```ruby{5}
 // ..
 target 'app' do

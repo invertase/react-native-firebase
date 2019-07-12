@@ -35,7 +35,7 @@ messages that encourage them to use key app features. React Native Firebase prov
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-fiam)

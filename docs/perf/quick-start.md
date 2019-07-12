@@ -37,52 +37,52 @@ import { firebase } from '@react-native-firebase/perf';
 
 ### Custom Tracing
 
-Defining a custom trace provides greater insight into actions a user may carry out with your application. 
+Defining a custom trace provides greater insight into actions a user may carry out with your application.
 
- ```js
+```js
 import perf from '@react-native-firebase/perf';
 
 async function customTrace() {
   // Define & start a trace
   const trace = await perf().startTrace('custom_trace');
-  
+
   // Define trace meta details
-  trace.putAttribute('user',  'abcd');
+  trace.putAttribute('user', 'abcd');
   trace.putMetric('credits', 30);
-  
+
   // Stop the trace
   await trace.stop();
 }
- ```
+```
 
 ### HTTP Request Tracing
 
 Performance Monitoring provides an API to trace HTTP network requests.
 
- ```js
+```js
 import perf from '@react-native-firebase/perf';
 
 async function getRequest(url) {
   // Define the network metric
   const metric = await perf().newHttpMetric(url, 'GET');
-  
+
   // Define meta details
-  metric.putAttribute('user',  'abcd');
-  
+  metric.putAttribute('user', 'abcd');
+
   // Perform a HTTP request and provide response information
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
-  
+
   // Stop the trace
   await metric.stop();
-  
+
   return response.json();
 }
 
 // Call API
-getRequest('https://api.com').then((json) => {
+getRequest('https://api.com').then(json => {
   console.log(json);
 });
- ```
+```

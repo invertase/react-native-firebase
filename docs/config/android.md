@@ -1,16 +1,17 @@
 ---
 title: Android Setup
-description: Manually integrate Remote Config into your Android application. 
+description: Manually integrate Remote Config into your Android application.
 ---
 
 # Android Manual Linking
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> auto-linking.
 
 #### Add Remote Config to Gradle Settings
 
 **`android/settings.gradle`**:
+
 ```groovy
 include ':@react-native-firebase_config'
 project(':@react-native-firebase_config').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/config/android')
@@ -19,6 +20,7 @@ project(':@react-native-firebase_config').projectDir = new File(rootProject.proj
 #### Add Remote Config to App Gradle Dependencies
 
 **`android/app/build.gradle`**:
+
 ```groovy{4}
 // ..
 dependencies {
@@ -29,7 +31,8 @@ dependencies {
 
 #### Add Remote Config to Main Android Application:
 
-**`android/app/src/main/java/**/MainApplication.java`**:
+**`android/app/src/main/java/**/MainApplication.java`\*\*:
+
 ```java{2,8}
 // ..
 import io.invertase.firebase.config.ReactNativeFirebaseConfigPackage;

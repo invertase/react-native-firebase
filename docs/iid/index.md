@@ -1,11 +1,11 @@
 ---
 title: Instance ID
-description: Firebase Instance ID provides a unique identifier for each app instance and a mechanism to authenticate and authorize actions. 
+description: Firebase Instance ID provides a unique identifier for each app instance and a mechanism to authenticate and authorize actions.
 ---
 
 # Instance ID
 
-Instance ID provides a simple API to generate security tokens that authorize third parties to access 
+Instance ID provides a simple API to generate security tokens that authorize third parties to access
 your app's server side managed resources, for example sending FCM messages.
 
 ## Getting Started
@@ -40,7 +40,7 @@ your app's server side managed resources, for example sending FCM messages.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-iid)

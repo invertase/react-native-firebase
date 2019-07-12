@@ -1,6 +1,6 @@
 ---
 title: Crashlytics
-description: Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. 
+description: Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality.
 ---
 
 # Crashlytics
@@ -8,7 +8,7 @@ description: Firebase Crashlytics is a lightweight, realtime crash reporter that
 Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality.
 React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.
 The JavaScript API also allows for full custom crash reporting and supports sending additional attributes to help debug crashes within your
-application. 
+application.
 
 <Youtube id="k_mdNRZzd30" />
 
@@ -46,7 +46,7 @@ application.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-crashlytics)

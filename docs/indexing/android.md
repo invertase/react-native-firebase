@@ -12,6 +12,7 @@ To set this up, add a new `intent-filter` to your manifest file. The example bel
 to handle URLs from any `https://invertase.io/blog` URL.
 
 `android/app/src/main/AndroidManifest.xml`:
+
 ```xml
 <manifest ...>
   <application android:name="com.your.app.MainApplication"

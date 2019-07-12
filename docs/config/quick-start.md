@@ -40,7 +40,7 @@ import config from '@react-native-firebase/config';
 async function getValues() {
   try {
     const activated = await config().fetchAndActivate();
-    
+
     if (activated) {
       const experimentalFeatureEnabled = await config().getValue('experiment');
       console.log('Experimental source: ', experimentalFeatureEnabled.source);

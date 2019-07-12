@@ -15,7 +15,6 @@ yarn add @react-native-firebase/auth
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
-
 ## Module usage
 
 The Authentication package provides a JavaScript API which mimics the Firebase Web SDK.
@@ -46,28 +45,32 @@ function App() {
   // Set an initilizing state whilst Firebase connects
   const [initilizing, setInitilizing] = useState(true);
   const [user, setUser] = useState();
-  
+
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
     if (initilizing) setInitilizing(false);
   }
-  
+
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
- 
+
   if (initilizing) return null;
-  
+
   if (!user) {
     return (
-      <View><Text>Login</Text></View>
+      <View>
+        <Text>Login</Text>
+      </View>
     );
   }
-  
+
   return (
-    <View><Text>Welcome {user.email}</Text></View>
+    <View>
+      <Text>Welcome {user.email}</Text>
+    </View>
   );
 }
 ```
@@ -80,18 +83,17 @@ SDKs, ensuring that a users previous authentication state between app sessions i
 
 The user is able to clear their state by deleting the apps data/cache from the device settings.
 
-
 ### Auth providers
 
 React Native Firebase provides access to the majority of authentication providers available, including social providers
 including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
 
-*Our [guides](/guides?tags=auth) provide more in-depth explanations on provides and how to integrate them into your application.* 
+_Our [guides](/guides?tags=auth) provide more in-depth explanations on provides and how to integrate them into your application._
 
 #### Anonymous Sign In
 
 Some applications don't require authentication, which make it tricky to identify what users are doing throughout your app.
-If connecting with external APIs, it is also useful to add an extra layer of security by ensuring the users request is 
+If connecting with external APIs, it is also useful to add an extra layer of security by ensuring the users request is
 from the app. This can be achieved with the `signInAnonymously` method, which creates a new anonymous user which is
 persisted, allowing you to integrate with other services such as Analytics by providing a user id.
 
@@ -117,8 +119,8 @@ async function bootstrap() {
 #### Email/Password Sign In
 
 Email/Password sign in is a common method for user sign in on applications. This requires the user to provide
-an email address and secure password. Users can both register and sign in in one method called 
- `createUserWithEmailAndPassword`, or sign in to an existing account with `signInWithEmailAndPassword`.
+an email address and secure password. Users can both register and sign in in one method called
+`createUserWithEmailAndPassword`, or sign in to an existing account with `signInWithEmailAndPassword`.
 
 Users must first register using the `createUserWithEmailAndPassword` method
 and then sign in with the `signInWithEmailAndPassword` method.
@@ -134,4 +136,3 @@ async function register(email, password) {
   }
 }
 ```
-

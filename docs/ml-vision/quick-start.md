@@ -39,19 +39,19 @@ Add any of the keys indicated below to your JSON file and set them to `true` to 
 
 ```json5
 {
-  "react-native": {
+  'react-native': {
     // on device face detection
-    "ml_vision_face_model" : true,
+    ml_vision_face_model: true,
     // on device text recognition
-    "ml_vision_ocr_model" : true,
+    ml_vision_ocr_model: true,
     // on device barcode detection
-    "ml_vision_barcode_model" : true,
+    ml_vision_barcode_model: true,
 
     // on device image labelling
     // TODO: merge these options into one
-    "ml_vision_label_model": true,
-    "ml_vision_image_label_model": true,
-  }
+    ml_vision_label_model: true,
+    ml_vision_image_label_model: true,
+  },
 }
 ```
 

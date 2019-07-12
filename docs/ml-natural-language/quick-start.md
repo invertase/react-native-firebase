@@ -39,12 +39,12 @@ Add any of the keys indicated below to your JSON file and set them to `true` to 
 
 ```json5
 {
-  "react-native": {
+  'react-native': {
     // Language Identification
-    "ml_natural_language_language_id_model": false,
+    ml_natural_language_language_id_model: false,
     // Smart Replies
-    "ml_natural_language_smart_reply_model": false
-  }
+    ml_natural_language_smart_reply_model: false,
+  },
 }
 ```
 

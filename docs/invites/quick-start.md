@@ -52,12 +52,12 @@ function App() {
     const deeplink = invite.deeplink;
     Alert.alert('Invitation received', `ID: ${invite.invitationId}`);
   }
-  
+
   useEffect(() => {
     const subscriber = invites().onInvitation(handleInvitation);
     return subscriber();
   });
-  
+
   return <HomeScreen />;
 }
 ```
@@ -74,7 +74,7 @@ import invites from '@react-native-firebase/invites';
 
 async function bootstrap() {
   const invite = await invites().getInitialInvitation();
-  
+
   // Check if an invite has been opened
   if (invite) onInitialInvite(invite);
 }
@@ -88,7 +88,7 @@ function onInitialInvite(invite) {
 
 ### Sending an invite
 
-To send an invite, it must first be built using `createInvitation` and then sent using `sendInvitation`. The 
+To send an invite, it must first be built using `createInvitation` and then sent using `sendInvitation`. The
 `createInvitation` returns an instance of a `InviteBuilder` which can be used to enhance your invitation with additional
 contents such as HTML content, a Google Analytics tracking ID and a custom email subject and more.
 
@@ -98,16 +98,18 @@ To view all available invite properties, view the <Anchor href="/reference/invit
 import invites from '@react-native-firebase/invites';
 
 async function createAndSendInvite(user) {
-  const invite = invites().createInvitation('Join my app', `Hey ${user.name}, join my app with me and share content!`);
+  const invite = invites().createInvitation(
+    'Join my app',
+    `Hey ${user.name}, join my app with me and share content!`,
+  );
   // Set additional invite content
   invite
-  .setCallToActionText('Join my app!')
-  .setDeepLink(`app:/invite?name=${user.uid}`)
-  // Set Android specific content
-  .android
-    .setGoogleAnalyticsTrackingId('UA-12345')
+    .setCallToActionText('Join my app!')
+    .setDeepLink(`app:/invite?name=${user.uid}`)
+    // Set Android specific content
+    .android.setGoogleAnalyticsTrackingId('UA-12345')
     .setEmailSubject(`${user.name}, join my app!`);
-  
+
   try {
     const id = await invites().sendInvitation(invite);
     console.log(`Invite created with the ID:`, id);

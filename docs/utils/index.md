@@ -1,12 +1,12 @@
 ---
 title: Utils
-description: The Utils package provides public access to internal methods to aide with development  
+description: The Utils package provides public access to internal methods to aide with development
 ---
 
 # Utils
 
 The Utils package provides a public JavaScript interface to internal functionality that has been created as part of the
-development of the React Native Firebase library. 
+development of the React Native Firebase library.
 
 ## Getting Started
 

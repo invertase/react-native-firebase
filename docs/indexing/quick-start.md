@@ -57,20 +57,20 @@ open. Once the app has loaded, the `getInitialURL()` method can be called to det
 by an app indexed URL. If your application was not opened via an app indexed URL, the value will be `null`.
 
 Note: All URLs which trigger the app to open will be passed to this method, therefore it is important to check
-the domain of the URL to check it has come from an indexed source. 
+the domain of the URL to check it has come from an indexed source.
 
 ```js
 import indexing from '@react-native-firebase/indexing';
 
 async function bootstrapApp() {
-   const url = await indexing.getInitialURL();
-   
-   if (url && url.startsWith('https://invertase.io')) {
-     if (url === 'https://invertase.io/offers') {
-       // Handle the URL, e.g. using a react-navigation custom service: 
-       NavigationService.navigate('OffersScreen', { from: 'indexing' });
-     }
-   }
+  const url = await indexing.getInitialURL();
+
+  if (url && url.startsWith('https://invertase.io')) {
+    if (url === 'https://invertase.io/offers') {
+      // Handle the URL, e.g. using a react-navigation custom service:
+      NavigationService.navigate('OffersScreen', { from: 'indexing' });
+    }
+  }
 }
 ```
 
@@ -89,20 +89,19 @@ import indexing from '@react-native-firebase/indexing';
 function App({ navigation }) {
   // Listen to open URL events once ready
   useEffect(() => {
-    const unsubscribe = indexing().onOpenURL((url) => {
+    const unsubscribe = indexing().onOpenURL(url => {
       if (url.startsWith('https://invertase.io')) {
         if (url === 'https://invertase.io/offers') {
-          // Handle the URL, e.g. using the react-navigation navigation prop: 
+          // Handle the URL, e.g. using the react-navigation navigation prop:
           navigation.navigate('OffersScreen', { from: 'indexing' });
         }
       }
     });
-    
+
     // Return the function to unsubscribe from
     return unsubscribe;
   }, []);
-    
+
   return <NavigationStack />;
 }
 ```
-

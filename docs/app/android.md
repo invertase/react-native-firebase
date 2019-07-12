@@ -1,16 +1,17 @@
 ---
 title: Android Initialization
-description: Initialization Firebase with Android. 
+description: Initialization Firebase with Android.
 ---
 
 # Android Manual Linking
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> auto-linking.
 
 #### Add App to Gradle Settings
 
 **`android/settings.gradle`**:
+
 ```groovy
 include ':@react-native-firebase_app'
 project(':@react-native-firebase_app').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/app/android')
@@ -19,6 +20,7 @@ project(':@react-native-firebase_app').projectDir = new File(rootProject.project
 #### Add App to App Gradle Dependencies
 
 **`android/app/build.gradle`**:
+
 ```groovy{4}
 // ..
 dependencies {
@@ -29,7 +31,8 @@ dependencies {
 
 #### Add App to Main Android Application:
 
-**`android/app/src/main/java/**/MainApplication.java`**:
+**`android/app/src/main/java/**/MainApplication.java`\*\*:
+
 ```java{2,8}
 // ..
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;

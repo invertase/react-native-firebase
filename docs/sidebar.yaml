@@ -2,260 +2,260 @@
   group: AdMob
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Initialization
-      to: "/android"
+      to: '/android'
     - text: iOS Initialization
-      to: "/ios"
+      to: '/ios'
 
 - module: analytics
   group: Analytics
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
     - text: Reserved Events
-      to: "/reserved-events"
+      to: '/reserved-events'
 
 - module: auth
   group: Authentication
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
     - text: Social Auth
-      to: "/social-auth"
+      to: '/social-auth'
     - text: Phone Auth
-      to: "/phone-auth"
+      to: '/phone-auth'
 
 - module: firestore
   group: Cloud Firestore
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: functions
   group: Cloud Functions
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: messaging
   group: Cloud Messaging
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: storage
   group: Cloud Storage
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: app
   group: App
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Initialization
-      to: "/android"
+      to: '/android'
     - text: iOS Initialization
-      to: "/ios"
+      to: '/ios'
     - text: Client Initialization
-      to: "/client"
+      to: '/client'
 
 - module: crashlytics
   group: Crashlytics
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: database
   group: Realtime Database
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: links
   group: Dynamic Links
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: fiam
   group: In-App Messaging
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: indexing
   group: App Indexing
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: iid
   group: Instance ID
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: invites
   group: Invites
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
     - text: Migrate to Dynamic Links
-      to: "/migrate-to-dynamic-links"
+      to: '/migrate-to-dynamic-links'
 
 - module: ml-natural-language
   group: ML Kit Natural Language
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: ml-vision
   group: ML Kit Vision
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: notifications
   group: Notifications
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: config
   group: Remote Config
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: perf
   group: Performance Monitoring
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
 
 - module: utils
   group: Utils
   children:
     - text: Overview
-      to: "/"
+      to: '/'
     - text: Quick Start
-      to: "/quick-start"
+      to: '/quick-start'
     - text: Android Setup
-      to: "/android"
+      to: '/android'
     - text: iOS Setup
-      to: "/ios"
+      to: '/ios'
