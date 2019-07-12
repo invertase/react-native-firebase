@@ -1,16 +1,16 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of ML Kit Natural Language APIs in React Native Firebase
+description: Get to grips with the basics of ML Kit Vision in React Native Firebase
 ---
 
-# ML Kit Quick Start
+# ML Kit Vision Quick Start
 
 ## Installation
 
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/ml-natural-language
+yarn add @react-native-firebase/ml-vision
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
@@ -20,13 +20,13 @@ yarn add @react-native-firebase/ml-natural-language
 Import the ML Kit package into your project:
 
 ```js
-import mlNaturalLanguage from '@react-native-firebase/ml-natural-language';
+import mlKitVision from '@react-native-firebase/ml-vision';
 ```
 
 The package also provides access to the firebase instance:
 
 ```js
-import { firebase } from '@react-native-firebase/ml-natural-language';
+import { firebase } from '@react-native-firebase/ml-vision';
 ```
 
 ### Configuring Models
@@ -40,10 +40,17 @@ Add any of the keys indicated below to your JSON file and set them to `true` to 
 ```json5
 {
   "react-native": {
-    // Language Identification
-    "ml_natural_language_language_id_model": false,
-    // Smart Replies
-    "ml_natural_language_smart_reply_model": false
+    // on device face detection
+    "ml_vision_face_model" : true,
+    // on device text recognition
+    "ml_vision_ocr_model" : true,
+    // on device barcode detection
+    "ml_vision_barcode_model" : true,
+
+    // on device image labelling
+    // TODO: merge these options into one
+    "ml_vision_label_model": true,
+    "ml_vision_image_label_model": true,
   }
 }
 ```
