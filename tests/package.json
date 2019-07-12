@@ -22,6 +22,7 @@
     "@react-native-firebase/invites": "0.0.26",
     "@react-native-firebase/links": "0.0.26",
     "@react-native-firebase/ml-natural-language": "0.0.26",
+    "@react-native-firebase/ml-vision": "0.0.26",
     "@react-native-firebase/perf": "0.0.26",
     "@react-native-firebase/storage": "0.0.26",
     "@react-native-firebase/utils": "0.0.26",

@@ -1,0 +1,75 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.4.0'
+  }
+}
+
+plugins {
+  id "io.invertase.gradle.build" version "1.3"
+}
+
+project.ext {
+  set('react-native', [
+    versions: [
+      android           : [
+        minSdk    : 16,
+        targetSdk : 28,
+        compileSdk: 28,
+        // optional as gradle.buildTools comes with one by default
+        // overriding here though to match the version RN uses
+        buildTools: "28.0.3"
+      ],
+
+      googlePlayServices: [
+        base: "16.1.0",
+      ],
+
+      firebase          : [
+        mlkitVision                               : "20.0.0",
+        "mlModel:ml_vision_face_model"            : "17.0.2",
+        "mlModel:ml_vision_image_label_model"     : "17.0.2",
+        // "mlModel:ml_vision_object_detection_model": "16.0.0", // object tracking -> TODO 6.1
+      ],
+    ],
+  ])
+}
+
+android {
+  defaultConfig {
+    multiDexEnabled true
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+}
+
+dependencies {
+  api project(':@react-native-firebase_app')
+  implementation "com.google.firebase:firebase-ml-vision:${ReactNative.ext.getVersion("firebase", "mlkitVision")}"
+}
+
+apply from: file("./ml-models.gradle")
+
+ReactNative.shared.applyPackageVersion()
+ReactNative.shared.applyDefaultExcludes()
+ReactNative.module.applyAndroidVersions()
+ReactNative.module.applyReactNativeDependency("api")

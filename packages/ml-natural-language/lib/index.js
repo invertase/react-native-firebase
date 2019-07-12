@@ -26,6 +26,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  validateOptionalNativeDependencyExists,
 } from '@react-native-firebase/common';
 
 import version from './version';
@@ -65,33 +66,11 @@ function validateIdentifyLanguageArgs(text, options, methodName) {
   }
 }
 
-function validateOptionalNativeDependencyExists(firebaseJsonKey, nativeFnExists) {
-  if (nativeFnExists) return;
-  let errorMessage = `You attempted to use an optional ML Kit API that's not enabled natively. \n\n To enable `;
-
-  if (firebaseJsonKey === 'ml_natural_language_language_id_model') {
-    errorMessage += `Language ID detection`;
-  } else if (firebaseJsonKey === 'ml_natural_language_smart_reply_model') {
-    errorMessage += `Smart Replies`;
-  }
-
-  errorMessage += ` please set the 'react-native' -> '${firebaseJsonKey}' key to true in your firebase.json file`;
-
-  if (isAndroid) {
-    errorMessage += ' and rebuild your Android app.';
-  } else {
-    errorMessage +=
-      ', re-run pod install and rebuild your iOS app. ' +
-      "If you're not using Pods then make sure you've have downloaded the necessary Firebase iOS SDK dependencies for this API.";
-  }
-
-  throw new Error(errorMessage);
-}
-
 class FirebaseMlKitLanguageModule extends FirebaseModule {
   identifyLanguage(text, options = {}) {
     validateOptionalNativeDependencyExists(
       'ml_natural_language_language_id_model',
+      'ML Kit Language Identification',
       !!this.native.identifyLanguage,
     );
     validateIdentifyLanguageArgs(text, options, 'identifyLanguage');
@@ -101,6 +80,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
   identifyPossibleLanguages(text, options = {}) {
     validateOptionalNativeDependencyExists(
       'ml_natural_language_language_id_model',
+      'ML Kit Language Identification',
       !!this.native.identifyPossibleLanguages,
     );
     validateIdentifyLanguageArgs(text, options, 'identifyPossibleLanguages');
@@ -113,6 +93,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
   newSmartReplyConversation(messageHistoryLimit) {
     validateOptionalNativeDependencyExists(
       'ml_natural_language_smart_reply_model',
+      'ML Kit Smart Replies',
       !!this.native.getSuggestedReplies,
     );
     if (!isUndefined(messageHistoryLimit) && !isNumber(messageHistoryLimit)) {

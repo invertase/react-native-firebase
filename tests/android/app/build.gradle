@@ -29,6 +29,7 @@ def firebasePackages = [
   'invites',
   'links',
   'ml-natural-language',
+  'ml-vision',
   'storage',
   'perf',
   'links',
