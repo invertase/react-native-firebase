@@ -62,7 +62,7 @@ export function generateDatabaseId(serverTimeOffset = 0) {
  * Generate a firestore auto id for use with collection/document .add()
  * @return {string}
  */
-export function generateFirestoreId(): string {
+export function generateFirestoreId() {
   let autoId = '';
 
   for (let i = 0; i < 20; i++) {

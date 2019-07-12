@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE();
 #ifdef REGISTER_LIB
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"6.0.0-alpha.26"];
+      [FIRApp registerLibrary:@"react-native-firebase" withVersion:@"0.0.26"];
     });
 #endif
   }

@@ -111,3 +111,14 @@ export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
 export function isValidKey(key) {
   return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(path);
 }
+
+/**
+ * Converts a file path to a standardized string path
+ * @param path
+ * @returns {*}
+ */
+export function toFilePath(path) {
+  let _filePath = path.replace('file://', '');
+  if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
+  return _filePath;
+}

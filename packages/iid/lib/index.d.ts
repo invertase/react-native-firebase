@@ -135,8 +135,8 @@ export namespace Iid {
 declare module '@react-native-firebase/iid' {
   import {
     ReactNativeFirebaseModuleAndStaticsWithApp,
-  ReactNativeFirebaseNamespace
-} from '@react-native-firebase/app-types';
+    ReactNativeFirebaseNamespace,
+  } from '@react-native-firebase/app-types';
 
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
 

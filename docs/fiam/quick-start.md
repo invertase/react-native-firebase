@@ -10,7 +10,7 @@ description: Get to grips with the basics of Firebase In-App Messaging in React 
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/fiam@alpha
+yarn add @react-native-firebase/fiam
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.

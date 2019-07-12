@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-types",
-  "version": "6.0.0-alpha.25",
+  "version": "0.0.26",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "@react-native-firebase/app-types",
   "files": [
@@ -13,7 +13,7 @@
     "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app-types"
   },
   "license": "Apache-2.0",
-  "gitHead": "c2bb4fb41200861c831e51231c5fadbb1acf90c9",
+  "gitHead": "639c15d4b8ba8a972f0fe17fcc285b4a6e4af320",
   "publishConfig": {
     "access": "public"
   }

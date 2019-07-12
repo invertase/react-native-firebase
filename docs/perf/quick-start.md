@@ -10,7 +10,7 @@ description: Get to grips with the basics of Performance Monitoring in React Nat
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/perf@alpha
+yarn add @react-native-firebase/perf
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.

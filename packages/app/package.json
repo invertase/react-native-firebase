@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "6.0.0-alpha.25",
+  "version": "0.0.26",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "lib/index.js",
@@ -53,15 +53,15 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.25",
-    "@react-native-firebase/common": "6.0.0-alpha.25",
+    "@react-native-firebase/app-types": "0.0.26",
+    "@react-native-firebase/common": "0.0.26",
     "opencollective-postinstall": "^2.0.1"
   },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
   },
-  "gitHead": "c2bb4fb41200861c831e51231c5fadbb1acf90c9",
+  "gitHead": "639c15d4b8ba8a972f0fe17fcc285b4a6e4af320",
   "publishConfig": {
     "access": "public"
   }

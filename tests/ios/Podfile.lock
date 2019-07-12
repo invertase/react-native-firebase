@@ -255,7 +255,7 @@ PODS:
     - Firebase/RemoteConfig (~> 6.3.0)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.0.0-alpha.25):
+  - RNFBCrashlytics (0.0.26):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 6.3.0)
@@ -332,6 +332,7 @@ DEPENDENCIES:
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
   - "RNFBLinks (from `../node_modules/@react-native-firebase/links/ios`)"
+  - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging/ios`)"
   - "RNFBMlNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
   - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
@@ -405,6 +406,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBLinks:
     :path: "../node_modules/@react-native-firebase/links/ios"
+  RNFBMessaging:
+    :path: "../node_modules/@react-native-firebase/messaging/ios"
   RNFBMlNaturalLanguage:
     :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
   RNFBStorage:

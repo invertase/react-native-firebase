@@ -1049,7 +1049,7 @@ export namespace Storage {
      *
      * @param time The number of times to retry.
      */
-    setMaxUploadRetryTime(time: number): Promise<null>;
+    setMaxUploadRetryTime(time: number): Promise<void>;
 
     /**
      * Returns the maximum time to retry a download if a failure occurs.
@@ -1073,7 +1073,7 @@ export namespace Storage {
      *
      * @param time The number of times to retry.
      */
-    setMaxDownloadRetryTime(time: number): Promise<null>;
+    setMaxDownloadRetryTime(time: number): Promise<void>;
 
     /**
      * Returns the maximum time to retry operations other than upload and download if a failure occurs.
@@ -1097,7 +1097,7 @@ export namespace Storage {
      *
      * @param time The number of times to retry.
      */
-    setMaxOperationRetryTime(time: number): Promise<null>;
+    setMaxOperationRetryTime(time: number): Promise<void>;
 
     /**
      * Returns a new {@link storage.Reference} instance.

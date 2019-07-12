@@ -3,7 +3,7 @@ title: iOS Setup
 description: Manually integrate Cloud Storage into your iOS application. 
 ---
 
-# iOS Setup
+# iOS Manual Linking
 
 ## Manual iOS Integration via CocoaPods
 

@@ -15,23 +15,22 @@
  *
  */
 
-import { deepGet, deepSet } from '@react-native-firebase/common/lib/deeps';
+import { deepGet, deepSet } from './deeps';
 
-// private class
 export default class MutatableParams {
-  constructor(dynamicLinkInstance) {
-    if (dynamicLinkInstance) {
-      this._mutatableParams = dynamicLinkInstance._mutatableParams;
-      this._dynamicLinkIntance = dynamicLinkInstance;
+  constructor(parentInstance) {
+    if (parentInstance) {
+      this._mutatableParams = parentInstance._mutatableParams;
+      this._parentInstance = parentInstance;
     } else {
       this._mutatableParams = {};
-      this._dynamicLinkIntance = this;
+      this._parentInstance = this;
     }
   }
 
   set(param, value) {
     deepSet(this._mutatableParams, param, value);
-    return this._dynamicLinkIntance;
+    return this._parentInstance;
   }
 
   get(param) {
