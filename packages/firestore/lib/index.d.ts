@@ -293,7 +293,7 @@ export namespace Firestore {
      *
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+    onSnapshot(observer: FirestoreObserver): Function;
 
     /**
      * Attaches a listener for DocumentSnapshot events with snapshot listener options.
@@ -319,10 +319,7 @@ export namespace Firestore {
      * @param options Options controlling the listen behavior.
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(
-      options: SnapshotListenOptions,
-      observer: { complete?: Function; error?: Function; next?: Function },
-    ): Function;
+    onSnapshot(options: SnapshotListenOptions, observer: FirestoreObserver): Function;
 
     /**
      * Attaches a listener for DocumentSnapshot events.
@@ -772,6 +769,12 @@ export namespace Firestore {
     source: 'default' | 'server' | 'cache';
   }
 
+  export interface FirestoreObserver {
+    complete?: Function;
+    error?: Function;
+    next?: Function;
+  }
+
   /**
    * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
    * adding filters and ordering.
@@ -942,7 +945,7 @@ export namespace Firestore {
      *
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+    onSnapshot(observer: FirestoreObserver): Function;
 
     /**
      * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
@@ -968,10 +971,7 @@ export namespace Firestore {
      * @param options Options controlling the listen behavior.
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(
-      options: SnapshotListenOptions,
-      observer: { complete?: Function; error?: Function; next?: Function },
-    ): Function;
+    onSnapshot(options: SnapshotListenOptions, observer: FirestoreObserver): Function;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.
