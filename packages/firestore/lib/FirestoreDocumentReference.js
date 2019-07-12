@@ -16,12 +16,7 @@
  */
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import {
-  generateFirestoreId,
-  isObject,
-  isString,
-  isUndefined,
-} from '@react-native-firebase/common';
+import { isObject, isString, isUndefined } from '@react-native-firebase/common';
 
 import { buildNativeMap } from './utils/serialize';
 import { parseSetOptions, parseUpdateArgs, parseSnapshotArgs } from './utils';

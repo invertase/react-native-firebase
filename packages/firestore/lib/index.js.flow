@@ -17,14 +17,6 @@
  */
 
 import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types/index.js.flow';
-import {
-  DocumentChangeType,
-  DocumentSnapshot,
-  FieldPath,
-  GetOptions, QuerySnapshot,
-  SetOptions,
-  SnapshotListenOptions, SnapshotMetadata,
-} from './index';
 
 /**
  * An immutable object representing an array of bytes.
@@ -35,31 +27,31 @@ export class Blob {
    *
    * @param base64 The Base64 string used to create the Blob object.
    */
-  static fromBase64String(base64: string): Blob;
+  static fromBase64String: (base64: string) => Blob;
 
   /**
    * Creates a new Blob from the given Uint8Array.
    *
    * @param array The Uint8Array used to create the Blob object.
    */
-  static fromUint8Array(array: Uint8Array): Blob;
+  static fromUint8Array: (array: Uint8Array) => Blob;
 
   /**
    * Returns true if this `Blob` is equal to the provided one.
    *
    * @param other The `Blob` to compare against.
    */
-  isEqual(other: Blob): Blob;
+  isEqual: (other: Blob) => boolean;
 
   /**
    * Returns the bytes of a Blob as a Base64-encoded string.
    */
-  toBase64(): string;
+  toBase64: () => string;
 
   /**
    * Returns the bytes of a Blob in a new Uint8Array.
    */
-  toUint8Array(): Uint8Array;
+  toUint8Array: () => Uint8Array;
 }
 
 /**
@@ -261,7 +253,7 @@ export interface DocumentReference {
    *
    * @param observer A single object containing `next` and `error` callbacks.
    */
-  onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+  onSnapshot(observer: { complete?: Function, error?: Function, next?: Function }): Function;
 
   /**
    * Attaches a listener for DocumentSnapshot events with snapshot listener options.
@@ -289,7 +281,7 @@ export interface DocumentReference {
    */
   onSnapshot(
     options: SnapshotListenOptions,
-    observer: { complete?: Function; error?: Function; next?: Function },
+    observer: { complete?: Function, error?: Function, next?: Function },
   ): Function;
 
   /**
@@ -504,7 +496,7 @@ export class FieldPath {
   /**
    * Returns a special sentinel FieldPath to refer to the ID of a document. It can be used in queries to sort or filter by the document ID.
    */
-  static documentId(): FieldPath;
+  static documentId: () => FieldPath;
 
   /**
    * Creates a FieldPath from the provided field names. If more than one field name is provided, the path will point to a nested field in a document.
@@ -517,7 +509,8 @@ export class FieldPath {
    *
    * @param fieldNames A list of field names.
    */
-  constructor(...fieldNames: string[]);
+  // TODO don't think this is possible on flow?
+  // constructor(...fieldNames: string[]);
 
   /**
    * Returns true if this `FieldPath` is equal to the provided one.
@@ -534,7 +527,7 @@ export class FieldPath {
    *
    * @param other The `FieldPath` to compare against.
    */
-  isEqual(other: FieldPath): boolean;
+  isEqual: (other: FieldPath) => boolean;
 }
 
 /**
@@ -569,7 +562,7 @@ export class FieldValue {
    *
    * @param elements The elements to remove from the array.
    */
-  static arrayRemove(...elements: any[]): FieldValue;
+  static arrayRemove: (...elements: any[]) => FieldValue;
 
   /**
    * Returns a special value that can be used with `set()` or `update()` that tells the server to union the given
@@ -590,7 +583,7 @@ export class FieldValue {
    *
    * @param elements The elements to union into the array.
    */
-  static arrayUnion(...elements: any[]): FieldValue;
+  static arrayUnion: (...elements: any[]) => FieldValue;
 
   /**
    * Returns a sentinel for use with update() to mark a field for deletion.
@@ -606,7 +599,7 @@ export class FieldValue {
    * });
    * ```
    */
-  static delete(): FieldValue;
+  static delete: () => FieldValue;
 
   /**
    * Returns a special value that can be used with `set()` or `update()` that tells the server to increment the field's current value by the given value.
@@ -631,7 +624,7 @@ export class FieldValue {
    *
    * @param n The value to increment by.
    */
-  static increment(n: number): FieldValue;
+  static increment: (n: number) => FieldValue;
 
   /**
    * Returns a sentinel used with set() or update() to include a server-generated timestamp in the written data.
@@ -647,7 +640,7 @@ export class FieldValue {
    * });
    * ```
    */
-  static serverTimestamp(): FieldValue;
+  static serverTimestamp: () => FieldValue;
 
   /**
    * Returns true if this FieldValue is equal to the provided one.
@@ -664,7 +657,7 @@ export class FieldValue {
    *
    * @param other The FieldValue to compare against.
    */
-  isEqual(other: FieldValue): boolean;
+  isEqual: (other: FieldValue) => boolean;
 }
 
 /**
@@ -685,7 +678,8 @@ export class GeoPoint {
    * @param latitude The latitude as number between -90 and 90.
    * @param longitude The longitude as number between -180 and 180.
    */
-  constructor(latitude: number, longitude: number);
+  // TODO don't think this is possible on flow?
+  // constructor(latitude: number, longitude: number);
 
   /**
    * The latitude of this `GeoPoint` instance.
@@ -712,7 +706,7 @@ export class GeoPoint {
    *
    * @param other The `GeoPoint` to compare against.
    */
-  isEqual(other: GeoPoint): boolean;
+  isEqual: (other: GeoPoint) => boolean;
 }
 
 /**
@@ -910,7 +904,7 @@ export interface Query {
    *
    * @param observer A single object containing `next` and `error` callbacks.
    */
-  onSnapshot(observer: { complete?: Function; error?: Function; next?: Function }): Function;
+  onSnapshot(observer: { complete?: Function, error?: Function, next?: Function }): Function;
 
   /**
    * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
@@ -938,7 +932,7 @@ export interface Query {
    */
   onSnapshot(
     options: SnapshotListenOptions,
-    observer: { complete?: Function; error?: Function; next?: Function },
+    observer: { complete?: Function, error?: Function, next?: Function },
   ): Function;
 
   /**
@@ -1219,19 +1213,19 @@ export class Timestamp {
    *
    * @param date The date to initialize the `Timestamp` from.
    */
-  static fromDate(date: Date): Timestamp;
+  static fromDate: (date: Date) => Timestamp;
 
   /**
    * Creates a new timestamp from the given number of milliseconds.
    *
    * @param milliseconds Number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
    */
-  static fromMillis(milliseconds: number): Timestamp;
+  static fromMillis: (milliseconds: number) => Timestamp;
 
   /**
    * Creates a new timestamp with the current date, with millisecond precision.
    */
-  static now(): Timestamp;
+  static now: () => Timestamp;
 
   /**
    * Creates a new timestamp.
@@ -1239,7 +1233,8 @@ export class Timestamp {
    * @param seconds The number of seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
    * @param nanoseconds The non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanoseconds values that count forward in time. Must be from 0 to 999,999,999 inclusive.
    */
-  constructor(seconds: number, nanoseconds: number);
+  // TODO don't think this is possible on flow?
+  // constructor(seconds: number, nanoseconds: number);
 
   /**
    * The number of nanoseconds of this `Timestamp`;
@@ -1256,7 +1251,7 @@ export class Timestamp {
    *
    * @param other The `Timestamp` to compare against.
    */
-  isEqual(other: Timestamp): boolean;
+  isEqual: (other: Timestamp) => boolean;
 
   /**
    * Convert a Timestamp to a JavaScript Date object. This conversion causes a loss of precision since Date objects
@@ -1265,14 +1260,14 @@ export class Timestamp {
    * Returns a JavaScript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) with
    * millseconds precision.
    */
-  toDate(): Date;
+  toDate: () => Date;
 
   /**
    * Convert a timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
    *
    * The point in time corresponding to this timestamp, represented as the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
    */
-  toMillis(): number;
+  toMillis: () => number;
 }
 
 /**

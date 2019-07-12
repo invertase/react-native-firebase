@@ -61,7 +61,7 @@ describe('firestore.Transaction', () => {
     const docRef = firebase.firestore().doc('nope/foo');
 
     try {
-      await firebase.firestore().runTransaction(async (t) => {
+      await firebase.firestore().runTransaction(async t => {
         t.set(docRef, {
           foo: 'bar',
         });

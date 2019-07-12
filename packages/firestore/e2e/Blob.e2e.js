@@ -26,7 +26,6 @@ const testBufferLarge = Buffer.from(testStringLarge);
 const testBase64Large = testBufferLarge.toString('base64');
 
 describe('firestore.Blob', () => {
-
   it('should throw if constructed manually', () => {
     try {
       new firebase.firestore.Blob();

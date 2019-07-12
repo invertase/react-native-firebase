@@ -81,7 +81,7 @@ export namespace Firestore {
      *
      * @param other The `Blob` to compare against.
      */
-    isEqual(other: Blob): Blob;
+    isEqual(other: Blob): boolean;
 
     /**
      * Returns the bytes of a Blob as a Base64-encoded string.
