@@ -57,7 +57,7 @@ import {
  *
  * @firebase ml-natural-language
  */
-export namespace MlKitLanguage {
+export namespace MLKitLanguage {
   export interface Statics {}
 
   /**
@@ -271,9 +271,9 @@ declare module '@react-native-firebase/ml-natural-language' {
    */
   export const firebase = FirebaseNamespaceExport;
 
-  const MlKitLanguageDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    MlKitLanguage.Module,
-    MlKitLanguage.Statics
+  const MLKitLanguageDefaultExport: ReactNativeFirebaseModuleAndStatics<
+    MLKitLanguage.Module,
+    MLKitLanguage.Statics
   >;
   /**
    * @example
@@ -282,7 +282,7 @@ declare module '@react-native-firebase/ml-natural-language' {
    * mlKitLanguage().X(...);
    * ```
    */
-  export default MlKitLanguageDefaultExport;
+  export default MLKitLanguageDefaultExport;
 }
 
 /**
@@ -291,15 +291,15 @@ declare module '@react-native-firebase/ml-natural-language' {
 declare module '@react-native-firebase/app-types' {
   interface ReactNativeFirebaseNamespace {
     /**
-     * MlKitLanguage
+     * MLKitLanguage
      */
-    mlKitLanguage: ReactNativeFirebaseModuleAndStatics<MlKitLanguage.Module, MlKitLanguage.Statics>;
+    mlKitLanguage: ReactNativeFirebaseModuleAndStatics<MLKitLanguage.Module, MLKitLanguage.Statics>;
   }
 
   interface FirebaseApp {
     /**
-     * MlKitLanguage
+     * MLKitLanguage
      */
-    mlKitLanguage(): MlKitLanguage.Module;
+    mlKitLanguage(): MLKitLanguage.Module;
   }
 }

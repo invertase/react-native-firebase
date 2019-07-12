@@ -43,6 +43,7 @@ const PACKAGES = [
   'crashlytics',
   'utils',
   'ml-natural-language',
+  'ml-vision',
   'invites',
   'fiam',
   'auth',

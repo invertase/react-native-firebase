@@ -2,6 +2,10 @@ import '@react-native-firebase/storage';
 import '@react-native-firebase/perf';
 import '@react-native-firebase/functions';
 
+import { VisionCloudTextRecognizerModelType } from '@react-native-firebase/ml-vision';
+
+console.log(VisionCloudTextRecognizerModelType.SPARSE_MODEL);
+
 //
 // const foo = async () => {
 //   const task = firebase

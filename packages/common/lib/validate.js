@@ -15,6 +15,8 @@
  *
  */
 
+import { Platform } from 'react-native';
+
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
 export function objectKeyValuesAreStrings(object) {
@@ -130,4 +132,22 @@ export function isOneOf(value, oneOf = []) {
 
 export function noop() {
   // noop-🐈
+}
+
+export function validateOptionalNativeDependencyExists(firebaseJsonKey, apiName, nativeFnExists) {
+  if (nativeFnExists) return;
+  let errorMessage = `You attempted to use an optional API that's not enabled natively. \n\n To enable `;
+
+  errorMessage += apiName;
+  errorMessage += ` please set the 'react-native' -> '${firebaseJsonKey}' key to true in your firebase.json file`;
+
+  if (Platform.OS === 'android') {
+    errorMessage += ' and rebuild your Android app.';
+  } else {
+    errorMessage +=
+      ', re-run pod install and rebuild your iOS app. ' +
+      "If you're not using Pods then make sure you've have downloaded the necessary Firebase iOS SDK dependencies for this API.";
+  }
+
+  throw new Error(errorMessage);
 }

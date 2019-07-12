@@ -30,6 +30,7 @@ def firebasePackages = [
   'links',
   'messaging',
   'ml-natural-language',
+  'ml-vision',
   'storage',
   'perf',
   'links',

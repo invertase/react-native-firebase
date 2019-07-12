@@ -1,0 +1,45 @@
+{
+  "name": "@react-native-firebase/ml-vision",
+  "version": "0.0.26",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - ML Kit Vision",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/ml-vision"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "mlkit",
+    "machine learning",
+    "text recognition",
+    "landmark recognition",
+    "image labeler",
+    "face detector",
+    "barcode",
+    "label",
+    "natural language",
+    "nlp",
+    "vision"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "*"
+  },
+  "dependencies": {
+    "@react-native-firebase/app-types": "0.0.26",
+    "@react-native-firebase/common": "0.0.26"
+  },
+  "gitHead": "832835bc23987d794520996b23468870f343ef80",
+  "publishConfig": {
+    "access": "public"
+  }
+}
