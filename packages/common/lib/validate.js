@@ -53,6 +53,18 @@ export function isObject(value) {
 }
 
 /**
+ * Simple is date check
+ * https://stackoverflow.com/a/44198641
+ * @param value
+ * @returns {boolean}
+ */
+export function isDate(value) {
+  // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
+  // eslint-disable-next-line no-restricted-globals
+  return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
+}
+
+/**
  * Simple is function check
  *
  * @param value
@@ -78,6 +90,15 @@ export function isString(value) {
  */
 export function isNumber(value) {
   return typeof value === 'number';
+}
+
+/**
+ * Simple finite check
+ * @param value
+ * @returns {boolean}
+ */
+export function isFinite(value) {
+  return Number.isFinite(value);
 }
 
 /**

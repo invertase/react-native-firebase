@@ -29,7 +29,7 @@ project.ext {
       ],
 
       firebase          : [
-        firestore: "16.0.6"
+        firestore: "19.0.2"
       ],
     ],
   ])
@@ -46,6 +46,11 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
   }
 }
 

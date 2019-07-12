@@ -173,6 +173,33 @@ Support for handling an incoming app index URL has been added to React Native Fi
   - Changes do not take effect until the next app startup
   - This persists between app restarts and only needs to be called once, can be used in conjunction with `isCrashlyticsCollectionEnabled` to reduce bridge startup traffic - though calling multiple times is still allowed
 
+## Cloud Firestore (firestore)
+
+Cloud Firestore has undergone a complete overhaul of both JavaScript & native code, including a re-write of bridge serialisation, support for new features & heavy test coverage.
+
+- [NEW] Added support for collection group queries (`firestore().collectionGroup()`).
+- [NEW] Added support for `isEqual()` across most classes.
+- [NEW] Added support for `SetOptions.mergeFields` (`DocumentReference.set()` / `Transaction.set()`).
+- [NEW] Added support for setting negative infinity (`-Infinity`).
+- [NEW] Snapshot metadata now returns a `SnapshotMetadata` class (as per Web SDK).
+- [NEW] Added support for handling snapshot metadata via the `includeMetadataChanges` flag which can be passed to `CollectionReference.onSnapshot()` and `QuerySnapshot.docChanges()` to return additional results from query snapshot listeners.
+- [NEW] `QuerySnapshot.forEach()` can now take an optional context argument.
+- [NEW] Cache size can now be set to unlimited using the `CACHE_SIZE_UNLIMITED` static when passed to `firestore().settings()` (also added in v5.4).
+- [FIX] Remove circular reference warnings.
+- [FIX] `CollectionReference` now correctly extends a `Query` class. In v5 it is possible to chain calls from `Query` → `CollectionReference` which isn't possible on the Web SDK.
+- [FIX] `onSnapshot()` calls now take the correct arguments, allowing for `SnapshotListenOptions`, inline function callbacks or an object containing next/error callbacks (as per the Web SDK).
+- [FIX] Setting a `Date` on Firestore was setting an incorrect value. Date objects are now converted to a `Timestamp` as per the Web SDK.
+- [FIX] Cursor queries in v5 (`startAt`, `startAfter`, `endAt`, `endBefore`) were incorrectly handling a `DocumentSnapshot` argument. It is now possible to perform a cursor query directly on a snapshot, or on snapshot fields, as per the Web SDK, for example ending at a specific snapshot with no order.
+- [BREAKING] The v6 release includes **a lot** of additional JavaScript validation. This is more consistent with the Web SDK and helps catch native errors/crashes which may occur due to false-positive data being sent over the bridge.
+    - Specifically, the `Query` class has undergone a rewrite, and includes a lot of additional checks which are not present in v5. Please check your Firestore queries once upgraded.
+- [BREAKING] Removed the `Query.where` single equals operator (`=`) as per the Web SDK. Use `==` instead.
+- [BREAKING] previously deprecated `setTimestampsInSnapshotsEnabled` on settings has now been removed.
+- [PERFORMANCE][🔥] [ANDROID] All data serialisation logic is now performed off the main UI thread. This will help increase performance and reduce activity on the UI thread when sending large volumes of data to Firestore and back to the device.
+- [PERFORMANCE][🔥] The data serialisation logic has undergone a large rewrite for performance.
+    - JavaScript data being sent over the native bridge has to be converted to it's native counterpart, and visa versa. When dealing with a large number of documents and/or large amounts document data, this process can be both time consuming and resource intensive. The rewrite keeps data being sent over the bridge at a minimum; mapping data types to integer values on both JavaScript and native.
+    - Sample comparisons against v5 have shown:
+        - Data size sent over the bridge has been reduced by ~58%.
+        - On large queries (4x documents with 1500 nested array items (containing all data types)) are over ~50% faster on v6. Smaller queries (1x document with 1500 nested array items) are over ~15% quicker.
 ## Dynamic Links (links)
 
 - [NEW][ios][🔥] Manually adding `AppDelegate` methods to support receiving Dynamic Link open events is no longer required, we swizzle this at runtime and automatically intercept the required events.
