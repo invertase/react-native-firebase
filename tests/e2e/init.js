@@ -50,8 +50,8 @@ const PACKAGES = [
   'database',
   'storage',
   'indexing',
+  'messaging',
   // 'firestore',
-  // 'messaging',
   // 'ml-vision',
   // 'ml-automl',
 ];

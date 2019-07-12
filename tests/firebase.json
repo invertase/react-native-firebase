@@ -11,6 +11,8 @@
     "ml_vision_ocr_model" : true,
     "ml_vision_barcode_model" : true,
 
+    "messaging_auto_init_enabled": true,
+    "messaging_android_headless_task_timeout": 30000,
     "ml_vision_label_model": true,
     "ml_vision_image_label_model": true,
 
@@ -20,7 +22,6 @@
     "TODO_fiam_auto_collection_enabled": true,
     "TODO_database_persistence_enabled": true,
     "TODO_firestore_persistence_enabled": true,
-    "TODO_messaging_auto_init_enabled": true,
 
     "rnfirebase_json_testing_string": "abc",
     "rnfirebase_json_testing_boolean_false": false,

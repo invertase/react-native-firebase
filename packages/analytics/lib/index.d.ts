@@ -244,6 +244,32 @@ declare module '@react-native-firebase/app-types' {
     analytics: ReactNativeFirebaseModuleAndStatics<Analytics.Module, Analytics.Statics>;
   }
 
+  interface FirebaseJSON {
+    /**
+     * Disable or enable auto collection of analytics data.
+     *
+     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+     * This can be overridden in JavaScript.
+     *
+     * #### Example
+     *
+     * ```json
+     * // <project-root>/firebase.json
+     * {
+     *   "react-native": {
+     *     "analytics_auto_collection_enabled": false
+     *   }
+     * }
+     * ```
+     *
+     * ```js
+     * // Re-enable analytics data collection, e.g. once user has granted permission:
+     * await firebase.analytics().setAnalyticsCollectionEnabled(true);
+     * ```
+     */
+    analytics_auto_collection_enabled: boolean;
+  }
+
   interface FirebaseApp {
     analytics(): Analytics.Module;
   }
