@@ -367,6 +367,23 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 
 > ML Kit Translate APIs to come in a later release.
 
+## ML Kit Vision (mlKitVision) - **[NEW]**
+
+- [NEW] Implemented support for [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text) Vision APIs;
+  - [x] Cloud
+  - [x] On Device
+- [NEW] Implemented support for [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text) Vision APIs;
+  - [x] Cloud
+- [NEW] Implemented support for [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces) Vision APIs;
+  - [x] On Device
+- [NEW] Implemented support for [Barcode Detection](https://firebase.google.com/docs/ml-kit/read-barcodes) Vision APIs;
+  - [x] On Device
+- [NEW] Implemented support for [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images) Vision APIs;
+  - [x] Cloud
+  - [x] On Device
+- [NEW] Implemented support for [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks) Vision APIs;
+  - [x] Cloud
+
 ## Utils
 
 - [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment
