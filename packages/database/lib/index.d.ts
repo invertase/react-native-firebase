@@ -99,6 +99,11 @@ export namespace Database {
     ServerValue: ServerValue;
   }
 
+  export interface TransactionResult {
+    committed: boolean;
+    snapshot: DataSnapshot;
+  }
+
   /**
    * A Reference represents a specific location in your Database and can be used for reading or
    * writing data to that Database location.
@@ -345,11 +350,12 @@ export namespace Database {
      * @param onComplete A callback function that will be called when the transaction completes. The callback is passed three arguments: a possibly-null Error, a boolean indicating whether the transaction was committed, and a DataSnapshot indicating the final result. If the transaction failed abnormally, the first argument will be an Error object indicating the failure cause. If the transaction finished normally, but no data was committed because no data was returned from transactionUpdate, then second argument will be false. If the transaction completed and committed data to Firebase, the second argument will be true. Regardless, the third argument will be a DataSnapshot containing the resulting data in this location.
      * @param applyLocally By default, events are raised each time the transaction update function runs. So if it is run multiple times, you may see intermediate states. You can set this to false to suppress these intermediate states and instead wait until the transaction has completed before events are raised.
      */
+    // TODO better types for update & complete fns with typed args
     transaction(
       transactionUpdate: Function,
       onComplete?: Function,
       applyLocally?: boolean,
-    ): Promise<{ committed: boolean, snapshot: DataSnapshot }>;
+    ): Promise<TransactionResult>;
 
     /**
      * Generates a new child location using a unique key and returns its `Reference`.
@@ -387,8 +393,7 @@ export namespace Database {
     onDisconnect(): OnDisconnect;
   }
 
-  export interface ThenableReference extends Reference {
-  }
+  export interface ThenableReference extends Reference {}
 
   /**
    * A Query sorts and filters the data at a Database location so only a subset of the child data
@@ -1215,8 +1220,10 @@ declare module '@react-native-firebase/database' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
   const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
   export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<Database.Module,
-    Database.Statics>;
+  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
+    Database.Module,
+    Database.Statics
+  >;
   export default DatabaseDefaultExport;
 }
 
