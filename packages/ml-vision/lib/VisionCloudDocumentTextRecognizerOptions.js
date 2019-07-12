@@ -16,8 +16,8 @@
  */
 
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
-import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
 import { isArray, isString } from '@react-native-firebase/common';
+import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
 
 export default class VisionCloudDocumentTextRecognizerOptions extends MutatableParams {
   constructor() {

@@ -240,9 +240,9 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     );
   }
 
-  barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
-    // todo
-  }
+  // barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
+  // todo
+  // }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/ml-vision';
