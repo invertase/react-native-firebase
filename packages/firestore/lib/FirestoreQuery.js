@@ -16,16 +16,7 @@
  */
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import {
-  generateFirestoreId,
-  hasOwnProperty,
-  isBoolean,
-  isFunction,
-  isNull,
-  isObject,
-  isString,
-  isUndefined,
-} from '@react-native-firebase/common';
+import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/common';
 
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';

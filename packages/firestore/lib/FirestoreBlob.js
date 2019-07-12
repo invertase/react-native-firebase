@@ -55,7 +55,10 @@ export default class FirestoreBlob {
       throw new Error('firestore.Blob.fromUint8Array expects an instance of Uint8Array');
     }
 
-    return new FirestoreBlob(true, Array.prototype.map.call(array, $ => String.fromCharCode($)).join(''));
+    return new FirestoreBlob(
+      true,
+      Array.prototype.map.call(array, $ => String.fromCharCode($)).join(''),
+    );
   }
 
   /**
