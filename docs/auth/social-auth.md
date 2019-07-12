@@ -5,7 +5,7 @@ description: React Native Firebase integrates with the majority of social auth p
 
 # Social Auth
 
-React Native Firebase provides support for integrating with different social platforms. The authentication with these 
+React Native Firebase provides support for integrating with different social platforms. The authentication with these
 different platforms is left to the developer to implement due to the various implementations and flows possible using their
 oAuth APIs.
 
@@ -18,11 +18,12 @@ library, which provides a wrapper around the native Android & iOS SDKs. The libr
 access to the users `AccessToken` which is required to create a Firebase credential.
 
 **Step 1**: Login to Facebook with permissions.
+
 ```js
 import { LoginManager } from 'react-native-fbsdk';
 
 // Login with permissions
-const result = await LoginManager.logInWithReadPermissions(['public_profile', 'email']); 
+const result = await LoginManager.logInWithReadPermissions(['public_profile', 'email']);
 
 if (result.isCancelled) {
   throw new Error('User cancelled the login process');
@@ -57,8 +58,8 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Twitter
 
-The [react-native-twitter-signin](https://github.com/GoldenOwlAsia/react-native-twitter-signin) library provides a 
-wrapper around the official Twitter SDKs, providing access to the users `authToken` and `authTokenSecret` which are 
+The [react-native-twitter-signin](https://github.com/GoldenOwlAsia/react-native-twitter-signin) library provides a
+wrapper around the official Twitter SDKs, providing access to the users `authToken` and `authTokenSecret` which are
 required to create a Firebase credential.
 
 **Step 1**: Initialize the Twitter SDK.
@@ -68,13 +69,13 @@ import { NativeModules } from 'react-native';
 const { RNTwitterSignIn } = NativeModules;
 
 await RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET');
-``` 
+```
 
 **Step 2**: Login to Twitter and read tokens
 
 ```js
 // Also returns: name, userID & userName
-const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn(); 
+const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
 ```
 
 **Step 3**: Create a Firebase credential with the tokens.
@@ -82,7 +83,7 @@ const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
 ```js
 import { firebase } from '@react-native-firebase/auth';
 
-const credential = firebase.auth.TwitterAuthProvider .credential(authToken, authTokenSecret);
+const credential = firebase.auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
 ```
 
 **Step 4**: Sign in to Firebase with the created credential.
@@ -93,7 +94,7 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Google
 
-The [react-native-google-signin](https://github.com/react-native-community/react-native-google-signin) provides a 
+The [react-native-google-signin](https://github.com/react-native-community/react-native-google-signin) provides a
 wrapper around the official Google login library, providing access to the users `accessToken` and `idToken` which are
 required to create a Firebase credential.
 
@@ -126,7 +127,7 @@ const { accessToken, idToken } = await GoogleSignin.signIn();
 ```js
 import { firebase } from '@react-native-firebase/auth';
 
-const credential = firebase.auth.GoogleAuthProvider .credential(idToken, accessToken);
+const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
 ```
 
 **Step 4**: Sign in to Firebase with the created credential.
@@ -137,8 +138,8 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Github
 
-*TODO* @salakar
+_TODO_ @salakar
 
 ## Custom Provider
 
-*TODO* @salakar
+_TODO_ @salakar

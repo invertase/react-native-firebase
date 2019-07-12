@@ -5,7 +5,7 @@ description: Google Analytics for Firebase is a free app measurement solution th
 
 # Analytics
 
-The analytics module provides out of the box support with Google Analytics for Firebase. 
+The analytics module provides out of the box support with Google Analytics for Firebase.
 Integration with the Android & iOS allows for in-depth analytical insight reporting, such as
 device information, location, user actions and more.
 
@@ -53,7 +53,7 @@ device information, location, user actions and more.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-analytics)

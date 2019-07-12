@@ -12,10 +12,10 @@ Firebase ML Kit brings the power of machine learning vision to your React Native
 ML Kit Vision for React Native currently supports the following Firebase APIs:
 
 - [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [X] Cloud
+  - [x] Cloud
   - [x] On Device
 - [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [X] Cloud
+  - [x] Cloud
 - [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)
   - [x] On Device
 - [Barcode Detection](https://firebase.google.com/docs/ml-kit/read-barcodes)
@@ -24,14 +24,13 @@ ML Kit Vision for React Native currently supports the following Firebase APIs:
   - [x] Cloud
   - [x] On Device
 - [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)
-    - [X] Cloud
+  - [x] Cloud
 
 The following APIs are **unsupported**, with support coming in a future release;
 
 - AutoML Vision Edge
 - Object detection & tracking
 - Image Labeling with a custom model
-
 
 ## Getting Started
 

@@ -22,5 +22,3 @@ TODO
 ## Reacts lifecycle
 
 TODO
-
-

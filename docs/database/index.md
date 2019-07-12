@@ -1,13 +1,13 @@
 ---
 title: Realtime Database
-description: Store and sync data with our NoSQL cloud database. Data is synced across all clients in realtime, and remains available when your app goes offline. 
+description: Store and sync data with our NoSQL cloud database. Data is synced across all clients in realtime, and remains available when your app goes offline.
 ---
 
 # Realtime Database
 
-The Firebase Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to 
-every connected client. React Native Firebase provides native integration with the Android & iOS Firebase SDKs,  supporting
-both realtime data sync and offline  capabilities.
+The Firebase Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to
+every connected client. React Native Firebase provides native integration with the Android & iOS Firebase SDKs, supporting
+both realtime data sync and offline capabilities.
 
 <Youtube id="U5aeM5dvUpA" />
 
@@ -35,7 +35,7 @@ both realtime data sync and offline  capabilities.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-database)

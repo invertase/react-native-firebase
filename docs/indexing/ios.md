@@ -37,14 +37,8 @@ After navigating to the URL Types section of your Xcode workspace you can now ad
 #### Configure the new URL Type
 
 1. Input the `Identifier` value; The Identifier is normally the same as your Bundle Identifier which is usually the reverse of the domain for your app e.g. com.mycompany.app.
-2. Input the `URL Schemes` value - this can be a comma delimited list of values; For example if you set this to myapp,foobar then your app will then accept urls from myapp://* and foobar://*.
+2. Input the `URL Schemes` value - this can be a comma delimited list of values; For example if you set this to myapp,foobar then your app will then accept urls from myapp://_ and foobar://_.
 
 `Icon` and `Role` can be left to use the defaults unless you need to change these.
 
 ![Example](https://prismic-io.s3.amazonaws.com/invertase%2F5d66eb78-883f-4f87-b390-adcee22bbff0_configure-item.png)
-
-
-
-
-
-

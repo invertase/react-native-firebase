@@ -19,7 +19,7 @@ yarn add @react-native-firebase/admob
 
 ## Module usage
 
-The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and 
+The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and
 React component view adverts such as Banner Ads.
 
 Import the Cloud Functions package into your project:

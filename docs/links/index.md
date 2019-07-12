@@ -1,16 +1,16 @@
 ---
 title: Dynamic Links
-description: Firebase Dynamic Links are links that work the way you want, whether or not your app is already installed. 
+description: Firebase Dynamic Links are links that work the way you want, whether or not your app is already installed.
 ---
 
 # Dynamic Links
 
-React Native Firebase provides native integration Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a 
+React Native Firebase provides native integration Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a
 cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging
 module provides a simple JavaScript API to interact with FCM.
 
 The Messaging module is only responsible for handling data-only messages. To learn how to display notifications to
-users, view the <Anchor group="notifications" href="/">Notifications</Anchor> module. 
+users, view the <Anchor group="notifications" href="/">Notifications</Anchor> module.
 
 <Youtube id="sioEY4tWmLI" />
 
@@ -47,7 +47,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-messaging)

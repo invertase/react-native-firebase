@@ -1,6 +1,6 @@
 ---
 title: Invites
-description: Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS. 
+description: Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
 ---
 
 # Invites
@@ -8,7 +8,7 @@ description: Firebase Invites are an out-of-the-box solution for app referrals a
 > Firebase Invites is deprecated. On January 24th, 2020, support will be discontinued for Firebase Invites. Learn how to migrate to <Anchor href="/migrate-to-dynamic-links">Dynamic Links</Anchor> with a customs sharing solution.
 
 React Native Firebase provides native integration of Firebase Invites, allowing you to build your own invitations
-to send to friends with a JavaScript API. Send simple or rich HTML emails to users, and then build a custom invite 
+to send to friends with a JavaScript API. Send simple or rich HTML emails to users, and then build a custom invite
 handler directly within your React Native app.
 
 <Youtube id="LkaIJCZ_HyM" />
@@ -44,7 +44,7 @@ handler directly within your React Native app.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-invites)

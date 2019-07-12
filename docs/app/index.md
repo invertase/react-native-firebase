@@ -1,6 +1,6 @@
 ---
 title: Firebase App
-description: The app module is the core library which integrates React Native with Firebase.  
+description: The app module is the core library which integrates React Native with Firebase.
 ---
 
 # App
@@ -43,7 +43,7 @@ app to be installed.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-app)

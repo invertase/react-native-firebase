@@ -32,11 +32,11 @@ import { firebase } from '@react-native-firebase/utils';
 ### Detect whether the app is running within TestL Lab
 
 Firebase [TestLab](https://firebase.google.com/docs/test-lab/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=utils)
-is a cloud-based app-testing infrastructure. With one operation, you can test your Android or iOS app across 
-a wide variety of devices and device configurations, and see the results—including logs, videos, 
-and screenshots—in the Firebase console. 
+is a cloud-based app-testing infrastructure. With one operation, you can test your Android or iOS app across
+a wide variety of devices and device configurations, and see the results—including logs, videos,
+and screenshots—in the Firebase console.
 
-It is useful to change the apps configuration if it is being run in Test Lab, for example disabling Analytics 
+It is useful to change the apps configuration if it is being run in Test Lab, for example disabling Analytics
 data collection. Such functionality can be carried out by taking advantage of the `isRunningInTestLab` property:
 
 ```js
@@ -46,8 +46,6 @@ import analytics from '@react-native-firebase/analytics';
 async function bootstrap() {
   if (utils().isRunningInTestLab) {
     await analytics().setAnalyticsCollectionEnabled(false);
-  }  
+  }
 }
 ```
- 
- 
