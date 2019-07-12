@@ -21,7 +21,6 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import {
-  isAndroid,
   isNumber,
   isObject,
   isString,
