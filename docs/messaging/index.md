@@ -1,9 +1,9 @@
 ---
-title: Cloud Messaging (FCM)
+title: Firebase Cloud Messaging (FCM)
 description: Firebase Cloud Messaging (FCM) is a cross-platform messaging solution that lets you reliably deliver messages at no cost. 
 ---
 
-# Cloud Messaging
+# Firebase Cloud Messaging
 
 React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a 
 cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging

@@ -21,6 +21,7 @@
     "@react-native-firebase/indexing": "^0.0.26",
     "@react-native-firebase/invites": "0.0.26",
     "@react-native-firebase/links": "0.0.26",
+    "@react-native-firebase/messaging": "0.0.26",
     "@react-native-firebase/ml-natural-language": "0.0.26",
     "@react-native-firebase/ml-vision": "0.0.26",
     "@react-native-firebase/perf": "0.0.26",
@@ -34,7 +35,7 @@
     "react-native-gifted-chat": "0.9.0-beta.3"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-helpers": "^0.0.9",
+    "@react-native-firebase/private-tests-helpers": "^0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.1.1",
     "detox": "12.5.0",

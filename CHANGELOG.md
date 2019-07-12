@@ -17,6 +17,7 @@ The following modules are completed and published to NPM and ready to be consume
 | [App Indexing](/packages/indexing)                        |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/indexing.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/indexing)            |            [![badge](https://api.rnfirebase.io/coverage/indexing/badge)](https://api.rnfirebase.io/coverage/indexing/detail)            |
 | [Cloud Functions](/packages/functions)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)           |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
 | [Cloud Storage](/packages/storage)                        |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/storage)             |             [![badge](https://api.rnfirebase.io/coverage/storage/badge)](https://api.rnfirebase.io/coverage/storage/detail)             |
+| [Cloud Messaging](/packages/messaging)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/messaging.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/messaging)           |           [![badge](https://api.rnfirebase.io/coverage/messaging/badge)](https://api.rnfirebase.io/coverage/messaging/detail)           |
 | [Crashlytics](/packages/crashlytics)                      |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics)         |         [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail)         |
 | [Dynamic Links](/packages/links)                          |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/links.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/links)               |               [![badge](https://api.rnfirebase.io/coverage/links/badge)](https://api.rnfirebase.io/coverage/links/detail)               |
 | [In-app Messaging](/packages/fiam)                        |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)                |                [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)                |
@@ -195,6 +196,39 @@ Support for handling an incoming app index URL has been added to React Native Fi
 ## Instance Id (iid)
 
 - [NEW] Instance Id now supports multiple Firebase apps, e.g. `firebase.app('fooApp').iid().get()`
+
+## Cloud Messaging (messaging)
+
+- [NEW] added support for `onSendError` events, an event that indicates a message (with id) failed to send
+- [NEW] added support for `onMessageSent` events, an event that indicates a message (with id) was successfully sent
+- [NEW] added support for `onDeletedMessages` events, an event that indicates the FCM server deleted pending messages
+  - when your app instance receives this event, it should perform a full sync with your app server if it relies on message data
+- [NEW] `getToken` & `deleteToken` now optionally support `authorizedEntity` & `scope` arguments
+  - `authorizedEntity` - defaults to `firebase.app().options.messagingSenderId`
+  - `scope` - defaults to `FCM`
+- [NEW][iOS] added support for `isRegisteredForRemoteNotifications: boolean;`
+- [NEW][iOS] added support for `unregisterForRemoteNotifications(): Promise<void>;`
+- [NEW][iOS] `requestPermission` on iOS 12+ devices now uses the `UNAuthorizationOptionProvisional` option to request permission
+  - this allows you to immediately start sending 'quiet' notifications to your users without their explicit permission, i.e., on a trial basis. `requestPermission` with this option will no longer show a permission request dialog to your user. [Learn More](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/)
+  - [[WWDC 2018 Video]](https://developer.apple.com/videos/play/wwdc2018/710/) (30:00 onwards)
+- [NEW] added support for `isAutoInitEnabled: boolean;`
+- [NEW] added support for `setAutoInitEnabled(enabled: boolean): Promise<void>;`
+- [NEW] added support for disabling messaging auto initialisation via the new `firebase.json` configuration file
+  - `messaging_auto_init_enabled`: `true/false`
+- [NEW][Android] added support for configuring the background Headless task timeout via the new `firebase.json` configuration file
+  - `messaging_android_headless_task_timeout`: `number` - milliseconds
+- [NEW][Android] added support for registering the background message headless task via `firebase.messaging().setBackgroundMessageHandler(handler: Function)`
+- [BREAKING][Android] manually registering the background message headless task handler via `AppRegistry.registerHeadlessTask` is no longer supported. Call `firebase.messaging().setBackgroundMessageHandler(handler: Function)` instead.
+  - This is a pre-emptive change that will allow us to support background tasks for iOS in a future release (as it won't be via RN Headless Tasks as it's not supported on iOS)
+- [BREAKING][Android] the manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
+  - Many manual code changes that existed in v5 are now automatically handled for you in v6
+- [BREAKING][iOS] any the manually added `AppDelegate.m` changes for messaging on v5 are longer required - you can safely remove them (search for `RNFirebaseMessaging` in your `AppDelegate`)
+  - Many manual code changes that existed in v5 are now automatically handled for you in v6
+- [BREAKING] constructing a `RemoteMessage` instance via `new firebase.messaging.RemoteMessage()` is no longer supported, use `firebase.messaging().newRemoteMessage()` to retrieve an new remote message builder instance.
+- [BREAKING][iOS] the minimum supported iOS version is now 10
+  - iOS 9 or lower only accounts for 0.% of all iPhone devices
+  - to see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/)
+  - community contributions that add iOS 9 support are welcome
 
 ## Performance Monitoring (perf)
 
