@@ -77,6 +77,9 @@
   - text: ML Kit Natural Language
     to: "/v6/ml-natural-language"
     asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
+  - text: ML Kit Vision
+    to: "/v6/ml-vision"
+    asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
   - text: Notifications
     to: "/v6/notifications"
     asset: "//static.invertase.io/assets/social/firebase-logo.png"
