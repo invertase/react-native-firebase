@@ -18,11 +18,34 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
 </p>
 
-----
+---
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
-Messaging description.
+Bring powerful machine learning vision APIs to your mobile app whether you're new or experienced in ML. Get started easily by using ready-to-use APIs from Firebase for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
+
+This module currently supports the following Firebase ML Kit Vision APIs:
+
+- [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
+  - [x] Cloud
+  - [x] On Device
+- [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
+  - [x] Cloud
+- [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)
+  - [x] On Device
+- [Barcode Detection](https://firebase.google.com/docs/ml-kit/read-barcodes)
+  - [x] On Device
+- [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)
+  - [x] Cloud
+  - [x] On Device
+- [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)
+  - [x] Cloud
+
+The following APIs are **unsupported**, with support coming in a future release;
+
+- AutoML Vision Edge
+- Object detection & tracking
+- Image Labeling with a custom model
 
 [> Learn More](https://firebase.google.com/products/ml-kit/)
 
@@ -45,7 +68,7 @@ react-native link @react-native-firebase/ml-vision
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
@@ -59,4 +82,4 @@ react-native link @react-native-firebase/ml-vision
   </p>
 </p>
 
-----
+---
