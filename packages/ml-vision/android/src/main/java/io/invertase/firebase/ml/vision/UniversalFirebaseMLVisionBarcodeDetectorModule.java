@@ -77,13 +77,23 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
       barcodeMap.put(KEY_DISPLAY_VALUE, barcode.getDisplayValue());
       barcodeMap.put(KEY_RAW_VALUE, barcode.getRawValue());
 
-      // TODO calendar event
+      // `calendarEvent`
+      addCalendarEventFromBarcodeToMap(barcode, barcodeMap);
+
+      // `contactInfo`
       addContactInfoFromBarcodeToMap(barcode, barcodeMap);
 
       detectedBarcodesFormatted.add(barcodeMap);
     }
 
     return detectedBarcodesFormatted;
+  }
+
+  private void addCalendarEventFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getCalendarEvent() == null) return;
+    Map<String, Object> calendarEventMap = new HashMap<>();
+
+    barcodeMap.put("calendarEvent", calendarEventMap);
   }
 
   private void addContactInfoFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
@@ -118,11 +128,26 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
     // person name
     contactInfoMap.put("name", getPersonNameMap(contactInfo.getName()));
 
+    // addresses
+    List<FirebaseVisionBarcode.Address> addressListRaw = contactInfo.getAddresses();
+    List<Map<String, Object>> addressListFormatted = new ArrayList<>(addressListRaw.size());
+    for (FirebaseVisionBarcode.Address email : addressListRaw) {
+      addressListFormatted.add(getAddressMap(email));
+    }
+    contactInfoMap.put("addresses", addressListFormatted);
+
     barcodeMap.put("contactInfo", contactInfoMap);
   }
 
+  private Map<String, Object> getAddressMap(FirebaseVisionBarcode.Address address) {
+    Map<String, Object> addressMap = new HashMap<>();
+    addressMap.put("lines", address.getAddressLines());
+    addressMap.put("type", address.getType());
+    return addressMap;
+  }
+
   private Map<String, Object> getPersonNameMap(FirebaseVisionBarcode.PersonName personName) {
-    Map<String, Object> personNameMap = new HashMap<>();
+    Map<String, Object> personNameMap = new HashMap<>(7);
     personNameMap.put("first", personName.getFirst());
     personNameMap.put("formatted", personName.getFormattedName());
     personNameMap.put("last", personName.getLast());
@@ -134,7 +159,7 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
   }
 
   private Map<String, Object> getEmailMap(FirebaseVisionBarcode.Email email) {
-    Map<String, Object> emailMap = new HashMap<>();
+    Map<String, Object> emailMap = new HashMap<>(3);
     emailMap.put("address", email.getAddress());
     emailMap.put("body", email.getBody());
     emailMap.put("subject", email.getSubject());

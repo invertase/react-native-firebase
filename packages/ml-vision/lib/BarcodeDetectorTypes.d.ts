@@ -61,6 +61,22 @@ export interface VisionBarcode {
   rawValue: string | null;
 
   /**
+   * Gets parsed calendar event (set if `valueType` is `VisionBarcodeValueType.CALENDAR_EVENT`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
+   *   console.log(barcode.calendarEvent)
+   * }
+   */
+  calendarEvent?: VisionBarcodeCalendarEvent;
+
+  /**
    * Gets parsed contact details (set if `valueType` is `VisionBarcodeValueType.CONTACT_INFO`).
    *
    * #### Example
@@ -77,8 +93,12 @@ export interface VisionBarcode {
   contactInfo?: VisionBarcodeContactInfo;
 }
 
+export interface VisionBarcodeCalendarEvent {
+
+}
+
 /**
- * A person's or organization's business card. For example a VCARD.
+ * A persons or organization's business card. For example a VCARD.
  *
  * #### Example
  *
@@ -100,39 +120,63 @@ export interface VisionBarcodeContactInfo {
   urls: string[];
 
   /**
-   * Gets contact person's title. E.g. `Dr`
+   * Gets the contact persons title. E.g. `Dr`
    *
    * Returns `null` if no title detected.
    */
   title: string | null;
 
   /**
-   * Gets contact person's organization.
+   * Gets the contact persons organization.
    *
    * Returns `null` if no organization detected.
    */
   organization: string | null;
 
   /**
-   * Gets contact person's phones.
+   * Gets the contact persons phones.
+   *
    * Returns an empty array if nothing found.
    */
   phones: VisionBarcodePhone[];
 
   /**
-   * Gets contact person's emails.
+   * Gets the contact persons emails.
+   *
    * Returns an empty array if nothing found.
    */
   emails: VisionBarcodeEmail[];
 
   /**
-   * Gets the contact person's name.
+   * Gets the contact persons name.
    */
   name: VisionBarcodePersonName;
+
+  /**
+   * Gets an array of the contact persons addresses.
+   *
+   * Returns an empty array if nothing found.
+   */
+  addresses: VisionBarcodeAddress[];
 }
 
 /**
- * A person's name, both formatted version and their individual name components.
+ * A contacts address.
+ */
+export interface VisionBarcodeAddress {
+  /**
+   * An array of address line strings of the formatted address.
+   */
+  lines: string[];
+
+  /**
+   * The address type, e.g. `VisionBarcodeAddressType.WORK`.
+   */
+  type: number;
+}
+
+/**
+ * A persons name, both formatted version and their individual name components.
  */
 export interface VisionBarcodePersonName {
   /**
