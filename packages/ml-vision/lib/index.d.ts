@@ -20,16 +20,7 @@ import {
   ReactNativeFirebaseModuleAndStatics,
   ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
-import {
-  VisionBarcode,
-  VisionBarcodeAddressType,
-  VisionBarcodeDetectorOptions,
-  VisionBarcodeEmailType,
-  VisionBarcodeFormat,
-  VisionBarcodePhoneType,
-  VisionBarcodeValueType,
-  VisionBarcodeWifiEncryptionType,
-} from './BarcodeDetectorTypes';
+import './BarcodeDetectorTypes';
 
 /**
  * Firebase ML Kit package for React Native.
@@ -68,8 +59,6 @@ import {
  * @firebase ml-vision
  */
 export namespace MLKitVision {
-  export * from './BarcodeDetectorTypes';
-
   export interface Statics {
     VisionFaceDetectorOptions: VisionFaceDetectorOptions;
     VisionImageLabelerOptions: VisionImageLabelerOptions;
@@ -1245,6 +1234,14 @@ export const VisionDocumentTextRecognizedBreakType =
   MLKitVision.VisionDocumentTextRecognizedBreakType;
 export const VisionCloudLandmarkRecognizerModelType =
   MLKitVision.VisionCloudLandmarkRecognizerModelType;
+
+export const VisionBarcodeFormat = MLKITVision.VisionBarcodeFormat;
+export const VisionBarcodeValueType = MLKITVision.VisionBarcodeValueType;
+export const VisionBarcodeAddressType = MLKITVision.VisionBarcodeAddressType;
+export const VisionBarcodeEmailType = MLKITVision.VisionBarcodeEmailType;
+export const VisionBarcodePhoneType = MLKITVision.VisionBarcodePhoneType;
+export const VisionBarcodeWifiEncryptionType = MLKITVision.VisionBarcodeWifiEncryptionType;
+export const VisionBarcodeDetectorOptions = MLKITVision.VisionBarcodeDetectorOptions;
 
 declare module '@react-native-firebase/ml-vision' {
   import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
