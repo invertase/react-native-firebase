@@ -15,12 +15,7 @@
  *
  */
 
-import {
-  NativeFirebaseError,
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Cloud Storage package for React Native.
@@ -59,6 +54,9 @@ import {
  * @firebase storage
  */
 export namespace Storage {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
   /**
    * Possible string formats used for uploading via `StorageReference.putString()`
    *
@@ -1026,7 +1024,7 @@ export namespace Storage {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns the maximum time to retry an upload if a failure occurs.
      *
@@ -1130,26 +1128,27 @@ export namespace Storage {
 }
 
 declare module '@react-native-firebase/storage' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  export const firebase = FirebaseNamespaceExport;
-
-  const StorageDefaultExport: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
-
-  export default StorageDefaultExport;
+  const module: FirebaseModuleWithStatics<Storage.Module, Storage.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    storage: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
-  }
-
-  interface FirebaseApp {
-    storage?(bucket?: string): Storage.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      storage: FirebaseModuleWithStatics<Storage.Module, Storage.Statics>;
+    }
+    interface FirebaseApp {
+      storage(bucket?: string): Storage.Module;
+    }
   }
 }
