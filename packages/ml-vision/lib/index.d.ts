@@ -20,6 +20,16 @@ import {
   ReactNativeFirebaseModuleAndStatics,
   ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
+import {
+  VisionBarcode,
+  VisionBarcodeAddressType,
+  VisionBarcodeDetectorOptions,
+  VisionBarcodeEmailType,
+  VisionBarcodeFormat,
+  VisionBarcodePhoneType,
+  VisionBarcodeValueType,
+  VisionBarcodeWifiEncryptionType,
+} from './BarcodeDetectorTypes';
 
 /**
  * Firebase ML Kit package for React Native.
@@ -58,21 +68,31 @@ import {
  * @firebase ml-vision
  */
 export namespace MLKitVision {
+  export * from './BarcodeDetectorTypes';
+
   export interface Statics {
-    VisionPoint: VisionPoint;
-    VisionRectangle: VisionRectangle;
     VisionFaceDetectorOptions: VisionFaceDetectorOptions;
     VisionImageLabelerOptions: VisionImageLabelerOptions;
-    VisionBarcodeDetectorOptions: VisionBarcodeDetectorOptions;
     VisionCloudImageLabelerOptions: VisionCloudImageLabelerOptions;
     VisionCloudTextRecognizerOptions: VisionCloudTextRecognizerOptions;
     VisionCloudLandmarkRecognizerOptions: VisionCloudLandmarkRecognizerOptions;
     VisionCloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions;
+    VisionCloudTextRecognizerModelType: VisionCloudTextRecognizerModelType;
     VisionFaceDetectorClassificationMode: VisionFaceDetectorClassificationMode;
     VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
     VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
     VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
+    VisionFaceLandmarkType: VisionFaceLandmarkType;
+    VisionFaceContourType: VisionFaceContourType;
     VisionCloudLandmarkRecognizerModelType: VisionCloudLandmarkRecognizerModelType;
+    VisionDocumentTextRecognizedBreakType: VisionDocumentTextRecognizedBreakType;
+    VisionBarcodeFormat: VisionBarcodeFormat;
+    VisionBarcodeValueType: VisionBarcodeValueType;
+    VisionBarcodeAddressType: VisionBarcodeAddressType;
+    VisionBarcodeEmailType: VisionBarcodeEmailType;
+    VisionBarcodePhoneType: VisionBarcodePhoneType;
+    VisionBarcodeWifiEncryptionType: VisionBarcodeWifiEncryptionType;
+    VisionBarcodeDetectorOptions: VisionBarcodeDetectorOptions;
   }
 
   /**
@@ -260,10 +280,6 @@ export namespace MLKitVision {
      * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
     setConfidenceThreshold(confidenceThreshold: number): VisionCloudImageLabelerOptions;
-  }
-
-  export class VisionBarcodeDetectorOptions {
-    // todo
   }
 
   /**
@@ -1159,15 +1175,46 @@ export namespace MLKitVision {
     ): Promise<VisionImageLabel[]>;
 
     /**
-     * TODO
+     * Returns an array of barcodes (as `VisionBarcode`) detected for a local image file path.
      *
-     * @param imageFilePath
-     * @param barcodeDetectorOptions
+     * Barcode detection is done locally on device.
+     *
+     * #### Example 1
+     *
+     * ```js
+     * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+     *
+     * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+     *
+     * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
+     *   console.log(barcode.contactInfo);
+     * }
+     * ```
+     *
+     * #### Example 2
+     *
+     * Process image with custom `VisionBarcodeDetectorOptions`.
+     *
+     * ```js
+     * import vision, { VisionBarcodeDetectorOptions, VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+     *
+     * const options = new VisionBarcodeDetectorOptions();
+     * options.setBarcodeFormats(VisionBarcodeFormat.QR_CODE);
+     *
+     * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, options);
+     *
+     * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
+     *   console.log(barcode.contactInfo);
+     * }
+     * ```
+     *
+     * @param imageFilePath A local image file path.
+     * @param barcodeDetectorOptions An optional instance of `VisionBarcodeDetectorOptions`.
      */
     barcodeDetectorProcessImage(
       imageFilePath: string,
-      barcodeDetectorOptions: VisionBarcodeDetectorOptions,
-    ): Promise<TODO>;
+      barcodeDetectorOptions?: VisionBarcodeDetectorOptions,
+    ): Promise<VisionBarcode[]>;
   }
 }
 
@@ -1178,7 +1225,7 @@ export const VisionFaceLandmarkType = MLKitVision.VisionFaceLandmarkType;
 export const VisionFaceContourType = MLKitVision.VisionFaceContourType;
 
 export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
-export const VisionBarcodeDetectorOptions = MLKitVision.VisionBarcodeDetectorOptions;
+export const VisionBarcodeDetectorOptions = VisionBarcodeDetectorOptions;
 export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
 export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
 
