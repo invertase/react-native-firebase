@@ -71,7 +71,7 @@ export interface VisionBarcode {
    * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
    *
    * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
-   *   console.log(barcode.calendarEvent)
+   *   console.log(barcode.calendarEvent);
    * }
    */
   calendarEvent?: VisionBarcodeCalendarEvent;
@@ -87,14 +87,422 @@ export interface VisionBarcode {
    * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
    *
    * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
-   *   console.log(barcode.contactInfo)
+   *   console.log(barcode.contactInfo);
    * }
    */
   contactInfo?: VisionBarcodeContactInfo;
+
+  /**
+   * Gets parsed drivers license details (set if `valueType` is `VisionBarcodeValueType.DRIVER_LICENSE`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.DRIVER_LICENSE) {
+   *   console.log(barcode.driverLicense);
+   * }
+   */
+  driverLicense?: VisionBarcodeDriverLicense;
+
+  /**
+   * Gets parsed email details (set if `valueType` is `VisionBarcodeValueType.EMAIL`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.EMAIL) {
+   *   console.log(barcode.email);
+   * }
+   */
+  email?: VisionBarcodeEmail;
+
+  /**
+   * Gets parsed Geo Point details (set if `valueType` is `VisionBarcodeValueType.GEO`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.GEO) {
+   *   console.log(barcode.geoPoint);
+   * }
+   */
+  geoPoint?: VisionBarcodeGeoPoint;
+
+  /**
+   * Gets parsed phone details (set if `valueType` is `VisionBarcodeValueType.PHONE`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.PHONE) {
+   *   console.log(barcode.phone);
+   * }
+   */
+  phone?: VisionBarcodePhone;
+
+  /**
+   * Gets parsed sms details (set if `valueType` is `VisionBarcodeValueType.SMS`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.SMS) {
+   *   console.log(barcode.sms);
+   * }
+   */
+  sms?: VisionBarcodeSms;
+
+  /**
+   * Gets parsed url details (set if `valueType` is `VisionBarcodeValueType.URL`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.URL) {
+   *   console.log(barcode.url);
+   * }
+   */
+  url?: VisionBarcodeUrl;
+
+  /**
+   * Gets parsed wifi details (set if `valueType` is `VisionBarcodeValueType.WIFI`).
+   *
+   * #### Example
+   *
+   * ```js
+   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   *
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+   *
+   * if (barcode && barcode.valueType === VisionBarcodeValueType.WIFI) {
+   *   console.log(barcode.wifi);
+   * }
+   */
+  wifi?: VisionBarcodeWifi;
 }
 
-export interface VisionBarcodeCalendarEvent {
+/**
+ * Wifi network parameters from a 'WIFI:' or similar QRCode type.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.WIFI) {
+ *   console.log(barcode.wifi);
+ * }
+ */
+export interface VisionBarcodeWifi {
+  /**
+   * The encryption type of the WIFI. e.g. `VisionBarcodeWifiEncryptionType.WPA`
+   *
+   * See all types at `VisionBarcodeWifiEncryptionType`.
+   */
+  encryptionType: number;
 
+  /**
+   * The password for this WIFI.
+   *
+   * Returns `null` if nothing found.
+   */
+  password: string | null;
+
+  /**
+   * The SSID for this WIFI.
+   *
+   * Returns `null` if nothing found.
+   */
+  ssid: string | null;
+}
+
+/**
+ * A URL and title from a 'MEBKM:' or similar QRCode type.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.URL) {
+ *   console.log(barcode.url);
+ * }
+ */
+export interface VisionBarcodeUrl {
+  /**
+   * The title for this url.
+   *
+   * Returns `null` if nothing found.
+   */
+  title: string | null;
+
+  /**
+   * The URL.
+   *
+   * Returns `null` if nothing found.
+   */
+  url: string | null;
+}
+
+/**
+ * An sms message from an 'SMS:' or similar QRCode type.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.SMS) {
+ *   console.log(barcode.sms);
+ * }
+ */
+export interface VisionBarcodeSms {
+  /**
+   * The message text for this SMS.
+   *
+   * Returns `null` if nothing found.
+   */
+  message: string | null;
+
+  /**
+   * The phone number for this SMS.
+   *
+   * Returns `null` if nothing found.
+   */
+  phoneNumber: string | number;
+}
+
+/**
+ * GPS coordinates from a 'GEO:' or similar QRCode type.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.GEO) {
+ *   console.log(barcode.geoPoint);
+ * }
+ */
+export interface VisionBarcodeGeoPoint {
+  /**
+   * The latitude for these GPS coordinates.
+   */
+  lat: number;
+
+  /**
+   * The longitude for these GPS coordinates.
+   */
+  lng: number;
+}
+
+/**
+ * A driver license or ID card.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.DRIVER_LICENSE) {
+ *   console.log(barcode.driverLicense);
+ * }
+ */
+export interface VisionBarcodeDriverLicense {
+  /**
+   * Gets city of holder's address.
+   *
+   * Returns `null` if nothing found.
+   */
+  addressCity: string | null;
+
+  /**
+   * Gets state of holder's address.
+   *
+   * Returns `null` if nothing found.
+   */
+  addressState: string | null;
+
+  /**
+   * The holder's street address.
+   *
+   * Returns `null` if nothing found.
+   */
+  addressStreet: string | null;
+
+  /**
+   * The zip code of holder's address.
+   *
+   * Returns `null` if nothing found.
+   */
+  addressZip: string | null;
+
+  /**
+   * The birth date of the holder.
+   *
+   * Returns `null` if nothing found.
+   */
+  birthDate: string | null;
+
+  /**
+   * The "DL" for driver licenses, "ID" for ID cards.
+   *
+   * Returns `null` if nothing found.
+   */
+  documentType: string | null;
+
+  /**
+   * The expiry date of the license.
+   *
+   * Returns `null` if nothing found.
+   */
+  expiryDate: string | null;
+
+  /**
+   * The holder's first name.
+   *
+   * Returns `null` if nothing found.
+   */
+  firstName: string | null;
+
+  /**
+   * The holder's gender.
+   *
+   * Returns `null` if nothing found.
+   */
+  gender: string | null;
+
+  /**
+   * The issue date of the license.
+   *
+   * Returns `null` if nothing found.
+   */
+  issueDate: string | null;
+
+  /**
+   * The country in which DL/ID was issued.
+   *
+   * Returns `null` if nothing found.
+   */
+  issuingCountry: string | null;
+
+  /**
+   * The holder's last name.
+   *
+   * Returns `null` if nothing found.
+   */
+  lastName: string | null;
+
+  /**
+   * The driver license ID number.
+   *
+   * Returns `null` if nothing found.
+   */
+  licenseNumber: string | null;
+
+  /**
+   * The holder's middle name.
+   *
+   * Returns `null` if nothing found.
+   */
+  middleName: string | null;
+}
+
+/**
+ * A calendar event extracted from QRCode.
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
+ *   console.log(barcode.calendarEvent);
+ * }
+ */
+export interface VisionBarcodeCalendarEvent {
+  /**
+   * The description of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  description: string | null;
+
+  /**
+   * The end date time of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  end: string | null;
+
+  /**
+   * The location of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  location: string | null;
+
+  /**
+   * The organizer of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  organizer: string | null;
+
+  /**
+   * The start date time of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  start: string | null;
+
+  /**
+   * The status of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  status: string | null;
+
+  /**
+   * The summary of the calendar event.
+   *
+   * Returns `null` if nothing found.
+   */
+  summary: string | null;
 }
 
 /**

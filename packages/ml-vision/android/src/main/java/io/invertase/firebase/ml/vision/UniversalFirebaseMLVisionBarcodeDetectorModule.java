@@ -33,14 +33,10 @@ import io.invertase.firebase.common.UniversalFirebaseModule;
 
 import java.util.*;
 
-import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.KEY_BOUNDING_BOX;
-import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.KEY_CORNER_POINTS;
+import static io.invertase.firebase.ml.vision.UniversalFirebaseMLVisionCommon.*;
 
+@SuppressWarnings("ConstantConditions")
 class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseModule {
-
-  public static final String KEY_FORMAT = "format";
-  public static final String KEY_DISPLAY_VALUE = "displayValue";
-  public static final String KEY_RAW_VALUE = "rawValue";
 
   UniversalFirebaseMLVisionBarcodeDetectorModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -73,7 +69,7 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
       barcodeMap.put(KEY_BOUNDING_BOX, barcode.getBoundingBox());
       barcodeMap.put(KEY_CORNER_POINTS, barcode.getCornerPoints());
       barcodeMap.put(KEY_FORMAT, barcode.getFormat());
-      barcodeMap.put("valueType", barcode.getValueType());
+      barcodeMap.put(KEY_VALUE_TYPE, barcode.getValueType());
       barcodeMap.put(KEY_DISPLAY_VALUE, barcode.getDisplayValue());
       barcodeMap.put(KEY_RAW_VALUE, barcode.getRawValue());
 
@@ -83,17 +79,113 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
       // `contactInfo`
       addContactInfoFromBarcodeToMap(barcode, barcodeMap);
 
+      // driverLicense
+      addDriverLicenseFromBarcodeToMap(barcode, barcodeMap);
+
+      // email
+      addEmailFromBarcodeToMap(barcode, barcodeMap);
+
+      // geoPoint
+      addGeoPointFromBarcodeToMap(barcode, barcodeMap);
+
+      // phone
+      addPhoneFromBarcodeToMap(barcode, barcodeMap);
+
+      // sms
+      addSmsFromBarcodeToMap(barcode, barcodeMap);
+
+      // url
+      addUrlFromBarcodeToMap(barcode, barcodeMap);
+
+      // wifi
+      addWifiFromBarcodeToMap(barcode, barcodeMap);
+
       detectedBarcodesFormatted.add(barcodeMap);
     }
 
     return detectedBarcodesFormatted;
   }
 
+  private void addDriverLicenseFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getDriverLicense() == null) return;
+    Map<String, Object> driverLicenseMap = new HashMap<>();
+    FirebaseVisionBarcode.DriverLicense driverLicense = barcode.getDriverLicense();
+    driverLicenseMap.put("addressCity", driverLicense.getAddressCity());
+    driverLicenseMap.put("addressState", driverLicense.getAddressState());
+    driverLicenseMap.put("addressStreet", driverLicense.getAddressStreet());
+    driverLicenseMap.put("addressZip", driverLicense.getAddressZip());
+    driverLicenseMap.put("birthDate", driverLicense.getBirthDate());
+    driverLicenseMap.put("documentType", driverLicense.getDocumentType());
+    driverLicenseMap.put("expiryDate", driverLicense.getExpiryDate());
+    driverLicenseMap.put("firstName", driverLicense.getFirstName());
+    driverLicenseMap.put("gender", driverLicense.getGender());
+    driverLicenseMap.put("issueDate", driverLicense.getIssueDate());
+    driverLicenseMap.put("issuingCountry", driverLicense.getIssuingCountry());
+    driverLicenseMap.put("lastName", driverLicense.getLastName());
+    driverLicenseMap.put("licenseNumber", driverLicense.getLicenseNumber());
+    driverLicenseMap.put("middleName", driverLicense.getMiddleName());
+    barcodeMap.put("driverLicense", driverLicenseMap);
+  }
+
+  private void addGeoPointFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getGeoPoint() == null) return;
+    Map<String, Object> geoPointMap = new HashMap<>();
+    FirebaseVisionBarcode.GeoPoint geoPoint = barcode.getGeoPoint();
+    geoPointMap.put("lat", geoPoint.getLat());
+    geoPointMap.put("lng", geoPoint.getLng());
+    barcodeMap.put(KEY_GEO_POINT, geoPointMap);
+  }
+
+  private void addSmsFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getSms() == null) return;
+    Map<String, Object> smsMap = new HashMap<>();
+    FirebaseVisionBarcode.Sms sms = barcode.getSms();
+    smsMap.put("message", sms.getMessage());
+    smsMap.put("phoneNumber", sms.getPhoneNumber());
+    barcodeMap.put(KEY_SMS, smsMap);
+  }
+
+  private void addUrlFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getUrl() == null) return;
+    Map<String, Object> urlMap = new HashMap<>();
+    FirebaseVisionBarcode.UrlBookmark url = barcode.getUrl();
+    urlMap.put("title", url.getTitle());
+    urlMap.put("url", url.getUrl());
+    barcodeMap.put(KEY_URL, urlMap);
+  }
+
+  private void addWifiFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getWifi() == null) return;
+    Map<String, Object> wifiMap = new HashMap<>();
+    FirebaseVisionBarcode.WiFi wiFi = barcode.getWifi();
+    wifiMap.put("encryptionType", wiFi.getEncryptionType());
+    wifiMap.put("password", wiFi.getPassword());
+    wifiMap.put("ssid", wiFi.getSsid());
+    barcodeMap.put(KEY_WIFI, wifiMap);
+  }
+
+  private void addEmailFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getEmail() == null) return;
+    barcodeMap.put(KEY_EMAIL, getEmailMap(barcode.getEmail()));
+  }
+
+  private void addPhoneFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
+    if (barcode.getPhone() == null) return;
+    barcodeMap.put(KEY_PHONE, getPhoneMap(barcode.getPhone()));
+  }
+
   private void addCalendarEventFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
     if (barcode.getCalendarEvent() == null) return;
     Map<String, Object> calendarEventMap = new HashMap<>();
-
-    barcodeMap.put("calendarEvent", calendarEventMap);
+    FirebaseVisionBarcode.CalendarEvent calendarEvent = barcode.getCalendarEvent();
+    calendarEventMap.put("description", calendarEvent.getDescription());
+    calendarEventMap.put("end", calendarEvent.getEnd().getRawValue());
+    calendarEventMap.put("location", calendarEvent.getLocation());
+    calendarEventMap.put("organizer", calendarEvent.getOrganizer());
+    calendarEventMap.put("start", calendarEvent.getStart().getRawValue());
+    calendarEventMap.put("status", calendarEvent.getStatus());
+    calendarEventMap.put("summary", calendarEvent.getSummary());
+    barcodeMap.put(KEY_CALENDAR_EVENT, calendarEventMap);
   }
 
   private void addContactInfoFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
@@ -136,7 +228,7 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
     }
     contactInfoMap.put("addresses", addressListFormatted);
 
-    barcodeMap.put("contactInfo", contactInfoMap);
+    barcodeMap.put(KEY_CONTACT_INFO, contactInfoMap);
   }
 
   private Map<String, Object> getAddressMap(FirebaseVisionBarcode.Address address) {
