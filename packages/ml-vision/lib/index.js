@@ -28,8 +28,6 @@ import {
 } from '@react-native-firebase/common';
 
 import version from './version';
-import VisionPoint from './VisionPoint';
-import VisionRectangle from './VisionRectangle';
 import VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
 import VisionImageLabelerOptions from './VisionImageLabelerOptions';
 import VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';
@@ -54,8 +52,6 @@ import VisionBarcodePhoneType from './VisionBarcodePhoneType';
 import VisionBarcodeWifiEncryptionType from './VisionBarcodeWifiEncryptionType';
 
 const statics = {
-  VisionPoint,
-  VisionRectangle,
   VisionFaceDetectorOptions,
   VisionImageLabelerOptions,
   VisionBarcodeDetectorOptions,
@@ -297,9 +293,7 @@ export default createModuleNamespace({
 export const firebase = getFirebaseRoot();
 
 // e.g.
-// // import { VisionPoint } from '@react-native-firebase/ml-vision';
-export VisionPoint from './VisionPoint';
-export VisionRectangle from './VisionRectangle';
+// // import { VisionFaceDetectorOptions } from '@react-native-firebase/ml-vision';
 export VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
 export VisionImageLabelerOptions from './VisionImageLabelerOptions';
 export VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';

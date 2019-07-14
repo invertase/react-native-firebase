@@ -73,6 +73,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
    *   console.log(barcode.calendarEvent);
    * }
+   * ```
    */
   calendarEvent?: VisionBarcodeCalendarEvent;
 
@@ -89,6 +90,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
    *   console.log(barcode.contactInfo);
    * }
+   * ```
    */
   contactInfo?: VisionBarcodeContactInfo;
 
@@ -105,6 +107,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.DRIVER_LICENSE) {
    *   console.log(barcode.driverLicense);
    * }
+   * ```
    */
   driverLicense?: VisionBarcodeDriverLicense;
 
@@ -121,6 +124,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.EMAIL) {
    *   console.log(barcode.email);
    * }
+   * ```
    */
   email?: VisionBarcodeEmail;
 
@@ -137,6 +141,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.GEO) {
    *   console.log(barcode.geoPoint);
    * }
+   * ```
    */
   geoPoint?: VisionBarcodeGeoPoint;
 
@@ -153,6 +158,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.PHONE) {
    *   console.log(barcode.phone);
    * }
+   * ```
    */
   phone?: VisionBarcodePhone;
 
@@ -169,6 +175,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.SMS) {
    *   console.log(barcode.sms);
    * }
+   * ```
    */
   sms?: VisionBarcodeSms;
 
@@ -185,6 +192,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.URL) {
    *   console.log(barcode.url);
    * }
+   * ```
    */
   url?: VisionBarcodeUrl;
 
@@ -201,6 +209,7 @@ export interface VisionBarcode {
    * if (barcode && barcode.valueType === VisionBarcodeValueType.WIFI) {
    *   console.log(barcode.wifi);
    * }
+   * ```
    */
   wifi?: VisionBarcodeWifi;
 }
@@ -218,6 +227,7 @@ export interface VisionBarcode {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.WIFI) {
  *   console.log(barcode.wifi);
  * }
+ * ```
  */
 export interface VisionBarcodeWifi {
   /**
@@ -255,6 +265,7 @@ export interface VisionBarcodeWifi {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.URL) {
  *   console.log(barcode.url);
  * }
+ * ```
  */
 export interface VisionBarcodeUrl {
   /**
@@ -285,6 +296,7 @@ export interface VisionBarcodeUrl {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.SMS) {
  *   console.log(barcode.sms);
  * }
+ * ```
  */
 export interface VisionBarcodeSms {
   /**
@@ -315,6 +327,7 @@ export interface VisionBarcodeSms {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.GEO) {
  *   console.log(barcode.geoPoint);
  * }
+ * ```
  */
 export interface VisionBarcodeGeoPoint {
   /**
@@ -341,6 +354,7 @@ export interface VisionBarcodeGeoPoint {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.DRIVER_LICENSE) {
  *   console.log(barcode.driverLicense);
  * }
+ * ```
  */
 export interface VisionBarcodeDriverLicense {
   /**
@@ -453,6 +467,7 @@ export interface VisionBarcodeDriverLicense {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
  *   console.log(barcode.calendarEvent);
  * }
+ * ```
  */
 export interface VisionBarcodeCalendarEvent {
   /**
@@ -518,6 +533,7 @@ export interface VisionBarcodeCalendarEvent {
  * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
  *   console.log(barcode.contactInfo);
  * }
+ * ```
  */
 export interface VisionBarcodeContactInfo {
   /**
@@ -650,6 +666,7 @@ export interface VisionBarcodePersonName {
  * } else if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
  *   console.log(barcode.contactInfo.emails[0]);
  * }
+ * ```
  */
 export interface VisionBarcodeEmail {
   /**
@@ -689,6 +706,7 @@ export interface VisionBarcodeEmail {
  * } else if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
  *   console.log(barcode.contactInfo.phones[0]);
  * }
+ * ```
  */
 export interface VisionBarcodePhone {
   /**
@@ -704,4 +722,298 @@ export interface VisionBarcodePhone {
    * See also `VisionBarcodePhoneType`.
    */
   type: number;
+}
+
+/**
+ * Custom options for barcode detection.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeDetectorOptions, VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const options = new VisionBarcodeDetectorOptions();
+ * options.setBarcodeFormats(VisionBarcodeFormat.QR_CODE);
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, options);
+ *
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
+ *   console.log(barcode.contactInfo);
+ * }
+ * ```
+ */
+export class VisionBarcodeDetectorOptions {
+  /**
+   * Set the barcode formats to detect.
+   *
+   * Defaults to `VisionBarcodeFormat.ALL_FORMATS`;
+   *
+   * @param formats Variable args of `VisionBarcodeFormat`
+   */
+  setBarcodeFormats(...formats: VisionBarcodeFormat[]): VisionBarcodeDetectorOptions;
+}
+
+/**
+ * Barcode format constants - enumeration of supported barcode formats.
+ *
+ * Can be used to specify the known type of a barcode before processing; via `VisionBarcodeDetectorOptions.setBarcodeFormats()`
+ */
+export enum VisionBarcodeFormat {
+  /**
+   * Barcode format constant representing the union of all supported formats.
+   */
+  ALL_FORMATS = 0,
+
+  /**
+   * Barcode format constant for AZTEC.
+   */
+  AZTEC = 4096,
+
+  /**
+   * Barcode format constant for Codabar.
+   */
+  CODABAR = 8,
+
+  /**
+   * Barcode format constant for Code 128.
+   */
+  CODE_128 = 1,
+
+  /**
+   * Barcode format constant for Code 39.
+   */
+  CODE_39 = 2,
+
+  /**
+   * Barcode format constant for Code 93.
+   */
+  CODE_93 = 4,
+
+  /**
+   * Barcode format constant for Data Matrix.
+   */
+  DATA_MATRIX = 16,
+
+  /**
+   * Barcode format constant for EAN-13.
+   */
+  EAN_13 = 32,
+
+  /**
+   * Barcode format constant for EAN-8.
+   */
+  EAN_8 = 64,
+
+  /**
+   * Barcode format constant for ITF (Interleaved Two-of-Five).
+   */
+  ITF = 128,
+
+  /**
+   * Barcode format constant for PDF-417.
+   */
+  PDF417 = 2048,
+
+  /**
+   * Barcode format constant for QR Code.
+   */
+  QR_CODE = 256,
+
+  /**
+   * Barcode format unknown to the current SDK, but understood by Google Play services.
+   */
+  UNKNOWN = -1,
+
+  /**
+   * Barcode format constant for UPC-A.
+   */
+  UPC_A = 512,
+
+  /**
+   * Barcode format constant for UPC-E.
+   */
+  UPC_E = 1024,
+}
+
+/**
+ * Barcode value type constants - enumeration of supported barcode content value types.
+ *
+ * Can be used with `VisionBarcode.valueType` to determine the barcode content type of a detected barcode.
+ *
+ * #### Example
+ *
+ * ```js
+ * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+ *
+ * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
+ *
+ * // check for a calendar event barcode value type
+ * if (barcode && barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
+ *   console.log(barcode.calendarEvent);
+ * }
+ * ```
+ */
+export enum VisionBarcodeValueType {
+  /**
+   *  Barcode value type constant for calendar events.
+   */
+  CALENDAR_EVENT = 11,
+
+  /**
+   *  Barcode value type constant for contact information.
+   */
+  CONTACT_INFO = 1,
+
+  /**
+   *  Barcode value type constant for driver's license data.
+   */
+  DRIVER_LICENSE = 12,
+
+  /**
+   *  Barcode value type constant for email message details.
+   */
+  EMAIL = 2,
+
+  /**
+   *  Barcode value type constant for geographic coordinates.
+   */
+  GEO = 10,
+
+  /**
+   *  Barcode value type constant for ISBNs.
+   */
+  ISBN = 3,
+
+  /**
+   *  Barcode value type constant for phone numbers.
+   */
+  PHONE = 4,
+
+  /**
+   *  Barcode value type constant for product codes.
+   */
+  PRODUCT = 5,
+
+  /**
+   *  Barcode value type constant for SMS details.
+   */
+  SMS = 6,
+
+  /**
+   *  Barcode value type constant for plain text.
+   */
+  TEXT = 7,
+
+  /**
+   *  Barcode value type unknown, which indicates the current version of SDK cannot recognize the structure of the barcode.
+   */
+  UNKNOWN = 0,
+
+  /**
+   *  Barcode value type constant for URLs/bookmarks.
+   */
+  URL = 8,
+
+  /**
+   *  Barcode value type constant for WiFi access point details.
+   */
+  WIFI = 9,
+}
+
+/**
+ * The type of a address detected in a barcode.
+ *
+ * Use with `VisionBarcodeAddress.type`.
+ */
+export enum VisionBarcodeAddressType {
+  /**
+   * Unknown type
+   */
+  UNKNOWN = 0,
+
+  /**
+   * Address is specified as a WORK address.
+   */
+  WORK = 1,
+
+  /**
+   * Address is specified as a HOME address.
+   */
+  HOME = 2,
+}
+
+/**
+ * The type of an email detected in a barcode.
+ *
+ * Use with `VisionBarcodeEmail.type`.
+ */
+export enum VisionBarcodeEmailType {
+  /**
+   * Unknown type
+   */
+  UNKNOWN = 0,
+
+  /**
+   * Email address is specified as a WORK email.
+   */
+  WORK = 1,
+
+  /**
+   * Email address is specified as a HOME / personal email.
+   */
+  HOME = 2,
+}
+
+/**
+ * The type of a phone number detected in a barcode.
+ *
+ * Use with `VisionBarcodePhone.type`.
+ */
+export enum VisionBarcodePhoneType {
+  /**
+   * Face machine.
+   */
+  FAX = 3,
+
+  /**
+   * Home phone.
+   */
+  HOME = 2,
+
+  /**
+   * Mobile Phone.
+   */
+  MOBILE = 4,
+
+  /**
+   * Unknown type.
+   */
+  UNKNOWN = 0,
+
+  /**
+   * Work phone.
+   */
+  WORK = 1,
+}
+
+/**
+ * The type of wifi encryption used for a `VisionBarcodeWifi` instance.
+ *
+ * Use with `VisionBarcodeWifi.encryptionType`.
+ */
+export enum VisionBarcodeWifiEncryptionType {
+  /**
+   * Wifi has no encryption and is open.
+   */
+  OPEN = 1,
+
+  /**
+   * Wifi uses WPA encryption. This includes WPA2.
+   */
+  WPA = 2,
+
+  /**
+   * Wifi uses WEP encryption.
+   */
+  WEP = 3,
 }

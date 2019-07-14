@@ -23,6 +23,7 @@ export default class VisionBarcodeDetectorOptions extends MutatableParams {
     super();
     this.set('barcodeFormats', [VisionBarcodeFormat.ALL_FORMATS]); // TODO format all formats
   }
+
   setBarcodeFormats(...formats) {
     // todo
     this.set('barcodeFormats', []);
