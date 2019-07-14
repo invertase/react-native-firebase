@@ -20,6 +20,7 @@ import {
   ReactNativeFirebaseModuleAndStatics,
   ReactNativeFirebaseNamespace,
 } from '@react-native-firebase/app-types';
+import {VisionBarcode} from "./BarcodeDetectorTypes";
 
 /**
  * Firebase ML Kit package for React Native.
@@ -58,6 +59,8 @@ import {
  * @firebase ml-vision
  */
 export namespace MLKitVision {
+  export * from './BarcodeDetectorTypes';
+
   export interface Statics {
     VisionPoint: VisionPoint;
     VisionRectangle: VisionRectangle;
@@ -1166,8 +1169,8 @@ export namespace MLKitVision {
      */
     barcodeDetectorProcessImage(
       imageFilePath: string,
-      barcodeDetectorOptions: VisionBarcodeDetectorOptions,
-    ): Promise<TODO>;
+      barcodeDetectorOptions?: VisionBarcodeDetectorOptions,
+    ): Promise<VisionBarcode[]>;
   }
 }
 

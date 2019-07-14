@@ -34,7 +34,7 @@ public class ReactNativeFirebaseMLVisionPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new RNFirebaseMLVisionBarcodeScannerModule(reactContext));
+    modules.add(new RNFirebaseMLVisionBarcodeDetectorModule(reactContext));
     modules.add(new RNFirebaseMLVisionTextRecognizerModule(reactContext));
     modules.add(new RNFirebaseMLVisionLandmarkRecognizerModule(reactContext));
     modules.add(new RNFirebaseMLVisionDocumentTextRecognizerModule(reactContext));
