@@ -28,8 +28,6 @@ import {
 } from '@react-native-firebase/common';
 
 import version from './version';
-import VisionPoint from './VisionPoint';
-import VisionRectangle from './VisionRectangle';
 import VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
 import VisionImageLabelerOptions from './VisionImageLabelerOptions';
 import VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';
@@ -46,10 +44,14 @@ import VisionFaceLandmarkType from './VisionFaceLandmarkType';
 import VisionFaceContourType from './VisionFaceContourType';
 import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 import VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
+import VisionBarcodeFormat from './VisionBarcodeFormat';
+import VisionBarcodeValueType from './VisionBarcodeValueType';
+import VisionBarcodeAddressType from './VisionBarcodeAddressType';
+import VisionBarcodeEmailType from './VisionBarcodeEmailType';
+import VisionBarcodePhoneType from './VisionBarcodePhoneType';
+import VisionBarcodeWifiEncryptionType from './VisionBarcodeWifiEncryptionType';
 
 const statics = {
-  VisionPoint,
-  VisionRectangle,
   VisionFaceDetectorOptions,
   VisionImageLabelerOptions,
   VisionBarcodeDetectorOptions,
@@ -66,6 +68,12 @@ const statics = {
   VisionFaceContourType,
   VisionCloudLandmarkRecognizerModelType,
   VisionDocumentTextRecognizedBreakType,
+  VisionBarcodeFormat,
+  VisionBarcodeValueType,
+  VisionBarcodeAddressType,
+  VisionBarcodeEmailType,
+  VisionBarcodePhoneType,
+  VisionBarcodeWifiEncryptionType,
 };
 
 const namespace = 'mlKitVision';
@@ -240,9 +248,27 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     );
   }
 
-  // barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
-  // todo
-  // }
+  barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
+    if (!isString(localImageFilePath)) {
+      throw new Error(
+        `firebase.mlKitVision().barcodeDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+      );
+    }
+
+    if (
+      !isUndefined(barcodeDetectorOptions) &&
+      !(barcodeDetectorOptions instanceof VisionBarcodeDetectorOptions)
+    ) {
+      throw new Error(
+        `firebase.mlKitVision().barcodeDetectorProcessImage(_, *) 'barcodeDetectorOptions' expected an instance of VisionBarcodeDetectorOptions.`,
+      );
+    }
+
+    return this.native.barcodeDetectorProcessImage(
+      toFilePath(localImageFilePath),
+      barcodeDetectorOptions ? barcodeDetectorOptions.toJSON() : {},
+    );
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/ml-vision';
@@ -267,9 +293,7 @@ export default createModuleNamespace({
 export const firebase = getFirebaseRoot();
 
 // e.g.
-// // import { VisionPoint } from '@react-native-firebase/ml-vision';
-export VisionPoint from './VisionPoint';
-export VisionRectangle from './VisionRectangle';
+// // import { VisionFaceDetectorOptions } from '@react-native-firebase/ml-vision';
 export VisionFaceDetectorOptions from './VisionFaceDetectorOptions';
 export VisionImageLabelerOptions from './VisionImageLabelerOptions';
 export VisionBarcodeDetectorOptions from './VisionBarcodeDetectorOptions';
@@ -286,3 +310,9 @@ export VisionFaceLandmarkType from './VisionFaceLandmarkType';
 export VisionFaceContourType from './VisionFaceContourType';
 export VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 export VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
+export VisionBarcodeFormat from './VisionBarcodeFormat';
+export VisionBarcodeValueType from './VisionBarcodeValueType';
+export VisionBarcodeAddressType from './VisionBarcodeAddressType';
+export VisionBarcodeEmailType from './VisionBarcodeEmailType';
+export VisionBarcodePhoneType from './VisionBarcodePhoneType';
+export VisionBarcodeWifiEncryptionType from './VisionBarcodeWifiEncryptionType';

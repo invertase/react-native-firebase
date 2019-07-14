@@ -43,6 +43,18 @@ class UniversalFirebaseMLVisionCommon {
   static final String KEY_LANDMARK_MODE = "landmarkMode";
   static final String KEY_MIN_FACE_SIZE = "minFaceSize";
   static final String KEY_PERFORMANCE_MODE = "performanceMode";
+  static final String KEY_FORMAT = "format";
+  static final String KEY_DISPLAY_VALUE = "displayValue";
+  static final String KEY_RAW_VALUE = "rawValue";
+  static final String KEY_VALUE_TYPE = "valueType";
+  static final String KEY_GEO_POINT = "geoPoint";
+  static final String KEY_SMS = "sms";
+  static final String KEY_URL = "url";
+  static final String KEY_WIFI = "wifi";
+  static final String KEY_EMAIL = "email";
+  static final String KEY_PHONE = "phone";
+  static final String KEY_CALENDAR_EVENT = "calendarEvent";
+  static final String KEY_CONTACT_INFO = "contactInfo";
 
   static String[] getErrorCodeAndMessageFromException(@Nullable Exception possibleMLException) {
     String code = "unknown";

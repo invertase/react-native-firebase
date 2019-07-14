@@ -15,17 +15,10 @@
  *
  */
 
-import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
-import VisionBarcodeFormat from './VisionBarcodeFormat';
-
-export default class VisionBarcodeDetectorOptions extends MutatableParams {
-  constructor() {
-    super();
-    this.set('barcodeFormats', [VisionBarcodeFormat.ALL_FORMATS]); // TODO format all formats
-  }
-
-  setBarcodeFormats(...formats) {
-    // todo
-    this.set('barcodeFormats', []);
-  }
-}
+export default {
+  FAX: 3,
+  HOME: 2,
+  MOBILE: 4,
+  UNKNOWN: 0,
+  WORK: 1,
+};
