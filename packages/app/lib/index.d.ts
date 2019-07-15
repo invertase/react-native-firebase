@@ -58,7 +58,7 @@ export namespace ReactNativeFirebase {
     readonly nativeErrorMessage: string;
   }
 
-  export type FirebaseAppOptions = {
+  export interface FirebaseAppOptions {
     /**
      * The Google App ID that is used to uniquely identify an instance of an app.
      */
@@ -113,7 +113,7 @@ export namespace ReactNativeFirebase {
      */
     deepLinkURLScheme?: string;
     [name: string]: any;
-  };
+  }
 
   export interface FirebaseAppConfig {
     /**

@@ -28,8 +28,8 @@
 						}
 					],
 					"type": {
-						"type": "reference",
-						"name": "Module"
+						"type": "intrinsic",
+						"name": "any"
 					},
 					"defaultValue": " firebaseNamedExport"
 				},
@@ -46214,9 +46214,7 @@
 			"name": "ReactNativeFirebase",
 			"kind": 2,
 			"kindString": "Module",
-			"flags": {
-				"isExported": true
-			},
+			"flags": {},
 			"comment": {
 				"shortText": "Core React Native Firebase package.",
 				"text": "#### Example 1\n\nAccess the default firebase app from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\n\nconsole.log(firebase.app().name);\n```\n",
@@ -46229,7 +46227,7 @@
 			},
 			"children": [
 				{
-					"id": 85,
+					"id": 100,
 					"name": "FirebaseModule",
 					"kind": 128,
 					"kindString": "Class",
@@ -46238,7 +46236,7 @@
 					},
 					"children": [
 						{
-							"id": 86,
+							"id": 101,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46255,7 +46253,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseApp",
-								"id": 67
+								"id": 82
 							}
 						}
 					],
@@ -46264,7 +46262,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								86
+								101
 							]
 						}
 					],
@@ -46277,7 +46275,7 @@
 					]
 				},
 				{
-					"id": 67,
+					"id": 82,
 					"name": "FirebaseApp",
 					"kind": 256,
 					"kindString": "Interface",
@@ -46286,7 +46284,7 @@
 					},
 					"children": [
 						{
-							"id": 68,
+							"id": 83,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46309,7 +46307,7 @@
 							}
 						},
 						{
-							"id": 69,
+							"id": 84,
 							"name": "options",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46329,11 +46327,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FirebaseAppOptions",
-								"id": 88
+								"id": 65
 							}
 						},
 						{
-							"id": 70,
+							"id": 85,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -46342,7 +46340,7 @@
 							},
 							"signatures": [
 								{
-									"id": 71,
+									"id": 86,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -46376,15 +46374,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								68,
-								69
+								83,
+								84
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								70
+								85
 							]
 						}
 					],
@@ -46397,7 +46395,7 @@
 					]
 				},
 				{
-					"id": 63,
+					"id": 78,
 					"name": "FirebaseAppConfig",
 					"kind": 256,
 					"kindString": "Interface",
@@ -46406,7 +46404,7 @@
 					},
 					"children": [
 						{
-							"id": 65,
+							"id": 80,
 							"name": "automaticDataCollectionEnabled",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46441,7 +46439,7 @@
 							}
 						},
 						{
-							"id": 66,
+							"id": 81,
 							"name": "automaticResourceManagement",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46478,7 +46476,7 @@
 							}
 						},
 						{
-							"id": 64,
+							"id": 79,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46516,9 +46514,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								65,
-								66,
-								64
+								80,
+								81,
+								79
 							]
 						}
 					],
@@ -46531,17 +46529,425 @@
 					]
 				},
 				{
-					"id": 87,
-					"name": "FirebaseConfig",
+					"id": 65,
+					"name": "FirebaseAppOptions",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
 					},
+					"indexSignature": [
+						{
+							"id": 76,
+							"name": "__index",
+							"kind": 8192,
+							"kindString": "Index signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 77,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"children": [
+						{
+							"id": 74,
+							"name": "androidClientId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The Android client ID used in Google AppInvite when an iOS app has its Android version, for\nexample \"12345.apps.googleusercontent.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 109,
+									"character": 19
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 67,
+							"name": "apiKey",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An API key used for authenticating requests from your app, e.g.\n\"AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk\", used to identify your app to Google servers."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 71,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 66,
+							"name": "appId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The Google App ID that is used to uniquely identify an instance of an app."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 65,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 73,
+							"name": "clientId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The OAuth2 client ID for iOS application used to authenticate Google users, for example\n\"12345.apps.googleusercontent.com\", used for signing in with Google."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 103,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 68,
+							"name": "databaseURL",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The database root URL, e.g. \"http://abc-xyz-123.firebaseio.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 76,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 75,
+							"name": "deepLinkURLScheme",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "iOS only - The URL scheme used to set up Durable Deep Link service."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 114,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 70,
+							"name": "gaTrackingId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The tracking ID for Google Analytics, e.g. \"UA-12345678-1\", used to configure Google Analytics."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 86,
+									"character": 16
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 72,
+							"name": "messagingSenderId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The Project Number from the Google Developer's console, for example \"012345678901\", used to\nconfigure Google Cloud Messaging."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 97,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						},
+						{
+							"id": 69,
+							"name": "projectId",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The Project ID from the Firebase console, for example \"abc-xyz-123\"."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 81,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 71,
+							"name": "storageBucket",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The Google Cloud Storage bucket name, e.g. \"abc-xyz-123.storage.firebase.com\"."
+							},
+							"sources": [
+								{
+									"fileName": "app/lib/index.d.ts",
+									"line": 91,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								74,
+								67,
+								66,
+								73,
+								68,
+								75,
+								70,
+								72,
+								69,
+								71
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "app/lib/index.d.ts",
+							"line": 61,
+							"character": 37
+						}
+					]
+				},
+				{
+					"id": 54,
+					"name": "FirebaseConfig",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {},
 					"comment": {
 						"shortText": "React Native Firebase json config"
 					},
+					"children": [
+						{
+							"id": 55,
+							"name": "analytics_auto_collection_enabled",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"comment": {
+								"shortText": "Disable or enable auto collection of analytics data.",
+								"text": "This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.\nThis can be overridden in JavaScript.\n\n#### Example\n\n```json\n// <project-root>/firebase.json\n{\n  \"react-native\": {\n    \"analytics_auto_collection_enabled\": false\n  }\n}\n```\n\n```js\n// Re-enable analytics data collection, e.g. once user has granted permission:\nawait firebase.analytics().setAnalyticsCollectionEnabled(true);\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "analytics/lib/index.d.ts",
+									"line": 294,
+									"character": 37
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								55
+							]
+						}
+					],
 					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 271,
+							"character": 26
+						},
 						{
 							"fileName": "app/lib/index.d.ts",
 							"line": 219,
@@ -46550,7 +46956,7 @@
 					]
 				},
 				{
-					"id": 72,
+					"id": 87,
 					"name": "Module",
 					"kind": 256,
 					"kindString": "Interface",
@@ -46559,7 +46965,7 @@
 					},
 					"children": [
 						{
-							"id": 84,
+							"id": 99,
 							"name": "SDK_VERSION",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46582,7 +46988,7 @@
 							}
 						},
 						{
-							"id": 83,
+							"id": 98,
 							"name": "apps",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46604,12 +47010,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "FirebaseApp",
-									"id": 67
+									"id": 82
 								}
 							}
 						},
 						{
-							"id": 80,
+							"id": 95,
 							"name": "app",
 							"kind": 2048,
 							"kindString": "Method",
@@ -46618,7 +47024,7 @@
 							},
 							"signatures": [
 								{
-									"id": 81,
+									"id": 96,
 									"name": "app",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -46634,7 +47040,7 @@
 									},
 									"parameters": [
 										{
-											"id": 82,
+											"id": 97,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -46662,7 +47068,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 67
+										"id": 82
 									}
 								}
 							],
@@ -46675,7 +47081,7 @@
 							]
 						},
 						{
-							"id": 73,
+							"id": 88,
 							"name": "initializeApp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -46684,7 +47090,7 @@
 							},
 							"signatures": [
 								{
-									"id": 74,
+									"id": 89,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -46694,7 +47100,7 @@
 									},
 									"parameters": [
 										{
-											"id": 75,
+											"id": 90,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -46705,11 +47111,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppOptions",
-												"id": 88
+												"id": 65
 											}
 										},
 										{
-											"id": 76,
+											"id": 91,
 											"name": "config",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -46722,18 +47128,18 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppConfig",
-												"id": 63
+												"id": 78
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 67
+										"id": 82
 									}
 								},
 								{
-									"id": 77,
+									"id": 92,
 									"name": "initializeApp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -46743,7 +47149,7 @@
 									},
 									"parameters": [
 										{
-											"id": 78,
+											"id": 93,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -46754,11 +47160,11 @@
 											"type": {
 												"type": "reference",
 												"name": "FirebaseAppOptions",
-												"id": 88
+												"id": 65
 											}
 										},
 										{
-											"id": 79,
+											"id": 94,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -46786,7 +47192,7 @@
 									"type": {
 										"type": "reference",
 										"name": "FirebaseApp",
-										"id": 67
+										"id": 82
 									}
 								}
 							],
@@ -46809,16 +47215,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								84,
-								83
+								99,
+								98
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								80,
-								73
+								95,
+								88
 							]
 						}
 					],
@@ -46831,7 +47237,7 @@
 					]
 				},
 				{
-					"id": 54,
+					"id": 56,
 					"name": "NativeFirebaseError",
 					"kind": 256,
 					"kindString": "Interface",
@@ -46840,7 +47246,7 @@
 					},
 					"children": [
 						{
-							"id": 62,
+							"id": 64,
 							"name": "Error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46860,7 +47266,7 @@
 							}
 						},
 						{
-							"id": 55,
+							"id": 57,
 							"name": "code",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46883,7 +47289,7 @@
 							}
 						},
 						{
-							"id": 56,
+							"id": 58,
 							"name": "message",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46910,7 +47316,7 @@
 							}
 						},
 						{
-							"id": 60,
+							"id": 62,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46934,7 +47340,7 @@
 							}
 						},
 						{
-							"id": 57,
+							"id": 59,
 							"name": "namespace",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46957,7 +47363,7 @@
 							}
 						},
 						{
-							"id": 58,
+							"id": 60,
 							"name": "nativeErrorCode",
 							"kind": 1024,
 							"kindString": "Property",
@@ -46989,7 +47395,7 @@
 							}
 						},
 						{
-							"id": 59,
+							"id": 61,
 							"name": "nativeErrorMessage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47012,7 +47418,7 @@
 							}
 						},
 						{
-							"id": 61,
+							"id": 63,
 							"name": "stack",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47055,14 +47461,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								62,
-								55,
-								56,
-								60,
+								64,
 								57,
 								58,
+								62,
 								59,
-								61
+								60,
+								61,
+								63
 							]
 						}
 					],
@@ -47079,383 +47485,6 @@
 							"name": "Error"
 						}
 					]
-				},
-				{
-					"id": 88,
-					"name": "FirebaseAppOptions",
-					"kind": 4194304,
-					"kindString": "Type alias",
-					"flags": {
-						"isExported": true
-					},
-					"sources": [
-						{
-							"fileName": "app/lib/index.d.ts",
-							"line": 61,
-							"character": 32
-						}
-					],
-					"type": {
-						"type": "reflection",
-						"declaration": {
-							"id": 89,
-							"name": "__type",
-							"kind": 65536,
-							"kindString": "Type literal",
-							"flags": {},
-							"indexSignature": [
-								{
-									"id": 100,
-									"name": "__index",
-									"kind": 8192,
-									"kindString": "Index signature",
-									"flags": {},
-									"parameters": [
-										{
-											"id": 101,
-											"name": "name",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
-									}
-								}
-							],
-							"children": [
-								{
-									"id": 98,
-									"name": "androidClientId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "iOS only - The Android client ID used in Google AppInvite when an iOS app has its Android version, for\nexample \"12345.apps.googleusercontent.com\"."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 109,
-											"character": 19
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 91,
-									"name": "apiKey",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "An API key used for authenticating requests from your app, e.g.\n\"AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk\", used to identify your app to Google servers."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 71,
-											"character": 10
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 90,
-									"name": "appId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {},
-									"comment": {
-										"shortText": "The Google App ID that is used to uniquely identify an instance of an app."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 65,
-											"character": 9
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								},
-								{
-									"id": 97,
-									"name": "clientId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "iOS only - The OAuth2 client ID for iOS application used to authenticate Google users, for example\n\"12345.apps.googleusercontent.com\", used for signing in with Google."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 103,
-											"character": 12
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 92,
-									"name": "databaseURL",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "The database root URL, e.g. \"http://abc-xyz-123.firebaseio.com\"."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 76,
-											"character": 15
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 99,
-									"name": "deepLinkURLScheme",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "iOS only - The URL scheme used to set up Durable Deep Link service."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 114,
-											"character": 21
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 94,
-									"name": "gaTrackingId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "The tracking ID for Google Analytics, e.g. \"UA-12345678-1\", used to configure Google Analytics."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 86,
-											"character": 16
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 96,
-									"name": "messagingSenderId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "The Project Number from the Google Developer's console, for example \"012345678901\", used to\nconfigure Google Cloud Messaging."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 97,
-											"character": 21
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								},
-								{
-									"id": 93,
-									"name": "projectId",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {},
-									"comment": {
-										"shortText": "The Project ID from the Firebase console, for example \"abc-xyz-123\"."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 81,
-											"character": 13
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								},
-								{
-									"id": 95,
-									"name": "storageBucket",
-									"kind": 32,
-									"kindString": "Variable",
-									"flags": {
-										"isOptional": true
-									},
-									"comment": {
-										"shortText": "The Google Cloud Storage bucket name, e.g. \"abc-xyz-123.storage.firebase.com\"."
-									},
-									"sources": [
-										{
-											"fileName": "app/lib/index.d.ts",
-											"line": 91,
-											"character": 17
-										}
-									],
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "intrinsic",
-												"name": "undefined"
-											},
-											{
-												"type": "intrinsic",
-												"name": "string"
-											}
-										]
-									}
-								}
-							],
-							"groups": [
-								{
-									"title": "Variables",
-									"kind": 32,
-									"children": [
-										98,
-										91,
-										90,
-										97,
-										92,
-										99,
-										94,
-										96,
-										93,
-										95
-									]
-								}
-							],
-							"sources": [
-								{
-									"fileName": "app/lib/index.d.ts",
-									"line": 61,
-									"character": 34
-								}
-							]
-						}
-					}
 				},
 				{
 					"id": 102,
@@ -47621,7 +47650,7 @@
 													"type": {
 														"type": "reference",
 														"name": "FirebaseApp",
-														"id": 67
+														"id": 82
 													}
 												}
 											],
@@ -47685,31 +47714,36 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						85
+						100
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						67,
-						63,
+						82,
+						78,
+						65,
+						54,
 						87,
-						72,
-						54
+						56
 					]
 				},
 				{
 					"title": "Type aliases",
 					"kind": 4194304,
 					"children": [
-						88,
 						102,
 						108
 					]
 				}
 			],
 			"sources": [
+				{
+					"fileName": "analytics/lib/index.d.ts",
+					"line": 270,
+					"character": 29
+				},
 				{
 					"fileName": "app/lib/index.d.ts",
 					"line": 33,
@@ -51035,7 +51069,7 @@
 							"type": {
 								"type": "reference",
 								"name": "NativeFirebaseError",
-								"id": 54
+								"id": 56
 							}
 						},
 						{
