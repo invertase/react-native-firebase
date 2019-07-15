@@ -15,7 +15,7 @@
  *
  */
 
-describe('mlKitVision()', () => {
+android.describe('mlKitVision()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();

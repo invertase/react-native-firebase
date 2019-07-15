@@ -71,7 +71,7 @@ function textBaseElementValidate(textBase, cloud = false) {
 
 let testImageFile;
 
-describe('mlkit.vision.text', () => {
+android.describe('mlkit.vision.text', () => {
   before(async () => {
     testImageFile = `${firebase.storage.Path.DocumentDirectory}/text.png`;
     await firebase
