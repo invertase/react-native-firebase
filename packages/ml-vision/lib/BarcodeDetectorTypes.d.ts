@@ -178,7 +178,7 @@ export namespace MLKitVision {
      * }
      * ```
      */
-    geoPoint?: VisionBarcodeGeoPoint;
+    geoPoint?: VisionGeoPoint;
 
     /**
      * Gets parsed phone details (set if `valueType` is `VisionBarcodeValueType.PHONE`).
@@ -347,33 +347,6 @@ export namespace MLKitVision {
      * Returns `null` if nothing found.
      */
     phoneNumber: string | number;
-  }
-
-  /**
-   * GPS coordinates from a 'GEO:' or similar QRCode type.
-   *
-   * #### Example
-   *
-   * ```js
-   * import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
-   *
-   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath);
-   *
-   * if (barcode && barcode.valueType === VisionBarcodeValueType.GEO) {
-   *   console.log(barcode.geoPoint);
-   * }
-   * ```
-   */
-  export interface VisionBarcodeGeoPoint {
-    /**
-     * The latitude for these GPS coordinates.
-     */
-    lat: number;
-
-    /**
-     * The longitude for these GPS coordinates.
-     */
-    lng: number;
   }
 
   /**

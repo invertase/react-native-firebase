@@ -1037,20 +1037,19 @@ export namespace MLKitVision {
     /**
      * Gets the location information for the detected entity.
      *
-     * Multiple FirebaseVisionLatLng elements can be present because one location may indicate the location of the scene
+     * Multiple VisionGeoPoint elements can be present because one location may indicate the location of the scene
      * in the image, and another location may indicate the location of the place where the image was taken.
      * Location information is usually present for landmarks.
      */
-    locations: VisionLatLng[];
+    locations: VisionGeoPoint[];
   }
 
   /**
-   * An object representing a latitude/longitude pair. This is expressed as a pair of doubles representing degrees latitude and degrees longitude.
+   * A representation of a latitude/longitude pair.
    *
-   * Unless specified otherwise, this must conform to the [WGS84](https://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf)
-   * standard. Values must be within normalized ranges.
+   * This is expressed as an array of numbers representing degrees latitude and degrees longitude, in the form `[lat, lng]`.
    */
-  export type VisionLatLng = [number, number];
+  export type VisionGeoPoint = [number, number];
 
   /**
    * The Firebase ML Kit service interface.

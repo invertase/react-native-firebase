@@ -129,11 +129,11 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
 
   private void addGeoPointFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
     if (barcode.getGeoPoint() == null) return;
-    Map<String, Object> geoPointMap = new HashMap<>();
+    List<Double> latLng = new ArrayList<>(2);
     FirebaseVisionBarcode.GeoPoint geoPoint = barcode.getGeoPoint();
-    geoPointMap.put("lat", geoPoint.getLat());
-    geoPointMap.put("lng", geoPoint.getLng());
-    barcodeMap.put(KEY_GEO_POINT, geoPointMap);
+    latLng.add(geoPoint.getLat());
+    latLng.add(geoPoint.getLng());
+    barcodeMap.put(KEY_GEO_POINT, latLng);
   }
 
   private void addSmsFromBarcodeToMap(FirebaseVisionBarcode barcode, Map<String, Object> barcodeMap) {
