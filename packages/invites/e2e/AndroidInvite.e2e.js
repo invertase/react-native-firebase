@@ -15,7 +15,7 @@
  *
  */
 
-describe('firebase.invites.AndroidInvite', () => {
+android.describe('firebase.invites.AndroidInvite', () => {
   describe('setAdditionalReferralParameters', () => {
     it('accepts an object with string keys & values', () => {
       const invite = firebase.invites().createInvitation('foo', 'bar');
