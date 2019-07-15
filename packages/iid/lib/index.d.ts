@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStaticsWithApp,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Instance ID package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase iid
  */
 export namespace Iid {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -73,7 +71,7 @@ export namespace Iid {
    * const defaultAppIid = firebase.iid();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns a identifier that uniquely identifies the app instance.
      *
@@ -133,57 +131,27 @@ export namespace Iid {
 }
 
 declare module '@react-native-firebase/iid' {
-  import {
-    ReactNativeFirebaseModuleAndStaticsWithApp,
-    ReactNativeFirebaseNamespace,
-  } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/iid';
-   * firebase.iid().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const IidDefaultExport: ReactNativeFirebaseModuleAndStaticsWithApp<Iid.Module, Iid.Statics>;
-  /**
-   * @example
-   * ```js
-   * import iid from '@react-native-firebase/iid';
-   * iid().X(...);
-   * ```
-   */
-  export default IidDefaultExport;
+  const module: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
-     * and authorize actions for it (for example: sending FCM messages).
-     *
-     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
-     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
-     */
-    iid: ReactNativeFirebaseModuleAndStaticsWithApp<Iid.Module, Iid.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate
-     * and authorize actions for it (for example: sending FCM messages).
-     *
-     * An Instance ID is long lived except when you call delete, the app is restored on a new device, the user
-     * uninstalls/reinstall the app or the user clears the app data (clearing data applies to Android only).
-     *
-     */
-    iid(): Iid.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      iid: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
+    }
+    interface FirebaseApp {
+      iid(): Iid.Module;
+    }
   }
 }
