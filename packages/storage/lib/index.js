@@ -25,7 +25,7 @@ import { isNumber, isString } from '@react-native-firebase/common';
 import version from './version';
 import StorageStatics from './StorageStatics';
 import StorageReference from './StorageReference';
-import { getUrlParts, handleStorageEvent } from './utils';
+import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -87,13 +87,27 @@ class FirebaseStorageModule extends FirebaseModule {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#refFromURL
    */
   refFromURL(url) {
-    if (!isString(url) || !url.startsWith('gs://')) {
+    if (!isString(url) || (!url.startsWith('gs://') && !url.startsWith('http'))) {
       throw new Error(
-        `firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://'.`,
+        `firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://' or 'https://'.`,
       );
     }
 
-    const { bucket, path } = getUrlParts(url);
+    let path;
+    let bucket;
+
+    if (url.startsWith('http')) {
+      const parts = getHttpUrlParts(url);
+      if (!parts) {
+        throw new Error(
+          `firebase.storage().refFromURL(*) unable to parse 'url', ensure it's a valid storage url'.`,
+        );
+      }
+      ({ bucket, path } = parts);
+    } else {
+      ({ bucket, path } = getGsUrlParts(url));
+    }
+
     const storageInstance = this.app.storage(bucket);
     return new StorageReference(storageInstance, path);
   }
