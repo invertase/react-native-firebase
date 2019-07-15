@@ -1129,12 +1129,12 @@ export namespace Storage {
 
 declare module '@react-native-firebase/storage' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Storage.Module, Storage.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<Storage.Module, Storage.Statics>;
   export default module;
 }
 
@@ -1143,9 +1143,9 @@ declare module '@react-native-firebase/storage' {
  */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      storage: FirebaseModuleWithStatics<Storage.Module, Storage.Statics>;
+      storage: FirebaseModuleWithStaticsAndApp<Storage.Module, Storage.Statics>;
     }
     interface FirebaseApp {
       storage(bucket?: string): Storage.Module;
