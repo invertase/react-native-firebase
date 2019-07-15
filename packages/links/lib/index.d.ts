@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Links
@@ -27,6 +23,8 @@ import {
  * @firebase links
  */
 export namespace Links {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * The DynamicLinkAnalyticsParameters interface provides functionality to add Google Analytic
    * based parameters to a dynamic link.
@@ -407,7 +405,7 @@ export namespace Links {
    * const links = firebase.links();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Creates new parameters which enhance the functionality of a created link.
      *
@@ -547,45 +545,27 @@ export namespace Links {
 }
 
 declare module '@react-native-firebase/links' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/links';
-   * firebase.links().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const LinksDefaultExport: ReactNativeFirebaseModuleAndStatics<Links.Module, Links.Statics>;
-  /**
-   * @example
-   * ```js
-   * import links from '@react-native-firebase/links';
-   * links().X(...);
-   * ```
-   */
-  export default LinksDefaultExport;
+  const module: FirebaseModuleWithStatics<Links.Module, Links.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Links
-     */
-    links: ReactNativeFirebaseModuleAndStatics<Links.Module, Links.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Links
-     */
-    links(): Links.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      links: FirebaseModuleWithStatics<Links.Module, Links.Statics>;
+    }
+    interface FirebaseApp {
+      links(): Links.Module;
+    }
   }
 }
