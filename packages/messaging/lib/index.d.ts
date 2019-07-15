@@ -15,12 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-  NativeFirebaseError,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Messaging package for React Native.
@@ -59,6 +54,9 @@ import {
  * @firebase messaging
  */
 export namespace Messaging {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
   export interface Statics {
     // firebase.messaging.* static props go here
   }
@@ -243,7 +241,7 @@ export namespace Messaging {
    * const defaultAppMessaging = firebase.messaging();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns a new `RemoteMessageBuilder` which can be passed to `sendMessage()`.
      *
@@ -658,47 +656,33 @@ export namespace Messaging {
 }
 
 declare module '@react-native-firebase/messaging' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-  export const firebase = FirebaseNamespaceExport;
-  const MessagingDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Messaging.Module,
-    Messaging.Statics
-  >;
-  export default MessagingDefaultExport;
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
+
+  const module: FirebaseModuleWithStatics<Messaging.Module, Messaging.Statics>;
+  export default module;
 }
 
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    messaging: ReactNativeFirebaseModuleAndStatics<Messaging.Module, Messaging.Statics>;
-  }
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      messaging: FirebaseModuleWithStatics<Messaging.Module, Messaging.Statics>;
+    }
 
-  interface FirebaseJSON {
-    /**
-     * Set whether database persistence is enabled or disabled.
-     *
-     * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "messaging_auto_init_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable database persistence
-     * await firebase.messaging().setAutoInitEnabled(true);
-     * ```
-     */
-    messaging_auto_init_enabled: boolean;
-  }
+    interface FirebaseApp {
+      messaging(): Messaging.Module;
+    }
 
-  interface FirebaseApp {
-    messaging(): Messaging.Module;
+    interface FirebaseConfig {
+      messaging_auto_init_enabled: boolean;
+      messaging_android_headless_task_timeout: number;
+    }
   }
 }
