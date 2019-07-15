@@ -15,7 +15,7 @@
  *
  */
 
-describe('perf()', () => {
+android.describe('perf()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
