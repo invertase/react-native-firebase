@@ -17,7 +17,7 @@
 
 let testImageFile;
 
-describe('mlkit.vision.label', () => {
+android.describe('mlkit.vision.label', () => {
   before(async () => {
     testImageFile = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
     await firebase
