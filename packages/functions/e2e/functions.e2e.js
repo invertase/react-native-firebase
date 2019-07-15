@@ -66,6 +66,16 @@ describe('functions()', () => {
     });
   });
 
+  it('useFunctionsEmulator -> uses 10.0.2.2', async () => {
+    const region = 'europe-west2';
+    const functions = firebase.app().functions(region);
+
+    functions.useFunctionsEmulator('http://localhost');
+    functions._useFunctionsEmulatorOrigin.should.equal('http://10.0.2.2');
+    functions.useFunctionsEmulator('http://127.0.0.1');
+    functions._useFunctionsEmulatorOrigin.should.equal('http://10.0.2.2');
+  });
+
   it('useFunctionsEmulator', async () => {
     const region = 'europe-west2';
     const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
