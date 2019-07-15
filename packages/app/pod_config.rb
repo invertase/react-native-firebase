@@ -32,7 +32,7 @@ def react_native_firebase!(config = {})
     module_name = File.basename(module_dir)
     module_podspec_name = "RNFB_#{module_name.gsub('-', '_')}".camelize
     # TODO fix perf build
-    next if %w[private-tests-helpers app-types template perf common].include? module_name
+    next if %w[private-tests-helpers app-types template perf invites common].include? module_name
 
     module_podspec_path = File.join(module_dir, "ios", "#{module_podspec_name}.podspec")
     next unless File.exist?(module_podspec_path)
