@@ -16,10 +16,21 @@
  */
 
 /**
+ * Core React Native Firebase package.
+ *
+ * #### Example 1
+ *
+ * Access the default firebase app from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ *
+ * console.log(firebase.app().name);
+ * ```
+ *
  *  @firebase app
  */
 export namespace ReactNativeFirebase {
-  export interface Statics {}
   export interface NativeFirebaseError extends Error {
     /**
      * Firebase error code, e.g. `auth/invalid-email`
