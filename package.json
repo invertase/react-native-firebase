@@ -6,7 +6,7 @@
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
     "validate:all:js": "eslint ./",
-    "validate:all:ts": "tsc --project ./",
+    "validate:all:ts": "tsc --project ./ && tslint --project tsconfig.json -c tslint.json packages/**/**/*.ts",
     "validate:all:flow": "flow",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
