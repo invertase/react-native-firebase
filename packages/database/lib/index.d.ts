@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Database package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase database
  */
 export namespace Database {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * The ServerValue interface provides access to Firebase server values.
    */
@@ -1067,7 +1065,7 @@ export namespace Database {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns the current Firebase Database server time as a JavaScript Date object.
      */
@@ -1217,47 +1215,53 @@ export namespace Database {
 }
 
 declare module '@react-native-firebase/database' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-  export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Database.Module,
-    Database.Statics
-  >;
-  export default DatabaseDefaultExport;
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
+
+  const module: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+  export default module;
 }
 
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    database: ReactNativeFirebaseModuleAndStatics<Database.Module, Database.Statics>;
-  }
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      database: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+    }
 
-  interface FirebaseJSON {
-    /**
-     * Set whether database persistence is enabled or disabled.
-     *
-     * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "database_persistence_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable database persistence
-     * await firebase.database().setPersistenceEnabled(true);
-     * ```
-     */
-    database_persistence_enabled: boolean;
-  }
+    interface FirebaseApp {
+      database(databaseUrl?: string): Database.Module;
+    }
 
-  interface FirebaseApp {
-    database(): Database.Module;
+    interface FirebaseConfig {
+      /**
+       * Set whether database persistence is enabled or disabled.
+       *
+       * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "database_persistence_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable database persistence
+       * await firebase.database().setPersistenceEnabled(true);
+       * ```
+       */
+      database_persistence_enabled: boolean;
+    }
   }
 }
