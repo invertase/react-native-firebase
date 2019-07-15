@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Remote Config package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase config
  */
 export namespace Config {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
    *
@@ -274,7 +272,7 @@ export namespace Config {
    * const defaultAppRemoteConfig = firebase.config();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * The number of milliseconds since the last Remote Config fetch was performed.
      */
@@ -425,49 +423,27 @@ export namespace Config {
 }
 
 declare module '@react-native-firebase/config' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/config';
-   * firebase.config().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const ConfigDefaultExport: ReactNativeFirebaseModuleAndStatics<Config.Module, Config.Statics>;
-  /**
-   * @example
-   * ```js
-   * import config from '@react-native-firebase/config';
-   * config().X(...);
-   * ```
-   */
-  export default ConfigDefaultExport;
+  const module: FirebaseModuleWithStatics<Config.Module, Config.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
-     * app without requiring users to download an app update. When using Remote Config, you create in-app default
-     * values that control the behavior and appearance of your app.
-     */
-    config: ReactNativeFirebaseModuleAndStatics<Config.Module, Config.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Firebase Remote Config is a cloud service that lets you change the behavior and appearance of your
-     * app without requiring users to download an app update. When using Remote Config, you create in-app default
-     * values that control the behavior and appearance of your app.
-     */
-    config(): Config.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      config: FirebaseModuleWithStatics<Config.Module, Config.Statics>;
+    }
+    interface FirebaseApp {
+      config(): Config.Module;
+    }
   }
 }
