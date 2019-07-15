@@ -28,7 +28,7 @@
  * console.log(firebase.app().name);
  * ```
  *
- *  @firebase app
+ * @firebase app
  */
 export namespace ReactNativeFirebase {
   export interface NativeFirebaseError extends Error {

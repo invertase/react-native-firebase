@@ -46219,7 +46219,13 @@
 			},
 			"comment": {
 				"shortText": "Core React Native Firebase package.",
-				"text": "#### Example 1\n\nAccess the default firebase app from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\n\nconsole.log(firebase.app().name);\n```\n\n @firebase app\n"
+				"text": "#### Example 1\n\nAccess the default firebase app from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\n\nconsole.log(firebase.app().name);\n```\n",
+				"tags": [
+					{
+						"tag": "firebase",
+						"text": "app\n"
+					}
+				]
 			},
 			"children": [
 				{
