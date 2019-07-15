@@ -200,6 +200,11 @@ export namespace ReactNativeFirebase {
      */
     readonly SDK_VERSION: string;
   } & S;
+
+  /**
+   * React Native Firebase json config
+   */
+  export interface FirebaseConfig {}
 }
 
 declare module '@react-native-firebase/app' {
