@@ -461,30 +461,33 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       perf(): Perf.Module;
     }
-    interface FirebaseConfig {
-      /**
-       * Disable or enable auto collection of performance monitoring data collection.
-       *
-       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-       * This can be overridden in JavaScript.
-       *
-       * #### Example
-       *
-       * ```json
-       * // <project-root>/firebase.json
-       * {
-       *   "react-native": {
-       *     "perf_auto_collection_enabled": false
-       *   }
-       * }
-       * ```
-       *
-       * ```js
-       * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
-       * await firebase.perf().setPerformanceCollectionEnabled(true);
-       * ```
-       */
-      perf_auto_collection_enabled: boolean;
-    }
+  }
+}
+
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
+    /**
+     * Disable or enable auto collection of performance monitoring data collection.
+     *
+     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+     * This can be overridden in JavaScript.
+     *
+     * #### Example
+     *
+     * ```json
+     * // <project-root>/firebase.json
+     * {
+     *   "react-native": {
+     *     "perf_auto_collection_enabled": false
+     *   }
+     * }
+     * ```
+     *
+     * ```js
+     * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
+     * await firebase.perf().setPerformanceCollectionEnabled(true);
+     * ```
+     */
+    perf_auto_collection_enabled: boolean;
   }
 }

@@ -214,9 +214,9 @@ export namespace ReactNativeFirebase {
   } & S;
 
   /**
-   * React Native Firebase json config
+   * React Native Firebase `firebase.json` config
    */
-  export interface FirebaseConfig {}
+  export interface FirebaseJsonConfig {}
 }
 
 declare module '@react-native-firebase/app' {
