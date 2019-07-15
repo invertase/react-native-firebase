@@ -88,7 +88,7 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
-    await Utils.sleep(1000 * retry);
+    await Utils.sleep(2000 * retry);
   }
 });
 
