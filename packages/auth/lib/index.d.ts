@@ -15,12 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-  NativeFirebaseError,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Authentication package for React Native.
@@ -60,6 +55,9 @@ import {
  * @firebase auth
  */
 export namespace Auth {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
   /**
    * Interface that represents the credentials returned by an auth provider. Implementations specify the details
    * about each auth provider's credential requirements.
@@ -872,7 +870,7 @@ export namespace Auth {
     /**
      * Additional provider-specific information about the user.
      */
-    providerData: Array<UserInfo>;
+    providerData: UserInfo[];
 
     /**
      *  The authentication provider ID for the current user.
@@ -1131,7 +1129,7 @@ export namespace Auth {
    *
    * TODO @salakar missing updateCurrentUser
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Gets the current language code.
      *
@@ -1542,7 +1540,7 @@ export namespace Auth {
      * @error auth/invalid-email Thrown if the email address is not valid.
      * @param email The users email address.
      */
-    fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
+    fetchSignInMethodsForEmail(email: string): Promise<string[]>;
 
     /**
      * Checks a password reset code sent to the user by email or other out-of-band mechanism.
@@ -1565,45 +1563,27 @@ export namespace Auth {
 }
 
 declare module '@react-native-firebase/auth' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/auth';
-   * firebase.auth().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const AuthDefaultExport: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
-  /**
-   * @example
-   * ```js
-   * import auth from '@react-native-firebase/auth';
-   * auth().X(...);
-   * ```
-   */
-  export default AuthDefaultExport;
+  const module: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Auth
-     */
-    auth: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Auth
-     */
-    auth(): Auth.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      auth: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
+    }
+    interface FirebaseApp {
+      auth(): Auth.Module;
+    }
   }
 }

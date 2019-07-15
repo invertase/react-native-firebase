@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase In-App Messaging package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase fiam
  */
 export namespace Fiam {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -73,7 +71,7 @@ export namespace Fiam {
    * const defaultAppFiam = firebase.fiam();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Determines whether messages are suppressed or not.
      *
@@ -135,75 +133,54 @@ export namespace Fiam {
 }
 
 declare module '@react-native-firebase/fiam' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/fiam';
-   * firebase.fiam().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const FiamDefaultExport: ReactNativeFirebaseModuleAndStatics<Fiam.Module, Fiam.Statics>;
-  /**
-   * @example
-   * ```js
-   * import fiam from '@react-native-firebase/fiam';
-   * fiam().X(...);
-   * ```
-   */
-  export default FiamDefaultExport;
+  const module: FirebaseModuleWithStatics<Fiam.Module, Fiam.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firebase In-App Messaging helps you engage users who are actively using your app by sending
-     * them targeted and contextual messages that nudge them to complete key in-app actions - like
-     * beating a game level, buying an item, or subscribing to content.
-     */
-    fiam: ReactNativeFirebaseModuleAndStatics<Fiam.Module, Fiam.Statics>;
-  }
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      fiam: FirebaseModuleWithStatics<Fiam.Module, Fiam.Statics>;
+    }
 
-  interface FirebaseJSON {
-    /**
-     * Disable or enable auto collection & receiving of in-app messages and data collection.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "fiam_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable in-app messaging, e.g. once user has granted permission:
-     * await firebase.perf().setAutomaticDataCollectionEnabled(true);
-     * ```
-     */
-    fiam_auto_collection_enabled: boolean;
-  }
+    interface FirebaseApp {
+      fiam(): Fiam.Module;
+    }
 
-  interface FirebaseApp {
-    /**
-     * Firebase In-App Messaging helps you engage users who are actively using your app by sending
-     * them targeted and contextual messages that nudge them to complete key in-app actions - like
-     * beating a game level, buying an item, or subscribing to content.
-     */
-    fiam(): Fiam.Module;
+    interface FirebaseConfig {
+      /**
+       * Disable or enable auto collection & receiving of in-app messages and data collection.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "fiam_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable in-app messaging, e.g. once user has granted permission:
+       * await firebase.perf().setAutomaticDataCollectionEnabled(true);
+       * ```
+       */
+      fiam_auto_collection_enabled: boolean;
+    }
   }
 }

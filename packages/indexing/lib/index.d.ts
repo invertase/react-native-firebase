@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Indexing package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase indexing
  */
 export namespace Indexing {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -74,7 +72,7 @@ export namespace Indexing {
    * const defaultAppIndexing = firebase.indexing();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * If the application was launched via a deep link URL, the URL is returned, otherwise
      * value is `null`.
@@ -94,22 +92,27 @@ export namespace Indexing {
 }
 
 declare module '@react-native-firebase/indexing' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-  export const firebase = FirebaseNamespaceExport;
-  const IndexingDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Indexing.Module,
-    Indexing.Statics
-  >;
-  export default IndexingDefaultExport;
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
+
+  const module: FirebaseModuleWithStatics<Indexing.Module, Indexing.Statics>;
+  export default module;
 }
 
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    indexing: ReactNativeFirebaseModuleAndStatics<Indexing.Module, Indexing.Statics>;
-  }
-
-  interface FirebaseApp {
-    indexing(): Indexing.Module;
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      indexing: FirebaseModuleWithStatics<Indexing.Module, Indexing.Statics>;
+    }
+    interface FirebaseApp {
+      indexing(): Indexing.Module;
+    }
   }
 }
