@@ -21,11 +21,11 @@ import VisionBarcodeFormat from './VisionBarcodeFormat';
 export default class VisionBarcodeDetectorOptions extends MutatableParams {
   constructor() {
     super();
-    this.set('barcodeFormats', [VisionBarcodeFormat.ALL_FORMATS]); // TODO format all formats
+    this.set('barcodeFormats', [VisionBarcodeFormat.ALL_FORMATS]);
   }
 
   setBarcodeFormats(...formats) {
-    // todo
-    this.set('barcodeFormats', []);
+    // todo validate
+    this.set('barcodeFormats', formats);
   }
 }

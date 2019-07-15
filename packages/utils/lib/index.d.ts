@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * React Native Firebase Utilities package.
@@ -58,6 +54,8 @@ import {
  * @firebase utils
  */
 export namespace Utils {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -73,7 +71,7 @@ export namespace Utils {
    * const defaultAppUtils = firebase.utils();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
      *
@@ -84,47 +82,34 @@ export namespace Utils {
 }
 
 declare module '@react-native-firebase/utils' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/utils';
-   * firebase.utils().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const UtilsDefaultExport: ReactNativeFirebaseModuleAndStatics<Utils.Module, Utils.Statics>;
-  /**
-   * @example
-   * ```js
-   * import utils from '@react-native-firebase/utils';
-   * utils().X(...);
-   * ```
-   */
-  export default UtilsDefaultExport;
+  const module: FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Utils provides a collection of utilities to aid in using Firebase
-     * and related services inside React Native, e.g. Test Lab helpers
-     * and Google Play Services version helpers.
-     */
-    utils: ReactNativeFirebaseModuleAndStatics<Utils.Module, Utils.Statics>;
-  }
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  interface FirebaseApp {
-    /**
-     * Utils
-     */
-    utils(): Utils.Module;
+    interface Module {
+      /**
+       * Utils provides a collection of utilities to aid in using Firebase
+       * and related services inside React Native, e.g. Test Lab helpers
+       * and Google Play Services version helpers.
+       */
+      utils: FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
+    }
+
+    interface FirebaseApp {
+      utils(): Utils.Module;
+    }
   }
 }

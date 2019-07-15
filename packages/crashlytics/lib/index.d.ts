@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Crashlytics package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase crashlytics
  */
 export namespace Crashlytics {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -73,7 +71,7 @@ export namespace Crashlytics {
    * const defaultAppCrashlytics = firebase.crashlytics();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.
      *
@@ -229,50 +227,27 @@ export namespace Crashlytics {
 }
 
 declare module '@react-native-firebase/crashlytics' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/crashlytics';
-   * firebase.crashlytics().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const CrashlyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Crashlytics.Module,
-    Crashlytics.Statics
-  >;
-  /**
-   * @example
-   * ```js
-   * import crashlytics from '@react-native-firebase/crashlytics';
-   * crashlytics().X(...);
-   * ```
-   */
-  export default CrashlyticsDefaultExport;
+  const module: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
-     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
-     */
-    crashlytics: ReactNativeFirebaseModuleAndStatics<Crashlytics.Module, Crashlytics.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
-     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
-     */
-    crashlytics(): Crashlytics.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      crashlytics: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
+    }
+    interface FirebaseApp {
+      crashlytics(): Crashlytics.Module;
+    }
   }
 }

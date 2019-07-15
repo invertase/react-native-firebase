@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Cloud Firestore package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase firestore
  */
 export namespace Firestore {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * An immutable object representing an array of bytes.
    */
@@ -1629,7 +1627,7 @@ export namespace Firestore {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Creates a write batch, used for performing multiple writes as a single atomic operation.
      * The maximum number of writes allowed in a single WriteBatch is 500, but note that each usage
@@ -1756,48 +1754,27 @@ export namespace Firestore {
 }
 
 declare module '@react-native-firebase/firestore' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/firestore';
-   * firebase.firestore().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const FirestoreDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Firestore.Module,
-    Firestore.Statics
-  >;
-  /**
-   * @example
-   * ```js
-   * import firestore from '@react-native-firebase/firestore';
-   * firestore().X(...);
-   * ```
-   */
-  export default FirestoreDefaultExport;
+  const module: FirebaseModuleWithStaticsAndApp<Firestore.Module, Firestore.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firestore
-     */
-    firestore: ReactNativeFirebaseModuleAndStatics<Firestore.Module, Firestore.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Firestore
-     */
-    firestore(): Firestore.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      firestore: FirebaseModuleWithStaticsAndApp<Firestore.Module, Firestore.Statics>;
+    }
+    interface FirebaseApp {
+      firestore(): Firestore.Module;
+    }
   }
 }

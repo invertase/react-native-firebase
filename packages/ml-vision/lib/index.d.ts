@@ -15,12 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
-import './BarcodeDetectorTypes';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase ML Kit package for React Native.
@@ -59,6 +54,8 @@ import './BarcodeDetectorTypes';
  * @firebase ml-vision
  */
 export namespace MLKitVision {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {
     VisionFaceDetectorOptions: VisionFaceDetectorOptions;
     VisionImageLabelerOptions: VisionImageLabelerOptions;
@@ -1068,7 +1065,7 @@ export namespace MLKitVision {
    * const defaultAppMLKit = firebase.mlKitVision();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Detects faces from a local image file.
      *
@@ -1244,48 +1241,36 @@ export const VisionBarcodeWifiEncryptionType = MLKITVision.VisionBarcodeWifiEncr
 export const VisionBarcodeDetectorOptions = MLKITVision.VisionBarcodeDetectorOptions;
 
 declare module '@react-native-firebase/ml-vision' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/ml-vision';
-   * firebase.mlKitVision().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const MLKitVisionDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    MLKitVision.Module,
-    MLKitVision.Statics
-  >;
-  /**
-   * @example
-   * ```js
-   * import mlKitVision from '@react-native-firebase/ml-vision';
-   * mlKitVision().X(...);
-   * ```
-   */
-  export default MLKitVisionDefaultExport;
+  const module: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * MLKitVision
-     */
-    mlKitVision: ReactNativeFirebaseModuleAndStatics<MLKitVision.Module, MLKitVision.Statics>;
-  }
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      mlKitVision: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
+    }
 
-  interface FirebaseApp {
-    /**
-     * MLKitVision
-     */
-    mlKitVision(): MLKitVision.Module;
+    interface FirebaseApp {
+      mlKitVision(): MLKitVision.Module;
+    }
+
+    interface FirebaseConfig {
+      ml_vision_face_model: boolean;
+      ml_vision_ocr_model: boolean;
+      ml_vision_barcode_model: boolean;
+      ml_vision_label_model: boolean;
+      ml_vision_image_label_model: boolean;
+    }
   }
 }

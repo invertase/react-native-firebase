@@ -15,11 +15,8 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { Invites } from '@react-native-firebase/invites';
 
 /**
  * Firebase Analytics package for React Native.
@@ -58,6 +55,8 @@ import {
  * @firebase analytics
  */
 export namespace Analytics {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {}
 
   /**
@@ -73,7 +72,7 @@ export namespace Analytics {
    * const defaultAppAnalytics = firebase.analytics();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Log a custom event with optional params.
      *
@@ -216,61 +215,54 @@ export namespace Analytics {
 }
 
 declare module '@react-native-firebase/analytics' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * ```js
-   * import { firebase } from '@react-native-firebase/analytics';
-   * firebase.analytics().logEvent(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const AnalyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Analytics.Module,
-    Analytics.Statics
-  >;
-
-  export default AnalyticsDefaultExport;
+  const module: FirebaseModuleWithStatics<Analytics.Module, Analytics.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    analytics: ReactNativeFirebaseModuleAndStatics<Analytics.Module, Analytics.Statics>;
-  }
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      analytics: FirebaseModuleWithStatics<Analytics.Module, Analytics.Statics>;
+    }
 
-  interface FirebaseJSON {
-    /**
-     * Disable or enable auto collection of analytics data.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "analytics_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable analytics data collection, e.g. once user has granted permission:
-     * await firebase.analytics().setAnalyticsCollectionEnabled(true);
-     * ```
-     */
-    analytics_auto_collection_enabled: boolean;
-  }
+    interface FirebaseApp {
+      analytics(): Analytics.Module;
+    }
 
-  interface FirebaseApp {
-    analytics(): Analytics.Module;
+    interface FirebaseConfig {
+      /**
+       * Disable or enable auto collection of analytics data.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "analytics_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable analytics data collection, e.g. once user has granted permission:
+       * await firebase.analytics().setAnalyticsCollectionEnabled(true);
+       * ```
+       */
+      analytics_auto_collection_enabled: boolean;
+    }
   }
 }
