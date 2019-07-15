@@ -106,13 +106,32 @@ describe('storage()', () => {
   });
 
   describe('refFromURL', () => {
-    it('accepts a custom url', async () => {
+    it('accepts a gs url', async () => {
       const url = 'gs://foo/bar/baz.png';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
     });
 
-    it('accepts a custom url without a fullPath', async () => {
+    it('accepts a https url', async () => {
+      const url =
+        'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
+      const ref = firebase.storage().refFromURL(url);
+      ref.bucket.should.equal('react-native-firebase-testing');
+      ref.name.should.equal('1mbTestFile.gif');
+      ref.toString().should.equal('gs://react-native-firebase-testing/1mbTestFile.gif');
+    });
+
+    it('throws an error if https url could not be parsed', async () => {
+      try {
+        firebase.storage().refFromURL(`https://invertase.io`);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`unable to parse 'url'`);
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts a gs url without a fullPath', async () => {
       const url = 'gs://some-bucket';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
@@ -128,7 +147,7 @@ describe('storage()', () => {
       }
     });
 
-    it('throws an error if url does not start with gs://', async () => {
+    it('throws an error if url does not start with gs:// or https://', async () => {
       try {
         firebase.storage().refFromURL('bs://foo/bar/cat.gif');
         return Promise.reject(new Error('Did not throw an Error.'));
