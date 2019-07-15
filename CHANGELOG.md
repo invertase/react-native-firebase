@@ -323,12 +323,6 @@ The Remote Config API has had a significant API change as originally highlighted
 - [BUGFIX][android] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
 - [INTERNAL][android] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
 
-## Messaging
-
-**MODULE STILL WIP**
-
-- [NEW] Support `setAutoInitEnabled(enabled: boolean)` - this is useful for opt-in first flows
-
 ## ML Kit Natural Language (mlKitLanguage) - **[NEW]**
 
 - [NEW] Implemented support for language identification APIs
