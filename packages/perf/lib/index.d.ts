@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Performance Monitoring package for React Native.
@@ -67,6 +63,7 @@ export namespace Perf {
    * const metric = perf().newHttpMetric('https://api.com/user', 'PATCH');
    * ```
    */
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   export type HttpMethod =
     | 'GET'
     | 'HEAD'
@@ -370,7 +367,7 @@ export namespace Perf {
    * const defaultAppPerf = firebase.perf();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Determines whether performance monitoring is enabled or disabled.
      *
@@ -442,71 +439,52 @@ export namespace Perf {
 }
 
 declare module '@react-native-firebase/perf' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/perf';
-   * firebase.perf().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const PerfDefaultExport: ReactNativeFirebaseModuleAndStatics<Perf.Module, Perf.Statics>;
-  /**
-   * @example
-   * ```js
-   * import perf from '@react-native-firebase/perf';
-   * perf().X(...);
-   * ```
-   */
-  export default PerfDefaultExport;
+  const module: FirebaseModuleWithStatics<Perf.Module, Perf.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Get insights into how your app performs from your users’ point of view, with automatic and customized performance tracing.
-     */
-    perf: ReactNativeFirebaseModuleAndStatics<Perf.Module, Perf.Statics>;
-  }
-
-  interface FirebaseJSON {
-    /**
-     * Disable or enable auto collection of performance monitoring data collection.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "perf_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
-     * await firebase.perf().setPerformanceCollectionEnabled(true);
-     * ```
-     */
-    perf_auto_collection_enabled: boolean;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Perf
-     */
-    perf(): Perf.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      perf: FirebaseModuleWithStatics<Perf.Module, Perf.Statics>;
+    }
+    interface FirebaseApp {
+      perf(): Perf.Module;
+    }
+    interface FirebaseConfig {
+      /**
+       * Disable or enable auto collection of performance monitoring data collection.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "perf_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
+       * await firebase.perf().setPerformanceCollectionEnabled(true);
+       * ```
+       */
+      perf_auto_collection_enabled: boolean;
+    }
   }
 }
