@@ -19,6 +19,7 @@
  *  @firebase app
  */
 export namespace ReactNativeFirebase {
+  export interface Statics {}
   export interface NativeFirebaseError extends Error {
     /**
      * Firebase error code, e.g. `auth/invalid-email`
