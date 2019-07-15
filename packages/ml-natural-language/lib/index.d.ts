@@ -280,10 +280,12 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       mlKitLanguage(): MLKitLanguage.Module;
     }
+  }
+}
 
-    interface FirebaseConfig {
-      ml_natural_language_language_id_model: boolean;
-      ml_natural_language_smart_reply_model: boolean;
-    }
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
+    ml_natural_language_language_id_model: boolean;
+    ml_natural_language_smart_reply_model: boolean;
   }
 }
