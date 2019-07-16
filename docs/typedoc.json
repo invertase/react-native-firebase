@@ -43278,7 +43278,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "A boolean value to enable or disabled auto initialization.\n"
+												"text": "A boolean value to enable or disable auto initialization.\n"
 											},
 											"type": {
 												"type": "intrinsic",
