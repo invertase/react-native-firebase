@@ -430,7 +430,7 @@ export namespace Messaging {
      * }
      * ```
      *
-     * @platform ios
+     * @ios
      */
     requestPermission(): Promise<boolean>;
 
@@ -447,7 +447,7 @@ export namespace Messaging {
      * }
      * ```
      *
-     * @platform ios
+     * @ios
      */
     registerForRemoteNotifications(): Promise<void>;
 
@@ -461,7 +461,7 @@ export namespace Messaging {
      * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
      * ```
      *
-     * @platform ios
+     * @ios
      */
     isRegisteredForRemoteNotifications: boolean;
 
@@ -476,7 +476,7 @@ export namespace Messaging {
      * }
      * ```
      *
-     * @platform ios
+     * @ios
      */
     unregisterForRemoteNotifications(): Promise<void>;
 
@@ -494,7 +494,7 @@ export namespace Messaging {
      * }
      * ```
      *
-     * @platform ios
+     * @ios
      */
     getAPNSToken(): Promise<string | null>;
 
@@ -599,7 +599,7 @@ export namespace Messaging {
      * });
      * ```
      *
-     * @platform android
+     * @android
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => {});
 
