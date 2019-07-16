@@ -1026,7 +1026,7 @@ export namespace Storage {
    */
   export class Module extends FirebaseModule {
     /**
-     * Returns the maximum time to retry an upload if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry an upload if a failure occurs.
      *
      * #### Example
      *
@@ -1037,20 +1037,20 @@ export namespace Storage {
     maxUploadRetryTime: number;
 
     /**
-     * Sets the maximum time to retry an upload if a failure occurs.
+     * Sets the maximum time in milliseconds to retry an upload if a failure occurs.
      *
      * #### Example
      *
      * ```js
-     * await firebase.storage().setMaxUploadRetryTime(3);
+     * await firebase.storage().setMaxUploadRetryTime(25000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum upload retry time in milliseconds.
      */
     setMaxUploadRetryTime(time: number): Promise<void>;
 
     /**
-     * Returns the maximum time to retry a download if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry a download if a failure occurs.
      *
      * #### Example
      *
@@ -1061,20 +1061,20 @@ export namespace Storage {
     maxDownloadRetryTime: number;
 
     /**
-     * Sets the maximum time to retry a download if a failure occurs.
+     * Sets the maximum time in milliseconds to retry a download if a failure occurs.
      *
      * #### Example
      *
      * ```js
-     * await firebase.storage().setMaxDownloadRetryTime(5000);
+     * await firebase.storage().setMaxDownloadRetryTime(25000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum download retry time in milliseconds.
      */
     setMaxDownloadRetryTime(time: number): Promise<void>;
 
     /**
-     * Returns the maximum time to retry operations other than upload and download if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -1085,7 +1085,7 @@ export namespace Storage {
     maxOperationRetryTime: number;
 
     /**
-     * Sets the maximum time to retry operations other than upload and download if a failure occurs.
+     * Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -1093,7 +1093,7 @@ export namespace Storage {
      * await firebase.storage().setMaxOperationRetryTime(5000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum operation retry time in milliseconds.
      */
     setMaxOperationRetryTime(time: number): Promise<void>;
 
