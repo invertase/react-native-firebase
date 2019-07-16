@@ -1103,7 +1103,7 @@ export namespace Storage {
      * #### Example
      *
      * ```js
-     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * const ref = firebase.storage().ref('cats.gif');
      * ```
      *
      * @param path An optional string pointing to a location on the storage bucket. If no path
@@ -1117,11 +1117,16 @@ export namespace Storage {
      * #### Example
      *
      * ```js
-     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * const gsUrl = 'gs://react-native-firebase-testing/cats.gif';
+     * const httpUrl = 'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif';
+     *
+     * const refFromGsUrl = firebase.storage().refFromURL(gsUrl);
+     * // or
+     * const refFromHttpUrl = firebase.storage().refFromURL(httpUrl);
      * ```
      *
-     * @param url A storage bucket URL pointing to a single file or location. Must start with `gs://`,
-     * e.g. `gs://assets/logo.png` or `gs://assets`.
+     * @param url A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url,
+     * e.g. `gs://assets/logo.png` or `https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif`.
      */
     refFromURL(url: string): Reference;
   }
