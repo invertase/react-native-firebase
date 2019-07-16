@@ -191,8 +191,24 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   }
 
+  /**
+   * A class that all React Native Firebase modules extend from to provide default behaviour.
+   */
   export class FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
     app: FirebaseApp;
+
+    /**
+     * The native module instance for this Firebase service.
+     */
+    private native: any;
+
+    /**
+     * Returns the shared event emitter instance used for all JS event routing.
+     */
+    private emitter: any;
   }
 
   export type FirebaseModuleWithStatics<M, S = {}> = {
