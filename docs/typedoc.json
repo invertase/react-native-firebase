@@ -47786,7 +47786,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Returns the maximum time to retry a download if a failure occurs.",
+								"shortText": "Returns the current maximum time in milliseconds to retry a download if a failure occurs.",
 								"text": "#### Example\n\n```js\nconst downloadRetryTime = firebase.storage().maxUploadRetryTime;\n```\n"
 							},
 							"sources": [
@@ -47810,7 +47810,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Returns the maximum time to retry operations other than upload and download if a failure occurs.",
+								"shortText": "Returns the current maximum time in milliseconds to retry operations other than upload and download if a failure occurs.",
 								"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
 							},
 							"sources": [
@@ -47834,7 +47834,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Returns the maximum time to retry an upload if a failure occurs.",
+								"shortText": "Returns the current maximum time in milliseconds to retry an upload if a failure occurs.",
 								"text": "#### Example\n\n```js\nconst uploadRetryTime = firebase.storage().maxUploadRetryTime;\n```\n"
 							},
 							"sources": [
@@ -47976,8 +47976,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the maximum time to retry a download if a failure occurs.",
-										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxDownloadRetryTime(5000);\n```\n"
+										"shortText": "Sets the maximum time in milliseconds to retry a download if a failure occurs.",
+										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxDownloadRetryTime(25000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -47987,7 +47987,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "The number of times to retry.\n"
+												"text": "The new maximum download retry time in milliseconds.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -48031,7 +48031,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the maximum time to retry operations other than upload and download if a failure occurs.",
+										"shortText": "Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.",
 										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxOperationRetryTime(5000);\n```\n"
 									},
 									"parameters": [
@@ -48042,7 +48042,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "The number of times to retry.\n"
+												"text": "The new maximum operation retry time in milliseconds.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -48086,8 +48086,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets the maximum time to retry an upload if a failure occurs.",
-										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxUploadRetryTime(3);\n```\n"
+										"shortText": "Sets the maximum time in milliseconds to retry an upload if a failure occurs.",
+										"text": "#### Example\n\n```js\nawait firebase.storage().setMaxUploadRetryTime(25000);\n```\n"
 									},
 									"parameters": [
 										{
@@ -48097,7 +48097,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "The number of times to retry.\n"
+												"text": "The new maximum upload retry time in milliseconds.\n"
 											},
 											"type": {
 												"type": "intrinsic",
