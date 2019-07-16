@@ -42416,13 +42416,24 @@
 											"name": "authorizedEntity",
 											"kind": 32768,
 											"kindString": "Parameter",
-											"flags": {},
+											"flags": {
+												"isOptional": true
+											},
 											"comment": {
 												"text": "The messaging sender ID. In most cases this will be the current default app."
 											},
 											"type": {
-												"type": "intrinsic",
-												"name": "string"
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
 											}
 										},
 										{
@@ -42430,13 +42441,24 @@
 											"name": "scope",
 											"kind": 32768,
 											"kindString": "Parameter",
-											"flags": {},
+											"flags": {
+												"isOptional": true
+											},
 											"comment": {
 												"text": "The scope to assign when token will be deleted.\n"
 											},
 											"type": {
-												"type": "intrinsic",
-												"name": "string"
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "undefined"
+													},
+													{
+														"type": "intrinsic",
+														"name": "string"
+													}
+												]
 											},
 											"defaultValue": "\"FCM\""
 										}
@@ -42788,8 +42810,8 @@
 																}
 															],
 															"type": {
-																"type": "reference",
-																"name": "__type"
+																"type": "intrinsic",
+																"name": "any"
 															}
 														}
 													],
