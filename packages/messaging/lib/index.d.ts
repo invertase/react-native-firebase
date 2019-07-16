@@ -346,7 +346,7 @@ export namespace Messaging {
      * @param authorizedEntity The messaging sender ID. In most cases this will be the current default app.
      * @param scope The scope to assign when token will be deleted.
      */
-    deleteToken(authorizedEntity: string, scope: string = 'FCM'): Promise<void>;
+    deleteToken(authorizedEntity?: string, scope?: string = 'FCM'): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
@@ -374,7 +374,7 @@ export namespace Messaging {
      *
      * @param listener Called with a `RemoteMessage` when a new FCM payload is received from the server.
      */
-    onMessage(listener: (message: RemoteMessage) => {}): Function;
+    onMessage(listener: (message: RemoteMessage) => any): Function;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
