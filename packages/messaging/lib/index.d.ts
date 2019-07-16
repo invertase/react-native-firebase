@@ -405,7 +405,7 @@ export namespace Messaging {
      *
      * @param listener Called with a FCM token when the token is refreshed.
      */
-    onTokenRefresh(listener: (token: string) => {}): Function;
+    onTokenRefresh(listener: (token: string) => any): Function;
 
     /**
      * On iOS, messaging permission must be requested by the current application before messages can
@@ -556,7 +556,7 @@ export namespace Messaging {
      *
      * @param listener Called when the FCM sends the remote message to FCM.
      */
-    onMessageSent(listener: (messageId: string) => {}): Function;
+    onMessageSent(listener: (messageId: string) => any): Function;
 
     /**
      * When sending a `RemoteMessage`, this listener is called when an error is thrown and the
@@ -601,7 +601,7 @@ export namespace Messaging {
      *
      * @android
      */
-    setBackgroundMessageHandler(handler: (message: RemoteMessage) => {});
+    setBackgroundMessageHandler(handler: (message: RemoteMessage) => any);
 
     /**
      * Send a new `RemoteMessage` to the FCM server.
