@@ -42898,8 +42898,8 @@
 																}
 															],
 															"type": {
-																"type": "reference",
-																"name": "__type"
+																"type": "intrinsic",
+																"name": "any"
 															}
 														}
 													],
@@ -43075,8 +43075,8 @@
 																}
 															],
 															"type": {
-																"type": "reference",
-																"name": "__type"
+																"type": "intrinsic",
+																"name": "any"
 															}
 														}
 													],
@@ -43368,8 +43368,8 @@
 																}
 															],
 															"type": {
-																"type": "reference",
-																"name": "__type"
+																"type": "intrinsic",
+																"name": "any"
 															}
 														}
 													],
