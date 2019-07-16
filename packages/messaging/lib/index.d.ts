@@ -284,7 +284,7 @@ export namespace Messaging {
      * await firebase.messaging().setAutoInitEnabled(false);
      * ```
      *
-     * @param enabled A boolean value to enable or disabled auto initialization.
+     * @param enabled A boolean value to enable or disable auto initialization.
      */
     setAutoInitEnabled(enabled: boolean): Promise<void>;
 
