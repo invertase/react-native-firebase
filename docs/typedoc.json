@@ -681,7 +681,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1151,
+											"line": 1156,
 											"character": 13
 										}
 									]
@@ -824,7 +824,7 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1150,
+									"line": 1155,
 									"character": 25
 								},
 								{
@@ -1346,7 +1346,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1148,
+											"line": 1153,
 											"character": 13
 										}
 									],
@@ -1512,7 +1512,7 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1147,
+									"line": 1152,
 									"character": 20
 								},
 								{
@@ -1616,7 +1616,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1145,
+							"line": 1150,
 							"character": 31
 						},
 						{
@@ -1761,7 +1761,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1144,
+					"line": 1149,
 					"character": 43
 				},
 				{
@@ -3471,7 +3471,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1135,
+							"line": 1140,
 							"character": 23
 						}
 					],
@@ -3492,7 +3492,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1134,
+							"line": 1139,
 							"character": 27
 						}
 					],
@@ -3522,7 +3522,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1137,
+							"line": 1142,
 							"character": 14
 						}
 					],
@@ -3557,7 +3557,7 @@
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1130,
+					"line": 1135,
 					"character": 47
 				}
 			]
@@ -47995,7 +47995,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a new {@link storage.Reference} instance.",
-										"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
+										"text": "#### Example\n\n```js\nconst ref = firebase.storage().ref('cats.gif');\n```\n"
 									},
 									"parameters": [
 										{
@@ -48056,7 +48056,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a new {@link storage.Reference} instance from a storage bucket URL.",
-										"text": "#### Example\n\n```js\nconst maxOperationRetryTime = firebase.storage().maxOperationRetryTime;\n```\n"
+										"text": "#### Example\n\n```js\nconst gsUrl = 'gs://react-native-firebase-testing/cats.gif';\nconst httpUrl = 'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif';\n\nconst refFromGsUrl = firebase.storage().refFromURL(gsUrl);\n// or\nconst refFromHttpUrl = firebase.storage().refFromURL(httpUrl);\n```\n"
 									},
 									"parameters": [
 										{
@@ -48066,7 +48066,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "A storage bucket URL pointing to a single file or location. Must start with `gs://`,\ne.g. `gs://assets/logo.png` or `gs://assets`.\n"
+												"text": "A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url,\ne.g. `gs://assets/logo.png` or `https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif`.\n"
 											},
 											"type": {
 												"type": "intrinsic",
@@ -48084,7 +48084,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1126,
+									"line": 1131,
 									"character": 14
 								}
 							]
