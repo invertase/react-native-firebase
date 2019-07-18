@@ -42371,7 +42371,7 @@
 							},
 							"comment": {
 								"shortText": "Returns a boolean value whether the user has registered for remote notifications via\n`registerForRemoteNotifications()`.",
-								"text": "> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;\n```\n",
+								"text": "> You can safely access this property on Android without platform checks. Android returns `true` only.\n\n#### Example\n\n```js\nconst isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -42500,7 +42500,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your\niOS devices without using the FCM service.",
-										"text": "> Defaults to `null` on Android.\n\n#### Example\n\n```js\nconst apnsToken = await firebase.messaging().getAPNSToken();\n\nif (apnsToken) {\n  console.log('User APNS Token:', apnsToken);\n}\n```\n",
+										"text": "> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.\n\n#### Example\n\n```js\nconst apnsToken = await firebase.messaging().getAPNSToken();\n\nif (apnsToken) {\n  console.log('User APNS Token:', apnsToken);\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43122,7 +43122,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register\nthis request with APNS. For example if you want to display alerts, play sounds\nor perform other user-facing actions (via the Notification library), you must call this method.",
-										"text": "> Calling this on Android is no-op and also returns `void`.\n\n#### Example\n\n```js\nif (!firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
+										"text": "> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.\n\n#### Example\n\n```js\nif (!firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43167,7 +43167,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, messaging permission must be requested by the current application before messages can\nbe received or sent.",
-										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;\nbut notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.\n\n> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst permissionGranted = await firebase.messaging().requestPermission();\n```\n",
+										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;\nbut notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.\n\n> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `true`.\n\n#### Example\n\n```js\nconst permissionGranted = await firebase.messaging().requestPermission();\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43323,7 +43323,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On Android, set a message handler function which is called when the app is in the background\nor terminated. A headless task is created, allowing you to access the React Native environment\nto perform tasks such as updating local storage, or sending a network request.",
-										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> Calling this method on iOS is no-op.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n```\n",
+										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> You can safely call this method on iOS without platform checks. It's a no-op on iOS.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n```\n",
 										"tags": [
 											{
 												"tag": "android",
@@ -43470,7 +43470,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Unregisters the app from receiving remote notifications.",
-										"text": "> Calling this on Android is no-op and also returns `void`.\n\n#### Example\n\n```js\nif (firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().unregisterForRemoteNotifications();\n}\n```\n",
+										"text": "> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.\n\n#### Example\n\n```js\nif (firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().unregisterForRemoteNotifications();\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
