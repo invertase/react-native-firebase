@@ -1017,7 +1017,7 @@ export namespace MLKitVision {
     /**
      * Gets image region of the detected landmark. Returns null if nothing was detected
      */
-    boundingBox: VisionRectangle | void;
+    boundingBox: VisionRectangle | null;
 
     /**
      * Gets overall confidence of the result. Ranging between 0 & 1.

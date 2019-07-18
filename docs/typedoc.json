@@ -41026,7 +41026,7 @@
 									},
 									{
 										"type": "intrinsic",
-										"name": "void"
+										"name": "null"
 									}
 								]
 							}
@@ -44128,7 +44128,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "A time to live for the message. If the message has not yet been sent to the FCM server and the time\nsurpasses the TTL, the message will be dropped from the queue and will not be sent.",
+										"shortText": "Set a time to live for the message in seconds. If the message has not yet been sent to the FCM server and the time\nsurpasses the TTL, the message will be dropped from the queue and will not be sent.",
 										"text": "If `0`, the message send will be attempted immediately and will be dropped if the device is not\nconnected. Otherwise, the message will be queued.\n\nIf a message is dropped, the `onSendError()` listener will be called with the message ID.\n\nDefaults to 3600 seconds (1 hour).\n\n#### Example\n\n```js\nconst messageBuilder = firebase.messaging().newRemoteMessage()\n  .setTtl(600) // 10 minutes\n  .setData({\n    unread: 3,\n  });\n```\n"
 									},
 									"parameters": [
