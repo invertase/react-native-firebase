@@ -91,7 +91,7 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   requestPermission() {
-    if (isAndroid) return Promise.resolve();
+    if (isAndroid) return Promise.resolve(true);
     return this.native.requestPermission();
   }
 
