@@ -418,16 +418,12 @@ export namespace Messaging {
      * and will resolve `true`. The user will be able to receive FCM payloads, however when Notifications
      * are displayed, the user will then grant permission.
      *
+     * > Defaults to `true` on Android.
+     *
      * #### Example
      *
      * ```js
-     * let permissionGranted;
-     *
-     * if (Platform.OS === 'ios') {
-     *   permissionGranted = await firebase.messaging().requestPermission();
-     * } else {
-     *   permissionGranted = true;
-     * }
+     * const permissionGranted = await firebase.messaging().requestPermission();
      * ```
      *
      * @ios
@@ -439,10 +435,12 @@ export namespace Messaging {
      * this request with APNS. For example if you want to display alerts, play sounds
      * or perform other user-facing actions (via the Notification library), you must call this method.
      *
+     * > Calling this on Android is no-op and also returns `void`.
+     *
      * #### Example
      *
      * ```js
-     * if (Platform.OS === 'ios' && !firebase.messaging().isRegisteredForRemoteNotifications) {
+     * if (!firebase.messaging().isRegisteredForRemoteNotifications) {
      *   await firebase.messaging().registerForRemoteNotifications();
      * }
      * ```
@@ -454,6 +452,8 @@ export namespace Messaging {
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerForRemoteNotifications()`.
+     *
+     * > Defaults to `true` on Android.
      *
      * #### Example
      *
@@ -468,10 +468,12 @@ export namespace Messaging {
     /**
      * Unregisters the app from receiving remote notifications.
      *
+     * > Calling this on Android is no-op and also returns `void`.
+     *
      * #### Example
      *
      * ```js
-     * if (Platform.OS === 'ios' && firebase.messaging().isRegisteredForRemoteNotifications) {
+     * if (firebase.messaging().isRegisteredForRemoteNotifications) {
      *   await firebase.messaging().unregisterForRemoteNotifications();
      * }
      * ```

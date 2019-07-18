@@ -545,7 +545,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 680,
+											"line": 682,
 											"character": 15
 										}
 									]
@@ -804,7 +804,7 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 679,
+									"line": 681,
 									"character": 25
 								},
 								{
@@ -1222,7 +1222,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 676,
+											"line": 678,
 											"character": 15
 										}
 									],
@@ -1492,7 +1492,7 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 675,
+									"line": 677,
 									"character": 20
 								},
 								{
@@ -1596,7 +1596,7 @@
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 673,
+							"line": 675,
 							"character": 31
 						},
 						{
@@ -1741,7 +1741,7 @@
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 672,
+					"line": 674,
 					"character": 43
 				},
 				{
@@ -3031,7 +3031,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 663,
+							"line": 665,
 							"character": 23
 						}
 					],
@@ -3052,7 +3052,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 662,
+							"line": 664,
 							"character": 27
 						}
 					],
@@ -3082,7 +3082,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 665,
+							"line": 667,
 							"character": 14
 						}
 					],
@@ -3117,7 +3117,7 @@
 			"sources": [
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 658,
+					"line": 660,
 					"character": 49
 				}
 			]
@@ -42371,7 +42371,7 @@
 							},
 							"comment": {
 								"shortText": "Returns a boolean value whether the user has registered for remote notifications via\n`registerForRemoteNotifications()`.",
-								"text": "#### Example\n\n```js\nconst isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;\n```\n",
+								"text": "> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -42532,7 +42532,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 499,
+									"line": 501,
 									"character": 16
 								}
 							]
@@ -42663,7 +42663,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 510,
+									"line": 512,
 									"character": 17
 								}
 							]
@@ -42746,7 +42746,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 539,
+									"line": 541,
 									"character": 21
 								}
 							]
@@ -42906,7 +42906,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 559,
+															"line": 561,
 															"character": 27
 														}
 													]
@@ -42923,7 +42923,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 559,
+									"line": 561,
 									"character": 17
 								}
 							]
@@ -42995,7 +42995,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 580,
+															"line": 582,
 															"character": 25
 														}
 													]
@@ -43012,7 +43012,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 580,
+									"line": 582,
 									"character": 15
 								}
 							]
@@ -43122,7 +43122,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register\nthis request with APNS. For example if you want to display alerts, play sounds\nor perform other user-facing actions (via the Notification library), you must call this method.",
-										"text": "#### Example\n\n```js\nif (Platform.OS === 'ios' && !firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
+										"text": "> Calling this on Android is no-op and also returns `void`.\n\n#### Example\n\n```js\nif (!firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43145,7 +43145,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 452,
+									"line": 450,
 									"character": 34
 								}
 							]
@@ -43167,7 +43167,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, messaging permission must be requested by the current application before messages can\nbe received or sent.",
-										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads, however when Notifications\nare displayed, the user will then grant permission.\n\n#### Example\n\n```js\nlet permissionGranted;\n\nif (Platform.OS === 'ios') {\n  permissionGranted = await firebase.messaging().requestPermission();\n} else {\n  permissionGranted = true;\n}\n```\n",
+										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads, however when Notifications\nare displayed, the user will then grant permission.\n\n> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst permissionGranted = await firebase.messaging().requestPermission();\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43190,7 +43190,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 435,
+									"line": 431,
 									"character": 21
 								}
 							]
@@ -43246,7 +43246,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 627,
+									"line": 629,
 									"character": 15
 								}
 							]
@@ -43376,7 +43376,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 604,
+															"line": 606,
 															"character": 40
 														}
 													]
@@ -43393,7 +43393,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 604,
+									"line": 606,
 									"character": 31
 								}
 							]
@@ -43448,7 +43448,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 641,
+									"line": 643,
 									"character": 20
 								}
 							]
@@ -43470,7 +43470,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Unregisters the app from receiving remote notifications.",
-										"text": "#### Example\n\n```js\nif (Platform.OS === 'ios' && firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().unregisterForRemoteNotifications();\n}\n```\n",
+										"text": "> Calling this on Android is no-op and also returns `void`.\n\n#### Example\n\n```js\nif (firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().unregisterForRemoteNotifications();\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43493,7 +43493,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 481,
+									"line": 483,
 									"character": 36
 								}
 							]
@@ -43548,7 +43548,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 654,
+									"line": 656,
 									"character": 24
 								}
 							]
@@ -46768,7 +46768,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 688,
+									"line": 690,
 									"character": 43
 								}
 							],
@@ -46786,7 +46786,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 687,
+									"line": 689,
 									"character": 31
 								}
 							],
@@ -46996,7 +46996,7 @@
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 686,
+							"line": 688,
 							"character": 30
 						},
 						{
@@ -47827,7 +47827,7 @@
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 685,
+					"line": 687,
 					"character": 29
 				},
 				{
