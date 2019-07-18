@@ -87,7 +87,7 @@ export namespace Messaging {
     to: string;
 
     /**
-     * The time to live for the message.
+     * The time to live for the message in seconds.
      */
     ttl: number;
 

@@ -43778,7 +43778,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The time to live for the message."
+								"shortText": "The time to live for the message in seconds."
 							},
 							"sources": [
 								{
