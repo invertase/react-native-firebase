@@ -418,7 +418,7 @@ export namespace Messaging {
      * and will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;
      * but notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.
      *
-     * > Defaults to `true` on Android.
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `true`.
      *
      * #### Example
      *
@@ -435,7 +435,7 @@ export namespace Messaging {
      * this request with APNS. For example if you want to display alerts, play sounds
      * or perform other user-facing actions (via the Notification library), you must call this method.
      *
-     * > Calling this on Android is no-op and also returns `void`.
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
      *
      * #### Example
      *
@@ -453,7 +453,7 @@ export namespace Messaging {
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerForRemoteNotifications()`.
      *
-     * > Defaults to `true` on Android.
+     * > You can safely access this property on Android without platform checks. Android returns `true` only.
      *
      * #### Example
      *
@@ -468,7 +468,7 @@ export namespace Messaging {
     /**
      * Unregisters the app from receiving remote notifications.
      *
-     * > Calling this on Android is no-op and also returns `void`.
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
      *
      * #### Example
      *
@@ -486,7 +486,7 @@ export namespace Messaging {
      * On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your
      * iOS devices without using the FCM service.
      *
-     * > Defaults to `null` on Android.
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.
      *
      * #### Example
      *
@@ -591,7 +591,7 @@ export namespace Messaging {
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
      *
-     * > Calling this method on iOS is no-op.
+     * > You can safely call this method on iOS without platform checks. It's a no-op on iOS.
      *
      * #### Example
      *
