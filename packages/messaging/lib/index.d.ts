@@ -167,7 +167,7 @@ export namespace Messaging {
     setTo(to: string): RemoteMessageBuilder;
 
     /**
-     * A time to live for the message. If the message has not yet been sent to the FCM server and the time
+     * Set a time to live for the message in seconds. If the message has not yet been sent to the FCM server and the time
      * surpasses the TTL, the message will be dropped from the queue and will not be sent.
      *
      * If `0`, the message send will be attempted immediately and will be dropped if the device is not

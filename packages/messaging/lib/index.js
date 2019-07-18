@@ -25,7 +25,7 @@ import { isIOS, isAndroid } from '@react-native-firebase/common';
 import { AppRegistry } from 'react-native';
 
 import version from './version';
-import MessagingRemoteMessage from './MessagingRemoteMessage';
+import RemoteMessageBuilder from './RemoteMessageBuilder';
 
 const statics = {};
 
@@ -45,7 +45,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   newRemoteMessage() {
-    return new MessagingRemoteMessage(this.app.options.messagingSenderId);
+    return new RemoteMessageBuilder(this.app.options.messagingSenderId);
   }
 
   setAutoInitEnabled(enabled) {

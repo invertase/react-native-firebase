@@ -18,7 +18,7 @@
 import { generateFirestoreId } from '@react-native-firebase/common';
 import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
 
-export default class MessagingRemoteMessage extends MutatableParams {
+export default class RemoteMessageBuilder extends MutatableParams {
   constructor(messagingSenderId) {
     super();
     this.set('data', {});
