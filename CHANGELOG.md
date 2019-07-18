@@ -193,6 +193,7 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 - [NEW] Added support for handling snapshot metadata via the `includeMetadataChanges` flag which can be passed to `CollectionReference.onSnapshot()` and `QuerySnapshot.docChanges()` to return additional results from query snapshot listeners.
 - [NEW] Cache size can now be set to unlimited using the `CACHE_SIZE_UNLIMITED` static when passed to `firestore().settings()` (also added in v5.4).
 - [BUGFIX] Remove Metro circular reference warnings.
+- [BUGFIX] Transaction gets must also have a write command (matches Web SDK).
 - [BUGFIX] Setting a negative infinity value (`-Infinity`) now correctly works as expected.
 - [BUGFIX] `QuerySnapshot.forEach()` can now correctly takes an optional context argument.
 - [BUGFIX] Snapshot metadata now correctly returns a `SnapshotMetadata` class (as per Web SDK).
@@ -200,6 +201,7 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 - [BUGFIX] `onSnapshot()` calls now take the correct arguments, allowing for `SnapshotListenOptions`, inline function callbacks or an object containing next/error callbacks (as per the Web SDK).
 - [BUGFIX] Setting a `Date` on Firestore was setting an incorrect value. Date objects are now converted to a `Timestamp` as per the Web SDK.
 - [BUGFIX] Cursor queries in v5 (`startAt`, `startAfter`, `endAt`, `endBefore`) were incorrectly handling a `DocumentSnapshot` argument. It is now possible to perform a cursor query directly on a snapshot, or on snapshot fields, as per the Web SDK, for example ending at a specific snapshot with no order.
+- [BREAKING] Blob can no longer be constructed manually, as per the Web SDK.
 - [BREAKING] The v6 release includes **a lot** of additional JavaScript validation. This is more consistent with the Web SDK and helps catch native errors/crashes which may occur due to false-positive data being sent over the bridge.
   - Specifically, the `Query` class has undergone a rewrite, and includes a lot of additional checks which are not present in v5. Please check your Firestore queries once upgraded.
 - [BREAKING] Removed the `Query.where` single equals operator (`=`) as per the Web SDK. Use `==` instead.
