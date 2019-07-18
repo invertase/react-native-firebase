@@ -545,7 +545,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 682,
+											"line": 686,
 											"character": 15
 										}
 									]
@@ -804,7 +804,7 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 681,
+									"line": 685,
 									"character": 25
 								},
 								{
@@ -1222,7 +1222,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 678,
+											"line": 682,
 											"character": 15
 										}
 									],
@@ -1492,7 +1492,7 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 677,
+									"line": 681,
 									"character": 20
 								},
 								{
@@ -1596,7 +1596,7 @@
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 675,
+							"line": 679,
 							"character": 31
 						},
 						{
@@ -1741,7 +1741,7 @@
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 674,
+					"line": 678,
 					"character": 43
 				},
 				{
@@ -3031,7 +3031,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 665,
+							"line": 669,
 							"character": 23
 						}
 					],
@@ -3052,7 +3052,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 664,
+							"line": 668,
 							"character": 27
 						}
 					],
@@ -3082,7 +3082,7 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 667,
+							"line": 671,
 							"character": 14
 						}
 					],
@@ -3117,7 +3117,7 @@
 			"sources": [
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 660,
+					"line": 664,
 					"character": 49
 				}
 			]
@@ -42500,7 +42500,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your\niOS devices without using the FCM service.",
-										"text": "#### Example\n\n```js\nconst apnsToken = await firebase.messaging().getAPNSToken();\n\nif (apnsToken) {\n  console.log('User APNS Token:', apnsToken);\n}\n```\n",
+										"text": "> Defaults to `null` on Android.\n\n#### Example\n\n```js\nconst apnsToken = await firebase.messaging().getAPNSToken();\n\nif (apnsToken) {\n  console.log('User APNS Token:', apnsToken);\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -42532,7 +42532,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 501,
+									"line": 503,
 									"character": 16
 								}
 							]
@@ -42663,7 +42663,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 512,
+									"line": 514,
 									"character": 17
 								}
 							]
@@ -42746,7 +42746,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 541,
+									"line": 543,
 									"character": 21
 								}
 							]
@@ -42906,7 +42906,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 561,
+															"line": 563,
 															"character": 27
 														}
 													]
@@ -42923,7 +42923,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 561,
+									"line": 563,
 									"character": 17
 								}
 							]
@@ -42995,7 +42995,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 582,
+															"line": 584,
 															"character": 25
 														}
 													]
@@ -43012,7 +43012,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 582,
+									"line": 584,
 									"character": 15
 								}
 							]
@@ -43167,7 +43167,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, messaging permission must be requested by the current application before messages can\nbe received or sent.",
-										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads, however when Notifications\nare displayed, the user will then grant permission.\n\n> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst permissionGranted = await firebase.messaging().requestPermission();\n```\n",
+										"text": "On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.\nOnce handled, the promise will resolve with `true` if permission was granted.\n\nOn iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),\nand will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;\nbut notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.\n\n> Defaults to `true` on Android.\n\n#### Example\n\n```js\nconst permissionGranted = await firebase.messaging().requestPermission();\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -43246,7 +43246,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 629,
+									"line": 633,
 									"character": 15
 								}
 							]
@@ -43323,7 +43323,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On Android, set a message handler function which is called when the app is in the background\nor terminated. A headless task is created, allowing you to access the React Native environment\nto perform tasks such as updating local storage, or sending a network request.",
-										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n```\n",
+										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> Calling this method on iOS is no-op.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n```\n",
 										"tags": [
 											{
 												"tag": "android",
@@ -43376,7 +43376,7 @@
 													"sources": [
 														{
 															"fileName": "messaging/lib/index.d.ts",
-															"line": 606,
+															"line": 610,
 															"character": 40
 														}
 													]
@@ -43393,7 +43393,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 606,
+									"line": 610,
 									"character": 31
 								}
 							]
@@ -43448,7 +43448,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 643,
+									"line": 647,
 									"character": 20
 								}
 							]
@@ -43548,7 +43548,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 656,
+									"line": 660,
 									"character": 24
 								}
 							]
@@ -46768,7 +46768,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 690,
+									"line": 694,
 									"character": 43
 								}
 							],
@@ -46786,7 +46786,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 689,
+									"line": 693,
 									"character": 31
 								}
 							],
@@ -46996,7 +46996,7 @@
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 688,
+							"line": 692,
 							"character": 30
 						},
 						{
@@ -47827,7 +47827,7 @@
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 687,
+					"line": 691,
 					"character": 29
 				},
 				{

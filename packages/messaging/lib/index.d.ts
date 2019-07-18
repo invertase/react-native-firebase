@@ -415,8 +415,8 @@ export namespace Messaging {
      * Once handled, the promise will resolve with `true` if permission was granted.
      *
      * On iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),
-     * and will resolve `true`. The user will be able to receive FCM payloads, however when Notifications
-     * are displayed, the user will then grant permission.
+     * and will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;
+     * but notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.
      *
      * > Defaults to `true` on Android.
      *
@@ -485,6 +485,8 @@ export namespace Messaging {
     /**
      * On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your
      * iOS devices without using the FCM service.
+     *
+     * > Defaults to `null` on Android.
      *
      * #### Example
      *
@@ -588,6 +590,8 @@ export namespace Messaging {
      *
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
+     *
+     * > Calling this method on iOS is no-op.
      *
      * #### Example
      *
