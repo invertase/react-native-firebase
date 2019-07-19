@@ -169,10 +169,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getFile
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
    */
   @ReactMethod
-  public void getFile(
+  public void writeToFile(
     String appName,
     String url,
     String localFilePath,

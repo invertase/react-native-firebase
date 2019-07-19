@@ -197,7 +197,7 @@ export namespace Storage {
   /**
    * A collection of native device file paths to aid in the usage of file path based storage methods.
    *
-   * Concatenate a file path with your target file name when using `putFile` or `getFile`.
+   * Concatenate a file path with your target file name when using `putFile` or `writeToFile`.
    *
    * ```js
    * firebase.storage.Path;
@@ -684,11 +684,11 @@ export namespace Storage {
      * ```js
      * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/foobar.json`;
      *
-     * const task = firebase.storage().ref('/foo/bar.json').getFile(downloadTo);
+     * const task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);
      * ```
      * @param localFilePath
      */
-    getFile(localFilePath: string): Task;
+    writeToFile(localFilePath: string): Task;
 
     /**
      * Puts data onto the storage bucket.
@@ -812,7 +812,7 @@ export namespace Storage {
    * const task = firebase
    *  .storage()
    *  .ref('/foo/bar.json')
-   *  .getFile(downloadTo);
+   *  .writeToFile(downloadTo);
    * ```
    */
   export interface Task {
@@ -882,7 +882,7 @@ export namespace Storage {
      * const task = firebase
      *  .storage()
      *  .ref('/foo/bar.json')
-     *  .getFile(downloadTo);
+     *  .writeToFile(downloadTo);
      *
      * task.on('state_changed', (taskSnapshot) => {
      *   console.log(taskSnapshot.state);
