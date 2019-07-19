@@ -16,10 +16,10 @@
  */
 
 
-#import "RNFBLinksModule.h"
-#import "RNFBLinksAppDelegateInterceptor.h"
+#import "RNFBDynamicLinksModule.h"
+#import "RNFBDynamicLinksAppDelegateInterceptor.h"
 
-@implementation RNFBLinksModule
+@implementation RNFBDynamicLinksModule
 #pragma mark -
 #pragma mark Module Setup
 
@@ -136,8 +136,8 @@ RCT_EXPORT_METHOD(getInitialLink:
     return;
   }
 
-  if ([RNFBLinksAppDelegateInterceptor shared].initialLink) {
-    resolve([RNFBLinksAppDelegateInterceptor shared].initialLink);
+  if ([RNFBDynamicLinksAppDelegateInterceptor shared].initialLink) {
+    resolve([RNFBDynamicLinksAppDelegateInterceptor shared].initialLink);
   } else {
     resolve([NSNull null]);
   }

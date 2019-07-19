@@ -2,7 +2,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name                = "RNFBLinks"
+  s.name                = "RNFBDynamicLinks"
   s.version             = package["version"]
   s.description         = package["description"]
   s.summary             = <<-DESC

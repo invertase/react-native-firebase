@@ -16,19 +16,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
+#import <React/RCTBridgeModule.h>
+#import <React/RCTUtils.h>
+#import <React/RCTEventEmitter.h>
 #import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-static NSString *const LINK_RECEIVED_EVENT = @"links_link_received";
-
-@interface RNFBLinksAppDelegateInterceptor : NSObject <UIApplicationDelegate>
-@property NSString *_Nullable initialLink;
-
-+ (instancetype)shared;
+// can't access self.bridge.launchOptions without RCTEventEmitter
+@interface RNFBDynamicLinksModule : RCTEventEmitter <RCTBridgeModule>
 
 @end
-
-NS_ASSUME_NONNULL_END

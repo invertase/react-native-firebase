@@ -18,11 +18,11 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
- * Links
+ * Dynamic DynamicLinks
  *
- * @firebase links
+ * @firebase dynamic-links
  */
-export namespace Links {
+export namespace DynamicLinks {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -226,7 +226,7 @@ export namespace Links {
     /**
      * Sets the provider token.
      *
-     * @param providerToken The provider token that enables analytics for Dynamic Links from within iTunes Connect.
+     * @param providerToken The provider token that enables analytics for Dynamic DynamicLinks from within iTunes Connect.
      */
     setProviderToken(providerToken: string): DynamicLinkParameters;
   }
@@ -368,7 +368,7 @@ export namespace Links {
     /**
      * Shorten the path to an unguessable string. Such strings are created by base62-encoding randomly
      * generated 96-bit numbers, and consist of 17 alphanumeric characters. Use unguessable strings
-     * to prevent your Dynamic Links from being crawled, which can potentially expose sensitive information.
+     * to prevent your Dynamic DynamicLinks from being crawled, which can potentially expose sensitive information.
      */
     UNGUESSABLE: 'UNGUESSABLE';
 
@@ -379,7 +379,7 @@ export namespace Links {
   }
 
   /**
-   * Firebase Dynamic Links Statics
+   * Firebase Dynamic DynamicLinks Statics
    *
    * ```js
    * firebase.links.X
@@ -395,7 +395,7 @@ export namespace Links {
 
   /**
    *
-   * The Firebase Dynamic Links service is available for the default app only.
+   * The Firebase Dynamic DynamicLinks service is available for the default app only.
    *
    * #### Example 1
    *
@@ -544,14 +544,14 @@ export namespace Links {
   }
 }
 
-declare module '@react-native-firebase/links' {
+declare module '@react-native-firebase/dynamic-links' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Links.Module, Links.Statics>;
+  const module: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
   export default module;
 }
 
@@ -562,10 +562,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      links: FirebaseModuleWithStatics<Links.Module, Links.Statics>;
+      links: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
     }
     interface FirebaseApp {
-      links(): Links.Module;
+      links(): DynamicLinks.Module;
     }
   }
 }

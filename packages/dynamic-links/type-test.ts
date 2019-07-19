@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/links';
+import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/dynamic-links';
 
 // checks module exists at root
 console.log(firebase.links().app.name);

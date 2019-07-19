@@ -1,4 +1,4 @@
-package io.invertase.firebase.links;
+package io.invertase.firebase.dynamiclinks;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors

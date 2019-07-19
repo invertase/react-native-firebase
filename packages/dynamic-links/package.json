@@ -1,5 +1,5 @@
 {
-  "name": "@react-native-firebase/links",
+  "name": "@react-native-firebase/dynamic-links",
   "version": "0.0.26",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Dynamic Links",

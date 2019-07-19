@@ -219,7 +219,7 @@ export interface DynamicLinkITunesParameters {
   /**
    * Sets the provider token.
    *
-   * @param providerToken The provider token that enables analytics for Dynamic Links from within iTunes Connect.
+   * @param providerToken The provider token that enables analytics for Dynamic DynamicLinks from within iTunes Connect.
    */
   setProviderToken(providerToken: string): DynamicLinkParameters;
 }
@@ -361,7 +361,7 @@ export interface ShortLinkType {
   /**
    * Shorten the path to an unguessable string. Such strings are created by base62-encoding randomly
    * generated 96-bit numbers, and consist of 17 alphanumeric characters. Use unguessable strings
-   * to prevent your Dynamic Links from being crawled, which can potentially expose sensitive information.
+   * to prevent your Dynamic DynamicLinks from being crawled, which can potentially expose sensitive information.
    */
   UNGUESSABLE: 'UNGUESSABLE';
 
@@ -372,7 +372,7 @@ export interface ShortLinkType {
 }
 
 /**
- * Firebase Dynamic Links Statics
+ * Firebase Dynamic DynamicLinks Statics
  *
  * ```js
  * firebase.links.X
@@ -388,7 +388,7 @@ export interface Statics {
 
 /**
  *
- * The Firebase Dynamic Links service is available for the default app only.
+ * The Firebase Dynamic DynamicLinks service is available for the default app only.
  *
  * #### Example 1
  *
@@ -536,7 +536,7 @@ export interface Module extends ReactNativeFirebaseModule {
   onLink(listener: Function<string>): Function;
 }
 
-declare module '@react-native-firebase/links' {
+declare module '@react-native-firebase/dynamic-links' {
   import type {
     ReactNativeFirebaseNamespace,
     ReactNativeFirebaseModuleAndStatics,
@@ -544,7 +544,7 @@ declare module '@react-native-firebase/links' {
   /**
    * @example
    * ```js
-   * import { firebase } from '@react-native-firebase/links';
+   * import { firebase } from '@react-native-firebase/dynamic-links';
    * firebase.links().X(...);
    * ```
    */
@@ -553,7 +553,7 @@ declare module '@react-native-firebase/links' {
   /**
    * @example
    * ```js
-   * import links from '@react-native-firebase/links';
+   * import links from '@react-native-firebase/dynamic-links';
    * links().X(...);
    * ```
    */
@@ -568,14 +568,14 @@ declare module '@react-native-firebase/app-types' {
 
   declare interface ReactNativeFirebaseNamespace {
     /**
-     * Links
+     * DynamicLinks
      */
     links: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
   }
 
   declare interface FirebaseApp {
     /**
-     * Links
+     * DynamicLinks
      */
     links(): Module;
   }

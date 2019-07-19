@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View } from 'react-native';
 
-import '@react-native-firebase/links';
+import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/invites';
 import firebase from '@react-native-firebase/app';
 

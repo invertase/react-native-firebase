@@ -36,7 +36,7 @@ for installation instructions on each individual module page.
 | <Anchor href="/messaging">Cloud Messaging</Anchor>   | <Badge type="downloads">@react-native-firebase/messaging</Badge>     | <Badge type="coverage">messaging</Badge>     |
 | <Anchor href="/storage">Cloud Storage</Anchor>       | <Badge type="downloads">@react-native-firebase/storage</Badge>       | <Badge type="coverage">storage</Badge>       |
 | <Anchor href="/crashlytics">Crashlytics</Anchor>     | <Badge type="downloads">@react-native-firebase/crashlytics</Badge>   | <Badge type="coverage">crashlytics</Badge>   |
-| <Anchor href="/links">Dynamic Links</Anchor>         | <Badge type="downloads">@react-native-firebase/links</Badge>         | <Badge type="coverage">links</Badge>         |
+| <Anchor href="/links">Dynamic Links</Anchor>         | <Badge type="downloads">@react-native-firebase/dynamic-links</Badge> | <Badge type="coverage">links</Badge>         |
 | <Anchor href="/fiam">In-app Messaging</Anchor>       | <Badge type="downloads">@react-native-firebase/fiam</Badge>          | <Badge type="coverage">fiam</Badge>          |
 | <Anchor href="/iid">Instance ID</Anchor>             | <Badge type="downloads">@react-native-firebase/iid</Badge>           | <Badge type="coverage">iid</Badge>           |
 | <Anchor href="/mlkit">ML Kit</Anchor>                | <Badge type="downloads">@react-native-firebase/mlkit</Badge>         | <Badge type="coverage">mlkit</Badge>         |
