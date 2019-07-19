@@ -16,11 +16,15 @@ Pod::Spec.new do |s|
   s.platform            = :ios, "9.0"
   s.default_subspecs    = 'Core'
   s.subspec 'Core' do |cs|
+    cs.source_files = 'RNFirebase/**/*.{h,m}'
+    cs.exclude_files = 'RNFirebase/fabric/**/*.{h,m}'
+
     cs.dependency 'React'
     cs.dependency 'Firebase/Core'
-    cs.source_files = 'RNFirebase/**/*.{h,m}'
   end
   s.subspec 'Crashlytics' do |cs|
+    cs.source_files = 'RNFirebase/fabric/**/*.{h,m}'
+
     cs.dependency 'Fabric'
     cs.dependency 'Crashlytics'
   end
