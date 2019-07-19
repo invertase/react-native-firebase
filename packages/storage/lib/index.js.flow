@@ -574,7 +574,7 @@ export interface TaskSnapshotObserver {
  * const task = firebase
  *  .storage()
  *  .ref('/foo/bar.json')
- *  .getFile(downloadTo);
+ *  .writeToFile(downloadTo);
  * ```
  */
 export interface Task {

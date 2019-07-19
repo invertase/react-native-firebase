@@ -199,10 +199,10 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
-  getFile(filePath) {
+  writeToFile(filePath) {
     // TODO(salakar) validate arg?
     return new StorageDownloadTask(this, task =>
-      this._storage.native.getFile(this.toString(), filePath, task._id),
+      this._storage.native.writeToFile(this.toString(), filePath, task._id),
     );
   }
 
@@ -212,9 +212,9 @@ export default class StorageReference extends ReferenceBase {
   // TODO(deprecation) remove in 6.2.
   downloadFile(filePath) {
     console.warn(
-      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'getFile()'",
+      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'writeToFile()'",
     );
-    return this.getFile(filePath);
+    return this.writeToFile(filePath);
   }
 
   /**

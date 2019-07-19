@@ -196,7 +196,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
  */
-RCT_EXPORT_METHOD(getFile:
+RCT_EXPORT_METHOD(writeToFile:
   (FIRApp *) firebaseApp
     : (NSString *) url
     : (NSString *) localFilePath
