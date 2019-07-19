@@ -15,17 +15,17 @@
  *
  */
 
-#import "RNFBLinksAppDelegateInterceptor.h"
+#import "RNFBDynamicLinksAppDelegateInterceptor.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
-@implementation RNFBLinksAppDelegateInterceptor
+@implementation RNFBDynamicLinksAppDelegateInterceptor
 
 + (instancetype)shared {
   static dispatch_once_t once;
-  static RNFBLinksAppDelegateInterceptor *sharedInstance;
+  static RNFBDynamicLinksAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
-    sharedInstance = [[RNFBLinksAppDelegateInterceptor alloc] init];
+    sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
     sharedInstance.initialLink = nil;
   });
   return sharedInstance;
@@ -71,7 +71,10 @@
       [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
     }
 
-    if (error) NSLog(@"RNFBLinks: Unknown error occurred when attempting to handle a universal link: %@", error);
+    // TODO: We could send this to JS and maybe have a onDynamicLinkError listener but there's also a good chance the
+    // TODO: `userActivity.webpageURL` might not be for a Firebase dynamic link, which needs consideration - so we'll
+    // TODO: log this for now, logging will get picked up by Crashlytics automatically if its integrated.
+    if (error) NSLog(@"RNFBDynamicLinks: Unknown error occurred when attempting to handle a universal link: %@", error);
   };
 
   return [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];

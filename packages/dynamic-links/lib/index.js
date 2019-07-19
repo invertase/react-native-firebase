@@ -31,9 +31,9 @@ const statics = {
 
 const namespace = 'links';
 
-const nativeModuleName = 'RNFBLinksModule';
+const nativeModuleName = 'RNFBDynamicLinksModule';
 
-const nativeEvents = ['links_link_received'];
+const nativeEvents = ['dynamic_links_link_received'];
 
 class FirebaseLinksModule extends FirebaseModule {
   newDynamicLinkParameters(link, domainURIPrefix) {
@@ -73,7 +73,7 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 
   onLink(listener) {
-    const subscription = this.emitter.subscribe('links_link_received', event =>
+    const subscription = this.emitter.subscribe('dynamic_links_link_received', event =>
       listener(event.url),
     );
     return () => {
@@ -82,10 +82,10 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/links';
+// import { SDK_VERSION } from '@react-native-firebase/dynamic-links';
 export const SDK_VERSION = version;
 
-// import links from '@react-native-firebase/links';
+// import links from '@react-native-firebase/dynamic-links';
 // links().X(...);
 export default createModuleNamespace({
   statics,
@@ -98,7 +98,7 @@ export default createModuleNamespace({
   ModuleClass: FirebaseLinksModule,
 });
 
-// import links, { firebase } from '@react-native-firebase/links';
+// import links, { firebase } from '@react-native-firebase/dynamic-links';
 // links().X(...);
 // firebase.links().X(...);
 export const firebase = getFirebaseRoot();

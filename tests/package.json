@@ -20,7 +20,7 @@
     "@react-native-firebase/iid": "0.0.26",
     "@react-native-firebase/indexing": "^0.0.26",
     "@react-native-firebase/invites": "0.0.26",
-    "@react-native-firebase/links": "0.0.26",
+    "@react-native-firebase/dynamic-links": "0.0.26",
     "@react-native-firebase/messaging": "0.0.26",
     "@react-native-firebase/ml-natural-language": "0.0.26",
     "@react-native-firebase/ml-vision": "0.0.26",

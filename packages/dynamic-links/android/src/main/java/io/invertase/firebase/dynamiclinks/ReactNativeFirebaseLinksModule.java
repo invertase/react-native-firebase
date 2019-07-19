@@ -1,4 +1,4 @@
-package io.invertase.firebase.links;
+package io.invertase.firebase.dynamiclinks;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -321,7 +321,7 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
             WritableMap body = Arguments.createMap();
             body.putString("url", pendingDynamicLinkData.getLink().toString());
             ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(new ReactNativeFirebaseEvent(
-              "links_link_received",
+              "dynamic_links_link_received",
               body
             ));
           }

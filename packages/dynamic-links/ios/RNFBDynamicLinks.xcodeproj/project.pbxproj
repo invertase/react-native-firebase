@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBLinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBLinksModule.m */; };
-		DADD678B22A8D02E00BBEC26 /* RNFBLinksAppDelegateInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = DADD678A22A8D02E00BBEC26 /* RNFBLinksAppDelegateInterceptor.m */; };
+		2744B98621F45429004F8E3F /* RNFBDynamicLinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBDynamicLinksModule.m */; };
+		DADD678B22A8D02E00BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = DADD678A22A8D02E00BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,11 +24,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2744B98221F45429004F8E3F /* libRNFBLinks.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBLinks.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBLinksModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBLinksModule.h; path = RNFBLinks/RNFBLinksModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBLinksModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBLinksModule.m; path = RNFBLinks/RNFBLinksModule.m; sourceTree = SOURCE_ROOT; };
-		DADD678922A8D01600BBEC26 /* RNFBLinksAppDelegateInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBLinksAppDelegateInterceptor.h; sourceTree = "<group>"; };
-		DADD678A22A8D02E00BBEC26 /* RNFBLinksAppDelegateInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBLinksAppDelegateInterceptor.m; sourceTree = "<group>"; };
+		2744B98221F45429004F8E3F /* libRNFBDynamicLinks.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBDynamicLinks.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2744B98421F45429004F8E3F /* RNFBDynamicLinksModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDynamicLinksModule.h; path = RNFBDynamicLinks/RNFBDynamicLinksModule.h; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBDynamicLinksModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDynamicLinksModule.m; path = RNFBDynamicLinks/RNFBDynamicLinksModule.m; sourceTree = SOURCE_ROOT; };
+		DADD678922A8D01600BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDynamicLinksAppDelegateInterceptor.h; sourceTree = "<group>"; };
+		DADD678A22A8D02E00BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDynamicLinksAppDelegateInterceptor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,26 +45,26 @@
 		2744B97521F452B8004F8E3F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98221F45429004F8E3F /* libRNFBLinks.a */,
+				2744B98221F45429004F8E3F /* libRNFBDynamicLinks.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2744B98321F45429004F8E3F /* RNFBLinks */ = {
+		2744B98321F45429004F8E3F /* RNFBDynamicLinks */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98421F45429004F8E3F /* RNFBLinksModule.h */,
-				2744B98521F45429004F8E3F /* RNFBLinksModule.m */,
-				DADD678922A8D01600BBEC26 /* RNFBLinksAppDelegateInterceptor.h */,
-				DADD678A22A8D02E00BBEC26 /* RNFBLinksAppDelegateInterceptor.m */,
+				2744B98421F45429004F8E3F /* RNFBDynamicLinksModule.h */,
+				2744B98521F45429004F8E3F /* RNFBDynamicLinksModule.m */,
+				DADD678922A8D01600BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.h */,
+				DADD678A22A8D02E00BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.m */,
 			);
-			path = RNFBLinks;
+			path = RNFBDynamicLinks;
 			sourceTree = "<group>";
 		};
 		3323F52AAFE26B7384BE4DE3 = {
 			isa = PBXGroup;
 			children = (
-				2744B98321F45429004F8E3F /* RNFBLinks */,
+				2744B98321F45429004F8E3F /* RNFBDynamicLinks */,
 				2744B97521F452B8004F8E3F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -72,9 +72,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2744B98121F45429004F8E3F /* RNFBLinks */ = {
+		2744B98121F45429004F8E3F /* RNFBDynamicLinks */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBLinks" */;
+			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBDynamicLinks" */;
 			buildPhases = (
 				2744B97E21F45429004F8E3F /* Sources */,
 				2744B97F21F45429004F8E3F /* Frameworks */,
@@ -84,9 +84,9 @@
 			);
 			dependencies = (
 			);
-			name = RNFBLinks;
-			productName = RNFBLinks;
-			productReference = 2744B98221F45429004F8E3F /* libRNFBLinks.a */;
+			name = RNFBDynamicLinks;
+			productName = RNFBDynamicLinks;
+			productReference = 2744B98221F45429004F8E3F /* libRNFBDynamicLinks.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -95,7 +95,7 @@
 		3323F95273A95DB34F55C6D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = RNFBLinks;
+				CLASSPREFIX = RNFBDynamicLinks;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = Invertase;
 				TargetAttributes = {
@@ -105,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBLinks" */;
+			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBDynamicLinks" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -118,7 +118,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2744B98121F45429004F8E3F /* RNFBLinks */,
+				2744B98121F45429004F8E3F /* RNFBDynamicLinks */,
 			);
 		};
 /* End PBXProject section */
@@ -128,8 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DADD678B22A8D02E00BBEC26 /* RNFBLinksAppDelegateInterceptor.m in Sources */,
-				2744B98621F45429004F8E3F /* RNFBLinksModule.m in Sources */,
+				DADD678B22A8D02E00BBEC26 /* RNFBDynamicLinksAppDelegateInterceptor.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBDynamicLinksModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,7 +330,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBLinks" */ = {
+		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBDynamicLinks" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2744B98921F45429004F8E3F /* Debug */,
@@ -339,7 +339,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBLinks" */ = {
+		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBDynamicLinks" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3323F7E33E1559A2B9826720 /* Debug */,

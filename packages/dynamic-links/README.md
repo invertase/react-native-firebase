@@ -7,8 +7,8 @@
 
 <p align="center">
   <a href="https://api.rnfirebase.io/coverage/links/detail"><img src="https://api.rnfirebase.io/coverage/links/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/links"><img src="https://img.shields.io/npm/dm/@react-native-firebase/links.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/links"><img src="https://img.shields.io/npm/v/@react-native-firebase/links.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/dynamic-links"><img src="https://img.shields.io/npm/dm/@react-native-firebase/dynamic-links.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/dynamic-links"><img src="https://img.shields.io/npm/v/@react-native-firebase/dynamic-links.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
 </p>
@@ -31,15 +31,15 @@ Dynamic Links are smart URLs that allow you to send existing and potential users
 Requires `@react-native-firebase/app` to be installed.
 
 ```bash
-yarn add @react-native-firebase/links
-react-native link @react-native-firebase/links
+yarn add @react-native-firebase/dynamic-links
+react-native link @react-native-firebase/dynamic-links
 ```
 
 ## Documentation
 
 - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=links)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/links)
-- [Reference](https://invertase.io/oss/react-native-firebase/v6/links/reference)
+- [Installation](https://invertase.io/oss/react-native-firebase/v6/dynamic-links)
+- [Reference](https://invertase.io/oss/react-native-firebase/v6/dynamic-links/reference)
 
 ## License
 

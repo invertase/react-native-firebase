@@ -72,7 +72,7 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <!-- App Links -->
+      <!-- App DynamicLinks -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 
@@ -124,7 +124,7 @@
           android:host="foo.bar"
           android:scheme="invertase" />
       </intent-filter>
-      <!-- Dynamic Links Test -->
+      <!-- Dynamic DynamicLinks Test -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
