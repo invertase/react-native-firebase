@@ -349,8 +349,9 @@ The Remote Config API has had a significant API change as originally highlighted
 - [NEW] Added an `error` property to TaskSnapshot's for `error` state events - this is an instance of `NativeFirebaseError` (with `code` & `message`)
 - [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
 - [BREAKING] `StorageReference.downloadFile()` is now deprecated and will be removed in a later release, please rename usages of this to `writeToFile()` - renamed to match Native SDKs
-- [BREAKING] `firebase.storage.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.storage.Path`
-- [BREAKING] `firebase.storage.Native.*` properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate
+- [BREAKING] `firebase.storage.Native` has moved to `firebase.utils.Native`
+- [BREAKING] `firebase.utils.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.utils.FilePath`
+- [BREAKING] `firebase.utils.Native.*` some properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate
 - [BUGFIX][android] Update/set metadata now correctly supports removing metadata values by passing a null property value in `customMetadata`
 - [BUGFIX][android] `contentType` mime type is now correctly determined in all scenarios, there was an edge case where it would just use the default value
 - [INTERNAL][android] `downloadFile` no longer uses a `StreamDownloadTask`, replaced with the newer `FileDownloadTask`
@@ -419,3 +420,4 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 ## Utils
 
 - [NEW] Added support via `isRunningInTestLab` for checking if an Android application is running inside a Firebase Test Lab environment
+- [NEW] Added a new `FilePath` utility that provides common file paths on the device, see `firebase.utils.FilePath` docs for more info, this is the replacement API for `firebase.storage.Native`
