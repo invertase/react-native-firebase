@@ -723,7 +723,11 @@ export namespace Storage {
      * @param format The format type of the string, e.g. a Base64 format string.
      * @param metadata Any additional `SettableMetadata` for this task.
      */
-    putString(data: string, format?: StringFormat, metadata?: SettableMetadata): Task;
+    putString(
+      data: string,
+      format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+      metadata?: SettableMetadata,
+    ): Task;
 
     /**
      * Updates the metadata for this reference object on the storage bucket.
