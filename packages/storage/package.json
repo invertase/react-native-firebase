@@ -35,13 +35,6 @@
     "@react-native-firebase/app-types": "0.0.26",
     "@react-native-firebase/common": "0.0.26"
   },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_storage')",
-      "packageImportPath": "import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;",
-      "packageInstance": "new ReactNativeFirebaseStoragePackage()"
-    }
-  },
   "gitHead": "639c15d4b8ba8a972f0fe17fcc285b4a6e4af320",
   "publishConfig": {
     "access": "public"
