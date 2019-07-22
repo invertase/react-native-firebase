@@ -60,7 +60,7 @@
     to: "/v6/database"
     asset: "//static.invertase.io/assets/firebase/realtime-database.svg"
   - text: Dynamic Links
-    to: "/v6/links"
+    to: "/v6/dynamic-links"
     asset: "//static.invertase.io/assets/firebase/dynamic-links.svg"
   - text: App Indexing
     to: "/v6/indexing"
