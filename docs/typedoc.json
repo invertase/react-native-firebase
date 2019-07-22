@@ -3717,7 +3717,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -4499,7 +4499,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -5507,7 +5507,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "The action code settings. The action code settings which provides Firebase with instructions on how to construct the email link. This includes the sign in completion URL or the deep link for mobile redirects, the mobile apps to use when the sign-in link is opened on an Android or iOS device. Mobile app redirects will only be applicable if the developer configures and accepts the Firebase Dynamic DynamicLinks terms of condition. The Android package name and iOS bundle ID will be respected only if they are configured in the same Firebase Auth project used.\n"
+												"text": "The action code settings. The action code settings which provides Firebase with instructions on how to construct the email link. This includes the sign in completion URL or the deep link for mobile redirects, the mobile apps to use when the sign-in link is opened on an Android or iOS device. Mobile app redirects will only be applicable if the developer configures and accepts the Firebase Dynamic Links terms of condition. The Android package name and iOS bundle ID will be respected only if they are configured in the same Firebase Auth project used.\n"
 											},
 											"type": {
 												"type": "reference",
@@ -11012,7 +11012,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -12219,7 +12219,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -12897,7 +12897,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -19513,7 +19513,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -21695,7 +21695,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -22945,7 +22945,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -28809,7 +28809,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -29087,7 +29087,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 19
 								}
@@ -29157,7 +29157,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 964,
 									"character": 11
 								}
@@ -29181,7 +29181,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 963,
 									"character": 8
 								}
@@ -29206,7 +29206,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 965,
 									"character": 9
 								}
@@ -29874,7 +29874,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -30268,7 +30268,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -31097,7 +31097,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -31685,7 +31685,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -34690,7 +34690,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -42323,7 +42323,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -44943,7 +44943,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -47316,7 +47316,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 19
 								}
@@ -47386,7 +47386,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 963,
 									"character": 8
 								}
@@ -47489,7 +47489,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 965,
 									"character": 9
 								}
@@ -47892,7 +47892,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
@@ -51784,7 +51784,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/Mike/Documents/Projects/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
+									"fileName": "/Users/Salakar/Documents/@react-native-firebase/node_modules/@react-native-firebase/app/lib/index.d.ts",
 									"line": 201,
 									"character": 7
 								}
