@@ -651,9 +651,9 @@ describe('storage() -> StorageTask', () => {
       const { resolve, reject, promise } = Promise.defer();
 
       // random file name as Android does not allow overriding if file already exists
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/invertase/pauseDownload${Math.round(
-        Math.random() * 1000,
-      )}.gif`;
+      const path = `${
+        firebase.utils.FilePath.DOCUMENT_DIRECTORY
+      }/invertase/pauseDownload${Math.round(Math.random() * 1000)}.gif`;
       const downloadTask = ref.writeToFile(path);
 
       let hadRunningStatus = false;
