@@ -21,21 +21,21 @@ Pod::Spec.new do |s|
   s.source_files        = 'RNFBMlNaturalLanguage/**/*.{h,m}'
   s.dependency          'RNFBApp'
   s.dependency          'React'
-  s.dependency          'Firebase/Core', '~> 6.3.0'
+  s.dependency          'Firebase/Core', '~> 6.5.0'
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_language_id_model', false)
-    s.dependency          'Firebase/MLNaturalLanguage', '~> 6.3.0'
-    s.dependency          'Firebase/MLNLLanguageID', '~> 6.3.0'
+    s.dependency          'Firebase/MLNaturalLanguage', '~> 6.5.0'
+    s.dependency          'Firebase/MLNLLanguageID', '~> 6.5.0'
   end
 
   # ignore until after v6 release, add support in a feature release
   # if FirebaseJSON::Config.get_value_or_default('ml_natural_language_translate_model', false)
-  #  s.dependency          'Firebase/MLNLTranslate', '~> 6.3.0'
+  #  s.dependency          'Firebase/MLNLTranslate', '~> 6.5.0'
   # end
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_smart_reply_model', false)
-    s.dependency          'Firebase/MLCommon', '~> 6.3.0'
-    s.dependency          'Firebase/MLNLSmartReply', '~> 6.3.0'
+    s.dependency          'Firebase/MLCommon', '~> 6.5.0'
+    s.dependency          'Firebase/MLNLSmartReply', '~> 6.5.0'
   end
 
   s.static_framework    = true
