@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of AdMob in React Native Firebase
+description: Getting started with AdMob in React Native Firebase
 ---
 
 # AdMob Quick Start

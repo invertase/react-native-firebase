@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Invites in React Native Firebase
+description: Getting started with Invites in React Native Firebase
 ---
 
 # Invites Quick Start

@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Realtime Database in React Native Firebase
+description: Getting started with Realtime Database in React Native Firebase
 ---
 
 # Realtime Database Quick Start

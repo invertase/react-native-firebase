@@ -1,6 +1,6 @@
 ---
 title: Authentication Quick Start
-description: Get to grips with the basics of Authentication in React Native Firebase
+description: Getting started with Authentication in React Native Firebase
 ---
 
 # Auth Quick Start

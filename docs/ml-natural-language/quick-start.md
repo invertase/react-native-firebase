@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of ML Kit Natural Language APIs in React Native Firebase
+description: Getting started with ML Kit Natural Language APIs in React Native Firebase
 ---
 
 # ML Kit Quick Start

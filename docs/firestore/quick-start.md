@@ -1,6 +1,6 @@
 ---
 title: Cloud Firestore Quick Start
-description: Get to grips with the basics of Cloud Firestore in React Native Firebase
+description: Getting started with Cloud Firestore in React Native Firebase
 ---
 
 # Cloud Firestore Quick Start
