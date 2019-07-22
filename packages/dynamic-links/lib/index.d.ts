@@ -32,12 +32,12 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *    .analytics.setCampaign('banner')
    *    .analytics.setContent('Click Me');
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkAnalyticsParameters {
@@ -87,12 +87,12 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *   .android.setPackageName('io.invertase.testing')
    *   .android.setMinimumVersion('18');
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkAndroidParameters {
@@ -129,13 +129,13 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *   .ios.setBundleId('io.invertase.testing')
    *   .ios.setAppStoreId('123456789')
    *   .ios.setMinimumVersion('18');
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkIOSParameters {
@@ -201,11 +201,11 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *   .itunes.setAffiliateToken('ABCDEFG');
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkITunesParameters {
@@ -238,11 +238,11 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *   .navigation.setForcedRedirectEnabled(true);
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkNavigationParameters {
@@ -261,12 +261,12 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
+   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    * linkParams
    *   .social.setTitle('Social Application')
    *   .social.setDescriptionText('A Social Application');
    *
-   *  const link = await firebase.links().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkSocialParameters {
@@ -299,12 +299,12 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links()
+   * const linkParams = firebase.dynamicLinks()
    *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    *
    * linkParams.analytics.setCampaign('banner');
    *
-   * const link = await firebase.links().buildLink(linkParams);
+   * const link = await firebase.dynamicLinks().buildLink(linkParams);
    * ```
    */
   export interface DynamicLinkParameters {
@@ -346,14 +346,14 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.links()
+   * const linkParams = firebase.dynamicLinks()
    *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
    *
    * linkParams.analytics.setCampaign('banner');
    *
-   * const link = await firebase.links().buildShortLink(
+   * const link = await firebase.dynamicLinks().buildShortLink(
    *   linkParams,
-   *   firebase.links.ShortLinkType.UNGUESSABLE,
+   *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
    * );
    * ```
    */
@@ -382,7 +382,7 @@ export namespace DynamicLinks {
    * Firebase Dynamic DynamicLinks Statics
    *
    * ```js
-   * firebase.links.X
+   * firebase.dynamicLinks.X
    * ```
    */
   export interface Statics {
@@ -402,7 +402,7 @@ export namespace DynamicLinks {
    * Get the links instance for the **default app**:
    *
    * ```js
-   * const links = firebase.links();
+   * const links = firebase.dynamicLinks();
    * ```
    */
   export class Module extends FirebaseModule {
@@ -410,19 +410,19 @@ export namespace DynamicLinks {
      * Creates new parameters which enhance the functionality of a created link.
      *
      * To create a DynamicLinkParameters, first populate it by using the setX methods available on the `DynamicLinkParameters` builder classes,
-     * then pass it to `firebase.links().buildLink(linkParams)` or `firebase.links().buildShortLink(linkParams, type)`.
+     * then pass it to `firebase.dynamicLinks().buildLink(linkParams)` or `firebase.dynamicLinks().buildShortLink(linkParams, type)`.
      *
      * #### Example
      *
      * ```js
-     * const linkParams = firebase.links()
+     * const linkParams = firebase.dynamicLinks()
      *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
      *
      * linkParams.analytics.setCampaign('banner');
      *
-     * const link = await firebase.links().buildShortLink(
+     * const link = await firebase.dynamicLinks().buildShortLink(
      *   linkParams,
-     *   firebase.links.ShortLinkType.UNGUESSABLE,
+     *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
      * );
      * ```
      *
@@ -437,12 +437,12 @@ export namespace DynamicLinks {
      * #### Example
      *
      * ```js
-     * const linkParams = firebase.links()
+     * const linkParams = firebase.dynamicLinks()
      *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
      *
      * linkParams.analytics.setCampaign('banner');
      *
-     * const link = await firebase.links().buildLink(linkParams);
+     * const link = await firebase.dynamicLinks().buildLink(linkParams);
      * ```
      *
      * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
@@ -461,19 +461,19 @@ export namespace DynamicLinks {
      * Builds a short Dynamic Link from the provided DynamicLinkParameters instances.
      *
      *  ```js
-     * const linkParams = firebase.links()
+     * const linkParams = firebase.dynamicLinks()
      *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
      *
      * linkParams.analytics.setCampaign('banner');
      *
-     * const link = await firebase.links().buildShortLink(
+     * const link = await firebase.dynamicLinks().buildShortLink(
      *   linkParams,
-     *   firebase.links.ShortLinkType.UNGUESSABLE,
+     *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
      * );
      * ```
      *
      * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.links.ShortLinkType`
+     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     buildShortLink(
       dynamicLinkParams: DynamicLinkParameters,
@@ -485,7 +485,7 @@ export namespace DynamicLinks {
      *
      * @deprecated Use `buildShortLink` with the same args instead.
      * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.links.ShortLinkType`
+     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     createShortDynamicLink(
       dynamicLinkParams: DynamicLinkParameters,
@@ -501,7 +501,7 @@ export namespace DynamicLinks {
      *
      * ```js
      * async function bootstrapApp() {
-     *    await initialLink = await firebase.links().getInitialLink();
+     *    await initialLink = await firebase.dynamicLinks().getInitialLink();
      *
      *    if (initialLink) {
      *      // Handle dynamic link inside your own application
@@ -528,7 +528,7 @@ export namespace DynamicLinks {
      *   };
      *
      *   useEffect(() => {
-     *     const unsubscribe = firebase.links().onLink(handleDynamicLink);
+     *     const unsubscribe = firebase.dynamicLinks().onLink(handleDynamicLink);
      *     // When the component unmounts, remove the listener
      *     return unsubscribe;
      *   }, []);

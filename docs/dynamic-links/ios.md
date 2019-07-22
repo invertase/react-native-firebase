@@ -1,6 +1,6 @@
 ---
 title: iOS Setup
-description: Manually integrate Messaging into your iOS application.
+description: Manually integrate Dynamic Links into your iOS application.
 ---
 
 # iOS Manual Linking
