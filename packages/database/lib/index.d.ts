@@ -1146,8 +1146,8 @@ export namespace Database {
     goOffline(): Promise<void>;
 
     /**
-     * Sets whether persistence is enabled for all database calls across all app
-     * instances.
+     * Sets whether persistence is enabled for all database calls for the current app
+     * instance.
      *
      * > Ensure this is called before any database calls are performed, otherwise
      * persistence will only come into effect when the app is next started.

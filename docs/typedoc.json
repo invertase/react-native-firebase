@@ -13258,7 +13258,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets whether persistence is enabled for all database calls across all app\ninstances.",
+										"shortText": "Sets whether persistence is enabled for all database calls for the current app\ninstance.",
 										"text": "> Ensure this is called before any database calls are performed, otherwise\npersistence will only come into effect when the app is next started.\n\n#### Example\n\n```js\nfirebase.database().setPersistenceEnabled(true);\n\nasync function bootstrap() {\n  // Bootstrapping application\n  const snapshot = await firebase.database().ref('settings').once('value');\n}\n```\n"
 									},
 									"parameters": [
