@@ -635,21 +635,21 @@
 									]
 								},
 								{
-									"id": 2302,
+									"id": 2291,
 									"name": "storage",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2303,
+											"id": 2292,
 											"name": "storage",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2304,
+													"id": 2293,
 													"name": "bucket",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -674,14 +674,14 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 2277
+												"id": 2266
 											}
 										}
 									],
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1160,
+											"line": 1035,
 											"character": 13
 										}
 									]
@@ -709,7 +709,7 @@
 									"sources": [
 										{
 											"fileName": "utils/lib/index.d.ts",
-											"line": 112,
+											"line": 228,
 											"character": 11
 										}
 									]
@@ -736,7 +736,7 @@
 										1614,
 										2028,
 										2122,
-										2302,
+										2291,
 										2315
 									]
 								}
@@ -824,12 +824,12 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1159,
+									"line": 1034,
 									"character": 25
 								},
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 111,
+									"line": 227,
 									"character": 25
 								}
 							]
@@ -1338,7 +1338,7 @@
 									}
 								},
 								{
-									"id": 2301,
+									"id": 2290,
 									"name": "storage",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1346,7 +1346,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1157,
+											"line": 1032,
 											"character": 13
 										}
 									],
@@ -1358,12 +1358,12 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 2277
+												"id": 2266
 											},
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 2149
+												"id": 2139
 											}
 										]
 									}
@@ -1380,7 +1380,7 @@
 									"sources": [
 										{
 											"fileName": "utils/lib/index.d.ts",
-											"line": 108,
+											"line": 224,
 											"character": 11
 										}
 									],
@@ -1397,7 +1397,7 @@
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 2306
+												"id": 2305
 											}
 										]
 									}
@@ -1424,7 +1424,7 @@
 										1613,
 										2027,
 										2121,
-										2301,
+										2290,
 										2314
 									]
 								}
@@ -1512,12 +1512,12 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1156,
+									"line": 1031,
 									"character": 20
 								},
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 102,
+									"line": 218,
 									"character": 20
 								}
 							]
@@ -1616,12 +1616,12 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1154,
+							"line": 1029,
 							"character": 31
 						},
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 99,
+							"line": 215,
 							"character": 31
 						}
 					]
@@ -1761,12 +1761,12 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1153,
+					"line": 1028,
 					"character": 43
 				},
 				{
 					"fileName": "utils/lib/index.d.ts",
-					"line": 98,
+					"line": 214,
 					"character": 43
 				}
 			]
@@ -3453,14 +3453,14 @@
 			]
 		},
 		{
-			"id": 2297,
+			"id": 2286,
 			"name": "\"@react-native-firebase/storage\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 2299,
+					"id": 2288,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3471,7 +3471,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1144,
+							"line": 1019,
 							"character": 23
 						}
 					],
@@ -3482,7 +3482,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 2298,
+					"id": 2287,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3492,7 +3492,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1143,
+							"line": 1018,
 							"character": 27
 						}
 					],
@@ -3511,7 +3511,7 @@
 					}
 				},
 				{
-					"id": 2300,
+					"id": 2289,
 					"name": "module",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3522,7 +3522,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1146,
+							"line": 1021,
 							"character": 14
 						}
 					],
@@ -3548,16 +3548,16 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						2299,
-						2298,
-						2300
+						2288,
+						2287,
+						2289
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1139,
+					"line": 1014,
 					"character": 47
 				}
 			]
@@ -3581,7 +3581,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 89,
+							"line": 205,
 							"character": 23
 						}
 					],
@@ -3602,7 +3602,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 88,
+							"line": 204,
 							"character": 27
 						}
 					],
@@ -3632,7 +3632,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 91,
+							"line": 207,
 							"character": 14
 						}
 					],
@@ -3667,7 +3667,7 @@
 			"sources": [
 				{
 					"fileName": "utils/lib/index.d.ts",
-					"line": 84,
+					"line": 200,
 					"character": 45
 				}
 			]
@@ -19497,7 +19497,7 @@
 					},
 					"comment": {
 						"shortText": "The Firebase Dynamic DynamicLinks service is available for the default app only.",
-						"text": "#### Example 1\n\nGet the links instance for the **default app**:\n\n```js\nconst links = firebase.links();\n```\n"
+						"text": "#### Example 1\n\nGet the links instance for the **default app**:\n\n```js\nconst links = firebase.dynamicLinks();\n```\n"
 					},
 					"children": [
 						{
@@ -19544,7 +19544,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Builds a Dynamic Link from the provided DynamicLinkParameters instances.",
-										"text": "#### Example\n\n```js\nconst linkParams = firebase.links()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.links().buildLink(linkParams);\n```\n"
+										"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 									},
 									"parameters": [
 										{
@@ -19600,7 +19600,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Builds a short Dynamic Link from the provided DynamicLinkParameters instances.",
-										"text": " ```js\nconst linkParams = firebase.links()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.links().buildShortLink(\n  linkParams,\n  firebase.links.ShortLinkType.UNGUESSABLE,\n);\n```\n"
+										"text": " ```js\nconst linkParams = firebase.dynamicLinks()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.dynamicLinks().buildShortLink(\n  linkParams,\n  firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -19627,7 +19627,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "The short link type, one of `ShortLinkType` from `firebase.links.ShortLinkType`\n"
+												"text": "The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`\n"
 											},
 											"type": {
 												"type": "reference",
@@ -19766,7 +19766,7 @@
 												"isOptional": true
 											},
 											"comment": {
-												"text": "The short link type, one of `ShortLinkType` from `firebase.links.ShortLinkType`\n"
+												"text": "The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`\n"
 											},
 											"type": {
 												"type": "reference",
@@ -19812,7 +19812,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns the URL that the app has been launched from. If the app was not launched from a URL the return value will be null.",
-										"text": "> Use {@link auth#isSignInWithEmailLink} to check if an inbound dynamic link is an email sign-in link.\n\n#### Example\n\n```js\nasync function bootstrapApp() {\n   await initialLink = await firebase.links().getInitialLink();\n\n   if (initialLink) {\n     // Handle dynamic link inside your own application\n     if (initialLink === 'https://invertase.io/offer') return navigateTo('/offers')\n   }\n}\n```\n"
+										"text": "> Use {@link auth#isSignInWithEmailLink} to check if an inbound dynamic link is an email sign-in link.\n\n#### Example\n\n```js\nasync function bootstrapApp() {\n   await initialLink = await firebase.dynamicLinks().getInitialLink();\n\n   if (initialLink) {\n     // Handle dynamic link inside your own application\n     if (initialLink === 'https://invertase.io/offer') return navigateTo('/offers')\n   }\n}\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -19860,7 +19860,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Creates new parameters which enhance the functionality of a created link.",
-										"text": "To create a DynamicLinkParameters, first populate it by using the setX methods available on the `DynamicLinkParameters` builder classes,\nthen pass it to `firebase.links().buildLink(linkParams)` or `firebase.links().buildShortLink(linkParams, type)`.\n\n#### Example\n\n```js\nconst linkParams = firebase.links()\n   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.links().buildShortLink(\n  linkParams,\n  firebase.links.ShortLinkType.UNGUESSABLE,\n);\n```\n"
+										"text": "To create a DynamicLinkParameters, first populate it by using the setX methods available on the `DynamicLinkParameters` builder classes,\nthen pass it to `firebase.dynamicLinks().buildLink(linkParams)` or `firebase.dynamicLinks().buildShortLink(linkParams, type)`.\n\n#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks()\n   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.dynamicLinks().buildShortLink(\n  linkParams,\n  firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,\n);\n```\n"
 									},
 									"parameters": [
 										{
@@ -19924,7 +19924,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Subscribe to URL open events while the app is still running.",
-										"text": "The listener is called from URL open events whilst the app is still running, use\n{@link links#getInitialLink} for URLs which cause the app to open from a previously closed / not running state.\n\n#### Example\n\n```jsx\nfunction App() {\n  const handleDynamicLink = (link) => {\n    // Handle dynamic link inside your own application\n    if (link === 'https://invertase.io/offer') return navigateTo('/offers')\n  };\n\n  useEffect(() => {\n    const unsubscribe = firebase.links().onLink(handleDynamicLink);\n    // When the component unmounts, remove the listener\n    return unsubscribe;\n  }, []);\n\n  return <YourApp />;\n}\n```\n",
+										"text": "The listener is called from URL open events whilst the app is still running, use\n{@link links#getInitialLink} for URLs which cause the app to open from a previously closed / not running state.\n\n#### Example\n\n```jsx\nfunction App() {\n  const handleDynamicLink = (link) => {\n    // Handle dynamic link inside your own application\n    if (link === 'https://invertase.io/offer') return navigateTo('/offers')\n  };\n\n  useEffect(() => {\n    const unsubscribe = firebase.dynamicLinks().onLink(handleDynamicLink);\n    // When the component unmounts, remove the listener\n    return unsubscribe;\n  }, []);\n\n  return <YourApp />;\n}\n```\n",
 										"returns": "Unsubscribe function, call the returned function to unsubscribe from all future events."
 									},
 									"parameters": [
@@ -20010,7 +20010,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkAnalyticsParameters interface provides functionality to add Google Analytic\nbased parameters to a dynamic link.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n   .analytics.setCampaign('banner')\n   .analytics.setContent('Click Me');\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n   .analytics.setCampaign('banner')\n   .analytics.setContent('Click Me');\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -20290,7 +20290,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkAndroidParameters interface provides functionality to configure the behaviour\nof dynamic links for Android devices.",
-						"text": "If any parameter is declared then the Android package name must also be set via `setPackageName`\n\n#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .android.setPackageName('io.invertase.testing')\n  .android.setMinimumVersion('18');\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "If any parameter is declared then the Android package name must also be set via `setPackageName`\n\n#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .android.setPackageName('io.invertase.testing')\n  .android.setMinimumVersion('18');\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -20470,7 +20470,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkIOSParameters interface provides functionality to configure the behaviour\nof dynamic links for iOS devices.",
-						"text": "If any parameter is declared then the iOS BundleId must also be set via `setBundleId`\n\n#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .ios.setBundleId('io.invertase.testing')\n  .ios.setAppStoreId('123456789')\n  .ios.setMinimumVersion('18');\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "If any parameter is declared then the iOS BundleId must also be set via `setBundleId`\n\n#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .ios.setBundleId('io.invertase.testing')\n  .ios.setAppStoreId('123456789')\n  .ios.setMinimumVersion('18');\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -20850,7 +20850,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkITunesParameters interface provides functionality to add iTunes Connect Analytics\nbased parameters to the created dynamic link.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .itunes.setAffiliateToken('ABCDEFG');\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .itunes.setAffiliateToken('ABCDEFG');\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -21030,7 +21030,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkNavigationParameters interface provides functionality to specify how the navigation\nof the created link is handled.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .navigation.setForcedRedirectEnabled(true);\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .navigation.setForcedRedirectEnabled(true);\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -21110,7 +21110,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkParameters interface provides access to the Dynamic Link builder classes\nused to configure a created link.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -21290,7 +21290,7 @@
 					},
 					"comment": {
 						"shortText": "The DynamicLinkSocialParameters interface provides functionality to add additional social\nmeta-data to the URL.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .social.setTitle('Social Application')\n  .social.setDescriptionText('A Social Application');\n\n const link = await firebase.links().buildLink(linkParams);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\nlinkParams\n  .social.setTitle('Social Application')\n  .social.setDescriptionText('A Social Application');\n\n const link = await firebase.dynamicLinks().buildLink(linkParams);\n```\n"
 					},
 					"children": [
 						{
@@ -21470,7 +21470,7 @@
 					},
 					"comment": {
 						"shortText": "ShortLinkType determines the type of dynamic short link which Firebase creates. Used when building\na new short link via `buildShortLink()`.",
-						"text": "#### Example\n\n```js\nconst linkParams = firebase.links()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.links().buildShortLink(\n  linkParams,\n  firebase.links.ShortLinkType.UNGUESSABLE,\n);\n```\n"
+						"text": "#### Example\n\n```js\nconst linkParams = firebase.dynamicLinks()\n  .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');\n\nlinkParams.analytics.setCampaign('banner');\n\nconst link = await firebase.dynamicLinks().buildShortLink(\n  linkParams,\n  firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,\n);\n```\n"
 					},
 					"children": [
 						{
@@ -21572,7 +21572,7 @@
 					},
 					"comment": {
 						"shortText": "Firebase Dynamic DynamicLinks Statics",
-						"text": "```js\nfirebase.links.X\n```\n"
+						"text": "```js\nfirebase.dynamicLinks.X\n```\n"
 					},
 					"children": [
 						{
@@ -47867,7 +47867,7 @@
 			},
 			"children": [
 				{
-					"id": 2277,
+					"id": 2266,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -47880,7 +47880,7 @@
 					},
 					"children": [
 						{
-							"id": 2296,
+							"id": 2285,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47907,7 +47907,7 @@
 							}
 						},
 						{
-							"id": 2282,
+							"id": 2271,
 							"name": "maxDownloadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47921,7 +47921,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1065,
+									"line": 940,
 									"character": 24
 								}
 							],
@@ -47931,7 +47931,7 @@
 							}
 						},
 						{
-							"id": 2286,
+							"id": 2275,
 							"name": "maxOperationRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47945,7 +47945,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1089,
+									"line": 964,
 									"character": 25
 								}
 							],
@@ -47955,7 +47955,7 @@
 							}
 						},
 						{
-							"id": 2278,
+							"id": 2267,
 							"name": "maxUploadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47969,7 +47969,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1041,
+									"line": 916,
 									"character": 22
 								}
 							],
@@ -47979,7 +47979,7 @@
 							}
 						},
 						{
-							"id": 2290,
+							"id": 2279,
 							"name": "ref",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47988,7 +47988,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2291,
+									"id": 2280,
 									"name": "ref",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47999,7 +47999,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2292,
+											"id": 2281,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48027,20 +48027,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2183
+										"id": 2172
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1116,
+									"line": 991,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 2293,
+							"id": 2282,
 							"name": "refFromURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48049,7 +48049,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2294,
+									"id": 2283,
 									"name": "refFromURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48060,7 +48060,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2295,
+											"id": 2284,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48077,20 +48077,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2183
+										"id": 2172
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1135,
+									"line": 1010,
 									"character": 14
 								}
 							]
 						},
 						{
-							"id": 2283,
+							"id": 2272,
 							"name": "setMaxDownloadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48099,7 +48099,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2284,
+									"id": 2273,
 									"name": "setMaxDownloadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48110,7 +48110,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2285,
+											"id": 2274,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48139,13 +48139,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1078,
+									"line": 953,
 									"character": 27
 								}
 							]
 						},
 						{
-							"id": 2287,
+							"id": 2276,
 							"name": "setMaxOperationRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48154,7 +48154,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2288,
+									"id": 2277,
 									"name": "setMaxOperationRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48165,7 +48165,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2289,
+											"id": 2278,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48194,13 +48194,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1102,
+									"line": 977,
 									"character": 28
 								}
 							]
 						},
 						{
-							"id": 2279,
+							"id": 2268,
 							"name": "setMaxUploadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48209,7 +48209,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2280,
+									"id": 2269,
 									"name": "setMaxUploadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48220,7 +48220,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2281,
+											"id": 2270,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48249,7 +48249,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1054,
+									"line": 929,
 									"character": 25
 								}
 							]
@@ -48260,28 +48260,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2296,
-								2282,
-								2286,
-								2278
+								2285,
+								2271,
+								2275,
+								2267
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2290,
-								2293,
-								2283,
-								2287,
-								2279
+								2279,
+								2282,
+								2272,
+								2276,
+								2268
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1031,
+							"line": 906,
 							"character": 21
 						}
 					],
@@ -48293,7 +48293,7 @@
 					]
 				},
 				{
-					"id": 2164,
+					"id": 2153,
 					"name": "FullMetadata",
 					"kind": 256,
 					"kindString": "Interface",
@@ -48305,7 +48305,7 @@
 					},
 					"children": [
 						{
-							"id": 2166,
+							"id": 2155,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48319,7 +48319,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 482,
+									"line": 357,
 									"character": 10
 								}
 							],
@@ -48329,7 +48329,7 @@
 							}
 						},
 						{
-							"id": 2174,
+							"id": 2163,
 							"name": "cacheControl",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48344,7 +48344,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 397,
+									"line": 272,
 									"character": 16
 								}
 							],
@@ -48364,11 +48364,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.cacheControl",
-								"id": 2155
+								"id": 2144
 							}
 						},
 						{
-							"id": 2175,
+							"id": 2164,
 							"name": "contentDisposition",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48383,7 +48383,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 404,
+									"line": 279,
 									"character": 22
 								}
 							],
@@ -48403,11 +48403,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentDisposition",
-								"id": 2156
+								"id": 2145
 							}
 						},
 						{
-							"id": 2176,
+							"id": 2165,
 							"name": "contentEncoding",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48422,7 +48422,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 411,
+									"line": 286,
 									"character": 19
 								}
 							],
@@ -48442,11 +48442,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentEncoding",
-								"id": 2157
+								"id": 2146
 							}
 						},
 						{
-							"id": 2177,
+							"id": 2166,
 							"name": "contentLanguage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48461,7 +48461,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 418,
+									"line": 293,
 									"character": 19
 								}
 							],
@@ -48481,11 +48481,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentLanguage",
-								"id": 2158
+								"id": 2147
 							}
 						},
 						{
-							"id": 2178,
+							"id": 2167,
 							"name": "contentType",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48500,7 +48500,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 441,
+									"line": 316,
 									"character": 15
 								}
 							],
@@ -48520,11 +48520,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentType",
-								"id": 2159
+								"id": 2148
 							}
 						},
 						{
-							"id": 2179,
+							"id": 2168,
 							"name": "customMetadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48539,7 +48539,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 459,
+									"line": 334,
 									"character": 18
 								}
 							],
@@ -48549,21 +48549,21 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 2180,
+											"id": 2169,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 2181,
+													"id": 2170,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 2182,
+															"id": 2171,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -48583,7 +48583,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 459,
+													"line": 334,
 													"character": 20
 												}
 											]
@@ -48598,11 +48598,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.customMetadata",
-								"id": 2160
+								"id": 2149
 							}
 						},
 						{
-							"id": 2167,
+							"id": 2156,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48616,7 +48616,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 493,
+									"line": 368,
 									"character": 12
 								}
 							],
@@ -48626,7 +48626,7 @@
 							}
 						},
 						{
-							"id": 2168,
+							"id": 2157,
 							"name": "generation",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48640,7 +48640,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 500,
+									"line": 375,
 									"character": 14
 								}
 							],
@@ -48650,7 +48650,7 @@
 							}
 						},
 						{
-							"id": 2165,
+							"id": 2154,
 							"name": "md5Hash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48663,7 +48663,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 471,
+									"line": 346,
 									"character": 11
 								}
 							],
@@ -48682,7 +48682,7 @@
 							}
 						},
 						{
-							"id": 2169,
+							"id": 2158,
 							"name": "metageneration",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48696,7 +48696,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 507,
+									"line": 382,
 									"character": 18
 								}
 							],
@@ -48706,7 +48706,7 @@
 							}
 						},
 						{
-							"id": 2170,
+							"id": 2159,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48720,7 +48720,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 518,
+									"line": 393,
 									"character": 8
 								}
 							],
@@ -48730,7 +48730,7 @@
 							}
 						},
 						{
-							"id": 2171,
+							"id": 2160,
 							"name": "size",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48743,7 +48743,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 523,
+									"line": 398,
 									"character": 8
 								}
 							],
@@ -48753,7 +48753,7 @@
 							}
 						},
 						{
-							"id": 2172,
+							"id": 2161,
 							"name": "timeCreated",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48767,7 +48767,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 534,
+									"line": 409,
 									"character": 15
 								}
 							],
@@ -48777,7 +48777,7 @@
 							}
 						},
 						{
-							"id": 2173,
+							"id": 2162,
 							"name": "updated",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48791,7 +48791,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 545,
+									"line": 420,
 									"character": 11
 								}
 							],
@@ -48806,28 +48806,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
+								2155,
+								2163,
+								2164,
+								2165,
 								2166,
-								2174,
-								2175,
-								2176,
-								2177,
-								2178,
-								2179,
 								2167,
 								2168,
-								2165,
-								2169,
-								2170,
-								2171,
-								2172,
-								2173
+								2156,
+								2157,
+								2154,
+								2158,
+								2159,
+								2160,
+								2161,
+								2162
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 467,
+							"line": 342,
 							"character": 31
 						}
 					],
@@ -48835,303 +48835,12 @@
 						{
 							"type": "reference",
 							"name": "SettableMetadata",
-							"id": 2154
+							"id": 2143
 						}
 					]
 				},
 				{
-					"id": 2139,
-					"name": "Path",
-					"kind": 256,
-					"kindString": "Interface",
-					"flags": {
-						"isExported": true
-					},
-					"comment": {
-						"shortText": "A collection of native device file paths to aid in the usage of file path based storage methods.",
-						"text": "Concatenate a file path with your target file name when using `putFile` or `writeToFile`.\n\n```js\nfirebase.storage.Path;\n```\n"
-					},
-					"children": [
-						{
-							"id": 2141,
-							"name": "CachesDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the application specific cache directory on the filesystem.",
-								"text": "The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.storage.Path.CachesDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 227,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2142,
-							"name": "DocumentDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the users Documents directory.",
-								"text": "Use this directory to place documents that have been created by the user.\n\n```js\nfirebase.storage.Path.DocumentDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 238,
-									"character": 21
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2145,
-							"name": "ExternalDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the directory on the primary shared/external storage device.",
-								"text": "Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.storage.Path.ExternalDirectory;\n```\n",
-								"tags": [
-									{
-										"tag": "android",
-										"text": "Android only - iOS returns null\n"
-									}
-								]
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 275,
-									"character": 21
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							}
-						},
-						{
-							"id": 2146,
-							"name": "ExternalStorageDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the primary shared/external storage directory.",
-								"text": "Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.storage.Path.ExternalStorageDirectory;\n```\n",
-								"tags": [
-									{
-										"tag": "android",
-										"text": "Android only - iOS returns null\n"
-									}
-								]
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 290,
-									"character": 28
-								}
-							],
-							"type": {
-								"type": "union",
-								"types": [
-									{
-										"type": "intrinsic",
-										"name": "string"
-									},
-									{
-										"type": "intrinsic",
-										"name": "null"
-									}
-								]
-							}
-						},
-						{
-							"id": 2144,
-							"name": "LibraryDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the apps library/resources directory.",
-								"text": "E.g. this can be used for things like documentation, support files, and configuration files and generic resources.\n\n```js\nfirebase.storage.Path.LibraryDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 260,
-									"character": 20
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2140,
-							"name": "MainBundle",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to the applications main bundle.",
-								"text": "```js\nfirebase.storage.Path.MainBundle;\n```\n",
-								"tags": [
-									{
-										"tag": "ios",
-										"text": "iOS only\n"
-									}
-								]
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 216,
-									"character": 14
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2148,
-							"name": "MoviesDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to a directory in which to place movies that are available to the user.",
-								"text": "```js\nfirebase.storage.Path.MoviesDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 308,
-									"character": 19
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2147,
-							"name": "PicturesDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to a directory in which to place pictures that are available to the user.",
-								"text": "```js\nfirebase.storage.Path.PicturesDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 299,
-									"character": 21
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						},
-						{
-							"id": 2143,
-							"name": "TempDirectory",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Returns an absolute path to a temporary directory.",
-								"text": "Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.storage.Path.TempDirectory;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 249,
-									"character": 17
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						}
-					],
-					"groups": [
-						{
-							"title": "Properties",
-							"kind": 1024,
-							"children": [
-								2141,
-								2142,
-								2145,
-								2146,
-								2144,
-								2140,
-								2148,
-								2147,
-								2143
-							]
-						}
-					],
-					"sources": [
-						{
-							"fileName": "storage/lib/index.d.ts",
-							"line": 206,
-							"character": 23
-						}
-					]
-				},
-				{
-					"id": 2183,
+					"id": 2172,
 					"name": "Reference",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49144,7 +48853,7 @@
 					},
 					"children": [
 						{
-							"id": 2184,
+							"id": 2173,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49157,7 +48866,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 573,
+									"line": 448,
 									"character": 10
 								}
 							],
@@ -49167,7 +48876,7 @@
 							}
 						},
 						{
-							"id": 2186,
+							"id": 2175,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49180,7 +48889,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 581,
+									"line": 456,
 									"character": 12
 								}
 							],
@@ -49190,7 +48899,7 @@
 							}
 						},
 						{
-							"id": 2187,
+							"id": 2176,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49203,7 +48912,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 586,
+									"line": 461,
 									"character": 8
 								}
 							],
@@ -49213,7 +48922,7 @@
 							}
 						},
 						{
-							"id": 2185,
+							"id": 2174,
 							"name": "parent",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49226,7 +48935,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 577,
+									"line": 452,
 									"character": 10
 								}
 							],
@@ -49236,7 +48945,7 @@
 									{
 										"type": "reference",
 										"name": "Reference",
-										"id": 2183
+										"id": 2172
 									},
 									{
 										"type": "intrinsic",
@@ -49246,7 +48955,7 @@
 							}
 						},
 						{
-							"id": 2188,
+							"id": 2177,
 							"name": "root",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49259,18 +48968,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 590,
+									"line": 465,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 2183
+								"id": 2172
 							}
 						},
 						{
-							"id": 2189,
+							"id": 2178,
 							"name": "storage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49283,18 +48992,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 594,
+									"line": 469,
 									"character": 11
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Module",
-								"id": 2277
+								"id": 2266
 							}
 						},
 						{
-							"id": 2192,
+							"id": 2181,
 							"name": "child",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49303,7 +49012,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2193,
+									"id": 2182,
 									"name": "child",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49314,7 +49023,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2194,
+											"id": 2183,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49331,20 +49040,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2183
+										"id": 2172
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 620,
+									"line": 495,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 2195,
+							"id": 2184,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49353,7 +49062,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2196,
+									"id": 2185,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49377,13 +49086,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 632,
+									"line": 507,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 2197,
+							"id": 2186,
 							"name": "getDownloadURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49392,7 +49101,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2198,
+									"id": 2187,
 									"name": "getDownloadURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49416,13 +49125,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 644,
+									"line": 519,
 									"character": 18
 								}
 							]
 						},
 						{
-							"id": 2199,
+							"id": 2188,
 							"name": "getMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49431,7 +49140,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2200,
+									"id": 2189,
 									"name": "getMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49447,7 +49156,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 2164
+												"id": 2153
 											}
 										]
 									}
@@ -49456,13 +49165,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 657,
+									"line": 532,
 									"character": 15
 								}
 							]
 						},
 						{
-							"id": 2208,
+							"id": 2197,
 							"name": "put",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49471,7 +49180,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2209,
+									"id": 2198,
 									"name": "put",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49482,7 +49191,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2210,
+											"id": 2199,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49509,7 +49218,7 @@
 											}
 										},
 										{
-											"id": 2211,
+											"id": 2200,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49522,27 +49231,27 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2154
+												"id": 2143
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2232
+										"id": 2221
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 708,
+									"line": 583,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 2201,
+							"id": 2190,
 							"name": "putFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49551,18 +49260,18 @@
 							},
 							"signatures": [
 								{
-									"id": 2202,
+									"id": 2191,
 									"name": "putFile",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
 										"shortText": "Puts a file from local disk onto the storage bucket.",
-										"text": "#### Example\n\n```js\nconst ref = firebase.storage().ref('invertase/new-logo.png');\nconst path = `${firebase.storage.Path.DocumentDirectory}/new-logo.png`;\nconst task = ref.putFile(path, {\n  cacheControl: 'no-store', // disable caching\n});\n```\n"
+										"text": "#### Example\n\n```js\nconst ref = firebase.storage().ref('invertase/new-logo.png');\nconst path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/new-logo.png`;\nconst task = ref.putFile(path, {\n  cacheControl: 'no-store', // disable caching\n});\n```\n"
 									},
 									"parameters": [
 										{
-											"id": 2203,
+											"id": 2192,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49576,7 +49285,7 @@
 											}
 										},
 										{
-											"id": 2204,
+											"id": 2193,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49589,27 +49298,27 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2154
+												"id": 2143
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2232
+										"id": 2221
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 675,
+									"line": 550,
 									"character": 11
 								}
 							]
 						},
 						{
-							"id": 2212,
+							"id": 2201,
 							"name": "putString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49618,7 +49327,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2213,
+									"id": 2202,
 									"name": "putString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49629,7 +49338,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2214,
+											"id": 2203,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49643,7 +49352,7 @@
 											}
 										},
 										{
-											"id": 2215,
+											"id": 2204,
 											"name": "format",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49676,7 +49385,7 @@
 											}
 										},
 										{
-											"id": 2216,
+											"id": 2205,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49689,27 +49398,27 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2154
+												"id": 2143
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2232
+										"id": 2221
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 726,
+									"line": 601,
 									"character": 13
 								}
 							]
 						},
 						{
-							"id": 2190,
+							"id": 2179,
 							"name": "toString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49718,7 +49427,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2191,
+									"id": 2180,
 									"name": "toString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49736,13 +49445,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 606,
+									"line": 481,
 									"character": 12
 								}
 							]
 						},
 						{
-							"id": 2217,
+							"id": 2206,
 							"name": "updateMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49751,7 +49460,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2218,
+									"id": 2207,
 									"name": "updateMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49762,7 +49471,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2219,
+											"id": 2208,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49773,7 +49482,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2154
+												"id": 2143
 											}
 										}
 									],
@@ -49784,7 +49493,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 2164
+												"id": 2153
 											}
 										]
 									}
@@ -49793,13 +49502,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 748,
+									"line": 623,
 									"character": 18
 								}
 							]
 						},
 						{
-							"id": 2205,
+							"id": 2194,
 							"name": "writeToFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49808,18 +49517,18 @@
 							},
 							"signatures": [
 								{
-									"id": 2206,
+									"id": 2195,
 									"name": "writeToFile",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
 										"shortText": "Downloads a file to the specified local file path on the device.",
-										"text": "#### Example\n\nGet a Download Storage task to download a file:\n\n```js\nconst downloadTo = `${firebase.storage.Path.DocumentDirectory}/foobar.json`;\n\nconst task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);\n```"
+										"text": "#### Example\n\nGet a Download Storage task to download a file:\n\n```js\nconst downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/foobar.json`;\n\nconst task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);\n```"
 									},
 									"parameters": [
 										{
-											"id": 2207,
+											"id": 2196,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49836,14 +49545,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2232
+										"id": 2221
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 691,
+									"line": 566,
 									"character": 15
 								}
 							]
@@ -49854,41 +49563,41 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2184,
-								2186,
-								2187,
-								2185,
-								2188,
-								2189
+								2173,
+								2175,
+								2176,
+								2174,
+								2177,
+								2178
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2192,
-								2195,
+								2181,
+								2184,
+								2186,
+								2188,
 								2197,
-								2199,
-								2208,
-								2201,
-								2212,
 								2190,
-								2217,
-								2205
+								2201,
+								2179,
+								2206,
+								2194
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 569,
+							"line": 444,
 							"character": 28
 						}
 					]
 				},
 				{
-					"id": 2154,
+					"id": 2143,
 					"name": "SettableMetadata",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49901,7 +49610,7 @@
 					},
 					"children": [
 						{
-							"id": 2155,
+							"id": 2144,
 							"name": "cacheControl",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49916,7 +49625,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 397,
+									"line": 272,
 									"character": 16
 								}
 							],
@@ -49935,7 +49644,7 @@
 							}
 						},
 						{
-							"id": 2156,
+							"id": 2145,
 							"name": "contentDisposition",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49950,7 +49659,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 404,
+									"line": 279,
 									"character": 22
 								}
 							],
@@ -49969,7 +49678,7 @@
 							}
 						},
 						{
-							"id": 2157,
+							"id": 2146,
 							"name": "contentEncoding",
 							"kind": 1024,
 							"kindString": "Property",
@@ -49984,7 +49693,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 411,
+									"line": 286,
 									"character": 19
 								}
 							],
@@ -50003,7 +49712,7 @@
 							}
 						},
 						{
-							"id": 2158,
+							"id": 2147,
 							"name": "contentLanguage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50018,7 +49727,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 418,
+									"line": 293,
 									"character": 19
 								}
 							],
@@ -50037,7 +49746,7 @@
 							}
 						},
 						{
-							"id": 2159,
+							"id": 2148,
 							"name": "contentType",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50052,7 +49761,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 441,
+									"line": 316,
 									"character": 15
 								}
 							],
@@ -50071,7 +49780,7 @@
 							}
 						},
 						{
-							"id": 2160,
+							"id": 2149,
 							"name": "customMetadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50086,7 +49795,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 459,
+									"line": 334,
 									"character": 18
 								}
 							],
@@ -50096,21 +49805,21 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 2161,
+											"id": 2150,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 2162,
+													"id": 2151,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 2163,
+															"id": 2152,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -50130,7 +49839,7 @@
 											"sources": [
 												{
 													"fileName": "storage/lib/index.d.ts",
-													"line": 459,
+													"line": 334,
 													"character": 20
 												}
 											]
@@ -50149,19 +49858,19 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2155,
-								2156,
-								2157,
-								2158,
-								2159,
-								2160
+								2144,
+								2145,
+								2146,
+								2147,
+								2148,
+								2149
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 371,
+							"line": 246,
 							"character": 35
 						}
 					],
@@ -50169,12 +49878,12 @@
 						{
 							"type": "reference",
 							"name": "FullMetadata",
-							"id": 2164
+							"id": 2153
 						}
 					]
 				},
 				{
-					"id": 2149,
+					"id": 2139,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50187,32 +49896,7 @@
 					},
 					"children": [
 						{
-							"id": 2153,
-							"name": "Path",
-							"kind": 1024,
-							"kindString": "Property",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "A collection of native device file paths to aid in the usage of file path based storage methods.",
-								"text": "#### Example\n\n```js\nfirebase.storage.Path;\n```\n"
-							},
-							"sources": [
-								{
-									"fileName": "storage/lib/index.d.ts",
-									"line": 363,
-									"character": 8
-								}
-							],
-							"type": {
-								"type": "reference",
-								"name": "Path",
-								"id": 2139
-							}
-						},
-						{
-							"id": 2150,
+							"id": 2140,
 							"name": "StringFormat",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50226,7 +49910,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 330,
+									"line": 216,
 									"character": 16
 								}
 							],
@@ -50237,7 +49921,7 @@
 							}
 						},
 						{
-							"id": 2152,
+							"id": 2142,
 							"name": "TaskEvent",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50251,7 +49935,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 352,
+									"line": 238,
 									"character": 13
 								}
 							],
@@ -50262,7 +49946,7 @@
 							}
 						},
 						{
-							"id": 2151,
+							"id": 2141,
 							"name": "TaskState",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50276,7 +49960,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 341,
+									"line": 227,
 									"character": 13
 								}
 							],
@@ -50292,17 +49976,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2153,
-								2150,
-								2152,
-								2151
+								2140,
+								2142,
+								2141
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 320,
+							"line": 206,
 							"character": 26
 						}
 					]
@@ -50438,7 +50121,7 @@
 					]
 				},
 				{
-					"id": 2232,
+					"id": 2221,
 					"name": "Task",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50447,11 +50130,11 @@
 					},
 					"comment": {
 						"shortText": "Storage Task used for Uploading or Downloading files.",
-						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst downloadTo = `${firebase.storage.Path.DocumentDirectory}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .writeToFile(downloadTo);\n```\n"
+						"text": "#### Example 1\n\nGet a Upload Storage task to upload a string:\n\n```js\nconst string = '{ \"foo\": 1 }';\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .putString(string);\n```\n\n#### Example 2\n\nGet a Download Storage task to download a file:\n\n```js\nconst downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/bar.json`;\n\nconst task = firebase\n .storage()\n .ref('/foo/bar.json')\n .writeToFile(downloadTo);\n```\n"
 					},
 					"children": [
 						{
-							"id": 2237,
+							"id": 2226,
 							"name": "cancel",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50460,7 +50143,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2238,
+									"id": 2227,
 									"name": "cancel",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50484,13 +50167,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 878,
+									"line": 753,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 2263,
+							"id": 2252,
 							"name": "catch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50499,14 +50182,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2264,
+									"id": 2253,
 									"name": "catch",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2265,
+											"id": 2254,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50514,21 +50197,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 2266,
+													"id": 2255,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 2267,
+															"id": 2256,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 2268,
+																	"id": 2257,
 																	"name": "a",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -50548,7 +50231,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 924,
+															"line": 799,
 															"character": 21
 														}
 													]
@@ -50571,13 +50254,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 924,
+									"line": 799,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 2239,
+							"id": 2228,
 							"name": "on",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50586,7 +50269,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2240,
+									"id": 2229,
 									"name": "on",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50597,7 +50280,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2241,
+											"id": 2230,
 											"name": "event",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50611,7 +50294,7 @@
 											}
 										},
 										{
-											"id": 2242,
+											"id": 2231,
 											"name": "nextOrObserver",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50627,7 +50310,7 @@
 													{
 														"type": "reference",
 														"name": "TaskSnapshotObserver",
-														"id": 2220
+														"id": 2209
 													},
 													{
 														"type": "intrinsic",
@@ -50636,21 +50319,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2243,
+															"id": 2232,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2244,
+																	"id": 2233,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2245,
+																			"id": 2234,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -50658,7 +50341,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2269
+																				"id": 2258
 																			}
 																		}
 																	],
@@ -50671,7 +50354,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 909,
+																	"line": 784,
 																	"character": 52
 																}
 															]
@@ -50681,7 +50364,7 @@
 											}
 										},
 										{
-											"id": 2246,
+											"id": 2235,
 											"name": "error",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50697,21 +50380,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2247,
+															"id": 2236,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2248,
+																	"id": 2237,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2249,
+																			"id": 2238,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -50731,7 +50414,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 910,
+																	"line": 785,
 																	"character": 13
 																}
 															]
@@ -50745,7 +50428,7 @@
 											}
 										},
 										{
-											"id": 2250,
+											"id": 2239,
 											"name": "complete",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50761,14 +50444,14 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2251,
+															"id": 2240,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2252,
+																	"id": 2241,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
@@ -50782,7 +50465,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 911,
+																	"line": 786,
 																	"character": 16
 																}
 															]
@@ -50805,13 +50488,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 907,
+									"line": 782,
 									"character": 6
 								}
 							]
 						},
 						{
-							"id": 2233,
+							"id": 2222,
 							"name": "pause",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50820,7 +50503,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2234,
+									"id": 2223,
 									"name": "pause",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50844,13 +50527,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 840,
+									"line": 715,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 2235,
+							"id": 2224,
 							"name": "resume",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50859,7 +50542,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2236,
+									"id": 2225,
 									"name": "resume",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50883,13 +50566,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 860,
+									"line": 735,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 2253,
+							"id": 2242,
 							"name": "then",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50898,14 +50581,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2254,
+									"id": 2243,
 									"name": "then",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2255,
+											"id": 2244,
 											"name": "onFulfilled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50918,21 +50601,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2256,
+															"id": 2245,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2257,
+																	"id": 2246,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2258,
+																			"id": 2247,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -50940,7 +50623,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2269
+																				"id": 2258
 																			}
 																		}
 																	],
@@ -50953,7 +50636,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 920,
+																	"line": 795,
 																	"character": 19
 																}
 															]
@@ -50967,7 +50650,7 @@
 											}
 										},
 										{
-											"id": 2259,
+											"id": 2248,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50980,21 +50663,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2260,
+															"id": 2249,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2261,
+																	"id": 2250,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2262,
+																			"id": 2251,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -51014,7 +50697,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 921,
+																	"line": 796,
 																	"character": 18
 																}
 															]
@@ -51043,7 +50726,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 919,
+									"line": 794,
 									"character": 8
 								}
 							]
@@ -51054,19 +50737,19 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2237,
-								2263,
-								2239,
-								2233,
-								2235,
-								2253
+								2226,
+								2252,
+								2228,
+								2222,
+								2224,
+								2242
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 822,
+							"line": 697,
 							"character": 23
 						}
 					]
@@ -51127,7 +50810,7 @@
 					]
 				},
 				{
-					"id": 2269,
+					"id": 2258,
 					"name": "TaskSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -51140,7 +50823,7 @@
 					},
 					"children": [
 						{
-							"id": 2270,
+							"id": 2259,
 							"name": "bytesTransferred",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51153,7 +50836,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 964,
+									"line": 839,
 									"character": 20
 								}
 							],
@@ -51163,7 +50846,7 @@
 							}
 						},
 						{
-							"id": 2276,
+							"id": 2265,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51177,7 +50860,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 995,
+									"line": 870,
 									"character": 9
 								}
 							],
@@ -51188,7 +50871,7 @@
 							}
 						},
 						{
-							"id": 2271,
+							"id": 2260,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51201,18 +50884,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 969,
+									"line": 844,
 									"character": 12
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "FullMetadata",
-								"id": 2164
+								"id": 2153
 							}
 						},
 						{
-							"id": 2272,
+							"id": 2261,
 							"name": "ref",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51225,18 +50908,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 974,
+									"line": 849,
 									"character": 7
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 2183
+								"id": 2172
 							}
 						},
 						{
-							"id": 2273,
+							"id": 2262,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51249,7 +50932,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 979,
+									"line": 854,
 									"character": 9
 								}
 							],
@@ -51280,7 +50963,7 @@
 							}
 						},
 						{
-							"id": 2274,
+							"id": 2263,
 							"name": "task",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51293,18 +50976,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 984,
+									"line": 859,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Task",
-								"id": 2232
+								"id": 2221
 							}
 						},
 						{
-							"id": 2275,
+							"id": 2264,
 							"name": "totalBytes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51317,7 +51000,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 989,
+									"line": 864,
 									"character": 14
 								}
 							],
@@ -51332,26 +51015,26 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2270,
-								2276,
-								2271,
-								2272,
-								2273,
-								2274,
-								2275
+								2259,
+								2265,
+								2260,
+								2261,
+								2262,
+								2263,
+								2264
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 960,
+							"line": 835,
 							"character": 31
 						}
 					]
 				},
 				{
-					"id": 2220,
+					"id": 2209,
 					"name": "TaskSnapshotObserver",
 					"kind": 256,
 					"kindString": "Interface",
@@ -51364,7 +51047,7 @@
 					},
 					"children": [
 						{
-							"id": 2229,
+							"id": 2218,
 							"name": "complete",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51377,21 +51060,21 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 791,
+									"line": 666,
 									"character": 12
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2230,
+									"id": 2219,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2231,
+											"id": 2220,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -51405,7 +51088,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 791,
+											"line": 666,
 											"character": 13
 										}
 									]
@@ -51413,7 +51096,7 @@
 							}
 						},
 						{
-							"id": 2225,
+							"id": 2214,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51426,14 +51109,14 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 786,
+									"line": 661,
 									"character": 9
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2226,
+									"id": 2215,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
@@ -51443,7 +51126,7 @@
 									},
 									"signatures": [
 										{
-											"id": 2227,
+											"id": 2216,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -51453,7 +51136,7 @@
 											},
 											"parameters": [
 												{
-													"id": 2228,
+													"id": 2217,
 													"name": "error",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -51473,7 +51156,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 786,
+											"line": 661,
 											"character": 10
 										}
 									]
@@ -51481,7 +51164,7 @@
 							}
 						},
 						{
-							"id": 2221,
+							"id": 2210,
 							"name": "next",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51501,28 +51184,28 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 779,
+									"line": 654,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2222,
+									"id": 2211,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2223,
+											"id": 2212,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2224,
+													"id": 2213,
 													"name": "taskSnapshot",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -51530,7 +51213,7 @@
 													"type": {
 														"type": "reference",
 														"name": "TaskSnapshot",
-														"id": 2269
+														"id": 2258
 													}
 												}
 											],
@@ -51543,7 +51226,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 779,
+											"line": 654,
 											"character": 9
 										}
 									]
@@ -51556,16 +51239,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2229,
-								2225,
-								2221
+								2218,
+								2214,
+								2210
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 773,
+							"line": 648,
 							"character": 39
 						}
 					]
@@ -51726,23 +51409,22 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						2277
+						2266
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2164,
+						2153,
+						2172,
+						2143,
 						2139,
-						2183,
-						2154,
-						2149,
 						2126,
-						2232,
+						2221,
 						2131,
-						2269,
-						2220,
+						2258,
+						2209,
 						2133
 					]
 				}
@@ -51756,7 +51438,7 @@
 			]
 		},
 		{
-			"id": 2305,
+			"id": 2294,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -51834,7 +51516,7 @@
 							"sources": [
 								{
 									"fileName": "utils/lib/index.d.ts",
-									"line": 80,
+									"line": 196,
 									"character": 22
 								}
 							],
@@ -51857,7 +51539,7 @@
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 74,
+							"line": 190,
 							"character": 21
 						}
 					],
@@ -51869,17 +51551,340 @@
 					]
 				},
 				{
-					"id": 2306,
+					"id": 2295,
+					"name": "FilePath",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "A collection of native device file paths to aid in the usage of file path based methods.",
+						"text": "Concatenate a file path with your target file name when using with Storage `putFile` or `writeToFile`.\n\n```js\nfirebase.utils.FilePath;\n```\n"
+					},
+					"children": [
+						{
+							"id": 2297,
+							"name": "CACHES_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the application specific cache directory on the filesystem.",
+								"text": "The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.utils.FilePath.CACHES_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 89,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2298,
+							"name": "DOCUMENT_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the users Documents directory.",
+								"text": "Use this directory to place documents that have been created by the user.\n\n```js\nfirebase.utils.FilePath.DOCUMENT_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 100,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2301,
+							"name": "EXTERNAL_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the directory on the primary shared/external storage device.",
+								"text": "Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.utils.FilePath.EXTERNAL_DIRECTORY;\n```\n",
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS returns null\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 137,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 2302,
+							"name": "EXTERNAL_STORAGE_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the primary shared/external storage directory.",
+								"text": "Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.\n\nReturns null if no external storage directory found, e.g. removable media has been ejected by the user.\n\n```js\nfirebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY;\n```\n",
+								"tags": [
+									{
+										"tag": "android",
+										"text": "Android only - iOS returns null\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 152,
+									"character": 30
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 2300,
+							"name": "LIBRARY_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the apps library/resources directory.",
+								"text": "E.g. this can be used for things like documentation, support files, and configuration files and generic resources.\n\n```js\nfirebase.utils.FilePath.LIBRARY_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 122,
+									"character": 21
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2296,
+							"name": "MAIN_BUNDLE",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to the applications main bundle.",
+								"text": "```js\nfirebase.utils.FilePath.MAIN_BUNDLE;\n```\n",
+								"tags": [
+									{
+										"tag": "ios",
+										"text": "iOS only\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 78,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2304,
+							"name": "MOVIES_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to a directory in which to place movies that are available to the user.",
+								"text": "```js\nfirebase.utils.FilePath.MOVIES_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 170,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2303,
+							"name": "PICTURES_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to a directory in which to place pictures that are available to the user.",
+								"text": "```js\nfirebase.utils.FilePath.PICTURES_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 161,
+									"character": 22
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 2299,
+							"name": "TEMP_DIRECTORY",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns an absolute path to a temporary directory.",
+								"text": "Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.\n\n```js\nfirebase.utils.FilePath.TEMP_DIRECTORY;\n```\n"
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 111,
+									"character": 18
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								2297,
+								2298,
+								2301,
+								2302,
+								2300,
+								2296,
+								2304,
+								2303,
+								2299
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "utils/lib/index.d.ts",
+							"line": 68,
+							"character": 27
+						}
+					]
+				},
+				{
+					"id": 2305,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {
 						"isExported": true
 					},
+					"children": [
+						{
+							"id": 2306,
+							"name": "FilePath",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "utils/lib/index.d.ts",
+									"line": 174,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "reference",
+								"name": "FilePath",
+								"id": 2295
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								2306
+							]
+						}
+					],
 					"sources": [
 						{
 							"fileName": "utils/lib/index.d.ts",
-							"line": 59,
+							"line": 173,
 							"character": 26
 						}
 					]
@@ -51897,7 +51902,8 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2306
+						2295,
+						2305
 					]
 				}
 			],
@@ -52480,7 +52486,7 @@
 				1609,
 				2023,
 				2117,
-				2297,
+				2286,
 				2310,
 				1,
 				116,
@@ -52500,7 +52506,7 @@
 				2035,
 				51,
 				2125,
-				2305
+				2294
 			]
 		},
 		{

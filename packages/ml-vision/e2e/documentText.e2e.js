@@ -44,11 +44,11 @@ let testImageFile;
 
 android.describe('mlkit.vision.document.text', () => {
   before(async () => {
-    testImageFile = `${firebase.storage.Path.DocumentDirectory}/text.png`;
+    testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
       .storage()
       .ref('vision/text.png')
-      .getFile(testImageFile);
+      .writeToFile(testImageFile);
   });
 
   describe('VisionCloudDocumentTextRecognizerOptions', () => {

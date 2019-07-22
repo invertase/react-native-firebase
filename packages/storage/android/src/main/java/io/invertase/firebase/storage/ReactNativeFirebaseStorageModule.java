@@ -47,15 +47,15 @@ import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.pro
 
 public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Storage";
-  private static final String KEY_MAIN_BUNDLE = "MainBundle";
-  private static final String KEY_DOCUMENT_DIRECTORY = "DocumentDirectory";
-  private static final String KEY_LIBRARY_DIRECTORY = "LibraryDirectory";
-  private static final String KEY_EXTERNAL_DIRECTORY = "ExternalDirectory";
-  private static final String KEY_EXT_STORAGE_DIRECTORY = "ExternalStorageDirectory";
-  private static final String KEY_PICS_DIRECTORY = "PicturesDirectory";
-  private static final String KEY_MOVIES_DIRECTORY = "MoviesDirectory";
-  private static final String KEY_TEMP_DIRECTORY = "TempDirectory";
-  private static final String KEY_CACHE_DIRECTORY = "CachesDirectory";
+  private static final String KEY_MAIN_BUNDLE = "MAIN_BUNDLE";
+  private static final String KEY_DOCUMENT_DIRECTORY = "DOCUMENT_DIRECTORY";
+  private static final String KEY_LIBRARY_DIRECTORY = "LIBRARY_DIRECTORY";
+  private static final String KEY_EXTERNAL_DIRECTORY = "EXTERNAL_DIRECTORY";
+  private static final String KEY_EXT_STORAGE_DIRECTORY = "EXTERNAL_STORAGE_DIRECTORY";
+  private static final String KEY_PICS_DIRECTORY = "PICTURES_DIRECTORY";
+  private static final String KEY_MOVIES_DIRECTORY = "MOVIES_DIRECTORY";
+  private static final String KEY_TEMP_DIRECTORY = "TEMP_DIRECTORY";
+  private static final String KEY_CACHE_DIRECTORY = "CACHES_DIRECTORY";
 
   ReactNativeFirebaseStorageModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);

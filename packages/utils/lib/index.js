@@ -20,14 +20,12 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
 import { isIOS } from '@react-native-firebase/common';
-
+import UtilsStatics from './UtilsStatics';
 import version from './version';
 
-const statics = {};
-
 const namespace = 'utils';
+const statics = UtilsStatics;
 
 const nativeModuleName = 'RNFBUtilsModule';
 

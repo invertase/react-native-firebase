@@ -35,7 +35,7 @@ console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
 
 const PACKAGES = [
   'app',
-  'links',
+  'dynamic-links',
   'iid',
   'perf',
   'fiam',
@@ -46,7 +46,7 @@ const PACKAGES = [
   'utils',
   'ml-natural-language',
   'ml-vision',
-  'invites',
+  // 'invites',
   'fiam',
   'auth',
   'database',
@@ -54,8 +54,6 @@ const PACKAGES = [
   'indexing',
   'messaging',
   'firestore',
-  // 'ml-vision',
-  // 'ml-automl',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
