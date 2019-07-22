@@ -1,6 +1,6 @@
 ---
 title: Android Setup
-description: Manually integrate Messaging into your Android application.
+description: Manually integrate Dynamic Links into your Android application.
 ---
 
 # Android Manual Linking
