@@ -979,7 +979,7 @@ export namespace MLKitVision {
    */
   export enum VisionBarcodePhoneType {
     /**
-     * Face machine.
+     * Fax machine.
      */
     FAX = 3,
 

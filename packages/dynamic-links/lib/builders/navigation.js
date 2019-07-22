@@ -15,26 +15,22 @@
  *
  */
 
-import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
+import { hasOwnProperty, isBoolean, isObject } from '@react-native-firebase/common';
 
-export default class DynamicLinkAnalyticsParameters extends MutatableParams {
-  setCampaign(campaign) {
-    return this.set('analytics.campaign', campaign);
+export default function buildNavigation(navigationParams) {
+  if (!isObject(navigationParams)) {
+    throw new Error(`'dynamicLinksParams.navigation' must be an object.`);
   }
 
-  setContent(content) {
-    return this.set('analytics.content', content);
+  const params = {};
+
+  if (hasOwnProperty(navigationParams, 'forcedRedirectEnabled')) {
+    if (!isBoolean(navigationParams.forcedRedirectEnabled)) {
+      throw new Error(`'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean.`);
+    }
+
+    params.forcedRedirectEnabled = navigationParams.forcedRedirectEnabled;
   }
 
-  setMedium(medium) {
-    return this.set('analytics.medium', medium);
-  }
-
-  setSource(source) {
-    return this.set('analytics.source', source);
-  }
-
-  setTerm(term) {
-    return this.set('analytics.term', term);
-  }
+  return params;
 }
