@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Messaging in React Native Firebase
+description: Getting started with Messaging in React Native Firebase
 ---
 
 # Messaging Quick Start

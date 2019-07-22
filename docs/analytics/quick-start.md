@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Analytics in React Native Firebase
+description: Getting started with Analytics in React Native Firebase
 ---
 
 # Analytics Quick Start

@@ -19,7 +19,7 @@ React Native Firebase supports integration with production and locally emulated 
 		title="Quick Start"
 		to="/quick-start"
 	>
-	  Install & get to grips with the basics of Cloud Functions.
+	  Install & Getting started with Cloud Functions.
   </Block>
   <Block
     icon="assignment_turned_in"

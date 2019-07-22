@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Remote Config in React Native Firebase
+description: Getting started with Remote Config in React Native Firebase
 ---
 
 # Remote Config Quick Start

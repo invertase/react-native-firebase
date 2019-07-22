@@ -1,6 +1,6 @@
 ---
 title: Firebase In-App Messaging Quick Start
-description: Get to grips with the basics of Firebase In-App Messaging in React Native Firebase
+description: Getting started with Firebase In-App Messaging in React Native Firebase
 ---
 
 # Firebase In-App Messaging Quick Start

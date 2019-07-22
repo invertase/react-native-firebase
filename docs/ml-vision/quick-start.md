@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of ML Kit Vision in React Native Firebase
+description: Getting started with ML Kit Vision in React Native Firebase
 ---
 
 # ML Kit Vision Quick Start

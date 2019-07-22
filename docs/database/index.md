@@ -20,7 +20,7 @@ both realtime data sync and offline capabilities.
 		title="Quick Start"
 		to="/quick-start"
 	>
-	  Install & get to grips with the basics of Realtime Database.
+	  Install & Getting started with Realtime Database.
   </Block>
   <Block
 		icon="layers"

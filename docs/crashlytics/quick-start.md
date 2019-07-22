@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Crashlytics in React Native Firebase
+description: Getting started with Crashlytics in React Native Firebase
 ---
 
 # Crashlytics Quick Start

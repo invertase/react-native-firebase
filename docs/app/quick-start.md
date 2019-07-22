@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of the App package in React Native Firebase
+description: Getting started with the App package in React Native Firebase
 ---
 
 # App Quick Start

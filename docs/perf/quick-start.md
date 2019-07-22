@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Performance Monitoring in React Native Firebase
+description: Getting started with Performance Monitoring in React Native Firebase
 ---
 
 # Performance Monitoring Quick Start

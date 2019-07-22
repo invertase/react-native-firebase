@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of the Utils package in React Native Firebase
+description: Getting started with the Utils package in React Native Firebase
 ---
 
 # Utils Quick Start
