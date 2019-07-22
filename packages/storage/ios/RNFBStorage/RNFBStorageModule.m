@@ -484,13 +484,13 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [@{
-      @"MainBundle": [[NSBundle mainBundle] bundlePath],
-      @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
-      @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"PicturesDirectory": [self getPathForDirectory:NSPicturesDirectory],
-      @"MoviesDirectory": [self getPathForDirectory:NSMoviesDirectory],
-      @"TempDirectory": NSTemporaryDirectory(),
-      @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
+      @"MAIN_BUNDLE": [[NSBundle mainBundle] bundlePath],
+      @"CACHES_DIRECTORY": [self getPathForDirectory:NSCachesDirectory],
+      @"DOCUMENT_DIRECTORY": [self getPathForDirectory:NSDocumentDirectory],
+      @"PICTURES_DIRECTORY": [self getPathForDirectory:NSPicturesDirectory],
+      @"MOVIES_DIRECTORY": [self getPathForDirectory:NSMoviesDirectory],
+      @"TEMP_DIRECTORY": NSTemporaryDirectory(),
+      @"LIBRARY_DIRECTORY": [self getPathForDirectory:NSLibraryDirectory],
   } mutableCopy];
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {

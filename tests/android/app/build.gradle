@@ -28,13 +28,12 @@ def firebasePackages = [
   'fiam',
   'iid',
   'invites',
-  'links',
+  'dynamic-links',
   'messaging',
   'ml-natural-language',
   'ml-vision',
   'storage',
   'perf',
-  'links',
   'utils'
 ]
 

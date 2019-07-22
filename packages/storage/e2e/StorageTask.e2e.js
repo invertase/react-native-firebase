@@ -22,7 +22,7 @@ describe('storage() -> StorageTask', () => {
         await firebase
           .storage()
           .ref('/not.jpg')
-          .writeToFile(`${firebase.storage.Path.DocumentDirectory}/not.jpg`);
+          .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/not.jpg`);
         return Promise.reject(new Error('No permission denied error'));
       } catch (error) {
         error.code.should.equal('storage/unauthorized');
@@ -35,7 +35,7 @@ describe('storage() -> StorageTask', () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
       meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
       meta.bytesTransferred.should.eql(meta.totalBytes);
@@ -45,7 +45,7 @@ describe('storage() -> StorageTask', () => {
       const meta = await firebase
         .storage()
         .ref('/ok.jpeg')
-        .downloadFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .downloadFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
       meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
       meta.bytesTransferred.should.eql(meta.totalBytes);
@@ -262,15 +262,15 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
       await firebase
         .storage()
         .ref('/cat.gif')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/cat.gif`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/cat.gif`);
       await firebase
         .storage()
         .ref('/hei.heic')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/hei.heic`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/hei.heic`);
     });
 
     it('errors if permission denied', async () => {
@@ -278,7 +278,7 @@ describe('storage() -> StorageTask', () => {
         await firebase
           .storage()
           .ref('/uploadNope.jpeg')
-          .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+          .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
         return Promise.reject(new Error('No permission denied error'));
       } catch (error) {
         error.code.should.equal('storage/unauthorized');
@@ -291,7 +291,7 @@ describe('storage() -> StorageTask', () => {
       const out = await firebase
         .storage()
         .ref('/uploadNope.jpeg')
-        .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`)
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`)
         .catch(error => {
           error.code.should.equal('storage/unauthorized');
           error.message.includes('not authorized').should.be.true();
@@ -304,7 +304,7 @@ describe('storage() -> StorageTask', () => {
       let uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadOk.jpeg')
-        .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
       uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
@@ -315,7 +315,7 @@ describe('storage() -> StorageTask', () => {
         .storage()
         .ref('/uploadCat.gif')
         // uri decode test
-        .putFile(`${firebase.storage.Path.DocumentDirectory}%2Fcat.gif`);
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}%2Fcat.gif`);
 
       uploadTaskSnapshot.metadata.should.be.an.Object();
       uploadTaskSnapshot.metadata.contentType.should.equal('image/gif');
@@ -324,7 +324,7 @@ describe('storage() -> StorageTask', () => {
         uploadTaskSnapshot = await firebase
           .storage()
           .ref('/uploadHei.heic')
-          .putFile(`${firebase.storage.Path.DocumentDirectory}/hei.heic`);
+          .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/hei.heic`);
 
         uploadTaskSnapshot.metadata.should.be.an.Object();
         uploadTaskSnapshot.metadata.contentType.should.equal('image/heic');
@@ -335,7 +335,7 @@ describe('storage() -> StorageTask', () => {
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/writeOnly.jpeg')
-        .putFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
       uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
@@ -348,7 +348,7 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/ok.jpeg`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
     });
 
     it('throws an Error if event is invalid', async () => {
@@ -380,7 +380,7 @@ describe('storage() -> StorageTask', () => {
     it('observer calls error callback', async () => {
       const ref = firebase.storage().ref('/uploadOk.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/notFoundFooFile.bar`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
       const task = ref.putFile(path);
 
       task.on('state_changed', {
@@ -402,7 +402,7 @@ describe('storage() -> StorageTask', () => {
     it('observer: calls next callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       task.on('state_changed', {
@@ -420,7 +420,7 @@ describe('storage() -> StorageTask', () => {
     it('observer: calls completion callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       task.on('state_changed', {
@@ -437,7 +437,7 @@ describe('storage() -> StorageTask', () => {
     it('calls error callback', async () => {
       const ref = firebase.storage().ref('/uploadOk.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/notFoundFooFile.bar`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
       const task = ref.putFile(path);
 
       task.on(
@@ -462,7 +462,7 @@ describe('storage() -> StorageTask', () => {
     it('calls next callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       task.on('state_changed', snapshot => {
@@ -478,7 +478,7 @@ describe('storage() -> StorageTask', () => {
     it('calls completion callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       task.on('state_changed', null, null, snapshot => {
@@ -493,7 +493,7 @@ describe('storage() -> StorageTask', () => {
     it('returns a subscribe fn', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       const subscribe = task.on('state_changed');
@@ -511,7 +511,7 @@ describe('storage() -> StorageTask', () => {
     it('returns a subscribe fn supporting observer usage syntax', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
       const task = ref.writeToFile(path);
 
       const subscribe = task.on('state_changed');
@@ -533,7 +533,7 @@ describe('storage() -> StorageTask', () => {
 
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/onDownload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
 
       const unsubscribe = ref.writeToFile(path).on(
         'state_changed',
@@ -555,7 +555,7 @@ describe('storage() -> StorageTask', () => {
       this.timeout(25000);
 
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/ok.jpeg`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
 
       const unsubscribe = ref.putFile(path).on(
@@ -582,11 +582,11 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
 
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -651,7 +651,7 @@ describe('storage() -> StorageTask', () => {
       const { resolve, reject, promise } = Promise.defer();
 
       // random file name as Android does not allow overriding if file already exists
-      const path = `${firebase.storage.Path.DocumentDirectory}/invertase/pauseDownload${Math.round(
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/invertase/pauseDownload${Math.round(
         Math.random() * 1000,
       )}.gif`;
       const downloadTask = ref.writeToFile(path);
@@ -708,13 +708,13 @@ describe('storage() -> StorageTask', () => {
       await firebase
         .storage()
         .ref('/1mbTestFile.gif')
-        .writeToFile(`${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
     });
 
     it('successfully cancels an upload', () => {
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/pauseUpload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -759,7 +759,7 @@ describe('storage() -> StorageTask', () => {
     it('successfully cancels a download', () => {
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.storage.Path.DocumentDirectory}/cancelDownload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/cancelDownload.gif`;
       const downloadTask = ref.writeToFile(path);
 
       let hadRunningStatus = false;

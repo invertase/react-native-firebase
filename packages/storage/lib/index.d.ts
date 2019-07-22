@@ -195,120 +195,6 @@ export namespace Storage {
   }
 
   /**
-   * A collection of native device file paths to aid in the usage of file path based storage methods.
-   *
-   * Concatenate a file path with your target file name when using `putFile` or `writeToFile`.
-   *
-   * ```js
-   * firebase.storage.Path;
-   * ```
-   */
-  export interface Path {
-    /**
-     * Returns an absolute path to the applications main bundle.
-     *
-     * ```js
-     * firebase.storage.Path.MainBundle;
-     * ```
-     *
-     * @ios iOS only
-     */
-    MainBundle: string;
-
-    /**
-     * Returns an absolute path to the application specific cache directory on the filesystem.
-     *
-     * The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
-     *
-     * ```js
-     * firebase.storage.Path.CachesDirectory;
-     * ```
-     */
-    CachesDirectory: string;
-
-    /**
-     * Returns an absolute path to the users Documents directory.
-     *
-     * Use this directory to place documents that have been created by the user.
-     *
-     * ```js
-     * firebase.storage.Path.DocumentDirectory;
-     * ```
-     */
-    DocumentDirectory: string;
-
-    /**
-     * Returns an absolute path to a temporary directory.
-     *
-     * Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
-     *
-     * ```js
-     * firebase.storage.Path.TempDirectory;
-     * ```
-     */
-    TempDirectory: string;
-
-    /**
-     * Returns an absolute path to the apps library/resources directory.
-     *
-     * E.g. this can be used for things like documentation, support files, and configuration files and generic resources.
-     *
-     * ```js
-     * firebase.storage.Path.LibraryDirectory;
-     * ```
-     */
-    LibraryDirectory: string;
-
-    /**
-     * Returns an absolute path to the directory on the primary shared/external storage device.
-     *
-     * Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
-     *
-     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
-     *
-     * ```js
-     * firebase.storage.Path.ExternalDirectory;
-     * ```
-     *
-     * @android Android only - iOS returns null
-     */
-    ExternalDirectory: string | null;
-
-    /**
-     * Returns an absolute path to the primary shared/external storage directory.
-     *
-     * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
-     *
-     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
-     *
-     * ```js
-     * firebase.storage.Path.ExternalStorageDirectory;
-     * ```
-     *
-     * @android Android only - iOS returns null
-     */
-    ExternalStorageDirectory: string | null;
-
-    /**
-     * Returns an absolute path to a directory in which to place pictures that are available to the user.
-     *
-     * ```js
-     * firebase.storage.Path.PicturesDirectory;
-     * ```
-     */
-    PicturesDirectory: string;
-
-    /**
-     * Returns an absolute path to a directory in which to place movies that are available to the user.
-     *
-     * ```js
-     * firebase.storage.Path.MoviesDirectory;
-     * ```
-     */
-    MoviesDirectory: string;
-  }
-
-  /**
    * Cloud Storage statics.
    *
    * #### Example
@@ -350,17 +236,6 @@ export namespace Storage {
      * ```
      */
     TaskEvent: TaskEvent;
-
-    /**
-     * A collection of native device file paths to aid in the usage of file path based storage methods.
-     *
-     * #### Example
-     *
-     * ```js
-     * firebase.storage.Path;
-     * ```
-     */
-    Path: Path;
   }
 
   /**
@@ -663,7 +538,7 @@ export namespace Storage {
      *
      * ```js
      * const ref = firebase.storage().ref('invertase/new-logo.png');
-     * const path = `${firebase.storage.Path.DocumentDirectory}/new-logo.png`;
+     * const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/new-logo.png`;
      * const task = ref.putFile(path, {
      *   cacheControl: 'no-store', // disable caching
      * });
@@ -682,7 +557,7 @@ export namespace Storage {
      * Get a Download Storage task to download a file:
      *
      * ```js
-     * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/foobar.json`;
+     * const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/foobar.json`;
      *
      * const task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);
      * ```
@@ -811,7 +686,7 @@ export namespace Storage {
    * Get a Download Storage task to download a file:
    *
    * ```js
-   * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/bar.json`;
+   * const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/bar.json`;
    *
    * const task = firebase
    *  .storage()

@@ -17,11 +17,11 @@
 let testImageFile;
 android.describe('mlkit.vision.landmark', () => {
   before(async () => {
-    testImageFile = `${firebase.storage.Path.DocumentDirectory}/landmark.jpg`;
+    testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/landmark.jpg`;
     await firebase
       .storage()
       .ref('vision/landmark.jpg')
-      .getFile(testImageFile);
+      .writeToFile(testImageFile);
   });
 
   describe('cloudLandmarkRecognizerProcessImage()', () => {

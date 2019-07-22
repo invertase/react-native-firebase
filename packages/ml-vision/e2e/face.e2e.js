@@ -19,11 +19,11 @@ let testImageFile;
 
 android.describe('mlkit.vision.face', () => {
   before(async () => {
-    testImageFile = `${firebase.storage.Path.DocumentDirectory}/faces.jpg`;
+    testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/faces.jpg`;
     await firebase
       .storage()
       .ref('vision/faces.jpg')
-      .getFile(testImageFile);
+      .writeToFile(testImageFile);
   });
 
   describe('faceDetectorProcessImage()', () => {

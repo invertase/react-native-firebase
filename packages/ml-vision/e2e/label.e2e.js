@@ -19,11 +19,11 @@ let testImageFile;
 
 android.describe('mlkit.vision.label', () => {
   before(async () => {
-    testImageFile = `${firebase.storage.Path.DocumentDirectory}/crab.jpg`;
+    testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/crab.jpg`;
     await firebase
       .storage()
       .ref('vision/crab.jpg')
-      .getFile(testImageFile);
+      .writeToFile(testImageFile);
   });
 
   describe('imageLabelerProcessImage()', () => {
