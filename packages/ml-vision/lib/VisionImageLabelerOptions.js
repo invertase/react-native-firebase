@@ -15,28 +15,39 @@
  *
  */
 
-import MutatableParams from '@react-native-firebase/common/lib/MutatableParams';
-import { isNumber } from '@react-native-firebase/common';
+import { hasOwnProperty, isNumber, isObject, isUndefined } from '@react-native-firebase/common';
 
-export default class VisionImageLabelerOptions extends MutatableParams {
-  constructor() {
-    super();
-    this.set('confidenceThreshold', 0.5);
+export default function visionImageLabelerOptions(imageLabelerOptions) {
+  const out = {
+    confidenceThreshold: 0.5,
+  };
+
+  if (isUndefined(imageLabelerOptions)) {
+    return out;
   }
 
-  setConfidenceThreshold(confidenceThreshold) {
-    if (!isNumber(confidenceThreshold)) {
+  if (!isObject(imageLabelerOptions)) {
+    throw new Error(`'imageLabelerOptions' expected an object value.`);
+  }
+
+  if (hasOwnProperty(imageLabelerOptions, 'confidenceThreshold')) {
+    if (!isNumber(imageLabelerOptions.confidenceThreshold)) {
       throw new Error(
-        `firebase.mlKitVision() VisionImageLabelerOptions.setConfidenceThreshold(*) 'confidenceThreshold' expected a number value between 0 & 1.`,
+        `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
       );
     }
 
-    if (confidenceThreshold < 0 || confidenceThreshold > 1) {
+    if (
+      imageLabelerOptions.confidenceThreshold < 0 ||
+      imageLabelerOptions.confidenceThreshold > 1
+    ) {
       throw new Error(
-        `firebase.mlKitVision() VisionImageLabelerOptions.setConfidenceThreshold(*) 'confidenceThreshold' expected value to be between 0 & 1.`,
+        `'imageLabelerOptions.confidenceThreshold' expected value to be between 0 & 1.`,
       );
     }
 
-    return this.set('confidenceThreshold', confidenceThreshold);
+    out.confidenceThreshold = imageLabelerOptions.confidenceThreshold;
   }
+
+  return out;
 }

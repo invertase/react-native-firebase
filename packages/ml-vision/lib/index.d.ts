@@ -57,12 +57,6 @@ export namespace MLKitVision {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {
-    VisionFaceDetectorOptions: VisionFaceDetectorOptions;
-    VisionImageLabelerOptions: VisionImageLabelerOptions;
-    VisionCloudImageLabelerOptions: VisionCloudImageLabelerOptions;
-    VisionCloudTextRecognizerOptions: VisionCloudTextRecognizerOptions;
-    VisionCloudLandmarkRecognizerOptions: VisionCloudLandmarkRecognizerOptions;
-    VisionCloudDocumentTextRecognizerOptions: VisionCloudDocumentTextRecognizerOptions;
     VisionCloudTextRecognizerModelType: VisionCloudTextRecognizerModelType;
     VisionFaceDetectorClassificationMode: VisionFaceDetectorClassificationMode;
     VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
@@ -78,25 +72,10 @@ export namespace MLKitVision {
     VisionBarcodeEmailType: VisionBarcodeEmailType;
     VisionBarcodePhoneType: VisionBarcodePhoneType;
     VisionBarcodeWifiEncryptionType: VisionBarcodeWifiEncryptionType;
-    VisionBarcodeDetectorOptions: VisionBarcodeDetectorOptions;
   }
 
   /**
    * Options for vision face detector.
-   *
-   * #### Example
-   *
-   * ```js
-   * const options = new VisionFaceDetectorOptions();
-   *
-   * options.setClassificationMode(
-   *   VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
-   * );
-   *
-   * options.setPerformanceMode(
-   *   VisionFaceDetectorPerformanceMode.ACCURATE
-   * );
-   * ```
    */
   export class VisionFaceDetectorOptions {
     /**
@@ -107,20 +86,14 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const options = new VisionFaceDetectorOptions();
-     *
-     * options.setClassificationMode(
-     *   VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
-     * );
+     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     *   classificationMode: VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
+     * });
      * ```
-     *
-     * @param classificationMode The classification mode used by the detector.
      */
-    setClassificationMode(
-      classificationMode:
-        | VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS
-        | VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
-    ): VisionFaceDetectorOptions;
+    classificationMode?:
+      | VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS
+      | VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS;
 
     /**
      * Sets whether to detect no contours or all contours. Processing time increases as the number of contours to search
@@ -129,13 +102,17 @@ export namespace MLKitVision {
      *
      * Defaults to `VisionFaceDetectorContourMode.NO_CONTOURS`.
      *
-     * @param contourMode The contour mode used by the detector.
+     * #### Example
+     *
+     * ```js
+     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     *   contourMode: VisionFaceDetectorContourMode.ALL_CONTOURS,
+     * });
+     * ```
      */
-    setContourMode(
-      contourMode:
-        | VisionFaceDetectorContourMode.NO_CONTOURS
-        | VisionFaceDetectorContourMode.ALL_CONTOURS,
-    ): VisionFaceDetectorOptions;
+    contourMode?:
+      | VisionFaceDetectorContourMode.NO_CONTOURS
+      | VisionFaceDetectorContourMode.ALL_CONTOURS;
 
     /**
      * Sets whether to detect no landmarks or all landmarks. Processing time increases as the number of landmarks to
@@ -144,13 +121,17 @@ export namespace MLKitVision {
      *
      * Defaults to `VisionFaceDetectorLandmarkMode.NO_LANDMARKS`.
      *
-     * @param landmarkMode The performance mode used by the detector.
+     * #### Example
+     *
+     * ```js
+     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     *   landmarkMode: VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
+     * });
+     * ```
      */
-    setLandmarkMode(
-      landmarkMode:
-        | VisionFaceDetectorLandmarkMode.NO_LANDMARKS
-        | VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
-    ): VisionFaceDetectorOptions;
+    landmarkMode?:
+      | VisionFaceDetectorLandmarkMode.NO_LANDMARKS
+      | VisionFaceDetectorLandmarkMode.ALL_LANDMARKS;
 
     /**
      * Sets the smallest desired face size, expressed as a proportion of the width of the head to the image width. For
@@ -165,9 +146,15 @@ export namespace MLKitVision {
      *
      * Defaults to 0.1.
      *
-     * @param minFaceSize The smallest head size to search for relative to the size of the image, in the range of 0.0 and 1.0. For example, a setting of 0.5 would indicate that detected faces need to fill at least half of the image width. The default size is 0.1.
+     * #### Example
+     *
+     * ```js
+     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     *   minFaceSize: 0.5,
+     * });
+     * ```
      */
-    setMinFaceSize(minFaceSize: number): VisionFaceDetectorOptions;
+    minFaceSize?: number;
 
     /**
      * Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,
@@ -176,46 +163,41 @@ export namespace MLKitVision {
      *
      * Defaults to `VisionFaceDetectorPerformanceMode.FAST`.
      *
-     * @param performanceMode Fast/accurate trade-off mode.
+     * #### Example
+     *
+     * ```js
+     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     *   performanceMode: VisionFaceDetectorPerformanceMode.ACCURATE,
+     * });
+     * ```
      */
-    setPerformanceMode(
-      performanceMode:
-        | VisionFaceDetectorPerformanceMode.FAST
-        | VisionFaceDetectorPerformanceMode.ACCURATE,
-    ): VisionFaceDetectorOptions;
+    performanceMode?:
+      | VisionFaceDetectorPerformanceMode.FAST
+      | VisionFaceDetectorPerformanceMode.ACCURATE;
   }
 
   /**
    * Options for on device image labeler. Confidence threshold could be provided for the label detection.
    *
-   * For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned.
-   * The default threshold is 0.5.
-   *
-   * #### Example
-   *
-   * ```js
-   * const labelerOptions = new VisionImageLabelerOptions();
-   * labelerOptions.setConfidenceThreshold(0.8);
-   *
-   * await firebase.mlKitVision().imageLabelerProcessImage(filePath, labelerOptions);
-   * ```
+
    */
-  export class VisionImageLabelerOptions {
+  export interface VisionImageLabelerOptions {
     /**
      * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
+     *
+     * For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned.
      *
      * Defaults to 0.5.
      *
      * #### Example
      *
      * ```js
-     * const labelerOptions = new VisionImageLabelerOptions();
-     * labelerOptions.setConfidenceThreshold(0.8);
+     * const labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, {
+     *   confidenceThreshold: 0.8,
+     * });
      * ```
-     *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
-    setConfidenceThreshold(confidenceThreshold: number): VisionImageLabelerOptions;
+    confidenceThreshold?: number;
   }
 
   /**
@@ -224,17 +206,8 @@ export namespace MLKitVision {
    * For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned. The default threshold is 0.5.
    *
    * Note: at most 20 labels will be returned for cloud image labeler.
-   *
-   * #### Example
-   *
-   * ```js
-   * const labelerOptions = new VisionCloudImageLabelerOptions();
-   * labelerOptions.setConfidenceThreshold(0.8);
-   *
-   * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, labelerOptions);
-   * ```
    */
-  export class VisionCloudImageLabelerOptions {
+  export interface VisionCloudImageLabelerOptions {
     /**
      * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
      *
@@ -243,63 +216,55 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const labelerOptions = new VisionCloudImageLabelerOptions();
-     * labelerOptions.enforceCertFingerprintMatch();
-     *
-     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, labelerOptions);
+     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     *   enforceCertFingerprintMatch: true,
+     * });
      * ```
      */
-    enforceCertFingerprintMatch(): VisionCloudImageLabelerOptions;
+    enforceCertFingerprintMatch?: boolean;
 
     /**
-     * Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.
+     * Sets confidence threshold in the range of [0.0 - 1.0] of detected labels. Only labels detected with confidence higher than this threshold are returned.
      *
      * Defaults to 0.5.
      *
      * #### Example
      *
      * ```js
-     * const labelerOptions = new VisionCloudImageLabelerOptions();
-     * labelerOptions.setConfidenceThreshold(0.8);
+     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     *   confidenceThreshold: 0.8,
+     * });
      * ```
-     *
-     * @param confidenceThreshold A confidence threshold in the range of [0.0 - 1.0].
      */
-    setConfidenceThreshold(confidenceThreshold: number): VisionCloudImageLabelerOptions;
+    confidenceThreshold?: number;
   }
 
   /**
    * Detector for finding popular natural and man-made structures within an image.
    */
-  export class VisionCloudLandmarkRecognizerOptions {
+  export interface VisionCloudLandmarkRecognizerOptions {
     /**
      * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
      *
      * > Do not set this for debug build if you use simulators to test.
      */
-    enforceCertFingerprintMatch(): VisionCloudLandmarkRecognizerOptions;
+    enforceCertFingerprintMatch?: boolean;
 
     /**
      * Sets the maximum number of results of this type.
      *
      * Defaults to 10.
-     *
-     * @param maxResults The maximum number of results to return.
      */
-    setMaxResults(maxResults: number): VisionCloudLandmarkRecognizerOptions;
+    maxResults?: number;
 
     /**
      * Sets model type for the detection.
      *
      * Defaults to `VisionCloudLandmarkRecognizerModelType.STABLE_MODEL`.
-     *
-     * @param model A stable or latest model used for detection.
      */
-    setModelType(
-      model:
-        | VisionCloudLandmarkRecognizerModelType.STABLE_MODEL
-        | VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
-    ): VisionCloudLandmarkRecognizerOptions;
+    modelType?:
+      | VisionCloudLandmarkRecognizerModelType.STABLE_MODEL
+      | VisionCloudLandmarkRecognizerModelType.LATEST_MODEL;
   }
 
   /**
@@ -319,18 +284,8 @@ export namespace MLKitVision {
 
   /**
    * Options for cloud text recognizer.
-   *
-   * #### Example
-   *
-   * ```js
-   * import { VisionCloudTextRecognizerOptions } from '@react-native-firebase/ml-vision';
-   *
-   * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
-   * textRecognizerOptions.enforceCertFingerprintMatch();
-   * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
-   * ```
    */
-  export class VisionCloudTextRecognizerOptions {
+  export interface VisionCloudTextRecognizerOptions {
     /**
      * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
      *
@@ -339,15 +294,12 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * import { VisionCloudTextRecognizerOptions, firebase } from '@react-native-firebase/ml-vision';
-     *
-     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
-     * textRecognizerOptions.enforceCertFingerprintMatch();
-     *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   enforceCertFingerprintMatch: true,
+     * });
      * ```
      */
-    enforceCertFingerprintMatch(): VisionCloudTextRecognizerOptions;
+    enforceCertFingerprintMatch?: boolean;
 
     /**
      * Sets model type for cloud text recognition. The two models SPARSE_MODEL and DENSE_MODEL handle different text densities in an image.
@@ -362,20 +314,16 @@ export namespace MLKitVision {
      * import {
      *   firebase,
      *   VisionCloudTextRecognizerModelType,
-     *   VisionCloudTextRecognizerOptions
      * } from '@react-native-firebase/ml-vision';
      *
-     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
-     * textRecognizerOptions.setModelType(VisionCloudTextRecognizerModelType.DENSE_MODEL);
-     *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   modelType: VisionCloudTextRecognizerModelType.DENSE_MODEL,
+     * });
      * ```
      */
-    setModelType(
-      modelType:
-        | VisionCloudTextRecognizerModelType.SPARSE_MODEL
-        | VisionCloudTextRecognizerModelType.DENSE_MODEL,
-    ): VisionCloudTextRecognizerOptions;
+    modelType?:
+      | VisionCloudTextRecognizerModelType.SPARSE_MODEL
+      | VisionCloudTextRecognizerModelType.DENSE_MODEL;
 
     /**
      * Sets language hints. In most cases, not setting this yields the best results since it enables automatic language
@@ -388,34 +336,21 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * import {
-     *   firebase,
-     *   VisionCloudTextRecognizerOptions
-     * } from '@react-native-firebase/ml-vision';
-     *
      * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
      * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
      *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, textRecognizerOptions);
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   languageHints: ['fr', 'de'],
+     * });
      * ```
      */
-    setLanguageHints(hintedLanguages: string[]): VisionCloudTextRecognizerOptions;
+    languageHints?: string[];
   }
 
   /**
    * Options for the cloud document text recognizer.
-   *
-   * #### Example
-   *
-   * ```js
-   * import { VisionCloudDocumentTextRecognizerOptions } from '@react-native-firebase/ml-vision';
-   *
-   * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
-   * docTextRecognizerOptions.enforceCertFingerprintMatch();
-   * docTextRecognizerOptions.setHintedLanguages(['fr', 'de']);
-   * ```
    */
-  export class VisionCloudDocumentTextRecognizerOptions {
+  export interface VisionCloudDocumentTextRecognizerOptions {
     /**
      * Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.
      *
@@ -424,15 +359,12 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * import { VisionCloudDocumentTextRecognizerOptions, firebase } from '@react-native-firebase/ml-vision';
-     *
-     * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
-     * docTextRecognizerOptions.enforceCertFingerprintMatch();
-     *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, docTextRecognizerOptions);
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   enforceCertFingerprintMatch: true,
+     * });
      * ```
      */
-    enforceCertFingerprintMatch(): VisionCloudDocumentTextRecognizerOptions;
+    enforceCertFingerprintMatch?: boolean;
 
     /**
      * Sets language hints. In most cases, not setting this yields the best results since it enables automatic language
@@ -445,18 +377,12 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * import {
-     *   firebase,
-     *   VisionCloudDocumentTextRecognizerOptions
-     * } from '@react-native-firebase/ml-vision';
-     *
-     * const docTextRecognizerOptions = new VisionCloudDocumentTextRecognizerOptions();
-     * docTextRecognizerOptions.setHintedLanguages(['fr', 'de']);
-     *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, docTextRecognizerOptions);
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   languageHints: ['fr', 'de'],
+     * });
      * ```
      */
-    setLanguageHints(hintedLanguages: string[]): VisionCloudDocumentTextRecognizerOptions;
+    languageHints?: string[];
   }
 
   /**
@@ -1145,10 +1071,9 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-     * options.setConfidenceThreshold(0.8);
-     *
-     * const labels = await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, options);
+     * const labels = await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     *   confidenceThreshold: 0.8,
+     * });
      * ```
      *
      * @param imageFilePath A local image file path.
@@ -1181,12 +1106,11 @@ export namespace MLKitVision {
      * Process image with custom `VisionBarcodeDetectorOptions`.
      *
      * ```js
-     * import vision, { VisionBarcodeDetectorOptions, VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+     * import vision, { VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
      *
-     * const options = new VisionBarcodeDetectorOptions();
-     * options.setBarcodeFormats(VisionBarcodeFormat.QR_CODE);
-     *
-     * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, options);
+     * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, {
+     *   barcodeFormats: [VisionBarcodeFormat.QR_CODE]
+     * });
      *
      * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
      *   console.log(barcode.contactInfo);
@@ -1194,7 +1118,7 @@ export namespace MLKitVision {
      * ```
      *
      * @param imageFilePath A local image file path.
-     * @param barcodeDetectorOptions An optional instance of `VisionBarcodeDetectorOptions`.
+     * @param barcodeDetectorOptions Optional instance of `VisionBarcodeDetectorOptions`.
      */
     barcodeDetectorProcessImage(
       imageFilePath: string,
