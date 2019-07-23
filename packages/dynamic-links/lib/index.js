@@ -24,6 +24,8 @@ import {
 import builder from './builder';
 import version from './version';
 
+const statics = {};
+
 const namespace = 'links';
 
 const nativeModuleName = 'RNFBDynamicLinksModule';
@@ -66,7 +68,7 @@ class FirebaseLinksModule extends FirebaseModule {
       );
     }
 
-    return this.native.buildLink(params, shortLinkType);
+    return this.native.buildShortLink(params, shortLinkType);
   }
 
   createShortDynamicLink(dynamicLinkParams, shortLinkType) {

@@ -144,7 +144,7 @@ export namespace DynamicLinks {
     /**
      * The bundle ID of the iOS app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
      *
-     * This option is required if passing android options to your dynamic link.
+     * This option is required if passing ios options to your dynamic link.
      */
     bundleId: string;
 
