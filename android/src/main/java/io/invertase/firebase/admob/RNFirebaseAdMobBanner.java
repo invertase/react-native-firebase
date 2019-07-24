@@ -1,5 +1,8 @@
 package io.invertase.firebase.admob;
 
+
+import android.app.Activity;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -45,13 +48,13 @@ public class RNFirebaseAdMobBanner extends SimpleViewManager<ReactViewGroup> {
   @Override
   public ReactViewGroup createViewInstance(ThemedReactContext themedReactContext) {
     context = themedReactContext;
-    viewGroup = new ReactViewGroup(themedReactContext);
-    emitter = themedReactContext.getJSModule(RCTEventEmitter.class);
+    emitter = context.getJSModule(RCTEventEmitter.class);
 
-    AdView adView = new AdView(context);
-    viewGroup.addView(adView);
+    viewGroup = new ReactViewGroup(context);
+    Activity activity = context.getCurrentActivity();
+    viewGroup.addView(new AdView(activity == null ? context : activity));
+
     setAdListener();
-
     return viewGroup;
   }
 
