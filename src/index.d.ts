@@ -1443,7 +1443,7 @@ declare module 'react-native-firebase' {
         android: AndroidNotification;
         ios: IOSNotification;
         body: string;
-        data: any;
+        data: { [key: string]: string };
         notificationId: string;
         sound?: string;
         subtitle?: string;
