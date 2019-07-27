@@ -107,6 +107,13 @@
     "opencollective-postinstall": "^2.0.0",
     "prop-types": "^15.7.2"
   },
+  "rnpm": {
+    "android": {
+      "buildPatch": "    implementation project(':react-native-firebase')",
+      "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
+      "packageInstance": "new RNFirebasePackage()"
+    }
+  },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/react-native-firebase"
