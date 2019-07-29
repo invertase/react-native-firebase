@@ -738,27 +738,26 @@ export namespace MLKitVision {
    * #### Example
    *
    * ```js
-   * import vision, { VisionBarcodeDetectorOptions, VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
+   * import vision, { VisionBarcodeFormat, VisionBarcodeValueType } from '@react-native-firebase/ml-vision';
    *
-   * const options = new VisionBarcodeDetectorOptions();
-   * options.setBarcodeFormats(VisionBarcodeFormat.QR_CODE);
-   *
-   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, options);
+   * const [barcode, ...otherBarcodes] = await vision().barcodeDetectorProcessImage(filePath, {
+   *   barcodeFormats: [VisionBarcodeFormat.QR_CODE]
+   * });
    *
    * if (barcode && barcode.valueType === VisionBarcodeValueType.CONTACT_INFO) {
    *   console.log(barcode.contactInfo);
    * }
    * ```
    */
-  export class VisionBarcodeDetectorOptions {
+  export interface VisionBarcodeDetectorOptions {
     /**
      * Set the barcode formats to detect.
      *
      * Defaults to `VisionBarcodeFormat.ALL_FORMATS`;
      *
-     * @param formats Variable args of `VisionBarcodeFormat`
+     * @param formats Array of `VisionBarcodeFormat` types.
      */
-    setBarcodeFormats(...formats: VisionBarcodeFormat[]): VisionBarcodeDetectorOptions;
+    barcodeFormats?: VisionBarcodeFormat[];
   }
 
   /**

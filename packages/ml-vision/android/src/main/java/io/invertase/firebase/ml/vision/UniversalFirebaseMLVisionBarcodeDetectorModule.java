@@ -66,8 +66,8 @@ class UniversalFirebaseMLVisionBarcodeDetectorModule extends UniversalFirebaseMo
 
     for (FirebaseVisionBarcode barcode : detectedBarcodesRaw) {
       Map<String, Object> barcodeMap = new HashMap<>();
-      barcodeMap.put(KEY_BOUNDING_BOX, barcode.getBoundingBox());
-      barcodeMap.put(KEY_CORNER_POINTS, barcode.getCornerPoints());
+      barcodeMap.put(KEY_BOUNDING_BOX, SharedUtils.rectToIntArray(barcode.getBoundingBox()));
+      barcodeMap.put(KEY_CORNER_POINTS, SharedUtils.pointsToIntsList(barcode.getCornerPoints()));
       barcodeMap.put(KEY_FORMAT, barcode.getFormat());
       barcodeMap.put(KEY_VALUE_TYPE, barcode.getValueType());
       barcodeMap.put(KEY_DISPLAY_VALUE, barcode.getDisplayValue());
