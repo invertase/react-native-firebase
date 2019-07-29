@@ -75,5 +75,4 @@ describe('dynamicLinks() dynamicLinkParams.itunes', () => {
       return Promise.resolve();
     }
   });
-
 });
