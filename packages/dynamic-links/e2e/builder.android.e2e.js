@@ -15,7 +15,7 @@
  *
  */
 
-import { baseParams } from './dynamicLinks.e2e';
+const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.android', () => {
   it('throws if android is not an object', () => {

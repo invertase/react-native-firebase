@@ -15,7 +15,7 @@
  *
  */
 
-import { baseParams } from './dynamicLinks.e2e';
+const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.itunes', () => {
   it('throws if itunes is not an object', () => {

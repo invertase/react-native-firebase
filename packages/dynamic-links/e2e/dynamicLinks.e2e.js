@@ -16,10 +16,12 @@
  */
 
 // eslint-disable-next-line import/prefer-default-export
-export const baseParams = {
+const baseParams = {
   link: 'https://invertase.io',
   domainUriPrefix: 'https://xyz.page.link',
 };
+
+module.exports.baseParams = baseParams;
 
 describe('dynamicLinks()', () => {
   describe('namespace', () => {
@@ -29,18 +31,6 @@ describe('dynamicLinks()', () => {
       app.links().app.should.equal(app);
     });
   });
-
-  // // Tests TODO
-  // xdescribe('aMethod()', () => {
-  //   it('foo', async () => {
-  //     // await device.relaunchApp({ url: 'https://invertase.io/links-test', newInstance: true });
-  //     // firebase.links().onLink(console.dir);
-  //     // await device.relaunchApp({ url: 'https://invertase.io/links-test', newInstance: false });
-  //     // await Utils.sleep(3000);
-  //     // const result = await firebase.links().getInitialLink();
-  //     // await device.relaunchApp({ url: 'https://invertase.io/links-test', newInstance: false });
-  //   });
-  // });
 
   describe('buildLink()', () => {
     it('returns a dynamic link', async () => {

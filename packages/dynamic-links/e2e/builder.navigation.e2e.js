@@ -15,7 +15,7 @@
  *
  */
 
-import { baseParams } from './dynamicLinks.e2e';
+const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.navigation', () => {
   it('throws if navigation is not an object', () => {

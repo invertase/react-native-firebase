@@ -49,7 +49,7 @@ export default function build(dynamicLinksParams) {
   }
 
   // TODO better validation?
-  if (!link.startsWith('http://') || !link.startsWith('https://')) {
+  if (!link.startsWith('http://') && !link.startsWith('https://')) {
     throw new Error(`'link' expected a well-formatted URL using the HTTP or HTTPS scheme.`);
   }
 
@@ -61,7 +61,7 @@ export default function build(dynamicLinksParams) {
     throw new Error(`'domainUriPrefix' expected a string.`);
   }
 
-  if (!domainUriPrefix.startsWith('http://') || !domainUriPrefix.startsWith('https://')) {
+  if (!domainUriPrefix.startsWith('http://') && !domainUriPrefix.startsWith('https://')) {
     throw new Error(
       `'domainUriPrefix' expected a well-formatted URL using the HTTP or HTTPS scheme.`,
     );

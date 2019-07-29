@@ -15,7 +15,7 @@
  *
  */
 
-import { baseParams } from './dynamicLinks.e2e';
+const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.social', () => {
   it('throws if social is not an object', () => {

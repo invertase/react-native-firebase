@@ -15,7 +15,7 @@
  *
  */
 
-import { baseParams } from './dynamicLinks.e2e';
+const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.analytics', () => {
   it('throws if analytics is not an object', () => {
@@ -91,7 +91,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
     }
   });
 
-  it('throws if analytics.source is not a string', () => {
+  it('throws if analytics.term is not a string', () => {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
