@@ -203,9 +203,7 @@ android.describe('mlkit.vision.text', () => {
           });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(
-            `'cloudTextRecognizerOptions.modelType' invalid model`,
-          );
+          error.message.should.containEql(`'cloudTextRecognizerOptions.modelType' invalid model`);
           return Promise.resolve();
         }
       });
