@@ -37,18 +37,6 @@ android.describe('mlkit.vision.label', () => {
       }
     });
 
-    it('should throw if options are not a valid instance', () => {
-      try {
-        firebase.mlKitVision().imageLabelerProcessImage('foo', {});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'imageLabelerOptions' expected an instance of VisionImageLabelerOptions`,
-        );
-        return Promise.resolve();
-      }
-    });
-
     it('should return a local label array', async () => {
       const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile);
 
@@ -74,18 +62,6 @@ android.describe('mlkit.vision.label', () => {
       }
     });
 
-    it('should throw if options are not a valid instance', () => {
-      try {
-        firebase.mlKitVision().cloudImageLabelerProcessImage('foo', {});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'cloudImageLabelerOptions' expected an instance of VisionCloudImageLabelerOptions`,
-        );
-        return Promise.resolve();
-      }
-    });
-
     it('should return a cloud label array', async () => {
       const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile);
 
@@ -100,44 +76,51 @@ android.describe('mlkit.vision.label', () => {
     });
   });
 
-  describe('VisionImageLabelerOptions.setConfidenceThreshold()', () => {
-    it('should throw if confidence threshold is not a number', () => {
+  describe('VisionImageLabelerOptions', () => {
+    it('throws if not an object', async () => {
       try {
-        const options = new firebase.mlKitVision.VisionImageLabelerOptions();
-        options.setConfidenceThreshold('0.5');
+        await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'imageLabelerOptions' expected an object value`);
+        return Promise.resolve();
+      }
+    });
+
+    describe('confidenceThreshold', () => {
+      it('should throw if confidence threshold is not a number', async () => {
+        try {
+          await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+            confidenceThreshold: '0.5',
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
+    it('should throw if confidence threshold is not between 0 & 1', async () => {
+      try {
+        await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+          confidenceThreshold: -0.2,
+        });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `'confidenceThreshold' expected a number value between 0 & 1`,
+          `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
         );
         return Promise.resolve();
       }
     });
 
-    it('should throw if confidence threshold is between 0 & 1', () => {
-      try {
-        const options = new firebase.mlKitVision.VisionImageLabelerOptions();
-        options.setConfidenceThreshold(1.1);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'confidenceThreshold' expected value to be between 0 & 1`);
-        return Promise.resolve();
-      }
-    });
-
-    it('should return the class', () => {
-      const options = new firebase.mlKitVision.VisionImageLabelerOptions().setConfidenceThreshold(
-        0.8,
-      );
-
-      options.constructor.name.should.eql('VisionImageLabelerOptions');
-    });
-
     it('should accept options and return local labels', async () => {
-      const options = new firebase.mlKitVision.VisionImageLabelerOptions();
-      options.setConfidenceThreshold(0.8);
-
-      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, options);
+      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+        confidenceThreshold: 0.8,
+      });
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -151,48 +134,49 @@ android.describe('mlkit.vision.label', () => {
   });
 
   describe('VisionCloudImageLabelerOptions', () => {
-    describe('setConfidenceThreshold()', () => {
-      it('should throw if confidence threshold is not a number', () => {
+    it('throws if not an object', async () => {
+      try {
+        await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'cloudImageLabelerOptions' expected an object value`);
+        return Promise.resolve();
+      }
+    });
+
+    describe('confidenceThreshold', () => {
+      it('should throw if confidence threshold is not a number', async () => {
         try {
-          const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-          options.setConfidenceThreshold('0.5');
+          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+            confidenceThreshold: '0.2',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'confidenceThreshold' expected a number value between 0 & 1`,
+            `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
           );
           return Promise.resolve();
         }
       });
 
-      it('should throw if confidence threshold is between 0 & 1', () => {
+      it('should throw if confidence threshold is not between 0 & 1', async () => {
         try {
-          const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-          options.setConfidenceThreshold(1.1);
+          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+            confidenceThreshold: 1.1,
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'confidenceThreshold' expected value to be between 0 & 1`,
+            `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
           );
           return Promise.resolve();
         }
-      });
-
-      it('should return the class', () => {
-        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions().setConfidenceThreshold(
-          0.8,
-        );
-
-        options.constructor.name.should.eql('VisionCloudImageLabelerOptions');
       });
 
       it('should accept options and return cloud labels', async () => {
-        const options = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-        options.setConfidenceThreshold(0.8);
-
-        const res = await firebase
-          .mlKitVision()
-          .cloudImageLabelerProcessImage(testImageFile, options);
+        const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+          confidenceThreshold: 0.8,
+        });
 
         res.should.be.Array();
         res.length.should.be.greaterThan(0);
@@ -205,11 +189,25 @@ android.describe('mlkit.vision.label', () => {
       });
     });
 
-    describe('enforceCertFingerprintMatch()', () => {
-      it('enforceCertFingerprintMatch()', () => {
-        const o = new firebase.mlKitVision.VisionCloudImageLabelerOptions();
-        o.enforceCertFingerprintMatch();
-        o.get('enforceCertFingerprintMatch').should.equal(true);
+    describe('enforceCertFingerprintMatch', () => {
+      it('throws if not a boolean', async () => {
+        try {
+          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+            enforceCertFingerprintMatch: 'true',
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudImageLabelerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets enforceCertFingerprintMatch', async () => {
+        await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+          enforceCertFingerprintMatch: false,
+        });
       });
     });
   });

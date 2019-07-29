@@ -15,6 +15,7 @@
  *
  */
 let testImageFile;
+
 android.describe('mlkit.vision.landmark', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/landmark.jpg`;
@@ -31,18 +32,6 @@ android.describe('mlkit.vision.landmark', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
-        return Promise.resolve();
-      }
-    });
-
-    it('should throw if options are not a valid instance', () => {
-      try {
-        firebase.mlKitVision().cloudLandmarkRecognizerProcessImage('foo', {});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'cloudLandmarkRecognizerOptions' expected an instance of VisionCloudLandmarkRecognizerOptions`,
-        );
         return Promise.resolve();
       }
     });
@@ -71,35 +60,61 @@ android.describe('mlkit.vision.landmark', () => {
   });
 
   describe('VisionCloudLandmarkRecognizerOptions', () => {
-    // TODO how to test?
-    describe('enforceCertFingerprintMatch()', () => {
-      it('enforces fingerpint match without error', () => {
-        new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().enforceCertFingerprintMatch();
-      });
+    it('throws if not an object', async () => {
+      try {
+        await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          `'cloudLandmarkRecognizerOptions' expected an object value`,
+        );
+        return Promise.resolve();
+      }
     });
 
-    describe('setMaxResults()', () => {
-      it('throws if maxNumber is not a number', () => {
+    describe('cloudLandmarkRecognizerOptions', () => {
+      it('throws if not a boolean', async () => {
         try {
-          new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setMaxResults('2');
+          await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+            enforceCertFingerprintMatch: 'false',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'maxResults' expected a number value`);
+          error.message.should.containEql(
+            `'cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('returns instance', () => {
-        const i = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setMaxResults(2);
-        i.constructor.name.should.eql('VisionCloudLandmarkRecognizerOptions');
+      it('sets cloudLandmarkRecognizerOptions', async () => {
+        await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+          enforceCertFingerprintMatch: false,
+        });
+      });
+    });
+
+    describe('maxResults', () => {
+      it('throws if maxResults is not a number', async () => {
+        try {
+          await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+            maxResults: '2',
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudLandmarkRecognizerOptions.maxResults' expected a number value`,
+          );
+          return Promise.resolve();
+        }
       });
 
       it('limits the maximum results', async () => {
-        const o = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setMaxResults(3);
-
         const res = await firebase
           .mlKitVision()
-          .cloudLandmarkRecognizerProcessImage(testImageFile, o);
+          .cloudLandmarkRecognizerProcessImage(testImageFile, {
+            maxResults: 3,
+          });
 
         // TODO SDK returns random number of results on native
         // 1 = 0 result
@@ -108,37 +123,37 @@ android.describe('mlkit.vision.landmark', () => {
       });
     });
 
-    describe('setModelType()', () => {
-      it('throws if model is invalid', () => {
+    describe('modelType', () => {
+      it('throws if model is invalid', async () => {
         try {
-          new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setModelType(3);
+          await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+            modelType: 3,
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'model' invalid model`);
+          error.message.should.containEql(
+            `'cloudLandmarkRecognizerOptions.modelType' invalid model`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('returns instance', () => {
-        const i1 = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setModelType(
-          firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.STABLE_MODEL,
-        );
-        const i2 = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setModelType(
-          firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
-        );
+      it('sets modelType', async () => {
+        await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+          modelType: firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.STABLE_MODEL,
+        });
 
-        i1.constructor.name.should.eql('VisionCloudLandmarkRecognizerOptions');
-        i2.constructor.name.should.eql('VisionCloudLandmarkRecognizerOptions');
+        await firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+          modelType: firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
+        });
       });
 
       it('uses a latest model', async () => {
-        const o = new firebase.mlKitVision.VisionCloudLandmarkRecognizerOptions().setModelType(
-          firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
-        );
-
         const res = await firebase
           .mlKitVision()
-          .cloudLandmarkRecognizerProcessImage(testImageFile, o);
+          .cloudLandmarkRecognizerProcessImage(testImageFile, {
+            modelType: firebase.mlKitVision.VisionCloudLandmarkRecognizerModelType.LATEST_MODEL,
+          });
         res.should.be.Array();
       });
     });
