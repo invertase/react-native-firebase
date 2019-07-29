@@ -57,7 +57,9 @@ android.describe('mlkit.vision.document.text', () => {
         await firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(testImageFile, 'foo');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'cloudDocumentTextRecognizerOptions' expected an object value`);
+        e.message.should.containEql(
+          `'cloudDocumentTextRecognizerOptions' expected an object value`,
+        );
         return Promise.resolve();
       }
     });
