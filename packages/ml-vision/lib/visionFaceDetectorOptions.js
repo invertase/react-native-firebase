@@ -60,7 +60,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
       faceDetectorOptions.contourMode !== VisionFaceDetectorContourMode.ALL_CONTOURS
     ) {
       throw new Error(
-        `firebase.mlKitVision() VisionFaceDetectorOptions.setContourMode(*) 'contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.`,
+        `'faceDetectorOptions.contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.`,
       );
     }
 

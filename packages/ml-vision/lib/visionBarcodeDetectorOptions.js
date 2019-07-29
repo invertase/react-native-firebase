@@ -38,8 +38,10 @@ export default function visionBarcodeDetectorOptions(barcodeDetectorOptions) {
       );
     }
 
+    const validFormats = Object.values(VisionBarcodeFormat);
+
     for (let i = 0; i < barcodeDetectorOptions.barcodeFormats.length; i++) {
-      if (!VisionBarcodeFormat[barcodeDetectorOptions.barcodeFormats[i]]) {
+      if (!validFormats.includes(barcodeDetectorOptions.barcodeFormats[i])) {
         throw new Error(
           `'barcodeDetectorOptions.barcodeFormats' type at index ${i} is invalid. Expected a VisionBarcodeFormat type.`,
         );

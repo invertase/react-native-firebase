@@ -113,77 +113,112 @@ android.describe('mlkit.vision.text', () => {
   });
 
   describe('VisionCloudTextRecognizerOptions', () => {
-    it('enforceCertFingerprintMatch()', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      o.enforceCertFingerprintMatch();
-      o.get('enforceCertFingerprintMatch').should.equal(true);
-    });
-
-    it('setLanguageHints()', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      o.setLanguageHints(['en']);
-      o.get('hintedLanguages').should.be.an.Array();
-      o.get('hintedLanguages')[0].should.equal('en');
-    });
-
-    it('setLanguageHints() - throws if not an array', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
+    it('throws if not an object', async () => {
       try {
-        o.setLanguageHints('invertase');
+        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'hintedLanguages' must be an non empty array of strings.`);
+        error.message.should.containEql(`'cloudTextRecognizerOptions' expected an object value`);
         return Promise.resolve();
       }
     });
 
-    it('setLanguageHints() - throws if empty array', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      try {
-        o.setLanguageHints([]);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'hintedLanguages' must be an non empty array of strings.`);
-        return Promise.resolve();
-      }
+    describe('enforceCertFingerprintMatch', () => {
+      it('throws if not a boolean', async () => {
+        try {
+          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+            enforceCertFingerprintMatch: 'false',
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a value', async () => {
+        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          enforceCertFingerprintMatch: false,
+        });
+      });
     });
 
-    it('setLanguageHints() - throws array not strings', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      try {
-        o.setLanguageHints([1, 2, 3]);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(`'hintedLanguages' must be an non empty array of strings.`);
-        return Promise.resolve();
-      }
+    describe('languageHints', () => {
+      it('throws if not array', async () => {
+        try {
+          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+            languageHints: 'en',
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if empty array', async () => {
+        try {
+          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+            languageHints: [],
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if array contains non-string values', async () => {
+        try {
+          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+            languageHints: [123],
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets hintedLanguages', async () => {
+        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          languageHints: ['fr'],
+        });
+      });
     });
 
-    it('setModelType()', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      firebase.mlKitVision.VisionCloudTextRecognizerModelType.SPARSE_MODEL.should.equal(1);
-      firebase.mlKitVision.VisionCloudTextRecognizerModelType.DENSE_MODEL.should.equal(2);
-      o.setModelType(firebase.mlKitVision.VisionCloudTextRecognizerModelType.SPARSE_MODEL);
-      o.get('modelType').should.equal(
-        firebase.mlKitVision.VisionCloudTextRecognizerModelType.SPARSE_MODEL,
-      );
-      o.setModelType(firebase.mlKitVision.VisionCloudTextRecognizerModelType.DENSE_MODEL);
-      o.get('modelType').should.equal(
-        firebase.mlKitVision.VisionCloudTextRecognizerModelType.DENSE_MODEL,
-      );
-    });
+    describe('modelType', () => {
+      it('throws if invalid type', async () => {
+        try {
+          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+            modelType: 7,
+          });
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            `'cloudTextRecognizerOptions.modelType' invalid model`,
+          );
+          return Promise.resolve();
+        }
+      });
 
-    it('setModelType() - throws if not a valid model type', () => {
-      const o = new firebase.mlKitVision.VisionCloudTextRecognizerOptions();
-      try {
-        o.setModelType('invertase');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'modelType' must be one of VisionCloudTextRecognizerModelType.DENSE_MODEL or .SPARSE_MODEL`,
-        );
-        return Promise.resolve();
-      }
+      it('sets modelType', async () => {
+        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          modelType: firebase.mlKitVision.VisionCloudTextRecognizerModelType.SPARSE_MODEL,
+        });
+
+        await firebase.mlKitVision().textRecognizerProcessImage(testImageFile, {
+          modelType: firebase.mlKitVision.VisionCloudTextRecognizerModelType.DENSE_MODEL,
+        });
+      });
     });
   });
 
@@ -194,18 +229,6 @@ android.describe('mlkit.vision.text', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
-        return Promise.resolve();
-      }
-    });
-
-    it('should throw if options are not a valid instance', () => {
-      try {
-        firebase.mlKitVision().cloudTextRecognizerProcessImage('invertase', {});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'cloudTextRecognizerOptions' expected an instance of VisionCloudTextRecognizerOptions`,
-        );
         return Promise.resolve();
       }
     });

@@ -59,7 +59,7 @@ export default function visionCloudImageLabelerOptions(cloudImageLabelerOptions)
       cloudImageLabelerOptions.confidenceThreshold > 1
     ) {
       throw new Error(
-        `'cloudImageLabelerOptions.confidenceThreshold' expected value to be between 0 & 1.`,
+        `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
       );
     }
 

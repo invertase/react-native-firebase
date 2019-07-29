@@ -37,18 +37,6 @@ android.describe('mlkit.vision.face', () => {
       }
     });
 
-    it('should throw if options are not a valid instance', () => {
-      try {
-        firebase.mlKitVision().faceDetectorProcessImage('foo', {});
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          `'faceDetectorOptions' expected an instance of VisionFaceDetectorOptions`,
-        );
-        return Promise.resolve();
-      }
-    });
-
     it('returns basic face object with no options enabled', async () => {
       const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile);
 
@@ -74,10 +62,10 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns classifications if enabled', async () => {
-      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
-      o.setClassificationMode(2);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        classificationMode: 2,
+      });
 
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -89,10 +77,9 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns landmarks if enabled', async () => {
-      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
-      o.setLandmarkMode(2);
-
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        landmarkMode: 2,
+      });
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -108,10 +95,9 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns contours if enabled', async () => {
-      const o = new firebase.mlKitVision.VisionFaceDetectorOptions();
-      o.setContourMode(2);
-
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, o);
+      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        contourMode: 2,
+      });
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
 
@@ -131,131 +117,153 @@ android.describe('mlkit.vision.face', () => {
   });
 
   describe('VisionFaceDetectorOptions', () => {
-    describe('setClassificationMode()', () => {
-      it('throws if mode is incorrect', () => {
+    it('throws if not an object', async () => {
+      try {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(`'faceDetectorOptions' expected an object value`);
+        return Promise.resolve();
+      }
+    });
+
+    describe('classificationMode', () => {
+      it('throws if mode is incorrect', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(3);
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            classificationMode: 'foo',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'classificationMode' invalid classification mode`);
+          error.message.should.containEql(
+            `'faceDetectorOptions.classificationMode' invalid classification mode`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('sets classification and returns an instance', () => {
-        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(
-          firebase.mlKitVision.VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS,
-        );
+      it('sets classificationMode', async () => {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          classificationMode:
+            firebase.mlKitVision.VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS,
+        });
 
-        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setClassificationMode(
-          firebase.mlKitVision.VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
-        );
-
-        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
-        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          classificationMode:
+            firebase.mlKitVision.VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
+        });
       });
     });
 
-    describe('setContourMode()', () => {
-      it('throws if mode is incorrect', () => {
+    describe('contourMode', () => {
+      it('throws if mode is incorrect', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(3);
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            contourMode: 'foo',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'contourMode' invalid contour mode`);
+          error.message.should.containEql(`'faceDetectorOptions.contourMode' invalid contour mode`);
           return Promise.resolve();
         }
       });
 
-      it('sets contour mode and returns an instance', () => {
-        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
-          firebase.mlKitVision.VisionFaceDetectorContourMode.NO_CONTOURS,
-        );
+      it('sets contourMode', async () => {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          contourMode: firebase.mlKitVision.VisionFaceDetectorContourMode.NO_CONTOURS,
+        });
 
-        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setContourMode(
-          firebase.mlKitVision.VisionFaceDetectorContourMode.ALL_CONTOURS,
-        );
-
-        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
-        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          contourMode: firebase.mlKitVision.VisionFaceDetectorContourMode.ALL_CONTOURS,
+        });
       });
     });
 
-    describe('setPerformanceMode()', () => {
-      it('throws if mode is incorrect', () => {
+    describe('performanceMode', () => {
+      it('throws if mode is incorrect', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(3);
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            performanceMode: 'foo',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'performanceMode' invalid performance mode`);
+          error.message.should.containEql(
+            `'faceDetectorOptions.performanceMode' invalid performance mode`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('sets contour mode and returns an instance', () => {
-        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
-          firebase.mlKitVision.VisionFaceDetectorPerformanceMode.FAST,
-        );
+      it('sets performanceMode', async () => {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          performanceMode: firebase.mlKitVision.VisionFaceDetectorPerformanceMode.FAST,
+        });
 
-        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
-          firebase.mlKitVision.VisionFaceDetectorPerformanceMode.ACCURATE,
-        );
-
-        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
-        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          performanceMode: firebase.mlKitVision.VisionFaceDetectorPerformanceMode.ACCURATE,
+        });
       });
     });
 
-    describe('setLandmarkMode()', () => {
-      it('throws if mode is incorrect', () => {
+    describe('landmarkMode', () => {
+      it('throws if mode is incorrect', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setLandmarkMode(3);
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            landmarkMode: 'foo',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'landmarkMode' invalid landmark mode`);
+          error.message.should.containEql(
+            `'faceDetectorOptions.landmarkMode' invalid landmark mode`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('sets landmark mode and returns an instance', () => {
-        const i1 = new firebase.mlKitVision.VisionFaceDetectorOptions().setLandmarkMode(
-          firebase.mlKitVision.VisionFaceDetectorLandmarkMode.NO_LANDMARKS,
-        );
+      it('sets landmarkMode', async () => {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          landmarkMode: firebase.mlKitVision.VisionFaceDetectorLandmarkMode.NO_LANDMARKS,
+        });
 
-        const i2 = new firebase.mlKitVision.VisionFaceDetectorOptions().setPerformanceMode(
-          firebase.mlKitVision.VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
-        );
-
-        i1.constructor.name.should.eql('VisionFaceDetectorOptions');
-        i2.constructor.name.should.eql('VisionFaceDetectorOptions');
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          landmarkMode: firebase.mlKitVision.VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
+        });
       });
     });
 
-    describe('setMinFaceSize()', () => {
-      it('throws if size is not a number', () => {
+    describe('minFaceSize', () => {
+      it('throws if size is not a number', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize('0.5');
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            minFaceSize: '0.1',
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'minFaceSize' expected a number value between 0 & 1`);
+          error.message.should.containEql(
+            `'faceDetectorOptions.minFaceSize' expected a number value between 0 & 1`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('throws if size is not valid', () => {
+      it('throws if size is not valid', async () => {
         try {
-          new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize(-1);
+          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+            minFaceSize: -1,
+          });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'minFaceSize' expected value to be between 0 & 1`);
+          error.message.should.containEql(
+            `'faceDetectorOptions.minFaceSize' expected value to be between 0 & 1`,
+          );
           return Promise.resolve();
         }
       });
 
-      it('sets face size and returns an instance', () => {
-        const i = new firebase.mlKitVision.VisionFaceDetectorOptions().setMinFaceSize(0.5);
-
-        i.constructor.name.should.eql('VisionFaceDetectorOptions');
+      it('sets minFaceSize', async () => {
+        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          minFaceSize: 0.3,
+        });
       });
     });
   });

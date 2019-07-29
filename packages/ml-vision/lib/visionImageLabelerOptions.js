@@ -42,7 +42,7 @@ export default function visionImageLabelerOptions(imageLabelerOptions) {
       imageLabelerOptions.confidenceThreshold > 1
     ) {
       throw new Error(
-        `'imageLabelerOptions.confidenceThreshold' expected value to be between 0 & 1.`,
+        `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
       );
     }
 
