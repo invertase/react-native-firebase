@@ -32,50 +32,41 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *    .analytics.setCampaign('banner')
-   *    .analytics.setContent('Click Me');
-   *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    analytics: {
+   *      campaign: 'banner',
+   *      content: 'Click Me',
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkAnalyticsParameters {
     /**
-     * Sets the campaign name.
-     *
-     * @param campaign The campaign name; The individual campaign name, slogan, promo code, etc. for a product.
+     * The individual campaign name, slogan, promo code, etc. for a product.
      */
-    setCampaign(campaign: string): DynamicLinkParameters;
+    campaign?: string;
 
     /**
-     * Sets the campaign content.
-     *
-     * @param content The campaign content; used for A/B testing and content-targeted ads to differentiate ads or links that point to the same URL.
+     * The campaign content; used for A/B testing and content-targeted ads to differentiate ads or links that point to the same URL.
      */
-    setContent(content: string): DynamicLinkParameters;
+    content?: string;
 
     /**
-     * Sets the campaign medium.
-     *
-     * @param medium The campaign medium; used to identify a medium such as email or cost-per-click (cpc).
+     * The campaign medium; used to identify a medium such as email or cost-per-click (cpc).
      */
-    setMedium(medium: string): DynamicLinkParameters;
+    medium?: string;
 
     /**
-     * Sets the campaign source.
-     *
-     * @param source The campaign source; used to identify a search engine, newsletter, or other source.
+     * The campaign source; used to identify a search engine, newsletter, or other source.
      */
-    setSource(source: string): DynamicLinkParameters;
+    source?: string;
 
     /**
-     * Sets the campaign term.
-     *
-     * @param term The campaign term; used with paid search to supply the keywords for ads.
-
+     * The campaign term; used with paid search to supply the keywords for ads.
      */
-    setTerm(term: string): DynamicLinkParameters;
+    term?: string;
   }
 
   /**
@@ -87,12 +78,14 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *   .android.setPackageName('io.invertase.testing')
-   *   .android.setMinimumVersion('18');
-   *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    android: {
+   *      packageName: 'io.invertase.testing',
+   *      minimumVersion: '18',
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkAndroidParameters {
@@ -100,24 +93,20 @@ export namespace DynamicLinks {
      * Sets the link to open when the app isn't installed. Specify this to do something other than install your app from
      * the Play Store when the app isn't installed, such as open the mobile web version of the content, or display a
      * promotional page for your app.
-     *
-     * @param fallbackUrl The link to open on Android if the app is not installed.
      */
-    setFallbackUrl(fallbackUrl: string): DynamicLinkParameters;
+    fallbackUrl?: string;
 
     /**
      * Sets the version code of the minimum version of your app that can open the link.
-     *
-     * @param minimumVersion The minimum version.
      */
-    setMinimumVersion(minimumVersion: string): DynamicLinkParameters;
+    minimumVersion?: string;
 
     /**
-     * Sets the Android package name.
+     * The package name of the Android app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
      *
-     * @param packageName The package name of the Android app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
+     * This option is required if passing android options to your dynamic link.
      */
-    setPackageName(packageName: string): DynamicLinkParameters;
+    packageName: string;
   }
 
   /**
@@ -135,63 +124,59 @@ export namespace DynamicLinks {
    *   .ios.setAppStoreId('123456789')
    *   .ios.setMinimumVersion('18');
    *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    ios: {
+   *      bundleId: 'io.invertase.testing',
+   *      appStoreId: '123456789',
+   *      minimumVersion: '18',
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkIOSParameters {
     /**
      * Sets the App Store ID, used to send users to the App Store when the app isn't installed.
-     *
-     * @param appStoreId The App Store ID.
      */
-    setAppStoreId(appStoreId: string): DynamicLinkParameters;
+    appStoreId?: string;
 
     /**
-     * Sets the iOS bundle ID.
+     * The bundle ID of the iOS app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
      *
-     * @param bundleId The bundle ID of the iOS app to use to open the link. The app must be connected to your project from the Overview page of the Firebase console.
+     * This option is required if passing ios options to your dynamic link.
      */
-    setBundleId(bundleId: string): DynamicLinkParameters;
+    bundleId: string;
 
     /**
      * Sets the app's custom URL scheme, if defined to be something other than your app's parameters ID.
-     *
-     * @param customScheme The app's custom URL scheme.
      */
-    setCustomScheme(customScheme: string): DynamicLinkParameters;
+    customScheme?: string;
 
     /**
      * Sets the link to open when the app isn't installed. Specify this to do something other than install your app from
      * the App Store when the app isn't installed, such as open the mobile web version of the content, or display a
      * promotional page for your app.
-     *
-     * @param fallbackUrl The link to open on iOS if the app is not installed.
      */
-    setFallbackUrl(fallbackUrl: string): DynamicLinkParameters;
+    fallbackUrl?: string;
 
     /**
      * Sets the bundle ID of the iOS app to use on iPads to open the link. The app must be connected to your project
      * from the Overview page of the Firebase console.
-     *
-     * @param iPadBundleId The iPad parameters ID of the app.
      */
-    setIPadBundleId(iPadBundleId: string): DynamicLinkParameters;
+    iPadBundleId?: string;
 
     /**
      * Sets the link to open on iPads when the app isn't installed. Specify this to do something other than install your
      * app from the App Store when the app isn't installed, such as open the web version of the content, or display a
      * promotional page for your app. Overrides the fallback link set by `setFallbackUrl` on iPad.
-     *
-     * @param iPadFallbackUrl The link to open on iPad if the app is not installed.
      */
-    setIPadFallbackUrl(iPadFallbackUrl: string): DynamicLinkParameters;
+    iPadFallbackUrl?: string;
 
     /**
      * Sets the minimum version of your app that can open the link.
-     *
-     * @param minimumVersion The minimum version.
      */
-    setMinimumVersion(minimumVersion: string): DynamicLinkParameters;
+    minimumVersion?: string;
   }
 
   /**
@@ -201,34 +186,30 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *   .itunes.setAffiliateToken('ABCDEFG');
-   *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    itunes: {
+   *      affiliateToken: 'ABCDEFG',
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkITunesParameters {
     /**
-     * Sets the affiliate token.
-     *
-     * @param affiliateToken The affiliate token used to create affiliate-coded links.
+     * The affiliate token used to create affiliate-coded links.
      */
-    setAffiliateToken(affiliateToken: string): DynamicLinkParameters;
+    affiliateToken?: string;
 
     /**
-     * Sets the campaign token.
-     *
-     * @param campaignToken The campaign token that developers can add to any link in order to track sales from a specific marketing campaign.
+     * The campaign token that developers can add to any link in order to track sales from a specific marketing campaign.
      */
-    setCampaignToken(campaignToken: string): DynamicLinkParameters;
+    campaignToken?: string;
 
     /**
-     * Sets the provider token.
-     *
-     * @param providerToken The provider token that enables analytics for Dynamic DynamicLinks from within iTunes Connect.
+     * The provider token that enables analytics for Dynamic DynamicLinks from within iTunes Connect.
      */
-    setProviderToken(providerToken: string): DynamicLinkParameters;
+    providerToken?: string;
   }
 
   /**
@@ -238,20 +219,22 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *   .navigation.setForcedRedirectEnabled(true);
-   *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    navigation: {
+   *      forcedRedirectEnabled: true,
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkNavigationParameters {
     /**
      * Sets whether to enable force redirecting or going to the app preview page. Defaults to false.
      *
-     * @param forcedRedirectEnabled If true, app preview page will be disabled and there will be a redirect to the FDL. If false, go to the app preview page.
+     * If true, app preview page will be disabled and there will be a redirect to the FDL. If false, go to the app preview page.
      */
-    setForcedRedirectEnabled(forcedRedirectEnabled: boolean): DynamicLinkParameters;
+    forcedRedirectEnabled?: boolean;
   }
 
   /**
@@ -261,35 +244,31 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *   .social.setTitle('Social Application')
-   *   .social.setDescriptionText('A Social Application');
-   *
-   *  const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    social: {
+   *      title: 'Social Application',
+   *      descriptionText: 'A Social Application',
+   *    }
+   *  });
    * ```
    */
   export interface DynamicLinkSocialParameters {
     /**
-     * Sets the meta-tag description.
-     *
-     * @param descriptionText The description to use when the Dynamic Link is shared in a social post.
+     * The description to use when the Dynamic Link is shared in a social post.
      */
-    setDescriptionText(descriptionText: string): DynamicLinkParameters;
+    descriptionText?: string;
 
     /**
-     * Sets the meta-tag image link.
-     *
-     * @param imageUrl The URL to an image related to this link.
+     * The URL to an image related to this link.
      */
-    setImageUrl(imageUrl: string): DynamicLinkParameters;
+    imageUrl?: string;
 
     /**
-     * Sets the meta-tag title.
-     *
-     * @param title The title to use when the Dynamic Link is shared in a social post.
+     * The title to use when the Dynamic Link is shared in a social post.
      */
-    setTitle(title: string): DynamicLinkParameters;
+    title?: string;
   }
 
   /**
@@ -299,44 +278,56 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks()
-   *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   *
-   * linkParams.analytics.setCampaign('banner');
-   *
-   * const link = await firebase.dynamicLinks().buildLink(linkParams);
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *  });
    * ```
    */
   export interface DynamicLinkParameters {
     /**
+     * The link the target app will open. You can specify any URL the app can handle, such as a link to the app’s content,
+     * or a URL that initiates some app-specific logic such as crediting the user with a coupon, or displaying a
+     * specific welcome screen. This link must be a well-formatted URL, be properly URL-encoded, and use the HTTP or
+     * HTTPS scheme.
+     */
+    link: string;
+
+    /**
+     * Domain URI Prefix of your App. This value must be your assigned domain from the Firebase console,
+     * (e.g. https://xyz.page.link). The domain URI prefix must start with a valid HTTPS scheme (https://).
+     */
+    domainUriPrefix: string;
+
+    /**
      * Access Google Analytics specific link parameters.
      */
-    analytics: DynamicLinkAnalyticsParameters;
+    analytics?: DynamicLinkAnalyticsParameters;
 
     /**
      * Access Android specific link parameters.
      */
-    android: DynamicLinkAndroidParameters;
+    android?: DynamicLinkAndroidParameters;
 
     /**
      * Access iOS specific link parameters.
      */
-    ios: DynamicLinkIOSParameters;
+    ios?: DynamicLinkIOSParameters;
 
     /**
      * Access iTunes Connect specific link parameters.
      */
-    itunes: DynamicLinkITunesParameters;
+    itunes?: DynamicLinkITunesParameters;
 
     /**
      * Access navigation specific link parameters.
      */
-    navigation: DynamicLinkNavigationParameters;
+    navigation?: DynamicLinkNavigationParameters;
 
     /**
      * Access social specific link parameters.
      */
-    social: DynamicLinkSocialParameters;
+    social?: DynamicLinkSocialParameters;
   }
 
   /**
@@ -346,15 +337,10 @@ export namespace DynamicLinks {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks()
-   *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   *
-   * linkParams.analytics.setCampaign('banner');
-   *
-   * const link = await firebase.dynamicLinks().buildShortLink(
-   *   linkParams,
-   *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
-   * );
+   *  const link = await firebase.dynamicLinks().buildShortLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *  }, firebase.dynamicLinks.ShortLinkType.UNGUESSABLE);
    * ```
    */
   export interface ShortLinkType {
@@ -407,72 +393,49 @@ export namespace DynamicLinks {
    */
   export class Module extends FirebaseModule {
     /**
-     * Creates new parameters which enhance the functionality of a created link.
-     *
-     * To create a DynamicLinkParameters, first populate it by using the setX methods available on the `DynamicLinkParameters` builder classes,
-     * then pass it to `firebase.dynamicLinks().buildLink(linkParams)` or `firebase.dynamicLinks().buildShortLink(linkParams, type)`.
-     *
-     * #### Example
-     *
-     * ```js
-     * const linkParams = firebase.dynamicLinks()
-     *    .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-     *
-     * linkParams.analytics.setCampaign('banner');
-     *
-     * const link = await firebase.dynamicLinks().buildShortLink(
-     *   linkParams,
-     *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
-     * );
-     * ```
-     *
-     * @param link The link the target app will open. You can specify any URL the app can handle, such as a link to the app’s content, or a URL that initiates some app-specific logic such as crediting the user with a coupon, or displaying a specific welcome screen. This link must be a well-formatted URL, be properly URL-encoded, and use the HTTP or HTTPS scheme.
-     * @param domainURIPrefix Domain URI Prefix of your App. This value must be your assigned domain from the Firebase console. (e.g. https://xyz.page.link) The domain URI prefix must start with a valid HTTPS scheme (https://).
-     */
-    newDynamicLinkParameters(link: string, domainURIPrefix: string): DynamicLinkParameters;
-
-    /**
      * Builds a Dynamic Link from the provided DynamicLinkParameters instances.
      *
      * #### Example
      *
      * ```js
-     * const linkParams = firebase.dynamicLinks()
-     *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-     *
-     * linkParams.analytics.setCampaign('banner');
-     *
-     * const link = await firebase.dynamicLinks().buildLink(linkParams);
+     * const link = await firebase.dynamicLinks().buildLink({
+     *   link: 'https://invertase.io',
+     *   domainUriPrefix: 'https://xyz.page.link',
+     *   analytics: {
+     *     campaign: 'banner',
+     *   }
+     * });
      * ```
      *
-     * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
+     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     buildLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
 
     /**
-     * **Deprecated**: Creates a link from the provided DynamicLinkParameters instances.
+     * **Deprecated**: Creates a link from the provided DynamicLinkParameters interface.
      *
      * @deprecated Use `buildLink` with the same args instead.
-     * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
+     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     createDynamicLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
 
     /**
-     * Builds a short Dynamic Link from the provided DynamicLinkParameters instances.
+     * Builds a short Dynamic Link from the provided DynamicLinkParameters interface.
      *
      *  ```js
-     * const linkParams = firebase.dynamicLinks()
-     *   .newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-     *
-     * linkParams.analytics.setCampaign('banner');
-     *
      * const link = await firebase.dynamicLinks().buildShortLink(
-     *   linkParams,
+     *   {
+     *     link: 'https://invertase.io',
+     *     domainUriPrefix: 'https://xyz.page.link',
+     *     analytics: {
+     *       campaign: 'banner',
+     *     }
+     *   },
      *   firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
      * );
      * ```
      *
-     * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
+     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     buildShortLink(
@@ -484,7 +447,7 @@ export namespace DynamicLinks {
      * **Deprecated**: Creates a short Dynamic Link from the provided DynamicLinkParameters instances.
      *
      * @deprecated Use `buildShortLink` with the same args instead.
-     * @param dynamicLinkParams An instance of DynamicLinkParameters created via `newDynamicLinkParameters`
+     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     createShortDynamicLink(

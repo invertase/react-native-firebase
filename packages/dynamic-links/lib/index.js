@@ -21,13 +21,10 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import DynamicLinkParameters from './DynamicLinkParameters';
-
+import builder from './builder';
 import version from './version';
 
-const statics = {
-  DynamicLink: DynamicLinkParameters, // TODO deprecate
-};
+const statics = {};
 
 const namespace = 'links';
 
@@ -36,16 +33,15 @@ const nativeModuleName = 'RNFBDynamicLinksModule';
 const nativeEvents = ['dynamic_links_link_received'];
 
 class FirebaseLinksModule extends FirebaseModule {
-  newDynamicLinkParameters(link, domainURIPrefix) {
-    // todo validate args
-    //    link string must start with http:// or https://
-    //    domainUriPrefix string, must not start with http:// or https:// - without these
-    return new DynamicLinkParameters(link, domainURIPrefix);
-  }
-
   buildLink(dynamicLinkParams) {
-    // TODO(salakar) instance of link validate
-    return this.native.buildLink(dynamicLinkParams.build());
+    let params;
+    try {
+      params = builder(dynamicLinkParams);
+    } catch (error) {
+      throw new Error(`firebase.dynamicLinks().buildLink(*) ${error.message}`);
+    }
+
+    return this.native.buildLink(params);
   }
 
   createDynamicLink(dynamicLinkParams) {
@@ -55,9 +51,24 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 
   buildShortLink(dynamicLinkParams, shortLinkType = 'DEFAULT') {
-    // TODO(salakar) instance of link validate
-    // TODO(salakar) shortLinkType validate
-    return this.native.buildLink(dynamicLinkParams.build(), shortLinkType);
+    let params;
+    try {
+      params = builder(dynamicLinkParams);
+    } catch (error) {
+      throw new Error(`firebase.dynamicLinks().buildShortLink(*) ${error.message}`);
+    }
+
+    if (
+      shortLinkType !== 'DEFAULT' ||
+      shortLinkType !== 'SHORT' ||
+      shortLinkType !== 'UNGUESSABLE'
+    ) {
+      throw new Error(
+        `firebase.dynamicLinks().buildShortLink(_, *) 'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE.`,
+      );
+    }
+
+    return this.native.buildShortLink(params, shortLinkType);
   }
 
   createShortDynamicLink(dynamicLinkParams, shortLinkType) {
