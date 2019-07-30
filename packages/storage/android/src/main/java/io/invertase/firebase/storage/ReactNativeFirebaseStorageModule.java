@@ -32,6 +32,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
@@ -126,7 +127,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
 
     if (listOptions.hasKey("pageToken")) {
       String pageToken = listOptions.getString("pageToken");
-      list = reference.list(maxResults, pageToken);
+      list = reference.list(maxResults, Objects.requireNonNull(pageToken));
     } else {
       list = reference.list(maxResults);
     }

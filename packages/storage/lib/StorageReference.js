@@ -127,38 +127,38 @@ export default class StorageReference extends ReferenceBase {
       maxResults: 1000,
     };
 
+    if (options) {
+      if (hasOwnProperty(options, 'maxResults')) {
+        if (!isNumber(options.maxResults)) {
+          throw new Error(
+            "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
+          );
+        }
 
-    if (hasOwnProperty(options, 'maxResults')) {
-      if (!isNumber(options.maxResults)) {
-        throw new Error(
-          "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
-        );
+        // todo integer check
+
+        if (options.maxResults < 1 || options.maxResults > 1000) {
+          throw new Error(
+            "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
+          );
+        }
+
+        listOptions.maxResults = options.maxResults;
       }
 
-      // todo integer check
+      if (options.pageToken) {
+        if (!isString(options.pageToken)) {
+          throw new Error(
+            "firebase.storage.StorageReference.list(*) 'options.pageToken' expected a string value.",
+          );
+        }
 
-      if (options.maxResults < 1 || options.maxResults > 1000) {
-        throw new Error(
-          "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
-        );
+        listOptions.pageToken = options.pageToken;
       }
-
-      listOptions.maxResults = options.maxResults;
     }
-
-    if (options.pageToken) {
-      if (!isString(options.pageToken)) {
-        throw new Error(
-          "firebase.storage.StorageReference.list(*) 'options.pageToken' expected a string value.",
-        );
-      }
-
-      listOptions.pageToken = options.pageToken;
-    }
-
 
     return this._storage.native
-      .list(options)
+      .list(this.toString(), listOptions)
       .then(data => new StorageListResult(this._storage, data));
   }
 
@@ -167,7 +167,7 @@ export default class StorageReference extends ReferenceBase {
    */
   listAll() {
     return this._storage.native
-      .listAll()
+      .listAll(this.toString())
       .then(data => new StorageListResult(this._storage, data));
   }
 
@@ -241,10 +241,10 @@ export default class StorageReference extends ReferenceBase {
    */
   toString() {
     if (this.path.length <= 1) {
-      return this._storage._customUrlOrRegion;
+      return `${this._storage._customUrlOrRegion}/`;
     }
 
-    return `${this._storage._customUrlOrRegion}/${this.path}`;
+    return `${this._storage._customUrlOrRegion}/${this.path}/`;
   }
 
   /**
