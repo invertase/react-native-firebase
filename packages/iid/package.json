@@ -30,7 +30,7 @@
     "@react-native-firebase/app-types": "0.1.1",
     "@react-native-firebase/common": "0.1.1"
   },
-  "gitHead": "a73e87eedf6d13b20c9de61c9d0f3077b4163746",
+  "gitHead": "8c2df657b78bccde6e001c3848b2a9d8bb44ee47",
   "publishConfig": {
     "access": "public"
   }
