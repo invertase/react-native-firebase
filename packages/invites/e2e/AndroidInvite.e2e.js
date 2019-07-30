@@ -37,7 +37,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         androidInvite.setAdditionalReferralParameters('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'additionalReferralParameters' must be an object`);
+        error.message.should.containEql("'additionalReferralParameters' must be an object");
         return Promise.resolve();
       }
     });
@@ -49,7 +49,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         androidInvite.setAdditionalReferralParameters({ 1: 1 });
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'additionalReferralParameters' must be an object`);
+        error.message.should.containEql("'additionalReferralParameters' must be an object");
         return Promise.resolve();
       }
     });
@@ -70,7 +70,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         androidInvite.setEmailHtmlContent(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'emailHtmlContent' must be a string value`);
+        error.message.should.containEql("'emailHtmlContent' must be a string value");
         return Promise.resolve();
       }
     });
@@ -84,7 +84,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql(
-          `'emailHtmlContent' cannot be used alongside 'callToActionText'`,
+          "'emailHtmlContent' cannot be used alongside 'callToActionText'",
         );
         return Promise.resolve();
       }
@@ -106,7 +106,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         androidInvite.setEmailSubject(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'emailSubject' must be a string value`);
+        error.message.should.containEql("'emailSubject' must be a string value");
         return Promise.resolve();
       }
     });
@@ -127,7 +127,7 @@ android.describe('firebase.invites.AndroidInvite', () => {
         androidInvite.setGoogleAnalyticsTrackingId(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'googleAnalyticsTrackingId' must be a string value`);
+        error.message.should.containEql("'googleAnalyticsTrackingId' must be a string value");
         return Promise.resolve();
       }
     });

@@ -24,7 +24,7 @@ describe('firestore.WriteBatch.set()', () => {
         .set(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'documentRef' expected instance of a DocumentReference`);
+      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
       return Promise.resolve();
     }
   });
@@ -40,7 +40,7 @@ describe('firestore.WriteBatch.set()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'documentRef' provided DocumentReference is from a different Firestore instance`,
+        "'documentRef' provided DocumentReference is from a different Firestore instance",
       );
       return Promise.resolve();
     }
@@ -55,7 +55,7 @@ describe('firestore.WriteBatch.set()', () => {
         .set(docRef, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'data' must be an object`);
+      error.message.should.containEql("'data' must be an object");
       return Promise.resolve();
     }
   });
@@ -69,7 +69,7 @@ describe('firestore.WriteBatch.set()', () => {
         .set(docRef, {}, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options' must be an object`);
+      error.message.should.containEql("'options' must be an object");
       return Promise.resolve();
     }
   });
@@ -90,7 +90,7 @@ describe('firestore.WriteBatch.set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options' must not contain both 'merge' & 'mergeFields'`);
+      error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
       return Promise.resolve();
     }
   });
@@ -110,7 +110,7 @@ describe('firestore.WriteBatch.set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options.merge' must be a boolean value`);
+      error.message.should.containEql("'options.merge' must be a boolean value");
       return Promise.resolve();
     }
   });
@@ -130,7 +130,7 @@ describe('firestore.WriteBatch.set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options.mergeFields' must be an array`);
+      error.message.should.containEql("'options.mergeFields' must be an array");
       return Promise.resolve();
     }
   });
@@ -151,7 +151,7 @@ describe('firestore.WriteBatch.set()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'options.mergeFields' all fields must be of type string or FieldPath`,
+        "'options.mergeFields' all fields must be of type string or FieldPath",
       );
       return Promise.resolve();
     }
@@ -172,7 +172,7 @@ describe('firestore.WriteBatch.set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options.mergeFields' Invalid field path`);
+      error.message.should.containEql("'options.mergeFields' Invalid field path");
       return Promise.resolve();
     }
   });

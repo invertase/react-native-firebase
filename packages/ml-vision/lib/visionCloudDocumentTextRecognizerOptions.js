@@ -36,13 +36,13 @@ export default function visionCloudDocumentTextRecognizerOptions(
   }
 
   if (!isObject(cloudDocumentTextRecognizerOptions)) {
-    throw new Error(`'cloudDocumentTextRecognizerOptions' expected an object value.`);
+    throw new Error("'cloudDocumentTextRecognizerOptions' expected an object value.");
   }
 
   if (hasOwnProperty(cloudDocumentTextRecognizerOptions, 'enforceCertFingerprintMatch')) {
     if (!isBoolean(cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch)) {
       throw new Error(
-        `'cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.`,
+        "'cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.",
       );
     }
 
@@ -57,7 +57,7 @@ export default function visionCloudDocumentTextRecognizerOptions(
       !isString(cloudDocumentTextRecognizerOptions.languageHints[0])
     ) {
       throw new Error(
-        `'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings.`,
+        "'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings.",
       );
     }
 

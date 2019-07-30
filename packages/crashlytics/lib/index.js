@@ -129,7 +129,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   setCrashlyticsCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.`,
+        "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 

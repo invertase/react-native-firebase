@@ -21,7 +21,7 @@ describe('firestore.Transaction', () => {
       await firebase.firestore().runTransaction(() => 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'updateFunction' must return a Promise`);
+      error.message.should.containEql("'updateFunction' must return a Promise");
       return Promise.resolve();
     }
   });
@@ -81,7 +81,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentRef' expected a DocumentReference`);
+        error.message.should.containEql("'documentRef' expected a DocumentReference");
         return Promise.resolve();
       }
     });
@@ -96,7 +96,7 @@ describe('firestore.Transaction', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `Every document read in a transaction must also be written`,
+          'Every document read in a transaction must also be written',
         );
         return Promise.resolve();
       }
@@ -125,7 +125,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentRef' expected a DocumentReference`);
+        error.message.should.containEql("'documentRef' expected a DocumentReference");
         return Promise.resolve();
       }
     });
@@ -158,7 +158,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentRef' expected a DocumentReference`);
+        error.message.should.containEql("'documentRef' expected a DocumentReference");
         return Promise.resolve();
       }
     });
@@ -172,7 +172,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`it must be an object`);
+        error.message.should.containEql('it must be an object');
         return Promise.resolve();
       }
     });
@@ -222,7 +222,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentRef' expected a DocumentReference`);
+        error.message.should.containEql("'documentRef' expected a DocumentReference");
         return Promise.resolve();
       }
     });
@@ -236,7 +236,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'data' must be an object.`);
+        error.message.should.containEql("'data' must be an object.");
         return Promise.resolve();
       }
     });
@@ -257,7 +257,7 @@ describe('firestore.Transaction', () => {
         });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'options' must not contain both 'merge' & 'mergeFields'`);
+        error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
         return Promise.resolve();
       }
     });

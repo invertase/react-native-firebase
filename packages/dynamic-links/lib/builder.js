@@ -26,7 +26,7 @@ import buildSocial from './builders/social';
 
 export default function build(dynamicLinksParams) {
   if (!isObject(dynamicLinksParams)) {
-    throw new Error(`'dynamicLinksParams' must be an object.`);
+    throw new Error("'dynamicLinksParams' must be an object.");
   }
 
   const {
@@ -41,29 +41,29 @@ export default function build(dynamicLinksParams) {
   } = dynamicLinksParams;
 
   if (!link) {
-    throw new Error(`missing required 'link' property.`);
+    throw new Error("missing required 'link' property.");
   }
 
   if (!isString(link)) {
-    throw new Error(`'link' expected a string.`);
+    throw new Error("'link' expected a string.");
   }
 
   // TODO better validation?
   if (!link.startsWith('http://') && !link.startsWith('https://')) {
-    throw new Error(`'link' expected a well-formatted URL using the HTTP or HTTPS scheme.`);
+    throw new Error("'link' expected a well-formatted URL using the HTTP or HTTPS scheme.");
   }
 
   if (!domainUriPrefix) {
-    throw new Error(`missing required 'domainUriPrefix' property.`);
+    throw new Error("missing required 'domainUriPrefix' property.");
   }
 
   if (!isString(domainUriPrefix)) {
-    throw new Error(`'domainUriPrefix' expected a string.`);
+    throw new Error("'domainUriPrefix' expected a string.");
   }
 
   if (!domainUriPrefix.startsWith('http://') && !domainUriPrefix.startsWith('https://')) {
     throw new Error(
-      `'domainUriPrefix' expected a well-formatted URL using the HTTP or HTTPS scheme.`,
+      "'domainUriPrefix' expected a well-formatted URL using the HTTP or HTTPS scheme.",
     );
   }
 

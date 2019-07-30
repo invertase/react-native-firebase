@@ -100,7 +100,7 @@ export function isValidPath(path) {
   return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
 }
 
-// eslint-disable-next-line no-control-regex,no-useless-escape
+// eslint-disable-next-line no-control-regex
 export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
 
 /**
@@ -119,6 +119,8 @@ export function isValidKey(key) {
  */
 export function toFilePath(path) {
   let _filePath = path.replace('file://', '');
-  if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
+  if (_filePath.includes('%')) {
+    _filePath = decodeURIComponent(_filePath);
+  }
   return _filePath;
 }

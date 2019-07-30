@@ -31,7 +31,7 @@ export default class Trace extends MetricWithAttributes {
 
   getMetric(metricName) {
     if (!isString(metricName)) {
-      throw new Error(`firebase.perf.Trace.getMetric(*) 'metricName' must be a string.`);
+      throw new Error("firebase.perf.Trace.getMetric(*) 'metricName' must be a string.");
     }
 
     return hasOwnProperty(this._metrics, metricName) ? this._metrics[metricName] : 0;
@@ -45,11 +45,11 @@ export default class Trace extends MetricWithAttributes {
     // TODO(VALIDATION): metricName: no leading or trailing whitespace, no leading underscore '_' character, max length is 32 characters
     // TODO(VALIDATION): value: >= 0
     if (!isString(metricName)) {
-      throw new Error(`firebase.perf.Trace.putMetric(*, _) 'metricName' must be a string.`);
+      throw new Error("firebase.perf.Trace.putMetric(*, _) 'metricName' must be a string.");
     }
 
     if (!isNumber(value)) {
-      throw new Error(`firebase.perf.Trace.putMetric(_, *) 'value' must be a number.`);
+      throw new Error("firebase.perf.Trace.putMetric(_, *) 'value' must be a number.");
     }
 
     this._metrics[metricName] = value;
@@ -59,11 +59,11 @@ export default class Trace extends MetricWithAttributes {
     // TODO(VALIDATION): metricName: no leading or trailing whitespace, no leading underscore '_' character, max length is 32 characters
     // TODO(VALIDATION): value: >= 0
     if (!isString(metricName)) {
-      throw new Error(`firebase.perf.Trace.incrementMetric(*, _) 'metricName' must be a string.`);
+      throw new Error("firebase.perf.Trace.incrementMetric(*, _) 'metricName' must be a string.");
     }
 
     if (!isNumber(incrementBy)) {
-      throw new Error(`firebase.perf.Trace.incrementMetric(_, *) 'incrementBy' must be a number.`);
+      throw new Error("firebase.perf.Trace.incrementMetric(_, *) 'incrementBy' must be a number.");
     }
 
     this._metrics[metricName] = this.getMetric(metricName) + incrementBy;
@@ -71,21 +71,25 @@ export default class Trace extends MetricWithAttributes {
 
   removeMetric(metric) {
     if (!isString(metric)) {
-      throw new Error(`firebase.perf.Trace.removeMetric(*) 'metric' must be a string.`);
+      throw new Error("firebase.perf.Trace.removeMetric(*) 'metric' must be a string.");
     }
 
     delete this._metrics[metric];
   }
 
   start() {
-    if (this._started) return Promise.resolve(null);
+    if (this._started) {
+      return Promise.resolve(null);
+    }
     this._started = true;
 
     return this.native.startTrace(this._id, this._identifier);
   }
 
   stop() {
-    if (this._stopped) return Promise.resolve(null);
+    if (this._stopped) {
+      return Promise.resolve(null);
+    }
     this._stopped = true;
 
     const traceData = {

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -51,12 +50,14 @@ export default class DatabaseDataSnapshot {
    */
   child(path) {
     if (!isString(path)) {
-      throw new Error(`snapshot().child(*) 'path' must be a string value`);
+      throw new Error("snapshot().child(*) 'path' must be a string value");
     }
 
     let value = deepGet(this._snapshot.value, path);
 
-    if (value === undefined) value = null;
+    if (value === undefined) {
+      value = null;
+    }
     const childRef = this._ref.child(path);
 
     return new DatabaseDataSnapshot(childRef, {
@@ -102,7 +103,7 @@ export default class DatabaseDataSnapshot {
    */
   forEach(action) {
     if (!isFunction(action)) {
-      throw new Error(`snapshot.forEach(*) 'action' must be a function.`);
+      throw new Error("snapshot.forEach(*) 'action' must be a function.");
     }
 
     // If the value is an array,
@@ -145,7 +146,7 @@ export default class DatabaseDataSnapshot {
    */
   hasChild(path) {
     if (!isString(path)) {
-      throw new Error(`snapshot.hasChild(*) 'path' must be a string value.`);
+      throw new Error("snapshot.hasChild(*) 'path' must be a string value.");
     }
 
     return deepGet(this._snapshot.value, path) !== undefined;
@@ -167,8 +168,12 @@ export default class DatabaseDataSnapshot {
    */
   numChildren() {
     const { value } = this._snapshot;
-    if (isArray(value)) return value.length;
-    if (!isObject(value)) return 0;
+    if (isArray(value)) {
+      return value.length;
+    }
+    if (!isObject(value)) {
+      return 0;
+    }
     return Object.keys(value).length;
   }
 

@@ -19,14 +19,14 @@ import { hasOwnProperty, isBoolean, isObject } from '@react-native-firebase/comm
 
 export default function buildNavigation(navigationParams) {
   if (!isObject(navigationParams)) {
-    throw new Error(`'dynamicLinksParams.navigation' must be an object.`);
+    throw new Error("'dynamicLinksParams.navigation' must be an object.");
   }
 
   const params = {};
 
   if (hasOwnProperty(navigationParams, 'forcedRedirectEnabled')) {
     if (!isBoolean(navigationParams.forcedRedirectEnabled)) {
-      throw new Error(`'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean.`);
+      throw new Error("'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean.");
     }
 
     params.forcedRedirectEnabled = navigationParams.forcedRedirectEnabled;

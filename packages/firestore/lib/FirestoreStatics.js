@@ -35,7 +35,7 @@ export default {
   setLogLevel(logLevel) {
     if (logLevel !== 'debug' && logLevel !== 'error' && logLevel !== 'silent') {
       throw new Error(
-        `firebase.firestore.setLogLevel(*) 'logLevel' expected one of 'debug', 'error' or 'silent'`,
+        "firebase.firestore.setLogLevel(*) 'logLevel' expected one of 'debug', 'error' or 'silent'",
       );
     }
 

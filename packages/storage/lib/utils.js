@@ -61,7 +61,7 @@ export function getGsUrlParts(url) {
 
 export function validateMetadata(metadata) {
   if (!isObject(metadata)) {
-    throw new Error(`firebase.storage.SettableMetadata must be an object value if provided.`);
+    throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
 
   const metadataEntries = Object.entries(metadata);
@@ -84,7 +84,7 @@ export function validateMetadata(metadata) {
       }
     } else if (!isObject(value)) {
       throw new Error(
-        `firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.`,
+        'firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.',
       );
     }
   }

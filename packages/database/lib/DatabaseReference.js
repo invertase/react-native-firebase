@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -48,7 +47,7 @@ export default class DatabaseReference extends DatabaseQuery {
     // Validate the reference path
     if (!internalRefs.includes(path) && !isValidPath(path)) {
       throw new Error(
-        `firebase.database() Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+        'firebase.database() Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"',
       );
     }
 
@@ -61,7 +60,9 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   get parent() {
     const parentPath = pathParent(this.path);
-    if (parentPath === null) return null;
+    if (parentPath === null) {
+      return null;
+    }
     return new DatabaseReference(this._database, parentPath);
   }
 
@@ -78,7 +79,7 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   child(path) {
     if (!isString(path)) {
-      throw new Error(`firebase.database().ref().child(*) 'path' must be a string value.`);
+      throw new Error("firebase.database().ref().child(*) 'path' must be a string value.");
     }
     return new DatabaseReference(this._database, pathChild(this.path, path));
   }
@@ -90,12 +91,12 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   set(value, onComplete) {
     if (isUndefined(value)) {
-      throw new Error(`firebase.database().ref().set(*) 'value' must be defined.`);
+      throw new Error("firebase.database().ref().set(*) 'value' must be defined.");
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().set(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().set(_, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -109,12 +110,12 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   update(values, onComplete) {
     if (!isObject(values)) {
-      throw new Error(`firebase.database().ref().update(*) 'values' must be an object.`);
+      throw new Error("firebase.database().ref().update(*) 'values' must be an object.");
     }
 
     if (!Object.keys(values).length) {
       throw new Error(
-        `firebase.database().ref().update(*) 'values' must be an object containing multiple values.`,
+        "firebase.database().ref().update(*) 'values' must be an object containing multiple values.",
       );
     }
 
@@ -122,14 +123,14 @@ export default class DatabaseReference extends DatabaseQuery {
     for (let i = 0; i < keys.length; i++) {
       if (!isValidPath(keys[i])) {
         throw new Error(
-          `firebase.database().update(*) 'values' contains an invalid path. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+          'firebase.database().update(*) \'values\' contains an invalid path. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"',
         );
       }
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().update(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().update(_, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -147,18 +148,18 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   setWithPriority(newVal, newPriority, onComplete) {
     if (isUndefined(newVal)) {
-      throw new Error(`firebase.database().ref().setWithPriority(*) 'newVal' must be defined.`);
+      throw new Error("firebase.database().ref().setWithPriority(*) 'newVal' must be defined.");
     }
 
     if (!isNumber(newPriority) && !isString(newPriority) && !isNull(newPriority)) {
       throw new Error(
-        `firebase.database().ref().setWithPriority(_, *) 'newPriority' must be a number, string or null value.`,
+        "firebase.database().ref().setWithPriority(_, *) 'newPriority' must be a number, string or null value.",
       );
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().setWithPriority(_, _, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().setWithPriority(_, _, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -178,7 +179,7 @@ export default class DatabaseReference extends DatabaseQuery {
   remove(onComplete) {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().remove(*) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().remove(*) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -194,19 +195,19 @@ export default class DatabaseReference extends DatabaseQuery {
   transaction(transactionUpdate, onComplete, applyLocally) {
     if (!isFunction(transactionUpdate)) {
       throw new Error(
-        `firebase.database().ref().transaction(*) 'transactionUpdate' must be a function.`,
+        "firebase.database().ref().transaction(*) 'transactionUpdate' must be a function.",
       );
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().transaction(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().transaction(_, *) 'onComplete' must be a function if provided.",
       );
     }
 
     if (!isUndefined(applyLocally) && !isBoolean(applyLocally)) {
       throw new Error(
-        `firebase.database().ref().transaction(_, _, *) 'applyLocally' must be a boolean value if provided.`,
+        "firebase.database().ref().transaction(_, _, *) 'applyLocally' must be a boolean value if provided.",
       );
     }
 
@@ -220,7 +221,9 @@ export default class DatabaseReference extends DatabaseQuery {
           }
         }
 
-        if (error) return reject(error);
+        if (error) {
+          return reject(error);
+        }
         return resolve({
           committed,
           snapshot: new DatabaseDataSnapshot(this, snapshotData),
@@ -240,13 +243,13 @@ export default class DatabaseReference extends DatabaseQuery {
   setPriority(priority, onComplete) {
     if (!isNumber(priority) && !isString(priority) && !isNull(priority)) {
       throw new Error(
-        `firebase.database().ref().setPriority(*) 'priority' must be a number, string or null value.`,
+        "firebase.database().ref().setPriority(*) 'priority' must be a number, string or null value.",
       );
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().setPriority(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().setPriority(_, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -265,7 +268,7 @@ export default class DatabaseReference extends DatabaseQuery {
   push(value, onComplete) {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().push(_, *) 'onComplete' must be a function if provided.",
       );
     }
 

@@ -80,7 +80,7 @@ export default class FirestoreDocumentSnapshot {
 
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.`,
+        "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
       );
     }
 
@@ -103,7 +103,7 @@ export default class FirestoreDocumentSnapshot {
   isEqual(other) {
     if (!(other instanceof FirestoreDocumentSnapshot)) {
       throw new Error(
-        `firebase.firestore() DocumentSnapshot.isEqual(*) 'other' expected a DocumentSnapshot instance.`,
+        "firebase.firestore() DocumentSnapshot.isEqual(*) 'other' expected a DocumentSnapshot instance.",
       );
     }
 

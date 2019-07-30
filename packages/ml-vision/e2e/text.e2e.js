@@ -85,7 +85,7 @@ android.describe('mlkit.vision.text', () => {
         firebase.mlKitVision().textRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -118,7 +118,7 @@ android.describe('mlkit.vision.text', () => {
         await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'cloudTextRecognizerOptions' expected an object value`);
+        error.message.should.containEql("'cloudTextRecognizerOptions' expected an object value");
         return Promise.resolve();
       }
     });
@@ -132,7 +132,7 @@ android.describe('mlkit.vision.text', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+            "'cloudTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value",
           );
           return Promise.resolve();
         }
@@ -154,7 +154,7 @@ android.describe('mlkit.vision.text', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+            "'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings",
           );
           return Promise.resolve();
         }
@@ -168,7 +168,7 @@ android.describe('mlkit.vision.text', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+            "'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings",
           );
           return Promise.resolve();
         }
@@ -182,7 +182,7 @@ android.describe('mlkit.vision.text', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+            "'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings",
           );
           return Promise.resolve();
         }
@@ -203,7 +203,7 @@ android.describe('mlkit.vision.text', () => {
           });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'cloudTextRecognizerOptions.modelType' invalid model`);
+          error.message.should.containEql("'cloudTextRecognizerOptions.modelType' invalid model");
           return Promise.resolve();
         }
       });
@@ -226,7 +226,7 @@ android.describe('mlkit.vision.text', () => {
         firebase.mlKitVision().cloudTextRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });

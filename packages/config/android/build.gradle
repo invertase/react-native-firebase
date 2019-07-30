@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.0'
+    classpath 'com.android.tools.build:gradle:3.4.2'
   }
 }
 
@@ -24,12 +24,8 @@ project.ext {
         buildTools: "28.0.3"
       ],
 
-      googlePlayServices: [
-        base: "16.1.0",
-      ],
-
       firebase          : [
-        config: "17.0.0"
+        bom: "21.1.0",
       ],
     ],
   ])
@@ -61,8 +57,8 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase_app')
-  implementation "com.google.firebase:firebase-config:${ReactNative.ext.getVersion("firebase", "config")}"
-  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-config"
 }
 
 ReactNative.shared.applyPackageVersion()

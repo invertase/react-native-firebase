@@ -21,7 +21,7 @@ describe('firestore.FieldPath', () => {
       new firebase.firestore.FieldPath();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`cannot construct FieldPath with no segments`);
+      error.message.should.containEql('cannot construct FieldPath with no segments');
       return Promise.resolve();
     }
   });
@@ -31,7 +31,7 @@ describe('firestore.FieldPath', () => {
       new firebase.firestore.FieldPath('foo', '');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`invalid segment at index`);
+      error.message.should.containEql('invalid segment at index');
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('firestore.FieldPath', () => {
       new firebase.firestore.FieldPath('foo', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`invalid segment at index`);
+      error.message.should.containEql('invalid segment at index');
       return Promise.resolve();
     }
   });
@@ -55,7 +55,7 @@ describe('firestore.FieldPath', () => {
         .where('.foo', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Invalid field path`);
+      error.message.should.containEql('Invalid field path');
       return Promise.resolve();
     }
   });
@@ -69,7 +69,7 @@ describe('firestore.FieldPath', () => {
         .where('foo/bar', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Paths must not contain`);
+      error.message.should.containEql('Paths must not contain');
       return Promise.resolve();
     }
   });
@@ -100,7 +100,7 @@ describe('firestore.FieldPath', () => {
         path.isEqual({});
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected instance of FieldPath`);
+        error.message.should.containEql("'other' expected instance of FieldPath");
         return Promise.resolve();
       }
     });

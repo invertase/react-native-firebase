@@ -44,12 +44,12 @@ export function parseUpdateArgs(args) {
   let data = {};
   if (args.length === 1) {
     if (!isObject(args[0])) {
-      throw new Error(`if using a single update argument, it must be an object.`);
+      throw new Error('if using a single update argument, it must be an object.');
     }
     [data] = args;
   } else if (args.length % 2 === 1) {
     throw new Error(
-      `the update arguments must be either a single object argument, or equal numbers of key/value pairs.`,
+      'the update arguments must be either a single object argument, or equal numbers of key/value pairs.',
     );
   } else {
     for (let i = 0; i < args.length; i += 2) {
@@ -74,19 +74,21 @@ export function parseUpdateArgs(args) {
 export function parseSetOptions(options) {
   const out = {};
 
-  if (isUndefined(options)) return out;
+  if (isUndefined(options)) {
+    return out;
+  }
 
   if (!isObject(options)) {
-    throw new Error(`'options' must be an object.`);
+    throw new Error("'options' must be an object.");
   }
 
   if (hasOwnProperty(options, 'merge') && hasOwnProperty(options, 'mergeFields')) {
-    throw new Error(`'options' must not contain both 'merge' & 'mergeFields'.`);
+    throw new Error("'options' must not contain both 'merge' & 'mergeFields'.");
   }
 
   if (!isUndefined(options.merge)) {
     if (!isBoolean(options.merge)) {
-      throw new Error(`'options.merge' must be a boolean value.`);
+      throw new Error("'options.merge' must be a boolean value.");
     }
 
     out.merge = true;
@@ -94,7 +96,7 @@ export function parseSetOptions(options) {
 
   if (!isUndefined(options.mergeFields)) {
     if (!isArray(options.mergeFields)) {
-      throw new Error(`'options.mergeFields' must be an array.`);
+      throw new Error("'options.mergeFields' must be an array.");
     }
 
     out.mergeFields = [];
@@ -159,10 +161,8 @@ export function mergeFieldPathData(data, segments, value) {
 }
 
 export function parseSnapshotArgs(args) {
-  /* eslint-disable prefer-destructuring */
-
   if (args.length === 0) {
-    throw new Error(`expected at least one argument.`);
+    throw new Error('expected at least one argument.');
   }
 
   // Ignore onComplete as its never used
@@ -194,8 +194,12 @@ export function parseSnapshotArgs(args) {
    * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
    */
   if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
-    if (args[0].error) onError = args[0].error;
-    if (args[0].next) onNext = args[0].next;
+    if (args[0].error) {
+      onError = args[0].error;
+    }
+    if (args[0].next) {
+      onNext = args[0].next;
+    }
   }
 
   /**
@@ -223,23 +227,27 @@ export function parseSnapshotArgs(args) {
       /**
        * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
        */
-      if (isFunction(args[1].error)) onError = args[1].error;
-      if (isFunction(args[1].next)) onNext = args[1].next;
+      if (isFunction(args[1].error)) {
+        onError = args[1].error;
+      }
+      if (isFunction(args[1].next)) {
+        onNext = args[1].next;
+      }
     }
   }
 
   if (hasOwnProperty(snapshotListenOptions, 'includeMetadataChanges')) {
     if (!isBoolean(snapshotListenOptions.includeMetadataChanges)) {
-      throw new Error(`'options' SnapshotOptions.includeMetadataChanges must be a boolean value.`);
+      throw new Error("'options' SnapshotOptions.includeMetadataChanges must be a boolean value.");
     }
   }
 
   if (!isFunction(onNext)) {
-    throw new Error(`'observer.next' or 'onNext' expected a function.`);
+    throw new Error("'observer.next' or 'onNext' expected a function.");
   }
 
   if (!isFunction(onError)) {
-    throw new Error(`'observer.error' or 'onError' expected a function.`);
+    throw new Error("'observer.error' or 'onError' expected a function.");
   }
 
   return { snapshotListenOptions, callback, onNext, onError };

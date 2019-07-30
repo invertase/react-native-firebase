@@ -24,7 +24,7 @@ describe('firestore.doc() -> snapshot.isEqual()', () => {
       docSnapshot.isEqual(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'other' expected a DocumentSnapshot instance`);
+      error.message.should.containEql("'other' expected a DocumentSnapshot instance");
       return Promise.resolve();
     }
   });

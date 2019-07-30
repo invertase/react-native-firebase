@@ -28,7 +28,7 @@ describe('firestore().doc().onSnapshot()', () => {
         .onSnapshot();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`expected at least one argument`);
+      error.message.should.containEql('expected at least one argument');
       return Promise.resolve();
     }
   });
@@ -302,7 +302,7 @@ describe('firestore().doc().onSnapshot()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'options' SnapshotOptions.includeMetadataChanges must be a boolean value`,
+        "'options' SnapshotOptions.includeMetadataChanges must be a boolean value",
       );
       return Promise.resolve();
     }
@@ -318,7 +318,7 @@ describe('firestore().doc().onSnapshot()', () => {
         });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'observer.next' or 'onNext' expected a function`);
+      error.message.should.containEql("'observer.next' or 'onNext' expected a function");
       return Promise.resolve();
     }
   });
@@ -333,7 +333,7 @@ describe('firestore().doc().onSnapshot()', () => {
         });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'observer.error' or 'onError' expected a function`);
+      error.message.should.containEql("'observer.error' or 'onError' expected a function");
       return Promise.resolve();
     }
   });

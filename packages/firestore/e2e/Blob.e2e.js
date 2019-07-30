@@ -31,7 +31,7 @@ describe('firestore.Blob', () => {
       new firebase.firestore.Blob();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`constructor is private`);
+      error.message.should.containEql('constructor is private');
       return Promise.resolve();
     }
   });

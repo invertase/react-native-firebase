@@ -32,7 +32,7 @@ android.describe('mlkit.vision.label', () => {
         firebase.mlKitVision().imageLabelerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -57,7 +57,7 @@ android.describe('mlkit.vision.label', () => {
         firebase.mlKitVision().cloudImageLabelerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -82,7 +82,7 @@ android.describe('mlkit.vision.label', () => {
         await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'imageLabelerOptions' expected an object value`);
+        error.message.should.containEql("'imageLabelerOptions' expected an object value");
         return Promise.resolve();
       }
     });
@@ -96,7 +96,7 @@ android.describe('mlkit.vision.label', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
+            "'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1",
           );
           return Promise.resolve();
         }
@@ -111,7 +111,7 @@ android.describe('mlkit.vision.label', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
+          "'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1",
         );
         return Promise.resolve();
       }
@@ -139,7 +139,7 @@ android.describe('mlkit.vision.label', () => {
         await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'cloudImageLabelerOptions' expected an object value`);
+        error.message.should.containEql("'cloudImageLabelerOptions' expected an object value");
         return Promise.resolve();
       }
     });
@@ -153,7 +153,7 @@ android.describe('mlkit.vision.label', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
+            "'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1",
           );
           return Promise.resolve();
         }
@@ -167,7 +167,7 @@ android.describe('mlkit.vision.label', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1`,
+            "'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1",
           );
           return Promise.resolve();
         }
@@ -198,7 +198,7 @@ android.describe('mlkit.vision.label', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudImageLabelerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+            "'cloudImageLabelerOptions.enforceCertFingerprintMatch' expected a boolean value",
           );
           return Promise.resolve();
         }

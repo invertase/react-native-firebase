@@ -31,7 +31,7 @@ describe('database().ref().once()', () => {
         .once('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'eventType' must be one of`);
+      error.message.should.containEql("'eventType' must be one of");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().once()', () => {
         .once('value', 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'successCallBack' must be a function`);
+      error.message.should.containEql("'successCallBack' must be a function");
       return Promise.resolve();
     }
   });
@@ -57,7 +57,7 @@ describe('database().ref().once()', () => {
         .once('value', () => {}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'failureCallbackOrContext' must be a function or context`);
+      error.message.should.containEql("'failureCallbackOrContext' must be a function or context");
       return Promise.resolve();
     }
   });
@@ -70,7 +70,7 @@ describe('database().ref().once()', () => {
         .once('value', () => {}, () => {}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'context' must be a context object.`);
+      error.message.should.containEql("'context' must be a context object.");
       return Promise.resolve();
     }
   });

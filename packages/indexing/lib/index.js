@@ -46,7 +46,7 @@ class FirebaseIndexingModule extends FirebaseModule {
    */
   onOpenURL(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.indexing().onOpenURL(*) 'listener' must be a function.`);
+      throw new Error("firebase.indexing().onOpenURL(*) 'listener' must be a function.");
     }
 
     Linking.addEventListener('url', ({ url }) => listener(url));

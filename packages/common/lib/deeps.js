@@ -25,9 +25,10 @@ import { isArray, isObject } from './validate';
  * @param joiner
  * @returns {*}
  */
-// eslint-disable-next-line import/prefer-default-export
 export function deepGet(object, path, joiner = '/') {
-  if (!isObject(object) && !Array.isArray(object)) return undefined;
+  if (!isObject(object) && !Array.isArray(object)) {
+    return undefined;
+  }
   const keys = path.split(joiner);
 
   let i = 0;
@@ -36,7 +37,9 @@ export function deepGet(object, path, joiner = '/') {
 
   while (i < len) {
     const key = keys[i++];
-    if (!tmp || !Object.hasOwnProperty.call(tmp, key)) return undefined;
+    if (!tmp || !Object.hasOwnProperty.call(tmp, key)) {
+      return undefined;
+    }
     tmp = tmp[key];
   }
 
@@ -52,7 +55,9 @@ export function deepGet(object, path, joiner = '/') {
  * @param joiner
  */
 export function deepSet(object, path, value, initPaths = true, joiner = '.') {
-  if (!isObject(object)) return false;
+  if (!isObject(object)) {
+    return false;
+  }
   const keys = path.split(joiner);
 
   let i = 0;
@@ -61,7 +66,9 @@ export function deepSet(object, path, value, initPaths = true, joiner = '.') {
 
   while (i < len) {
     const key = keys[i++];
-    if (initPaths && !Object.hasOwnProperty.call(object, key)) _object[key] = {};
+    if (initPaths && !Object.hasOwnProperty.call(object, key)) {
+      _object[key] = {};
+    }
     _object = _object[key];
   }
 
@@ -82,11 +89,12 @@ export function deepSet(object, path, value, initPaths = true, joiner = '.') {
  */
 export function flatten(object, joiner) {
   const _joiner = joiner || '.';
-  if (!isObject(object)) return null;
+  if (!isObject(object)) {
+    return null;
+  }
 
   const stack = {};
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const key in object) {
     if (isObject(object[key])) {
       _flattenChild(object[key], stack, key, _joiner);
@@ -108,13 +116,11 @@ export function flatten(object, joiner) {
  * @private
  */
 function _flattenChild(object, stack, parent, joiner) {
-  // eslint-disable-next-line no-restricted-syntax
   for (const key in object) {
     if (isObject(object[key])) {
       const p = parent + joiner + key;
       _flattenChild(object[key], stack, p, joiner);
     } else {
-      // eslint-disable-next-line no-param-reassign
       stack[parent + joiner + key] = object[key];
     }
   }

@@ -94,7 +94,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
           conversation.addRemoteUserMessage(false, timestamp, remoteUserId);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql(`'text' must be a string value`);
+          e.message.should.containEql("'text' must be a string value");
           return Promise.resolve();
         }
       });
@@ -105,7 +105,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
           conversation.addRemoteUserMessage(text, false, remoteUserId);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql(`'timestamp' must be a number value`);
+          e.message.should.containEql("'timestamp' must be a number value");
           return Promise.resolve();
         }
       });
@@ -116,7 +116,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
           conversation.addRemoteUserMessage(text, timestamp, false);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql(`'remoteUserId' must be a string value`);
+          e.message.should.containEql("'remoteUserId' must be a string value");
           return Promise.resolve();
         }
       });
@@ -138,7 +138,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
           conversation.addLocalUserMessage(false, timestamp);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql(`'text' must be a string value`);
+          e.message.should.containEql("'text' must be a string value");
           return Promise.resolve();
         }
       });
@@ -149,7 +149,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
           conversation.addLocalUserMessage(text, false);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql(`'timestamp' must be a number value`);
+          e.message.should.containEql("'timestamp' must be a number value");
           return Promise.resolve();
         }
       });

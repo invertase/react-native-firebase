@@ -55,7 +55,7 @@ describe('storage()', () => {
         firebase.app().storage(bucket);
         return Promise.reject(new Error('Did not throw.'));
       } catch (error) {
-        error.message.should.containEql(`bucket url must be a string and begin with 'gs://'`);
+        error.message.should.containEql("bucket url must be a string and begin with 'gs://'");
         return Promise.resolve();
       }
     });
@@ -99,7 +99,7 @@ describe('storage()', () => {
         firebase.storage().ref({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'path' must be a string value`);
+        error.message.should.containEql("'path' must be a string value");
         return Promise.resolve();
       }
     });
@@ -123,10 +123,10 @@ describe('storage()', () => {
 
     it('throws an error if https url could not be parsed', async () => {
       try {
-        firebase.storage().refFromURL(`https://invertase.io`);
+        firebase.storage().refFromURL('https://invertase.io');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`unable to parse 'url'`);
+        error.message.should.containEql("unable to parse 'url'");
         return Promise.resolve();
       }
     });
@@ -142,7 +142,7 @@ describe('storage()', () => {
         firebase.storage().refFromURL({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'url' must be a string value`);
+        error.message.should.containEql("'url' must be a string value");
         return Promise.resolve();
       }
     });
@@ -152,7 +152,7 @@ describe('storage()', () => {
         firebase.storage().refFromURL('bs://foo/bar/cat.gif');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`begin with 'gs://'`);
+        error.message.should.containEql("begin with 'gs://'");
         return Promise.resolve();
       }
     });
@@ -170,7 +170,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxOperationRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });
@@ -188,7 +188,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxUploadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });
@@ -206,7 +206,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxDownloadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });

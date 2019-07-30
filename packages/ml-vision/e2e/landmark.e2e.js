@@ -31,7 +31,7 @@ android.describe('mlkit.vision.landmark', () => {
         firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -66,7 +66,7 @@ android.describe('mlkit.vision.landmark', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `'cloudLandmarkRecognizerOptions' expected an object value`,
+          "'cloudLandmarkRecognizerOptions' expected an object value",
         );
         return Promise.resolve();
       }
@@ -81,7 +81,7 @@ android.describe('mlkit.vision.landmark', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+            "'cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value",
           );
           return Promise.resolve();
         }
@@ -103,7 +103,7 @@ android.describe('mlkit.vision.landmark', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudLandmarkRecognizerOptions.maxResults' expected a number value`,
+            "'cloudLandmarkRecognizerOptions.maxResults' expected a number value",
           );
           return Promise.resolve();
         }
@@ -132,7 +132,7 @@ android.describe('mlkit.vision.landmark', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'cloudLandmarkRecognizerOptions.modelType' invalid model`,
+            "'cloudLandmarkRecognizerOptions.modelType' invalid model",
           );
           return Promise.resolve();
         }

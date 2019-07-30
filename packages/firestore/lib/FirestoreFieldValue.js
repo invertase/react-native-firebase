@@ -29,11 +29,11 @@ function validateArrayElements(elements) {
     const element = elements[i];
 
     if (element instanceof FirestoreFieldValue) {
-      throw new Error(`FieldValue instance cannot be used with other FieldValue methods.`);
+      throw new Error('FieldValue instance cannot be used with other FieldValue methods.');
     }
 
     if (isArray(element)) {
-      throw new Error(`Nested arrays are not supported`);
+      throw new Error('Nested arrays are not supported');
     }
   }
 }
@@ -56,7 +56,7 @@ export default class FirestoreFieldValue {
 
   static increment(n) {
     if (!isNumber(n)) {
-      throw new Error(`firebase.firestore.FieldValue.increment(*) 'n' expected a number value.`);
+      throw new Error("firebase.firestore.FieldValue.increment(*) 'n' expected a number value.");
     }
 
     return new FirestoreFieldValue(true, TypeFieldValueIncrement, n);
@@ -97,7 +97,7 @@ export default class FirestoreFieldValue {
   isEqual(other) {
     if (!(other instanceof FirestoreFieldValue)) {
       throw new Error(
-        `firebase.firestore.FieldValue.isEqual(*) 'other' expected a FieldValue instance.`,
+        "firebase.firestore.FieldValue.isEqual(*) 'other' expected a FieldValue instance.",
       );
     }
 

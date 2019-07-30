@@ -31,7 +31,9 @@ const nativeModuleName = 'RNFBUtilsModule';
 
 class FirebaseUtilsModule extends FirebaseModule {
   get isRunningInTestLab() {
-    if (isIOS) return false;
+    if (isIOS) {
+      return false;
+    }
     return this.native.isRunningInTestLab;
   }
 }

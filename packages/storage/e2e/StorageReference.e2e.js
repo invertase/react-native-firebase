@@ -33,11 +33,11 @@ describe('storage() -> StorageReference', () => {
         firebase
           .storage()
           .ref('/foo/uploadNope.jpeg')
-          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+          .fullPath.should.equal('foo/uploadNope.jpeg');
         firebase
           .storage()
           .ref('foo/uploadNope.jpeg')
-          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+          .fullPath.should.equal('foo/uploadNope.jpeg');
       });
     });
 
@@ -301,7 +301,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putFile('foo', { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -312,7 +312,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putFile('foo', { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -324,7 +324,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }
@@ -349,7 +349,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putString('foo', 'raw', { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -360,7 +360,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putString('foo', 'raw', { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -372,7 +372,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }
@@ -397,7 +397,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -408,7 +408,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -420,7 +420,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }

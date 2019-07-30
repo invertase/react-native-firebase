@@ -36,7 +36,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
   }
 
   if (!isObject(faceDetectorOptions)) {
-    throw new Error(`'faceDetectorOptions' expected an object value.`);
+    throw new Error("'faceDetectorOptions' expected an object value.");
   }
 
   if (faceDetectorOptions.classificationMode) {
@@ -47,7 +47,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
         VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS
     ) {
       throw new Error(
-        `'faceDetectorOptions.classificationMode' invalid classification mode. Expected VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS or VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS.`,
+        "'faceDetectorOptions.classificationMode' invalid classification mode. Expected VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS or VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS.",
       );
     }
 
@@ -60,7 +60,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
       faceDetectorOptions.contourMode !== VisionFaceDetectorContourMode.ALL_CONTOURS
     ) {
       throw new Error(
-        `'faceDetectorOptions.contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.`,
+        "'faceDetectorOptions.contourMode' invalid contour mode. Expected VisionFaceDetectorContourMode.NO_CONTOURS or VisionFaceDetectorContourMode.ALL_CONTOURS.",
       );
     }
 
@@ -73,7 +73,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
       faceDetectorOptions.landmarkMode !== VisionFaceDetectorLandmarkMode.ALL_LANDMARKS
     ) {
       throw new Error(
-        `'faceDetectorOptions.landmarkMode' invalid landmark mode. Expected VisionFaceDetectorLandmarkMode.NO_LANDMARKS or VisionFaceDetectorLandmarkMode.ALL_LANDMARKS.`,
+        "'faceDetectorOptions.landmarkMode' invalid landmark mode. Expected VisionFaceDetectorLandmarkMode.NO_LANDMARKS or VisionFaceDetectorLandmarkMode.ALL_LANDMARKS.",
       );
     }
 
@@ -82,11 +82,11 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
 
   if (hasOwnProperty(faceDetectorOptions, 'minFaceSize')) {
     if (!isNumber(faceDetectorOptions.minFaceSize)) {
-      throw new Error(`'faceDetectorOptions.minFaceSize' expected a number value between 0 & 1.`);
+      throw new Error("'faceDetectorOptions.minFaceSize' expected a number value between 0 & 1.");
     }
 
     if (faceDetectorOptions.minFaceSize < 0 || faceDetectorOptions.minFaceSize > 1) {
-      throw new Error(`'faceDetectorOptions.minFaceSize' expected value to be between 0 & 1.`);
+      throw new Error("'faceDetectorOptions.minFaceSize' expected value to be between 0 & 1.");
     }
 
     out.minFaceSize = faceDetectorOptions.minFaceSize;
@@ -98,7 +98,7 @@ export default function visionFaceDetectorOptions(faceDetectorOptions) {
       faceDetectorOptions.performanceMode !== VisionFaceDetectorPerformanceMode.ACCURATE
     ) {
       throw new Error(
-        `'faceDetectorOptions.performanceMode' invalid performance mode. Expected VisionFaceDetectorPerformanceMode.FAST or VisionFaceDetectorPerformanceMode.ACCURATE.`,
+        "'faceDetectorOptions.performanceMode' invalid performance mode. Expected VisionFaceDetectorPerformanceMode.FAST or VisionFaceDetectorPerformanceMode.ACCURATE.",
       );
     }
 

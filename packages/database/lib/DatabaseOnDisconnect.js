@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -38,7 +37,7 @@ export default class DatabaseOnDisconnect {
   cancel(onComplete) {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().cancel(*) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().onDisconnect().cancel(*) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -54,7 +53,7 @@ export default class DatabaseOnDisconnect {
   remove(onComplete) {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().remove(*) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().onDisconnect().remove(*) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -69,12 +68,12 @@ export default class DatabaseOnDisconnect {
    */
   set(value, onComplete) {
     if (isUndefined(value)) {
-      throw new Error(`firebase.database().ref().value(*) 'value' must be defined.`);
+      throw new Error("firebase.database().ref().value(*) 'value' must be defined.");
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().set(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().onDisconnect().set(_, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -89,18 +88,18 @@ export default class DatabaseOnDisconnect {
    */
   setWithPriority(value, priority, onComplete) {
     if (isUndefined(value)) {
-      throw new Error(`firebase.database().ref().setWithPriority(*) 'value' must be defined.`);
+      throw new Error("firebase.database().ref().setWithPriority(*) 'value' must be defined.");
     }
 
     if (!isNumber(priority) && !isString(priority) && !isNull(priority)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().setWithPriority(_, *) 'priority' must be a number, string or null value.`,
+        "firebase.database().ref().onDisconnect().setWithPriority(_, *) 'priority' must be a number, string or null value.",
       );
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().setWithPriority(_, _, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().onDisconnect().setWithPriority(_, _, *) 'onComplete' must be a function if provided.",
       );
     }
 
@@ -116,13 +115,13 @@ export default class DatabaseOnDisconnect {
   update(values, onComplete) {
     if (!isObject(values)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().update(*) 'values' must be an object.`,
+        "firebase.database().ref().onDisconnect().update(*) 'values' must be an object.",
       );
     }
 
     if (!Object.keys(values).length) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().update(*) 'values' must be an object containing multiple values.`,
+        "firebase.database().ref().onDisconnect().update(*) 'values' must be an object containing multiple values.",
       );
     }
 
@@ -130,14 +129,14 @@ export default class DatabaseOnDisconnect {
     for (let i = 0; i < keys.length; i++) {
       if (!isValidPath(keys[i])) {
         throw new Error(
-          `firebase.database().onDisconnect().update(*) 'values' contains an invalid path. Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+          'firebase.database().onDisconnect().update(*) \'values\' contains an invalid path. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"',
         );
       }
     }
 
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
-        `firebase.database().ref().onDisconnect().update(_, *) 'onComplete' must be a function if provided.`,
+        "firebase.database().ref().onDisconnect().update(_, *) 'onComplete' must be a function if provided.",
       );
     }
 

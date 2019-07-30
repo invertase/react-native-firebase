@@ -21,7 +21,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp('1234');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'seconds' expected a number value`);
+      error.message.should.containEql("'seconds' expected a number value");
       return Promise.resolve();
     }
   });
@@ -31,7 +31,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp(123, '456');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'nanoseconds' expected a number value`);
+      error.message.should.containEql("'nanoseconds' expected a number value");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp(123, -1);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'nanoseconds' out of range`);
+      error.message.should.containEql("'nanoseconds' out of range");
       return Promise.resolve();
     }
   });
@@ -51,7 +51,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp(123, 10000000000);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'nanoseconds' out of range`);
+      error.message.should.containEql("'nanoseconds' out of range");
       return Promise.resolve();
     }
   });
@@ -61,7 +61,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp(-63135596800, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'seconds' out of range`);
+      error.message.should.containEql("'seconds' out of range");
       return Promise.resolve();
     }
   });
@@ -71,7 +71,7 @@ describe('firestore.Timestamp', () => {
       new firebase.firestore.Timestamp(253402300800, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'seconds' out of range`);
+      error.message.should.containEql("'seconds' out of range");
       return Promise.resolve();
     }
   });
@@ -93,7 +93,7 @@ describe('firestore.Timestamp', () => {
         ts.isEqual(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected an instance of Timestamp`);
+        error.message.should.containEql("'other' expected an instance of Timestamp");
         return Promise.resolve();
       }
     });
@@ -148,7 +148,7 @@ describe('firestore.Timestamp', () => {
         firebase.firestore.Timestamp.fromDate(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'date' expected a valid Date object`);
+        error.message.should.containEql("'date' expected a valid Date object");
         return Promise.resolve();
       }
     });

@@ -28,7 +28,7 @@ describe('firestore().collection().limit()', () => {
         .limit(-1);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'limit' must be a positive integer value`);
+      error.message.should.containEql("'limit' must be a positive integer value");
       return Promise.resolve();
     }
   });

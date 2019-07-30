@@ -34,13 +34,13 @@ export default function visionCloudImageLabelerOptions(cloudImageLabelerOptions)
   }
 
   if (!isObject(cloudImageLabelerOptions)) {
-    throw new Error(`'cloudImageLabelerOptions' expected an object value.`);
+    throw new Error("'cloudImageLabelerOptions' expected an object value.");
   }
 
   if (hasOwnProperty(cloudImageLabelerOptions, 'enforceCertFingerprintMatch')) {
     if (!isBoolean(cloudImageLabelerOptions.enforceCertFingerprintMatch)) {
       throw new Error(
-        `'cloudImageLabelerOptions.enforceCertFingerprintMatch' expected a boolean value.`,
+        "'cloudImageLabelerOptions.enforceCertFingerprintMatch' expected a boolean value.",
       );
     }
 
@@ -50,7 +50,7 @@ export default function visionCloudImageLabelerOptions(cloudImageLabelerOptions)
   if (cloudImageLabelerOptions.confidenceThreshold) {
     if (!isNumber(cloudImageLabelerOptions.confidenceThreshold)) {
       throw new Error(
-        `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
+        "'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.",
       );
     }
 
@@ -59,7 +59,7 @@ export default function visionCloudImageLabelerOptions(cloudImageLabelerOptions)
       cloudImageLabelerOptions.confidenceThreshold > 1
     ) {
       throw new Error(
-        `'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
+        "'cloudImageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.",
       );
     }
 

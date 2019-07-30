@@ -93,7 +93,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   getValue(key) {
     if (!isString(key)) {
-      throw new Error(`firebase.config().getValue(): 'key' must be a string value.`);
+      throw new Error("firebase.config().getValue(): 'key' must be a string value.");
     }
 
     if (!hasOwnProperty(this._values, key)) {
@@ -126,13 +126,13 @@ class FirebaseConfigModule extends FirebaseModule {
   setConfigSettings(settings = {}) {
     if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
       throw new Error(
-        `firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.`,
+        "firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.",
       );
     }
 
     if (!isBoolean(settings.isDeveloperModeEnabled)) {
       throw new Error(
-        `firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.`,
+        "firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
       );
     }
 
@@ -156,7 +156,7 @@ class FirebaseConfigModule extends FirebaseModule {
   fetch(expirationDurationSeconds) {
     if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
       throw new Error(
-        `firebase.config().fetch(): 'expirationDurationSeconds' must be a number value.`,
+        "firebase.config().fetch(): 'expirationDurationSeconds' must be a number value.",
       );
     }
 
@@ -176,7 +176,7 @@ class FirebaseConfigModule extends FirebaseModule {
    */
   setDefaults(defaults) {
     if (!isObject(defaults)) {
-      throw new Error(`firebase.config().setDefaults(): 'defaults' must be an object.`);
+      throw new Error("firebase.config().setDefaults(): 'defaults' must be an object.");
     }
 
     return this._promiseWithConstants(this.native.setDefaults(defaults));
@@ -189,7 +189,7 @@ class FirebaseConfigModule extends FirebaseModule {
   setDefaultsFromResource(resourceName) {
     if (!isString(resourceName)) {
       throw new Error(
-        `firebase.config().setDefaultsFromResource(): 'resourceName' must be a string value.`,
+        "firebase.config().setDefaultsFromResource(): 'resourceName' must be a string value.",
       );
     }
 

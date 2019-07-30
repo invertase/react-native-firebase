@@ -92,7 +92,8 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
       for (SmartReplySuggestion suggestedReplyRaw : suggestedRepliesListRaw) {
         Bundle suggestReplyFormatted = new Bundle(2);
         suggestReplyFormatted.putString("text", suggestedReplyRaw.getText());
-        suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
+        // TODO no longer exists - undocumented breaking change
+        // suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
         suggestedRepliesListFormatted.add(suggestReplyFormatted);
       }
 

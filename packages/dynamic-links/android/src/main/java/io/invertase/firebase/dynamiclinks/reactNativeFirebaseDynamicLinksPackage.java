@@ -28,12 +28,12 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ReactNativeFirebaseLinksPackage implements ReactPackage {
+public class reactNativeFirebaseDynamicLinksPackage implements ReactPackage {
   @Nonnull
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseLinksModule(reactContext));
+    modules.add(new ReactNativeFirebaseDynamicLinksModule(reactContext));
     return modules;
   }
 

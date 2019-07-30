@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -91,7 +90,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent(13377331);
       }).should.throw(
-        `firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.`,
+        "firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.",
       );
     });
 
@@ -99,7 +98,7 @@ describe('analytics()', () => {
       (() => {
         firebase.analytics().logEvent('invertase_event', 'this should be an object');
       }).should.throw(
-        `firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.`,
+        "firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.",
       );
     });
 

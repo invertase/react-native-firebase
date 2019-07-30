@@ -50,7 +50,9 @@ export const setGlobalErrorHandler = once(nativeModule => {
   const originalHandler = ErrorUtils.getGlobalHandler();
 
   async function handler(error, fatal) {
-    if (__DEV__) return originalHandler(error, fatal);
+    if (__DEV__) {
+      return originalHandler(error, fatal);
+    }
 
     if (!isError(error)) {
       await nativeModule.logPromise(`Unknown Error: ${error}`);

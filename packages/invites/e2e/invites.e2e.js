@@ -42,7 +42,7 @@ android.describe('invites()', () => {
         firebase.invites().createInvitation(1234, 'bar');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'title' must be a string value`);
+        error.message.should.containEql("'title' must be a string value");
         return Promise.resolve();
       }
     });
@@ -52,7 +52,7 @@ android.describe('invites()', () => {
         firebase.invites().createInvitation('foo', 1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'message' must be a string value`);
+        error.message.should.containEql("'message' must be a string value");
         return Promise.resolve();
       }
     });
@@ -128,7 +128,7 @@ android.describe('invites()', () => {
         firebase.invites().sendInvitation('foo');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`expects and instance of Invite.`);
+        error.message.should.containEql('expects and instance of Invite.');
         return Promise.resolve();
       }
     });

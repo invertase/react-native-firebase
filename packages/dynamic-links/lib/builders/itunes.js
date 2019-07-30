@@ -19,14 +19,14 @@ import { isObject, isString } from '@react-native-firebase/common';
 
 export default function buildiTunes(itunesParams) {
   if (!isObject(itunesParams)) {
-    throw new Error(`'dynamicLinksParams.itunes' must be an object.`);
+    throw new Error("'dynamicLinksParams.itunes' must be an object.");
   }
 
   const params = {};
 
   if (itunesParams.affiliateToken) {
     if (!isString(itunesParams.affiliateToken)) {
-      throw new Error(`'dynamicLinksParams.itunes.affiliateToken' must be a string.`);
+      throw new Error("'dynamicLinksParams.itunes.affiliateToken' must be a string.");
     }
 
     params.affiliateToken = itunesParams.affiliateToken;
@@ -34,7 +34,7 @@ export default function buildiTunes(itunesParams) {
 
   if (itunesParams.campaignToken) {
     if (!isString(itunesParams.campaignToken)) {
-      throw new Error(`'dynamicLinksParams.itunes.campaignToken' must be a string.`);
+      throw new Error("'dynamicLinksParams.itunes.campaignToken' must be a string.");
     }
 
     params.campaignToken = itunesParams.campaignToken;
@@ -42,7 +42,7 @@ export default function buildiTunes(itunesParams) {
 
   if (itunesParams.providerToken) {
     if (!isString(itunesParams.providerToken)) {
-      throw new Error(`'dynamicLinksParams.itunes.providerToken' must be a string.`);
+      throw new Error("'dynamicLinksParams.itunes.providerToken' must be a string.");
     }
 
     params.providerToken = itunesParams.providerToken;

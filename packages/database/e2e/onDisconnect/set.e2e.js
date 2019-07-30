@@ -36,7 +36,7 @@ describe('database().ref().onDisconnect().set()', () => {
       ref.set();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' must be defined`);
+      error.message.should.containEql("'value' must be defined");
       return Promise.resolve();
     }
   });
@@ -50,7 +50,7 @@ describe('database().ref().onDisconnect().set()', () => {
       ref.set(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

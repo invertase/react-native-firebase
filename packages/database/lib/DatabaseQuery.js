@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -65,19 +64,19 @@ export default class DatabaseQuery extends ReferenceBase {
   endAt(value, key) {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
-        `firebase.database().ref().endAt(*) 'value' must be a number, string, boolean or null value.`,
+        "firebase.database().ref().endAt(*) 'value' must be a number, string, boolean or null value.",
       );
     }
 
     if (!isUndefined(key) && !isString(key)) {
       throw new Error(
-        `firebase.database().ref().endAt(_, *) 'key' must be a string value if defined.`,
+        "firebase.database().ref().endAt(_, *) 'key' must be a string value if defined.",
       );
     }
 
     if (this._modifiers.hasEndAt()) {
       throw new Error(
-        `firebase.database().ref().endAt() Ending point was already set (by another call to endAt or equalTo).`,
+        'firebase.database().ref().endAt() Ending point was already set (by another call to endAt or equalTo).',
       );
     }
 
@@ -96,25 +95,25 @@ export default class DatabaseQuery extends ReferenceBase {
   equalTo(value, key) {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
-        `firebase.database().ref().equalTo(*) 'value' must be a number, string, boolean or null value.`,
+        "firebase.database().ref().equalTo(*) 'value' must be a number, string, boolean or null value.",
       );
     }
 
     if (!isUndefined(key) && !isString(key)) {
       throw new Error(
-        `firebase.database().ref().equalTo(_, *) 'key' must be a string value if defined.`,
+        "firebase.database().ref().equalTo(_, *) 'key' must be a string value if defined.",
       );
     }
 
     if (this._modifiers.hasStartAt()) {
       throw new Error(
-        `firebase.database().ref().equalTo() Starting point was already set (by another call to startAt or equalTo).`,
+        'firebase.database().ref().equalTo() Starting point was already set (by another call to startAt or equalTo).',
       );
     }
 
     if (this._modifiers.hasEndAt()) {
       throw new Error(
-        `firebase.database().ref().equalTo() Ending point was already set (by another call to endAt or equalTo).`,
+        'firebase.database().ref().equalTo() Ending point was already set (by another call to endAt or equalTo).',
       );
     }
 
@@ -128,7 +127,7 @@ export default class DatabaseQuery extends ReferenceBase {
    */
   isEqual(other) {
     if (!(other instanceof DatabaseQuery)) {
-      throw new Error(`firebase.database().ref().isEqual(*) 'other' must be an instance of Query.`);
+      throw new Error("firebase.database().ref().isEqual(*) 'other' must be an instance of Query.");
     }
 
     const sameApp = other._database.app === this._database.app;
@@ -146,13 +145,13 @@ export default class DatabaseQuery extends ReferenceBase {
   limitToFirst(limit) {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
-        `firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer value.`,
+        "firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer value.",
       );
     }
 
     if (this._modifiers.hasLimit()) {
       throw new Error(
-        `firebase.database().ref().limitToFirst(*) Limit was already set (by another call to limitToFirst, or limitToLast)`,
+        'firebase.database().ref().limitToFirst(*) Limit was already set (by another call to limitToFirst, or limitToLast)',
       );
     }
 
@@ -167,13 +166,13 @@ export default class DatabaseQuery extends ReferenceBase {
   limitToLast(limit) {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
-        `firebase.database().ref().limitToLast(*) 'limit' must be a positive integer value.`,
+        "firebase.database().ref().limitToLast(*) 'limit' must be a positive integer value.",
       );
     }
 
     if (this._modifiers.hasLimit()) {
       throw new Error(
-        `firebase.database().ref().limitToLast(*) Limit was already set (by another call to limitToFirst, or limitToLast)`,
+        'firebase.database().ref().limitToLast(*) Limit was already set (by another call to limitToFirst, or limitToLast)',
       );
     }
 
@@ -204,11 +203,11 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     if (!isUndefined(callback) && !isFunction(callback)) {
-      throw new Error(`firebase.database().ref().off(_, *) 'callback' must be a function.`);
+      throw new Error("firebase.database().ref().off(_, *) 'callback' must be a function.");
     }
 
     if (!isUndefined(context) && !isObject(context)) {
-      throw new Error(`firebase.database().ref().off(_, _, *) 'context' must be an object.`);
+      throw new Error("firebase.database().ref().off(_, _, *) 'context' must be an object.");
     }
 
     // Firebase Docs:
@@ -224,7 +223,9 @@ export default class DatabaseQuery extends ReferenceBase {
         eventType,
         callback,
       );
-      if (!registration) return [];
+      if (!registration) {
+        return [];
+      }
 
       // remove the paired cancellation registration if any exist
       DatabaseSyncTree.removeListenersForRegistrations([`${registration}$cancelled`]);
@@ -261,7 +262,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     if (!isFunction(callback)) {
-      throw new Error(`firebase.database().ref().on(_, *) 'callback' must be a function.`);
+      throw new Error("firebase.database().ref().on(_, *) 'callback' must be a function.");
     }
 
     if (
@@ -269,12 +270,12 @@ export default class DatabaseQuery extends ReferenceBase {
       (!isFunction(cancelCallbackOrContext) && !isObject(cancelCallbackOrContext))
     ) {
       throw new Error(
-        `firebase.database().ref().on(_, _, *) 'cancelCallbackOrContext' must be a function or object.`,
+        "firebase.database().ref().on(_, _, *) 'cancelCallbackOrContext' must be a function or object.",
       );
     }
 
     if (!isUndefined(context) && !isObject(context)) {
-      throw new Error(`firebase.database().ref().on(_, _, _, *) 'context' must be an object.`);
+      throw new Error("firebase.database().ref().on(_, _, _, *) 'context' must be an object.");
     }
 
     const queryKey = this._generateQueryKey();
@@ -352,7 +353,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     if (!isUndefined(successCallBack) && !isFunction(successCallBack)) {
-      throw new Error(`firebase.database().ref().once(_, *) 'successCallBack' must be a function.`);
+      throw new Error("firebase.database().ref().once(_, *) 'successCallBack' must be a function.");
     }
 
     if (
@@ -360,13 +361,13 @@ export default class DatabaseQuery extends ReferenceBase {
       (!isObject(failureCallbackOrContext) && !isFunction(failureCallbackOrContext))
     ) {
       throw new Error(
-        `firebase.database().ref().once(_, _, *) 'failureCallbackOrContext' must be a function or context.`,
+        "firebase.database().ref().once(_, _, *) 'failureCallbackOrContext' must be a function or context.",
       );
     }
 
     if (!isUndefined(context) && !isObject(context)) {
       throw new Error(
-        `firebase.database().ref().once(_, _, _, *) 'context' must be a context object.`,
+        "firebase.database().ref().once(_, _, _, *) 'context' must be a context object.",
       );
     }
 
@@ -383,7 +384,6 @@ export default class DatabaseQuery extends ReferenceBase {
           dataSnapshot = new DatabaseDataSnapshot(this.ref, result);
         } else {
           dataSnapshot = new DatabaseDataSnapshot(this.ref, result.snapshot);
-          // eslint-disable-next-line prefer-destructuring
           previousChildName = result.previousChildName;
         }
 
@@ -400,7 +400,9 @@ export default class DatabaseQuery extends ReferenceBase {
         return dataSnapshot;
       })
       .catch(error => {
-        if (isFunction(failureCallbackOrContext)) failureCallbackOrContext(error);
+        if (isFunction(failureCallbackOrContext)) {
+          failureCallbackOrContext(error);
+        }
         return Promise.reject(error);
       });
   }
@@ -410,18 +412,18 @@ export default class DatabaseQuery extends ReferenceBase {
    */
   orderByChild(path) {
     if (!isString(path)) {
-      throw new Error(`firebase.database().ref().orderByChild(*) 'path' must be a string value.`);
+      throw new Error("firebase.database().ref().orderByChild(*) 'path' must be a string value.");
     }
 
     if (pathIsEmpty(path)) {
       throw new Error(
-        `firebase.database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead.`,
+        "firebase.database().ref().orderByChild(*) 'path' cannot be empty. Use orderByValue instead.",
       );
     }
 
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
-        `firebase.database().ref().orderByChild(*) You can't combine multiple orderBy calls.`,
+        "firebase.database().ref().orderByChild(*) You can't combine multiple orderBy calls.",
       );
     }
 
@@ -437,7 +439,7 @@ export default class DatabaseQuery extends ReferenceBase {
   orderByKey() {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
-        `firebase.database().ref().orderByKey() You can't combine multiple orderBy calls.`,
+        "firebase.database().ref().orderByKey() You can't combine multiple orderBy calls.",
       );
     }
 
@@ -453,7 +455,7 @@ export default class DatabaseQuery extends ReferenceBase {
   orderByPriority() {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
-        `firebase.database().ref().orderByPriority() You can't combine multiple orderBy calls.`,
+        "firebase.database().ref().orderByPriority() You can't combine multiple orderBy calls.",
       );
     }
 
@@ -469,7 +471,7 @@ export default class DatabaseQuery extends ReferenceBase {
   orderByValue() {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
-        `firebase.database().ref().orderByValue() You can't combine multiple orderBy calls.`,
+        "firebase.database().ref().orderByValue() You can't combine multiple orderBy calls.",
       );
     }
 
@@ -482,19 +484,19 @@ export default class DatabaseQuery extends ReferenceBase {
   startAt(value, key) {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
-        `firebase.database().ref().startAt(*) 'value' must be a number, string, boolean or null value.`,
+        "firebase.database().ref().startAt(*) 'value' must be a number, string, boolean or null value.",
       );
     }
 
     if (!isUndefined(key) && !isString(key)) {
       throw new Error(
-        `firebase.database().ref().startAt(_, *) 'key' must be a string value if defined.`,
+        "firebase.database().ref().startAt(_, *) 'key' must be a string value if defined.",
       );
     }
 
     if (this._modifiers.hasStartAt()) {
       throw new Error(
-        `firebase.database().ref().startAt() Starting point was already set (by another call to startAt or equalTo).`,
+        'firebase.database().ref().startAt() Starting point was already set (by another call to startAt or equalTo).',
       );
     }
 
@@ -515,7 +517,7 @@ export default class DatabaseQuery extends ReferenceBase {
   keepSynced(bool) {
     if (!isBoolean(bool)) {
       throw new Error(
-        `firebase.database().ref().keepSynced(*) 'bool' value must be a boolean value.`,
+        "firebase.database().ref().keepSynced(*) 'bool' value must be a boolean value.",
       );
     }
 

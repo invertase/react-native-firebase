@@ -26,7 +26,7 @@ export default class FirestoreFieldPath {
 
   constructor(...segments) {
     if (segments.length === 0) {
-      throw new Error(`firebase.firestore.FieldPath cannot construct FieldPath with no segments.`);
+      throw new Error('firebase.firestore.FieldPath cannot construct FieldPath with no segments.');
     }
 
     for (let i = 0; i < segments.length; i++) {
@@ -44,7 +44,7 @@ export default class FirestoreFieldPath {
   isEqual(other) {
     if (!(other instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.`,
+        "firebase.firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.",
       );
     }
 
@@ -61,7 +61,7 @@ export const DOCUMENT_ID = new FirestoreFieldPath('__name__');
 export function fromDotSeparatedString(path) {
   if (path === '' || path.startsWith('.') || path.endsWith('.') || path.indexOf('..') > 0) {
     throw new Error(
-      `Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.`,
+      "Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.",
     );
   }
 

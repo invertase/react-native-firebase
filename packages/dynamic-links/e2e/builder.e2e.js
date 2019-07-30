@@ -21,7 +21,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       firebase.dynamicLinks().buildLink(123);
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams' must be an object");
       return Promise.resolve();
     }
   });
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       firebase.dynamicLinks().buildLink({});
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`missing required 'link' property`);
+      e.message.should.containEql("missing required 'link' property");
       return Promise.resolve();
     }
   });
@@ -43,7 +43,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'link' expected a string`);
+      e.message.should.containEql("'link' expected a string");
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
       e.message.should.containEql(
-        `'link' expected a well-formatted URL using the HTTP or HTTPS scheme`,
+        "'link' expected a well-formatted URL using the HTTP or HTTPS scheme",
       );
       return Promise.resolve();
     }
@@ -69,7 +69,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`missing required 'domainUriPrefix' property`);
+      e.message.should.containEql("missing required 'domainUriPrefix' property");
       return Promise.resolve();
     }
   });
@@ -82,7 +82,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'domainUriPrefix' expected a string`);
+      e.message.should.containEql("'domainUriPrefix' expected a string");
       return Promise.resolve();
     }
   });
@@ -96,7 +96,7 @@ describe('dynamicLinks() dynamicLinkParams', () => {
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
       e.message.should.containEql(
-        `'domainUriPrefix' expected a well-formatted URL using the HTTP or HTTPS scheme`,
+        "'domainUriPrefix' expected a well-formatted URL using the HTTP or HTTPS scheme",
       );
       return Promise.resolve();
     }

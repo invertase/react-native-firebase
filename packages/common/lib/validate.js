@@ -20,13 +20,17 @@ import { Platform } from 'react-native';
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
 export function objectKeyValuesAreStrings(object) {
-  if (!isObject(object)) return false;
+  if (!isObject(object)) {
+    return false;
+  }
 
   const entries = Object.entries(object);
 
   for (let i = 0; i < entries.length; i++) {
     const [key, value] = entries[i];
-    if (!isString(key) || !isString(value)) return false;
+    if (!isString(key) || !isString(value)) {
+      return false;
+    }
   }
 
   return true;
@@ -60,7 +64,6 @@ export function isObject(value) {
  */
 export function isDate(value) {
   // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
-  // eslint-disable-next-line no-restricted-globals
   return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
 }
 
@@ -147,7 +150,9 @@ export function isAlphaNumericUnderscore(value) {
  * @returns {boolean}
  */
 export function isOneOf(value, oneOf = []) {
-  if (!isArray(oneOf)) return false;
+  if (!isArray(oneOf)) {
+    return false;
+  }
   return oneOf.includes(value);
 }
 
@@ -156,8 +161,11 @@ export function noop() {
 }
 
 export function validateOptionalNativeDependencyExists(firebaseJsonKey, apiName, nativeFnExists) {
-  if (nativeFnExists) return;
-  let errorMessage = `You attempted to use an optional API that's not enabled natively. \n\n To enable `;
+  if (nativeFnExists) {
+    return;
+  }
+  let errorMessage =
+    "You attempted to use an optional API that's not enabled natively. \n\n To enable ";
 
   errorMessage += apiName;
   errorMessage += ` please set the 'react-native' -> '${firebaseJsonKey}' key to true in your firebase.json file`;

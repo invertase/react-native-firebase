@@ -19,14 +19,14 @@ import { isString, isObject } from '@react-native-firebase/common';
 
 export default function buildSocial(socialParameters) {
   if (!isObject(socialParameters)) {
-    throw new Error(`'dynamicLinksParams.social' must be an object.`);
+    throw new Error("'dynamicLinksParams.social' must be an object.");
   }
 
   const params = {};
 
   if (socialParameters.descriptionText) {
     if (!isString(socialParameters.descriptionText)) {
-      throw new Error(`'dynamicLinksParams.social.descriptionText' must be a string.`);
+      throw new Error("'dynamicLinksParams.social.descriptionText' must be a string.");
     }
 
     params.descriptionText = socialParameters.descriptionText;
@@ -34,7 +34,7 @@ export default function buildSocial(socialParameters) {
 
   if (socialParameters.imageUrl) {
     if (!isString(socialParameters.imageUrl)) {
-      throw new Error(`'dynamicLinksParams.social.imageUrl' must be a string.`);
+      throw new Error("'dynamicLinksParams.social.imageUrl' must be a string.");
     }
 
     params.imageUrl = socialParameters.imageUrl;
@@ -42,7 +42,7 @@ export default function buildSocial(socialParameters) {
 
   if (socialParameters.title) {
     if (!isString(socialParameters.title)) {
-      throw new Error(`'dynamicLinksParams.social.title' must be a string.`);
+      throw new Error("'dynamicLinksParams.social.title' must be a string.");
     }
 
     params.title = socialParameters.title;

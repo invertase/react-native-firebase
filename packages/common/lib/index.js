@@ -26,12 +26,18 @@ export Base64 from './Base64';
 export ReferenceBase from './ReferenceBase';
 
 export function getDataUrlParts(dataUrlString) {
-  const isBase64 = dataUrlString.includes(`;base64`);
+  const isBase64 = dataUrlString.includes(';base64');
   let [mediaType, base64String] = dataUrlString.split(',');
-  if (!mediaType || !base64String) return { base64String: undefined, mediaType: undefined };
+  if (!mediaType || !base64String) {
+    return { base64String: undefined, mediaType: undefined };
+  }
   mediaType = mediaType.replace('data:', '').replace(';base64', '');
-  if (base64String && base64String.includes('%')) base64String = decodeURIComponent(base64String);
-  if (!isBase64) base64String = Base64.btoa(base64String);
+  if (base64String && base64String.includes('%')) {
+    base64String = decodeURIComponent(base64String);
+  }
+  if (!isBase64) {
+    base64String = Base64.btoa(base64String);
+  }
   return { base64String, mediaType };
 }
 
@@ -68,7 +74,9 @@ export function hasOwnProperty(target, property) {
  * @returns {*}
  */
 export function stripTrailingSlash(string) {
-  if (!isString(string)) return string;
+  if (!isString(string)) {
+    return string;
+  }
   return string.endsWith('/') ? string.slice(0, -1) : string;
 }
 

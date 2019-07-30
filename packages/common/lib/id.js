@@ -53,7 +53,9 @@ export function generateDatabaseId(serverTimeOffset = 0) {
     id += PUSH_CHARS.charAt(lastRandChars[i]);
   }
 
-  if (id.length !== 20) throw new Error('Length should be 20.');
+  if (id.length !== 20) {
+    throw new Error('Length should be 20.');
+  }
 
   return id;
 }

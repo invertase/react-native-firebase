@@ -28,7 +28,7 @@ describe('firestore.collection().add()', () => {
         .add(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'data' must be an object`);
+      error.message.should.containEql("'data' must be an object");
       return Promise.resolve();
     }
   });

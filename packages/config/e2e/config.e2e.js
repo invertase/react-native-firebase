@@ -133,7 +133,7 @@ describe('config()', () => {
         await firebase.config().setConfigSettings({});
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'isDeveloperModeEnabled' key`);
+        error.message.should.containEql("'isDeveloperModeEnabled' key");
         return Promise.resolve();
       }
     });
@@ -144,7 +144,7 @@ describe('config()', () => {
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql(
-          `'settings.isDeveloperModeEnabled' must be a boolean value`,
+          "'settings.isDeveloperModeEnabled' must be a boolean value",
         );
         return Promise.resolve();
       }
@@ -214,7 +214,9 @@ describe('config()', () => {
 
     it('it rejects if resource not found', async () => {
       const [error] = await A2A(firebase.config().setDefaultsFromResource('i_do_not_exist'));
-      if (!error) throw new Error('Did not reject');
+      if (!error) {
+        throw new Error('Did not reject');
+      }
       error.code.should.equal('config/resource_not_found');
       error.message.should.containEql('was not found');
     });

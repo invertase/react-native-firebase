@@ -28,13 +28,13 @@ export default function visionBarcodeDetectorOptions(barcodeDetectorOptions) {
   }
 
   if (!isObject(barcodeDetectorOptions)) {
-    throw new Error(`'barcodeDetectorOptions' expected an object value.`);
+    throw new Error("'barcodeDetectorOptions' expected an object value.");
   }
 
   if (barcodeDetectorOptions.barcodeFormats) {
     if (!isArray(barcodeDetectorOptions.barcodeFormats)) {
       throw new Error(
-        `'barcodeDetectorOptions.barcodeFormats' must be an array of VisionBarcodeFormat types.`,
+        "'barcodeDetectorOptions.barcodeFormats' must be an array of VisionBarcodeFormat types.",
       );
     }
 

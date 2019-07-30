@@ -24,7 +24,7 @@ describe('firestore.WriteBatch.delete()', () => {
         .delete(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'documentRef' expected instance of a DocumentReference`);
+      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
       return Promise.resolve();
     }
   });
@@ -40,7 +40,7 @@ describe('firestore.WriteBatch.delete()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'documentRef' provided DocumentReference is from a different Firestore instance`,
+        "'documentRef' provided DocumentReference is from a different Firestore instance",
       );
       return Promise.resolve();
     }

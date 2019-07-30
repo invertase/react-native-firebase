@@ -29,7 +29,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setAndroidClientId(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'androidClientId' must be a string value`);
+        error.message.should.containEql("'androidClientId' must be a string value");
         return Promise.resolve();
       }
     });
@@ -48,7 +48,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setAndroidMinimumVersionCode('1234');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'androidMinimumVersionCode' must be a number value`);
+        error.message.should.containEql("'androidMinimumVersionCode' must be a number value");
         return Promise.resolve();
       }
     });
@@ -67,7 +67,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setCallToActionText(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'callToActionText' must be a string value`);
+        error.message.should.containEql("'callToActionText' must be a string value");
         return Promise.resolve();
       }
     });
@@ -82,7 +82,7 @@ android.describe('firebase.invites.Invite', () => {
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql(
-          `'callToActionText' cannot be used alongside 'emailHtmlContent'`,
+          "'callToActionText' cannot be used alongside 'emailHtmlContent'",
         );
         return Promise.resolve();
       }
@@ -102,7 +102,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setCustomImage(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'customImage' must be a string value`);
+        error.message.should.containEql("'customImage' must be a string value");
         return Promise.resolve();
       }
     });
@@ -121,7 +121,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setDeepLink(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'deepLink' must be a string value`);
+        error.message.should.containEql("'deepLink' must be a string value");
         return Promise.resolve();
       }
     });
@@ -140,7 +140,7 @@ android.describe('firebase.invites.Invite', () => {
         invite.setIOSClientId(1234);
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'iosClientId' must be a string value`);
+        error.message.should.containEql("'iosClientId' must be a string value");
         return Promise.resolve();
       }
     });

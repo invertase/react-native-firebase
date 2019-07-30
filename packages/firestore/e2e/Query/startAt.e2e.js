@@ -29,7 +29,7 @@ describe('firestore().collection().starAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `Expected a DocumentSnapshot or list of field values but got undefined`,
+        'Expected a DocumentSnapshot or list of field values but got undefined',
       );
       return Promise.resolve();
     }
@@ -44,7 +44,7 @@ describe('firestore().collection().starAt()', () => {
         .startAt('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`The number of arguments must be less than or equal`);
+      error.message.should.containEql('The number of arguments must be less than or equal');
       return Promise.resolve();
     }
   });
@@ -61,7 +61,7 @@ describe('firestore().collection().starAt()', () => {
         .startAt(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Expected DocumentSnapshot or list of field values`);
+      error.message.should.containEql('Expected DocumentSnapshot or list of field values');
       return Promise.resolve();
     }
   });
@@ -78,7 +78,7 @@ describe('firestore().collection().starAt()', () => {
         .startAt(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Can't use a DocumentSnapshot that doesn't exist`);
+      error.message.should.containEql("Can't use a DocumentSnapshot that doesn't exist");
       return Promise.resolve();
     }
   });
@@ -97,7 +97,7 @@ describe('firestore().collection().starAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `You are trying to start or end a query using a document for which the field`,
+        'You are trying to start or end a query using a document for which the field',
       );
       return Promise.resolve();
     }

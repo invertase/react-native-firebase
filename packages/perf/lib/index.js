@@ -58,7 +58,7 @@ class FirebasePerfModule extends FirebaseModule {
   setPerformanceCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.`,
+        "firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 
@@ -70,7 +70,7 @@ class FirebasePerfModule extends FirebaseModule {
     // TODO(VALIDATION): identifier: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(identifier) || identifier.length > 100) {
       throw new Error(
-        `firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.`,
+        "firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.",
       );
     }
 
@@ -84,7 +84,7 @@ class FirebasePerfModule extends FirebaseModule {
 
   newHttpMetric(url, httpMethod) {
     if (!isString(url)) {
-      throw new Error(`firebase.perf().newHttpMetric(*, _) 'url' must be a string.`);
+      throw new Error("firebase.perf().newHttpMetric(*, _) 'url' must be a string.");
     }
 
     if (!isString(url) || !isOneOf(httpMethod, VALID_HTTP_METHODS)) {

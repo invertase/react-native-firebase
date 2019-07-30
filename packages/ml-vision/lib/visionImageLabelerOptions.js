@@ -27,13 +27,13 @@ export default function visionImageLabelerOptions(imageLabelerOptions) {
   }
 
   if (!isObject(imageLabelerOptions)) {
-    throw new Error(`'imageLabelerOptions' expected an object value.`);
+    throw new Error("'imageLabelerOptions' expected an object value.");
   }
 
   if (hasOwnProperty(imageLabelerOptions, 'confidenceThreshold')) {
     if (!isNumber(imageLabelerOptions.confidenceThreshold)) {
       throw new Error(
-        `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
+        "'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.",
       );
     }
 
@@ -42,7 +42,7 @@ export default function visionImageLabelerOptions(imageLabelerOptions) {
       imageLabelerOptions.confidenceThreshold > 1
     ) {
       throw new Error(
-        `'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.`,
+        "'imageLabelerOptions.confidenceThreshold' expected a number value between 0 & 1.",
       );
     }
 

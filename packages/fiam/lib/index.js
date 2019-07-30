@@ -49,7 +49,7 @@ class FirebaseFiamModule extends FirebaseModule {
   setMessagesDisplaySuppressed(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.fiam().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.`,
+        "firebase.fiam().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.",
       );
     }
 
@@ -60,7 +60,7 @@ class FirebaseFiamModule extends FirebaseModule {
   setAutomaticDataCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.fiam().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.`,
+        "firebase.fiam().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 

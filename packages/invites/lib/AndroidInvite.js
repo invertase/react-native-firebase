@@ -25,7 +25,7 @@ export default class AndroidInvitation {
   setAdditionalReferralParameters(additionalReferralParameters) {
     if (!objectKeyValuesAreStrings(additionalReferralParameters)) {
       throw new Error(
-        `firebase.invites.AndroidInvite.setAdditionalReferralParameters(*) 'additionalReferralParameters' must be an object of string keys and values.`,
+        "firebase.invites.AndroidInvite.setAdditionalReferralParameters(*) 'additionalReferralParameters' must be an object of string keys and values.",
       );
     }
 
@@ -36,13 +36,13 @@ export default class AndroidInvitation {
   setEmailHtmlContent(emailHtmlContent) {
     if (this._invite._callToActionText) {
       throw new Error(
-        `firebase.invites.AndroidInvite.setEmailHtmlContent(*) 'emailHtmlContent' cannot be used alongside 'callToActionText'.`,
+        "firebase.invites.AndroidInvite.setEmailHtmlContent(*) 'emailHtmlContent' cannot be used alongside 'callToActionText'.",
       );
     }
 
     if (!isString(emailHtmlContent)) {
       throw new Error(
-        `firebase.invites.AndroidInvite.setEmailHtmlContent(*) 'emailHtmlContent' must be a string value.`,
+        "firebase.invites.AndroidInvite.setEmailHtmlContent(*) 'emailHtmlContent' must be a string value.",
       );
     }
 
@@ -53,7 +53,7 @@ export default class AndroidInvitation {
   setEmailSubject(emailSubject) {
     if (!isString(emailSubject)) {
       throw new Error(
-        `firebase.invites.AndroidInvite.setEmailSubject(*) 'emailSubject' must be a string value.`,
+        "firebase.invites.AndroidInvite.setEmailSubject(*) 'emailSubject' must be a string value.",
       );
     }
 
@@ -64,7 +64,7 @@ export default class AndroidInvitation {
   setGoogleAnalyticsTrackingId(googleAnalyticsTrackingId) {
     if (!isString(googleAnalyticsTrackingId)) {
       throw new Error(
-        `firebase.invites.AndroidInvite.setGoogleAnalyticsTrackingId(*) 'googleAnalyticsTrackingId' must be a string value.`,
+        "firebase.invites.AndroidInvite.setGoogleAnalyticsTrackingId(*) 'googleAnalyticsTrackingId' must be a string value.",
       );
     }
 

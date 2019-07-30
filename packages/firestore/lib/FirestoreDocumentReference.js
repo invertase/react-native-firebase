@@ -60,13 +60,13 @@ export default class FirestoreDocumentReference {
   collection(collectionPath) {
     if (!isString(collectionPath)) {
       throw new Error(
-        `firebase.firestore().doc().collection(*) 'collectionPath' must be a string value.`,
+        "firebase.firestore().doc().collection(*) 'collectionPath' must be a string value.",
       );
     }
 
     if (collectionPath === '') {
       throw new Error(
-        `firebase.firestore().doc().collection(*) 'collectionPath' must be a non-empty string.`,
+        "firebase.firestore().doc().collection(*) 'collectionPath' must be a non-empty string.",
       );
     }
 
@@ -74,7 +74,7 @@ export default class FirestoreDocumentReference {
 
     if (!path.isCollection) {
       throw new Error(
-        `firebase.firestore().doc().collection(*) 'collectionPath' must point to a collection.`,
+        "firebase.firestore().doc().collection(*) 'collectionPath' must point to a collection.",
       );
     }
 
@@ -87,7 +87,7 @@ export default class FirestoreDocumentReference {
 
   get(options) {
     if (!isUndefined(options) && !isObject(options)) {
-      throw new Error(`firebase.firestore().doc().get(*) 'options' must be an object is provided.`);
+      throw new Error("firebase.firestore().doc().get(*) 'options' must be an object is provided.");
     }
 
     if (
@@ -98,7 +98,7 @@ export default class FirestoreDocumentReference {
       options.source !== 'cache'
     ) {
       throw new Error(
-        `firebase.firestore().doc().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.`,
+        "firebase.firestore().doc().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.",
       );
     }
 
@@ -110,7 +110,7 @@ export default class FirestoreDocumentReference {
   isEqual(other) {
     if (!(other instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.`,
+        "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
       );
     }
 
@@ -122,8 +122,6 @@ export default class FirestoreDocumentReference {
   }
 
   onSnapshot(...args) {
-    /* eslint-disable prefer-destructuring */
-
     let snapshotListenOptions;
     let callback;
     let onNext;
@@ -179,7 +177,7 @@ export default class FirestoreDocumentReference {
 
   set(data, options) {
     if (!isObject(data)) {
-      throw new Error(`firebase.firestore().doc().set(*) 'data' must be an object.`);
+      throw new Error("firebase.firestore().doc().set(*) 'data' must be an object.");
     }
 
     let setOptions;
@@ -195,7 +193,7 @@ export default class FirestoreDocumentReference {
   update(...args) {
     if (args.length === 0) {
       throw new Error(
-        `firebase.firestore().doc().update(*) expected at least 1 argument but was called with 0 arguments.`,
+        'firebase.firestore().doc().update(*) expected at least 1 argument but was called with 0 arguments.',
       );
     }
 

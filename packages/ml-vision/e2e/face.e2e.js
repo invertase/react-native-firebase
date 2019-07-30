@@ -32,7 +32,7 @@ android.describe('mlkit.vision.face', () => {
         firebase.mlKitVision().faceDetectorProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -122,7 +122,7 @@ android.describe('mlkit.vision.face', () => {
         await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'faceDetectorOptions' expected an object value`);
+        error.message.should.containEql("'faceDetectorOptions' expected an object value");
         return Promise.resolve();
       }
     });
@@ -136,7 +136,7 @@ android.describe('mlkit.vision.face', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'faceDetectorOptions.classificationMode' invalid classification mode`,
+            "'faceDetectorOptions.classificationMode' invalid classification mode",
           );
           return Promise.resolve();
         }
@@ -163,7 +163,7 @@ android.describe('mlkit.vision.face', () => {
           });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql(`'faceDetectorOptions.contourMode' invalid contour mode`);
+          error.message.should.containEql("'faceDetectorOptions.contourMode' invalid contour mode");
           return Promise.resolve();
         }
       });
@@ -188,7 +188,7 @@ android.describe('mlkit.vision.face', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'faceDetectorOptions.performanceMode' invalid performance mode`,
+            "'faceDetectorOptions.performanceMode' invalid performance mode",
           );
           return Promise.resolve();
         }
@@ -214,7 +214,7 @@ android.describe('mlkit.vision.face', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'faceDetectorOptions.landmarkMode' invalid landmark mode`,
+            "'faceDetectorOptions.landmarkMode' invalid landmark mode",
           );
           return Promise.resolve();
         }
@@ -240,7 +240,7 @@ android.describe('mlkit.vision.face', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'faceDetectorOptions.minFaceSize' expected a number value between 0 & 1`,
+            "'faceDetectorOptions.minFaceSize' expected a number value between 0 & 1",
           );
           return Promise.resolve();
         }
@@ -254,7 +254,7 @@ android.describe('mlkit.vision.face', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'faceDetectorOptions.minFaceSize' expected value to be between 0 & 1`,
+            "'faceDetectorOptions.minFaceSize' expected value to be between 0 & 1",
           );
           return Promise.resolve();
         }

@@ -46,7 +46,9 @@ export function buildNativeMap(data) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const typeMap = generateNativeData(data[key]);
-      if (typeMap) nativeData[key] = typeMap;
+      if (typeMap) {
+        nativeData[key] = typeMap;
+      }
     }
   }
   return nativeData;
@@ -63,7 +65,9 @@ export function buildNativeArray(array) {
     for (let i = 0; i < array.length; i++) {
       const value = array[i];
       const typeMap = generateNativeData(value);
-      if (typeMap) nativeArray.push(typeMap);
+      if (typeMap) {
+        nativeArray.push(typeMap);
+      }
     }
   }
   return nativeArray;
@@ -101,7 +105,9 @@ export function generateNativeData(value) {
   }
 
   if (isBoolean(value)) {
-    if (value === true) return getTypeMapInt('booleanTrue');
+    if (value === true) {
+      return getTypeMapInt('booleanTrue');
+    }
     return getTypeMapInt('booleanFalse');
   }
 
@@ -110,7 +116,9 @@ export function generateNativeData(value) {
   }
 
   if (isString(value)) {
-    if (value === '') return getTypeMapInt('stringEmpty');
+    if (value === '') {
+      return getTypeMapInt('stringEmpty');
+    }
     return getTypeMapInt('string', value);
   }
 

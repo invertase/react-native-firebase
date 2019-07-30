@@ -22,7 +22,9 @@ let TASK_ID = 0;
 
 function wrapErrorEventListener(listenerFn, unsubscribe) {
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
+    if (unsubscribe) {
+      setTimeout(() => unsubscribe(), 0);
+    } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       listenerFn(event.error);
     }
@@ -30,18 +32,28 @@ function wrapErrorEventListener(listenerFn, unsubscribe) {
 }
 
 function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
-  if (!isFunction(listenerFn)) return null;
+  if (!isFunction(listenerFn)) {
+    return null;
+  }
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
+    if (unsubscribe) {
+      setTimeout(() => unsubscribe(), 0);
+    } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       const snapshot = Object.assign({}, event);
       snapshot.task = task;
       snapshot.ref = task._ref;
 
       if (snapshot.metadata) {
-        if (!snapshot.metadata.generation) snapshot.metadata.generation = '';
-        if (!snapshot.metadata.bucket) snapshot.metadata.bucket = task._ref.bucket;
-        if (!snapshot.metadata.metageneration) snapshot.metadata.metageneration = '';
+        if (!snapshot.metadata.generation) {
+          snapshot.metadata.generation = '';
+        }
+        if (!snapshot.metadata.bucket) {
+          snapshot.metadata.bucket = task._ref.bucket;
+        }
+        if (!snapshot.metadata.metageneration) {
+          snapshot.metadata.metageneration = '';
+        }
         // // TODO(salakar): these are always here, cannot repro without, remove in 6.1.0 if no issues:
         // if (!snapshot.metadata.name) snapshot.metadata.name = task._ref.name;
         // if (!snapshot.metadata.fullPath) snapshot.metadata.fullPath = task._ref.fullPath;
@@ -77,9 +89,15 @@ function subscribeToEvents(task, nextOrObserver, error, complete) {
   let _completeSubscription;
 
   const unsubscribe = () => {
-    if (_nextSubscription) _nextSubscription.remove();
-    if (_errorSubscription) _errorSubscription.remove();
-    if (_completeSubscription) _completeSubscription.remove();
+    if (_nextSubscription) {
+      _nextSubscription.remove();
+    }
+    if (_errorSubscription) {
+      _errorSubscription.remove();
+    }
+    if (_completeSubscription) {
+      _completeSubscription.remove();
+    }
   };
 
   if (isFunction(nextOrObserver)) {
@@ -95,7 +113,7 @@ function subscribeToEvents(task, nextOrObserver, error, complete) {
     _complete = wrapSnapshotEventListener(task, complete, unsubscribe);
   } else {
     throw new Error(
-      `firebase.storage.StorageTask.on(*, _) 'nextOrObserver' must be a Function, an Object or Null.`,
+      "firebase.storage.StorageTask.on(*, _) 'nextOrObserver' must be a Function, an Object or Null.",
     );
   }
 
@@ -128,7 +146,9 @@ export default class StorageTask {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#then
    */
   get then() {
-    if (!this._promise) this._promise = this._beginTask(this);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
     return this._promise.then.bind(this._promise);
   }
 
@@ -136,7 +156,9 @@ export default class StorageTask {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
    */
   get catch() {
-    if (!this._promise) this._promise = this._beginTask(this);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
     return this._promise.catch.bind(this._promise);
   }
 
@@ -161,7 +183,9 @@ export default class StorageTask {
       );
     }
 
-    if (!this._promise) this._promise = this._beginTask(this);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
 
     // if only event provided return the subscriber function
     if (!nextOrObserver && !error && !complete) {

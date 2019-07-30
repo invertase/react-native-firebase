@@ -24,7 +24,7 @@ describe('firestore.WriteBatch.update()', () => {
         .update(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'documentRef' expected instance of a DocumentReference`);
+      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
       return Promise.resolve();
     }
   });
@@ -40,7 +40,7 @@ describe('firestore.WriteBatch.update()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'documentRef' provided DocumentReference is from a different Firestore instance`,
+        "'documentRef' provided DocumentReference is from a different Firestore instance",
       );
       return Promise.resolve();
     }
@@ -55,7 +55,7 @@ describe('firestore.WriteBatch.update()', () => {
         .update(docRef);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Expected update object or list of key/value pairs`);
+      error.message.should.containEql('Expected update object or list of key/value pairs');
       return Promise.resolve();
     }
   });
@@ -69,7 +69,7 @@ describe('firestore.WriteBatch.update()', () => {
         .update(docRef, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`if using a single update argument, it must be an object`);
+      error.message.should.containEql('if using a single update argument, it must be an object');
       return Promise.resolve();
     }
   });
@@ -83,7 +83,7 @@ describe('firestore.WriteBatch.update()', () => {
         .update(docRef, 'foo', 'bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`equal numbers of key/value pairs`);
+      error.message.should.containEql('equal numbers of key/value pairs');
       return Promise.resolve();
     }
   });
@@ -97,7 +97,7 @@ describe('firestore.WriteBatch.update()', () => {
         .update(docRef, 'foo', 'bar', 123, 'ben');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`argument at index 2 must be a string or FieldPath`);
+      error.message.should.containEql('argument at index 2 must be a string or FieldPath');
       return Promise.resolve();
     }
   });
