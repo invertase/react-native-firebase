@@ -16,7 +16,7 @@
  */
 
 import { isArray, isNumber } from '@react-native-firebase/common';
-import { buildNativeArray } from './utils/serialize';
+import { provideFieldValueClass, buildNativeArray } from './utils/serialize';
 
 export const TypeFieldValueDelete = 'delete';
 export const TypeFieldValueIncrement = 'increment';
@@ -107,3 +107,5 @@ export default class FirestoreFieldValue {
     );
   }
 }
+
+provideFieldValueClass(FirestoreFieldValue); // serialize

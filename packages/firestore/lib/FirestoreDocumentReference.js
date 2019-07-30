@@ -18,7 +18,7 @@
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import { isObject, isString, isUndefined } from '@react-native-firebase/common';
 
-import { buildNativeMap } from './utils/serialize';
+import { provideDocumentReferenceClass, buildNativeMap } from './utils/serialize';
 import { parseSetOptions, parseUpdateArgs, parseSnapshotArgs } from './utils';
 
 // To avoid React Native require cycle warnings
@@ -207,3 +207,5 @@ export default class FirestoreDocumentReference {
     return this._firestore.native.documentUpdate(this.path, buildNativeMap(data));
   }
 }
+
+provideDocumentReferenceClass(FirestoreDocumentReference); // serialize
