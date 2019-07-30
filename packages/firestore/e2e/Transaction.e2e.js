@@ -68,7 +68,7 @@ describe('firestore.Transaction', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (error) {
-      error.code.should.eql('firestore/aborted');
+      error.code.should.eql('firestore/permission-denied');
       return Promise.resolve();
     }
   });

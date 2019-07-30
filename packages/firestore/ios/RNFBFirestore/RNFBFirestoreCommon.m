@@ -17,7 +17,7 @@
  */
 
 #import "RNFBFirestoreCommon.h"
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 
 @implementation RNFBFirestoreCommon
 

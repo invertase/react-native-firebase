@@ -16,8 +16,8 @@
  */
 
 #import <React/RCTUtils.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
-#import "RNFBRCTEventEmitter.h"
 #import "RNFBFirestoreTransactionModule.h"
 
 static __strong NSMutableDictionary *transactions;
@@ -39,15 +39,21 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+- (dispatch_queue_t)methodQueue {
+  return dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+}
+
 - (void)dealloc {
   [self invalidate];
 }
 
 - (void)invalidate {
-  for (NSNumber *id in transactions) {
-    NSMutableDictionary *transactionState = transactions[id];
-    // TODO How to remove
-    [transactionState removeObjectForKey:id];
+  for (NSString *key in [transactions allKeys]) {
+    [transactions removeObjectForKey:key];
   }
 }
 
@@ -61,7 +67,33 @@ RCT_EXPORT_METHOD(transactionGetDocument:
     :(RCTPromiseResolveBlock)resolve
     :(RCTPromiseRejectBlock)reject
 ) {
+  @synchronized (transactions[[transactionId stringValue]]) {
+    NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
+    if (!transactionState) {
+      DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
+      return;
+    }
+
+    NSError *error = nil;
+    FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
+    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+    FIRDocumentReference *ref = [RNFBFirestoreCommon getDocumentForFirestore:firestore path:path];
+    FIRDocumentSnapshot *snapshot = [transaction getDocument:ref error:&error];
+
+    if (error != nil) {
+      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+    } else {
+      NSDictionary *snapshotDict = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot];
+      NSString *snapshotPath = snapshotDict[@"path"];
+
+      if (snapshotPath == nil) {
+        [snapshotDict setValue:ref.path forKey:@"path"];
+      }
+
+      resolve(snapshotDict);
+    }
+  }
 }
 
 RCT_EXPORT_METHOD(transactionDispose:
@@ -69,7 +101,7 @@ RCT_EXPORT_METHOD(transactionDispose:
     :(nonnull NSNumber *)transactionId
 ) {
   @synchronized (transactions[[transactionId stringValue]]) {
-    __block NSMutableDictionary *transactionState = transactions[transactionId];
+    NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
     if (!transactionState) {
       return;
@@ -86,7 +118,18 @@ RCT_EXPORT_METHOD(transactionApplyBuffer:
     :(nonnull NSNumber *)transactionId
     :(NSArray *)commandBuffer
 ) {
+  @synchronized (transactions[[transactionId stringValue]]) {
+    __block NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
+    if (!transactionState) {
+      DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
+      return;
+    }
+
+    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
+    [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
+    dispatch_semaphore_signal(semaphore);
+  }
 }
 
 RCT_EXPORT_METHOD(transactionBegin:
@@ -98,24 +141,33 @@ RCT_EXPORT_METHOD(transactionBegin:
   __block BOOL completed = false;
   __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
 
-  id transactionBlock = ^id(FIRTransaction *transaction, NSError **pError) {
+  id transactionBlock = ^id(FIRTransaction *transaction, NSError **errorPointer) {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     @synchronized (transactionState) {
       transactionState[@"semaphore"] = semaphore;
       transactionState[@"transaction"] = transaction;
 
-      if (!transactions[transactionId]) {
-        transactions[transactionId] = transactionState;
+      if (!transactions[[transactionId stringValue]]) {
+        transactions[[transactionId stringValue]] = transactionState;
       }
 
-      // todo dispatch
+      // build and send transaction update event
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableDictionary *eventMap = [NSMutableDictionary new];
+        eventMap[@"type"] = @"update";
+        [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT body:@{
+            @"listenerId": transactionId,
+            @"appName": [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+            @"body": eventMap,
+        }];
+      });
     }
 
     // wait for the js event handler to call transactionApplyBuffer
     // this wait occurs on the RNFirestore Worker Queue so if transactionApplyBuffer fails to
     // signal the semaphore then no further blocks will be executed by RNFirestore until the timeout expires
-    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 5000 * NSEC_PER_SEC);
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 15 * NSEC_PER_SEC);
     BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
 
     @synchronized (transactionState) {
@@ -126,11 +178,16 @@ RCT_EXPORT_METHOD(transactionBegin:
       }
 
       if (aborted == YES) {
-        // TODO error pointer
+        *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeAborted userInfo:@{}];
         return nil;
       }
 
       if (timedOut == YES) {
+        *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeDeadlineExceeded userInfo:@{}];
+        return nil;
+      }
+
+      if (completed == YES) {
         return nil;
       }
 
@@ -174,10 +231,27 @@ RCT_EXPORT_METHOD(transactionBegin:
 
     @synchronized (transactionState) {
       if (aborted == NO) {
-        // TODO send event
+        NSMutableDictionary *eventMap = [NSMutableDictionary new];
+
+        if (error != nil) {
+          NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
+          eventMap[@"type"] = @"error";
+          eventMap[@"error"] = @{
+              @"code": codeAndMessage[0],
+              @"message": codeAndMessage[1],
+          };
+        } else {
+          eventMap[@"type"] = @"complete";
+        }
+
+        [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT body:@{
+            @"listenerId": transactionId,
+            @"appName": [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+            @"body": eventMap,
+        }];
       }
 
-      [transactions removeObjectForKey:transactionId];
+      [transactions removeObjectForKey:[transactionId stringValue]];
     }
   };
 

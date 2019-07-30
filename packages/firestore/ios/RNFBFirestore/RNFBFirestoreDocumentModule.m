@@ -16,8 +16,8 @@
  */
 
 #import <React/RCTUtils.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
-#import "RNFBRCTEventEmitter.h"
 #import "RNFBFirestoreDocumentModule.h"
 
 static __strong NSMutableDictionary *documentSnapshotListeners;
@@ -31,6 +31,10 @@ RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
   return dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return YES;
 }
 
 - (id)init {
@@ -47,10 +51,10 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSNumber *listenerId in documentSnapshotListeners) {
-    id <FIRListenerRegistration> listener = documentSnapshotListeners[listenerId];
+  for (NSString *key in [documentSnapshotListeners allKeys]) {
+    id <FIRListenerRegistration> listener = documentSnapshotListeners[key];
     [listener remove];
-    [documentSnapshotListeners removeObjectForKey:listenerId];
+    [documentSnapshotListeners removeObjectForKey:key];
   }
 }
 

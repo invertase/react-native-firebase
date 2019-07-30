@@ -40,6 +40,10 @@ RCT_EXPORT_MODULE();
   return firestoreQueue;
 }
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
