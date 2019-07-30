@@ -28,7 +28,7 @@ describe('firestore().collection().where()', () => {
         .where(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'fieldPath' must be a string or instance of FieldPath`);
+      error.message.should.containEql("'fieldPath' must be a string or instance of FieldPath");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('firestore().collection().where()', () => {
         .where('.foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'fieldPath' Invalid field path`);
+      error.message.should.containEql("'fieldPath' Invalid field path");
       return Promise.resolve();
     }
   });
@@ -54,7 +54,7 @@ describe('firestore().collection().where()', () => {
         .where('foo.bar', '!');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'opStr' is invalid`);
+      error.message.should.containEql("'opStr' is invalid");
       return Promise.resolve();
     }
   });
@@ -68,7 +68,7 @@ describe('firestore().collection().where()', () => {
         .where('foo.bar', 'array-contains', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Queries only support a single array-contains filter`);
+      error.message.should.containEql('Queries only support a single array-contains filter');
       return Promise.resolve();
     }
   });
@@ -81,7 +81,7 @@ describe('firestore().collection().where()', () => {
         .where('foo.bar', 'array-contains');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' argument expected`);
+      error.message.should.containEql("'value' argument expected");
       return Promise.resolve();
     }
   });
@@ -94,7 +94,7 @@ describe('firestore().collection().where()', () => {
         .where('foo.bar', 'array-contains', null);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You can only perform equals comparisons on null`);
+      error.message.should.containEql('You can only perform equals comparisons on null');
       return Promise.resolve();
     }
   });
@@ -115,7 +115,7 @@ describe('firestore().collection().where()', () => {
         .where('bar', '>', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`All where filters with an inequality`);
+      error.message.should.containEql('All where filters with an inequality');
       return Promise.resolve();
     }
   });

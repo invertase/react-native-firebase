@@ -38,7 +38,9 @@ const path = {};
 let processedPathConstants = false;
 
 function processPathConstants(nativeModule) {
-  if (processedPathConstants || !nativeModule) return path;
+  if (processedPathConstants || !nativeModule) {
+    return path;
+  }
   processedPathConstants = true;
 
   const entries = Object.entries(PATH_NAMES);
@@ -49,7 +51,6 @@ function processPathConstants(nativeModule) {
     // TODO(salakar) deprecated remove in 6.1.0:
     if (oldName) {
       Object.defineProperty(path, `${oldName}`, {
-        // eslint-disable-next-line no-loop-func
         get() {
           console.warn(
             `'firebase.utils.Native.${oldName}' is deprecated and will be removed in 6.1.0 please use 'firebase.utils.FilePath.${newName}' instead`,

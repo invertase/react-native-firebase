@@ -27,13 +27,13 @@ export default class SmartReplyConversation {
   addLocalUserMessage(text, timestamp) {
     if (!isString(text)) {
       throw new Error(
-        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.`,
+        "firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.",
       );
     }
 
     if (!isUndefined(timestamp) && !isNumber(timestamp)) {
       throw new Error(
-        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.`,
+        "firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.",
       );
     }
 
@@ -46,19 +46,19 @@ export default class SmartReplyConversation {
   addRemoteUserMessage(text, timestamp, remoteUserId) {
     if (!isString(text)) {
       throw new Error(
-        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.`,
+        "firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(*, _, _) 'text' must be a string value.",
       );
     }
 
     if (!isNumber(timestamp)) {
       throw new Error(
-        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.`,
+        "firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, *, _) 'timestamp' must be a number value.",
       );
     }
 
     if (!isString(remoteUserId)) {
       throw new Error(
-        `firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, _, *) 'remoteUserId' must be a string value.`,
+        "firebase.mlKitLanguage.SmartReplyConversation.addRemoteUserMessage(_, _, *) 'remoteUserId' must be a string value.",
       );
     }
 
@@ -69,7 +69,9 @@ export default class SmartReplyConversation {
   }
 
   getSuggestedReplies() {
-    if (!this.messages.length) return Promise.resolve([]);
+    if (!this.messages.length) {
+      return Promise.resolve([]);
+    }
     return this.native.getSuggestedReplies([...this.messages]);
   }
 

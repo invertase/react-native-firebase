@@ -45,7 +45,7 @@ export default class FirestoreTransaction {
   get(documentRef) {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.get(*) 'documentRef' expected a DocumentReference.`,
+        "firebase.firestore().runTransaction() Transaction.get(*) 'documentRef' expected a DocumentReference.",
       );
     }
 
@@ -63,13 +63,13 @@ export default class FirestoreTransaction {
   set(documentRef, data, options) {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.`,
+        "firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.",
       );
     }
 
     if (!isObject(data)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..`,
+        "firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..",
       );
     }
 
@@ -95,7 +95,7 @@ export default class FirestoreTransaction {
   update(documentRef, ...args) {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.update(*) 'documentRef' expected a DocumentReference.`,
+        "firebase.firestore().runTransaction() Transaction.update(*) 'documentRef' expected a DocumentReference.",
       );
     }
 
@@ -120,7 +120,7 @@ export default class FirestoreTransaction {
   delete(documentRef) {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore().runTransaction() Transaction.delete(*) 'documentRef' expected a DocumentReference.`,
+        "firebase.firestore().runTransaction() Transaction.delete(*) 'documentRef' expected a DocumentReference.",
       );
     }
 

@@ -28,7 +28,7 @@ describe('firestore.doc().set()', () => {
         .set('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'data' must be an object`);
+      error.message.should.containEql("'data' must be an object");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('firestore.doc().set()', () => {
         .set({}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options' must be an object`);
+      error.message.should.containEql("'options' must be an object");
       return Promise.resolve();
     }
   });
@@ -60,7 +60,7 @@ describe('firestore.doc().set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options' must not contain both 'merge' & 'mergeFields'`);
+      error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
       return Promise.resolve();
     }
   });
@@ -78,7 +78,7 @@ describe('firestore.doc().set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options.merge' must be a boolean value`);
+      error.message.should.containEql("'options.merge' must be a boolean value");
       return Promise.resolve();
     }
   });
@@ -96,7 +96,7 @@ describe('firestore.doc().set()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options.mergeFields' must be an array`);
+      error.message.should.containEql("'options.mergeFields' must be an array");
       return Promise.resolve();
     }
   });
@@ -115,7 +115,7 @@ describe('firestore.doc().set()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'options.mergeFields' all fields must be of type string or FieldPath, but the value at index 3 was number`,
+        "'options.mergeFields' all fields must be of type string or FieldPath, but the value at index 3 was number",
       );
       return Promise.resolve();
     }

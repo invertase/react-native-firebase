@@ -63,7 +63,9 @@ export default class StorageReference extends ReferenceBase {
    */
   get parent() {
     const parentPath = pathParent(this.path);
-    if (parentPath === null) return parentPath;
+    if (parentPath === null) {
+      return parentPath;
+    }
     return new StorageReference(this._storage, parentPath);
   }
 
@@ -129,7 +131,7 @@ export default class StorageReference extends ReferenceBase {
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
     if (!isString(string)) {
       throw new Error(
-        `firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.`,
+        "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
       );
     }
 
@@ -156,12 +158,14 @@ export default class StorageReference extends ReferenceBase {
       const { mediaType, base64String } = getDataUrlParts(_string);
       if (isUndefined(base64String)) {
         throw new Error(
-          `firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.`,
+          'firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.',
         );
       }
 
       if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
-        if (isUndefined(metadata)) _metadata = {};
+        if (isUndefined(metadata)) {
+          _metadata = {};
+        }
         _metadata.contentType = mediaType;
         _string = base64String;
         _format = StorageStatics.StringFormat.BASE64;
@@ -227,12 +231,14 @@ export default class StorageReference extends ReferenceBase {
 
     if (!isString(filePath)) {
       throw new Error(
-        `firebase.storage.StorageReference.putFile(*, _) 'filePath' expects a string value.`,
+        "firebase.storage.StorageReference.putFile(*, _) 'filePath' expects a string value.",
       );
     }
 
     let _filePath = filePath.replace('file://', '');
-    if (_filePath.includes('%')) _filePath = decodeURIComponent(_filePath);
+    if (_filePath.includes('%')) {
+      _filePath = decodeURIComponent(_filePath);
+    }
     return new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), _filePath, metadata, task._id),
     );

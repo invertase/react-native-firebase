@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams.ios' must be an object");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.appStoreId' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.appStoreId' must be a string");
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.bundleId' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.bundleId' must be a string");
       return Promise.resolve();
     }
   });
@@ -71,7 +71,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.customScheme' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.customScheme' must be a string");
       return Promise.resolve();
     }
   });
@@ -86,7 +86,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.fallbackUrl' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.fallbackUrl' must be a string");
       return Promise.resolve();
     }
   });
@@ -101,7 +101,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.iPadBundleId' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.iPadBundleId' must be a string");
       return Promise.resolve();
     }
   });
@@ -116,7 +116,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.iPadFallbackUrl' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.iPadFallbackUrl' must be a string");
       return Promise.resolve();
     }
   });
@@ -131,7 +131,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios.minimumVersion' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.ios.minimumVersion' must be a string");
       return Promise.resolve();
     }
   });
@@ -146,7 +146,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.ios' missing required 'bundleId' property`);
+      e.message.should.containEql("'dynamicLinksParams.ios' missing required 'bundleId' property");
       return Promise.resolve();
     }
   });

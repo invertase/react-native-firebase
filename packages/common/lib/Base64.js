@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-bitwise */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -30,7 +30,6 @@ function btoa(input): string {
   let block = 0;
   let output = '';
 
-  // eslint-disable-next-line
   for (
     block = 0, i = 0, map = CHARS;
     input.charAt(i | 0) || ((map = '='), i % 1);
@@ -60,7 +59,7 @@ function atob(input): string {
   let buffer;
   let output = '';
 
-  const str = input.replace(/=+$/, '');
+  const str = input.replace(/[=]+$/, '');
 
   if (str.length % 4 === 1) {
     throw new Error(
@@ -68,7 +67,6 @@ function atob(input): string {
     );
   }
 
-  // eslint-disable-next-line
   for (
     bc = 0, bs = 0, i = 0;
     (buffer = str.charAt(i++));

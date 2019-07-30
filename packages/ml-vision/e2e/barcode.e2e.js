@@ -54,7 +54,7 @@ android.describe('mlkit.vision.barcode', () => {
         firebase.mlKitVision().barcodeDetectorProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });
@@ -74,7 +74,7 @@ android.describe('mlkit.vision.barcode', () => {
         await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'barcodeDetectorOptions' expected an object value`);
+        error.message.should.containEql("'barcodeDetectorOptions' expected an object value");
         return Promise.resolve();
       }
     });
@@ -88,7 +88,7 @@ android.describe('mlkit.vision.barcode', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'barcodeDetectorOptions.barcodeFormats' must be an array of VisionBarcodeFormat types`,
+            "'barcodeDetectorOptions.barcodeFormats' must be an array of VisionBarcodeFormat types",
           );
           return Promise.resolve();
         }
@@ -102,7 +102,7 @@ android.describe('mlkit.vision.barcode', () => {
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql(
-            `'barcodeDetectorOptions.barcodeFormats' type at index 1 is invalid`,
+            "'barcodeDetectorOptions.barcodeFormats' type at index 1 is invalid",
           );
           return Promise.resolve();
         }

@@ -39,7 +39,9 @@ export default class FirestoreWriteBatch {
   commit() {
     this._verifyNotCommitted('commit');
     this._committed = true;
-    if (this._writes.length === 0) return Promise.resolve();
+    if (this._writes.length === 0) {
+      return Promise.resolve();
+    }
     return this._firestore.native.documentBatch(this._writes);
   }
 
@@ -47,13 +49,13 @@ export default class FirestoreWriteBatch {
     this._verifyNotCommitted('delete');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.`,
+        "firebase.firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.",
       );
     }
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.firestore.batch().delete(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
+        "firebase.firestore.batch().delete(*) 'documentRef' provided DocumentReference is from a different Firestore instance.",
       );
     }
 
@@ -69,18 +71,18 @@ export default class FirestoreWriteBatch {
     this._verifyNotCommitted('set');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore.batch().set(*) 'documentRef' expected instance of a DocumentReference.`,
+        "firebase.firestore.batch().set(*) 'documentRef' expected instance of a DocumentReference.",
       );
     }
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.firestore.batch().set(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
+        "firebase.firestore.batch().set(*) 'documentRef' provided DocumentReference is from a different Firestore instance.",
       );
     }
 
     if (!isObject(data)) {
-      throw new Error(`firebase.firestore.batch().set(_, *) 'data' must be an object.`);
+      throw new Error("firebase.firestore.batch().set(_, *) 'data' must be an object.");
     }
 
     let setOptions;
@@ -104,19 +106,19 @@ export default class FirestoreWriteBatch {
     this._verifyNotCommitted('update');
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
-        `firebase.firestore.batch().update(*) 'documentRef' expected instance of a DocumentReference.`,
+        "firebase.firestore.batch().update(*) 'documentRef' expected instance of a DocumentReference.",
       );
     }
 
     if (documentRef.firestore.app !== this._firestore.app) {
       throw new Error(
-        `firebase.firestore.batch().update(*) 'documentRef' provided DocumentReference is from a different Firestore instance.`,
+        "firebase.firestore.batch().update(*) 'documentRef' provided DocumentReference is from a different Firestore instance.",
       );
     }
 
     if (args.length === 0) {
       throw new Error(
-        `firebase.firestore.batch().update(_, *) Invalid arguments. Expected update object or list of key/value pairs.`,
+        'firebase.firestore.batch().update(_, *) Invalid arguments. Expected update object or list of key/value pairs.',
       );
     }
 

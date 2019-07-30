@@ -37,7 +37,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setHttpResponseCode(code) {
     if (!isNumber(code) && !isNull(code)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.`,
+        "firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.",
       );
     }
 
@@ -47,7 +47,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setRequestPayloadSize(bytes) {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.`,
+        "firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.",
       );
     }
 
@@ -57,7 +57,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setResponsePayloadSize(bytes) {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.`,
+        "firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.",
       );
     }
 
@@ -67,7 +67,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setResponseContentType(contentType) {
     if (!isString(contentType) && !isNull(contentType)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.`,
+        "firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.",
       );
     }
 
@@ -75,14 +75,18 @@ export default class HttpMetric extends MetricWithAttributes {
   }
 
   start() {
-    if (this._started) return Promise.resolve(null);
+    if (this._started) {
+      return Promise.resolve(null);
+    }
     this._started = true;
 
     return this.native.startHttpMetric(this._id, this._url, this._httpMethod);
   }
 
   stop() {
-    if (this._stopped) return Promise.resolve(null);
+    if (this._stopped) {
+      return Promise.resolve(null);
+    }
     this._stopped = true;
 
     const metricData = {
@@ -100,11 +104,15 @@ export default class HttpMetric extends MetricWithAttributes {
       );
     }
 
-    if (!isNull(this._requestPayloadSize)) metricData.requestPayloadSize = this._requestPayloadSize;
-    if (!isNull(this._responsePayloadSize))
+    if (!isNull(this._requestPayloadSize)) {
+      metricData.requestPayloadSize = this._requestPayloadSize;
+    }
+    if (!isNull(this._responsePayloadSize)) {
       metricData.responsePayloadSize = this._responsePayloadSize;
-    if (!isNull(this._responseContentType))
+    }
+    if (!isNull(this._responseContentType)) {
       metricData.responseContentType = this._responseContentType;
+    }
 
     return this.native.stopHttpMetric(this._id, metricData);
   }

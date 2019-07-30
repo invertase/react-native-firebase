@@ -37,13 +37,13 @@ export default function visionCloudLandmarkRecognizerOptions(cloudLandmarkRecogn
   }
 
   if (!isObject(cloudLandmarkRecognizerOptions)) {
-    throw new Error(`'cloudLandmarkRecognizerOptions' expected an object value.`);
+    throw new Error("'cloudLandmarkRecognizerOptions' expected an object value.");
   }
 
   if (hasOwnProperty(cloudLandmarkRecognizerOptions, 'enforceCertFingerprintMatch')) {
     if (!isBoolean(cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch)) {
       throw new Error(
-        `'cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.`,
+        "'cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.",
       );
     }
 
@@ -52,7 +52,7 @@ export default function visionCloudLandmarkRecognizerOptions(cloudLandmarkRecogn
 
   if (hasOwnProperty(cloudLandmarkRecognizerOptions, 'maxResults')) {
     if (!isNumber(cloudLandmarkRecognizerOptions.maxResults)) {
-      throw new Error(`'cloudLandmarkRecognizerOptions.maxResults' expected a number value.`);
+      throw new Error("'cloudLandmarkRecognizerOptions.maxResults' expected a number value.");
     }
 
     out.maxResults = cloudLandmarkRecognizerOptions.maxResults;
@@ -66,7 +66,7 @@ export default function visionCloudLandmarkRecognizerOptions(cloudLandmarkRecogn
         VisionCloudLandmarkRecognizerModelType.LATEST_MODEL
     ) {
       throw new Error(
-        `'cloudLandmarkRecognizerOptions.modelType' invalid model. Expected VisionCloudLandmarkRecognizerModelType.STABLE_MODEL or VisionCloudLandmarkRecognizerModelType.LATEST_MODEL.`,
+        "'cloudLandmarkRecognizerOptions.modelType' invalid model. Expected VisionCloudLandmarkRecognizerModelType.STABLE_MODEL or VisionCloudLandmarkRecognizerModelType.LATEST_MODEL.",
       );
     }
 

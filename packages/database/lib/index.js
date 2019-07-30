@@ -74,7 +74,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
    */
   ref(path = '/') {
     if (!isString(path)) {
-      throw new Error(`firebase.app().database().ref(*) 'path' must be a string value.`);
+      throw new Error("firebase.app().database().ref(*) 'path' must be a string value.");
     }
 
     return new DatabaseReference(this, path);
@@ -90,7 +90,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
   refFromURL(url) {
     if (!isString(url) || !url.startsWith('https://')) {
       throw new Error(
-        `firebase.app().database().refFromURL(*) 'url' must be a valid database URL.`,
+        "firebase.app().database().refFromURL(*) 'url' must be a valid database URL.",
       );
     }
 
@@ -103,7 +103,9 @@ class FirebaseDatabaseModule extends FirebaseModule {
     }
 
     let path = url.replace(this._customUrlOrRegion, '');
-    if (path.includes('?')) path = path.slice(0, path.indexOf('?'));
+    if (path.includes('?')) {
+      path = path.slice(0, path.indexOf('?'));
+    }
 
     return new DatabaseReference(this, path || '/');
   }
@@ -129,7 +131,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
   setPersistenceEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.app().database().setPersistenceEnabled(*) 'enabled' must be a boolean value.`,
+        "firebase.app().database().setPersistenceEnabled(*) 'enabled' must be a boolean value.",
       );
     }
 
@@ -143,7 +145,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
   setLoggingEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.app().database().setLoggingEnabled(*) 'enabled' must be a boolean value.`,
+        "firebase.app().database().setLoggingEnabled(*) 'enabled' must be a boolean value.",
       );
     }
 
@@ -157,19 +159,19 @@ class FirebaseDatabaseModule extends FirebaseModule {
   setPersistenceCacheSizeBytes(bytes) {
     if (!isNumber(bytes)) {
       throw new Error(
-        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be a number value.`,
+        "firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be a number value.",
       );
     }
 
     if (bytes < 1048576) {
       throw new Error(
-        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be greater than 1048576 bytes (1MB).`,
+        "firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be greater than 1048576 bytes (1MB).",
       );
     }
 
     if (bytes > 104857600) {
       throw new Error(
-        `firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be less than 104857600 bytes (100MB).`,
+        "firebase.app().database().setPersistenceCacheSizeBytes(*) 'bytes' must be less than 104857600 bytes (100MB).",
       );
     }
 

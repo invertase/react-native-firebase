@@ -122,7 +122,7 @@ export default class FirestoreQuery {
   get(options) {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
-        `firebase.firestore().collection().get(*) 'options' must be an object is provided.`,
+        "firebase.firestore().collection().get(*) 'options' must be an object is provided.",
       );
     }
 
@@ -134,7 +134,7 @@ export default class FirestoreQuery {
       options.source !== 'cache'
     ) {
       throw new Error(
-        `firebase.firestore().collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.`,
+        "firebase.firestore().collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.",
       );
     }
 
@@ -153,7 +153,7 @@ export default class FirestoreQuery {
   isEqual(other) {
     if (!(other instanceof FirestoreQuery)) {
       throw new Error(
-        `firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.`,
+        "firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.",
       );
     }
 
@@ -184,7 +184,7 @@ export default class FirestoreQuery {
   limit(limit) {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
-        `firebase.firestore().collection().limit(*) 'limit' must be a positive integer value.`,
+        "firebase.firestore().collection().limit(*) 'limit' must be a positive integer value.",
       );
     }
 
@@ -194,8 +194,6 @@ export default class FirestoreQuery {
   }
 
   onSnapshot(...args) {
-    /* eslint-disable prefer-destructuring */
-
     let snapshotListenOptions;
     let callback;
     let onNext;
@@ -260,7 +258,7 @@ export default class FirestoreQuery {
   orderBy(fieldPath, directionStr) {
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.`,
+        "firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.",
       );
     }
 
@@ -278,19 +276,19 @@ export default class FirestoreQuery {
 
     if (!isUndefined(directionStr) && !this._modifiers.isValidDirection(directionStr)) {
       throw new Error(
-        `firebase.firestore().collection().orderBy(_, *) 'directionStr' must be one of 'asc' or 'desc'.`,
+        "firebase.firestore().collection().orderBy(_, *) 'directionStr' must be one of 'asc' or 'desc'.",
       );
     }
 
     if (this._modifiers.hasStart()) {
       throw new Error(
-        `firebase.firestore().collection().orderBy() Invalid query. You must not call startAt() or startAfter() before calling orderBy().`,
+        'firebase.firestore().collection().orderBy() Invalid query. You must not call startAt() or startAfter() before calling orderBy().',
       );
     }
 
     if (this._modifiers.hasEnd()) {
       throw new Error(
-        `firebase.firestore().collection().orderBy() Invalid query. You must not call endAt() or endBefore() before calling orderBy().`,
+        'firebase.firestore().collection().orderBy() Invalid query. You must not call endAt() or endBefore() before calling orderBy().',
       );
     }
 
@@ -324,7 +322,7 @@ export default class FirestoreQuery {
   where(fieldPath, opStr, value) {
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
-        `firebase.firestore().collection().where(*) 'fieldPath' must be a string or instance of FieldPath.`,
+        "firebase.firestore().collection().where(*) 'fieldPath' must be a string or instance of FieldPath.",
       );
     }
 
@@ -342,19 +340,19 @@ export default class FirestoreQuery {
 
     if (!this._modifiers.isValidOperator(opStr)) {
       throw new Error(
-        `firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=' or 'array-contains'.`,
+        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=' or 'array-contains'.",
       );
     }
 
     if (isUndefined(value)) {
       throw new Error(
-        `firebase.firestore().collection().where(_, _, *) 'value' argument expected.`,
+        "firebase.firestore().collection().where(_, _, *) 'value' argument expected.",
       );
     }
 
     if (isNull(value) && !this._modifiers.isEqualOperator(opStr)) {
       throw new Error(
-        `firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null`,
+        "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
       );
     }
 

@@ -25,14 +25,16 @@ export default class Invitation {
   }
 
   get android() {
-    if (!this._android) this._android = new AndroidInvitation(this);
+    if (!this._android) {
+      this._android = new AndroidInvitation(this);
+    }
     return this._android;
   }
 
   setAndroidClientId(androidClientId) {
     if (!isString(androidClientId)) {
       throw new Error(
-        `firebase.invites.Invite.setAndroidClientId(*) 'androidClientId' must be a string value.`,
+        "firebase.invites.Invite.setAndroidClientId(*) 'androidClientId' must be a string value.",
       );
     }
 
@@ -43,7 +45,7 @@ export default class Invitation {
   setAndroidMinimumVersionCode(androidMinimumVersionCode) {
     if (!isNumber(androidMinimumVersionCode)) {
       throw new Error(
-        `firebase.invites.Invite.setAndroidMinimumVersionCode(*) 'androidMinimumVersionCode' must be a number value.`,
+        "firebase.invites.Invite.setAndroidMinimumVersionCode(*) 'androidMinimumVersionCode' must be a number value.",
       );
     }
 
@@ -54,13 +56,13 @@ export default class Invitation {
   setCallToActionText(callToActionText) {
     if (this._android && this._android._emailHtmlContent) {
       throw new Error(
-        `firebase.invites.Invite.setCallToActionText(*) 'callToActionText' cannot be used alongside 'emailHtmlContent'.`,
+        "firebase.invites.Invite.setCallToActionText(*) 'callToActionText' cannot be used alongside 'emailHtmlContent'.",
       );
     }
 
     if (!isString(callToActionText)) {
       throw new Error(
-        `firebase.invites.Invite.setCallToActionText(*) 'callToActionText' must be a string value.`,
+        "firebase.invites.Invite.setCallToActionText(*) 'callToActionText' must be a string value.",
       );
     }
 
@@ -71,7 +73,7 @@ export default class Invitation {
   setCustomImage(customImage) {
     if (!isString(customImage)) {
       throw new Error(
-        `firebase.invites.Invite.setCustomImage(*) 'customImage' must be a string value.`,
+        "firebase.invites.Invite.setCustomImage(*) 'customImage' must be a string value.",
       );
     }
 
@@ -81,7 +83,7 @@ export default class Invitation {
 
   setDeepLink(deepLink) {
     if (!isString(deepLink)) {
-      throw new Error(`firebase.invites.Invite.setDeepLink(*) 'deepLink' must be a string value.`);
+      throw new Error("firebase.invites.Invite.setDeepLink(*) 'deepLink' must be a string value.");
     }
 
     this._deepLink = deepLink;
@@ -91,7 +93,7 @@ export default class Invitation {
   setIOSClientId(iosClientId) {
     if (!isString(iosClientId)) {
       throw new Error(
-        `firebase.invites.Invite.setIOSClientId(*) 'iosClientId' must be a string value.`,
+        "firebase.invites.Invite.setIOSClientId(*) 'iosClientId' must be a string value.",
       );
     }
 

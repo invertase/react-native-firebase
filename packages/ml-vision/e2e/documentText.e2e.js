@@ -58,7 +58,7 @@ android.describe('mlkit.vision.document.text', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'cloudDocumentTextRecognizerOptions' expected an object value`,
+          "'cloudDocumentTextRecognizerOptions' expected an object value",
         );
         return Promise.resolve();
       }
@@ -72,7 +72,7 @@ android.describe('mlkit.vision.document.text', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value`,
+          "'cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value",
         );
         return Promise.resolve();
       }
@@ -92,7 +92,7 @@ android.describe('mlkit.vision.document.text', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          "'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings",
         );
         return Promise.resolve();
       }
@@ -106,7 +106,7 @@ android.describe('mlkit.vision.document.text', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          "'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings",
         );
         return Promise.resolve();
       }
@@ -120,7 +120,7 @@ android.describe('mlkit.vision.document.text', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings`,
+          "'cloudDocumentTextRecognizerOptions.languageHints' must be an non empty array of strings",
         );
         return Promise.resolve();
       }
@@ -139,7 +139,7 @@ android.describe('mlkit.vision.document.text', () => {
         firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'localImageFilePath' expected a string local file path`);
+        error.message.should.containEql("'localImageFilePath' expected a string local file path");
         return Promise.resolve();
       }
     });

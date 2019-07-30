@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
@@ -35,14 +34,14 @@ import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule implements ActivityEventListener, LifecycleEventListener {
-  private static final String TAG = "Links";
+public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseModule implements ActivityEventListener, LifecycleEventListener {
+  private static final String TAG = "DynamicLinks";
   private static final String SHORT_LINK_TYPE_SHORT = "SHORT";
   private static final String SHORT_LINK_TYPE_UNGUESSABLE = "UNGUESSABLE";
   private String initialLinkValue = null;
   private boolean gotInitialLink = false;
 
-  ReactNativeFirebaseLinksModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseDynamicLinksModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
     getReactApplicationContext().addActivityEventListener(this);
     getReactApplicationContext().addLifecycleEventListener(this);
@@ -55,7 +54,7 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
   }
 
   @ReactMethod
-  public void buildLink(WritableMap dynamicLinkMap, Promise promise) {
+  public void buildLink(ReadableMap dynamicLinkMap, Promise promise) {
     Tasks
       .call(getExecutor(), () -> createDynamicLinkBuilder(dynamicLinkMap).buildDynamicLink().getUri().toString())
       .addOnCompleteListener(getExecutor(), (task) -> {
@@ -69,7 +68,7 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
   }
 
   @ReactMethod
-  public void buildShortLink(WritableMap dynamicLinkMap, String shortLinkType, Promise promise) {
+  public void buildShortLink(ReadableMap dynamicLinkMap, String shortLinkType, Promise promise) {
     Tasks
       .call(getExecutor(), () -> {
         DynamicLink.Builder builder = createDynamicLinkBuilder(dynamicLinkMap);
@@ -123,7 +122,7 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
           gotInitialLink = true;
 
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
-          if (pendingDynamicLinkData != null && isNotInvite(pendingDynamicLinkData)) {
+          if (pendingDynamicLinkData != null) {
             initialLinkValue = pendingDynamicLinkData.getLink().toString();
           }
 
@@ -304,11 +303,6 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
     gotInitialLink = false;
   }
 
-  private boolean isNotInvite(PendingDynamicLinkData pendingDynamicLinkData) {
-    FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(pendingDynamicLinkData);
-    return invite == null || invite.getInvitationId() == null || invite.getInvitationId().isEmpty();
-  }
-
   @Override
   public void onNewIntent(Intent intent) {
     FirebaseDynamicLinks
@@ -317,7 +311,7 @@ public class ReactNativeFirebaseLinksModule extends ReactNativeFirebaseModule im
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
-          if (pendingDynamicLinkData != null && isNotInvite(pendingDynamicLinkData)) {
+          if (pendingDynamicLinkData != null) {
             WritableMap body = Arguments.createMap();
             body.putString("url", pendingDynamicLinkData.getLink().toString());
             ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(new ReactNativeFirebaseEvent(

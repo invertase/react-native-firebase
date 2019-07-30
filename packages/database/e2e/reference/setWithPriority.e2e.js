@@ -31,7 +31,7 @@ describe('database().ref().setWithPriority()', () => {
         .setWithPriority();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'newVal' must be defined`);
+      error.message.should.containEql("'newVal' must be defined");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().setWithPriority()', () => {
         .setWithPriority(null, { foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'newPriority' must be a number, string or null value`);
+      error.message.should.containEql("'newPriority' must be a number, string or null value");
       return Promise.resolve();
     }
   });
@@ -57,7 +57,7 @@ describe('database().ref().setWithPriority()', () => {
         .setWithPriority(null, null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

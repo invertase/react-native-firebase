@@ -90,7 +90,7 @@ describe('firestore.QuerySnapshot', () => {
         snapshot.docChanges(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'options' expected an object`);
+        error.message.should.containEql("'options' expected an object");
         return Promise.resolve();
       }
     });
@@ -102,7 +102,7 @@ describe('firestore.QuerySnapshot', () => {
         snapshot.docChanges({ includeMetadataChanges: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'options.includeMetadataChanges' expected a boolean`);
+        error.message.should.containEql("'options.includeMetadataChanges' expected a boolean");
         return Promise.resolve();
       }
     });
@@ -124,7 +124,7 @@ describe('firestore.QuerySnapshot', () => {
         snapshot.docChanges({ includeMetadataChanges: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`To include metadata changes with your document changes`);
+        error.message.should.containEql('To include metadata changes with your document changes');
         return Promise.resolve();
       }
     });
@@ -183,7 +183,7 @@ describe('firestore.QuerySnapshot', () => {
         snapshot.forEach(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'callback' expected a function`);
+        error.message.should.containEql("'callback' expected a function");
         return Promise.resolve();
       }
     });
@@ -226,7 +226,7 @@ describe('firestore.QuerySnapshot', () => {
         qs.isEqual(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected a QuerySnapshot instance`);
+        error.message.should.containEql("'other' expected a QuerySnapshot instance");
         return Promise.resolve();
       }
     });

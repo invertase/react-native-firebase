@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams.navigation', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.navigation' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams.navigation' must be an object");
       return Promise.resolve();
     }
   });
@@ -42,7 +42,7 @@ describe('dynamicLinks() dynamicLinkParams.navigation', () => {
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
       e.message.should.containEql(
-        `'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean`,
+        "'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean",
       );
       return Promise.resolve();
     }

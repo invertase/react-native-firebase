@@ -90,7 +90,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().faceDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().faceDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -109,7 +109,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   textRecognizerProcessImage(localImageFilePath) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().textRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().textRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -119,7 +119,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -136,7 +136,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -158,7 +158,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -183,7 +183,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -206,7 +206,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -223,7 +223,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        `firebase.mlKitVision().barcodeDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.`,
+        "firebase.mlKitVision().barcodeDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 

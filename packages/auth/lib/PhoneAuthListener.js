@@ -80,12 +80,16 @@ export default class PhoneAuthListener {
 
   _emitToErrorCb(snapshot) {
     const { error } = snapshot;
-    if (this._reject) this._reject(error);
+    if (this._reject) {
+      this._reject(error);
+    }
     this._auth.emitter.emit(this._publicEvents.error, error);
   }
 
   _emitToSuccessCb(snapshot) {
-    if (this._resolve) this._resolve(snapshot);
+    if (this._resolve) {
+      this._resolve(snapshot);
+    }
     this._auth.emitter.emit(this._publicEvents.success, snapshot);
   }
 
@@ -105,7 +109,9 @@ export default class PhoneAuthListener {
   }
 
   _promiseDeferred() {
-    if (!this._promise) this._promise = promiseDefer();
+    if (!this._promise) {
+      this._promise = promiseDefer();
+    }
   }
 
   /* --------------------------
@@ -179,13 +185,13 @@ export default class PhoneAuthListener {
   on(event, observer, errorCb, successCb) {
     if (event !== 'state_changed') {
       throw new Error(
-        `firebase.auth.PhoneAuthListener.on(*, _, _, _) 'event' must equal 'state_changed'.`,
+        "firebase.auth.PhoneAuthListener.on(*, _, _, _) 'event' must equal 'state_changed'.",
       );
     }
 
     if (!isFunction(observer)) {
       throw new Error(
-        `firebase.auth.PhoneAuthListener.on(_, *, _, _) 'observer' must be a function.`,
+        "firebase.auth.PhoneAuthListener.on(_, *, _, _) 'observer' must be a function.",
       );
     }
 
@@ -204,13 +210,17 @@ export default class PhoneAuthListener {
 
   then(fn) {
     this._promiseDeferred();
-    if (this._promise) return this._promise.then.bind(this._promise)(fn);
+    if (this._promise) {
+      return this._promise.then.bind(this._promise)(fn);
+    }
     return undefined;
   }
 
   catch(fn) {
     this._promiseDeferred();
-    if (this._promise) return this._promise.catch.bind(this._promise)(fn);
+    if (this._promise) {
+      return this._promise.catch.bind(this._promise)(fn);
+    }
     return undefined;
   }
 }

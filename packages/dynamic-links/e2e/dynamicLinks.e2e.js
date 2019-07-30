@@ -15,7 +15,6 @@
  *
  */
 
-// eslint-disable-next-line import/prefer-default-export
 const baseParams = {
   link: 'https://invertase.io',
   domainUriPrefix: 'https://xyz.page.link',
@@ -23,12 +22,13 @@ const baseParams = {
 
 module.exports.baseParams = baseParams;
 
-describe('dynamicLinks()', () => {
+// eslint-disable-next-line jest/no-disabled-tests
+xdescribe('dynamicLinks()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.links);
-      app.links().app.should.equal(app);
+      should.exist(app.dynamicLinks);
+      app.dynamicLinks().app.should.equal(app);
     });
   });
 
@@ -61,7 +61,7 @@ describe('dynamicLinks()', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE`,
+          "'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE",
         );
         return Promise.resolve();
       }

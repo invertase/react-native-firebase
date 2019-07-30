@@ -11,7 +11,7 @@ dependencies {
     mlModels.each { modelFlag ->
       if (rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
         rootProject.logger.info ":${project.name} model enabled: '${modelFlag}'"
-        implementation "com.google.firebase:firebase-${modelFlag.replaceAll("_", "-")}:${ReactNative.ext.getVersion("firebase", "mlModel:${modelFlag}")}"
+        implementation "com.google.firebase:firebase-${modelFlag.replaceAll("_", "-")}"
       } else {
         rootProject.logger.warn ":${project.name} model disabled: '${modelFlag}'"
       }

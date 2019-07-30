@@ -53,7 +53,7 @@ export default class FirestoreQuerySnapshot {
   docChanges(options) {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
-        `firebase.firestore() QuerySnapshot.docChanges(*) 'options' expected an object.`,
+        "firebase.firestore() QuerySnapshot.docChanges(*) 'options' expected an object.",
       );
     }
 
@@ -62,7 +62,7 @@ export default class FirestoreQuerySnapshot {
     if (options) {
       if (!isBoolean(options.includeMetadataChanges)) {
         throw new Error(
-          `firebase.firestore() QuerySnapshot.docChanges(*) 'options.includeMetadataChanges' expected a boolean.`,
+          "firebase.firestore() QuerySnapshot.docChanges(*) 'options.includeMetadataChanges' expected a boolean.",
         );
       }
 
@@ -76,7 +76,7 @@ export default class FirestoreQuerySnapshot {
 
     if (includeMetaDataChanges && this._excludesMetadataChanges) {
       throw new Error(
-        `firebase.firestore() QuerySnapshot.docChanges() To include metadata changes with your document changes, you must also pass { includeMetadataChanges:true } to onSnapshot().`,
+        'firebase.firestore() QuerySnapshot.docChanges() To include metadata changes with your document changes, you must also pass { includeMetadataChanges:true } to onSnapshot().',
       );
     }
 
@@ -93,7 +93,7 @@ export default class FirestoreQuerySnapshot {
   forEach(callback, thisArg) {
     if (!isFunction(callback)) {
       throw new Error(
-        `firebase.firestore() QuerySnapshot.forEach(*) 'callback' expected a function.`,
+        "firebase.firestore() QuerySnapshot.forEach(*) 'callback' expected a function.",
       );
     }
 
@@ -107,7 +107,7 @@ export default class FirestoreQuerySnapshot {
   isEqual(other) {
     if (!(other instanceof FirestoreQuerySnapshot)) {
       throw new Error(
-        `firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.`,
+        "firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.",
       );
     }
 

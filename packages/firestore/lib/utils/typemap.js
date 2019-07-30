@@ -49,7 +49,9 @@ const MAP_ENTRIES = Object.entries(MAP);
 export function getTypeMapInt(type, value = undefined) {
   if (hasOwnProperty(MAP, type)) {
     const array = [MAP[type]];
-    if (value !== undefined) array.push(value);
+    if (value !== undefined) {
+      array.push(value);
+    }
     return array;
   }
 
@@ -64,7 +66,9 @@ export function getTypeMapInt(type, value = undefined) {
 export function getTypeMapName(value) {
   for (let i = 0; i < MAP_ENTRIES.length; i++) {
     const [name, int] = MAP_ENTRIES[i];
-    if (value === int) return name;
+    if (value === int) {
+      return name;
+    }
   }
 
   return null;

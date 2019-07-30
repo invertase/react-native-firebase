@@ -38,5 +38,5 @@ Pod::Spec.new do |s|
     s.dependency          'Firebase/MLNLSmartReply', '~> 6.5.0'
   end
 
-  s.static_framework    = true
+  s.static_framework    = false
 end

@@ -39,7 +39,9 @@ export function promiseDefer() {
  * @param callback
  */
 export function promiseWithOptionalCallback(promise, callback) {
-  if (!isFunction(callback)) return promise;
+  if (!isFunction(callback)) {
+    return promise;
+  }
 
   return promise
     .then(result => {
@@ -52,7 +54,9 @@ export function promiseWithOptionalCallback(promise, callback) {
       return result;
     })
     .catch(error => {
-      if (callback) callback(error);
+      if (callback) {
+        callback(error);
+      }
       return Promise.reject(error);
     });
 }

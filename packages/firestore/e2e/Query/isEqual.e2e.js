@@ -24,7 +24,7 @@ describe('firestore().collection().isEqual()', () => {
         .isEqual(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'other' expected a Query instance`);
+      error.message.should.containEql("'other' expected a Query instance");
       return Promise.resolve();
     }
   });

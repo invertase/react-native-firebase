@@ -103,7 +103,6 @@ class DatabaseSyncTree {
       snapshot = new DatabaseDataSnapshot(registration.ref, event.data);
     } else {
       snapshot = new DatabaseDataSnapshot(registration.ref, event.data.snapshot);
-      // eslint-disable-next-line prefer-destructuring
       previousChildName = event.data.previousChildName;
     }
 
@@ -136,7 +135,9 @@ class DatabaseSyncTree {
       return 1;
     }
 
-    if (!Array.isArray(registrations)) return 0;
+    if (!Array.isArray(registrations)) {
+      return 0;
+    }
     for (let i = 0, len = registrations.length; i < len; i++) {
       this.removeRegistration(registrations[i]);
       SharedEventEmitter.removeAllListeners(registrations[i]);
@@ -153,7 +154,9 @@ class DatabaseSyncTree {
    * @return {Array} array of registrations removed
    */
   removeListenerRegistrations(listener, registrations) {
-    if (!Array.isArray(registrations)) return [];
+    if (!Array.isArray(registrations)) {
+      return [];
+    }
     const removed = [];
 
     for (let i = 0, len = registrations.length; i < len; i++) {
@@ -202,8 +205,12 @@ class DatabaseSyncTree {
    * @return {Array}
    */
   getRegistrationsByPathEvent(path, eventType) {
-    if (!this._tree[path]) return [];
-    if (!this._tree[path][eventType]) return [];
+    if (!this._tree[path]) {
+      return [];
+    }
+    if (!this._tree[path][eventType]) {
+      return [];
+    }
 
     return Object.keys(this._tree[path][eventType]);
   }
@@ -217,14 +224,20 @@ class DatabaseSyncTree {
    * @return {Array}
    */
   getOneByPathEventListener(path, eventType, listener) {
-    if (!this._tree[path]) return null;
-    if (!this._tree[path][eventType]) return null;
+    if (!this._tree[path]) {
+      return null;
+    }
+    if (!this._tree[path][eventType]) {
+      return null;
+    }
 
     const registrationsForPathEvent = Object.entries(this._tree[path][eventType]);
 
     for (let i = 0; i < registrationsForPathEvent.length; i++) {
       const registration = registrationsForPathEvent[i];
-      if (registration[1] === listener) return registration[0];
+      if (registration[1] === listener) {
+        return registration[0];
+      }
     }
 
     return null;
@@ -238,8 +251,12 @@ class DatabaseSyncTree {
   addRegistration(registration) {
     const { eventRegistrationKey, eventType, listener, once, path } = registration;
 
-    if (!this._tree[path]) this._tree[path] = {};
-    if (!this._tree[path][eventType]) this._tree[path][eventType] = {};
+    if (!this._tree[path]) {
+      this._tree[path] = {};
+    }
+    if (!this._tree[path][eventType]) {
+      this._tree[path][eventType] = {};
+    }
 
     this._tree[path][eventType][eventRegistrationKey] = listener;
     this._reverseLookup[eventRegistrationKey] = registration;
@@ -264,7 +281,9 @@ class DatabaseSyncTree {
    * @return {boolean}
    */
   removeRegistration(registration) {
-    if (!this._reverseLookup[registration]) return false;
+    if (!this._reverseLookup[registration]) {
+      return false;
+    }
     const { path, eventType, once } = this._reverseLookup[registration];
 
     if (!this._tree[path]) {

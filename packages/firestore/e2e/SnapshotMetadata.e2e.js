@@ -48,7 +48,7 @@ describe('firestore.SnapshotMetadata', () => {
         snapshot.metadata.isEqual();
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected instance of SnapshotMetadata`);
+        error.message.should.containEql("'other' expected instance of SnapshotMetadata");
         return Promise.resolve();
       }
     });

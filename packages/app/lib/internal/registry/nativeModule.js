@@ -62,7 +62,9 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  */
 function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   const native = {};
-  if (!NativeModule) return NativeModule;
+  if (!NativeModule) {
+    return NativeModule;
+  }
 
   const properties = Object.keys(NativeModule);
 

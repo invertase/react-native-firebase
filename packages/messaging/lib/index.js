@@ -91,7 +91,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   requestPermission() {
-    if (isAndroid) return Promise.resolve(true);
+    if (isAndroid) {
+      return Promise.resolve(true);
+    }
     return this.native.requestPermission();
   }
 
@@ -99,7 +101,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   registerForRemoteNotifications() {
-    if (isAndroid) return Promise.resolve();
+    if (isAndroid) {
+      return Promise.resolve();
+    }
     this._isRegisteredForRemoteNotifcations = true;
     return this.native.registerForRemoteNotifications();
   }
@@ -108,7 +112,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   get isRegisteredForRemoteNotifications() {
-    if (isAndroid) return true;
+    if (isAndroid) {
+      return true;
+    }
     return this._isRegisteredForRemoteNotifcations;
   }
 
@@ -116,7 +122,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   unregisterForRemoteNotifications() {
-    if (isAndroid) return Promise.resolve();
+    if (isAndroid) {
+      return Promise.resolve();
+    }
     this._isRegisteredForRemoteNotifcations = false;
     return this.native.unregisterForRemoteNotifications();
   }
@@ -125,7 +133,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform ios
    */
   getAPNSToken() {
-    if (isAndroid) return Promise.resolve(null);
+    if (isAndroid) {
+      return Promise.resolve(null);
+    }
     return this.native.getAPNSToken();
   }
 
@@ -164,7 +174,9 @@ class FirebaseMessagingModule extends FirebaseModule {
    * @platform android
    */
   setBackgroundMessageHandler(handler) {
-    if (isIOS) return;
+    if (isIOS) {
+      return;
+    }
     // todo validate arg, function
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => handler);
   }

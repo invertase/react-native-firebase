@@ -57,7 +57,7 @@ describe('firestore()', () => {
         firebase.firestore().collection(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionPath' must be a string value`);
+        error.message.should.containEql("'collectionPath' must be a string value");
         return Promise.resolve();
       }
     });
@@ -67,7 +67,7 @@ describe('firestore()', () => {
         firebase.firestore().collection('');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionPath' must be a non-empty string`);
+        error.message.should.containEql("'collectionPath' must be a non-empty string");
         return Promise.resolve();
       }
     });
@@ -77,7 +77,7 @@ describe('firestore()', () => {
         firebase.firestore().collection('foo/bar');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionPath' must point to a collection`);
+        error.message.should.containEql("'collectionPath' must point to a collection");
         return Promise.resolve();
       }
     });
@@ -95,7 +95,7 @@ describe('firestore()', () => {
         firebase.firestore().doc(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentPath' must be a string value`);
+        error.message.should.containEql("'documentPath' must be a string value");
         return Promise.resolve();
       }
     });
@@ -105,7 +105,7 @@ describe('firestore()', () => {
         firebase.firestore().doc('');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentPath' must be a non-empty string`);
+        error.message.should.containEql("'documentPath' must be a non-empty string");
         return Promise.resolve();
       }
     });
@@ -115,7 +115,7 @@ describe('firestore()', () => {
         firebase.firestore().doc('foo/bar/baz');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'documentPath' must point to a document`);
+        error.message.should.containEql("'documentPath' must point to a document");
         return Promise.resolve();
       }
     });
@@ -133,7 +133,7 @@ describe('firestore()', () => {
         firebase.firestore().collectionGroup(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionId' must be a string value`);
+        error.message.should.containEql("'collectionId' must be a string value");
         return Promise.resolve();
       }
     });
@@ -143,7 +143,7 @@ describe('firestore()', () => {
         firebase.firestore().collectionGroup('');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionId' must be a non-empty string`);
+        error.message.should.containEql("'collectionId' must be a non-empty string");
         return Promise.resolve();
       }
     });
@@ -153,7 +153,7 @@ describe('firestore()', () => {
         firebase.firestore().collectionGroup('foo/bar');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'collectionId' must not contain '/'`);
+        error.message.should.containEql("'collectionId' must not contain '/'");
         return Promise.resolve();
       }
     });
@@ -205,7 +205,7 @@ describe('firestore()', () => {
         firebase.firestore().runTransaction('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'updateFunction' must be a function`);
+        error.message.should.containEql("'updateFunction' must be a function");
         return Promise.resolve();
       }
     });
@@ -217,7 +217,7 @@ describe('firestore()', () => {
         firebase.firestore().settings('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings' must be an object`);
+        error.message.should.containEql("'settings' must be an object");
         return Promise.resolve();
       }
     });
@@ -227,7 +227,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ foo: 'bar' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.foo' is not a valid settings field`);
+        error.message.should.containEql("'settings.foo' is not a valid settings field");
         return Promise.resolve();
       }
     });
@@ -237,7 +237,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ cacheSizeBytes: 'foo' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.cacheSizeBytes' must be a number value`);
+        error.message.should.containEql("'settings.cacheSizeBytes' must be a number value");
         return Promise.resolve();
       }
     });
@@ -247,7 +247,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ cacheSizeBytes: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.cacheSizeBytes' the minimum cache size`);
+        error.message.should.containEql("'settings.cacheSizeBytes' the minimum cache size");
         return Promise.resolve();
       }
     });
@@ -261,7 +261,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ host: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.host' must be a string value`);
+        error.message.should.containEql("'settings.host' must be a string value");
         return Promise.resolve();
       }
     });
@@ -271,7 +271,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ host: '' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.host' must not be an empty string`);
+        error.message.should.containEql("'settings.host' must not be an empty string");
         return Promise.resolve();
       }
     });
@@ -281,7 +281,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ persistence: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.persistence' must be a boolean value`);
+        error.message.should.containEql("'settings.persistence' must be a boolean value");
         return Promise.resolve();
       }
     });
@@ -291,7 +291,7 @@ describe('firestore()', () => {
         firebase.firestore().settings({ ssl: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'settings.ssl' must be a boolean value`);
+        error.message.should.containEql("'settings.ssl' must be a boolean value");
         return Promise.resolve();
       }
     });

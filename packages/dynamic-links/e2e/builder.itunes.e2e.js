@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.itunes' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams.itunes' must be an object");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.itunes.affiliateToken' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.itunes.affiliateToken' must be a string");
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.itunes.campaignToken' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.itunes.campaignToken' must be a string");
       return Promise.resolve();
     }
   });
@@ -71,7 +71,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.itunes.providerToken' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.itunes.providerToken' must be a string");
       return Promise.resolve();
     }
   });

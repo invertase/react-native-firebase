@@ -97,7 +97,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
     );
     if (!isUndefined(messageHistoryLimit) && !isNumber(messageHistoryLimit)) {
       throw new Error(
-        `firebase.mlKitLanguage().newSmartReplyConversation(*) 'messageHistoryLimit' must be a number or undefined.`,
+        "firebase.mlKitLanguage().newSmartReplyConversation(*) 'messageHistoryLimit' must be a number or undefined.",
       );
     }
 

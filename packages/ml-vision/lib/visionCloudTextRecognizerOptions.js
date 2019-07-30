@@ -37,13 +37,13 @@ export default function visionCloudTextRecognizerOptions(cloudTextRecognizerOpti
   }
 
   if (!isObject(cloudTextRecognizerOptions)) {
-    throw new Error(`'cloudTextRecognizerOptions' expected an object value.`);
+    throw new Error("'cloudTextRecognizerOptions' expected an object value.");
   }
 
   if (hasOwnProperty(cloudTextRecognizerOptions, 'enforceCertFingerprintMatch')) {
     if (!isBoolean(cloudTextRecognizerOptions.enforceCertFingerprintMatch)) {
       throw new Error(
-        `'cloudTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.`,
+        "'cloudTextRecognizerOptions.enforceCertFingerprintMatch' expected a boolean value.",
       );
     }
 
@@ -56,7 +56,7 @@ export default function visionCloudTextRecognizerOptions(cloudTextRecognizerOpti
       cloudTextRecognizerOptions.modelType !== VisionCloudTextRecognizerModelType.SPARSE_MODEL
     ) {
       throw new Error(
-        `'cloudTextRecognizerOptions.modelType' invalid model. Expected VisionCloudTextRecognizerModelType.DENSE_MODEL or VisionCloudTextRecognizerModelType.SPARSE_MODEL.`,
+        "'cloudTextRecognizerOptions.modelType' invalid model. Expected VisionCloudTextRecognizerModelType.DENSE_MODEL or VisionCloudTextRecognizerModelType.SPARSE_MODEL.",
       );
     }
 
@@ -70,7 +70,7 @@ export default function visionCloudTextRecognizerOptions(cloudTextRecognizerOpti
       !isString(cloudTextRecognizerOptions.languageHints[0])
     ) {
       throw new Error(
-        `'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings.`,
+        "'cloudTextRecognizerOptions.languageHints' must be an non empty array of strings.",
       );
     }
 

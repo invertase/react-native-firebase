@@ -41,11 +41,11 @@ const nativeEvents = [EVENT_INVITE_RECEIVED];
 class FirebaseInvitesModule extends FirebaseModule {
   createInvitation(title, message) {
     if (!isString(title)) {
-      throw new Error(`firebase.invites().createInvite(*, _) 'title' must be a string value.`);
+      throw new Error("firebase.invites().createInvite(*, _) 'title' must be a string value.");
     }
 
     if (!isString(message)) {
-      throw new Error(`firebase.invites().createInvite(_, *) 'message' must be a string value.`);
+      throw new Error("firebase.invites().createInvite(_, *) 'message' must be a string value.");
     }
 
     return new Invite(title, message);
@@ -67,7 +67,7 @@ class FirebaseInvitesModule extends FirebaseModule {
       return this.native.sendInvitation(invite.build());
     }
 
-    throw new Error(`firebase.invites().sendInvitation(*) expects and instance of Invite.`);
+    throw new Error('firebase.invites().sendInvitation(*) expects and instance of Invite.');
   }
 }
 

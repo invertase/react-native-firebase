@@ -28,7 +28,7 @@ export default class MetricWithAttributes {
 
   getAttribute(attribute) {
     if (!isString(attribute)) {
-      throw new Error(`firebase.perf.*.getAttribute(*) 'attribute' must be a string.`);
+      throw new Error("firebase.perf.*.getAttribute(*) 'attribute' must be a string.");
     }
     return this._attributes[attribute] || null;
   }
@@ -37,19 +37,19 @@ export default class MetricWithAttributes {
     // TODO(VALIDATION): attribute: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(attribute) || attribute.length > 40) {
       throw new Error(
-        `firebase.perf.*.putAttribute(*, _) 'attribute' must be a string with a maximum length of 40 characters.`,
+        "firebase.perf.*.putAttribute(*, _) 'attribute' must be a string with a maximum length of 40 characters.",
       );
     }
 
     if (!isString(value) || value.length > 100) {
       throw new Error(
-        `firebase.perf.*.putAttribute(_, *) 'value' must be a string with a maximum length of 100 characters.`,
+        "firebase.perf.*.putAttribute(_, *) 'value' must be a string with a maximum length of 100 characters.",
       );
     }
 
     if (!hasOwnProperty(this._attributes, attribute) && Object.keys(this._attributes).length > 4) {
       throw new Error(
-        `firebase.perf.*.putAttribute(_, _) the maximum number of attributes (5) has been reached.`,
+        'firebase.perf.*.putAttribute(_, _) the maximum number of attributes (5) has been reached.',
       );
     }
 

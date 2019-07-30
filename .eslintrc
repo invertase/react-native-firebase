@@ -1,15 +1,20 @@
 {
   "root": true,
-  "extends": ["airbnb", "plugin:prettier/recommended", "prettier/flowtype", "prettier/react"],
-  "parser": "babel-eslint",
-  "plugins": ["flowtype", "prettier"],
+  "extends": "@react-native-community",
   "env": {
     "es6": true,
     "node": true,
     "shelljs": true,
     "jest": true
   },
+  "settings": {
+    "react": {
+      "version": "16.8.6"
+    }
+  },
   "rules": {
+    "jest/no-identical-title": 0,
+    "eslint-comments/no-unlimited-disable": 0,
     "no-new": 0,
     "no-continue": 0,
     "no-extend-native": 0,
@@ -19,16 +24,19 @@
     "no-console": 1,
     "no-plusplus": 0,
     "no-undef": 0,
+    "no-catch-shadow": 0,
     "no-underscore-dangle": "off",
     "no-use-before-define": 0,
     "react/forbid-prop-types": "warn",
     "react/jsx-filename-extension": ["off", { "extensions": [".js", ".jsx"] }],
-    "import/no-cycle": 1,
     "import/no-unresolved": 0
   },
   "globals": {
     "__DEV__": true,
     "__RNFB__": true,
+    "firebase": true,
+    "should": true,
+    "Utils": true,
     "window": true
   }
 }

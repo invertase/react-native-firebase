@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *

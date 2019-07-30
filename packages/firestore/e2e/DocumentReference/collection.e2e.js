@@ -24,7 +24,7 @@ describe('firestore.doc().collection()', () => {
         .collection(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'collectionPath' must be a string value`);
+      error.message.should.containEql("'collectionPath' must be a string value");
       return Promise.resolve();
     }
   });
@@ -37,7 +37,7 @@ describe('firestore.doc().collection()', () => {
         .collection('');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'collectionPath' must be a non-empty string`);
+      error.message.should.containEql("'collectionPath' must be a non-empty string");
       return Promise.resolve();
     }
   });
@@ -50,7 +50,7 @@ describe('firestore.doc().collection()', () => {
         .collection('foo/bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'collectionPath' must point to a collection`);
+      error.message.should.containEql("'collectionPath' must point to a collection");
       return Promise.resolve();
     }
   });

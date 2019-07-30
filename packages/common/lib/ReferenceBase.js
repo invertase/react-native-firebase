@@ -21,7 +21,9 @@ export default class ReferenceBase {
 
     if (path) {
       path = path.length > 1 && path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-      if (path.startsWith('/') && path.length > 1) path = path.substring(1, path.length);
+      if (path.startsWith('/') && path.length > 1) {
+        path = path.substring(1, path.length);
+      }
     } else {
       path = '/';
     }

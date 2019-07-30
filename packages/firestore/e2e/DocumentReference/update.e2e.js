@@ -29,7 +29,7 @@ describe('firestore.doc().update()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `expected at least 1 argument but was called with 0 arguments`,
+        'expected at least 1 argument but was called with 0 arguments',
       );
       return Promise.resolve();
     }
@@ -43,7 +43,7 @@ describe('firestore.doc().update()', () => {
         .update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.code.should.containEql(`firestore/not-found`);
+      error.code.should.containEql('firestore/not-found');
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('firestore.doc().update()', () => {
         .update('foo', 'bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`or equal numbers of key/value pairs`);
+      error.message.should.containEql('or equal numbers of key/value pairs');
       return Promise.resolve();
     }
   });

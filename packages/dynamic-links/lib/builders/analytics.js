@@ -19,14 +19,14 @@ import { isObject, isString } from '@react-native-firebase/common';
 
 export default function buildAnalytics(analyticsParams) {
   if (!isObject(analyticsParams)) {
-    throw new Error(`'dynamicLinksParams.analytics' must be an object.`);
+    throw new Error("'dynamicLinksParams.analytics' must be an object.");
   }
 
   const params = {};
 
   if (analyticsParams.campaign) {
     if (!isString(analyticsParams.campaign)) {
-      throw new Error(`'dynamicLinksParams.analytics.campaign' must be a string.`);
+      throw new Error("'dynamicLinksParams.analytics.campaign' must be a string.");
     }
 
     params.campaign = analyticsParams.campaign;
@@ -34,7 +34,7 @@ export default function buildAnalytics(analyticsParams) {
 
   if (analyticsParams.content) {
     if (!isString(analyticsParams.content)) {
-      throw new Error(`'dynamicLinksParams.analytics.content' must be a string.`);
+      throw new Error("'dynamicLinksParams.analytics.content' must be a string.");
     }
 
     params.content = analyticsParams.content;
@@ -42,7 +42,7 @@ export default function buildAnalytics(analyticsParams) {
 
   if (analyticsParams.medium) {
     if (!isString(analyticsParams.medium)) {
-      throw new Error(`'dynamicLinksParams.analytics.medium' must be a string.`);
+      throw new Error("'dynamicLinksParams.analytics.medium' must be a string.");
     }
 
     params.medium = analyticsParams.medium;
@@ -50,7 +50,7 @@ export default function buildAnalytics(analyticsParams) {
 
   if (analyticsParams.source) {
     if (!isString(analyticsParams.source)) {
-      throw new Error(`'dynamicLinksParams.analytics.source' must be a string.`);
+      throw new Error("'dynamicLinksParams.analytics.source' must be a string.");
     }
 
     params.source = analyticsParams.source;
@@ -58,7 +58,7 @@ export default function buildAnalytics(analyticsParams) {
 
   if (analyticsParams.term) {
     if (!isString(analyticsParams.term)) {
-      throw new Error(`'dynamicLinksParams.analytics.term' must be a string.`);
+      throw new Error("'dynamicLinksParams.analytics.term' must be a string.");
     }
 
     params.term = analyticsParams.term;

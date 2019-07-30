@@ -33,7 +33,7 @@ export default class FirestoreSnapshotMetadata {
   isEqual(other) {
     if (isUndefined(other) || !(other instanceof FirestoreSnapshotMetadata)) {
       throw new Error(
-        `firebase.firestore() SnapshotMetadata.isEqual(*) 'other' expected instance of SnapshotMetadata`,
+        "firebase.firestore() SnapshotMetadata.isEqual(*) 'other' expected instance of SnapshotMetadata",
       );
     }
 

@@ -32,7 +32,7 @@ describe('database().ref().transaction()', () => {
         .transaction();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'transactionUpdate' must be a function`);
+      error.message.should.containEql("'transactionUpdate' must be a function");
       return Promise.resolve();
     }
   });
@@ -45,7 +45,7 @@ describe('database().ref().transaction()', () => {
         .transaction(NOOP, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });
@@ -58,7 +58,7 @@ describe('database().ref().transaction()', () => {
         .transaction(NOOP, NOOP, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'applyLocally' must be a boolean value if provided`);
+      error.message.should.containEql("'applyLocally' must be a boolean value if provided");
       return Promise.resolve();
     }
   });
@@ -142,7 +142,7 @@ describe('database().ref().transaction()', () => {
       });
       return Promise.reject(new Error('Did not throw error.'));
     } catch (error) {
-      error.message.should.containEql(`Client doesn't have permission to access the desired data`);
+      error.message.should.containEql("Client doesn't have permission to access the desired data");
       return Promise.resolve();
     }
   });
@@ -166,7 +166,7 @@ describe('database().ref().transaction()', () => {
             }
 
             error.message.should.containEql(
-              `Client doesn't have permission to access the desired data`,
+              "Client doesn't have permission to access the desired data",
             );
             return resolve();
           },

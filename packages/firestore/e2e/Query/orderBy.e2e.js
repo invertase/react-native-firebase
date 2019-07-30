@@ -28,7 +28,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'fieldPath' must be a string or instance of FieldPath`);
+      error.message.should.containEql("'fieldPath' must be a string or instance of FieldPath");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('.foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'fieldPath' Invalid field path`);
+      error.message.should.containEql("'fieldPath' Invalid field path");
       return Promise.resolve();
     }
   });
@@ -54,7 +54,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('foo', 'up');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'directionStr' must be one of 'asc' or 'desc'`);
+      error.message.should.containEql("'directionStr' must be one of 'asc' or 'desc'");
       return Promise.resolve();
     }
   });
@@ -72,7 +72,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You must not call startAt() or startAfter()`);
+      error.message.should.containEql('You must not call startAt() or startAfter()');
       return Promise.resolve();
     }
   });
@@ -90,7 +90,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You must not call endAt() or endBefore()`);
+      error.message.should.containEql('You must not call endAt() or endBefore()');
       return Promise.resolve();
     }
   });
@@ -104,7 +104,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You have a where filter with an inequality`);
+      error.message.should.containEql('You have a where filter with an inequality');
       return Promise.resolve();
     }
   });
@@ -118,7 +118,7 @@ describe('firestore().collection().orderBy()', () => {
         .orderBy('foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`Order by clause cannot contain duplicate fields`);
+      error.message.should.containEql('Order by clause cannot contain duplicate fields');
       return Promise.resolve();
     }
   });

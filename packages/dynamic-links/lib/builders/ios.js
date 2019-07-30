@@ -19,14 +19,14 @@ import { isObject, isString } from '@react-native-firebase/common';
 
 export default function buildIos(iosParams) {
   if (!isObject(iosParams)) {
-    throw new Error(`'dynamicLinksParams.ios' must be an object.`);
+    throw new Error("'dynamicLinksParams.ios' must be an object.");
   }
 
   const params = {};
 
   if (iosParams.appStoreId) {
     if (!isString(iosParams.appStoreId)) {
-      throw new Error(`'dynamicLinksParams.ios.appStoreId' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.appStoreId' must be a string.");
     }
 
     params.appStoreId = iosParams.appStoreId;
@@ -34,7 +34,7 @@ export default function buildIos(iosParams) {
 
   if (iosParams.bundleId) {
     if (!isString(iosParams.bundleId)) {
-      throw new Error(`'dynamicLinksParams.ios.bundleId' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.bundleId' must be a string.");
     }
 
     params.bundleId = iosParams.bundleId;
@@ -42,7 +42,7 @@ export default function buildIos(iosParams) {
 
   if (iosParams.customScheme) {
     if (!isString(iosParams.customScheme)) {
-      throw new Error(`'dynamicLinksParams.ios.customScheme' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.customScheme' must be a string.");
     }
 
     params.customScheme = iosParams.customScheme;
@@ -50,7 +50,7 @@ export default function buildIos(iosParams) {
 
   if (iosParams.fallbackUrl) {
     if (!isString(iosParams.fallbackUrl)) {
-      throw new Error(`'dynamicLinksParams.ios.fallbackUrl' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.fallbackUrl' must be a string.");
     }
 
     params.fallbackUrl = iosParams.fallbackUrl;
@@ -58,7 +58,7 @@ export default function buildIos(iosParams) {
 
   if (iosParams.iPadBundleId) {
     if (!isString(iosParams.iPadBundleId)) {
-      throw new Error(`'dynamicLinksParams.ios.iPadBundleId' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.iPadBundleId' must be a string.");
     }
 
     params.iPadBundleId = iosParams.iPadBundleId;
@@ -66,7 +66,7 @@ export default function buildIos(iosParams) {
 
   if (iosParams.iPadFallbackUrl) {
     if (!isString(iosParams.iPadFallbackUrl)) {
-      throw new Error(`'dynamicLinksParams.ios.iPadFallbackUrl' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.iPadFallbackUrl' must be a string.");
     }
 
     params.iPadFallbackUrl = iosParams.iPadFallbackUrl;
@@ -74,14 +74,14 @@ export default function buildIos(iosParams) {
 
   if (iosParams.minimumVersion) {
     if (!isString(iosParams.minimumVersion)) {
-      throw new Error(`'dynamicLinksParams.ios.minimumVersion' must be a string.`);
+      throw new Error("'dynamicLinksParams.ios.minimumVersion' must be a string.");
     }
 
     params.minimumVersion = iosParams.minimumVersion;
   }
 
   if (!params.bundleId) {
-    throw new Error(`'dynamicLinksParams.ios' missing required 'bundleId' property.`);
+    throw new Error("'dynamicLinksParams.ios' missing required 'bundleId' property.");
   }
 
   return params;

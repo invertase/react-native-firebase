@@ -25,7 +25,7 @@ export default class FirestoreTimestamp {
   static fromDate(date) {
     if (!isDate(date)) {
       throw new Error(
-        `firebase.firestore.Timestamp.fromDate(*) 'date' expected a valid Date object.`,
+        "firebase.firestore.Timestamp.fromDate(*) 'date' expected a valid Date object.",
       );
     }
 
@@ -40,11 +40,11 @@ export default class FirestoreTimestamp {
 
   constructor(seconds, nanoseconds) {
     if (!isNumber(seconds)) {
-      throw new Error(`firebase.firestore.Timestamp 'seconds' expected a number value.`);
+      throw new Error("firebase.firestore.Timestamp 'seconds' expected a number value.");
     }
 
     if (!isNumber(nanoseconds)) {
-      throw new Error(`firebase.firestore.Timestamp 'nanoseconds' expected a number value.`);
+      throw new Error("firebase.firestore.Timestamp 'nanoseconds' expected a number value.");
     }
 
     if (nanoseconds < 0) {
@@ -80,7 +80,7 @@ export default class FirestoreTimestamp {
   isEqual(other) {
     if (!(other instanceof FirestoreTimestamp)) {
       throw Error(
-        `firebase.firestore.Timestamp.isEqual(*) 'other' expected an instance of Timestamp.`,
+        "firebase.firestore.Timestamp.isEqual(*) 'other' expected an instance of Timestamp.",
       );
     }
 

@@ -38,7 +38,6 @@ export default class FirestoreTransactionHandler {
   }
 
   _onTransactionEvent(event) {
-    // eslint-disable-next-line default-case
     switch (event.body.type) {
       case 'update':
         this._handleUpdate(event);
@@ -56,7 +55,9 @@ export default class FirestoreTransactionHandler {
     const { listenerId: id } = event;
 
     // abort if no longer exists js side
-    if (!this._pending[id]) return this._remove(id);
+    if (!this._pending[id]) {
+      return this._remove(id);
+    }
 
     const { meta, transaction } = this._pending[id];
     const { updateFunction, reject } = meta;
@@ -74,7 +75,7 @@ export default class FirestoreTransactionHandler {
       // validate user has returned a promise in their update function
       if (!possiblePromise || !possiblePromise.then) {
         throw new Error(
-          `firebase.firestore().runTransaction(*) 'updateFunction' must return a Promise.`,
+          "firebase.firestore().runTransaction(*) 'updateFunction' must return a Promise.",
         );
       }
 

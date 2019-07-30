@@ -16,26 +16,6 @@ project.ext.react = [
 apply from: "../../node_modules/react-native/react.gradle"
 
 def enableSeparateBuildPerCPUArchitecture = false
-def firebasePackages = [
-  'app',
-  'auth',
-  'database',
-  'analytics',
-  'config',
-  'crashlytics',
-  'functions',
-  'firestore',
-  'fiam',
-  'iid',
-  'invites',
-  'dynamic-links',
-  'messaging',
-  'ml-natural-language',
-  'ml-vision',
-  'storage',
-  'perf',
-  'utils'
-]
 
 /**
  * Use international variant JavaScriptCore
@@ -105,8 +85,8 @@ android {
   applicationVariants.all { variant ->
     variant.outputs.each { output ->
       // For each separate APK per architecture, set a unique version code as described here:
-      // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
-      def versionCodes = ["armeabi-v7a": 1, "x86": 2]
+      // https://developer.android.com/studio/build/configure-apk-splits.html
+      def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
       def abi = output.getFilter(OutputFile.ABI)
       if (abi != null) {  // null for the universal-debug, universal-release variants
         output.versionCodeOverride =
@@ -144,12 +124,7 @@ dependencies {
   } else {
     implementation 'org.webkit:android-jsc:+'
   }
-  /* ----------------------------
-   *    REACT NATIVE FIREBASE
-   * ---------------------------- */
-  firebasePackages.each { firebasePackage ->
-    implementation project(path: ":@react-native-firebase_${firebasePackage}")
-  }
+
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
@@ -168,3 +143,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

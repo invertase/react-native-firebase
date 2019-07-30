@@ -69,7 +69,7 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('uploads a data_url formatted string', async () => {
-      const dataUrl = `data:application/json;base64,eyJmb28iOiJiYXNlNjQifQ==`;
+      const dataUrl = 'data:application/json;base64,eyJmb28iOiJiYXNlNjQifQ==';
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/putStringDataURL.json')
@@ -81,7 +81,7 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('uploads a url encoded data_url formatted string', async () => {
-      const dataUrl = `data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E`;
+      const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/helloWorld.html')
@@ -93,7 +93,7 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('when using data_url it still sets the content type if metadata is provided', async () => {
-      const dataUrl = `data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E`;
+      const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
 
       const uploadTaskSnapshot = await firebase
         .storage()
@@ -141,7 +141,7 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('throws an error on invalid data_url', async () => {
-      const dataUrl = ``;
+      const dataUrl = '';
       try {
         await firebase
           .storage()
@@ -162,7 +162,7 @@ describe('storage() -> StorageTask', () => {
           .putString(1, 'base64');
         return Promise.reject(new Error('Did not throw!'));
       } catch (error) {
-        error.message.should.containEql(`'string' expects a string value`);
+        error.message.should.containEql("'string' expects a string value");
         return Promise.resolve();
       }
     });
@@ -175,7 +175,7 @@ describe('storage() -> StorageTask', () => {
           .putString('fooby', 'abc');
         return Promise.reject(new Error('Did not throw!'));
       } catch (error) {
-        error.message.should.containEql(`'format' provided is invalid, must be one of`);
+        error.message.should.containEql("'format' provided is invalid, must be one of");
         return Promise.resolve();
       }
     });
@@ -188,7 +188,7 @@ describe('storage() -> StorageTask', () => {
           .putString('fooby', 'raw', 1234);
         return Promise.reject(new Error('Did not throw!'));
       } catch (error) {
-        error.message.should.containEql(`must be an object value if provided`);
+        error.message.should.containEql('must be an object value if provided');
         return Promise.resolve();
       }
     });
@@ -359,7 +359,7 @@ describe('storage() -> StorageTask', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `event argument must be a string with a value of 'state_changed'`,
+          "event argument must be a string with a value of 'state_changed'",
         );
         return Promise.resolve();
       }
@@ -372,7 +372,7 @@ describe('storage() -> StorageTask', () => {
         task.on('state_changed', 'not a fn');
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`'nextOrObserver' must be a Function, an Object or Null`);
+        error.message.should.containEql("'nextOrObserver' must be a Function, an Object or Null");
         return Promise.resolve();
       }
     });

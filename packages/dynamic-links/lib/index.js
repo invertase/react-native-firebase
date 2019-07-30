@@ -26,7 +26,7 @@ import version from './version';
 
 const statics = {};
 
-const namespace = 'links';
+const namespace = 'dynamicLinks';
 
 const nativeModuleName = 'RNFBDynamicLinksModule';
 
@@ -46,7 +46,7 @@ class FirebaseLinksModule extends FirebaseModule {
 
   createDynamicLink(dynamicLinkParams) {
     // eslint-disable-next-line no-console
-    console.warn(`firebase.links().createDynamicLink() is deprecated in favour of buildLink()`);
+    console.warn('firebase.links().createDynamicLink() is deprecated in favour of buildLink()');
     return this.buildLink(dynamicLinkParams);
   }
 
@@ -64,7 +64,7 @@ class FirebaseLinksModule extends FirebaseModule {
       shortLinkType !== 'UNGUESSABLE'
     ) {
       throw new Error(
-        `firebase.dynamicLinks().buildShortLink(_, *) 'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE.`,
+        "firebase.dynamicLinks().buildShortLink(_, *) 'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE.",
       );
     }
 
@@ -74,7 +74,7 @@ class FirebaseLinksModule extends FirebaseModule {
   createShortDynamicLink(dynamicLinkParams, shortLinkType) {
     // eslint-disable-next-line no-console
     console.warn(
-      `firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()`,
+      'firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()',
     );
     return this.buildShortLink(dynamicLinkParams, shortLinkType);
   }

@@ -19,14 +19,14 @@ import { isObject, isString } from '@react-native-firebase/common';
 
 export default function buildAndroid(androidParams) {
   if (!isObject(androidParams)) {
-    throw new Error(`'dynamicLinksParams.android' must be an object.`);
+    throw new Error("'dynamicLinksParams.android' must be an object.");
   }
 
   const params = {};
 
   if (androidParams.fallbackUrl) {
     if (!isString(androidParams.fallbackUrl)) {
-      throw new Error(`'dynamicLinksParams.android.fallbackUrl' must be a string.`);
+      throw new Error("'dynamicLinksParams.android.fallbackUrl' must be a string.");
     }
 
     params.fallbackUrl = androidParams.fallbackUrl;
@@ -34,7 +34,7 @@ export default function buildAndroid(androidParams) {
 
   if (androidParams.minimumVersion) {
     if (!isString(androidParams.minimumVersion)) {
-      throw new Error(`'dynamicLinksParams.android.minimumVersion' must be a string.`);
+      throw new Error("'dynamicLinksParams.android.minimumVersion' must be a string.");
     }
 
     params.minimumVersion = androidParams.minimumVersion;
@@ -42,14 +42,14 @@ export default function buildAndroid(androidParams) {
 
   if (androidParams.packageName) {
     if (!isString(androidParams.packageName)) {
-      throw new Error(`'dynamicLinksParams.android.packageName' must be a string.`);
+      throw new Error("'dynamicLinksParams.android.packageName' must be a string.");
     }
 
     params.packageName = androidParams.packageName;
   }
 
   if (!params.packageName) {
-    throw new Error(`'dynamicLinksParams.android' missing required 'packageName' property.`);
+    throw new Error("'dynamicLinksParams.android' missing required 'packageName' property.");
   }
 
   return params;

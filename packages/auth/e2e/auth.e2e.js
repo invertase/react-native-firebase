@@ -81,7 +81,7 @@ describe('auth()', () => {
   describe('signInWithCustomToken()', () => {
     // TODO(salakar) use new testing api to create a custom token
     xit('signs in with a admin sdk created custom auth token', async () => {
-      const customUID = `zdwHCjbpzraRoNK7d64FYWv5AH02`;
+      const customUID = 'zdwHCjbpzraRoNK7d64FYWv5AH02';
       const token = await firebaseAdmin.auth().createCustomToken(customUID, {
         test: null,
         roles: [
@@ -762,17 +762,14 @@ describe('auth()', () => {
 
   describe('languageCode', () => {
     it('it should change the language code', () => {
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'en';
       if (firebase.auth().languageCode !== 'en') {
         throw new Error('Expected language code to be "en".');
       }
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'fr';
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'en';
     });
   });
@@ -811,9 +808,7 @@ describe('auth()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
-      const pass = random;
-
-      await firebase.auth().createUserWithEmailAndPassword(email, pass);
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
 
       try {
         await firebase.auth().sendPasswordResetEmail(email);

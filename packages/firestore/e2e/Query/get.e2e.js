@@ -28,7 +28,7 @@ describe('firestore().collection().get()', () => {
         .get(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'options' must be an object is provided`);
+      error.message.should.containEql("'options' must be an object is provided");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('firestore().collection().get()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `'options' GetOptions.source must be one of 'default', 'server' or 'cache'`,
+        "'options' GetOptions.source must be one of 'default', 'server' or 'cache'",
       );
       return Promise.resolve();
     }

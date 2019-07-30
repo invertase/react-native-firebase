@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.android' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams.android' must be an object");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.android.fallbackUrl' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.android.fallbackUrl' must be a string");
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.android.minimumVersion' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.android.minimumVersion' must be a string");
       return Promise.resolve();
     }
   });
@@ -71,7 +71,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.android.packageName' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.android.packageName' must be a string");
       return Promise.resolve();
     }
   });
@@ -87,7 +87,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
       e.message.should.containEql(
-        `'dynamicLinksParams.android' missing required 'packageName' property`,
+        "'dynamicLinksParams.android' missing required 'packageName' property",
       );
       return Promise.resolve();
     }

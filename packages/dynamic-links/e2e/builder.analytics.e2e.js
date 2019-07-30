@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics' must be an object`);
+      e.message.should.containEql("'dynamicLinksParams.analytics' must be an object");
       return Promise.resolve();
     }
   });
@@ -41,7 +41,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics.campaign' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.analytics.campaign' must be a string");
       return Promise.resolve();
     }
   });
@@ -56,7 +56,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics.content' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.analytics.content' must be a string");
       return Promise.resolve();
     }
   });
@@ -71,7 +71,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics.medium' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.analytics.medium' must be a string");
       return Promise.resolve();
     }
   });
@@ -86,7 +86,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics.source' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.analytics.source' must be a string");
       return Promise.resolve();
     }
   });
@@ -101,7 +101,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', () => {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'dynamicLinksParams.analytics.term' must be a string`);
+      e.message.should.containEql("'dynamicLinksParams.analytics.term' must be a string");
       return Promise.resolve();
     }
   });

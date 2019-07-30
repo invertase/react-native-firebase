@@ -63,11 +63,21 @@ export default class FirestoreQueryModifiers {
   get options() {
     const options = {};
 
-    if (this._limit) options.limit = this._limit;
-    if (this._startAt) options.startAt = this._startAt;
-    if (this._startAfter) options.startAfter = this._startAfter;
-    if (this._endAt) options.endAt = this._endAt;
-    if (this._endBefore) options.endBefore = this._endBefore;
+    if (this._limit) {
+      options.limit = this._limit;
+    }
+    if (this._startAt) {
+      options.startAt = this._startAt;
+    }
+    if (this._startAfter) {
+      options.startAfter = this._startAfter;
+    }
+    if (this._endAt) {
+      options.endAt = this._endAt;
+    }
+    if (this._endBefore) {
+      options.endBefore = this._endBefore;
+    }
 
     return options;
   }
@@ -180,7 +190,7 @@ export default class FirestoreQueryModifiers {
         continue;
       }
 
-      throw new Error(`Invalid query. Queries only support a single array-contains filter.`);
+      throw new Error('Invalid query. Queries only support a single array-contains filter.');
     }
   }
 
@@ -209,7 +219,7 @@ export default class FirestoreQueryModifiers {
       const set = new Set(orders);
 
       if (set.size !== orders.length) {
-        throw new Error(`Invalid query. Order by clause cannot contain duplicate fields.`);
+        throw new Error('Invalid query. Order by clause cannot contain duplicate fields.');
       }
     }
 

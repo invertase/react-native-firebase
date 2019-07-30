@@ -28,7 +28,7 @@ describe('firestore.collection().doc()', () => {
         .doc('bar/baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'documentPath' must point to a document`);
+      error.message.should.containEql("'documentPath' must point to a document");
       return Promise.resolve();
     }
   });

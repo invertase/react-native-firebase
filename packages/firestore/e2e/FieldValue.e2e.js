@@ -25,7 +25,7 @@ describe('firestore.FieldValue', () => {
       new firebase.firestore.FieldValue();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`constructor is private`);
+      error.message.should.containEql('constructor is private');
       return Promise.resolve();
     }
   });
@@ -36,7 +36,7 @@ describe('firestore.FieldValue', () => {
         firebase.firestore.FieldValue.increment(1).isEqual(1);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected a FieldValue instance`);
+        error.message.should.containEql("'other' expected a FieldValue instance");
         return Promise.resolve();
       }
     });
@@ -71,7 +71,7 @@ describe('firestore.FieldValue', () => {
         firebase.firestore.FieldValue.increment('1');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'n' expected a number value`);
+        error.message.should.containEql("'n' expected a number value");
         return Promise.resolve();
       }
     });
@@ -136,7 +136,7 @@ describe('firestore.FieldValue', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `FieldValue instance cannot be used with other FieldValue methods`,
+          'FieldValue instance cannot be used with other FieldValue methods',
         );
         return Promise.resolve();
       }
@@ -147,7 +147,7 @@ describe('firestore.FieldValue', () => {
         firebase.firestore.FieldValue.arrayUnion([1]);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`Nested arrays are not supported`);
+        error.message.should.containEql('Nested arrays are not supported');
         return Promise.resolve();
       }
     });
@@ -202,7 +202,7 @@ describe('firestore.FieldValue', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `FieldValue instance cannot be used with other FieldValue methods`,
+          'FieldValue instance cannot be used with other FieldValue methods',
         );
         return Promise.resolve();
       }
@@ -213,7 +213,7 @@ describe('firestore.FieldValue', () => {
         firebase.firestore.FieldValue.arrayRemove([1]);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`Nested arrays are not supported`);
+        error.message.should.containEql('Nested arrays are not supported');
         return Promise.resolve();
       }
     });

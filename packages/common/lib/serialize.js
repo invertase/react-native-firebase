@@ -33,7 +33,9 @@ export function serializeType(value) {
 }
 
 export function serializeObject(object) {
-  if (!isObject(object)) return object;
+  if (!isObject(object)) {
+    return object;
+  }
 
   // json stringify then parse it calls toString on Objects / Classes
   // that support it i.e new Date() becomes a ISO string.

@@ -19,5 +19,5 @@ Pod::Spec.new do |s|
   s.dependency          'Firebase/Core', '~> 6.5.0'
   s.dependency          'Firebase/Database', '~> 6.5.0'
   s.dependency          'RNFBApp'
-  s.static_framework    = true
+  s.static_framework    = false
 end

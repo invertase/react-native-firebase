@@ -25,7 +25,7 @@ describe('firestore.GeoPoint', () => {
       new firebase.firestore.GeoPoint(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`constructor expected latitude and longitude values`);
+      error.message.should.containEql('constructor expected latitude and longitude values');
       return Promise.resolve();
     }
   });
@@ -35,7 +35,7 @@ describe('firestore.GeoPoint', () => {
       new firebase.firestore.GeoPoint('123', 0);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'latitude' must be a number value`);
+      error.message.should.containEql("'latitude' must be a number value");
       return Promise.resolve();
     }
   });
@@ -45,7 +45,7 @@ describe('firestore.GeoPoint', () => {
       new firebase.firestore.GeoPoint(0, '123');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'longitude' must be a number value`);
+      error.message.should.containEql("'longitude' must be a number value");
       return Promise.resolve();
     }
   });
@@ -55,7 +55,7 @@ describe('firestore.GeoPoint', () => {
       new firebase.firestore.GeoPoint(-100, 0);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'longitude' must be a number between -90 and 90`);
+      error.message.should.containEql("'longitude' must be a number between -90 and 90");
       return Promise.resolve();
     }
   });
@@ -65,7 +65,7 @@ describe('firestore.GeoPoint', () => {
       new firebase.firestore.GeoPoint(0, 200);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'longitude' must be a number between -180 and 180`);
+      error.message.should.containEql("'longitude' must be a number between -180 and 180");
       return Promise.resolve();
     }
   });
@@ -87,7 +87,7 @@ describe('firestore.GeoPoint', () => {
         geo.isEqual();
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'other' expected an instance of GeoPoint`);
+        error.message.should.containEql("'other' expected an instance of GeoPoint");
         return Promise.resolve();
       }
     });
