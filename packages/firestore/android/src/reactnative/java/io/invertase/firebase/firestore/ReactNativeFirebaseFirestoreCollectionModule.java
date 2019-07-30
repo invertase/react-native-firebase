@@ -18,23 +18,9 @@ package io.invertase.firebase.firestore;
  */
 
 import android.util.SparseArray;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Source;
-
+import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -47,7 +33,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   private static final String SERVICE_NAME = "FirestoreCollection";
   private static SparseArray<ListenerRegistration> collectionSnapshotListeners = new SparseArray<>();
 
-  public ReactNativeFirebaseFirestoreCollectionModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseFirestoreCollectionModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
   }
 
@@ -80,7 +66,6 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     ReactNativeFirebaseFirestoreQuery firestoreQuery = new ReactNativeFirebaseFirestoreQuery(
-      firebaseFirestore,
       getQueryForFirestore(firebaseFirestore, path, type),
       filters,
       orders,
@@ -142,7 +127,6 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   ) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     ReactNativeFirebaseFirestoreQuery query = new ReactNativeFirebaseFirestoreQuery(
-      firebaseFirestore,
       getQueryForFirestore(firebaseFirestore, path, type),
       filters,
       orders,

@@ -18,39 +18,20 @@ package io.invertase.firebase.firestore;
  */
 
 import android.util.SparseArray;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.Source;
-import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.firestore.*;
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
-
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseDocumentBatches;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableMap;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
@@ -59,7 +40,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
 
 
-  public ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
   }
 

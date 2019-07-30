@@ -24,10 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
 
-public class ReactNativeFirebaseFirestoreCommon {
-  private static final String TAG = "FirestoreCommon";
-
-  public static void rejectPromiseFirestoreException(Promise promise, Exception exception) {
+class ReactNativeFirebaseFirestoreCommon {
+  static void rejectPromiseFirestoreException(Promise promise, Exception exception) {
     if (exception instanceof FirebaseFirestoreException) {
       UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
       rejectPromiseWithCodeAndMessage(promise, universalException.getCode(), universalException.getMessage());
@@ -38,5 +36,4 @@ public class ReactNativeFirebaseFirestoreCommon {
       rejectPromiseWithExceptionMap(promise, exception);
     }
   }
-
 }
