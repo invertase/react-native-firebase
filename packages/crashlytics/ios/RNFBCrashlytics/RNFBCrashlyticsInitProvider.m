@@ -15,14 +15,12 @@
  *
  */
 
+#import <FirebaseCore/FIRAppInternal.h>
+#import <Firebase/Firebase.h>
 #import "RNFBCrashlyticsInitProvider.h"
-#import "Crashlytics.h"
 #import "RNFBPreferences.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
-#import "FIROptions.h"
-#import "FIRApp.h"
-#import "Fabric.h"
 
 
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";
@@ -30,43 +28,41 @@ NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_col
 
 @implementation RNFBCrashlyticsInitProvider
 
-  + (void)load {
-    if ([self isCrashlyticsCollectionEnabled]) {
-      // TODO(salakar): Without dispatch `[FIRApp configure];` breaks Detox and causes a crash on start (cannot read a userDefaults key)
-      dispatch_async(dispatch_get_main_queue(), ^{
-        FIROptions *defaultFirebaseOptions = [FIROptions defaultOptions];
-        if (defaultFirebaseOptions == nil) return;
++ (void)load {
+  if ([self isCrashlyticsCollectionEnabled]) {
+    [FIRApp registerInternalLibrary:self withName:@"react-native-firebase-crashlytics" withVersion:@"6.0.0"];
+  }
+}
 
-        NSString *googleAppID = defaultFirebaseOptions.googleAppID;
-        if (googleAppID == nil) return;
++ (BOOL)isCrashlyticsCollectionEnabled {
+  BOOL enabled;
 
-        // TODO(salakar): Option to disable auto init
-        // TODO(salakar): If disabled; when the default app is initialized from JS land then init crashlytics (register a block handler somehow in RNFBApp?)
-        if ([FIRApp defaultApp] == nil) {
-          [FIRApp configure];
-        }
-
-        if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
-          [Crashlytics sharedInstance].debugMode = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
-        }
-
-        [Fabric with:@[[Crashlytics class]]];
-      });
-    }
+  if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
+    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
+  } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
+    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
+  } else {
+    enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
   }
 
-  + (BOOL)isCrashlyticsCollectionEnabled {
-    BOOL enabled;
+  return enabled;
+}
 
-    if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
-      enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
-    } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
-      enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
-    } else {
-      enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
++ (NSArray<FIRComponent *> *)componentsToRegister {
+  return @[];
+}
+
++ (void)configureWithApp:(FIRApp *)app {
+  if ([app isDefaultApp]) {
+    // TODO(salakar): Option to disable auto init
+    // TODO(salakar): If disabled; when the default app is initialized from JS land then init crashlytics (register a block handler somehow in RNFBApp?)
+    if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
+      [Crashlytics sharedInstance].debugMode = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
     }
 
-    return enabled;
+    [Fabric with:@[[Crashlytics class]]];
   }
+}
+
 
 @end
