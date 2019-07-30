@@ -33,7 +33,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.testing</string>
+			<string>com.invertase.testing</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>invertase</string>
