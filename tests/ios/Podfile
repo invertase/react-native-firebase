@@ -31,6 +31,8 @@ target 'testing' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'Jet', :path => '../node_modules/jet/ios'
+
   react_native_firebase!
   use_native_modules!
 end
