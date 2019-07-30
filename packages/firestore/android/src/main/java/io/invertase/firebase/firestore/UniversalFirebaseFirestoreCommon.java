@@ -29,7 +29,7 @@ public class UniversalFirebaseFirestoreCommon {
     return FirebaseFirestore.getInstance(firebaseApp);
   }
 
-  static Query getQueryForFirestore (
+  static Query getQueryForFirestore(
     FirebaseFirestore firebaseFirestore,
     String path,
     String type

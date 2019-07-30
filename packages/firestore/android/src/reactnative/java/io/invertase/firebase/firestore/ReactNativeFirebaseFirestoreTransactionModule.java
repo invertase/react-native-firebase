@@ -19,28 +19,16 @@ package io.invertase.firebase.firestore;
 
 import android.os.AsyncTask;
 import android.util.SparseArray;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.*;
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableMap;
@@ -52,7 +40,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
   private static final String SERVICE_NAME = "FirestoreTransaction";
   private SparseArray<ReactNativeFirebaseFirestoreTransactionHandler> transactionHandlers = new SparseArray<>();
 
-  public ReactNativeFirebaseFirestoreTransactionModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseFirestoreTransactionModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
   }
 
@@ -61,6 +49,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
       int key = transactionHandlers.keyAt(i);
       ReactNativeFirebaseFirestoreTransactionHandler transactionHandler = transactionHandlers.get(key);
+
       if (transactionHandler != null) {
         transactionHandler.abort();
       }
@@ -75,6 +64,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
     if (transactionHandler == null) {
       rejectPromiseWithCodeAndMessage(promise, "internal-error", "An internal error occurred whilst attempting to find a native transaction by id.");
+      return;
     }
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
@@ -129,7 +119,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
           // Send an update signal to JS - telling it to now run the transaction
           emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
             eventMap,
             transactionHandler.getAppName(),
             transactionHandler.getTransactionId()
@@ -216,7 +206,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
           eventMap.putString("type", "complete");
 
           emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
             eventMap,
             transactionHandler.getAppName(),
             transactionHandler.getTransactionId()
@@ -234,7 +224,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
           eventMap.putMap("error", errorMap);
 
           emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.TRANSCTION_EVENT_SYNC,
+            ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
             eventMap,
             transactionHandler.getAppName(),
             transactionHandler.getTransactionId()

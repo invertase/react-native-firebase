@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ReactNativeFirebaseFirestoreTransactionHandler {
+class ReactNativeFirebaseFirestoreTransactionHandler {
 
   private final ReentrantLock lock;
   private final Condition condition;
-  public boolean aborted = false;
-  public boolean timeout = false;
+  boolean aborted = false;
+  boolean timeout = false;
   private String appName;
   private long timeoutAt;
   private int transactionId;
@@ -63,8 +63,6 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   /**
    * Reset handler state - clears command buffer + updates to new Transaction instance
-   *
-   * @param firestoreTransaction
    */
   void resetState(Transaction firestoreTransaction) {
     this.commandBuffer = null;
@@ -73,8 +71,6 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   /**
    * Signal that the transaction buffer has been received and needs to be processed.
-   *
-   * @param buffer
    */
   void signalBufferReceived(ReadableArray buffer) {
     lock.lock();
@@ -108,8 +104,6 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   /**
    * Get the current pending command buffer.
-   *
-   * @return
    */
   ReadableArray getCommandBuffer() {
     return commandBuffer;
@@ -125,8 +119,6 @@ public class ReactNativeFirebaseFirestoreTransactionHandler {
 
   /**
    * Get and resolve a DocumentSnapshot from transaction.get(ref);
-   *
-   * @param documentReference
    */
   DocumentSnapshot getDocument(DocumentReference documentReference) throws FirebaseFirestoreException {
     updateInternalTimeout();

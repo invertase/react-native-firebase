@@ -22,7 +22,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
@@ -33,17 +32,12 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseReadableArray;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.parseTypeMap;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
 
 public class ReactNativeFirebaseFirestoreQuery {
-
-  FirebaseFirestore firebaseFirestore;
   Query query;
 
   ReactNativeFirebaseFirestoreQuery(
-    FirebaseFirestore firebaseFirestore,
     Query query,
     ReadableArray filters,
     ReadableArray orders,
@@ -57,7 +51,7 @@ public class ReactNativeFirebaseFirestoreQuery {
 
   public Task<WritableMap> get(Executor executor, Source source) {
     return Tasks.call(executor, () -> {
-      QuerySnapshot querySnapshot = Tasks.await(this.query.get(source));
+      QuerySnapshot querySnapshot = Tasks.await(query.get(source));
       return snapshotToWritableMap("get", querySnapshot, null);
     });
   }
@@ -69,7 +63,7 @@ public class ReactNativeFirebaseFirestoreQuery {
       String fieldPath = Objects.requireNonNull(filter).getString("fieldPath");
       String operator = filter.getString("operator");
       ReadableArray arrayValue = filter.getArray("value");
-      Object value = parseTypeMap(firebaseFirestore, Objects.requireNonNull(arrayValue));
+      Object value = parseTypeMap(query.getFirestore(), Objects.requireNonNull(arrayValue));
 
       switch (Objects.requireNonNull(operator)) {
         case "EQUAL":
@@ -114,22 +108,22 @@ public class ReactNativeFirebaseFirestoreQuery {
     }
 
     if (options.hasKey("startAt")) {
-      List<Object> fieldList = parseReadableArray(firebaseFirestore, options.getArray("startAt"));
+      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("startAt"));
       query = query.startAt(Objects.requireNonNull(fieldList.toArray()));
     }
 
     if (options.hasKey("startAfter")) {
-      List<Object> fieldList = parseReadableArray(firebaseFirestore, options.getArray("startAfter"));
+      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("startAfter"));
       query = query.startAfter(Objects.requireNonNull(fieldList.toArray()));
     }
 
     if (options.hasKey("endAt")) {
-      List<Object> fieldList = parseReadableArray(firebaseFirestore, options.getArray("endAt"));
+      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("endAt"));
       query = query.endAt(Objects.requireNonNull(fieldList.toArray()));
     }
 
     if (options.hasKey("endBefore")) {
-      List<Object> fieldList = parseReadableArray(firebaseFirestore, options.getArray("endBefore"));
+      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("endBefore"));
       query = query.endBefore(Objects.requireNonNull(fieldList.toArray()));
     }
   }
