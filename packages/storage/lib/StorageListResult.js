@@ -26,7 +26,7 @@ export default class StorageListResult {
   constructor(storage, nativeData) {
     this._nextPageToken = nativeData.nextPageToken || null;
     this._items = nativeData.items.map(path => new StorageReference(storage, path));
-    this._prefixes = nativeData.items.map(path => new StorageReference(storage, path));
+    this._prefixes = nativeData.prefixes.map(path => new StorageReference(storage, path));
   }
 
   get items() {
