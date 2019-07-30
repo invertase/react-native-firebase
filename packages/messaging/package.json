@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/messaging",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Messaging",
   "main": "lib/index.js",
@@ -25,10 +25,10 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.1.0",
-    "@react-native-firebase/common": "0.1.0"
+    "@react-native-firebase/app-types": "0.1.1",
+    "@react-native-firebase/common": "0.1.1"
   },
-  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
+  "gitHead": "a73e87eedf6d13b20c9de61c9d0f3077b4163746",
   "publishConfig": {
     "access": "public"
   }
