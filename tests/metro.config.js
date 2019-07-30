@@ -32,6 +32,7 @@ const firebaseModules = readdirSync(packagesDir)
 const config = {
   projectRoot: __dirname,
   resolver: {
+    useWatchman: !process.env.TEAMCITY_VERSION,
     blackListRE: createBlacklist([
       /.*\/__fixtures__\/.*/,
       /.*\/template\/project\/node_modules\/react-native\/.*/,
