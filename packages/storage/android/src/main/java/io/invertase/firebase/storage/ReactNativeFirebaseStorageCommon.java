@@ -27,9 +27,11 @@ import android.webkit.MimeTypeMap;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 
 import java.util.Map;
@@ -192,6 +194,27 @@ class ReactNativeFirebaseStorageCommon {
     }
 
     return metadata;
+  }
+
+  static WritableMap getListResultAsMap(ListResult listResult) {
+    WritableMap map = Arguments.createMap();
+    map.putString("nextPageToken", listResult.getPageToken());
+
+    WritableArray items = Arguments.createArray();
+    WritableArray prefixes = Arguments.createArray();
+
+    for (StorageReference reference : listResult.getItems()) {
+      items.pushString(reference.getPath());
+    }
+
+    for (StorageReference reference : listResult.getPrefixes()) {
+      prefixes.pushString(reference.getPath());
+    }
+
+    map.putArray("items", items);
+    map.putArray("prefixes", prefixes);
+
+    return map;
   }
 
   static String[] getExceptionCodeAndMessage(@Nullable Exception exception) {

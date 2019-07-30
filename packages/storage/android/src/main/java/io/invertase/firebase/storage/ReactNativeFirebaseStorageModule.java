@@ -22,10 +22,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
@@ -41,6 +44,7 @@ import java.util.Objects;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getListResultAsMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.isExternalStorageWritable;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.promiseRejectStorageException;
@@ -107,6 +111,41 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     reference.getMetadata().addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
+      } else {
+        promiseRejectStorageException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
+    Task<ListResult> list;
+
+    int maxResults = listOptions.getInt("maxResults");
+
+    if (listOptions.hasKey("pageToken")) {
+      String pageToken = listOptions.getString("pageToken");
+      list = reference.list(maxResults, pageToken);
+    } else {
+      list = reference.list(maxResults);
+    }
+
+    list.addOnCompleteListener(getExecutor(), task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(getListResultAsMap(task.getResult()));
+      } else {
+        promiseRejectStorageException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listAll(String appName, String url, Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
+    reference.listAll().addOnCompleteListener(getExecutor(), task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(getListResultAsMap(task.getResult()));
       } else {
         promiseRejectStorageException(promise, task.getException());
       }

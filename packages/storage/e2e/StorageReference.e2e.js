@@ -221,6 +221,133 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
+  describe('list', () => {
+    it('should return list results', async () => {
+      const storageReference = firebase.storage().ref('/');
+      const result = await storageReference.list();
+
+      result.should.have.property('nextPageToken');
+
+      result.items.should.be.Array();
+      result.items.length.should.be.greaterThan(0);
+      result.items.constructor.name.should.eql('StorageListResult');
+
+      result.prefixes.should.be.Array();
+      result.prefixes.length.should.be.greaterThan(0);
+      result.prefixes.constructor.name.should.eql('StorageListResult');
+    });
+
+    it('throws if options is not an object', () => {
+      try {
+        const storageReference = firebase.storage().ref('/');
+        storageReference.list(123);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql("'options' expected an object value");
+        return Promise.resolve();
+      }
+    });
+
+    describe('maxResults', () => {
+      it('should limit with maxResults are passed', async () => {
+        const storageReference = firebase.storage().ref('/');
+        const result = await storageReference.list({
+          maxResults: 1,
+        });
+
+        result.nextPageToken.should.be.String();
+
+        result.items.should.be.Array();
+        result.items.length.should.eql(1);
+        result.items.constructor.name.should.eql('StorageListResult');
+
+        result.prefixes.should.be.Array();
+        // todo length?
+      });
+
+      it('throws if maxResults is not a number', () => {
+        try {
+          const storageReference = firebase.storage().ref('/');
+          storageReference.list({
+            maxResults: '123',
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql("'options.maxResults' expected a number value");
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if maxResults is not a valid number', () => {
+        try {
+          const storageReference = firebase.storage().ref('/');
+          storageReference.list({
+            maxResults: 2000,
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql("''options.maxResults' expected a number value between 1-1000");
+          return Promise.resolve();
+        }
+      });
+    });
+
+    describe('pageToken', () => {
+      it('throws if pageToken is not a string', () => {
+        try {
+          const storageReference = firebase.storage().ref('/');
+          storageReference.list({
+            pageToken: 123,
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql("'options.pageToken' expected a string value");
+          return Promise.resolve();
+        }
+      });
+
+      it('should return and use a page token', async () => {
+        const storageReference = firebase.storage().ref('/');
+        const result1 = await storageReference.list({
+          maxResults: 1,
+        });
+
+        const item1 = result1[0].path;
+
+        const result2 = await storageReference.list({
+          maxResults: 1,
+          pageToken: result1.nextPageToken,
+        });
+
+        const item2 = result2[0].path;
+
+        if (item1 === item2) {
+          throw new Error("Expected item results to be different.");
+        }
+      });
+    });
+
+  });
+
+  describe('listAll', () => {
+    it('should return all results', async () => {
+      const storageReference = firebase.storage().ref('/');
+      const result = await storageReference.listAll();
+
+      should.eql(result.nextPageToken, null);
+
+      result.items.should.be.Array();
+      result.items.length.should.be.greaterThan(0);
+      result.items.constructor.name.should.eql('StorageListResult');
+
+      result.prefixes.should.be.Array();
+      result.prefixes.length.should.be.greaterThan(0);
+      result.prefixes.constructor.name.should.eql('StorageListResult');
+    });
+
+
+  });
+
   describe('updateMetadata', () => {
     it('should return the updated metadata for a file', async () => {
       const storageReference = firebase.storage().ref('/writeOnly.jpeg');
