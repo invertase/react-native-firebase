@@ -123,6 +123,11 @@ export default class FirestoreTransactionHandler {
   _handleError(event) {
     const { listenerId: id, body } = event;
     const { error } = body;
+
+    if (!this._pending[id]) {
+      return;
+    }
+
     const { meta } = this._pending[id];
 
     if (meta && error) {
@@ -140,8 +145,12 @@ export default class FirestoreTransactionHandler {
    */
   _handleComplete(event) {
     const { listenerId: id } = event;
-    const { meta, transaction } = this._pending[id];
 
+    if (!this._pending[id]) {
+      return;
+    }
+
+    const { meta, transaction } = this._pending[id];
     if (meta) {
       meta.resolve(transaction._pendingResult);
     }

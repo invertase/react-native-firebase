@@ -17,7 +17,6 @@
  */
 
 #import "RNFBFirestoreQuery.h"
-#import "RNFBSharedUtils.h"
 
 @implementation RNFBFirestoreQuery
 
