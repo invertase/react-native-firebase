@@ -65,7 +65,7 @@ describe('functions()', () => {
     });
   });
 
-  it('useFunctionsEmulator -> uses 10.0.2.2', async () => {
+  android.it('useFunctionsEmulator -> uses 10.0.2.2', async () => {
     const region = 'europe-west2';
     const functions = firebase.app().functions(region);
 
