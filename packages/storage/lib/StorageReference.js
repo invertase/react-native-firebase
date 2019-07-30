@@ -24,12 +24,13 @@ import {
   isUndefined,
   getDataUrlParts,
   pathLastComponent,
-  ReferenceBase,
+  ReferenceBase, isObject, hasOwnProperty, isNumber,
 } from '@react-native-firebase/common';
 import { validateMetadata } from './utils';
 import StorageStatics from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import StorageDownloadTask from './StorageDownloadTask';
+import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
@@ -110,6 +111,64 @@ export default class StorageReference extends ReferenceBase {
    */
   getMetadata() {
     return this._storage.native.getMetadata(this.toString());
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
+   */
+  list(options) {
+    if (!isUndefined(options) && !isObject(options)) {
+      throw new Error(
+        "firebase.storage.StorageReference.list(*) 'options' expected an object value.",
+      );
+    }
+
+    const listOptions = {
+      maxResults: 1000,
+    };
+
+
+    if (hasOwnProperty(options, 'maxResults')) {
+      if (!isNumber(options.maxResults)) {
+        throw new Error(
+          "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
+        );
+      }
+
+      // todo integer check
+
+      if (options.maxResults < 1 || options.maxResults > 1000) {
+        throw new Error(
+          "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
+        );
+      }
+
+      listOptions.maxResults = options.maxResults;
+    }
+
+    if (options.pageToken) {
+      if (!isString(options.pageToken)) {
+        throw new Error(
+          "firebase.storage.StorageReference.list(*) 'options.pageToken' expected a string value.",
+        );
+      }
+
+      listOptions.pageToken = options.pageToken;
+    }
+
+
+    return this._storage.native
+      .list(options)
+      .then(data => new StorageListResult(this._storage, data));
+  }
+
+  /**
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
+   */
+  listAll() {
+    return this._storage.native
+      .listAll()
+      .then(data => new StorageListResult(this._storage, data));
   }
 
   /**
@@ -244,3 +303,5 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 }
+
+provideStorageReferenceClass(StorageReference);
