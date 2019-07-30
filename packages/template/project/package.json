@@ -1,6 +1,6 @@
 {
   "name": "HelloWorld",
-  "version": "0.0.26",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -11,7 +11,7 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/app": "^0.0.26",
+    "@react-native-firebase/app": "0.1.0",
     "react": "16.8.6",
     "react-native": "0.60.4"
   },
@@ -22,8 +22,8 @@
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
     "metro-react-native-babel-preset": "^0.54.1",
-    "react-test-renderer": "16.8.6",
-    "patch-package": "^6.1.0"
+    "patch-package": "^6.1.0",
+    "react-test-renderer": "16.8.6"
   },
   "jest": {
     "preset": "react-native"
