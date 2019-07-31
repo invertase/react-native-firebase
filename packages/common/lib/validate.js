@@ -105,6 +105,15 @@ export function isFinite(value) {
 }
 
 /**
+ * Simple integer check
+ * @param value
+ * @returns {boolean}
+ */
+export function isInteger(value) {
+  return Number.isInteger(value);
+}
+
+/**
  * Simple is boolean check
  *
  * @param value

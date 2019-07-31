@@ -20,12 +20,19 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isIOS, isAndroid } from '@react-native-firebase/common';
+import {
+  isAndroid,
+  isBoolean,
+  isFunction,
+  isIOS,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
 
 import { AppRegistry } from 'react-native';
 
 import version from './version';
-import RemoteMessageBuilder from './RemoteMessageBuilder';
+import remoteMessageOptions from './remoteMessageOptions';
 
 const statics = {};
 
@@ -44,18 +51,38 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this._isAutoInitEnabled;
   }
 
-  newRemoteMessage() {
-    return new RemoteMessageBuilder(this.app.options.messagingSenderId);
+  /**
+   * @platform ios
+   */
+  get isRegisteredForRemoteNotifications() {
+    if (isAndroid) {
+      return true;
+    }
+    return this._isRegisteredForRemoteNotifcations;
   }
 
   setAutoInitEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        `firebase.messaging().setAutoInitEnabled(*) 'enabled' expected a boolean value.`,
+      );
+    }
+
     this._isAutoInitEnabled = enabled;
     return this.native.setAutoInitEnabled(enabled);
   }
 
   getToken(authorizedEntity, scope) {
-    // todo validate arg 0, string, optional
-    // todo validate arg 1, string, optional
+    if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
+      throw new Error(
+        `firebase.messaging().getToken(*) 'authorizedEntity' expected a string value.`,
+      );
+    }
+
+    if (!isUndefined(scope) && !isString(scope)) {
+      throw new Error(`firebase.messaging().getToken(_, *) 'scope' expected a string value.`);
+    }
+
     return this.native.getToken(
       authorizedEntity || this.app.options.messagingSenderId,
       scope || 'FCM',
@@ -63,28 +90,38 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   deleteToken(authorizedEntity, scope) {
-    // todo validate arg 0, string, optional
-    // todo validate arg 1, string, optional
+    if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
+      throw new Error(
+        `firebase.messaging().deleteToken(*) 'authorizedEntity' expected a string value.`,
+      );
+    }
+
+    if (!isUndefined(scope) && !isString(scope)) {
+      throw new Error(`firebase.messaging().deleteToken(_, *) 'scope' expected a string value.`);
+    }
+
     return this.native.deleteToken(
       authorizedEntity || this.app.options.messagingSenderId,
       scope || 'FCM',
     );
   }
 
-  onMessage(nextOnly) {
-    // todo validate arg, function
-    const subscription = this.emitter.addListener('messaging_message_received', nextOnly);
-    return () => {
-      subscription.remove();
-    };
+  onMessage(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(`firebase.messaging().onMessage(*) 'listener' expected a function.`);
+    }
+
+    const subscription = this.emitter.addListener('messaging_message_received', listener);
+    return () => subscription.remove();
   }
 
-  onTokenRefresh(nextOnly) {
-    // todo validate arg, function
-    const subscription = this.emitter.addListener('messaging_token_refresh', nextOnly);
-    return () => {
-      subscription.remove();
-    };
+  onTokenRefresh(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(`firebase.messaging().onTokenRefresh(*) 'listener' expected a function.`);
+    }
+
+    const subscription = this.emitter.addListener('messaging_token_refresh', listener);
+    return () => subscription.remove();
   }
 
   /**
@@ -106,16 +143,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
     this._isRegisteredForRemoteNotifcations = true;
     return this.native.registerForRemoteNotifications();
-  }
-
-  /**
-   * @platform ios
-   */
-  get isRegisteredForRemoteNotifications() {
-    if (isAndroid) {
-      return true;
-    }
-    return this._isRegisteredForRemoteNotifcations;
   }
 
   /**
@@ -144,55 +171,88 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
-  onDeletedMessages(nextOnly) {
-    // todo validate arg, function
-    const subscription = this.emitter.addListener('messaging_message_deleted', nextOnly);
-    return () => {
-      subscription.remove();
-    };
+  onDeletedMessages(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(`firebase.messaging().onDeletedMessages(*) 'listener' expected a function.`);
+    }
+
+    const subscription = this.emitter.addListener('messaging_message_deleted', listener);
+    return () => subscription.remove();
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
-  onMessageSent(nextOnly) {
-    // todo validate arg, function
-    const subscription = this.emitter.addListener('messaging_message_sent', nextOnly);
+  onMessageSent(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(`firebase.messaging().onMessageSent(*) 'listener' expected a function.`);
+    }
+
+    const subscription = this.emitter.addListener('messaging_message_sent', listener);
     return () => {
       subscription.remove();
     };
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
-  onSendError(nextOnly) {
-    // todo validate arg, function
-    const subscription = this.emitter.addListener('messaging_message_send_error', nextOnly);
-    return () => {
-      subscription.remove();
-    };
+  onSendError(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(`firebase.messaging().onSendError(*) 'listener' expected a function.`);
+    }
+
+    const subscription = this.emitter.addListener('messaging_message_send_error', listener);
+    return () => subscription.remove();
   }
 
   /**
    * @platform android
    */
   setBackgroundMessageHandler(handler) {
+    if (!isFunction(handler)) {
+      throw new Error(
+        `firebase.messaging().setBackgroundMessageHandler(*) 'handler' expected a function.`,
+      );
+    }
+
     if (isIOS) {
       return;
     }
-    // todo validate arg, function
+
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => handler);
   }
 
   sendMessage(remoteMessage) {
-    // todo validate arg instance of MessagingRemoteMessaging
-    return this.native.sendMessage(remoteMessage.build());
+    let options;
+    try {
+      options = remoteMessageOptions(this.app.options.messagingSenderId, remoteMessage);
+    } catch (e) {
+      throw new Error(`firebase.messaging().sendMessage(*) ${e.message}.`);
+    }
+
+    return this.native.sendMessage(options);
   }
 
   subscribeToTopic(topic) {
-    // todo validate arg, string, no /
+    if (!isString(topic)) {
+      throw new Error(`firebase.messaging().subscribeToTopic(*) 'topic' expected a string value.`);
+    }
+
+    if (topic.indexOf('/') > -1) {
+      throw new Error(`firebase.messaging().subscribeToTopic(*) 'topic' must not include "/".`);
+    }
+
     return this.native.subscribeToTopic(topic);
   }
 
   unsubscribeFromTopic(topic) {
-    // todo validate arg, string, no /
+    if (!isString(topic)) {
+      throw new Error(
+        `firebase.messaging().unsubscribeFromTopic(*) 'topic' expected a string value.`,
+      );
+    }
+
+    if (topic.indexOf('/') > -1) {
+      throw new Error(`firebase.messaging().unsubscribeFromTopic(*) 'topic' must not include "/".`);
+    }
+
     return this.native.unsubscribeFromTopic(topic);
   }
 
@@ -201,11 +261,15 @@ class FirebaseMessagingModule extends FirebaseModule {
    */
 
   useServiceWorker() {
-    // todo unsupported warning
+    console.warn(
+      'firebase.messaging().useServiceWorker() is not supported on react-native-firebase.',
+    );
   }
 
   usePublicVapidKey() {
-    // todo unsupported warning
+    console.warn(
+      'firebase.messaging().usePublicVapidKey() is not supported on react-native-firebase.',
+    );
   }
 }
 
