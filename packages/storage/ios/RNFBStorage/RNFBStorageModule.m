@@ -154,6 +154,59 @@ RCT_EXPORT_METHOD(updateMetadata:
 }
 
 /**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
+ */
+RCT_EXPORT_METHOD(list:
+  (FIRApp *) firebaseApp
+    : (NSString *) url
+    : (NSDictionary *) listOptions
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+  FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  long *maxResults = [listOptions[@"maxResults"] pointerValue];
+
+  id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
+    if (error != nil) {
+      [self promiseRejectStorageException:reject error:error];
+    } else {
+      NSDictionary * dick = [RNFBStorageCommon listResultToDict:result];
+      // so we can see the result
+      resolve(dick);
+    }
+  };
+
+  if (listOptions[@"pageToken"]) {
+    NSString *pageToken = listOptions[@"pageToken"];
+    [storageReference listWithMaxResults:(int64_t) maxResults pageToken:pageToken completion:completionBlock];
+  } else {
+    [storageReference listWithMaxResults:(int64_t) maxResults completion:completionBlock];
+  }
+}
+
+/**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
+ */
+RCT_EXPORT_METHOD(listAll:
+  (FIRApp *) firebaseApp
+    : (NSString *) url
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+  FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+
+  id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
+    if (error != nil) {
+      [self promiseRejectStorageException:reject error:error];
+    } else {
+      resolve([RNFBStorageCommon listResultToDict:result]);
+    }
+  };
+
+  [storageReference listAllWithCompletion:completionBlock];
+}
+
+/**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  */
 RCT_EXPORT_METHOD(setMaxDownloadRetryTime:
