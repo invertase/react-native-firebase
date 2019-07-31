@@ -49,7 +49,6 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 | [Analytics](/packages/analytics)                         |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/analytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/analytics)           |           [![badge](https://api.rnfirebase.io/coverage/analytics/badge)](https://api.rnfirebase.io/coverage/analytics/detail)           |
 | [App](/packages/app)                                     |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/app)                 |                 [![badge](https://api.rnfirebase.io/coverage/app/badge)](https://api.rnfirebase.io/coverage/app/detail)                 |
 | [App Indexing](/packages/indexing)                       |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/indexing.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/indexing)            |            [![badge](https://api.rnfirebase.io/coverage/indexing/badge)](https://api.rnfirebase.io/coverage/indexing/detail)            |
-| [App Invites](/packages/invites)                         |             [![badge](https://img.shields.io/npm/dm/@react-native-firebase/invites.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/invites)             |             [![badge](https://api.rnfirebase.io/coverage/invites/badge)](https://api.rnfirebase.io/coverage/invites/detail)             |
 | [Authentication](/packages/auth)                         |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/auth.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/auth)                |                [![badge](https://api.rnfirebase.io/coverage/auth/badge)](https://api.rnfirebase.io/coverage/auth/detail)                |
 | [Cloud Firestore](/packages/firestore)                   |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/firestore.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/firestore)           |           [![badge](https://api.rnfirebase.io/coverage/firestore/badge)](https://api.rnfirebase.io/coverage/firestore/detail)           |
 | [Cloud Functions](/packages/functions)                   |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/functions.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/functions)           |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
@@ -69,15 +68,12 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 
 ## Other Packages
 
-React Native Firebase also publishes several other packages, some only used internally, others for public consumption such as Hooks.
+React Native Firebase also publishes other packages.
 
 | Name                             |                   Description                   |
 | -------------------------------- | :---------------------------------------------: |
-| [app-types](/packages/app-types) | Common Firebase types used by and all modules.  |
 | [common](/packages/common)       |      Common utilities used by all modules.      |
-| [hooks](/packages/hooks) (WIP)   | Official React Hooks for React Native Firebase. |
 
-> TODO other packages
 
 ## Documentation
 
