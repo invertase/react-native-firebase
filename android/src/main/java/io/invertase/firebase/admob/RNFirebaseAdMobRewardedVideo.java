@@ -79,6 +79,21 @@ public class RNFirebaseAdMobRewardedVideo implements RewardedVideoAdListener {
     }
   }
 
+  /**
+   * Show the loaded interstitial, if it's loaded
+   */
+  void setCustomData(final String customData) {
+    Activity activity = adMob.getActivity();
+    if (activity != null) {
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+           rewardedVideo.setCustomData(customData);
+        }
+      });
+    }
+  }
+
   @Override
   public void onRewarded(RewardItem reward) {
     WritableMap payload = Arguments.createMap();
