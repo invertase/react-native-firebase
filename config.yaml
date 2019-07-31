@@ -19,11 +19,9 @@ versions:
   branches:
     v6: master
 menu:
-  - text: v6.x.x
+  - text: Latest Release
     to: '/v6'
   - text: Guides
     to: '/guides'
-  - text: FAQs
+  - text: FAQ
     to: '/faqs'
-  - text: Showcase
-    to: '/showcase'
