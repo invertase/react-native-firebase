@@ -348,6 +348,7 @@ The Remote Config API has had a significant API change as originally highlighted
 - [NEW] Added support multiple buckets, e.g. `firebase.app().storage('gs://my-other-bucket')`
 - [NEW] Added support `pause()`, `resume()` & `cancel()` for Upload & Download Storage tasks
 - [NEW] Added an `error` property to TaskSnapshot's for `error` state events - this is an instance of `NativeFirebaseError` (with `code` & `message`)
+- [NEW] Added support for `StorageReference.list()` & `StorageReference.listAll()`.
 - [BREAKING] Removed formerly deprecated `UploadTaskSnapshot.downloadUrl` property, use `StorageReference.getDownloadURL(): Promise<string>` instead
 - [BREAKING] `StorageReference.downloadFile()` is now deprecated and will be removed in a later release, please rename usages of this to `writeToFile()` - renamed to match Native SDKs
 - [BREAKING] `firebase.storage.Native` has moved to `firebase.utils.Native`
