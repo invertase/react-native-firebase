@@ -244,10 +244,10 @@ export default class StorageReference extends ReferenceBase {
    */
   toString() {
     if (this.path.length <= 1) {
-      return `${this._storage._customUrlOrRegion}/`;
+      return `${this._storage._customUrlOrRegion}`;
     }
 
-    return `${this._storage._customUrlOrRegion}/${this.path}/`;
+    return `${this._storage._customUrlOrRegion}/${this.path}`;
   }
 
   /**

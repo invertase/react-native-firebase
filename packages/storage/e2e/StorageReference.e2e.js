@@ -333,18 +333,18 @@ describe('storage() -> StorageReference', () => {
 
   describe('listAll', () => {
     it('should return all results', async () => {
-      const storageReference = firebase.storage().ref('/');
+      const storageReference = firebase.storage().ref('/list');
       const result = await storageReference.listAll();
 
-      should.eql(result.nextPageToken, null);
+      should.equal(result.nextPageToken, null);
 
       result.items.should.be.Array();
       result.items.length.should.be.greaterThan(0);
-      result.items.constructor.name.should.eql('StorageListResult');
+      result.items[0].constructor.name.should.eql('StorageReference');
 
       result.prefixes.should.be.Array();
       result.prefixes.length.should.be.greaterThan(0);
-      result.prefixes.constructor.name.should.eql('StorageListResult');
+      result.prefixes[0].constructor.name.should.eql('StorageReference');
     });
   });
 
