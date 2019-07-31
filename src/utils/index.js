@@ -186,7 +186,7 @@ export function tryJSONParse(string: string | null): any {
  * @param data
  * @returns {*}
  */
-export function tryJSONStringify(data: mixed): string | null {
+export function tryJSONStringify(data: mixed): string | void {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {
