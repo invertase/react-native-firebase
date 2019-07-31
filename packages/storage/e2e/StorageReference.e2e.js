@@ -287,7 +287,9 @@ describe('storage() -> StorageReference', () => {
           });
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
-          error.message.should.containEql("'options.maxResults' expected a number value between 1-1000");
+          error.message.should.containEql(
+            "'options.maxResults' expected a number value between 1-1000",
+          );
           return Promise.resolve();
         }
       });
@@ -323,11 +325,10 @@ describe('storage() -> StorageReference', () => {
         const item2 = result2.items[0].fullPath;
 
         if (item1 === item2) {
-          throw new Error("Expected item results to be different.");
+          throw new Error('Expected item results to be different.');
         }
       });
     });
-
   });
 
   describe('listAll', () => {
@@ -345,8 +346,6 @@ describe('storage() -> StorageReference', () => {
       result.prefixes.length.should.be.greaterThan(0);
       result.prefixes.constructor.name.should.eql('StorageListResult');
     });
-
-
   });
 
   describe('updateMetadata', () => {

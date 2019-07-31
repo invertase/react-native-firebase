@@ -24,7 +24,10 @@ import {
   isUndefined,
   getDataUrlParts,
   pathLastComponent,
-  ReferenceBase, isObject, hasOwnProperty, isNumber,
+  ReferenceBase,
+  isObject,
+  hasOwnProperty,
+  isNumber,
 } from '@react-native-firebase/common';
 import { validateMetadata } from './utils';
 import StorageStatics from './StorageStatics';
