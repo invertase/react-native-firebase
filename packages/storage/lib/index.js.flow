@@ -507,36 +507,286 @@ export interface FullMetadata extends SettableMetadata {
   updated: string;
 }
 
-// TODO(salakar) -----\/
+/**
+ * The options `list()` accepts.
+ */
+export interface ListOptions {
+  /**
+   * If set, limits the total number of `prefixes` and `items` to return. The default and maximum maxResults is 1000.
+   */
+  maxResults?: number;
+
+  /**
+   * The `nextPageToken` from a previous call to `list()`. If provided, listing is resumed from the previous position.
+   */
+  pageToken?: string;
+}
+
+/**
+ * Result returned by `list()`.
+ */
+export interface ListResult {
+  /**
+   * Objects in this directory. You can call `getMetadate()` and `getDownloadUrl()` on them.
+   */
+  items: Reference[];
+
+  /**
+   * If set, there might be more results for this list. Use this token to resume the list.
+   */
+  nextPageToken: string | null;
+
+  /**
+   * References to prefixes (sub-folders). You can call `list()` on them to get its contents.
+   *
+   * Folders are implicit based on '/' in the object paths. For example, if a bucket has two objects '/a/b/1' and '/a/b/2', list('/a') will return '/a/b' as a prefix.
+   */
+  prefixes: Reference[];
+}
+
+/**
+ * Represents a reference to a Google Cloud Storage object in React Native Firebase.
+ *
+ * A reference can be used to upload and download storage objects, get/set storage object metadata, retrieve storage object download urls and delete storage objects.
+ *
+ * #### Example 1
+ *
+ * Get a reference to a specific storage path.
+ *
+ * ```js
+ * const ref = firebase.storage().ref('invertase/logo.png');
+ * ```
+ *
+ * #### Example 2
+ *
+ * Get a reference to a specific storage path on another bucket in the same firebase project.
+ *
+ * ```js
+ * const ref = firebase.storage().refFromURL('gs://other-bucket/invertase/logo.png');
+ * ```
+ */
 export interface Reference {
+  /**
+   * The name of the bucket containing this reference's object.
+   */
   bucket: string;
-
+  /**
+   * A reference pointing to the parent location of this reference, or null if this reference is the root.
+   */
   parent: Reference | null;
-
+  /**
+   * The full path of this object.
+   */
   fullPath: string;
-
+  /**
+   * The short name of this object, which is the last component of the full path. For example,
+   * if fullPath is 'full/path/image.png', name is 'image.png'.
+   */
   name: string;
-
+  /**
+   * A reference to the root of this reference's bucket.
+   */
   root: Reference;
-
+  /**
+   * The storage service associated with this reference.
+   */
   storage: Module;
 
+  /**
+   * Returns a gs:// URL for this object in the form `gs://<bucket>/<path>/<to>/<object>`.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/logo.png');
+   * console.log('Full path: ', ref.toString()); // gs://invertase.io/invertase/logo.png
+   * ```
+   */
   toString(): string;
 
+  /**
+   * Returns a reference to a relative path from this reference.
+   *
+   * #### Example
+   *
+   * ```js
+   * const parent = firebase.storage().ref('invertase');
+   * const ref = parent.child('logo.png');
+   * ```
+   *
+   * @param path The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
+   */
   child(path: string): Reference;
 
+  /**
+   * Deletes the object at this reference's location.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/logo.png');
+   * await ref.delete();
+   * ```
+   */
   delete(): Promise<void>;
 
+  /**
+   * Fetches a long lived download URL for this object.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/logo.png');
+   * const url = await ref.getDownloadURL();
+   * ```
+   */
   getDownloadURL(): Promise<string>;
 
+  /**
+   * Fetches metadata for the object at this location, if one exists.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/logo.png');
+   * const metadata = await ref.getMetadata();
+   * console.log('Cache control: ', metadata.cacheControl);
+   * ```
+   */
   getMetadata(): Promise<FullMetadata>;
 
+  /**
+   * List items (files) and prefixes (folders) under this storage reference.
+   *
+   * List API is only available for Firebase Rules Version 2.
+   *
+   * GCS is a key-blob store. Firebase Storage imposes the semantic of '/' delimited folder structure.
+   * Refer to GCS's List API if you want to learn more.
+   *
+   * To adhere to Firebase Rules's Semantics, Firebase Storage does not support objects whose paths
+   * end with "/" or contain two consecutive "/"s. Firebase Storage List API will filter these unsupported objects.
+   * list() may fail if there are too many unsupported objects in the bucket.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('/');
+   * const results = await ref.list({
+   *   maxResults: 30,
+   * });
+   * ```
+   *
+   * @param options An optional ListOptions interface.
+   */
+  list(options?: ListOptions): Promise<ListResult>;
+
+  /**
+   * List all items (files) and prefixes (folders) under this storage reference.
+   *
+   * This is a helper method for calling list() repeatedly until there are no more results. The default pagination size is 1000.
+   *
+   * Note: The results may not be consistent if objects are changed while this operation is running.
+   *
+   * Warning: `listAll` may potentially consume too many resources if there are too many results.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('/');
+   * const results = await ref.listAll();
+   * ```
+   */
+  listAll(): Promise<ListResult>;
+
+  /**
+   * Puts a file from local disk onto the storage bucket.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/new-logo.png');
+   * const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/new-logo.png`;
+   * const task = ref.putFile(path, {
+   *   cacheControl: 'no-store', // disable caching
+   * });
+   * ```
+   *
+   * @param localFilePath The local file path to upload to the bucket at the reference location.
+   * @param metadata Any additional `SettableMetadata` for this task.
+   */
   putFile(localFilePath: string, metadata?: SettableMetadata): Task;
 
+  /**
+   * Downloads a file to the specified local file path on the device.
+   *
+   * #### Example
+   *
+   * Get a Download Storage task to download a file:
+   *
+   * ```js
+   * const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/foobar.json`;
+   *
+   * const task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);
+   * ```
+   * @param localFilePath
+   */
+  writeToFile(localFilePath: string): Task;
+
+  /**
+   * Puts data onto the storage bucket.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/new-logo.png');
+   * const task = ref.put(BLOB, {
+   *   cacheControl: 'no-store', // disable caching
+   * });
+   * ```
+   *
+   * @param data The data to upload to the storage bucket at the reference location.
+   * @param metadata
+   */
   put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
 
-  putString(data: string, format?: StringFormat, metadata?: SettableMetadata): Task;
+  /**
+   * Puts a string on the storage bucket. Depending on the string type, set a {@link storage.StringFormat} type.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/new-logo.png');
+   * const task = ref.putString('PEZvbyBCYXI+', firebase.storage.StringFormat.BASE64, {
+   *   cacheControl: 'no-store', // disable caching
+   * });
+   * ```
+   *
+   * @param data The string data, must match the format provided.
+   * @param format The format type of the string, e.g. a Base64 format string.
+   * @param metadata Any additional `SettableMetadata` for this task.
+   */
+  putString(
+    data: string,
+    format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+    metadata?: SettableMetadata,
+  ): Task;
 
+  /**
+   * Updates the metadata for this reference object on the storage bucket.
+   *
+   * #### Example
+   *
+   * ```js
+   * const ref = firebase.storage().ref('invertase/nsfw-logo.png');
+   * const updatedMetadata = await ref.updateMetadata({
+   *   customMetadata: {
+   *     'nsfw': 'true',
+   *   }
+   * });
+   * ```
+   *
+   * @param metadata A `SettableMetadata` instance to update.
+   */
   updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
 }
 

@@ -299,6 +299,25 @@
   return storageMetadata;
 }
 
++ (NSDictionary *)listResultToDict:(FIRStorageListResult *)listResult {
+  NSMutableArray *items = [[NSMutableArray alloc]init];
+  NSMutableArray *prefixes = [[NSMutableArray alloc]init];
+
+  for (FIRStorageReference *ref in listResult.items) {
+    [items addObject:[ref fullPath]];
+  }
+
+  for (FIRStorageReference *ref in listResult.prefixes) {
+    [prefixes addObject:[ref fullPath]];
+  }
+
+  return @{
+    @"nextPageToken": [listResult pageToken] != nil ? (id) [listResult pageToken] : [NSNull null],
+    @"items": items,
+    @"prefixes": prefixes,
+  };
+}
+
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
   if (task == nil) {
     return [@{
