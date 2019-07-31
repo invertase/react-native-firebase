@@ -221,7 +221,7 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
-  describe.only('list', () => {
+  describe('list', () => {
     it('should return list results', async () => {
       const storageReference = firebase.storage().ref('/list');
       const result = await storageReference.list();
