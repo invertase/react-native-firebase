@@ -46,7 +46,7 @@ const PACKAGES = [
   'utils',
   'ml-natural-language',
   'ml-vision',
-  // 'invites',
+  'invites',
   'fiam',
   'auth',
   'database',
