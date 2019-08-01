@@ -172,7 +172,7 @@ export namespace MLKitLanguage {
      * const replies = await firebase.mlKitLanguage().suggestReplies([
      *   { text: "Hey, long time no speak!", },
      *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
-     *   { text: 'Hey, long time no speak!' },
+     *   { text: 'We should catchup some time!', },
      *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
      * ]);
      * ```
