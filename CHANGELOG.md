@@ -193,7 +193,8 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 - [NEW] Added support for handling snapshot metadata via the `includeMetadataChanges` flag which can be passed to `CollectionReference.onSnapshot()` and `QuerySnapshot.docChanges()` to return additional results from query snapshot listeners.
 - [NEW] Cache size can now be set to unlimited using the `CACHE_SIZE_UNLIMITED` static when passed to `firestore().settings()` (also added in v5.4).
 - [BUGFIX] Remove Metro circular reference warnings.
-- [BUGFIX] Transaction gets must also have a write command (matches Web SDK).
+- [BUGFIX] `DocumentReference` and `CollectionReference` snapshot observers now correctly handle the same args as the Web SDK.
+- [BUGFIX] Validate transaction gets must also have a write command (matches Web SDK).
 - [BUGFIX] Setting a negative infinity value (`-Infinity`) now correctly works as expected.
 - [BUGFIX] `QuerySnapshot.forEach()` can now correctly takes an optional context argument.
 - [BUGFIX] Snapshot metadata now correctly returns a `SnapshotMetadata` class (as per Web SDK).

@@ -62,147 +62,43 @@ export namespace Messaging {
   }
 
   /**
-   * The `RemoteMessage` interface describes an incoming message from the remote FCM server.
+   * The `RemoteMessage` interface describes an outgoing & incoming message from the remote FCM server.
    */
   export interface RemoteMessage {
     /**
      * The collapse key a message was sent with. Used to override existing messages with the same
      * key.
      */
-    collapseKey: string;
+    collapseKey?: string;
 
     /**
      * A unique ID assigned to every message.
+     *
+     * If not provided, a random unique ID is generated.
      */
-    messageId: string;
+    messageId?: string;
 
     /**
      * The message type of the message.
      */
-    messageType: string;
+    messageType?: string;
 
     /**
      * The address for the message.
      */
-    to: string;
+    to?: string;
 
     /**
      * The time to live for the message in seconds.
+     *
+     * Defaults to 3600.
      */
-    ttl: number;
+    ttl?: number;
 
     /**
-     * Any additional data which was sent with the message.
+     * Any additional data sent with the message.
      */
-    data: { [key: string]: string };
-  }
-
-  /**
-   * The `RemoteMessageBuilder` interface allows a `RemoteMessage` to be constructed which can later
-   * be sent to the FCM server from the application.
-   */
-  export interface RemoteMessageBuilder {
-    /**
-     * If provided, messages with the same key will override any pending messages which have not yet been
-     * sent to the FCM server.
-     *
-     * For example, sending an unread messages count for a chat app, the key could be the app user ID.
-     *
-     * #### Example
-     *
-     * ```js
-     * const messageBuilder = firebase.messaging().newRemoteMessage()
-     *   .setCollapseKey('1234')
-     *   .setData({
-     *     unread: 3,
-     *   });
-     * ```
-     *
-     * @param collapseKey
-     */
-    setCollapseKey(collapseKey: string): RemoteMessageBuilder;
-
-    /**
-     * Provide a custom message ID for the message. If not provided, a unique ID will be created
-     * for the message.
-     *
-     * @param messageId A custom message ID.
-     */
-    setMessageId(messageId: string): RemoteMessageBuilder;
-
-    /**
-     * Provide a custom message type which the FCM server can read.
-     *
-     * #### Example
-     *
-     * ```js
-     * const messageBuilder = firebase.messaging().newRemoteMessage()
-     *   .setMessageType('unread_count')
-     *   .setData({
-     *     unread: 3,
-     *   });
-     * ```
-     *
-     * @param messageType A message type.
-     */
-    setMessageType(messageType: string): RemoteMessageBuilder;
-
-    /**
-     * Provide a custom message destination. This is in the format of the receiving app server, e.g.
-     * `SENDER_ID@fcm.googleapis.com`.
-     *
-     * Defaults to the default Firebase app messaging sender ID.
-     *
-     * #### Example
-     *
-     * ```js
-     * const destination = firebase.app().options.messagingSenderId + '@fcm.googleapis.com';
-     *
-     * const messageBuilder = firebase.messaging().newRemoteMessage()
-     *   .setTo(destination)
-     * ```
-     *
-     * @param to The server ID.
-     */
-    setTo(to: string): RemoteMessageBuilder;
-
-    /**
-     * Set a time to live for the message in seconds. If the message has not yet been sent to the FCM server and the time
-     * surpasses the TTL, the message will be dropped from the queue and will not be sent.
-     *
-     * If `0`, the message send will be attempted immediately and will be dropped if the device is not
-     * connected. Otherwise, the message will be queued.
-     *
-     * If a message is dropped, the `onSendError()` listener will be called with the message ID.
-     *
-     * Defaults to 3600 seconds (1 hour).
-     *
-     * #### Example
-     *
-     * ```js
-     * const messageBuilder = firebase.messaging().newRemoteMessage()
-     *   .setTtl(600) // 10 minutes
-     *   .setData({
-     *     unread: 3,
-     *   });
-     * ```
-     *
-     * @param ttl The number of seconds this message should live for.
-     */
-    setTtl(ttl: number): RemoteMessageBuilder;
-
-    /**
-     * Sets a custom data payload to be sent with the message.
-     *
-     * const messageBuilder = firebase.messaging().newRemoteMessage()
-     *   .setData({
-     *     unread: 3,
-     *   });
-     * ```
-     *
-     * @param data An object of data.
-     */
-    setData(data: { [key: string]: string }): RemoteMessageBuilder;
+    data?: { [key: string]: string };
   }
 
   /**
@@ -242,20 +138,6 @@ export namespace Messaging {
    * ```
    */
   export class Module extends FirebaseModule {
-    /**
-     * Returns a new `RemoteMessageBuilder` which can be passed to `sendMessage()`.
-     *
-     * #### Example
-     *
-     * ```js
-     * const messageBuilder = firebase.messaging().newRemoteMessage();
-     * messageBuilder.setData({
-     *   timestamp: Date.now(),
-     * });
-     * ```
-     */
-    newRemoteMessage(): RemoteMessageBuilder;
-
     /**
      * Returns whether messaging auto initialization is enabled or disabled for the device.
      *
@@ -618,19 +500,17 @@ export namespace Messaging {
      * #### Example
      *
      * ```js
-     * const message = firebase.firestore().newRemoteMessage();
-     *
-     * message.data({
-     *   loggedIn: Date.now(),
-     *   uid: firebase.auth().currentUser.uid,
+     * await firebase.firestore().sendMessage({
+     *   data: {
+     *     loggedIn: Date.now(),
+     *     uid: firebase.auth().currentUser.uid,
+     *   }
      * });
-     *
-     * await firebase.firestore().sendMessage(message);
      * ```
      *
-     * @param message A `RemoteMessage` created from a `RemoteMessageBuilder`.
+     * @param message A `RemoteMessage` interface.
      */
-    sendMessage(message: RemoteMessageBuilder): Promise<void>;
+    sendMessage(message: RemoteMessage): Promise<void>;
 
     /**
      * Apps can subscribe to a topic, which allows the FCM server to send targeted messages to only those
