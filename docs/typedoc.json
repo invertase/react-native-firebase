@@ -637,21 +637,21 @@
 									]
 								},
 								{
-									"id": 2208,
+									"id": 2220,
 									"name": "storage",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2209,
+											"id": 2221,
 											"name": "storage",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2210,
+													"id": 2222,
 													"name": "bucket",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -676,27 +676,27 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 2183
+												"id": 2195
 											}
 										}
 									],
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1035,
+											"line": 1115,
 											"character": 13
 										}
 									]
 								},
 								{
-									"id": 2232,
+									"id": 2244,
 									"name": "utils",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2233,
+											"id": 2245,
 											"name": "utils",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -704,7 +704,7 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 2224
+												"id": 2236
 											}
 										}
 									],
@@ -738,8 +738,8 @@
 										1568,
 										1945,
 										2039,
-										2208,
-										2232
+										2220,
+										2244
 									]
 								}
 							],
@@ -826,7 +826,7 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1034,
+									"line": 1114,
 									"character": 25
 								},
 								{
@@ -1340,7 +1340,7 @@
 									}
 								},
 								{
-									"id": 2207,
+									"id": 2219,
 									"name": "storage",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1348,7 +1348,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1032,
+											"line": 1112,
 											"character": 13
 										}
 									],
@@ -1360,7 +1360,7 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 2183
+												"id": 2195
 											},
 											{
 												"type": "reference",
@@ -1371,7 +1371,7 @@
 									}
 								},
 								{
-									"id": 2231,
+									"id": 2243,
 									"name": "utils",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1394,12 +1394,12 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 2224
+												"id": 2236
 											},
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 2222
+												"id": 2234
 											}
 										]
 									}
@@ -1426,8 +1426,8 @@
 										1567,
 										1944,
 										2038,
-										2207,
-										2231
+										2219,
+										2243
 									]
 								}
 							],
@@ -1514,7 +1514,7 @@
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1031,
+									"line": 1111,
 									"character": 20
 								},
 								{
@@ -1618,7 +1618,7 @@
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1029,
+							"line": 1109,
 							"character": 31
 						},
 						{
@@ -1763,7 +1763,7 @@
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1028,
+					"line": 1108,
 					"character": 43
 				},
 				{
@@ -3486,14 +3486,14 @@
 			]
 		},
 		{
-			"id": 2203,
+			"id": 2215,
 			"name": "\"@react-native-firebase/storage\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 2205,
+					"id": 2217,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3504,7 +3504,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1019,
+							"line": 1099,
 							"character": 23
 						}
 					],
@@ -3515,7 +3515,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 2204,
+					"id": 2216,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3525,7 +3525,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1018,
+							"line": 1098,
 							"character": 27
 						}
 					],
@@ -3544,7 +3544,7 @@
 					}
 				},
 				{
-					"id": 2206,
+					"id": 2218,
 					"name": "module",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3555,7 +3555,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1021,
+							"line": 1101,
 							"character": 14
 						}
 					],
@@ -3567,7 +3567,7 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 2183
+								"id": 2195
 							},
 							{
 								"type": "reference",
@@ -3583,29 +3583,29 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						2205,
-						2204,
-						2206
+						2217,
+						2216,
+						2218
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1014,
+					"line": 1094,
 					"character": 47
 				}
 			]
 		},
 		{
-			"id": 2227,
+			"id": 2239,
 			"name": "\"@react-native-firebase/utils\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 2229,
+					"id": 2241,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3627,7 +3627,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 2228,
+					"id": 2240,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3656,7 +3656,7 @@
 					}
 				},
 				{
-					"id": 2230,
+					"id": 2242,
 					"name": "module",
 					"kind": 32,
 					"kindString": "Variable",
@@ -3679,12 +3679,12 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 2224
+								"id": 2236
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 2222
+								"id": 2234
 							}
 						]
 					}
@@ -3695,9 +3695,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						2229,
-						2228,
-						2230
+						2241,
+						2240,
+						2242
 					]
 				}
 			],
@@ -45363,12 +45363,12 @@
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 2183
+							"id": 2195
 						},
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 2224
+							"id": 2236
 						}
 					]
 				},
@@ -47262,7 +47262,7 @@
 			},
 			"children": [
 				{
-					"id": 2183,
+					"id": 2195,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -47275,7 +47275,7 @@
 					},
 					"children": [
 						{
-							"id": 2202,
+							"id": 2214,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47303,7 +47303,7 @@
 							}
 						},
 						{
-							"id": 2188,
+							"id": 2200,
 							"name": "maxDownloadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47317,7 +47317,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 940,
+									"line": 1020,
 									"character": 24
 								}
 							],
@@ -47327,7 +47327,7 @@
 							}
 						},
 						{
-							"id": 2192,
+							"id": 2204,
 							"name": "maxOperationRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47341,7 +47341,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 964,
+									"line": 1044,
 									"character": 25
 								}
 							],
@@ -47351,7 +47351,7 @@
 							}
 						},
 						{
-							"id": 2184,
+							"id": 2196,
 							"name": "maxUploadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -47365,7 +47365,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 916,
+									"line": 996,
 									"character": 22
 								}
 							],
@@ -47375,7 +47375,7 @@
 							}
 						},
 						{
-							"id": 2196,
+							"id": 2208,
 							"name": "ref",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47384,7 +47384,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2197,
+									"id": 2209,
 									"name": "ref",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47395,7 +47395,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2198,
+											"id": 2210,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -47430,13 +47430,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 991,
+									"line": 1071,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 2199,
+							"id": 2211,
 							"name": "refFromURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47445,7 +47445,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2200,
+									"id": 2212,
 									"name": "refFromURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47456,7 +47456,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2201,
+											"id": 2213,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -47480,13 +47480,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1010,
+									"line": 1090,
 									"character": 14
 								}
 							]
 						},
 						{
-							"id": 2189,
+							"id": 2201,
 							"name": "setMaxDownloadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47495,7 +47495,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2190,
+									"id": 2202,
 									"name": "setMaxDownloadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47506,7 +47506,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2191,
+											"id": 2203,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -47535,13 +47535,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 953,
+									"line": 1033,
 									"character": 27
 								}
 							]
 						},
 						{
-							"id": 2193,
+							"id": 2205,
 							"name": "setMaxOperationRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47550,7 +47550,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2194,
+									"id": 2206,
 									"name": "setMaxOperationRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47561,7 +47561,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2195,
+											"id": 2207,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -47590,13 +47590,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 977,
+									"line": 1057,
 									"character": 28
 								}
 							]
 						},
 						{
-							"id": 2185,
+							"id": 2197,
 							"name": "setMaxUploadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -47605,7 +47605,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2186,
+									"id": 2198,
 									"name": "setMaxUploadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -47616,7 +47616,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2187,
+											"id": 2199,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -47645,7 +47645,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 929,
+									"line": 1009,
 									"character": 25
 								}
 							]
@@ -47656,28 +47656,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2202,
-								2188,
-								2192,
-								2184
+								2214,
+								2200,
+								2204,
+								2196
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2196,
-								2199,
-								2189,
-								2193,
-								2185
+								2208,
+								2211,
+								2201,
+								2205,
+								2197
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 906,
+							"line": 986,
 							"character": 21
 						}
 					],
@@ -48237,6 +48237,222 @@
 					]
 				},
 				{
+					"id": 2188,
+					"name": "ListOptions",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "The options `list()` accepts."
+					},
+					"children": [
+						{
+							"id": 2189,
+							"name": "maxResults",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "If set, limits the total number of `prefixes` and `items` to return. The default and maximum maxResults is 1000."
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 923,
+									"character": 14
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "number"
+									}
+								]
+							}
+						},
+						{
+							"id": 2190,
+							"name": "pageToken",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true,
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "The `nextPageToken` from a previous call to `list()`. If provided, listing is resumed from the previous position."
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 928,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "string"
+									}
+								]
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								2189,
+								2190
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 919,
+							"character": 30
+						}
+					]
+				},
+				{
+					"id": 2191,
+					"name": "ListResult",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {
+						"isExported": true
+					},
+					"comment": {
+						"shortText": "Result returned by `list()`."
+					},
+					"children": [
+						{
+							"id": 2192,
+							"name": "items",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Objects in this directory. You can call `getMetadate()` and `getDownloadUrl()` on them."
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 938,
+									"character": 9
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"name": "Reference",
+									"id": 2089
+								}
+							}
+						},
+						{
+							"id": 2193,
+							"name": "nextPageToken",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "If set, there might be more results for this list. Use this token to resume the list."
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 943,
+									"character": 17
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 2194,
+							"name": "prefixes",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "References to prefixes (sub-folders). You can call `list()` on them to get its contents.",
+								"text": "Folders are implicit based on '/' in the object paths. For example, if a bucket has two objects '/a/b/1' and '/a/b/2', list('/a') will return '/a/b' as a prefix.\n"
+							},
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 950,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"name": "Reference",
+									"id": 2089
+								}
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								2192,
+								2193,
+								2194
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 934,
+							"character": 29
+						}
+					]
+				},
+				{
 					"id": 2089,
 					"name": "Reference",
 					"kind": 256,
@@ -48396,7 +48612,7 @@
 							"type": {
 								"type": "reference",
 								"name": "Module",
-								"id": 2183
+								"id": 2195
 							}
 						},
 						{
@@ -48568,7 +48784,106 @@
 							]
 						},
 						{
-							"id": 2114,
+							"id": 2107,
+							"name": "list",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 2108,
+									"name": "list",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "List items (files) and prefixes (folders) under this storage reference.",
+										"text": "List API is only available for Firebase Rules Version 2.\n\nGCS is a key-blob store. Firebase Storage imposes the semantic of '/' delimited folder structure.\nRefer to GCS's List API if you want to learn more.\n\nTo adhere to Firebase Rules's Semantics, Firebase Storage does not support objects whose paths\nend with \"/\" or contain two consecutive \"/\"s. Firebase Storage List API will filter these unsupported objects.\nlist() may fail if there are too many unsupported objects in the bucket.\n\n#### Example\n\n```js\nconst ref = firebase.storage().ref('/');\nconst results = await ref.list({\n  maxResults: 30,\n});\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 2109,
+											"name": "options",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"text": "An optional ListOptions interface.\n"
+											},
+											"type": {
+												"type": "reference",
+												"name": "ListOptions",
+												"id": 2188
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"name": "ListResult",
+												"id": 2191
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 557,
+									"character": 8
+								}
+							]
+						},
+						{
+							"id": 2110,
+							"name": "listAll",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 2111,
+									"name": "listAll",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "List all items (files) and prefixes (folders) under this storage reference.",
+										"text": "This is a helper method for calling list() repeatedly until there are no more results. The default pagination size is 1000.\n\nNote: The results may not be consistent if objects are changed while this operation is running.\n\nWarning: `listAll` may potentially consume too many resources if there are too many results.\n\n#### Example\n\n```js\nconst ref = firebase.storage().ref('/');\nconst results = await ref.listAll();\n```\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"name": "ListResult",
+												"id": 2191
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "storage/lib/index.d.ts",
+									"line": 575,
+									"character": 11
+								}
+							]
+						},
+						{
+							"id": 2119,
 							"name": "put",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48577,7 +48892,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2115,
+									"id": 2120,
 									"name": "put",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48588,7 +48903,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2116,
+											"id": 2121,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48615,7 +48930,7 @@
 											}
 										},
 										{
-											"id": 2117,
+											"id": 2122,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48635,20 +48950,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2138
+										"id": 2143
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 583,
+									"line": 626,
 									"character": 7
 								}
 							]
 						},
 						{
-							"id": 2107,
+							"id": 2112,
 							"name": "putFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48657,7 +48972,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2108,
+									"id": 2113,
 									"name": "putFile",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48668,7 +48983,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2109,
+											"id": 2114,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48682,7 +48997,7 @@
 											}
 										},
 										{
-											"id": 2110,
+											"id": 2115,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48702,20 +49017,20 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2138
+										"id": 2143
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 550,
+									"line": 593,
 									"character": 11
 								}
 							]
 						},
 						{
-							"id": 2118,
+							"id": 2123,
 							"name": "putString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48724,7 +49039,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2119,
+									"id": 2124,
 									"name": "putString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48735,7 +49050,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2120,
+											"id": 2125,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48749,7 +49064,7 @@
 											}
 										},
 										{
-											"id": 2121,
+											"id": 2126,
 											"name": "format",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48782,7 +49097,7 @@
 											}
 										},
 										{
-											"id": 2122,
+											"id": 2127,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48802,14 +49117,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2138
+										"id": 2143
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 601,
+									"line": 644,
 									"character": 13
 								}
 							]
@@ -48848,7 +49163,7 @@
 							]
 						},
 						{
-							"id": 2123,
+							"id": 2128,
 							"name": "updateMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48857,7 +49172,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2124,
+									"id": 2129,
 									"name": "updateMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48868,7 +49183,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2125,
+											"id": 2130,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48899,13 +49214,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 623,
+									"line": 666,
 									"character": 18
 								}
 							]
 						},
 						{
-							"id": 2111,
+							"id": 2116,
 							"name": "writeToFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48914,7 +49229,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2112,
+									"id": 2117,
 									"name": "writeToFile",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48925,7 +49240,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2113,
+											"id": 2118,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48942,14 +49257,14 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2138
+										"id": 2143
 									}
 								}
 							],
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 566,
+									"line": 609,
 									"character": 15
 								}
 							]
@@ -48976,12 +49291,14 @@
 								2101,
 								2103,
 								2105,
-								2114,
 								2107,
-								2118,
-								2096,
+								2110,
+								2119,
+								2112,
 								2123,
-								2111
+								2096,
+								2128,
+								2116
 							]
 						}
 					],
@@ -49518,7 +49835,7 @@
 					]
 				},
 				{
-					"id": 2138,
+					"id": 2143,
 					"name": "Task",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49531,7 +49848,7 @@
 					},
 					"children": [
 						{
-							"id": 2143,
+							"id": 2148,
 							"name": "cancel",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49540,7 +49857,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2144,
+									"id": 2149,
 									"name": "cancel",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49564,13 +49881,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 753,
+									"line": 796,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 2169,
+							"id": 2174,
 							"name": "catch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49579,14 +49896,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2170,
+									"id": 2175,
 									"name": "catch",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2171,
+											"id": 2176,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49594,21 +49911,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 2172,
+													"id": 2177,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 2173,
+															"id": 2178,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 2174,
+																	"id": 2179,
 																	"name": "a",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -49629,7 +49946,7 @@
 													"sources": [
 														{
 															"fileName": "storage/lib/index.d.ts",
-															"line": 799,
+															"line": 842,
 															"character": 21
 														}
 													]
@@ -49652,13 +49969,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 799,
+									"line": 842,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 2145,
+							"id": 2150,
 							"name": "on",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49667,7 +49984,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2146,
+									"id": 2151,
 									"name": "on",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49678,7 +49995,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2147,
+											"id": 2152,
 											"name": "event",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49692,7 +50009,7 @@
 											}
 										},
 										{
-											"id": 2148,
+											"id": 2153,
 											"name": "nextOrObserver",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49708,7 +50025,7 @@
 													{
 														"type": "reference",
 														"name": "TaskSnapshotObserver",
-														"id": 2126
+														"id": 2131
 													},
 													{
 														"type": "intrinsic",
@@ -49717,21 +50034,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2149,
+															"id": 2154,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2150,
+																	"id": 2155,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2151,
+																			"id": 2156,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -49739,7 +50056,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2175
+																				"id": 2180
 																			}
 																		}
 																	],
@@ -49752,7 +50069,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 784,
+																	"line": 827,
 																	"character": 52
 																}
 															]
@@ -49762,7 +50079,7 @@
 											}
 										},
 										{
-											"id": 2152,
+											"id": 2157,
 											"name": "error",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49778,21 +50095,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2153,
+															"id": 2158,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2154,
+																	"id": 2159,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2155,
+																			"id": 2160,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -49813,7 +50130,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 785,
+																	"line": 828,
 																	"character": 13
 																}
 															]
@@ -49827,7 +50144,7 @@
 											}
 										},
 										{
-											"id": 2156,
+											"id": 2161,
 											"name": "complete",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49843,14 +50160,14 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2157,
+															"id": 2162,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2158,
+																	"id": 2163,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
@@ -49864,7 +50181,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 786,
+																	"line": 829,
 																	"character": 16
 																}
 															]
@@ -49887,13 +50204,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 782,
+									"line": 825,
 									"character": 6
 								}
 							]
 						},
 						{
-							"id": 2139,
+							"id": 2144,
 							"name": "pause",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49902,7 +50219,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2140,
+									"id": 2145,
 									"name": "pause",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49926,13 +50243,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 715,
+									"line": 758,
 									"character": 9
 								}
 							]
 						},
 						{
-							"id": 2141,
+							"id": 2146,
 							"name": "resume",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49941,7 +50258,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2142,
+									"id": 2147,
 									"name": "resume",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49965,13 +50282,13 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 735,
+									"line": 778,
 									"character": 10
 								}
 							]
 						},
 						{
-							"id": 2159,
+							"id": 2164,
 							"name": "then",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49980,14 +50297,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2160,
+									"id": 2165,
 									"name": "then",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2161,
+											"id": 2166,
 											"name": "onFulfilled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50000,21 +50317,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2162,
+															"id": 2167,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2163,
+																	"id": 2168,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2164,
+																			"id": 2169,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -50022,7 +50339,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2175
+																				"id": 2180
 																			}
 																		}
 																	],
@@ -50035,7 +50352,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 795,
+																	"line": 838,
 																	"character": 19
 																}
 															]
@@ -50049,7 +50366,7 @@
 											}
 										},
 										{
-											"id": 2165,
+											"id": 2170,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50062,21 +50379,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2166,
+															"id": 2171,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2167,
+																	"id": 2172,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2168,
+																			"id": 2173,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -50097,7 +50414,7 @@
 															"sources": [
 																{
 																	"fileName": "storage/lib/index.d.ts",
-																	"line": 796,
+																	"line": 839,
 																	"character": 18
 																}
 															]
@@ -50126,7 +50443,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 794,
+									"line": 837,
 									"character": 8
 								}
 							]
@@ -50137,19 +50454,19 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2143,
-								2169,
-								2145,
-								2139,
-								2141,
-								2159
+								2148,
+								2174,
+								2150,
+								2144,
+								2146,
+								2164
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 697,
+							"line": 740,
 							"character": 23
 						}
 					]
@@ -50210,7 +50527,7 @@
 					]
 				},
 				{
-					"id": 2175,
+					"id": 2180,
 					"name": "TaskSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50223,7 +50540,7 @@
 					},
 					"children": [
 						{
-							"id": 2176,
+							"id": 2181,
 							"name": "bytesTransferred",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50236,7 +50553,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 839,
+									"line": 882,
 									"character": 20
 								}
 							],
@@ -50246,7 +50563,7 @@
 							}
 						},
 						{
-							"id": 2182,
+							"id": 2187,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50260,7 +50577,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 870,
+									"line": 913,
 									"character": 9
 								}
 							],
@@ -50271,7 +50588,7 @@
 							}
 						},
 						{
-							"id": 2177,
+							"id": 2182,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50284,7 +50601,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 844,
+									"line": 887,
 									"character": 12
 								}
 							],
@@ -50295,7 +50612,7 @@
 							}
 						},
 						{
-							"id": 2178,
+							"id": 2183,
 							"name": "ref",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50308,7 +50625,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 849,
+									"line": 892,
 									"character": 7
 								}
 							],
@@ -50319,7 +50636,7 @@
 							}
 						},
 						{
-							"id": 2179,
+							"id": 2184,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50332,7 +50649,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 854,
+									"line": 897,
 									"character": 9
 								}
 							],
@@ -50363,7 +50680,7 @@
 							}
 						},
 						{
-							"id": 2180,
+							"id": 2185,
 							"name": "task",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50376,18 +50693,18 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 859,
+									"line": 902,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reference",
 								"name": "Task",
-								"id": 2138
+								"id": 2143
 							}
 						},
 						{
-							"id": 2181,
+							"id": 2186,
 							"name": "totalBytes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50400,7 +50717,7 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 864,
+									"line": 907,
 									"character": 14
 								}
 							],
@@ -50415,26 +50732,26 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2176,
+								2181,
+								2187,
 								2182,
-								2177,
-								2178,
-								2179,
-								2180,
-								2181
+								2183,
+								2184,
+								2185,
+								2186
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 835,
+							"line": 878,
 							"character": 31
 						}
 					]
 				},
 				{
-					"id": 2126,
+					"id": 2131,
 					"name": "TaskSnapshotObserver",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50447,7 +50764,7 @@
 					},
 					"children": [
 						{
-							"id": 2135,
+							"id": 2140,
 							"name": "complete",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50460,21 +50777,21 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 666,
+									"line": 709,
 									"character": 12
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2136,
+									"id": 2141,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2137,
+											"id": 2142,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -50488,7 +50805,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 666,
+											"line": 709,
 											"character": 13
 										}
 									]
@@ -50496,7 +50813,7 @@
 							}
 						},
 						{
-							"id": 2131,
+							"id": 2136,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50509,14 +50826,14 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 661,
+									"line": 704,
 									"character": 9
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2132,
+									"id": 2137,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
@@ -50526,7 +50843,7 @@
 									},
 									"signatures": [
 										{
-											"id": 2133,
+											"id": 2138,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -50536,7 +50853,7 @@
 											},
 											"parameters": [
 												{
-													"id": 2134,
+													"id": 2139,
 													"name": "error",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -50557,7 +50874,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 661,
+											"line": 704,
 											"character": 10
 										}
 									]
@@ -50565,7 +50882,7 @@
 							}
 						},
 						{
-							"id": 2127,
+							"id": 2132,
 							"name": "next",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50585,28 +50902,28 @@
 							"sources": [
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 654,
+									"line": 697,
 									"character": 8
 								}
 							],
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2128,
+									"id": 2133,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2129,
+											"id": 2134,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2130,
+													"id": 2135,
 													"name": "taskSnapshot",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -50614,7 +50931,7 @@
 													"type": {
 														"type": "reference",
 														"name": "TaskSnapshot",
-														"id": 2175
+														"id": 2180
 													}
 												}
 											],
@@ -50627,7 +50944,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 654,
+											"line": 697,
 											"character": 9
 										}
 									]
@@ -50640,16 +50957,16 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2135,
-								2131,
-								2127
+								2140,
+								2136,
+								2132
 							]
 						}
 					],
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 648,
+							"line": 691,
 							"character": 39
 						}
 					]
@@ -50810,7 +51127,7 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						2183
+						2195
 					]
 				},
 				{
@@ -50818,14 +51135,16 @@
 					"kind": 256,
 					"children": [
 						2070,
+						2188,
+						2191,
 						2089,
 						2060,
 						2056,
 						2043,
-						2138,
+						2143,
 						2048,
-						2175,
-						2126,
+						2180,
+						2131,
 						2050
 					]
 				}
@@ -50839,7 +51158,7 @@
 			]
 		},
 		{
-			"id": 2211,
+			"id": 2223,
 			"name": "Utils",
 			"kind": 2,
 			"kindString": "Module",
@@ -50858,7 +51177,7 @@
 			},
 			"children": [
 				{
-					"id": 2224,
+					"id": 2236,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -50871,7 +51190,7 @@
 					},
 					"children": [
 						{
-							"id": 2226,
+							"id": 2238,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50899,7 +51218,7 @@
 							}
 						},
 						{
-							"id": 2225,
+							"id": 2237,
 							"name": "isRunningInTestLab",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50933,8 +51252,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2226,
-								2225
+								2238,
+								2237
 							]
 						}
 					],
@@ -50954,7 +51273,7 @@
 					]
 				},
 				{
-					"id": 2212,
+					"id": 2224,
 					"name": "FilePath",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50967,7 +51286,7 @@
 					},
 					"children": [
 						{
-							"id": 2214,
+							"id": 2226,
 							"name": "CACHES_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50991,7 +51310,7 @@
 							}
 						},
 						{
-							"id": 2215,
+							"id": 2227,
 							"name": "DOCUMENT_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51015,7 +51334,7 @@
 							}
 						},
 						{
-							"id": 2218,
+							"id": 2230,
 							"name": "EXTERNAL_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51054,7 +51373,7 @@
 							}
 						},
 						{
-							"id": 2219,
+							"id": 2231,
 							"name": "EXTERNAL_STORAGE_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51093,7 +51412,7 @@
 							}
 						},
 						{
-							"id": 2217,
+							"id": 2229,
 							"name": "LIBRARY_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51117,7 +51436,7 @@
 							}
 						},
 						{
-							"id": 2213,
+							"id": 2225,
 							"name": "MAIN_BUNDLE",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51147,7 +51466,7 @@
 							}
 						},
 						{
-							"id": 2221,
+							"id": 2233,
 							"name": "MOVIES_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51171,7 +51490,7 @@
 							}
 						},
 						{
-							"id": 2220,
+							"id": 2232,
 							"name": "PICTURES_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51195,7 +51514,7 @@
 							}
 						},
 						{
-							"id": 2216,
+							"id": 2228,
 							"name": "TEMP_DIRECTORY",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51224,15 +51543,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2214,
-								2215,
-								2218,
-								2219,
-								2217,
-								2213,
-								2221,
-								2220,
-								2216
+								2226,
+								2227,
+								2230,
+								2231,
+								2229,
+								2225,
+								2233,
+								2232,
+								2228
 							]
 						}
 					],
@@ -51245,7 +51564,7 @@
 					]
 				},
 				{
-					"id": 2222,
+					"id": 2234,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -51254,7 +51573,7 @@
 					},
 					"children": [
 						{
-							"id": 2223,
+							"id": 2235,
 							"name": "FilePath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51271,7 +51590,7 @@
 							"type": {
 								"type": "reference",
 								"name": "FilePath",
-								"id": 2212
+								"id": 2224
 							}
 						}
 					],
@@ -51280,7 +51599,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2223
+								2235
 							]
 						}
 					],
@@ -51298,15 +51617,15 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						2224
+						2236
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2212,
-						2222
+						2224,
+						2234
 					]
 				}
 			],
@@ -51884,8 +52203,8 @@
 				1563,
 				1940,
 				2034,
-				2203,
-				2227,
+				2215,
+				2239,
 				136,
 				183,
 				464,
@@ -51904,7 +52223,7 @@
 				1952,
 				1,
 				2042,
-				2211
+				2223
 			]
 		},
 		{
