@@ -15,13 +15,17 @@
  *
  */
 
-import { hasOwnProperty, isBoolean, isNumber, isObject, isString } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isBoolean,
+  isNumber,
+  isObject,
+  isString,
+} from '@react-native-firebase/common';
 
 export default function validateTextMessage(textMessage) {
   if (!isObject(textMessage)) {
-    throw new Error(
-      "'textMessage' expected an object value",
-    );
+    throw new Error("'textMessage' expected an object value");
   }
 
   const out = {
@@ -30,20 +34,14 @@ export default function validateTextMessage(textMessage) {
   };
 
   if (!hasOwnProperty(textMessage, 'text')) {
-    throw new Error(
-      "'textMessage.text' expected a string value",
-    );
+    throw new Error("'textMessage.text' expected a string value");
   } else {
     if (!isString(textMessage.text)) {
-      throw new Error(
-        "'textMessage.text' expected a string value",
-      );
+      throw new Error("'textMessage.text' expected a string value");
     }
 
     if (textMessage.text.length === 0) {
-      throw new Error(
-        "'textMessage.text' expected string value to not be empty",
-      );
+      throw new Error("'textMessage.text' expected string value to not be empty");
     }
 
     out.text = textMessage.text;
@@ -51,9 +49,7 @@ export default function validateTextMessage(textMessage) {
 
   if (hasOwnProperty(textMessage, 'timestamp')) {
     if (!isNumber(textMessage.timestamp)) {
-      throw new Error(
-        "'textMessage.timestamp' expected number value (milliseconds)",
-      );
+      throw new Error("'textMessage.timestamp' expected number value (milliseconds)");
     }
 
     out.timestamp = textMessage.timestamp;
@@ -61,9 +57,7 @@ export default function validateTextMessage(textMessage) {
 
   if (hasOwnProperty(textMessage, 'isLocalUser')) {
     if (!isBoolean(textMessage.isLocalUser)) {
-      throw new Error(
-        "'textMessage.isLocalUser' expected boolean value",
-      );
+      throw new Error("'textMessage.isLocalUser' expected boolean value");
     }
 
     out.isLocalUser = textMessage.isLocalUser;
@@ -74,20 +68,14 @@ export default function validateTextMessage(textMessage) {
       "'textMessage.userId' expected 'textMessage.isLocalUser' to be false when setting a user ID.",
     );
   } else if (!out.isLocalUser && !hasOwnProperty(textMessage, 'userId')) {
-    throw new Error(
-      "'textMessage.userId' expected a string value",
-    );
+    throw new Error("'textMessage.userId' expected a string value");
   } else if (!out.isLocalUser && hasOwnProperty(textMessage, 'userId')) {
     if (!isString(textMessage.userId)) {
-      throw new Error(
-        "'textMessage.userId' expected a string value",
-      );
+      throw new Error("'textMessage.userId' expected a string value");
     }
 
     if (textMessage.userId.length === 0) {
-      throw new Error(
-        "'textMessage.userId' expected string value to not be empty",
-      );
+      throw new Error("'textMessage.userId' expected string value to not be empty");
     }
 
     out.userId = textMessage.userId;

@@ -31,19 +31,25 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       }
     });
 
-    it('resolves an empty if empty array if provided', async () => {
+    it('resolves an empty array if empty array if provided', async () => {
       const replies = await firebase.mlKitLanguage().suggestReplies([]);
       replies.should.be.Array();
       replies.length.should.eql(0);
     });
 
     it('returns suggested replies', async () => {
-      const replies = await firebase.mlKitLanguage().suggestReplies([
-        { text: 'We should catchup some time!', },
-        { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
-        { text: 'We should catchup some time!' },
-        { text: 'Definitely, how about we go for lunch this week?', userId: '123', isLocalUser: false },
-      ]);
+      const replies = await firebase
+        .mlKitLanguage()
+        .suggestReplies([
+          { text: 'We should catchup some time!' },
+          { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
+          { text: 'We should catchup some time!' },
+          {
+            text: 'Definitely, how about we go for lunch this week?',
+            userId: '123',
+            isLocalUser: false,
+          },
+        ]);
 
       replies.should.be.Array();
       replies.length.should.equal(3);
@@ -53,10 +59,12 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         $.text.length.should.be.greaterThan(0);
       });
 
-      const replies2 = await firebase.mlKitLanguage().suggestReplies([
-        { text: replies[0].text },
-        { text: 'Great, does Friday work for you?', userId: '123', isLocalUser: false },
-      ]);
+      const replies2 = await firebase
+        .mlKitLanguage()
+        .suggestReplies([
+          { text: replies[0].text },
+          { text: 'Great, does Friday work for you?', userId: '123', isLocalUser: false },
+        ]);
 
       replies2[0].text.should.be.String();
       replies2[0].text.length.should.be.greaterThan(0);
@@ -65,9 +73,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     describe('TextMessage', () => {
       it('throws if message is not an object', () => {
         try {
-          firebase.mlKitLanguage().suggestReplies([
-            123
-          ]);
+          firebase.mlKitLanguage().suggestReplies([123]);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
           e.message.should.containEql("'textMessage' expected an object value");
@@ -78,9 +84,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       describe('.text', () => {
         it('throws if text option not provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              {}
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{}]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected a string value");
@@ -90,9 +94,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if text option is not a string', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 123 }
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{ text: 123 }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected a string value");
@@ -102,9 +104,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if text length is zero', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: '' }
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{ text: '' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected string value to not be empty");
@@ -116,21 +116,19 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       describe('.userId', () => {
         it('throws if local user true and id provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', userId: 'bar' }
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', userId: 'bar' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
-            e.message.should.containEql("'textMessage.userId' expected 'textMessage.isLocalUser' to be false when setting a user ID");
+            e.message.should.containEql(
+              "'textMessage.userId' expected 'textMessage.isLocalUser' to be false when setting a user ID",
+            );
             return Promise.resolve();
           }
         });
 
         it('throws if text userId not provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', isLocalUser: false }
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', isLocalUser: false }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.userId' expected a string value");
@@ -140,9 +138,9 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if userId option is not a string', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', isLocalUser: false, userId: 123 }
-            ]);
+            firebase
+              .mlKitLanguage()
+              .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 123 }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.userId' expected a string value");
@@ -152,29 +150,29 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if userId length is zero', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', isLocalUser: false,  userId: '' }
-            ]);
+            firebase
+              .mlKitLanguage()
+              .suggestReplies([{ text: 'foo', isLocalUser: false, userId: '' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
-            e.message.should.containEql("'textMessage.userId' expected string value to not be empty");
+            e.message.should.containEql(
+              "'textMessage.userId' expected string value to not be empty",
+            );
             return Promise.resolve();
           }
         });
 
         it('sets a user id', () => {
-          firebase.mlKitLanguage().suggestReplies([
-            { text: 'foo', isLocalUser: false, userId: 'bar' }
-          ]);
+          firebase
+            .mlKitLanguage()
+            .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 'bar' }]);
         });
       });
 
       describe('.timestamp', () => {
         it('throws if timestamp is not a number', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', timestamp: 'baz' }
-            ]);
+            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', timestamp: 'baz' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.timestamp' expected number value");
@@ -183,18 +181,16 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         });
 
         it('sets a timestamp', () => {
-          firebase.mlKitLanguage().suggestReplies([
-            { text: 'foo', timestamp: Date.now() + 123 }
-          ]);
+          firebase.mlKitLanguage().suggestReplies([{ text: 'foo', timestamp: Date.now() + 123 }]);
         });
       });
 
       describe('.isLocalUser', () => {
         it('throws if isLocalUser is not a boolean', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([
-              { text: 'foo', userId: 'bar', isLocalUser: 'baz' }
-            ]);
+            firebase
+              .mlKitLanguage()
+              .suggestReplies([{ text: 'foo', userId: 'bar', isLocalUser: 'baz' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.isLocalUser' expected boolean value");
