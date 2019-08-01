@@ -38,18 +38,16 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     });
 
     it('returns suggested replies', async () => {
-      const replies = await firebase
-        .mlKitLanguage()
-        .suggestReplies([
-          { text: 'We should catchup some time!' },
-          { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
-          { text: 'We should catchup some time!' },
-          {
-            text: 'Definitely, how about we go for lunch this week?',
-            userId: '123',
-            isLocalUser: false,
-          },
-        ]);
+      const replies = await firebase.mlKitLanguage().suggestReplies([
+        { text: 'We should catchup some time!' },
+        { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
+        { text: 'We should catchup some time!' },
+        {
+          text: 'Definitely, how about we go for lunch this week?',
+          userId: '123',
+          isLocalUser: false,
+        },
+      ]);
 
       replies.should.be.Array();
       replies.length.should.equal(3);
