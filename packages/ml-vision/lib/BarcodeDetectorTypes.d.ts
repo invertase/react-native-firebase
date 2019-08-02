@@ -8,7 +8,7 @@
  * ```js
  * import { firebase } from '@react-native-firebase/ml-vision';
  *
- * // firebase.mlKitVision().X
+ * // firebase.vision().X
  * ```
  *
  * #### Example 2
@@ -16,9 +16,9 @@
  * Using the default export from the `ml-vision` package:
  *
  * ```js
- * import mlKitVision from '@react-native-firebase/ml-vision';
+ * import vision from '@react-native-firebase/ml-vision';
  *
- * // mlKitVision().X
+ * // vision().X
  * ```
  *
  * #### Example 3
@@ -29,7 +29,7 @@
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/ml-vision';
  *
- * // firebase.mlKitVision().X
+ * // firebase.vision().X
  * ```
  *
  * @firebase ml-vision
@@ -41,7 +41,7 @@ export namespace MLKitVision {
    * #### Example
    *
    * ```js
-   * const [barcode, ...otherBarcodes] = await firebase.mlKitVision().barcodeDetectorProcessImage(filePath);
+   * const [barcode, ...otherBarcodes] = await firebase.vision().barcodeDetectorProcessImage(filePath);
    * console.log(barcode);
    * ```
    */

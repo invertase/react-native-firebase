@@ -581,34 +581,6 @@
 									]
 								},
 								{
-									"id": 1925,
-									"name": "mlKitVision",
-									"kind": 2048,
-									"kindString": "Method",
-									"flags": {},
-									"signatures": [
-										{
-											"id": 1926,
-											"name": "mlKitVision",
-											"kind": 4096,
-											"kindString": "Call signature",
-											"flags": {},
-											"type": {
-												"type": "reference",
-												"name": "Module",
-												"id": 1860
-											}
-										}
-									],
-									"sources": [
-										{
-											"fileName": "ml-vision/lib/index.d.ts",
-											"line": 1240,
-											"character": 17
-										}
-									]
-								},
-								{
 									"id": 2019,
 									"name": "perf",
 									"kind": 2048,
@@ -715,6 +687,34 @@
 											"character": 11
 										}
 									]
+								},
+								{
+									"id": 1925,
+									"name": "vision",
+									"kind": 2048,
+									"kindString": "Method",
+									"flags": {},
+									"signatures": [
+										{
+											"id": 1926,
+											"name": "vision",
+											"kind": 4096,
+											"kindString": "Call signature",
+											"flags": {},
+											"type": {
+												"type": "reference",
+												"name": "Module",
+												"id": 1860
+											}
+										}
+									],
+									"sources": [
+										{
+											"fileName": "ml-vision/lib/index.d.ts",
+											"line": 1240,
+											"character": 12
+										}
+									]
 								}
 							],
 							"groups": [
@@ -736,10 +736,10 @@
 										957,
 										1499,
 										1544,
-										1925,
 										2019,
 										2200,
-										2224
+										2224,
+										1925
 									]
 								}
 							],
@@ -1278,37 +1278,6 @@
 									}
 								},
 								{
-									"id": 1924,
-									"name": "mlKitVision",
-									"kind": 1024,
-									"kindString": "Property",
-									"flags": {},
-									"sources": [
-										{
-											"fileName": "ml-vision/lib/index.d.ts",
-											"line": 1236,
-											"character": 17
-										}
-									],
-									"type": {
-										"type": "reference",
-										"name": "FirebaseModuleWithStaticsAndApp",
-										"id": 57,
-										"typeArguments": [
-											{
-												"type": "reference",
-												"name": "Module",
-												"id": 1860
-											},
-											{
-												"type": "reference",
-												"name": "Statics",
-												"id": 1674
-											}
-										]
-									}
-								},
-								{
 									"id": 2018,
 									"name": "perf",
 									"kind": 1024,
@@ -1403,6 +1372,37 @@
 											}
 										]
 									}
+								},
+								{
+									"id": 1924,
+									"name": "vision",
+									"kind": 1024,
+									"kindString": "Property",
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "ml-vision/lib/index.d.ts",
+											"line": 1236,
+											"character": 12
+										}
+									],
+									"type": {
+										"type": "reference",
+										"name": "FirebaseModuleWithStaticsAndApp",
+										"id": 57,
+										"typeArguments": [
+											{
+												"type": "reference",
+												"name": "Module",
+												"id": 1860
+											},
+											{
+												"type": "reference",
+												"name": "Statics",
+												"id": 1674
+											}
+										]
+									}
 								}
 							],
 							"groups": [
@@ -1424,10 +1424,10 @@
 										956,
 										1498,
 										1543,
-										1924,
 										2018,
 										2199,
-										2223
+										2223,
+										1924
 									]
 								}
 							],
@@ -32139,7 +32139,7 @@
 			},
 			"comment": {
 				"shortText": "Firebase ML Kit package for React Native.",
-				"text": "#### Example 1\n\nAccess the firebase export from the `ml-vision` package:\n\n```js\nimport { firebase } from '@react-native-firebase/ml-vision';\n\n// firebase.mlKitVision().X\n```\n\n#### Example 2\n\nUsing the default export from the `ml-vision` package:\n\n```js\nimport mlKitVision from '@react-native-firebase/ml-vision';\n\n// mlKitVision().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/ml-vision';\n\n// firebase.mlKitVision().X\n```\n",
+				"text": "#### Example 1\n\nAccess the firebase export from the `ml-vision` package:\n\n```js\nimport { firebase } from '@react-native-firebase/ml-vision';\n\n// firebase.vision().X\n```\n\n#### Example 2\n\nUsing the default export from the `ml-vision` package:\n\n```js\nimport vision from '@react-native-firebase/ml-vision';\n\n// vision().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/ml-vision';\n\n// firebase.vision().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -34364,7 +34364,7 @@
 					},
 					"comment": {
 						"shortText": "The Firebase ML Kit service interface.",
-						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the ML Kit service for the default app:\n\n```js\nconst defaultAppMLKit = firebase.mlKitVision();\n```\n"
+						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the ML Kit service for the default app:\n\n```js\nconst defaultAppMLKit = firebase.vision();\n```\n"
 					},
 					"children": [
 						{
@@ -34560,7 +34560,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns an array of labels (as `VisionImageLabel`) of a given local image file path. Label detection is done\non cloud (Firebase), resulting in slower results but more descriptive.",
-										"text": "#### Example\n\n```js\nconst labels = await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
+										"text": "#### Example\n\n```js\nconst labels = await firebase.vision().cloudImageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -34858,7 +34858,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns an array of labels (as `VisionImageLabel`) of a given local image file path. Label detection is done\non device, resulting in faster results but less descriptive.",
-										"text": "#### Example\n\n```js\nconst options = new firebase.mlKitVision.VisionImageLabelerOptions();\noptions.setConfidenceThreshold(0.8);\n\nconst labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, options);\n```\n"
+										"text": "#### Example\n\n```js\nconst options = new firebase.vision.VisionImageLabelerOptions();\noptions.setConfidenceThreshold(0.8);\n\nconst labels = await firebase.vision().imageLabelerProcessImage(filePath, options);\n```\n"
 									},
 									"parameters": [
 										{
@@ -35034,7 +35034,7 @@
 							},
 							"comment": {
 								"shortText": "Indicates whether to run additional classifiers for characterizing attributes such as \"smiling\" and \"eyes open\".",
-								"text": "Defaults to `VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS`.\n\n#### Example\n\n```js\nconst faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {\n  classificationMode: VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,\n});\n```\n"
+								"text": "Defaults to `VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS`.\n\n#### Example\n\n```js\nconst faces = await firebase.vision().faceDetectorProcessImage(filePath, {\n  classificationMode: VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -35070,7 +35070,7 @@
 							},
 							"comment": {
 								"shortText": "Sets whether to detect no contours or all contours. Processing time increases as the number of contours to search\nfor increases, so detecting all contours will increase the overall detection time. Note that it would return up\nto 5 faces contours.",
-								"text": "Defaults to `VisionFaceDetectorContourMode.NO_CONTOURS`.\n\n#### Example\n\n```js\nconst faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {\n  contourMode: VisionFaceDetectorContourMode.ALL_CONTOURS,\n});\n```\n"
+								"text": "Defaults to `VisionFaceDetectorContourMode.NO_CONTOURS`.\n\n#### Example\n\n```js\nconst faces = await firebase.vision().faceDetectorProcessImage(filePath, {\n  contourMode: VisionFaceDetectorContourMode.ALL_CONTOURS,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -35106,7 +35106,7 @@
 							},
 							"comment": {
 								"shortText": "Sets whether to detect no landmarks or all landmarks. Processing time increases as the number of landmarks to\nsearch for increases, so detecting all landmarks will increase the overall detection time. Detecting landmarks\ncan improve pose estimation.",
-								"text": "Defaults to `VisionFaceDetectorLandmarkMode.NO_LANDMARKS`.\n\n#### Example\n\n```js\nconst faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {\n  landmarkMode: VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,\n});\n```\n"
+								"text": "Defaults to `VisionFaceDetectorLandmarkMode.NO_LANDMARKS`.\n\n#### Example\n\n```js\nconst faces = await firebase.vision().faceDetectorProcessImage(filePath, {\n  landmarkMode: VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -35142,7 +35142,7 @@
 							},
 							"comment": {
 								"shortText": "Sets the smallest desired face size, expressed as a proportion of the width of the head to the image width. For\nexample, if a value of 0.1 is specified then the smallest face to search for is roughly 10% of the width of the\nimage being searched.",
-								"text": "Setting the min face size is a performance vs. accuracy trade-off: setting the face size smaller will enable the\ndetector to find smaller faces but detection will take longer; setting the face size larger will exclude smaller\nfaces but will run faster.\n\nThis is not a hard limit on face size; the detector may find faces slightly smaller than specified.\n\nDefaults to 0.1.\n\n#### Example\n\n```js\nconst faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {\n  minFaceSize: 0.5,\n});\n```\n"
+								"text": "Setting the min face size is a performance vs. accuracy trade-off: setting the face size smaller will enable the\ndetector to find smaller faces but detection will take longer; setting the face size larger will exclude smaller\nfaces but will run faster.\n\nThis is not a hard limit on face size; the detector may find faces slightly smaller than specified.\n\nDefaults to 0.1.\n\n#### Example\n\n```js\nconst faces = await firebase.vision().faceDetectorProcessImage(filePath, {\n  minFaceSize: 0.5,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -35176,7 +35176,7 @@
 							},
 							"comment": {
 								"shortText": "Extended option for controlling additional accuracy / speed trade-offs in performing face detection. In general,\nchoosing the more accurate mode will generally result in longer runtime, whereas choosing the faster mode will\ngenerally result in detecting fewer faces.",
-								"text": "Defaults to `VisionFaceDetectorPerformanceMode.FAST`.\n\n#### Example\n\n```js\nconst faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {\n  performanceMode: VisionFaceDetectorPerformanceMode.ACCURATE,\n});\n```\n"
+								"text": "Defaults to `VisionFaceDetectorPerformanceMode.FAST`.\n\n#### Example\n\n```js\nconst faces = await firebase.vision().faceDetectorProcessImage(filePath, {\n  performanceMode: VisionFaceDetectorPerformanceMode.ACCURATE,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -35589,7 +35589,7 @@
 					},
 					"comment": {
 						"shortText": "A representation of a barcode detected in an image.",
-						"text": "#### Example\n\n```js\nconst [barcode, ...otherBarcodes] = await firebase.mlKitVision().barcodeDetectorProcessImage(filePath);\nconsole.log(barcode);\n```\n"
+						"text": "#### Example\n\n```js\nconst [barcode, ...otherBarcodes] = await firebase.vision().barcodeDetectorProcessImage(filePath);\nconsole.log(barcode);\n```\n"
 					},
 					"children": [
 						{
@@ -38011,7 +38011,7 @@
 							},
 							"comment": {
 								"shortText": "API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.",
-								"text": "#### Example\n\n```js\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
+								"text": "#### Example\n\n```js\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -38051,7 +38051,7 @@
 							},
 							"comment": {
 								"shortText": "Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.",
-								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
+								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38089,7 +38089,7 @@
 							},
 							"comment": {
 								"shortText": "Sets language hints. In most cases, not setting this yields the best results since it enables automatic language\ndetection. For languages based on the Latin alphabet, setting language hints is not needed. In rare cases, when\nthe language of the text in the image is known, setting a hint will help get better results (although it will be a\nsignificant hindrance if the hint is wrong).",
-								"text": "Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.\n\n#### Example\n\n```js\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  languageHints: ['fr', 'de'],\n});\n```\n"
+								"text": "Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.\n\n#### Example\n\n```js\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  languageHints: ['fr', 'de'],\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38150,7 +38150,7 @@
 							},
 							"comment": {
 								"shortText": "API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.",
-								"text": "#### Example\n\n```js\nawait firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
+								"text": "#### Example\n\n```js\nawait firebase.vision().cloudImageLabelerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -38190,7 +38190,7 @@
 							},
 							"comment": {
 								"shortText": "Sets confidence threshold in the range of [0.0 - 1.0] of detected labels. Only labels detected with confidence higher than this threshold are returned.",
-								"text": "Defaults to 0.5.\n\n#### Example\n\n```js\nawait firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
+								"text": "Defaults to 0.5.\n\n#### Example\n\n```js\nawait firebase.vision().cloudImageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38224,7 +38224,7 @@
 							},
 							"comment": {
 								"shortText": "Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.",
-								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
+								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.vision().cloudImageLabelerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38474,7 +38474,7 @@
 							},
 							"comment": {
 								"shortText": "API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.",
-								"text": "#### Example\n\n```js\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
+								"text": "#### Example\n\n```js\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  apiKeyOverride: 'xyz123',\n});\n```\n",
 								"tags": [
 									{
 										"tag": "ios",
@@ -38514,7 +38514,7 @@
 							},
 							"comment": {
 								"shortText": "Only allow registered application instances with matching certificate fingerprint to use Cloud Vision API.",
-								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
+								"text": "> Do not set this for debug build if you use simulators to test.\n\n#### Example\n\n```js\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  enforceCertFingerprintMatch: true,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38552,7 +38552,7 @@
 							},
 							"comment": {
 								"shortText": "Sets language hints. In most cases, not setting this yields the best results since it enables automatic language\ndetection. For languages based on the Latin alphabet, setting language hints is not needed. In rare cases, when\nthe language of the text in the image is known, setting a hint will help get better results (although it will be a\nsignificant hindrance if the hint is wrong).",
-								"text": "Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.\n\n#### Example\n\n```js\nconst textRecognizerOptions = new VisionCloudTextRecognizerOptions();\ntextRecognizerOptions.setHintedLanguages(['fr', 'de']);\n\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  languageHints: ['fr', 'de'],\n});\n```\n"
+								"text": "Each language code must be a BCP-47 identifier. See [Google Cloud OCR Language Support](https://cloud.google.com/vision/docs/languages) for more information.\n\n#### Example\n\n```js\nconst textRecognizerOptions = new VisionCloudTextRecognizerOptions();\ntextRecognizerOptions.setHintedLanguages(['fr', 'de']);\n\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  languageHints: ['fr', 'de'],\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -38580,7 +38580,7 @@
 							},
 							"comment": {
 								"shortText": "Sets model type for cloud text recognition. The two models SPARSE_MODEL and DENSE_MODEL handle different text densities in an image.",
-								"text": "See `VisionCloudTextRecognizerModelType` for types.\n\nDefaults to `VisionCloudTextRecognizerModelType.SPARSE_MODEL`.\n\n#### Example\n\n```js\nimport {\n  firebase,\n  VisionCloudTextRecognizerModelType,\n} from '@react-native-firebase/ml-vision';\n\nawait firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {\n  modelType: VisionCloudTextRecognizerModelType.DENSE_MODEL,\n});\n```\n"
+								"text": "See `VisionCloudTextRecognizerModelType` for types.\n\nDefaults to `VisionCloudTextRecognizerModelType.SPARSE_MODEL`.\n\n#### Example\n\n```js\nimport {\n  firebase,\n  VisionCloudTextRecognizerModelType,\n} from '@react-native-firebase/ml-vision';\n\nawait firebase.vision().cloudTextRecognizerProcessImage(filePath, {\n  modelType: VisionCloudTextRecognizerModelType.DENSE_MODEL,\n});\n```\n"
 							},
 							"sources": [
 								{
@@ -40383,7 +40383,7 @@
 							},
 							"comment": {
 								"shortText": "Sets confidence threshold of detected labels. Only labels detected with confidence higher than this threshold are returned.",
-								"text": "For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned.\n\nDefaults to 0.5.\n\n#### Example\n\n```js\nconst labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
+								"text": "For example, if the confidence threshold is set to 0.7, only labels with confidence >= 0.7 would be returned.\n\nDefaults to 0.5.\n\n#### Example\n\n```js\nconst labels = await firebase.vision().imageLabelerProcessImage(filePath, {\n  confidenceThreshold: 0.8,\n});\n```\n"
 							},
 							"sources": [
 								{

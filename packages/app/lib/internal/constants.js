@@ -37,7 +37,7 @@ export const KNOWN_NAMESPACES = [
   'dynamicLinks',
   'messaging',
   'mlKitLanguage',
-  'mlKitVision',
+  'vision',
   'notifications',
   'perf',
   'utils',
